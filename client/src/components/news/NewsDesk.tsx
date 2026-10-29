@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-12
+ * Date: 2026-10-29; 2026-10-12
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -26,12 +26,12 @@ import { useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
 import { MastheadAd } from './SponsorPlacement';
-import { StoryFeature, TeamFaces } from './NewsPeople';
+import { StoryPeopleCards, TeamFaces } from './NewsPeople';
 import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 
@@ -163,7 +163,7 @@ export function StoryPreview({ article, lead = false, people = [], sections = 0,
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">By the ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    <StoryFeature person={featuredPerson(article, people)} competition={article.competition} />
+    <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />
     {article.image ? <EditionArtwork article={article} lead={lead} /> : art}
     {!!shown.length && <div className="news-story-body">{shown.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}

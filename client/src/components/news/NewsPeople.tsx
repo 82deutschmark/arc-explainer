@@ -1,25 +1,26 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-29
  * PURPOSE: Reusable person pieces for competition reporting: faces (Hall of Fame crop or saved
  *          Kaggle picture, initials when a person has neither), roster chips, the "in this story"
- *          face strip, directory cards and honors that link to the person's Hall of Fame cards.
+ *          subject cards for every reported person, directory cards and honors that link to the person's Hall of Fame cards.
  *          Used by the people pages, team rosters, editions, dispatches and the community desk.
  * SRP/DRY check: Pass — exact verified account matches reuse the shared identity ledger; every
  *          view draws a person through PersonPortrait so a face looks the same everywhere.
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { displayPortrait, personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
 
 /** A person's face. Decorative when their name is printed right beside it. */
 export function PersonPortrait({ person, size, decorative = false }: { person: NewsPerson; size: PortraitSize; decorative?: boolean }) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<string[]>([]);
+  const portrait = [displayPortrait(person), person.portrait].find(item => item && !failed.includes(item.src));
   const className = `news-portrait news-portrait-${size}`;
-  if (!person.portrait || failed) return <span className={`${className} news-portrait-initials`} aria-hidden="true">{personInitials(person.name)}</span>;
-  return <img className={className} src={person.portrait.src} alt={decorative ? '' : person.portrait.alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+  if (!portrait) return <span className={`${className} news-portrait-initials`} aria-hidden="true">{personInitials(person.name)}</span>;
+  return <img className={className} src={portrait.src} alt={decorative ? '' : portrait.alt} loading="lazy" decoding="async" onError={() => setFailed(previous => [...previous, portrait.src])} />;
 }
 
 /** Name with face and the person's top honor, for rosters and source lines. */
@@ -27,18 +28,19 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
   return <span className="news-person-chip"><PersonPortrait person={person} size="chip" decorative /><span><Link href={personPath(person.id)}>{person.name} →</Link>{person.hallOfFame.slice(0, honors).map(card => <span key={card.path} className="news-person-history"> · <Link href={card.path}>{card.label} ↗</Link></span>)}</span></span>;
 }
 
-/**
- * The one person a story features (featuredPerson in shared/news.ts: named in the headline, then
- * the dek, then first cited); roster members who are not in the story never get pulled in. Face, name, their team
- * in this contest and their top honor, so it reads as the subject, never as a byline.
- */
-export function StoryFeature({ person, competition }: { person?: NewsPerson; competition: NewsCompetition }) {
-  if (!person) return null;
-  const team = [...person.memberships].reverse().find(member => member.competition === competition);
-  return <Link href={personPath(person.id)} className="news-story-feature">
-    <PersonPortrait person={person} size="card" decorative />
-    <span><em>In this story</em><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-story-feature-honor">{person.hallOfFame[0].label}</span>}</span>
-  </Link>;
+/** Compact collectible-style subject cards. Selection is shared with initial HTML, not inferred from team rosters. */
+export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]; competition: NewsCompetition }) {
+  if (!people.length) return null;
+  return <section className="news-story-people" aria-label="In this story">
+    <h2 className="news-section-title">In this story</h2>
+    <div className="news-story-people-grid">{people.map(person => {
+      const team = [...person.memberships].reverse().find(member => member.competition === competition);
+      return <Link key={person.id} href={personPath(person.id)} className="news-subject-card">
+        <PersonPortrait person={person} size="card" decorative />
+        <span className="news-subject-details"><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-subject-honor">{person.hallOfFame[0].label}</span>}<small>{person.editorialPortrait ? 'AI editorial portrait' : 'Player profile'} ↗</small></span>
+      </Link>;
+    })}</div>
+  </section>;
 }
 
 /** What a face is doing in a story: the person's team in this contest, else their top honor. */
@@ -95,6 +97,7 @@ export function PersonCard({ person }: { person: NewsPerson }) {
 
 /** Where a face came from, printed under the profile portrait. */
 export function PortraitCredit({ person }: { person: NewsPerson }) {
+  if (person.editorialPortrait) return <p className="news-muted">AI editorial portrait based on <a href={person.editorialPortrait.sourceUrl}>{person.editorialPortrait.sourceTitle} ↗</a>.</p>;
   const portrait = person.portrait;
   if (!portrait) return null;
   return <p className="news-muted">{portrait.kind === 'kaggle'

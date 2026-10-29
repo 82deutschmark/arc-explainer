@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-28
+ * Date: 2026-10-29
  * PURPOSE: Server-readable newspaper, full reserved features on edition permalinks,
  *          illustrated article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
@@ -25,7 +25,7 @@
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
-  articleTitle, articleDescription, editionFeature, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
+  articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
 } from '../../../shared/news';
@@ -57,7 +57,7 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
 function dispatchHtml(dispatch: NewsDispatch): string {
   return `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${illustrationHtml(dispatch)}${dispatch.sections.map(section => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${newlineText(section.text)}`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
 }
-export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = []): RouteMetaTags {
+export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = [], people: NewsPerson[] = []): RouteMetaTags {
   const url = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const feature = editionFeature(article, dispatches);
@@ -65,6 +65,7 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
     <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p>${illustrationHtml(article)}<p>ARC Daily sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
     ${feature ? dispatchHtml(feature) : ''}
+    ${storyPeopleHtml(reportedPeople(feature ? [feature, article] : [article], people), article.competition)}
     ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">The ARC Daily Digest front page</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
@@ -74,6 +75,14 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
     publishedTime: article.publishedAt, section: competitionName(article.competition) });
 }
 const personLink = (person: NewsPerson) => `<a href="${personPath(person.id)}">${esc(person.name)}</a>`;
+/** The crawler gets the same subjects and disclosed portrait choices as the browser sidebar. */
+function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition']): string {
+  return people.length ? `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
+    const portrait = displayPortrait(person);
+    const team = [...person.memberships].reverse().find(member => member.competition === competition);
+    return `<article>${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="76" height="88"/>` : ''}${personLink(person)}${team ? `<p>${esc(team.teamName)}</p>` : ''}${person.hallOfFame[0] ? `<p>${esc(person.hallOfFame[0].label)}</p>` : ''}${person.editorialPortrait ? '<p>AI editorial portrait</p>' : ''}</article>`;
+  }).join('')}</aside>` : '';
+}
 const rosterHtml = (record: CompetitorRecord, people: NewsPerson[]) => `<ul>${record.members.map(handle => {
   const person = peopleForTeam(people, record).find(item => item.accounts.some(account => account.platform === 'kaggle' && account.handle === handle));
   return `<li>${person ? personLink(person) : `<a href="https://www.kaggle.com/${encodeURIComponent(handle)}">${esc(handle)}</a>`}</li>`;
@@ -93,9 +102,10 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[], peopl
 }
 function peopleMeta(people: NewsPerson[], articles: NewsArticle[], person?: NewsPerson): RouteMetaTags {
   const base = ROUTE_META_TAGS['/news/people'];
+  const portrait = person && displayPortrait(person);
   const tags = completeMeta({ ...base, ...cardFor(articles), ...(person ? { title: `${person.name} | ${NEWS_NAME}`, url: `${SITE_ORIGIN}${personPath(person.id)}` } : {}) });
   return { ...tags, jsonLd: collection(tags, (person ? [person] : people).map(item => ({ name: item.name, path: personPath(item.id) }))),
-    bodyHtml: `<main><h1>${esc(person?.name ?? 'People behind the teams')}</h1><p>Verified people and dated competition rosters. Observations do not establish joining dates or credit for particular submissions.</p>${person ? `${person.portrait ? `<img src="${esc(person.portrait.src)}" alt="${esc(person.portrait.alt)}" width="176" height="176"/>` : ''}${person.hallOfFame.length ? `<ul>${person.hallOfFame.map(card => `<li><a href="${esc(card.path)}">${esc(card.label)}</a></li>`).join('')}</ul>` : ''}${person.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></p>`).join('')}<h2>Observed teams</h2><ul>${person.memberships.map(member => `<li>${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)}) · ${esc(member.memberHandle)} · observed ${timeTag(member.firstObservedAt, false)}–${timeTag(member.lastObservedAt, false)} <a href="${esc(member.sourceUrl)}">Roster source</a></li>`).join('')}</ul><h2>Public accounts</h2><ul>${person.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.handle)}</a> · <a href="${esc(account.sourceUrl)}">Identity source</a></li>`).join('')}</ul>${person.hallOfFame.map(card => `<figure><a href="${esc(card.path)}">${card.image ? `<img src="${esc(card.image.src)}" alt="${esc(card.image.alt)}"/>` : ''}${esc(card.label)}</a><figcaption>Historical ARC Hall of Fame artwork.</figcaption></figure>`).join('')}` : `<ul>${people.map(item => `<li>${personLink(item)}${item.hallOfFame.length ? ` · ${item.hallOfFame.map(card => esc(card.label)).join('; ')}` : ''}${item.memberships.length ? ` · ${item.memberships.map(member => `${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)})`).join('; ')}` : ''}</li>`).join('')}</ul>`}<p><a href="/news">Front page</a> · <a href="/news/people">All people</a></p></main>` };
+    bodyHtml: `<main><h1>${esc(person?.name ?? 'People behind the teams')}</h1><p>Verified people and dated competition rosters. Observations do not establish joining dates or credit for particular submissions.</p>${person ? `${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="176" height="176"/>${person.editorialPortrait ? `<p>AI editorial portrait based on <a href="${esc(portrait.sourceUrl)}">${esc(portrait.sourceTitle)}</a>.</p>` : ""}` : ''}${person.hallOfFame.length ? `<ul>${person.hallOfFame.map(card => `<li><a href="${esc(card.path)}">${esc(card.label)}</a></li>`).join('')}</ul>` : ''}${person.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></p>`).join('')}<h2>Observed teams</h2><ul>${person.memberships.map(member => `<li>${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)}) · ${esc(member.memberHandle)} · observed ${timeTag(member.firstObservedAt, false)}–${timeTag(member.lastObservedAt, false)} <a href="${esc(member.sourceUrl)}">Roster source</a></li>`).join('')}</ul><h2>Public accounts</h2><ul>${person.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.handle)}</a> · <a href="${esc(account.sourceUrl)}">Identity source</a></li>`).join('')}</ul>${person.hallOfFame.map(card => `<figure><a href="${esc(card.path)}">${card.image ? `<img src="${esc(card.image.src)}" alt="${esc(card.image.alt)}"/>` : ''}${esc(card.label)}</a><figcaption>Historical ARC Hall of Fame artwork.</figcaption></figure>`).join('')}` : `<ul>${people.map(item => `<li>${personLink(item)}${item.hallOfFame.length ? ` · ${item.hallOfFame.map(card => esc(card.label)).join('; ')}` : ''}${item.memberships.length ? ` · ${item.memberships.map(member => `${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)})`).join('; ')}` : ''}</li>`).join('')}</ul>`}<p><a href="/news">Front page</a> · <a href="/news/people">All people</a></p></main>` };
 }
 const discussionsHtml = (threads: NewsDiscussion[]) => `<section id="kaggle-boards"><h2>From the Kaggle boards</h2>${recentDiscussions(threads).map(thread => `<article><h3><a href="${esc(thread.url)}">${esc(thread.title)}</a></h3><p>${esc(competitionName(thread.competition))} · @${esc(thread.author)}</p><p>${esc(thread.summary)}</p><p>Activity ${timeTag(thread.latestActivityAt ?? thread.postedAt!)} · ${thread.commentCount} replies</p></article>`).join('')}</section>`;
 function communityMeta(posts: NewsSocialPost[], articles: NewsArticle[], discussions: NewsDiscussion[]): RouteMetaTags {
@@ -151,7 +161,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   const profile = route.match(/^\/news\/competitors\/([a-z0-9-]+)$/);
   if (profile) { const record = competitors.find(record => record.id === profile[1]); if (record) return { status: 200, tags: competitorMeta(record, articles, people) }; }
   const article = articles.find(article => newsArticlePath(article.id) === route);
-  if (article) return { status: 200, tags: newsArticleMeta(article, dispatches) };
+  if (article) return { status: 200, tags: newsArticleMeta(article, dispatches, people) };
   return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit The ARC Daily Digest for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
 }
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);

@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.7  Oct 29, 2026
+
+- **Every reported person gets a player card** (Author: GPT-6.1 Sol / Codex). Expand “In this story” into compact Hall of Fame-inspired cards for all named or person-cited subjects, including reserved feature and recap coverage. Keep rosters separate, deduplicate without a face cap, and resolve title-case Xz to the verified cat avatar on the existing morning story.
+- **Chen’s two-rabbit portrait, refreshed** (Author: GPT-6.1 Sol / Codex). Commission a clear native illustrated avatar from the owner reference. Preserve the original Kaggle picture, validate the separate editorial artwork’s identity and provenance, disclose AI art, and retain image-error fallbacks. Plan: `docs/plans/2026-10-29-story-player-cards.md`.
+- Validation: 32 focused news checks, 70 newsroom Python checks and production build pass; desktop and phone layouts reviewed. Broad TypeScript checking retains 12 unrelated existing diagnostics. The new portrait reached Discord first. Queue the editor-authorized Kaggle thank-you after the evening feature publishes, with a send-once outbox.
+
 ### Version 9.159.6  Oct 29, 2026
 
 - **Prepare xz’s illustrated evening profile** (Author: GPT-6.1 Sol / Codex). Verify the competitor’s profile, previous results, eleven-entry record and public infrastructure discussion; add the own-avatar portrait and frozen character reference. Prepare the editor’s giant-cat scoring-hall cover with inspected native provenance, send it to Discord, and reserve the researched feature for the evening desk’s fresh closing evidence.

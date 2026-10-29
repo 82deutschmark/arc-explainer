@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-28
+ * Date: 2026-10-29
  * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
  *          with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
@@ -12,11 +12,11 @@
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
 import { DispatchPreview } from '@/components/news/NewsDispatch';
-import { StoryFeature, TeamPeople } from '@/components/news/NewsPeople';
+import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, editionFeature, featuredPerson, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -48,7 +48,7 @@ export default function NewsArticle() {
         <p className="news-dek">{article.dek}</p>
         <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
-      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} />}
+      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} showPeople={false} />}
       <EditionArtwork article={article} lead={!feature} />
       <div className="news-article-grid">
         <div>
@@ -69,7 +69,7 @@ export default function NewsArticle() {
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
-          <StoryFeature person={featuredPerson(article, query.data?.people ?? [])} competition={article.competition} />
+          <StoryPeopleCards people={reportedPeople(feature ? [feature, article] : [article], query.data?.people ?? [])} competition={article.competition} />
           <h2 className="news-section-title">How this report was checked</h2>
           <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>

@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-28
+ * Date: 2026-10-29
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
@@ -28,6 +28,8 @@ import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
+import { reportedPeople, featuredPerson, displayPortrait } from '../shared/news';
+import { newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
 
 const NOW = '2026-10-09T23:54:00Z';
@@ -122,7 +124,7 @@ test('wire stories run in What’s News and in full on the wire page', () => {
   const index = { ...getNewsIndex(), wire: [story] };
   const front = render(News, '/news', index, markets(index));
   expect(front).toContain('href="/news/wire#2026-10-09-2020-arc-3-chen-takes-the-lead"');
-  expect(front).toContain('/news-images/people/yi-chia-chen.webp');
+  expect(front).toContain(displayPortrait(index.people!.find(person => person.id === 'yi-chia-chen')!)!.src);
   const page = render(NewsWire, '/news/wire', index);
   expect(page).toContain('id="2026-10-09-2020-arc-3-chen-takes-the-lead"');
   expect(page).toContain('Yi-Chia Chen gained 3.40 points to 59.17% and moved to 1st.');
@@ -176,4 +178,38 @@ test('missing or unrelated reserved features leave the ordinary edition readable
     expect(html).not.toContain(`id="${feature.id}"`);
     expect(html).not.toContain('Dispatch not found');
   }
+});
+
+test('the morning sidebar includes xz and Chen with the correct sourced portraits', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!;
+  expect(featuredPerson(article, index.people!)?.id).toBe('xz');
+  const subjects = reportedPeople([article], index.people!);
+  expect(subjects.map(person => person.id)).toEqual(['xz', 'yi-chia-chen']);
+  const html = render(NewsArticle, `/news/${article.id}`, index);
+  const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
+  expect(sidebar).toContain('/news-images/people/xz.webp');
+  expect(sidebar).toContain('/news-images/people/yi-chia-chen-editorial-v1.webp');
+  expect(sidebar).toContain('AI editorial portrait');
+  expect(sidebar).not.toContain('/news/people/dries-smit');
+  const initialHtml = newsArticleMeta(article, [], index.people).bodyHtml!;
+  for (const subject of subjects) expect(initialHtml).toContain(`/news/people/${subject.id}`);
+  const chen = subjects[1];
+  expect(newsPersonSchema.safeParse(chen).success).toBe(true);
+  expect(newsPersonSchema.safeParse({ ...chen, editorialPortrait: { ...chen.editorialPortrait!, sourceUrl: 'https://www.kaggle.com/xiaoz259' } }).success).toBe(false);
+});
+
+test('all reported subjects survive deduplication across a feature and recap, without a face cap', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const people = index.people!.slice(0, 8);
+  const original = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const article = { ...original, headline: 'The field', dek: 'A closing report', sections: [{ text: 'The field is moving.', sourceIds: people.map(person => `person-${person.id}-identity-0`) }] };
+  const feature = { ...index.dispatches!.find(item => item.id === original.frontPageFeatureId)!, headline: 'The contenders', sections: [{ text: 'Their approaches.', sourceIds: [`person-${people[0].id}-identity-0`] }] };
+  expect(reportedPeople([feature, article], index.people!).map(person => person.id)).toEqual(people.map(person => person.id));
+  expect(reportedPeople([{ headline: 'axzonal results', sections: [] }], index.people!)).toEqual([]);
+  const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
+  const sidebar = html.match(/<aside class="news-sidebar"[\s\S]*?<\/aside>/)![0];
+  for (const person of people) expect(sidebar).toContain(`href="/news/people/${person.id}" class="news-subject-card"`);
 });

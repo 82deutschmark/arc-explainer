@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
- * Date: 15-October-2026
+ * Date: 29-October-2026
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -82,6 +82,7 @@ export const newsPersonSchema = z.object({
   hallOfFame: z.array(z.object({ path: z.string().regex(HALL_OF_FAME_PATH), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
     image: z.object({ src: z.string().regex(HALL_OF_FAME_ART), alt: text.max(700) }).strict().optional() }).strict()),
   portrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), kind: z.enum(['hall-of-fame', 'kaggle']), sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
+  editorialPortrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), artworkId: safeId, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
 }).strict().superRefine((person, context) => {
   const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
   const memberships = person.memberships.map(member => `${member.competitionId}:${member.teamId}:${member.memberHandle}`);
@@ -94,6 +95,11 @@ export const newsPersonSchema = z.object({
     ? person.accounts.some(account => account.platform === 'kaggle' && account.url.toLowerCase() === portrait.sourceUrl.toLowerCase())
     : person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === portrait.sourceUrl))) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'Portrait must come from the person’s verified Kaggle account or their own Hall of Fame card' });
+  }
+  const editorial = person.editorialPortrait;
+  if (editorial && !person.accounts.some(account => account.platform === 'kaggle' && account.url.toLowerCase() === editorial.sourceUrl.toLowerCase())
+    && !person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === editorial.sourceUrl)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Editorial portrait reference must belong to this verified person' });
   }
 });
 export const newsSocialSchema = z.object({

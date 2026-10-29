@@ -21,7 +21,7 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 
 | Where | Whose faces | Driven by |
 |---|---|---|
-| Front page story, dispatch, article page | **one** featured person: the person named in the headline, else the dek, else the first person the sections cite (face, name, team, top honor). | `StoryFeature`, `featuredPerson()` |
+| Front page story, dispatch, article page | every person actually named in the reporting or cited through a person source, once each (portrait, name, contest team, top honor). | `StoryPeopleCards`, `reportedPeople()` |
 | Front page "Where the past winners stand" | every person with an honor whose ledger team is on a 2026 board, best placing first: face, top honor (links to their card), team now, rank, score, day's change | `PastWinners` in `client/src/components/news/NewsMarkets.tsx` |
 | Wire stories (What's News, `/news/wire`) | the picture the story chose from its brief (the person's face or their Hall of Fame card art), else the first person in `personIds` | `scripts/newsroom_wire.py` (offers `visuals`), `NewsWire.tsx` |
 | Front page "From X" strip, below the ticker | the post's author when the X handle is a verified person | `AroundTheContests`, `personForXHandle()` |
@@ -29,11 +29,33 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 | Community desk | the post's author when the X handle is a verified person, plus people in `personIds` | `personForXHandle()` |
 | People directory and profiles | everyone in `content/news/people.json`, with honors | `PersonCard`, profile header |
 
-**So the daily layout follows the reporting.** Cite a person's brief sources
-(`person-<id>-identity|fact|archive|roster-<n>`) in the sections where you write about them and
-the person your headline names (else your dek, else the first person you cite) is featured on that story with their face. Only one person is featured
-per story (Boss: a row of faces read like a staff list). Cite first the person the story is really
-about; a story that cites nobody features nobody.
+**The daily layout follows the reporting.** The editor’s 29 October direction replaces the
+older one-person strip: show **all people covered in the story**, as compact baseball-card-style
+profiles inspired by the existing Hall of Fame collectibles. Each card links to the person’s
+profile and carries their portrait, name, team in this contest and verified historical honor.
+Headline/dek names lead, then people named or cited in section order; duplicates appear once.
+Names match whole names without case sensitivity, so “Xz” resolves the verified `xz` account.
+An edition with a reserved feature includes subjects from both the full feature and the recap.
+There is no six-person cap. Full team rosters remain separate; mentioning a team does not put
+all its members in “In this story.”
+
+Cite `person-<id>-identity|fact|archive|roster-<n>` in each section about that person. Before
+publishing, resolve consequential new subjects through verified accounts, save their own avatar
+with the command below, and check the sidebar. If an account offers no genuine picture, retain
+honest initials. Never invent a face or guess an identity just to complete a card.
+
+### Commissioned editorial avatars
+
+The editor may commission an illustrated version of an established individual avatar. Keep the
+original `portrait` intact and add optional `editorialPortrait` with `src`, `alt`, `sourceUrl`,
+`sourceTitle`, `checkedAt`, and `artworkId`. Source ownership has the same verified-account or
+own-Hall-of-Fame rule as the original portrait. Save exact native tool arguments, inspected
+reference hashes, output hash and visual review in `content/news/artwork/<artworkId>.json`.
+The people checker requires both image files and the provenance record. Use a versioned asset
+name, such as `yi-chia-chen-editorial-v1.webp`. The common portrait renderer prefers it, falls
+back to the original on image error, then to initials. Cards and profile credits disclose AI
+editorial art; an illustrated rabbit or cat is an avatar, never a photograph of its owner.
+The original Kaggle-saving command preserves the separate commissioned artwork field.
 
 ## Portraits: `content/news/people.json` → `portrait`
 

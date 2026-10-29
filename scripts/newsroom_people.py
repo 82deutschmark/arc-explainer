@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 Sol / Codex; Claude Opus 5.5
-# Date: 2026-10-09
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+# Date: 2026-10-29
 # PURPOSE: Validate persistent public identities and preserve sourced roster observations
 # across competition teams. Called by newsroom preparation/publication; no model calls.
 # 09-Oct-2026 (Claude Opus 5.5): optional person portraits, and the `portrait` command that
@@ -22,6 +22,7 @@ HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net'
 HALL_OF_FAME_ART = r'/[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*\.(?:png|jpe?g)'
 PORTRAIT_FILE = r'/news-images/people/[a-z0-9-]+\.(?:webp|png|jpe?g)'
 PORTRAIT_FIELDS = {'src', 'alt', 'kind', 'sourceUrl', 'sourceTitle', 'checkedAt'}
+EDITORIAL_PORTRAIT_FIELDS = (PORTRAIT_FIELDS - {'kind'}) | {'artworkId'}
 # Kaggle serves a member's own picture under a numeric ID; default-thumb.png means no picture.
 KAGGLE_AVATAR = re.compile(r'https://storage\.googleapis\.com/kaggle-avatars/(?:thumbnails|images)/(\d+-[a-z]+\.(?:png|jpe?g|gif|webp))(?:\?[^"\s]*)?')
 PORTRAIT_PIXELS = 320
@@ -46,11 +47,32 @@ def validate_portrait(person):
         raise ValueError('invalid portrait kind')
 
 
+def validate_editorial_portrait(person):
+    """Commissioned art keeps the original photo intact and traces to the same verified identity."""
+    portrait = person['editorialPortrait']
+    if not isinstance(portrait, dict) or set(portrait) != EDITORIAL_PORTRAIT_FIELDS or not re.fullmatch(PORTRAIT_FILE, portrait['src']):
+        raise ValueError('invalid editorial portrait')
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', portrait['artworkId']):
+        raise ValueError('invalid editorial portrait artwork ID')
+    text(portrait['alt'], 'editorial portrait description', 700)
+    text(portrait['sourceTitle'], 'editorial portrait source')
+    web_source(portrait['sourceUrl'])
+    contract_stamp(portrait['checkedAt'])
+    allowed = {account['url'].lower() for account in person['accounts'] if account['platform'] == 'kaggle'}
+    allowed |= {(HALL_OF_FAME_ORIGIN + card['path']).lower() for card in person['hallOfFame']}
+    if portrait['sourceUrl'].lower() not in allowed:
+        raise ValueError('editorial portrait reference must belong to this verified person')
+
+
 def portrait_files_exist(people, root=ROOT):
     """Every portrait the ledger names must be a committed public asset."""
-    missing = [p['portrait']['src'] for p in people if 'portrait' in p and not (Path(root) / 'client/public' / p['portrait']['src'].lstrip('/')).is_file()]
+    missing = [p[field]['src'] for p in people for field in ('portrait', 'editorialPortrait')
+               if field in p and not (Path(root) / 'client/public' / p[field]['src'].lstrip('/')).is_file()]
     if missing:
         raise ValueError(f'portrait files missing from client/public: {", ".join(missing)}')
+    for person in people:
+        if 'editorialPortrait' in person and not (Path(root) / 'content/news/artwork' / f'{person["editorialPortrait"]["artworkId"]}.json').is_file():
+            raise ValueError(f'editorial portrait provenance missing for {person["id"]}')
 
 
 def validate_people(people):
@@ -58,7 +80,7 @@ def validate_people(people):
         raise ValueError('people.json must be an array')
     ids, accounts = set(), set()
     for person in people:
-        if set(person) - {'portrait'} != PERSON_FIELDS:
+        if set(person) - {'portrait', 'editorialPortrait'} != PERSON_FIELDS:
             raise ValueError('invalid person fields')
         pid = person['id']
         if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', pid) or pid in ids:
@@ -120,6 +142,8 @@ def validate_people(people):
             contract_stamp(card['checkedAt'])
         if 'portrait' in person:
             validate_portrait(person)
+        if 'editorialPortrait' in person:
+            validate_editorial_portrait(person)
     return people
 
 

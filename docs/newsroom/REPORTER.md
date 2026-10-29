@@ -52,8 +52,10 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
   invitations (for example to @mostik_ai or @JFPuget) are optional colour for a suitable or slow
   issue, never a required hook. `content/news/social-editorial.json` keeps background research out of
   the curated From X strip and edition sources while the full public archive keeps it.
-- **Faces.** Each story features one person: the person named in the headline, else the dek, else
-  the first person cited. Name the person a story is about in the headline or cite them first.
+- **Faces (Boss, 29 October).** Show every person actually covered in the story in compact
+  “In this story” player cards: portrait, name, contest team and verified honor. Cite their person
+  sources where you cover them; add verified new subjects and their own avatars before publishing.
+  Keep full team rosters separate. See [VISUALS.md](VISUALS.md) for selection and editorial portraits.
 - **Separate ARC2 and ARC3 teams.** Mark's ARC-AGI-2 entry is **ARC Mutants**, team
   `17023174`; Jack Cole joined Mark Barney, Son Pham and Ronen there, confirmed by Mark
   and the public roster on 19 October 2026. Mark's ARC-AGI-3 entry is **Team Turducken**,

@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
- * Date: 28-October-2026 (GPT-6.1 Sol: share reserved features across edition views); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ * Date: 29-October-2026 (GPT-6.1 Sol: all reported subjects and sourced editorial portraits); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -76,6 +76,8 @@ export function editionFeature(article: NewsArticle, dispatches: NewsDispatch[] 
  * client/public/news-images/people/. docs/newsroom/VISUALS.md maps every picture we have.
  */
 export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle'; sourceUrl: string; sourceTitle: string; checkedAt: string }
+/** Commissioned avatar art, kept separate from the original account picture and its provenance. */
+export interface NewsEditorialPortrait extends Omit<NewsPortrait, 'kind'> { artworkId: string }
 /** People persist across seasons; membership observations belong to a specific contest. */
 export interface NewsPerson {
   id: string; name: string;
@@ -86,7 +88,9 @@ export interface NewsPerson {
   /** Past results and roles, each linked to its Hall of Fame card; labels read like honors ("ARC Prize 2025 champion · NVARC"). */
   hallOfFame: ({ path: string; label: string; image?: { src: string; alt: string } } & Omit<CompetitorFact, 'text'>)[];
   portrait?: NewsPortrait;
+  editorialPortrait?: NewsEditorialPortrait;
 }
+export const displayPortrait = (person: NewsPerson) => person.editorialPortrait ?? person.portrait;
 export interface NewsSocialPost {
   id: string; author: string; authorName: string; url: string; postedAt: string | null; checkedAt: string;
   visibility: 'public'; summary: string; whyItMatters: string; competitions: NewsCompetition[]; personIds: string[];
@@ -154,8 +158,25 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
  * first person its sections cite. Nobody named or cited, nobody featured.
  */
 export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
-  const named = (text?: string) => text ? people.find(person => text.includes(shortPersonName(person.name))) : undefined;
-  return named(story.headline) ?? named(story.dek) ?? citedPeople(story.sections, people)[0];
+  return namedPeople(story.headline, people)[0] ?? namedPeople(story.dek, people)[0] ?? citedPeople(story.sections, people)[0];
+}
+type ReportedStory = { headline: string; dek?: string; sections: NewsSection[] };
+/** Whole names only: handles such as xz also match title case, never a substring in another word. */
+function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson[] {
+  if (!text) return [];
+  return people.map(person => {
+    const name = shortPersonName(person.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = new RegExp(`(^|[^\\p{L}\\p{N}_])${name}(?=$|[^\\p{L}\\p{N}_])`, 'iu').exec(text);
+    return { person, position: match?.index ?? -1 };
+  }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person);
+}
+/** Everyone named in the reporting or explicitly cited; never add uncited teammates from a roster. */
+export function reportedPeople(stories: ReportedStory[], people: NewsPerson[]): NewsPerson[] {
+  const subjects = stories.flatMap(story => [
+    ...namedPeople(story.headline, people), ...namedPeople(story.dek, people),
+    ...story.sections.flatMap(section => [...namedPeople(section.text, people), ...citedPeople([section], people)]),
+  ]);
+  return [...new Map(subjects.map(person => [person.id, person])).values()];
 }
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
 export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {
