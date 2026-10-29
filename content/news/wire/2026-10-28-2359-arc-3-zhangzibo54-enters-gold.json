@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T03:50:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "zhangzibo54 moves into ARC-3 gold",
+  "id": "2026-10-28-2359-arc-3-zhangzibo54-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-29T03:59:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "zhangzibo54 rose from 24th to 16th with a score of 39.22, moving into the 19 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold cutoff is 38.84, with zhangzibo54 now inside the 19 gold places."
+    }
+  ],
+  "since": "2026-10-28T03:47:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T03:58:52Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16557905"
+  ]
+}

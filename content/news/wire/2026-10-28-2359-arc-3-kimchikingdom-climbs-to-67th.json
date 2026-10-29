@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T03:50:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "kimchikingdom climbs 141 places on ARC-3",
+  "id": "2026-10-28-2359-arc-3-kimchikingdom-climbs-to-67th",
+  "personIds": [],
+  "publishedAt": "2026-10-29T03:59:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "kimchikingdom climbed from 208th to 67th, reaching 34.66 after a 1.97-point gain."
+    }
+  ],
+  "since": "2026-10-28T03:47:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T03:58:52Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17027453"
+  ]
+}
