@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.5  Oct 29, 2026
+
+- **Boss reaction approves illustrated X announcements** (Author: GPT-6.1 Sol / Codex). Require the Boss’s positive reaction on the exact Discord preview, or explicit written go-ahead, before X. Record the reacting user and image alongside the delivery receipt; silence, anonymous counts and other users do not authorize a send. Missing approval leaves a saved draft without polling or creating an automation. Existing posts stay intact.
+
 ### Version 9.159.4  Oct 29, 2026
 
 - **Illustrated features reach Discord before X** (Author: GPT-6.1 Sol / Codex). Make the finished image attachment, useful story summary and article link in #arc3-rollout-feed a required step before illustrated X announcements, including manual specials and prepared edition art. One shared art-desk procedure records the image hash and send receipt; X, reporter and scheduled-edition guides point to it. Text-only relay notices do not satisfy image delivery. Preserve existing sends and recover a missed Discord attachment without reposting X. Documentation and delivery records only; no application or automation changes.

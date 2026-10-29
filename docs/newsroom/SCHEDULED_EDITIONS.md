@@ -73,7 +73,9 @@ human confirmation. A saved `draft` is preparation for sending, not completion o
 
 If the issue has custom artwork, complete the CLI-based
 [Discord image delivery](ART_DESK.md#discord-image-delivery-before-x) before the X send and save
-its receipt in the outbox. This applies to approved stock compositions too; it does not authorize
+its receipt and the Boss’s approving reaction in the outbox. Without approval, keep X in
+`draft` with `awaiting-discord-approval` and finish the run; do not create a monitor or wait in
+a loop. This applies to approved stock compositions too; it does not authorize
 new generation. The relay's text-only notice is insufficient. A failed image delivery leaves X
 in `draft` with the concrete error; publication remains complete.
 
