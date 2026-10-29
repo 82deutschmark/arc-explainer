@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T09:50:51Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Xz surges from 1,274th to fourth on ARC-3",
+  "id": "2026-10-29-0604-arc-3-xz-jumps-to-fourth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T10:04:30Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Xz added 24.54 points to reach 52.95, vaulting from 1,274th to fourth on the public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That advance puts Xz inside the gold places and among the leaders, a sharp change in the ARC-3 chase."
+    }
+  ],
+  "since": "2026-10-28T09:47:50Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T10:04:01Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15487093"
+  ]
+}

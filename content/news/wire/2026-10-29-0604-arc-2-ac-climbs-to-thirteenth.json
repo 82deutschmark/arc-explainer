@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T09:50:52Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ảc pushes deeper into ARC-2 gold at 13th",
+  "id": "2026-10-29-0604-arc-2-ac-climbs-to-thirteenth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T10:04:30Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ảc added 2.36 points to reach 71.53, moving from 19th to 13th and further inside the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb follows the team's earlier entry into the gold places and strengthens its position near the top of the field."
+    }
+  ],
+  "since": "2026-10-28T09:47:51Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T10:04:01Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17166527"
+  ]
+}
