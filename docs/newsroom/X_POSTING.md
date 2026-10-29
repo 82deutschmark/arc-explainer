@@ -34,6 +34,15 @@ permanent article link and 280-character limit; omit an optional mention if need
 These rules apply to future drafts. Preserve every `posting`/`posted` outbox and
 existing announcement; a copy preference does not authorize a replacement send.
 
+## Discord image delivery comes before X
+
+Before **any illustrated X announcement**, including a manually commissioned special feature,
+complete [ART_DESK.md's Discord image delivery](ART_DESK.md#discord-image-delivery-before-x).
+The X outbox must reference a confirmed receipt for the finished attachment and story link in
+`#arc3-rollout-feed` before changing to `posting`. A text-only relay notice, an intended send or
+a clean-base preview is insufficient. If delivery fails, leave X in `draft` and report it.
+An existing X send is preserved; recover a missing Discord image without another X post.
+
 ## Scheduled edition handoffs
 
 Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): prepare the outbox with

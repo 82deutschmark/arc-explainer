@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.4  Oct 29, 2026
+
+- **Illustrated features reach Discord before X** (Author: GPT-6.1 Sol / Codex). Make the finished image attachment, useful story summary and article link in #arc3-rollout-feed a required step before illustrated X announcements, including manual specials and prepared edition art. One shared art-desk procedure records the image hash and send receipt; X, reporter and scheduled-edition guides point to it. Text-only relay notices do not satisfy image delivery. Preserve existing sends and recover a missed Discord attachment without reposting X. Documentation and delivery records only; no application or automation changes.
+
 ### Version 9.159.3  Oct 28, 2026
 
 - **Full illustrated features on edition links** (Author: GPT-6.1 Sol / Codex). The October 28 announcement linked to a short closing recap because only the front page resolved its reserved feature. Render the complete commissioned story, cover, caption and sources on the existing permanent edition URL too, in both React and initial server HTML. Reuse one dispatch view and one feature selector; preserve immutable reporting and evidence. Plan: `docs/plans/2026-10-28-edition-feature-permalink.md`.

@@ -71,6 +71,12 @@ This saves the normal text and exact edition artwork attachment without an HTTP 
 deployment wait. Read an existing outbox first; preserve `posting` and `posted` states and any
 human confirmation. A saved `draft` is preparation for sending, not completion of the job.
 
+If the issue has custom artwork, complete the CLI-based
+[Discord image delivery](ART_DESK.md#discord-image-delivery-before-x) before the X send and save
+its receipt in the outbox. This applies to approved stock compositions too; it does not authorize
+new generation. The relay's text-only notice is insufficient. A failed image delivery leaves X
+in `draft` with the concrete error; publication remains complete.
+
 Follow X_POSTING.md's edition-post procedure: confirm @82deutschmark and check for this edition's
 existing post, review the copy and exact attachment, save `posting`, send once, verify one success
 result, then record the URL and `posted`. Browser work is limited to six minutes and ten tool
@@ -79,8 +85,9 @@ the bound prevents a confirmed send, preserve the outbox and report the concrete
 uncertain send gets the one duplicate check defined in X_POSTING.md; never resend blindly.
 
 Discord sends are authorized in **#arc3-rollout-feed** (`channel:1550165647911034940`). The
-existing desk relay owns routine edition announcements and its send-once ledger; let that path
-deliver them, without a second manual copy or a deployment check. A necessary short desk status
+existing desk relay owns routine edition text announcements and its send-once ledger; let that
+path deliver them without a second manual text copy or deployment check. The separate finished
+image delivery above is required before an illustrated X announcement. A necessary short desk status
 or failure notice may be sent through
 `python3.13 /Users/macmini/bubba-workspace/tools/arc_daily_announce.py --alert "<status>"`.
 Do not send a routine status on every successful run. A distribution failure does not undo

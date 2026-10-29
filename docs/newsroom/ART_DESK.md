@@ -29,10 +29,12 @@ stock is returned. The illustration requirement below does not delay these sched
   previously published artwork, including its clean base with new scores or a new crop. Check
   previous article uses and Discord shares in the inventory before posting. Character reference
   sheets may preserve identities; they are not permission to repeat an old scene.
-- **Discord first, without an approval hold.** For newly commissioned art, post the illustration
-  in `#arc3-rollout-feed` before attaching it to an article. Unless someone objects, proceed with
-  publication; do not wait for an explicit review approval. Keep the normal visual and factual
-  checks, and address any objection before publishing the questioned image.
+- **Discord first, without an approval hold.** Every illustrated edition or commissioned feature,
+  including manual afternoon specials and finished stock compositions, delivers its reviewed image
+  and story link to `#arc3-rollout-feed` before its X post. A text-only relay notice does not deliver
+  the illustration. Follow [Discord image delivery](#discord-image-delivery-before-x) below.
+  Newly commissioned art can be shared before article publication as a labelled preview with its
+  intended link. Unless someone objects, proceed; do not wait for explicit approval.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa
@@ -125,6 +127,35 @@ If no job is returned and the front page still needs a picture, pick suitable un
 the inventory and commission it for this issue as above. If generation is unavailable or fails,
 or no accurate scene fits, publish the verified text and report the concrete art outcome; never
 use a paid API or a stale illustration.
+
+## Discord image delivery before X
+
+This is the shared delivery procedure for illustrated editions and special features (Mark's
+clarification, 29 October 2026). It is part of the commissioned publication, including when the
+editor only says to publish the feature and post it on X. Keep the reporting and copy standards
+in REPORTER.md; a good image does not replace a substantive, sourced story.
+
+1. Inspect the finished selected image, including any required current score/time overlays.
+   Send that image as an actual attachment, with a short useful summary, the permanent article
+   link (label it intended if not yet pushed), and `<@293569238386606080>`, to
+   `channel:1550165647911034940` (**#arc3-rollout-feed**). Use:
+   `openclaw message send --channel discord --target channel:1550165647911034940 --message "<reviewed summary and article link>" --media "<absolute finished image path>" --json`.
+   The relay's `--alert` sends text only; it cannot substitute for this image delivery.
+2. Preserve a story-specific receipt in
+   `/Users/macmini/bubba-workspace/reports/arc-daily-x/<story-id>-discord.json`: state,
+   article ID, image path and SHA-256, destination, message ID, Discord link and actual send time.
+   Link it from the X outbox's `discord` field and record the share in the artwork inventory's
+   `discordShares`. Check existing receipts before sending. A confirmed delivery of the same
+   image and story link is reused; an ambiguous send requires one destination-history check
+   before retrying. A different clean-base preview does not deliver the finished composition.
+3. Only after confirmed Discord image delivery may the authorized X post move from `draft` to
+   `posting`. If Discord fails, keep the X draft and report the failure; do not silently skip
+   Discord or send a text-only substitute. No approval wait or deployment polling is required.
+
+The existing relay still owns routine edition text notices; do not duplicate those manually.
+Its text-only success and the image-delivery receipt are separate. Preserve already posted X
+announcements: if the editor reports a missed Discord image, deliver that missing image once
+and record the recovery without reposting X or rewriting the article.
 
 ## Publish together
 

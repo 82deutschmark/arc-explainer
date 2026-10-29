@@ -276,15 +276,18 @@ once. Abort and report a conflict in unrelated files. Do not check the deploymen
 
 ## 8. Announce and report
 
-Send the routine edition post on X under [X_POSTING.md](X_POSTING.md) (the custom picture leads it).
-The desk relay owns the routine Discord edition notice and send-once ledger. Do not duplicate
-that notice manually; necessary desk status/failure notices are authorized through its sender.
+For an illustrated edition or commissioned feature, first deliver the finished image, summary
+and article link to Discord under [ART_DESK.md](ART_DESK.md#discord-image-delivery-before-x),
+then send the authorized X post under [X_POSTING.md](X_POSTING.md). The text-only relay does not
+deliver artwork. The relay retains ownership of routine edition text notices and their send-once
+ledger; do not duplicate those manually.
 
-**Special investigations (Mark, 28 October 2026):** publishing a special investigation includes
-one announcement with its permanent article link in **#arc3-rollout-feed**, through the same
-relay's `--alert` sender. Preserve a story-specific posted record before any retry; do not
-assume the scheduled-edition relay has announced a separately published feature. No extra X
-post is implied. A successful Git push confirms the release was submitted; do not describe a
+**Special features and investigations:** publishing a commissioned special includes its
+announcement in **#arc3-rollout-feed**. With artwork, use the image-delivery procedure above;
+without artwork, use the relay's `--alert` sender with the permanent article link. Preserve a
+story-specific receipt before any retry; do not assume the scheduled-edition relay delivered a
+separate feature's image. X still requires its existing authorization and follows Discord.
+A successful Git push confirms the release was submitted; do not describe a
 page as verified live unless it was actually checked. Scheduled jobs still stop after the push
 and their authorized distribution. When the editor reports a missing page, that is a separate
 troubleshooting assignment: check the exact URL, archive health and deployment receipt before
