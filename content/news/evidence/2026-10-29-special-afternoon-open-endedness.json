@@ -1,0 +1,84 @@
+{
+  "id": "2026-10-29-special-afternoon-open-endedness",
+  "articleId": "2026-10-29-special-afternoon-open-endedness",
+  "competition": "arc-3",
+  "publishedAt": "2026-10-29T16:29:06.514790+00:00",
+  "kind": "special-afternoon-feature",
+  "commissionedBy": "mark-barney",
+  "sourceFeatureSha256": "696b4abc59461f93f23d413465bb83f999eacd595bf873630a6a36f0c999219e",
+  "sources": [
+    {
+      "id": "greg-outlook",
+      "title": "Greg Kamradt — October 29, 2026: from games to open-ended innovation",
+      "url": "https://x.com/GregKamradt/status/2115823228090462626",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "stanley-challenge",
+      "title": "Kenneth Stanley — September 12, 2026: the open-ended benchmarking dilemma",
+      "url": "https://x.com/kenneth0stanley/status/2098955766845833451",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "summit",
+      "title": "ARC Prize — October 23, 2026 Research Summit speaker program",
+      "url": "https://arcprize.org/events/research-summit-2026",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "arc4",
+      "title": "ARC Prize — September 12, 2026: ARC-AGI-4 direction",
+      "url": "https://x.com/arcprize/status/2098849962754978152",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "mazur-notes",
+      "title": "Matt Mazur — October 26, 2026 notes on Kenneth Stanley’s summit keynote",
+      "url": "https://x.com/mhmazur/status/2114714032850473187",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "poet",
+      "title": "Wang and colleagues, including Stanley — Enhanced POET, ICML 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l.html",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "poet-measure",
+      "title": "Enhanced POET — Section 5: measuring environments created and solved, 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l/wang20l.pdf",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "novelty-learnability",
+      "title": "Hughes and colleagues — Open-Endedness is Essential for Artificial Superhuman Intelligence, June 6, 2024",
+      "url": "https://arxiv.org/abs/2406.04268",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "arc3",
+      "title": "ARC Prize — ARC-AGI-3 interactive reasoning benchmark",
+      "url": "https://arcprize.org/arc-agi/3",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "greg-redteam",
+      "title": "Greg Kamradt — October 6, 2026 invitation to red-team future ARC benchmarks",
+      "url": "https://x.com/GregKamradt/status/2107480627989938482",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    }
+  ],
+  "artwork": {
+    "id": "2026-10-29-open-endedness-cover-v1",
+    "sha256": "f90a836800bbfed3c92df8a483593afdff4e6a3f63d33693644915eee5656628"
+  },
+  "reportingNotes": [
+    "Public X originals read in signed-in Chrome @82deutschmark. No subscriber material used.",
+    "Primary summit program verified; talk content attributed to Mazur’s published notes, not claimed as a transcript.",
+    "Enhanced POET abstract and ANNECS section checked in original paper; Hughes and colleagues abstract read.",
+    "Question lists and ARC-grid evaluation sketch are editorial analysis, not announced benchmark rules.",
+    "No claims about release dates, specific tasks, detailed ARC-AGI-5 format or Kaggle standings.",
+    "The complete manuscript and reviewed illustration are published directly as a standalone special article, using the existing special-report archive format. No scheduled cutoff or leaderboard observations are asserted."
+  ],
+  "manuscriptId": "2026-10-29-open-endedness-of-open-endedness"
+}

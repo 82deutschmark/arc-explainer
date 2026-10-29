@@ -1,0 +1,135 @@
+{
+  "id": "2026-10-29-special-afternoon-open-endedness",
+  "date": "2026-10-29",
+  "edition": "evening",
+  "competition": "arc-3",
+  "headline": "The open-endedness of open-endedness",
+  "dek": "Kenneth Stanley’s challenge to ARC’s next frontier: how do you score discovery without telling the machine what to discover? A special afternoon feature.",
+  "publishedAt": "2026-10-29T16:29:06.514790+00:00",
+  "dataAsOf": "2026-10-29T16:29:06.514790+00:00",
+  "baselineAt": null,
+  "generatedBy": "gpt-6.1-sol",
+  "coverageNote": "Commissioned special afternoon feature, not a scheduled closing report. Public organizer sources checked October 29. Stanley’s summit talk is reported through Matt Mazur’s October 26 notes and Stanley’s own September post; no recording or transcript was reviewed. No leaderboard figures used.",
+  "teamIds": [],
+  "stats": [],
+  "sources": [
+    {
+      "id": "greg-outlook",
+      "title": "Greg Kamradt — October 29, 2026: from games to open-ended innovation",
+      "url": "https://x.com/GregKamradt/status/2115823228090462626",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "stanley-challenge",
+      "title": "Kenneth Stanley — September 12, 2026: the open-ended benchmarking dilemma",
+      "url": "https://x.com/kenneth0stanley/status/2098955766845833451",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "summit",
+      "title": "ARC Prize — October 23, 2026 Research Summit speaker program",
+      "url": "https://arcprize.org/events/research-summit-2026",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "arc4",
+      "title": "ARC Prize — September 12, 2026: ARC-AGI-4 direction",
+      "url": "https://x.com/arcprize/status/2098849962754978152",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "mazur-notes",
+      "title": "Matt Mazur — October 26, 2026 notes on Kenneth Stanley’s summit keynote",
+      "url": "https://x.com/mhmazur/status/2114714032850473187",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "poet",
+      "title": "Wang and colleagues, including Stanley — Enhanced POET, ICML 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l.html",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "poet-measure",
+      "title": "Enhanced POET — Section 5: measuring environments created and solved, 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l/wang20l.pdf",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "novelty-learnability",
+      "title": "Hughes and colleagues — Open-Endedness is Essential for Artificial Superhuman Intelligence, June 6, 2024",
+      "url": "https://arxiv.org/abs/2406.04268",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "arc3",
+      "title": "ARC Prize — ARC-AGI-3 interactive reasoning benchmark",
+      "url": "https://arcprize.org/arc-agi/3",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    },
+    {
+      "id": "greg-redteam",
+      "title": "Greg Kamradt — October 6, 2026 invitation to red-team future ARC benchmarks",
+      "url": "https://x.com/GregKamradt/status/2107480627989938482",
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "The test that has to leave the answer open",
+      "sourceIds": [
+        "greg-outlook",
+        "stanley-challenge",
+        "summit",
+        "arc4"
+      ],
+      "text": "ARC has spent years asking machines to solve problems people invented. Its next ambition is to find out whether machines can invent something worth doing next. Kenneth Stanley has a question for that ambition: what happens when the scoreboard starts choosing the discoveries?\n\nOn Thursday, ARC Prize president Greg Kamradt put the shift plainly: the past year was about games; the coming year will be about open-ended innovation. ARC Prize had already named autonomous open-ended innovation as ARC-AGI-4’s target in September. The destination has a name. How to recognize arrival is the interesting part.\n\nStanley, the neuroevolution researcher and co-author of Why Greatness Cannot Be Planned, brought that problem to ARC’s October 23 research summit at MIT. He is an apt person to trouble the new frontier: his work includes novelty search and systems that generate their own learning challenges. He has spent years studying what discovery looks like when it is allowed to wander.\n\nEven before the summit, he challenged the premise in public. A hard problem solved imaginatively still comes with a problem someone else selected. Open-ended intelligence also has to decide which problems deserve attention—and sometimes do something interesting before there is a problem at all.\n\nThat is the open-endedness of open-endedness. First the machine must escape the supplied task. Then the people measuring it must resist supplying the task again through the back door."
+    },
+    {
+      "heading": "Kenneth Stanley’s collection of detours",
+      "sourceIds": [
+        "mazur-notes",
+        "summit",
+        "poet"
+      ],
+      "text": "In his October 26 account of Stanley’s keynote, ARC Prize testing lead Matt Mazur describes a talk about accumulating stepping stones. Biological evolution and human civilization keep producing developments that make later developments possible. Neither has a final invention at which the process is complete.\n\nAn experiment can therefore matter without looking like progress toward today’s objective. The strange intermediate discovery may supply a capability that tomorrow’s project needs. Discard it for failing the current test and that route disappears.\n\nStanley’s research offers a concrete version. In Enhanced POET, published with Rui Wang and colleagues in 2020, an algorithm generates environments and develops agents that solve them. Solutions can transfer between challenges rather than being trapped on the problem that produced them. The system grows a collection of problems and capabilities together.\n\nIts progress measure counts novel environments that are created and eventually solved, with a difficulty check against the agents accumulated so far. Impossible challenges earn no credit. Neither should the system receive endless applause for making more tasks its old agents already handle.\n\nThat is a useful foothold: discovery must produce something the system can learn to master. It also leaves a boundary. POET works inside an environment its designers made. Extending the obstacle course is different from inventing the bicycle, a new kind of experiment or a field of mathematics. A growing score within one world cannot by itself tell us how far a system could travel outside it."
+    },
+    {
+      "heading": "An infinite pile of grids is still a pile of grids",
+      "sourceIds": [
+        "mazur-notes",
+        "stanley-challenge",
+        "poet-measure",
+        "novelty-learnability"
+      ],
+      "text": "Imagine a machine that prints a million unfamiliar ARC grids. It can change every color, move every square and never repeat a picture. Has it discovered anything?\n\nNow imagine another machine that produces only a handful, but invents a reusable way to represent motion that helps it solve an entirely different family of games. The smaller output could be the more important discovery. Counting pictures would miss it.\n\nThat example is ours, but the measurement trouble runs through Mazur’s notes. Tracking persistent new behaviors does not settle their interestingness. Scoring quality across fixed categories can make those categories the fence around discovery. Counting generated-and-solved environments assumes the invention can be separated neatly into a problem and its answer.\n\nNovelty alone is also a weak compass: noise is easy to produce. Edward Hughes and colleagues framed open-endedness around novelty and learnability in a 2024 position paper. The ambition is continuing discovery that remains meaningful to an observer, rather than mere surprise.\n\nThen comes the judge. A panel may prefer a familiar idea to an awkward one with a future. An AI judge may share the blind spots of the system it is assessing. And the real value of a stepping stone may emerge long after the evaluation budget expires.\n\nA competition needs an answer within a deadline. Discovery does not promise to deliver its consequences on schedule."
+    },
+    {
+      "heading": "What comes after ARC-3?",
+      "sourceIds": [
+        "arc3",
+        "arc4",
+        "greg-outlook",
+        "mazur-notes",
+        "greg-redteam"
+      ],
+      "text": "The announced next direction is ARC-AGI-4 and autonomous open-ended innovation. Today’s ARC-AGI-3 asks agents to learn unfamiliar interactive environments, discover their goals and act efficiently. The next ambition adds another responsibility: helping decide what should exist or be investigated in the first place.\n\nKamradt’s Thursday message reinforces that direction. His earlier October call invited researchers to help red-team future ARC versions, explicitly including v4, v5 and beyond. It describes a continuing benchmark program, not a published specification for every numbered successor.\n\nStanley’s keynote, as Mazur reports it, offered a possible way forward through tiers of open-endedness. A limited test could establish one level of capability while acknowledging that wider forms of discovery remain outside it. The notes supply no tier definitions or scoring formula.\n\nThat leaves real design choices. Does the entry being measured mean one model, a persistent agent, or a population exchanging discoveries? Can it keep its own archive? Can it invent tools and change the representations in which it works? How long must a discovery remain productive before it counts?\n\nThese are questions raised by the research, not announced ARC-AGI-4 rules. The reviewed announcement, organizer posts and summit notes establish the goal but do not settle its task format, scoring system or launch date. Nobody gets to fill those gaps by calling a favorite idea “the next benchmark.”"
+    },
+    {
+      "heading": "The grid grows a world",
+      "sourceIds": [
+        "stanley-challenge",
+        "mazur-notes",
+        "poet-measure"
+      ],
+      "text": "Our illustration turns the thought experiment into a strange little ecosystem. An ARC grid unfolds into a landscape. Paths branch into new grids; some become structures that support still more paths. The frame stops being a container and becomes material for the next invention.\n\nA useful test in that spirit might follow a lineage instead of admiring a single output: what did the system invent, what could it do afterward, and which later discovery depended on the earlier one? Give several systems the same resources, preserve the sequence of experiments, and ask whether new capabilities keep opening up. This is the desk’s sketch of a possible evaluation, not an ARC announcement.\n\nEven that sketch has a trap. Reward the number of branches and the system may learn to branch pointlessly. Reward the evaluator’s favorite kinds of invention and it may become a skilled imitator of that taste. Ask for endless novelty inside a small sandbox and the sandbox may run out before the intelligence does.\n\nFor ARC’s contenders, the shift suggests a different question to ask of an agent under construction. Beyond whether it solves the next game, does it retain anything that helps it discover the game after that—or imagine a useful one nobody assigned?\n\nStanley’s challenge is constructive. A modest test that says exactly which part of discovery it measures can still move research forward. The danger is giving a narrow victory the name of an unlimited capability.\n\nThe next frontier may begin with a machine choosing a worthwhile detour. The benchmark has to leave somewhere for it to go."
+    }
+  ],
+  "discord": "Kenneth Stanley and the benchmark after games: how do you score discovery without choosing the discovery? The ARC Daily Digest special afternoon feature. https://arc.markbarney.net/news/2026-10-29-special-afternoon-open-endedness",
+  "image": {
+    "src": "/news-images/2026-10-29-open-endedness-cover-v1.webp",
+    "alt": "An ARC grid unfolds into branching islands of tiled creatures, laboratories, bridges and portals, with a small mechanical explorer following a path into new worlds.",
+    "caption": "AI editorial illustration for the October 29 special afternoon edition. The branching ARC-grid worlds symbolize cumulative discovery; they do not depict announced ARC-AGI-4 tasks or measured results.",
+    "artworkId": "2026-10-29-open-endedness-cover-v1"
+  }
+}
