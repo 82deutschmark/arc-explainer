@@ -90,6 +90,10 @@ Concrete mappings that prevent repeat mistakes:
   represent `darrenamadeusmartin`; Alwin and Yassir use their own separate portraits;
   Billy and Tri use explicitly fictional opaque helmets. ARC2 `16559402` and ARC3
   `16534961` are separate entries. Six drawn figures do not mean six team members.
+- **Turducken / ARC Mutants:** ARC3 Turducken has seven accounts. Its `markbarney`,
+  `sonphamorg` and `scizical` accounts overlap ARC2 ARC Mutants, which also includes
+  `jcole75`. Do not transfer the full ARC3 roster to ARC2. Preserve the approved academy
+  original and the Boss's October 29 X-Men / Professor Xavier direction in CHARACTERS.md.
 - **The Last Dance:** preserve the established four-account cast. `gklambauer` remains
   unresolved until a direct primary identity link is verified; a likely surname or
   research association is insufficient. Read its dossier before assigning a real name.

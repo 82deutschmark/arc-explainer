@@ -859,7 +859,14 @@
   {
     "aliases": [],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result."
+      }
+    ],
     "firstObservedAt": "2026-10-13T09:41:34Z",
     "id": "arc-2-16559402",
     "lastObservedAt": "2026-10-29T21:52:30Z",
@@ -1519,7 +1526,7 @@
         "checkedAt": "2026-10-19T18:01:43.005825Z",
         "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
         "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        "text": "ARC Mutants unites Jack Cole, Mark Barney, Son Pham and scizical in ARC-AGI-2."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
@@ -2317,7 +2324,7 @@
         "checkedAt": "2026-10-18T19:16:05.370354Z",
         "sourceTitle": "ARC-3 observed public roster",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "text": "The public roster now lists all seven accounts together under Team Turducken. This confirms the combined entry, not its exact merger time or any new score gain."
+        "text": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham."
       },
       {
         "checkedAt": "2026-10-19T18:01:43.005825Z",
@@ -2474,6 +2481,12 @@
     "competition": "arc-3",
     "facts": [
       {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "Florian Sestak: 38th of 4,463 with silver in the Santander Value Prediction Challenge."
+      },
+      {
         "checkedAt": "2026-10-08T13:46:44Z",
         "sourceTitle": "Lukas Aichberger — Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/lukasaichberger",
@@ -2484,12 +2497,6 @@
         "sourceTitle": "JKU — Lukas Aichberger research profile",
         "sourceUrl": "https://research.jku.at/en/persons/lukas-aichberger/",
         "text": "Johannes Kepler University Linz lists Lukas Aichberger at its Institute for Machine Learning and credits him on research about reasoning models and uncertainty evaluation."
-      },
-      {
-        "checkedAt": "2026-10-08T13:46:44Z",
-        "sourceTitle": "fses91 — Kaggle profile",
-        "sourceUrl": "https://www.kaggle.com/fses91",
-        "text": "Another rostered account, fses91, describes itself on Kaggle only as Florian; the public profile does not establish a surname."
       },
       {
         "checkedAt": "2026-10-08T13:46:44Z",
@@ -2520,12 +2527,6 @@
         "sourceTitle": "Florian Sestak — directly linked GitHub identity",
         "sourceUrl": "https://github.com/fses91",
         "text": "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak."
-      },
-      {
-        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
-        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
-        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
-        "text": "His Kaggle completed-results page records silver for 38/4463 in Santander Value Prediction Challenge and bronze results in NFL Helmet Assignment (90/825), Jigsaw Unintended Bias (163/3165, shared entry) and Porto Seguro (364/5156)."
       },
       {
         "checkedAt": "2026-10-29T19:41:08.261436+00:00",

@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T00:23:50.049Z",
+  "updatedAt": "2026-10-30T02:13:40.913Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -473,10 +473,20 @@
       "name": "Darren Amadeus Martin",
       "personId": "darren-amadeus-martin",
       "entries": [],
-      "artNotes": [],
+      "artNotes": [
+        "Two dogs together represent Darren’s one account. Dedicated individual illustration; no human face invented and no crop from the team picture.",
+        "Both own-avatar dogs and their established Domdolus Tolus harness designs are preserved; original photograph and full team artwork remain saved."
+      ],
       "number": "P043",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+        "alt": "Darren’s cream floppy-eared dog and dark/white husky together in ARC-grid racing harnesses.",
+        "credit": "Commissioned individual illustration based on Darren’s own two-dog avatar",
+        "artworkId": "2026-10-29-darren-individual-avatar-v1-base",
+        "commissionedAt": "2026-10-30T02:13:40.913Z"
+      }
     },
     {
       "id": "person-xz-2026",
@@ -853,7 +863,7 @@
     {
       "id": "team-last-dance-2026",
       "kind": "team",
-      "name": "the last dance 🕺",
+      "name": "The Last Dance",
       "entries": [
         {
           "competition": "arc-3",
@@ -1117,7 +1127,7 @@
     {
       "id": "team-domdolus-tolus-2026",
       "kind": "team",
-      "name": "DomdolusTolus",
+      "name": "Domdolus Tolus",
       "entries": [
         {
           "competition": "arc-2",
@@ -1219,7 +1229,8 @@
       },
       "artNotes": [
         "Jack Cole, Mark Barney, Son Pham and a fictional opaque-helmet Ronen character; keep separate from ARC3 Turducken.",
-        "The approved native academy illustration includes intrinsic ARC MUTANTS / ARC-AGI-2 title lettering. It contains no baked rank, score, observation date or honor; all card statistics are drawn separately. No existing title-free four-person source was found, and the original pixels remain unchanged."
+        "The approved native academy illustration includes intrinsic ARC MUTANTS / ARC-AGI-2 title lettering. It contains no baked rank, score, observation date or honor; all card statistics are drawn separately. No existing title-free four-person source was found, and the original pixels remain unchanged.",
+        "Boss reaffirmed the academy image on 29 October 2026 as the retained base for future X-Men-inspired episodes: Jack in the Professor Charles Xavier mentor role, Mark the GPU brawler, Son the visor-equipped energy specialist and Ronen the opaque-helmet grid-shield architect. Preserve their established faces, roles and the original image when making new versions."
       ],
       "number": "T016",
       "issuedAt": "2026-10-30T00:23:50.049Z",

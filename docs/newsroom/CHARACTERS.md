@@ -118,6 +118,26 @@ editorial fantasy. Preserve the digital campus and ARC grids when developing thi
 ARC2 identity. Team Turducken (`15605182`) remains the separate ARC3 team: do not
 transfer its snowy setting, crew or team name into the ARC Mutants announcement.
 
+**Boss reaffirmed this direction on 29 October:** retain this exact academy original
+and build future episodes around the X-Men / Professor Charles Xavier lore. Jack
+occupies the cerebral mentor role; preserve his established own character rather than
+replacing him with an actor. Keep Mark as the GPU brawler, Son as the visor-equipped
+energy specialist and Ronen as the opaque-helmet grid-shield architect. Archive each
+new iteration separately, retaining this base and all four individual references.
+Only Mark, Son and the `scizical` account overlap the two current rosters; ARC3's other
+four accounts do not inherit ARC Mutants membership or Jack's historical honors.
+
+## Darren’s individual two-dog collectible — 29 October 2026
+
+The dedicated individual illustration is
+`2026-10-29-darren-individual-avatar-v1-base`, retained as its exact native PNG with
+prompt, owner-reference photograph, full team style reference and review in the normal
+artwork archive. Both dogs together represent Darren's one account: cream floppy-eared
+retriever and dark/white husky, matching the Domdolus Tolus scene. This is a separately
+generated illustration rather than a group crop. Preserve the photograph and original
+team picture. The five dated card proofs and their exact public inputs are in
+`docs/newsroom/card-proofs/2026-10-29/`.
+
 ## Programmed corner graphics
 
 The compositor now draws a compact lower-left team/rank/score chart and an upper-right ARC Daily Digest / ARC Explainer chyron directly onto a copy of the approved scene. It uses the existing favicon and newsroom fonts. Both bars share a 0–100 score scale. The exact scores and observation time come from the edition brief. It keeps the scene’s aspect ratio and source bytes, and archives `corner-overlays-v1` with the image hash. Generation prompts reserve those corners for the code-drawn graphics. Overlays require no new native image generation. The headline remains bound to the composition record and appears in the article; the image carries the small statistics and branding requested by the Boss.

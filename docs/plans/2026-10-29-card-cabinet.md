@@ -27,3 +27,10 @@ Validation covers exact entry/handle joins, credited historical rosters, unknown
 public-versus-final honors, official result corrections, all registered art bindings, real HTTP
 routes, PNG output, CJK text, original-byte preservation and private-data exclusion. Existing
 news content tests, newsroom Python checks and the production build complete integration.
+
+The Boss's same-day visual review requests Darren's individual card, Domdolus Tolus and
+The Last Dance with art and statistics together. Save five dated print proofs (also
+Turducken and ARC Mutants), exact public card inputs, source artwork hashes and two
+comparison sheets under `docs/newsroom/card-proofs/2026-10-29/`. Lead the relevant
+career highlights with sourced past competition results. Record the renewed Mutants
+academy / Professor Xavier art direction without replacing or regenerating the original.

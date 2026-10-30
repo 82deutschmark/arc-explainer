@@ -2736,6 +2736,18 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Darren Amadeus Martin — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+        "text": "His own completed competition record lists 18th of 1,142 and a silver medal in Code Golf Championship 2025."
+      },
+      {
         "checkedAt": "2026-10-27T01:44:45.672194+00:00",
         "sourceTitle": "Domdolus Tolus — fifth-place solution write-up and author credits",
         "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
@@ -2746,18 +2758,6 @@
         "sourceTitle": "Darren Amadeus Martin — own Kaggle biography",
         "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
         "text": "His own Kaggle profile identifies him as a student at Waseda University."
-      },
-      {
-        "checkedAt": "2026-10-29T23:43:35.884923Z",
-        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
-        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
-        "text": "The five-account Domdolus Tolus team finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal; the result is a shared team honor."
-      },
-      {
-        "checkedAt": "2026-10-29T23:43:35.884923Z",
-        "sourceTitle": "Darren Amadeus Martin — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
-        "text": "His own completed competition record lists 18th of 1,142 and a silver medal in Code Golf Championship 2025."
       }
     ],
     "hallOfFame": [],

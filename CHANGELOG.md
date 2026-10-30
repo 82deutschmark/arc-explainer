@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.14  Oct 29, 2026
+
+- **Show the collectible proofs** (Author: GPT-6.1 Sol / Codex). Save Darren, Domdolus Tolus, The Last Dance, Turducken and ARC Mutants with their artwork and dated statistics. Bring the shared Nemotron fifth-place gold and Florian's earlier competition record forward, and retain exact card inputs and original-art references with the print proofs.
+- Give Darren's individual card a dedicated two-dog illustration matching the team scene. Preserve the exact native PNG, full generation arguments, original own-avatar photograph and team style reference; register it in the character library and artwork inventory.
+- **Keep the two home teams distinct.** Record the Boss's renewed X-Men / Professor Xavier direction for the preserved ARC Mutants academy image. Mark, Son and scizical overlap ARC3 Turducken and ARC2 Mutants; Jack belongs to the four-account ARC2 crew.
+- Validation: 32 collection/API/image checks, people and character-library validation, and visual review of all five print proofs pass. Original artwork bytes remain unchanged; the added individual image is separately archived.
+
 ### Version 9.159.13  Oct 29, 2026
 
 - **Open the ARC Daily Card Cabinet** (Author: GPT-6.1 Sol / Codex). Add a permanent, searchable baseball-card collection at `/news/cards`, with 65 individual cards, 16 team cards, uncropped commissioned artwork, front/back records and printable PNGs. Names and dated statistics are drawn programmatically; Japanese names retain their lettering. Preserve stable card numbers, original art and source records.

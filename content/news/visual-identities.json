@@ -1267,6 +1267,31 @@
         "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
       ],
       "provenance": "Boss commissioned Darren Amadeus Martin and DomdolusTolus, with all finished artwork saved. Two individually sourced human photos and Darren’s own two-dog avatar were inspected before native generation; Billy/Tri have no personal likeness. Exact native prompt, inputs, hashes and visual review are archived with 2026-10-29-domdolus-tolus-avatar-v1-base."
+    },
+    {
+      "id": "darren-amadeus-martin-avatar",
+      "personId": "darren-amadeus-martin",
+      "status": "ready",
+      "names": [
+        "Darren Amadeus Martin — two-dog avatar"
+      ],
+      "description": "Darren’s two own-avatar dogs together, illustrated separately as his one competitor character.",
+      "referenceType": "Dedicated native individual illustration from his own avatar and approved team character designs",
+      "references": [
+        {
+          "src": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+          "sha256": "5885a483826cd18337f05d9c03f3560ca4afd7113e67c102a83b6657f7bb4746",
+          "generationRecord": "2026-10-29-darren-individual-avatar-v1-base",
+          "kind": "native-character",
+          "label": "Darren — cream retriever and dark/white husky together",
+          "role": "Exactly two dogs together represent Darren’s one account. Keep cream floppy ears, husky markings, amber/cyan harness details and ARC-grid panels. Never add a human Darren face or count the dogs as two competitors."
+        }
+      ],
+      "identityNotes": [
+        "Both dogs together represent Darren Amadeus Martin. New individual composition, not a crop from the team scene.",
+        "Preserve the own-avatar source photograph and the original full team scene."
+      ],
+      "provenance": "Boss requested the individual collectible beside the team card. Native imagegen illustration preserves the existing two-dog identity; exact arguments, source references and original native bytes are archived."
     }
   ],
   "updatedAt": "2026-10-29T23:49:13.619906Z",
