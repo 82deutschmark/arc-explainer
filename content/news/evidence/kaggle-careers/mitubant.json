@@ -1,0 +1,250 @@
+{
+  "personId": "mitubant",
+  "handle": "mitubant",
+  "name": "NT",
+  "checkedAt": "2026-10-30T14:29:33Z",
+  "method": "Read-only public Kaggle About and Competitions pages loaded in the app's built-in browser on 2026-10-30 (profile page, then the competitions page after a five-second pause; no refreshes, no block or captcha seen). Page text was read with get_page_text. Per-row medals, ranks, team counts and displayed team accounts were read from each row's own labels in the page (read with the browser's script tool); screenshots of the profile confirmed the aggregate three-silver, two-bronze medal panel, which matches the row labels. The portrait image address was read from the visible own-profile avatar element. The browser held a signed-in session (a Follow/Unfollow control showed), but only public profile content was used. No older draft file existed for this person, so nothing from a prior draft was carried over.",
+  "sources": [
+    "https://www.kaggle.com/mitubant",
+    "https://www.kaggle.com/mitubant/competitions"
+  ],
+  "profile": {
+    "displayName": "NT",
+    "headline": "Need more GPU!",
+    "bio": "Happy Kaggle! Baby!",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 3,
+      "bronze": 2
+    },
+    "competitionRank": 1723,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 1708,
+    "joinedTooltip": "Mon Nov 12 2018 19:29:12 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2018-11",
+    "bioPresent": true,
+    "activity": {
+      "competitionsSolo": 5,
+      "competitionsInATeam": 9,
+      "competitionsHosted": 0
+    },
+    "pinnedWork": "The 2026 NeuroGolf Championship, 18th of 2,963",
+    "competitionsTabCount": 14,
+    "privacyNote": "Employer and location shown on the profile were deliberately left out of this record and its facts."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 5,
+    "completedCount": 9,
+    "activeNames": [
+      "Name That LLM",
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Enveda CASMI 2026 - Molecule ID From Mass Spectra"
+    ],
+    "completedNames": [
+      "The 2026 NeuroGolf Championship",
+      "ROGII - Wellbore Geology Prediction",
+      "Kaggriculture",
+      "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "RSNA Knee Abnormality Detection",
+      "BirdCLEF+ 2026",
+      "Orbit Wars",
+      "CommonLit Readability Prize",
+      "ASHRAE - Great Energy Predictor III"
+    ],
+    "scopeNote": "All nine completed entries the page shows are recorded below, and the five medals match the profile's three silver and two bronze. Active entries have no final result yet. The list is only what Kaggle displays; do not infer other participation."
+  },
+  "completedResults": [
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 18,
+      "teams": 2963,
+      "medal": "silver",
+      "displayedHandles": [
+        "nahman",
+        "evilpsycho42",
+        "mitubant",
+        "calibrator",
+        "russcore"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 171,
+      "teams": 6125,
+      "medal": "silver",
+      "displayedHandles": [
+        "ngyzly",
+        "mitubant",
+        "yichengs",
+        "zzxhee",
+        "huangshunhao"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 302,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": [
+        "ngyzly",
+        "mitubant",
+        "keithtyser",
+        "hdhsjdjd",
+        "dzjiann"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 523,
+      "teams": 6807,
+      "medal": "bronze",
+      "displayedHandles": [
+        "ngyzly",
+        "mitubant"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 540,
+      "teams": 6299,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mitubant"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 896,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": [
+        "mitubant"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 1099,
+      "teams": 4729,
+      "medal": null,
+      "displayedHandles": [
+        "mitubant"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CommonLit Readability Prize",
+      "competitionUrl": "https://www.kaggle.com/competitions/commonlitreadabilityprize",
+      "rank": 1329,
+      "teams": 3633,
+      "medal": null,
+      "displayedHandles": [
+        "mitubant",
+        "tkmrhcp"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ASHRAE - Great Energy Predictor III",
+      "competitionUrl": "https://www.kaggle.com/competitions/ashrae-energy-prediction",
+      "rank": 2642,
+      "teams": 3614,
+      "medal": null,
+      "displayedHandles": [
+        "mitubant"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/mitubant-v2.webp",
+    "sourceUrl": "https://www.kaggle.com/mitubant",
+    "note": "NT's own Kaggle profile picture is a cartoon yellow bird with black eyebrows, half-lidded eyes and an ochre beak; he chose it himself, so it is his own individual picture (a drawn character, not a photograph). The portrait file previously attached to his record, nt-mitubant-avatar-v2.webp (1200 by 900), is a generated scene of that bird in engineering gear, not his own picture, so it is not used as the portrait; the older nt-mitubant-avatar-v1.webp is a wrong-identity image already marked superseded. The new file is the current own-profile avatar (400 by 400, avatar address stamped 2026-07-19) converted to webp from a temporary download, with no crop, edit or generation. Visually checked against the profile page: same bird.",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/2485622-kg.png?t=2026-07-19-08-01-12",
+    "originalSha256": "3996f256f239d18324fcfd42c72bc9f0d81629023692f616f1d65555f812d428",
+    "savedFileSha256": "3a85315000a07c1a3ef986c9dd08cec59b3fcabc9adced2134168a2e696d3939",
+    "width": 400,
+    "height": 400,
+    "previousEditorialPortraitSrc": "/news-images/people/nt-mitubant-avatar-v2.webp"
+  },
+  "facts": [
+    {
+      "text": "NT, who uses the Kaggle handle mitubant, joined Kaggle in November 2018 and is a Competitions Expert with three silver and two bronze competition medals, ranked 1,723rd of 225,021.",
+      "sourceUrl": "https://www.kaggle.com/mitubant",
+      "sourceTitle": "NT — public Kaggle profile, tier, medals and join date",
+      "checkedAt": "2026-10-30T14:29:33Z"
+    },
+    {
+      "text": "Kaggle lists the team entry that includes NT in The 2026 NeuroGolf Championship, a contest about the smallest neural networks that solve ARC-AGI puzzles, 18th of 2,963 teams with a silver medal. The entry shows five accounts: nahman, evilpsycho42, mitubant, calibrator and russcore; it is a team medal, not NT's solo result.",
+      "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+      "sourceTitle": "NT — completed NeuroGolf result and listed accounts",
+      "checkedAt": "2026-10-30T14:29:33Z"
+    },
+    {
+      "text": "NT's other two silver medals are team entries: ROGII Wellbore Geology Prediction, 171st of 6,125 teams, listed with ngyzly, yichengs, zzxhee and huangshunhao; and Kaggriculture, 302nd of 10,148 teams, listed with ngyzly, keithtyser, hdhsjdjd and dzjiann.",
+      "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+      "sourceTitle": "NT — completed ROGII and Kaggriculture results and listed accounts",
+      "checkedAt": "2026-10-30T14:29:33Z"
+    },
+    {
+      "text": "NT's two bronze medals are from the Pokémon Company PTCG AI Battle Challenge, 523rd of 6,807 teams, listed with ngyzly, and RSNA Knee Abnormality Detection, 540th of 6,299 teams, where only the mitubant account is shown.",
+      "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+      "sourceTitle": "NT — completed PTCG and RSNA results and listed accounts",
+      "checkedAt": "2026-10-30T14:29:33Z"
+    },
+    {
+      "text": "NT's Kaggle competitions page lists both ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2 among his five active competitions.",
+      "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+      "sourceTitle": "NT — active competitions, including both ARC Prize 2026 entries",
+      "checkedAt": "2026-10-30T14:29:33Z"
+    }
+  ],
+  "teamNotes": [
+    "Silver and bronze medals on shared entries are team medals. Kaggle shows them against every listed account, so none may be credited as NT's individual honour. Only the RSNA bronze lists the mitubant account alone.",
+    "Kaggle's competition list shows the accounts on each entry but not a team name, so teamName is null for every completed entry. Do not supply one.",
+    "Handles that match accounts the newsroom already tracks (keithtyser on Kaggriculture; ngyzly and dzjiann, who appear in the Team Turducken roster) are shown on those Kaggle rows. This run confirms only that the handles appear, not who holds them or what each did.",
+    "The existing newsroom record puts mitubant on Team Turducken in ARC-AGI-3 (team 15605182) and on a separate ARC-AGI-2 team named この遥かなる旅路に祝福を (team 15526034), from dated public roster observations on 2026-10-30. Those rosters were not re-checked in this run; this run confirms only that both ARC Prize 2026 competitions are active on his profile. Any public ARC standing for these teams is provisional until the 2 November close."
+  ],
+  "unverified": [
+    "Team Turducken (ARC-AGI-3) and the Japanese-named ARC-AGI-2 team memberships come from the newsroom's earlier roster observations (arc.markbarney.net board data), not from the Kaggle pages read here.",
+    "Exact completion dates: Kaggle shows only relative labels such as '3 months ago', so none are recorded.",
+    "The accounts shown on each row are the profile pictures the list displays; the list may not show every member of a larger team.",
+    "What NT personally contributed to any shared entry; Kaggle does not say.",
+    "Whether the medal on NeuroGolf (a Research competition) follows the usual rank bands; only the medal Kaggle displays is recorded."
+  ],
+  "verified": true
+}

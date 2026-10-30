@@ -1,0 +1,60 @@
+{
+  "personId": "mike-knoop",
+  "handle": null,
+  "xHandle": "mikeknoop",
+  "name": "Mike Knoop",
+  "checkedAt": "2026-10-30T11:46:00Z",
+  "method": "No browser visit was made on 30 October 2026, because his record in people.json carries no Kaggle handle (its only account is X, mikeknoop), so no Kaggle profile can be attributed to him from the record. The earlier draft of this file, written while Kaggle was blocking us, was treated as unverified and none of its Kaggle claims are repeated. What was read instead, by command line only: the ARC Explainer Hall of Fame contributor entry as served by the site's own public contributors data endpoint (the rendered page was not opened), the server-delivered text and image of the official ARC Prize About page (the website the Hall of Fame entry links), and his local portrait files. No Kaggle page, no X page and no Chrome tool was used.",
+  "sources": [
+    "https://arc.markbarney.net/hall-of-fame#contributor-19",
+    "https://arcprize.org/about"
+  ],
+  "profile": {
+    "kaggleHandleInRecord": false,
+    "competitionTier": null,
+    "medals": null,
+    "joinedMonth": null,
+    "note": "No Kaggle profile was read, so no tier, medal count, rank or join month is recorded."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/mike-knoop-v2.webp",
+    "sourceUrl": "https://arcprize.org/about",
+    "sourceTitle": "ARC Prize — Mission page, Team section, Mike Knoop",
+    "imageUrl": "https://arcprize.org/media/images/blog-mike-knoop.jpg",
+    "originalSha256": "2b49b692ff6e5da7aa3814bc58cb4eb787d6a83fb921ea10a3779aca8df4dfc5",
+    "alt": "Mike Knoop, ARC Prize co-founder, in the official portrait on the ARC Prize website",
+    "note": "His own individual picture: a single smiling man, black and white on a yellow field, labelled Mike Knoop (alt text and caption on the page) in the Team section of the official ARC Prize site. Saved at its native 500x500 as a new webp, mike-knoop-v2.webp, checked by eye on 30 October 2026. It replaces the shared two-man founders image (arc-founders.webp) on his card; that file was left untouched. An earlier draft also left an unreferenced file, mike-knoop.webp, taken from a Kaggle profile picture the draft claimed was his; that file was not adopted because nothing the record cites ties that Kaggle account to him, and it was left in place unedited. By eye it shows a man who looks like the one in the official portrait, but that is a resemblance, not proof."
+  },
+  "facts": [
+    {
+      "text": "The ARC Explainer Hall of Fame describes Mike Knoop, co-founder of Zapier, as the person who launched the ARC Prize in 2024 to accelerate progress toward artificial general intelligence.",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+      "checkedAt": "2026-10-30T11:46:00Z"
+    },
+    {
+      "text": "The official ARC Prize website lists Mike Knoop in its Team section as Co-founder and Board Member.",
+      "sourceUrl": "https://arcprize.org/about",
+      "sourceTitle": "ARC Prize — Mission page, Team section",
+      "checkedAt": "2026-10-30T11:46:00Z"
+    },
+    {
+      "text": "The Hall of Fame lists Mike Knoop together with François Chollet in a single Founders entry, under the team name ARC Prize Foundation.",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+      "checkedAt": "2026-10-30T11:46:00Z"
+    }
+  ],
+  "teamNotes": "No Kaggle team, entry or competing account was checked. The team name ARC Prize Foundation on the Hall of Fame founders entry is an organization label shared with François Chollet, not a Kaggle team, and no team medal or placing is credited to him. His record in people.json lists no team memberships. The Hall of Fame entry carries no ARC standings, so no provisional standing applies.",
+  "unverified": [
+    "Whether he has a Kaggle account that belongs to this record: it cites no Kaggle handle, so none was visited. His X handle and any Kaggle handle are not assumed to match.",
+    "Every Kaggle claim in the earlier draft of this file (the handle, Contributor tier, join date, Featured Competition Host badge, hosted-competition count, organization line, follower count, website link and the Kaggle profile picture). That draft was written while Kaggle was blocking us and none of it was re-read, so none of it is used.",
+    "Any completed Kaggle competition, rank, team count, medal or team name for him.",
+    "The claim in his record that ARC Prize's official X profile names him as a co-founder: it was not reopened today and is left as recorded on 9 October. The ARC Prize website's Team section, read today, states the same role.",
+    "Which Kaggle competitions, if any, he has hosted or entered under any account.",
+    "The scripts/merge_kaggle_careers.py script hard-codes the portrait kind as kaggle when the status is replaced; this replacement picture comes from the ARC Prize website, so that label would be wrong unless the script is adjusted."
+  ],
+  "verified": true
+}

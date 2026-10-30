@@ -1,0 +1,178 @@
+{
+  "personId": "daniel-franzen",
+  "handle": "dfranzen",
+  "name": "Daniel Franzen",
+  "checkedAt": "2026-10-30T11:39:34Z",
+  "method": "Rebuilt from scratch on 2026-10-30 in the app's built-in browser, with the earlier draft treated as unverified. Loaded only the public Kaggle profile page and its Competitions tab, one request each, about five seconds apart, and read page text, the document's own join tooltip and medal labels, and screenshots of the completed-competitions list to confirm the gold icons. The profile picture was read from the profile's avatar element, downloaded with curl, and compared by eye with the saved portrait.",
+  "sources": [
+    "https://www.kaggle.com/dfranzen",
+    "https://www.kaggle.com/dfranzen/competitions"
+  ],
+  "profile": {
+    "displayName": "Daniel Franzen",
+    "competitionTier": "Competitions Expert",
+    "medals": {
+      "gold": 2
+    },
+    "competitionRank": 246,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 77,
+    "joinedTooltip": "Tue Mar 20 2018 08:01:20 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2018-03",
+    "headline": "Deep Learning Researcher at University of Mainz",
+    "location": "Mainz, Rhineland-Palatinate, Germany",
+    "bioPresent": true,
+    "bioSummary": "PhD work on equivariant neural networks for physics and chemistry at the University of Mainz; grows Riesling wine in the Moselle valley as a side project.",
+    "followers": 86,
+    "activity": "3 competitions solo, 4 in a team, 0 hosted",
+    "competitionsTab": "7 competitions: 2 active, 5 completed"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 5,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "ARC Prize 2024",
+      "ARC Prize 2025",
+      "AI Mathematical Olympiad - Progress Prize 2",
+      "Jane Street Real-Time Market Data Forecasting",
+      "AI Mathematical Olympiad - Progress Prize 3"
+    ],
+    "scopeNote": "The page lists five completed competitions and shows no standing for the two active ones. Do not invent further finishes or treat the list as the full participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 1,
+      "teams": 1427,
+      "medal": "gold",
+      "displayedHandles": ["insanitycheck", "dfranzen"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 2,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": ["insanitycheck", "dfranzen", "dvhrtm"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 293,
+      "teams": 2212,
+      "medal": null,
+      "displayedHandles": ["dfranzen"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jane Street Real-Time Market Data Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+      "rank": 804,
+      "teams": 3757,
+      "medal": null,
+      "displayedHandles": ["dfranzen"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1286,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": ["insanitycheck", "dfranzen", "dvhrtm"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "activeEntries": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "displayedHandles": ["sbrodehl", "insanitycheck", "dfranzen", "dvhrtm"],
+      "status": "4 days to go",
+      "standingShown": false
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "displayedHandles": ["dfranzen"],
+      "status": "4 days to go",
+      "standingShown": false
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/daniel-franzen.webp",
+    "sourceUrl": "https://www.kaggle.com/dfranzen",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/1739702-kg.png?t=2025-07-14-08-19-48",
+    "originalSize": "400x400 PNG",
+    "originalSha256": "a9c5d92a9f54bfb461d02ec273fbe4174000f209231f56f2c24bf6134cf56b78",
+    "savedFileSize": "320x320 WebP",
+    "savedFileSha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49",
+    "note": "The saved file is the same single image as the avatar on his own Kaggle profile, downscaled: a cartoon yellow duck in black sunglasses against a blue, orange and green grid. It is his own chosen individual profile picture, not a group image, a crop of the team card or a default avatar. It is not a photograph of him; no photographic portrait appears on the two Kaggle pages read. The shared team image /ARChitechts.png is recorded under hallOfFame, not as his portrait. No new file was written."
+  },
+  "facts": [
+    {
+      "text": "Daniel Franzen is a Kaggle Competitions Expert, ranked 246th of 225,021 with a highest-ever rank of 77th, and his profile shows two gold competition medals.",
+      "sourceUrl": "https://www.kaggle.com/dfranzen",
+      "sourceTitle": "Daniel Franzen — public Kaggle profile",
+      "checkedAt": "2026-10-30T11:39:34Z"
+    },
+    {
+      "text": "Kaggle lists his ARC Prize 2024 entry first of 1,427 teams with a gold medal. It was a team entry, shown with the account insanitycheck.",
+      "sourceUrl": "https://www.kaggle.com/dfranzen/competitions",
+      "sourceTitle": "Daniel Franzen — completed ARC Prize 2024 result on Kaggle",
+      "checkedAt": "2026-10-30T11:39:34Z"
+    },
+    {
+      "text": "Kaggle lists his ARC Prize 2025 entry second of 1,455 teams with a gold medal. It was a team entry, shown with the accounts insanitycheck and dvhrtm.",
+      "sourceUrl": "https://www.kaggle.com/dfranzen/competitions",
+      "sourceTitle": "Daniel Franzen — completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T11:39:34Z"
+    },
+    {
+      "text": "His profile calls him a deep learning researcher at the University of Mainz, working on a PhD about equivariant neural networks, and says he grows Riesling wine in the Moselle valley on the side.",
+      "sourceUrl": "https://www.kaggle.com/dfranzen",
+      "sourceTitle": "Daniel Franzen — Kaggle profile bio",
+      "checkedAt": "2026-10-30T11:39:34Z"
+    },
+    {
+      "text": "In a September 30, 2026 write-up on his profile he says his open-sourced ARC-AGI-3 notebook scored 27.89 on the public leaderboard, a provisional standing until the private scores settle at the close; he built it on the Tufa Labs Duck harness.",
+      "sourceUrl": "https://www.kaggle.com/dfranzen",
+      "sourceTitle": "Daniel Franzen — ARC-AGI-3 Milestone 2 write-up on his Kaggle profile",
+      "checkedAt": "2026-10-30T11:39:34Z"
+    }
+  ],
+  "teamNotes": [
+    "Team names are not shown on the Kaggle competitions list, so teamName stays null for every completed result. The profile's solution write-up card is headed ARC Prize 2025, 2nd Place, the ARChitects, and signed by Daniel, Jan and David; that matches the three handles shown on the 2025 entry.",
+    "Both gold medals belong to team entries. Credit them to the team, never as an individual honour.",
+    "The active ARC-AGI-3 card on the Competitions tab shows four accounts: sbrodehl, insanitycheck, dfranzen and dvhrtm. The active ARC-AGI-2 card shows only dfranzen. Neither card shows a rank or score.",
+    "The ARC-AGI-3 team name The ARChitects, and the earlier solo team entry named Daniel Franzen, come from the newsroom's own roster observations in the person record, not from the Kaggle pages read here.",
+    "The saved 27.89 is the public leaderboard standing he reports as of his September write-up, not a current standing and not the final private result."
+  ],
+  "unverified": [
+    "Daniel Franzen as a named member of the 2024 ARChitects team and the 2024 and 2025 results on arcprize.org: not re-checked in this pass; only the Kaggle pages above were read.",
+    "A 2024 team name: Kaggle's list shows two handles for ARC Prize 2024 and no team name.",
+    "The exact completion date of every completed competition: only relative labels such as 2 years ago are shown.",
+    "The current ARC-AGI-3 and ARC-AGI-2 public leaderboard positions: not shown on these pages; the person record's roster observations were not re-checked.",
+    "The 27.89 figure is his own statement in a write-up; the leaderboard itself was not opened.",
+    "Whether the Kaggle avatar is a photograph of him: it is a cartoon duck; no photographic portrait was found on the pages read."
+  ],
+  "verified": true
+}

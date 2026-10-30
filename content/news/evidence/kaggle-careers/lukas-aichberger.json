@@ -1,0 +1,116 @@
+{
+  "personId": "lukas-aichberger",
+  "handle": "lukasaichberger",
+  "name": "Lukas Aichberger",
+  "checkedAt": "2026-10-30T12:53:47Z",
+  "method": "Built-in browser (the Claude app's Browser pane), 30 October 2026. Read the public Kaggle profile page and the competitions page once each, with a pause between them; the join date comes from the page's join tooltip and the profile picture address from the page's own profile image element. The competitions page shows no completed competitions, so there were no medal icons to read. The ARC-AGI-3 team standing, his GitHub biography, his Oxford group page and the EuroSkills 2016 results PDF were fetched with curl. No rate limiting, captcha or block appeared. No earlier draft file existed for him and nothing from the earlier record was carried over without being re-read.",
+  "sources": [
+    "https://www.kaggle.com/lukasaichberger",
+    "https://www.kaggle.com/lukasaichberger/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+    "https://oatml.cs.ox.ac.uk/members/lukas_aichberger/",
+    "https://spain-skills.es/images/competiciones/euroskills2016/06_Results_per_skill_competition-2.pdf"
+  ],
+  "profile": {
+    "displayName": "Lukas Aichberger",
+    "competitionTier": null,
+    "medals": null,
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "highestCompetitionRank": null,
+    "joinedTooltip": "Wed Oct 23 2024 07:45:51 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2024-10",
+    "joinedLabel": "2 years ago",
+    "lastSeenLabel": "in the past day",
+    "bioPresent": false,
+    "profileSectionsHidden": true,
+    "profileSectionsNote": "The About tab reads 'All profile sections are currently hidden.' Kaggle therefore shows no competition tier, no medal counts and no rank for this account. That is a privacy setting on the page, not proof that he has no medals.",
+    "linkedAccounts": [
+      "LinkedIn: https://www.linkedin.com/in/lukas-aichberger/",
+      "X: @aichberger",
+      "Website: https://aichberger.github.io/"
+    ],
+    "activityLine": "0 competitions solo, 1 competitions in a team, 0 competitions hosted",
+    "competitionsTabCount": 1
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "hostedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "activeEntries": [
+      {
+        "competition": "ARC Prize 2026 - ARC-AGI-3",
+        "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+        "statusLabel": "3 days to go",
+        "displayedHandles": [
+          "gklambauer",
+          "fses91",
+          "dwellement0baser",
+          "lukasaichberger"
+        ],
+        "teamName": null,
+        "note": "The Kaggle card shows four member pictures (alt text names the four handles) and no team name. The first of the four is Kaggle's default grey avatar."
+      }
+    ],
+    "scopeNote": "Only this one active competition is displayed, and no completed competitions at all. Do not invent any earlier finish or treat the list as proof of his whole competition history; hidden profile sections mean Kaggle may be withholding other records."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/lukas-aichberger.webp",
+    "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/23212113-kg.jpg?t=2026-09-26-18-43-14",
+    "width": 320,
+    "height": 320,
+    "sha256OfLiveOriginal": "d19b4a538177a431bd8d57205a51013f7ec66343a1568cb2d79ec62df517eeca",
+    "liveOriginalSize": "400x400",
+    "note": "The saved 320px file is the same picture as the avatar on his live Kaggle profile (compared by eye and numerically after resizing: average difference about 1 on a 0 to 255 scale, re-encoding only). It is a single person, not a group image and not Kaggle's default avatar. It is a cartoon-style self-portrait: a brown-haired young man in a dark hooded top printed with the text \\ai[chberger], which matches his own handle on GitHub and X. It is the picture he chose for his own profile, so it is his own individual picture, but it is an illustration and not a photograph. For reference only, his public Oxford OATML group page (https://oatml.cs.ox.ac.uk/members/lukas_aichberger/) carries a real single-person photograph of him (image address https://oatml.cs.ox.ac.uk/images/member_la_large.jpg, 394 by 591 pixels, brown-haired man in a dark sweatshirt outdoors). It was viewed but not saved, and no reuse permission was checked. No file was written or replaced."
+  },
+  "facts": [
+    {
+      "text": "Kaggle shows Lukas Aichberger (handle lukasaichberger) as having joined in October 2024, according to the join date on his public profile.",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+      "sourceTitle": "Lukas Aichberger — public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T12:53:47Z"
+    },
+    {
+      "text": "His Kaggle competitions page lists one entry, a team entry in the active ARC Prize 2026 - ARC-AGI-3 competition, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger/competitions",
+      "sourceTitle": "Lukas Aichberger — Kaggle competitions page",
+      "checkedAt": "2026-10-30T12:53:47Z"
+    },
+    {
+      "text": "His Kaggle profile hides all of its sections, so the page shows no competition tier and no medal counts for him.",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+      "sourceTitle": "Lukas Aichberger — public Kaggle profile, hidden sections",
+      "checkedAt": "2026-10-30T12:53:47Z"
+    },
+    {
+      "text": "On the newsroom's public ARC-AGI-3 roster board, the four-account team that includes his account (dwellement0baser, fses91, gklambauer and lukasaichberger), named the last dance, is listed 5th of 4,984 teams. This is a provisional public-leaderboard standing and it is the whole team's, not an individual honour.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public roster board — team the last dance",
+      "checkedAt": "2026-10-30T12:53:47Z"
+    },
+    {
+      "text": "His own GitHub biography says he completed a PhD in artificial intelligence at JKU Linz through the ELLIS PhD Program, co-supervised by Sepp Hochreiter and Yarin Gal, and has worked on LLM reasoning and post-training at Apple and done research with OATML at the University of Oxford.",
+      "sourceUrl": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+      "sourceTitle": "Lukas Aichberger — own GitHub biography",
+      "checkedAt": "2026-10-30T12:53:47Z"
+    }
+  ],
+  "teamNotes": "His only Kaggle competition entry is a team entry, so nothing below is an individual placing. Kaggle's own pages show the entry only as four member pictures and show no team name, so teamName is null on the Kaggle entry. The name 'the last dance' (with a dancing-man emoji) comes from the newsroom's public ARC roster board (team id 16021367), fetched once during this check at about 12:52 UTC, with the board's own internal snapshot stamp reading 12:24 UTC on 30 October 2026: rank 5 of 4,984 teams, handles dwellement0baser, fses91, gklambauer and lukasaichberger, same four handles as the pictures on his Kaggle card. These public standings stay provisional until the private leaderboard decides at the competition close. The board has listed his account on this team since the first observation on 14 October 2026.",
+  "unverified": [
+    "Competition tier, medal counts and ranks: his profile sections are hidden, so none are shown. Any medals he holds cannot be read.",
+    "Any competitions before ARC-AGI-3: none are displayed, and hidden sections may be hiding some.",
+    "Team name as Kaggle itself displays it for the ARC-AGI-3 entry: the pages show no team name; 'the last dance' is from the newsroom's roster board.",
+    "The earlier EuroSkills 2016 claim: the official results PDF (Mobile Robotics, page 15 of 38) does list 'Aichberger, Lukas / Müller, Florian', Austria, result 490, in fifth place, with no medal. But no page read in this run ties that name to this Kaggle account or to the researcher. A web search summary said his LinkedIn profile mentions a WorldSkills Europe title with Team Austria in Mobile Robotics, but the LinkedIn page could not be opened and a year was not given. The claim is therefore left out of facts and out of the card.",
+    "Whether the Oxford photograph may be reused by the newsroom: no permission was checked.",
+    "Whether the roster board standing is current at publication time: it is a provisional public standing."
+  ],
+  "verified": true
+}

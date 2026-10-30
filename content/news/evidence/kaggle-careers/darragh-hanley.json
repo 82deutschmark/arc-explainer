@@ -1,0 +1,971 @@
+{
+  "personId": "darragh-hanley",
+  "handle": "darraghdog",
+  "name": "Darragh Hanley",
+  "checkedAt": "2026-10-30T12:21:41Z",
+  "method": "Built-in browser (the Claude app's Browser pane), 30 October 2026. Read the public Kaggle profile page and the competitions page, including pages one to three of the completed-competitions list through the page's own pager. Medal icons were read from screenshots of the list and agree with each icon's alt text in the page. The join date comes from the page's join tooltip. The NVIDIA author biography and photo, and the newsroom's public ARC roster board, were fetched with curl. No rate limiting, captcha or block appeared. Nothing from the earlier unverified draft was carried over.",
+  "sources": [
+    "https://www.kaggle.com/darraghdog",
+    "https://www.kaggle.com/darraghdog/competitions",
+    "https://developer.nvidia.com/blog/author/dhanley/",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+  ],
+  "profile": {
+    "displayName": "Darragh",
+    "competitionTier": "Grandmaster",
+    "medals": {
+      "gold": 28,
+      "silver": 14,
+      "bronze": 3
+    },
+    "competitionRank": 53,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 4,
+    "joinedTooltip": "Thu Jul 03 2014 13:07:48 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2014-07",
+    "bioPresent": true,
+    "bioText": "you don't need a weatherman to know which way the wind blows…",
+    "headline": "AI Research at Nvidia",
+    "organization": "NVIDIA",
+    "linkedAccounts": [
+      "GitHub: darraghdog",
+      "LinkedIn",
+      "X: @gonedarragh"
+    ],
+    "activityLine": "26 competitions solo, 36 competitions in a team, 2 competitions hosted",
+    "notebooks": {
+      "tier": "Expert",
+      "medals": {
+        "gold": 3,
+        "silver": 2,
+        "bronze": 23
+      },
+      "rank": 562,
+      "rankOutOf": 58895,
+      "highestRank": 5
+    },
+    "competitionsTabCount": 63
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 59,
+    "hostedCount": 2,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "hostedNames": [
+      "Bird Watch (W251 Autumn Semester 2021 Week07 HW)",
+      "Bird Watch (W251 Week07 HW)"
+    ],
+    "scopeNote": "All 59 completed rows (pages one to three, sorted by Best Result) are recorded below. The two hosted Bird Watch community competitions are not results and are not in completedResults. The list gives only a relative age for each entry, never an exact date. The medal tally of the 59 rows (28 gold, 14 silver, 3 bronze) matches the profile's own totals."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 1,
+      "teams": 2212,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "shtoshni",
+        "sorokin",
+        "benediktschifferer",
+        "christofhenkel",
+        "igitman",
+        "ivainn"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google - American Sign Language Fingerspelling Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+      "rank": 1,
+      "teams": 1314,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Intracranial Hemorrhage Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-intracranial-hemorrhage-detection",
+      "rank": 2,
+      "teams": 1345,
+      "medal": "gold",
+      "displayedHandles": [
+        "dmitrylarko",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Outbrain Click Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/outbrain-click-prediction",
+      "rank": 2,
+      "teams": 978,
+      "medal": "gold",
+      "displayedHandles": [
+        "kazanova",
+        "mmueller",
+        "darraghdog",
+        "alexeynoskov"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "HMS - Harmful Brain Activity Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification",
+      "rank": 3,
+      "teams": 2767,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 3,
+      "teams": 2674,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "conjuring92"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Linking Writing Processes to Writing Quality",
+      "competitionUrl": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
+      "rank": 3,
+      "teams": 1876,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Bosch Production Line Performance",
+      "competitionUrl": "https://www.kaggle.com/competitions/bosch-production-line-performance",
+      "rank": 3,
+      "teams": 1370,
+      "medal": "gold",
+      "displayedHandles": [
+        "kazanova",
+        "stasg7",
+        "mmueller",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA 2022 Cervical Spine Fracture Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection",
+      "rank": 3,
+      "teams": 883,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Screening Mammography Breast Cancer Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-breast-cancer-detection",
+      "rank": 4,
+      "teams": 1687,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "vaillant",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Feedback Prize - Predicting Effective Arguments",
+      "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-effectiveness",
+      "rank": 4,
+      "teams": 1557,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel",
+        "ilu000"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BNP Paribas Cardif Claims Management",
+      "competitionUrl": "https://www.kaggle.com/competitions/bnp-paribas-cardif-claims-management",
+      "rank": 5,
+      "teams": 2920,
+      "medal": "gold",
+      "displayedHandles": [
+        "optimism",
+        "gertjac",
+        "khanenko",
+        "titericz",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Avito Demand Prediction Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/avito-demand-prediction",
+      "rank": 5,
+      "teams": 1868,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "nkelly",
+        "trosenflanz",
+        "jeschultz12"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA STR Pulmonary Embolism Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-str-pulmonary-embolism-detection",
+      "rank": 5,
+      "teams": 784,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA 2024 Lumbar Spine Degenerative Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification",
+      "rank": 6,
+      "teams": 1874,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel",
+        "theoviel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NBME - Score Clinical Patient Notes",
+      "competitionUrl": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
+      "rank": 6,
+      "teams": 1471,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel",
+        "ilu000"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Benetech - Making Graphs Accessible",
+      "competitionUrl": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
+      "rank": 6,
+      "teams": 608,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Feedback Prize - Evaluating Student Writing",
+      "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-2021",
+      "rank": 7,
+      "teams": 2058,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel",
+        "ilu000"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Crowdflower Search Results Relevance",
+      "competitionUrl": "https://www.kaggle.com/competitions/crowdflower-search-relevance",
+      "rank": 7,
+      "teams": 1324,
+      "medal": "gold",
+      "displayedHandles": [
+        "codingneo",
+        "markpeng",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google - Isolated Sign Language Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/asl-signs",
+      "rank": 8,
+      "teams": 1165,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Recursion Cellular Image Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/recursion-cellular-image-classification",
+      "rank": 8,
+      "teams": 865,
+      "medal": "gold",
+      "displayedHandles": [
+        "dmitrylarko",
+        "darraghdog",
+        "tunguz",
+        "tivfrvqhs5",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Bengali.AI Speech Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/bengaliai-speech",
+      "rank": 8,
+      "teams": 744,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM - Detect AI Generated Text",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+      "rank": 9,
+      "teams": 4358,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "tivfrvqhs5",
+        "christofhenkel"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "TalkingData AdTracking Fraud Detection Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
+      "rank": 9,
+      "teams": 3943,
+      "medal": "gold",
+      "displayedHandles": [
+        "titericz",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NOAA Fisheries Steller Sea Lion Population Count",
+      "competitionUrl": "https://www.kaggle.com/competitions/noaa-fisheries-steller-sea-lion-population-count",
+      "rank": 10,
+      "teams": 385,
+      "medal": "gold",
+      "displayedHandles": [
+        "kazanova",
+        "mmueller",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Riiid Answer Correctness Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
+      "rank": 11,
+      "teams": 3406,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "jusco11"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predicting Red Hat Business Value",
+      "competitionUrl": "https://www.kaggle.com/competitions/predicting-red-hat-business-value",
+      "rank": 12,
+      "teams": 2260,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Homesite Quote Conversion",
+      "competitionUrl": "https://www.kaggle.com/competitions/homesite-quote-conversion",
+      "rank": 12,
+      "teams": 1755,
+      "medal": "gold",
+      "displayedHandles": [
+        "newtohere",
+        "soundwaveli00",
+        "pengyan",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Bristol-Myers Squibb – Molecular Translation",
+      "competitionUrl": "https://www.kaggle.com/competitions/bms-molecular-translation",
+      "rank": 20,
+      "teams": 874,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog",
+        "anokas",
+        "mitiau",
+        "chubasik",
+        "yasufuminakama"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Springleaf Marketing Response",
+      "competitionUrl": "https://www.kaggle.com/competitions/springleaf-marketing-response",
+      "rank": 30,
+      "teams": 2221,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "TalkingData Mobile User Demographics",
+      "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-mobile-user-demographics",
+      "rank": 30,
+      "teams": 1680,
+      "medal": "silver",
+      "displayedHandles": [
+        "confirm",
+        "newtohere",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "competitionUrl": "https://www.kaggle.com/competitions/waveform-inversion",
+      "rank": 30,
+      "teams": 1365,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Konwinski Prize",
+      "competitionUrl": "https://www.kaggle.com/competitions/konwinski-prize",
+      "rank": 31,
+      "teams": 617,
+      "medal": "silver",
+      "displayedHandles": [
+        "cpmpml",
+        "darraghdog",
+        "simjeg",
+        "aerdem4",
+        "maxjeblick"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Expedia Hotel Recommendations",
+      "competitionUrl": "https://www.kaggle.com/competitions/expedia-hotel-recommendations",
+      "rank": 33,
+      "teams": 1971,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Nature Conservancy Fisheries Monitoring",
+      "competitionUrl": "https://www.kaggle.com/competitions/the-nature-conservancy-fisheries-monitoring",
+      "rank": 36,
+      "teams": 2293,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw Unintended Bias in Toxicity Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-unintended-bias-in-toxicity-classification",
+      "rank": 39,
+      "teams": 3165,
+      "medal": "silver",
+      "displayedHandles": [
+        "ravikondadadi",
+        "darraghdog",
+        "bmwshop",
+        "yiliu77",
+        "kathrinb"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Avito Duplicate Ads Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/avito-duplicate-ads-detection",
+      "rank": 39,
+      "teams": 546,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Home Depot Product Search Relevance",
+      "competitionUrl": "https://www.kaggle.com/competitions/home-depot-product-search-relevance",
+      "rank": 53,
+      "teams": 2123,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2024 - Predict New Medicines with BELKA",
+      "competitionUrl": "https://www.kaggle.com/competitions/leash-BELKA",
+      "rank": 67,
+      "teams": 1950,
+      "medal": "silver",
+      "displayedHandles": [
+        "ubique",
+        "darraghdog",
+        "christofhenkel",
+        "sorkun"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Otto Group Product Classification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/otto-group-product-classification-challenge",
+      "rank": 88,
+      "teams": 3507,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Liberty Mutual Group: Property Inspection Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/liberty-mutual-group-property-inspection-prediction",
+      "rank": 96,
+      "teams": 2232,
+      "medal": "silver",
+      "displayedHandles": [
+        "markpeng",
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santander Customer Satisfaction",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-satisfaction",
+      "rank": 147,
+      "teams": 5115,
+      "medal": "silver",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Intel & MobileODT Cervical Cancer Screening",
+      "competitionUrl": "https://www.kaggle.com/competitions/intel-mobileodt-cervical-cancer-screening",
+      "rank": 52,
+      "teams": 848,
+      "medal": "bronze",
+      "displayedHandles": [
+        "darraghdog",
+        "monodavids",
+        "damok6"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Prostate cANcer graDe Assessment (PANDA) Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/prostate-cancer-grade-assessment",
+      "rank": 56,
+      "teams": 1010,
+      "medal": "bronze",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Child Mind Institute — Problematic Internet Use",
+      "competitionUrl": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
+      "rank": 265,
+      "teams": 3559,
+      "medal": "bronze",
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google AI Open Images - Object Detection Track",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-ai-open-images-object-detection-track",
+      "rank": 164,
+      "teams": 452,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "VinBigData Chest X-ray Abnormalities Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection",
+      "rank": 165,
+      "teams": 1275,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Coupon Purchase Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/coupon-purchase-prediction",
+      "rank": 262,
+      "teams": 1072,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Carvana Image Masking Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/carvana-image-masking-challenge",
+      "rank": 303,
+      "teams": 734,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Allstate Claims Severity",
+      "competitionUrl": "https://www.kaggle.com/competitions/allstate-claims-severity",
+      "rank": 420,
+      "teams": 3045,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "UW-Madison GI Tract Image Segmentation",
+      "competitionUrl": "https://www.kaggle.com/competitions/uw-madison-gi-tract-image-segmentation",
+      "rank": 513,
+      "teams": 1548,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deepfake Detection Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
+      "rank": 565,
+      "teams": 2265,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog",
+        "del=2ca0364c6e9b2b7a"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Higgs Boson Machine Learning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/higgs-boson",
+      "rank": 664,
+      "teams": 1784,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "12 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Planet: Understanding the Amazon from Space",
+      "competitionUrl": "https://www.kaggle.com/competitions/planet-understanding-the-amazon-from-space",
+      "rank": 723,
+      "teams": 936,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog",
+        "monodavids"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Feedback Prize - English Language Learning",
+      "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-english-language-learning",
+      "rank": 725,
+      "teams": 2654,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Rossmann Store Sales",
+      "competitionUrl": "https://www.kaggle.com/competitions/rossmann-store-sales",
+      "rank": 1032,
+      "teams": 3298,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1154,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog",
+        "igitman",
+        "ivainn"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw - Agile Community Rules Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+      "rank": 1832,
+      "teams": 2445,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Mercari Price Suggestion Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge",
+      "rank": 2105,
+      "teams": 2380,
+      "medal": null,
+      "displayedHandles": [
+        "darraghdog"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/darragh-hanley-v2.webp",
+    "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
+    "imageUrl": "https://developer-blogs.nvidia.com/wp-content/uploads/2025/11/darragh_2025-540x540.png",
+    "sha256OfSourceImage": "85da1f318f2dacac310cce4a80af3dbf8bea5e12a4de33b9f7e84c9eca945919",
+    "width": 320,
+    "height": 320,
+    "note": "The old file (darragh-hanley.webp) is a 320px copy of his current Kaggle profile picture, a close-up of a Van Gogh style starry-night painting with a crescent moon. It is the picture he chose for his Kaggle account, but it is a painting and not a picture of him, so it acts as a stand-in. The new file is a single-person photo of him (smiling, plaid shirt, plain white background) published as the avatar photo on his own NVIDIA Technical Blog author page headed Darragh Hanley. It was saved as a new -v2 file, resized to 320 by 320, and the old file was left untouched. If the newsroom prefers to keep to Kaggle's own profile pictures, the old file is a safe fallback. No separate reuse permission for the NVIDIA photo was checked. Identity chain: the NVIDIA page names Darragh Hanley, describes him as a member of NVIDIA's Kaggle Grandmaster team with a peak rank in the top four worldwide, and his Kaggle profile reads AI Research at Nvidia, Competitions Grandmaster, highest-ever rank 4, so the photo and the darraghdog account are the same person.",
+    "previousPortrait": {
+      "src": "/news-images/people/darragh-hanley.webp",
+      "sourceUrl": "https://www.kaggle.com/darraghdog",
+      "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/213493-kg.jpeg",
+      "width": 400,
+      "height": 400,
+      "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d",
+      "visualReview": "Same painting as the existing 320px file, matched by eye against the live 400px profile image. Not a group image and not the default avatar."
+    },
+    "sourceTitle": "NVIDIA Technical Blog — author page, Darragh Hanley",
+    "alt": "Darragh Hanley, from his NVIDIA Technical Blog author page"
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists Darragh (darraghdog) as a Competitions Grandmaster, ranked 53rd of 225,021, with a highest-ever competition rank of 4. His profile shows 28 gold, 14 silver and 3 bronze competition medals.",
+      "sourceUrl": "https://www.kaggle.com/darraghdog",
+      "sourceTitle": "Darragh — public Kaggle profile, tier, rank and medal counts",
+      "checkedAt": "2026-10-30T12:21:41Z"
+    },
+    {
+      "text": "Darragh’s Kaggle account dates from July 2014, according to the join date shown on his profile.",
+      "sourceUrl": "https://www.kaggle.com/darraghdog",
+      "sourceTitle": "Darragh — public Kaggle account join date",
+      "checkedAt": "2026-10-30T12:21:41Z"
+    },
+    {
+      "text": "Two entries at the top of his Kaggle competitions list are first-place finishes by teams that included his account: the AI Mathematical Olympiad - Progress Prize 2 (1st of 2,212 teams, seven account handles listed) and the Google American Sign Language Fingerspelling Recognition competition (1st of 1,314 teams, two handles listed).",
+      "sourceUrl": "https://www.kaggle.com/darraghdog/competitions",
+      "sourceTitle": "Darragh — completed Kaggle competitions, best results",
+      "checkedAt": "2026-10-30T12:21:41Z"
+    },
+    {
+      "text": "NVIDIA’s author biography calls Darragh Hanley a senior LLM technologist on its applied agent research team and a member of NVIDIA’s Kaggle Grandmaster team with multiple competition wins, with a peak rank in the top four worldwide.",
+      "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
+      "sourceTitle": "NVIDIA — Darragh Hanley author biography",
+      "checkedAt": "2026-10-30T12:21:41Z"
+    },
+    {
+      "text": "Kaggle’s competitions page lists Darragh as an active entrant in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3.",
+      "sourceUrl": "https://www.kaggle.com/darraghdog/competitions",
+      "sourceTitle": "Darragh — active Kaggle competitions",
+      "checkedAt": "2026-10-30T12:21:41Z"
+    }
+  ],
+  "teamNotes": "Almost every finish above is a team entry: Kaggle shows only the members' profile pictures and handles, never a team name, so teamName is null on every row and displayedHandles holds the handles exactly as shown. A team medal or placing is the whole team's, so no line in the facts credits any finish to him alone. The only individual attributions are Kaggle's own counts on his profile (tier, medals, rank). One handle on the Deepfake Detection Challenge row is shown by Kaggle as a deleted-account marker and is kept as shown. His profile features a solution writeup titled '1st place solution - NemoSkills' (published 26 June 2025) for the AI Mathematical Olympiad - Progress Prize 2 win; that is the writeup's own title, not a team name shown on the results row. Provisional ARC standings, from the newsroom's public ARC roster boards (fetched 30 October 2026, 11:54 UTC, public leaderboards that stay provisional until the private leaderboard decides at the close): in ARC-AGI-3, team NVARC3 (handles cpmpml, darraghdog, eladsarafian, galkaplun, sorokin, titericz, yeyinzhu) is listed 8th of 4,984 teams; in ARC-AGI-2, team nvbanana (handles cpmpml, darraghdog) is listed 3rd of 3,531 teams. These two lines come from the roster boards, not from a Kaggle page read this run, and are not in facts for that reason.",
+  "unverified": [
+    "Exact completion dates: Kaggle's list shows only relative ages such as '2 years ago'.",
+    "Team names of past entries: the competitions list does not display them.",
+    "Whether the handles shown beside each entry are the complete team roster for the larger teams; the list shows a compact row of member pictures.",
+    "The meaning of the '4x' badge beside his profile picture on Kaggle; it was seen but not explained on the page.",
+    "Whether the NVIDIA author photo may be reused by the newsroom; no permission was checked.",
+    "Whether the ARC roster board standings are current at publication time; they are provisional public standings."
+  ],
+  "verified": true
+}

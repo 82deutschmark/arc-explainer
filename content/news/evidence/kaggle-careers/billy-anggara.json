@@ -1,0 +1,111 @@
+{
+  "personId": "billy-anggara",
+  "handle": "billyanggara",
+  "name": "Billy Anggara",
+  "checkedAt": "2026-10-30T13:27:01Z",
+  "method": "Read-only visit to the public Kaggle profile and Competitions pages in the app's built-in browser on 2026-10-30 (Claude Sonnet 5.5). Page text, one screenshot of the completed-competition row (medal icon read visually and from the icon's alt text), the join-date tooltip and the avatar element were read. The earlier draft was not carried forward; nothing was reused from it (none existed on disk).",
+  "sources": [
+    "https://www.kaggle.com/billyanggara",
+    "https://www.kaggle.com/billyanggara/competitions"
+  ],
+  "profile": {
+    "displayName": "Billy Anggara",
+    "pronouns": "he/him",
+    "occupation": "Student at Chuo University",
+    "location": "Tachikawa, Tokyo, Japan",
+    "competitionTier": null,
+    "medals": null,
+    "joinedTooltip": "Wed Apr 22 2026 01:49:05 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2026-04",
+    "lastSeenTooltip": "Tue Oct 27 2026 07:47:55 GMT-0400 (Eastern Daylight Time)",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "tabCounts": {
+      "competitions": 3,
+      "datasets": 2,
+      "code": 1,
+      "writeups": 1,
+      "followers": 1
+    },
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInTeam": 3,
+      "competitionsHosted": 0
+    },
+    "scopeNote": "No tier badge and no medal tally appeared in the page text or the visible profile and Competitions pages, so tier and medal counts are left null rather than inferred. The only medal visible anywhere is the gold icon on the completed Nemotron row."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 1,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge"
+    ],
+    "activeStatusLabel": "3 days to go",
+    "scopeNote": "Only one completed record is publicly displayed. Do not invent additional finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "category": "Featured",
+      "rank": 5,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/billyanggara",
+    "note": "His own Kaggle profile shows Kaggle's stock default avatar (a pencil-style goose drawing from the site's static default-avatar file), not a picture of him. No portrait file for him exists in client/public/news-images/people/ or references/, and no other public individual picture of him was found on the pages visited. The four teammates' small avatars on the competition row are not his and no group image was saved. Nothing was downloaded."
+  },
+  "facts": [
+    {
+      "text": "Billy Anggara's Kaggle profile lists him as a student at Chuo University, based in Tachikawa, Tokyo, Japan.",
+      "sourceUrl": "https://www.kaggle.com/billyanggara",
+      "sourceTitle": "Billy Anggara — public Kaggle profile",
+      "checkedAt": "2026-10-30T13:27:01Z"
+    },
+    {
+      "text": "Billy Anggara's Kaggle account dates its joining to April 2026.",
+      "sourceUrl": "https://www.kaggle.com/billyanggara",
+      "sourceTitle": "Billy Anggara — public Kaggle account join tooltip",
+      "checkedAt": "2026-10-30T13:27:01Z"
+    },
+    {
+      "text": "Kaggle lists one completed competition on Billy Anggara's profile: the NVIDIA Nemotron Model Reasoning Challenge, fifth of 4,185 teams, with a gold medal. The entry shows five accounts, his among them, so the result is a team result shared by all five.",
+      "sourceUrl": "https://www.kaggle.com/billyanggara/competitions",
+      "sourceTitle": "Billy Anggara — completed NVIDIA Nemotron result on Kaggle",
+      "checkedAt": "2026-10-30T13:27:01Z"
+    },
+    {
+      "text": "Billy Anggara's profile shows all three of his competitions as team entries, none solo, and lists him in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, which Kaggle showed as three days from closing.",
+      "sourceUrl": "https://www.kaggle.com/billyanggara/competitions",
+      "sourceTitle": "Billy Anggara — Kaggle competitions and activity",
+      "checkedAt": "2026-10-30T13:27:01Z"
+    }
+  ],
+  "teamNotes": "The completed Nemotron row and both active ARC rows each show the same five avatars, with these accounts named on the Nemotron row: darrenamadeusmartin, rinnnntt, alwintheodoric, yassirramadhan and billyanggara. Kaggle's profile list does not display a team name, so none is recorded here. The gold medal and fifth place belong to that five-account team entry and must not be credited to Billy Anggara as an individual honour. Public ARC standings, where the card mentions them, are provisional until the private leaderboard settles at the 02-Nov close.",
+  "unverified": [
+    "The team name Domdolus Tolus. It appears in the existing record's ARC roster observations and its cited Nemotron write-up, but the name is not shown on the Kaggle pages read here and the write-up was not opened in this check.",
+    "The existing record's claim that a public write-up credits all five members; the Writeups (1) tab was not opened.",
+    "Competitions Expert-style tier and medal totals; neither is displayed on the pages read.",
+    "Exact completion date of the Nemotron competition; Kaggle shows only 4 months ago.",
+    "Any current ARC-AGI-2 or ARC-AGI-3 leaderboard position; not visible on the profile pages and not read here."
+  ],
+  "verified": true
+}

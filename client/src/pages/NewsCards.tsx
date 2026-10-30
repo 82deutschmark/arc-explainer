@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex
- * Date: 2026-10-29
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Date: 2026-10-30 (slim one-line header, filters in one row, Front/Back beside the number, intro moved under the grid)
  * PURPOSE: The ARC Daily Digest's permanent, numbered Card Cabinet: commissioned team
  *          and player art, linked current/past teams, sourced career records, front/back downloads and
  *          shareable card pages whose artwork-led landscape metadata matches the server response.
@@ -86,9 +86,9 @@ export default function NewsCards() {
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {selected ? <section className="news-cabinet news-cabinet-detail" aria-labelledby="news-card-title">
       <header className="news-cabinet-header">
-        <div className="news-cabinet-series">{selected.kind === 'person' ? 'Player card' : 'Team card'} <span>{selected.number} · {selected.season}</span></div>
         <h1 id="news-card-title">{selected.name}</h1>
-        <p className="news-cabinet-intro">{selected.kind === 'person' ? 'The player, their teams and their career in competition.' : 'The team, its players and its competition record.'}</p>
+        <p className="news-cabinet-dek">{selected.kind === 'person' ? 'The player, their teams and their career in competition.' : 'The team, its players and its competition record.'}</p>
+        <div className="news-cabinet-series">{selected.kind === 'person' ? 'Player card' : 'Team card'} <span>{selected.number} · {selected.season}</span></div>
       </header>
       <div className="news-cabinet-detail-grid">
         <CabinetCard key={selected.id} card={selected} contest="all" />
@@ -100,14 +100,9 @@ export default function NewsCards() {
   return <NewsPaper>
     <section className="news-cabinet" aria-labelledby="news-cabinet-title">
       <header className="news-cabinet-header">
-        <div className="news-cabinet-series">The ARC Daily Digest <span>Collector’s series · {query.data?.season ?? '2026'}</span></div>
         <h1 id="news-cabinet-title">Card Cabinet</h1>
         <p className="news-cabinet-dek">The stars of the grid, collected.</p>
-        <p className="news-cabinet-intro">Collect the players. Follow their teams. Every player has a career; every team has its own card and roster. Open a card to see the full record or copy its link to share it.</p>
-        {query.data && <div className="news-cabinet-colophon">
-          <span>Commissioned by {query.data.commissionedBy} · {newsDate(query.data.commissionedAt)}</span>
-          <span>{personCount} player {personCount === 1 ? 'card' : 'cards'} · {teamCount} team {teamCount === 1 ? 'card' : 'cards'}</span>
-        </div>}
+        <div className="news-cabinet-series">Collector’s series · {query.data?.season ?? '2026'}{query.data && <span>{personCount} player {personCount === 1 ? 'card' : 'cards'} · {teamCount} team {teamCount === 1 ? 'card' : 'cards'}</span>}</div>
       </header>
 
       <form className="news-cabinet-filters" onSubmit={event => event.preventDefault()} aria-label="Find collection cards">
@@ -123,16 +118,17 @@ export default function NewsCards() {
           <legend>The contest</legend>
           <div className="news-cabinet-filter-buttons">{(['all', 'arc-3', 'arc-2'] as const).map(value => <button key={value} type="button" aria-pressed={contest === value} onClick={() => setContest(value)}>{value === 'all' ? 'Both contests' : value === 'arc-3' ? 'ARC3' : 'ARC2'}</button>)}</div>
         </fieldset>
+        {query.data && <div className="news-cabinet-results" role="status" aria-live="polite">{shown.length} of {allCards.length} on display</div>}
       </form>
 
       <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
       {query.data && <>
-        <div className="news-cabinet-results" role="status" aria-live="polite">
-          <span>{shown.length} of {allCards.length} cards on display</span>
-          <span>Public standings are dated observations; honors appear when verified.</span>
-        </div>
         <div className="news-cabinet-grid">{shown.map(card => <CabinetCard key={card.id} card={card} contest={contest} />)}</div>
         {!shown.length && <div className="news-cabinet-empty"><h2>No cards match that search.</h2><p>Try another name or show the full collection.</p><button type="button" onClick={() => { setSearch(''); setKind('all'); setContest('all'); }}>Show all cards →</button></div>}
+        <footer className="news-cabinet-colophon">
+          <p>Collect the players. Follow their teams. Every player has a career; every team has its own card and roster. Open a card to see the full record or copy its link to share it.</p>
+          <span>Commissioned by {query.data.commissionedBy} · {newsDate(query.data.commissionedAt)}. Public standings are dated observations; honors appear when verified.</span>
+        </footer>
       </>}
     </section>
   </NewsPaper>;
@@ -151,9 +147,9 @@ export function CabinetCard({ card, contest }: { card: CollectionCard; contest: 
     <div className="news-cabinet-card-top">
       <span className="news-cabinet-number">No. {String(card.number).padStart(3, '0')}</span>
       <span className="news-cabinet-type">{card.kind === 'person' ? 'Player' : 'Team'} · {card.season}</span>
-    </div>
-    <div className="news-cabinet-turn" role="group" aria-label={`View ${card.name} card`}>
-      {(['front', 'back'] as const).map(value => <button type="button" key={value} aria-pressed={side === value} aria-controls={faceId} onClick={() => setSide(value)}>{value === 'front' ? 'Front' : 'Back'}</button>)}
+      <div className="news-cabinet-turn" role="group" aria-label={`View ${card.name} card`}>
+        {(['front', 'back'] as const).map(value => <button type="button" key={value} aria-pressed={side === value} aria-controls={faceId} onClick={() => setSide(value)}>{value === 'front' ? 'Front' : 'Back'}</button>)}
+      </div>
     </div>
     <div className={`news-cabinet-face is-${side}`} id={faceId}>
       {side === 'front' ? <>

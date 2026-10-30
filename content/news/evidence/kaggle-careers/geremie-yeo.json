@@ -1,0 +1,406 @@
+{
+  "personId": "geremie-yeo",
+  "handle": "yeoyunsianggeremie",
+  "name": "Geremie Yeo",
+  "checkedAt": "2026-10-30T13:03:39Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude app's built-in browser, 2026-10-30; two page loads about eleven seconds apart, no refresh loops. Competition medals read from the medal icon on each row (confirmed by screenshots of the list) together with the icon's own label in the page; team members read from the avatar labels on each row; avatar compared as an image against the saved portrait.",
+  "sources": [
+    "https://www.kaggle.com/yeoyunsianggeremie",
+    "https://www.kaggle.com/yeoyunsianggeremie/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 4,
+      "silver": 10,
+      "bronze": 3
+    },
+    "competitionRank": 103,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 61,
+    "joinedTooltip": "Mon Jun 08 2020 02:56:56 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2020-06",
+    "discussionsTier": "Legacy Grandmaster",
+    "bioPresent": true,
+    "bio": "you love solving algorithmic puzzles don't lie to yourself",
+    "headline": "Just build. Learn by doing. Grow by shipping.",
+    "listedRole": "Founding Engineer at Solvea",
+    "listedLocation": "San Francisco, California, United States",
+    "activity": {
+      "competitionsSolo": 21,
+      "competitionsInATeam": 27,
+      "competitionsHosted": 0
+    },
+    "linkedAccounts": [
+      {
+        "platform": "x",
+        "handle": "bogoconic1",
+        "url": "https://x.com/bogoconic1"
+      },
+      {
+        "platform": "github",
+        "handle": "bogoconic1",
+        "url": "https://github.com/bogoconic1"
+      },
+      {
+        "platform": "linkedin",
+        "url": null,
+        "note": "LinkedIn link shown, address not read"
+      },
+      {
+        "platform": "medium",
+        "url": "https://medium.com/@geremieyeo"
+      }
+    ]
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 17,
+    "activeNames": [
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "completedNames": [
+      "The Learning Agency Lab - PII Data Detection",
+      "The 2026 NeuroGolf Championship",
+      "Make Data Count - Finding Data References",
+      "Optiver - Trading at the Close",
+      "Drawing with LLMs",
+      "Eedi - Mining Misconceptions in Mathematics",
+      "Deep Past Challenge - Translate Akkadian to English",
+      "Santa 2023 - The Polytope Permutation Puzzle",
+      "UM - Game-Playing Strength of MCTS Variants",
+      "AI Mathematical Olympiad - Progress Prize 1",
+      "CSIRO - Image2Biomass Prediction",
+      "AI Mathematical Olympiad - Progress Prize 2",
+      "Kaggle - LLM Science Exam",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "Forecasting Sticker Sales",
+      "AI Mathematical Olympiad - Proof Pilot",
+      "KAChallenges Series 1: Classifying Math Problems"
+    ],
+    "displayedMedalTally": {
+      "gold": 4,
+      "silver": 8,
+      "bronze": 1
+    },
+    "scopeNote": "The completed list shows 17 results with 4 gold, 8 silver and 1 bronze medal, while the profile totals say 4 gold, 10 silver and 3 bronze. Two silver and two bronze medals are not visible on the list. Do not invent them and do not treat the list as his whole record. No ARC Prize competition appears in his active or completed list."
+  },
+  "completedResults": [
+    {
+      "competition": "The Learning Agency Lab - PII Data Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+      "rank": 1,
+      "teams": 2048,
+      "medal": "gold",
+      "displayedHandles": [
+        "drpatrickchan",
+        "gauravbrills",
+        "ympaik",
+        "yeoyunsianggeremie",
+        "evgeniimaslov2"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 2,
+      "teams": 2963,
+      "medal": "gold",
+      "displayedHandles": [
+        "jacekwl",
+        "yhirano",
+        "chankhavu",
+        "yeoyunsianggeremie",
+        "gufanmingmie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Make Data Count - Finding Data References",
+      "competitionUrl": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
+      "rank": 9,
+      "teams": 1282,
+      "medal": "gold",
+      "displayedHandles": [
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Optiver - Trading at the Close",
+      "competitionUrl": "https://www.kaggle.com/competitions/optiver-trading-at-the-close",
+      "rank": 14,
+      "teams": 4436,
+      "medal": "gold",
+      "displayedHandles": [
+        "yeoyunsianggeremie",
+        "mcpenguin",
+        "ravi20076",
+        "cody11null",
+        "madarshbb"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Drawing with LLMs",
+      "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+      "rank": 16,
+      "teams": 1309,
+      "medal": "silver",
+      "displayedHandles": [
+        "xyzdivergence",
+        "yeoyunsianggeremie",
+        "evgeniimaslov2"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Eedi - Mining Misconceptions in Mathematics",
+      "competitionUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics",
+      "rank": 19,
+      "teams": 1446,
+      "medal": "silver",
+      "displayedHandles": [
+        "lihaoweicvch",
+        "xyzdivergence",
+        "yeoyunsianggeremie",
+        "evgeniimaslov2",
+        "roschildrui"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 24,
+      "teams": 2674,
+      "medal": "silver",
+      "displayedHandles": [
+        "andrevma18",
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2023 - The Polytope Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2023",
+      "rank": 25,
+      "teams": 1054,
+      "medal": "silver",
+      "displayedHandles": [
+        "yeoyunsianggeremie",
+        "alvaroborras",
+        "marksix",
+        "timothygao",
+        "codicon"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "UM - Game-Playing Strength of MCTS Variants",
+      "competitionUrl": "https://www.kaggle.com/competitions/um-game-playing-strength-of-mcts-variants",
+      "rank": 30,
+      "teams": 1608,
+      "medal": "silver",
+      "displayedHandles": [
+        "xyzdivergence",
+        "yeoyunsianggeremie",
+        "stefanoclss"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 1",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "rank": 33,
+      "teams": 1161,
+      "medal": "silver",
+      "displayedHandles": [
+        "gauravbrills",
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CSIRO - Image2Biomass Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+      "rank": 34,
+      "teams": 3805,
+      "medal": "silver",
+      "displayedHandles": [
+        "yeoyunsianggeremie",
+        "ducnh279"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 50,
+      "teams": 2212,
+      "medal": "silver",
+      "displayedHandles": [
+        "xyzdivergence",
+        "ubamba98",
+        "conjuring92",
+        "chankhavu",
+        "amedprof",
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggle - LLM Science Exam",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
+      "rank": 185,
+      "teams": 2664,
+      "medal": "bronze",
+      "displayedHandles": [
+        "poipii",
+        "nivedithavudayagiri",
+        "yeoyunsianggeremie",
+        "mcpenguin",
+        "madarshbb"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1219,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "chankhavu",
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Forecasting Sticker Sales",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e1",
+      "rank": 11,
+      "teams": 2722,
+      "medal": null,
+      "displayedHandles": [
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Proof Pilot",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-proof-pilot",
+      "rank": 3,
+      "teams": 6,
+      "medal": null,
+      "displayedHandles": [
+        "chankhavu",
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "KAChallenges Series 1: Classifying Math Problems",
+      "competitionUrl": "https://www.kaggle.com/competitions/classification-of-math-problems-by-kasut-academy",
+      "rank": 10,
+      "teams": 338,
+      "medal": null,
+      "displayedHandles": [
+        "yeoyunsianggeremie"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/geremie-yeo.webp",
+    "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "note": "The saved 320px portrait is the same individual photo as his current Kaggle profile picture (a man in glasses and a dark puffer jacket, with the Golden Gate Bridge behind him); compared as images on 2026-10-30. The live original is 400x400 at https://storage.googleapis.com/kaggle-avatars/images/5256933-kg.jpeg?t=2026-01-31-19-53-40 (sha256 e901238302386d02498255d8da99c87039f443a2441b1ba7efc439d0fd65e7df). Not a group image or default avatar. No replacement file was made.",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/5256933-kg.jpeg?t=2026-01-31-19-53-40",
+    "originalWidth": 400,
+    "originalHeight": 400
+  },
+  "facts": [
+    {
+      "text": "Kaggle shows Geremie Yeo as a Competitions Master with four gold, ten silver and three bronze medals, ranked 103rd of 225,021 in competitions and 61st at his highest.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+      "sourceTitle": "Geremie Yeo - public Kaggle profile, medals and rank",
+      "checkedAt": "2026-10-30T13:03:39Z"
+    },
+    {
+      "text": "Kaggle lists The 2026 NeuroGolf Championship, a contest on designing the smallest neural networks to solve ARC-AGI image transformations, as a 2nd-place finish of 2,963 teams with a gold medal; the entry shows five team accounts, his among them, so it is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+      "sourceTitle": "Geremie Yeo - completed NeuroGolf result on Kaggle",
+      "checkedAt": "2026-10-30T13:03:39Z"
+    },
+    {
+      "text": "Kaggle lists The Learning Agency Lab - PII Data Detection as a 1st-place finish of 2,048 teams with a gold medal; five accounts are shown on the entry, so it is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+      "sourceTitle": "Geremie Yeo - completed PII Data Detection result on Kaggle",
+      "checkedAt": "2026-10-30T13:03:39Z"
+    },
+    {
+      "text": "Kaggle lists Make Data Count - Finding Data References as 9th of 1,282 teams with a gold medal, and the entry shows only his own account.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+      "sourceTitle": "Geremie Yeo - completed Make Data Count result on Kaggle",
+      "checkedAt": "2026-10-30T13:03:39Z"
+    },
+    {
+      "text": "His Kaggle profile dates his account to June 2020 and lists him as a Founding Engineer at Solvea in San Francisco.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+      "sourceTitle": "Geremie Yeo - public Kaggle profile, join date and listed role",
+      "checkedAt": "2026-10-30T13:03:39Z"
+    }
+  ],
+  "teamNotes": [
+    "The Kaggle competition list shows the member avatars (by account handle) for each team entry but does not show a team name, so teamName is null for every row.",
+    "NeuroGolf (2nd of 2,963) and PII Data Detection (1st of 2,048) are shared team results: five accounts are shown on each entry. A team medal is a team's, not an individual honour.",
+    "Make Data Count (9th of 1,282, gold) shows only his own account.",
+    "Teammates shown with him on NeuroGolf: jacekwl, yhirano, chankhavu, gufanmingmie. His own writeup on the profile describes a five-person team with independent pipelines; those names come from the writeup text and were not matched account by account."
+  ],
+  "unverified": [
+    "The two silver and two bronze medals that make up the profile totals (10 silver, 3 bronze) but are not visible on the completed list: no source on the pages read.",
+    "Team names for every entry: not displayed on the profile pages.",
+    "Exact completion dates: only relative labels such as '3 months ago' are shown.",
+    "Whether the five-account NeuroGolf and PII teams are the full team rosters; only the avatars Kaggle displays were read.",
+    "The linked LinkedIn address and the page behind the Medium link were not opened.",
+    "No ARC Prize 2026 competition entry is displayed on his profile; any live ARC standing would need its own source and would be provisional until the close."
+  ],
+  "verified": true
+}

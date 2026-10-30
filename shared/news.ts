@@ -75,7 +75,7 @@ export function editionFeature(article: NewsArticle, dispatches: NewsDispatch[] 
  * picture on their verified Kaggle account (sourceUrl is that account). Files live in
  * client/public/news-images/people/. docs/newsroom/VISUALS.md maps every picture we have.
  */
-export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle'; sourceUrl: string; sourceTitle: string; checkedAt: string }
+export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle' | 'web'; sourceUrl: string; sourceTitle: string; checkedAt: string }
 /** Commissioned avatar art, kept separate from the original account picture and its provenance. */
 export interface NewsEditorialPortrait extends Omit<NewsPortrait, 'kind'> { artworkId: string }
 /** People persist across seasons; membership observations belong to a specific contest. */

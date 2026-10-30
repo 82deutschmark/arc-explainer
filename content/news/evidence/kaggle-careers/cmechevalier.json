@@ -1,0 +1,109 @@
+{
+  "personId": "cmechevalier",
+  "handle": "cmechevalier",
+  "name": "chev",
+  "checkedAt": "2026-10-30T14:25:21Z",
+  "checkedBy": "Claude Sonnet 5.5 Medium",
+  "method": "Built-in browser (app pane), 30 October 2026: loaded the public Kaggle profile and Competitions pages once each, read the page text, a screenshot of each page and the page's own profile-picture elements. No earlier draft existed for this player, so nothing was carried over. The ARC-AGI-3 team row was read from the project's own board mirror that the player record already cites; the Kaggle leaderboard page itself was not opened.",
+  "sources": [
+    "https://www.kaggle.com/cmechevalier",
+    "https://www.kaggle.com/cmechevalier/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "displayName": "chev",
+    "competitionTier": null,
+    "competitionTierNote": "No competition tier badge is displayed in the profile header.",
+    "medals": null,
+    "medalsNote": "No medals or medal counts are displayed on the profile or on the Competitions page.",
+    "competitionRank": null,
+    "joinedTooltip": "Sun May 31 2026 14:20:20 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2026-05",
+    "joinedLabel": "Joined 4 months ago",
+    "lastSeenLabel": "last seen in the past day",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "publicCounts": {
+      "competitions": 1,
+      "datasets": 2,
+      "code": 1,
+      "followers": 1
+    },
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInATeam": 1,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions page shows only one active competition and no completed section. Do not invent earlier finishes or treat the list as proof of the account's whole participation history."
+  },
+  "completedResults": [],
+  "activeEntries": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "status": "active, 3 days to go when checked",
+      "displayedHandles": [
+        "richardcsaky",
+        "cmechevalier"
+      ],
+      "teamName": null,
+      "teamNameNote": "The profile card shows two member pictures and no team name."
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/cmechevalier",
+    "note": "The profile picture is Kaggle's default avatar (an engraved goose drawing served from the default-avatar and default-thumb files), not a picture the player chose. Browsing was limited to the two Kaggle pages, so nothing off Kaggle was checked and no individual picture was found. No portrait file was saved. No person photo, group image or stand-in is to be used on the card. The picture in the top-right of the browser pane belongs to the signed-in viewer, not to this player, and was not used."
+  },
+  "facts": [
+    {
+      "text": "chev, who goes by cmechevalier on Kaggle, joined in May 2026 and has no bio on the public profile.",
+      "sourceUrl": "https://www.kaggle.com/cmechevalier",
+      "sourceTitle": "chev - public Kaggle profile",
+      "checkedAt": "2026-10-30T14:25:21Z"
+    },
+    {
+      "text": "The public profile shows one competition, ARC Prize 2026 - ARC-AGI-3, still running when checked, and no completed competitions, medals or tier.",
+      "sourceUrl": "https://www.kaggle.com/cmechevalier/competitions",
+      "sourceTitle": "chev - Kaggle competitions list",
+      "checkedAt": "2026-10-30T14:25:21Z"
+    },
+    {
+      "text": "Kaggle counts that entry as a team entry rather than a solo one, and the card shows two members, richardcsaky and cmechevalier.",
+      "sourceUrl": "https://www.kaggle.com/cmechevalier/competitions",
+      "sourceTitle": "chev - Kaggle competitions list and activity panel",
+      "checkedAt": "2026-10-30T14:25:21Z"
+    },
+    {
+      "text": "The profile also lists two public datasets and one public notebook.",
+      "sourceUrl": "https://www.kaggle.com/cmechevalier",
+      "sourceTitle": "chev - public Kaggle profile",
+      "checkedAt": "2026-10-30T14:25:21Z"
+    },
+    {
+      "text": "On the ARC-AGI-3 public board mirrored on 30 October 2026, the team artificialagencylab.com (cmechevalier and richardcsaky) sat 11th of 4,985 teams; this is a provisional public standing, not a final result, and it belongs to the team rather than to one person.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-3 public board mirror, row for artificialagencylab.com",
+      "checkedAt": "2026-10-30T14:25:21Z"
+    }
+  ],
+  "teamNotes": "Only one team is visible: artificialagencylab.com (team 16132261), with cmechevalier and richardcsaky as its two members on the project's board mirror fetched 2026-10-30T14:24:25Z, where it was 11th of 4,985 teams with a public score of 45.41. The same two handles appear as the two member pictures on the live Kaggle Competitions card. The public board is provisional until the private scoring at the 2 November close. Nothing here is a medal, and no team standing is to be credited as an individual honour.",
+  "unverified": [
+    "Whether the display name chev maps to a full real name remains unresolved; use chev.",
+    "The public notebook named FACE-OF-AGI ARC-AGI-3 RTX6000 in the earlier player record was not opened in this check, so the notebook title is not confirmed here; only the count of one public notebook is.",
+    "The Kaggle leaderboard page itself was not opened; the team name and rank come from the project's board mirror, not from a live Kaggle page.",
+    "Whether the team name artificialagencylab.com is shown on Kaggle's own leaderboard in that exact form was not checked live.",
+    "No competition tier is displayed, so no tier can be stated; a hidden or unranked tier is not ruled out.",
+    "Only the two Kaggle pages were checked for a picture; an individual picture elsewhere online was not searched for, so none-available means none was found on Kaggle."
+  ],
+  "verified": true
+}

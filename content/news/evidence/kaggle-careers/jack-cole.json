@@ -1,0 +1,245 @@
+{
+  "personId": "jack-cole",
+  "handle": "jcole75",
+  "name": "Jack Cole",
+  "checkedAt": "2026-10-30T11:18:45Z",
+  "method": "Claude desktop app built-in browser, 30 October 2026. Loaded only the public Kaggle profile page and then the public Kaggle competitions page for jcole75, with a pause between them. Text read with get_page_text; medal icons read from screenshots of the competitions list and cross-checked against the medal labels in the page markup; join date read from the Joined tooltip; profile image address read from the profile page. The earlier draft of this file was discarded and rebuilt from these pages only.",
+  "sources": [
+    "https://www.kaggle.com/jcole75",
+    "https://www.kaggle.com/jcole75/competitions"
+  ],
+  "profile": {
+    "displayName": "Jack Cole",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 2,
+      "bronze": 2
+    },
+    "competitionRank": 483,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 333,
+    "joinedTooltip": "Sun Jun 18 2017 17:32:12 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2017-06",
+    "bioPresent": true,
+    "occupationShown": "AI Researcher, Psychologist, Software Developer; AI Researcher at Mindware Consulting, Inc.",
+    "activity": "8 competitions solo, 4 competitions in a team, 0 hosted",
+    "competitionsTabCount": 12
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 10,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "ARC Prize 2025",
+      "Stanford RNA 3D Folding Part 2",
+      "The 2026 NeuroGolf Championship",
+      "ROGII - Wellbore Geology Prediction",
+      "Vesuvius Challenge - Surface Detection",
+      "PhysioNet - Digitization of ECG Images",
+      "Deep Past Challenge - Translate Akkadian to English",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "CAFA 6 Protein Function Prediction",
+      "RSNA Knee Abnormality Detection"
+    ],
+    "scopeNote": "Ten completed records are displayed and the profile shows twelve competitions in all, counting the two active ones. The list is sorted by best result. Completion dates appear only as relative labels. Do not treat the list as proof of his entire participation history."
+  },
+  "medalValueNote": "gold and bronze were read from the medal icons on the completed-competition list and match the profile badge of two gold and two bronze. The value none means the row was checked and shows no medal icon.",
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 3,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": [
+        "jcole75",
+        "driessmit1",
+        "pressman1",
+        "moeosman",
+        "michaelhodel"
+      ],
+      "teamName": "MindsAI & Tufa Labs",
+      "teamNameSource": "Featured writeup card on https://www.kaggle.com/jcole75 (titled MindsAI & Tufa Labs, ARC Prize 2025, 3rd Place). The competitions list itself shows no team name.",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 13,
+      "teams": 1867,
+      "medal": "gold",
+      "displayedHandles": [
+        "jcole75",
+        "bradleyshervheim"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 184,
+      "teams": 2963,
+      "medal": "bronze",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 411,
+      "teams": 6125,
+      "medal": "bronze",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Vesuvius Challenge - Surface Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
+      "rank": 235,
+      "teams": 1391,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "PhysioNet - Digitization of ECG Images",
+      "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+      "rank": 358,
+      "teams": 1424,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 438,
+      "teams": 2674,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 862,
+      "teams": 4138,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CAFA 6 Protein Function Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
+      "rank": 937,
+      "teams": 2259,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 1836,
+      "teams": 6299,
+      "medal": "none",
+      "displayedHandles": [
+        "jcole75"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 days ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/jack-cole-v2.webp",
+    "sourceUrl": "https://www.kaggle.com/jcole75",
+    "sourceTitle": "Jack Cole — own Kaggle profile picture",
+    "alt": "Jack Cole, from his own Kaggle profile picture",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/1131431-gp.jpg",
+    "width": 400,
+    "height": 400,
+    "note": "The portrait on file (jack-cole.webp) is a crop of the illustrated 2025 MindsAI card from the Hall of Fame: one person, not a group, but a drawn stand-in rather than his own picture. His public Kaggle profile shows a photograph of him, a man in dark sunglasses and a dark T-shirt in front of a mountain view, as the profile picture next to his name, handle and bio. Saved that 400 by 400 original as jack-cole-v2.webp; no cropping, no edits, and the old file is untouched. The illustrated card stays in the Hall of Fame."
+  },
+  "facts": [
+    {
+      "text": "Jack Cole's Kaggle profile (jcole75) shows him as a Competitions Expert, ranked 483rd of 225,021 with a best-ever rank of 333rd, and two gold and two bronze competition medals.",
+      "sourceUrl": "https://www.kaggle.com/jcole75",
+      "sourceTitle": "Jack Cole — public Kaggle profile, tier, rank and medals",
+      "checkedAt": "2026-10-30T11:18:45Z"
+    },
+    {
+      "text": "Jack Cole's Kaggle profile dates his account joining to June 2017.",
+      "sourceUrl": "https://www.kaggle.com/jcole75",
+      "sourceTitle": "Jack Cole — public Kaggle account join date",
+      "checkedAt": "2026-10-30T11:18:45Z"
+    },
+    {
+      "text": "Kaggle lists the ARC Prize 2025 entry on Jack Cole's profile as 3rd of 1,455 teams with a gold medal. The entry shows five accounts (jcole75, driessmit1, pressman1, moeosman and michaelhodel), so the gold is a team result.",
+      "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+      "sourceTitle": "Jack Cole — completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T11:18:45Z"
+    },
+    {
+      "text": "Kaggle lists Jack Cole's Stanford RNA 3D Folding Part 2 entry as 13th of 1,867 teams with a gold medal. The entry shows two accounts, jcole75 and bradleyshervheim, so it is a team result.",
+      "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+      "sourceTitle": "Jack Cole — completed Stanford RNA 3D Folding Part 2 result on Kaggle",
+      "checkedAt": "2026-10-30T11:18:45Z"
+    },
+    {
+      "text": "Jack Cole's two bronze medals on Kaggle are The 2026 NeuroGolf Championship (184th of 2,963 teams) and ROGII - Wellbore Geology Prediction (411th of 6,125 teams). Each entry shows only the jcole75 account.",
+      "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+      "sourceTitle": "Jack Cole — bronze-medal results on Kaggle",
+      "checkedAt": "2026-10-30T11:18:45Z"
+    }
+  ],
+  "teamNotes": [
+    "ARC Prize 2025: the gold medal and 3rd place belong to the whole team entry. His profile writeup names the team MindsAI & Tufa Labs and lists five members, and the five accounts on the competitions row are consistent with those five people, but Kaggle's list does not label which handle is which person, so the handle-to-name pairing is an inference and no individual credit is claimed beyond what the profile itself says.",
+    "Stanford RNA 3D Folding Part 2: the gold medal is a two-account team result shared with bradleyshervheim.",
+    "ARC Prize 2026: Kaggle lists ARC-AGI-3 and ARC-AGI-2 among his two active competitions. The roster and standing observations already in people.json (ARC-3 team Abstraction Lab & MindsAI, then ARC-2 teams Jack Cole and ARC Mutants) come from the public ARC board feed, were not re-read from Kaggle here, and are provisional until the private leaderboards settle at the close.",
+    "A team medal appears on the profile of every account on that entry. It is never written up as Jack alone."
+  ],
+  "unverified": [
+    "Exact completion dates: Kaggle shows only relative labels such as a year ago and 7 days ago.",
+    "Which teammate handle is which person on the ARC Prize 2025 entry (names come from the writeup, handles from the list; the pairing was not displayed).",
+    "Any ARC Prize 2026 standing or roster: no standing is shown on the profile or competitions pages, and the board-feed roster in people.json was not re-checked from Kaggle today.",
+    "Whether the illustrated Hall of Fame card was ever approved by Jack as his likeness. It is not used as the portrait now.",
+    "Every claim in the earlier draft of this file was treated as unverified and is not carried over; only what these two pages showed today is kept."
+  ],
+  "verified": true
+}

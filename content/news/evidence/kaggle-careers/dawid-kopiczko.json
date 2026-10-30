@@ -1,0 +1,175 @@
+{
+  "personId": "dawid-kopiczko",
+  "handle": "dawkopi",
+  "name": "Dawid Kopiczko",
+  "checkedAt": "2026-10-30T12:59:34Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude app's built-in browser on 30 October 2026, one load each of the profile and the competitions list with a pause between them (no other Kaggle page loaded, no refreshes). Page text read first; medal icons read from their image names and confirmed by screenshot (competition rows and the profile's medal counts agree); join date read from the profile's join tooltip; picture source read from the page's image elements. The public ARC standing was read from the newsroom's own board snapshot (https://arc.markbarney.net/api/kaggle/...), fetched with curl, not through the browser. An older draft written while Kaggle was blocking us was not present and none of its claims were used.",
+  "sources": [
+    "https://www.kaggle.com/dawkopi",
+    "https://www.kaggle.com/dawkopi/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 1,
+      "silver": 2,
+      "bronze": 0
+    },
+    "competitionRank": 923,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 735,
+    "joinedTooltip": "Fri Jun 28 2024 08:54:09 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2024-06",
+    "bioPresent": false,
+    "bioNote": "Profile shows the placeholder 'No bio yet...' and a short line reading 'Quietly working away'.",
+    "followers": 8,
+    "competitionActivity": {
+      "solo": 6,
+      "inATeam": 0,
+      "hosted": 0
+    },
+    "linksShownOnProfile": [
+      "GitHub dkopi",
+      "LinkedIn",
+      "X @dawkopi",
+      "https://dkopi.github.io"
+    ],
+    "linksNote": "Links are shown on the profile; none was opened, and none is confirmed beyond being listed there."
+  },
+  "visibleCompetitionList": {
+    "tabCount": 5,
+    "activeCount": 2,
+    "completedCount": 3,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "ARC Prize 2024",
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "The 2026 NeuroGolf Championship"
+    ],
+    "scopeNote": "The list is sorted by Best Result and shows three completed and two active entries. Kaggle's Activity panel counts six solo competitions, one more than the five listed, so the list is not proof of the account's entire participation history. No additional finishes were inferred."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 8,
+      "teams": 1427,
+      "medal": "gold",
+      "displayedHandles": [
+        "dawkopi"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 29,
+      "teams": 4185,
+      "medal": "silver",
+      "displayedHandles": [
+        "dawkopi"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 112,
+      "teams": 2963,
+      "medal": "silver",
+      "displayedHandles": [
+        "dawkopi"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "activeEntries": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "kaggleListLabel": "3 days to go",
+      "publicBoardSnapshot": {
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "fetched": "2026-10-30T12:54:16Z",
+        "teamName": "Dawid Kopiczko",
+        "teamId": "16461211",
+        "rank": 9,
+        "teams": 3534,
+        "score": 75.14,
+        "members": "dawkopi",
+        "status": "provisional public standing"
+      }
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "kaggleListLabel": "3 days to go",
+      "publicBoardSnapshot": {
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "fetched": "2026-10-30T12:54:14Z",
+        "teamName": "Dawid Kopiczko",
+        "teamId": "16439788",
+        "rank": 585,
+        "teams": 4984,
+        "score": 31,
+        "members": "dawkopi",
+        "status": "provisional public standing; the snapshot carries a second rank column reading 563, so this rank is not used as a card fact"
+      }
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/dawkopi",
+    "note": "The profile's large picture element loads Kaggle's built-in default-avatar image (the address ends static/images/profile/default-avatar.png), and the small picture beside every entry on the competitions page loads the matching default-thumb image, labelled 'Profile picture for dawkopi'. It is the stock drawn goose, not a picture the person chose or a photograph of him. No file was saved under client/public/news-images/people/, no group image or stand-in was used, and no other public individual picture is cited in the record (the record cites only the Kaggle profile and an X handle, neither of which was opened for a picture)."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists Dawid Kopiczko (dawkopi) as a Competitions Master, ranked 923rd of 225,021 (highest ever 735th), with one gold and two silver competition medals.",
+      "sourceUrl": "https://www.kaggle.com/dawkopi",
+      "sourceTitle": "Dawid Kopiczko - public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T12:59:34Z"
+    },
+    {
+      "text": "Kaggle lists his ARC Prize 2024 entry 8th of 1,427 teams with a gold medal. The displayed entry shows only the dawkopi account, and Kaggle's activity panel counts all of his competitions as solo.",
+      "sourceUrl": "https://www.kaggle.com/dawkopi/competitions",
+      "sourceTitle": "Dawid Kopiczko - completed ARC Prize 2024 result on Kaggle",
+      "checkedAt": "2026-10-30T12:59:34Z"
+    },
+    {
+      "text": "Kaggle lists two further silver-medal finishes for him: 29th of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge, and 112th of 2,963 teams in The 2026 NeuroGolf Championship.",
+      "sourceUrl": "https://www.kaggle.com/dawkopi/competitions",
+      "sourceTitle": "Dawid Kopiczko - completed Nemotron and NeuroGolf results on Kaggle",
+      "checkedAt": "2026-10-30T12:59:34Z"
+    },
+    {
+      "text": "Provisional public standing: on the ARC Prize 2026 ARC-AGI-2 leaderboard snapshot of 30 October 2026, his team Dawid Kopiczko (member dawkopi) was 9th of 3,534 teams. Standings can change until the private results settle at the 2 November close.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "sourceTitle": "ARC Prize 2026 ARC-AGI-2 public leaderboard snapshot (provisional)",
+      "checkedAt": "2026-10-30T12:59:34Z"
+    }
+  ],
+  "teamNotes": "Kaggle's list shows team entries by member picture only and displays no team name, so teamName is null for every completed row; each row shows a single picture labelled for dawkopi, and the profile's Activity panel reads six competitions solo, none in a team. The ARC Prize 2024 gold is therefore described only as the displayed entry (one account), never as a prize or award beyond the medal Kaggle shows. The 2026 ARC entries are listed on the public board under a team named Dawid Kopiczko with the single member dawkopi (people.json memberships, last observed 2026-10-29 for ARC-AGI-2). All public ARC standings are provisional until the private leaderboards settle at the 2 November close.",
+  "unverified": [
+    "Real-world details about the person (employer, country, background): the profile shows only a handle, a display name and the line 'Quietly working away'",
+    "Any individual picture of the person (Kaggle shows the stock default avatar; the linked GitHub, LinkedIn and X pages were not opened)",
+    "Exact completion dates (the list shows only relative labels such as 2 years ago)",
+    "Whether the sixth solo competition counted in the Activity panel exists publicly (only five entries are listed)",
+    "Team name for any entry (Kaggle's list shows no team names)",
+    "Whether the ARC Prize 2024 entry was solo or a team result (only one account is displayed and the Activity panel says solo; Kaggle does not state team members for the entry)",
+    "Any ARC Prize 2024 prize money or award credited to this account",
+    "ARC-AGI-3 public rank (the board snapshot gives 585 and 563 in two rank columns, so no ARC-AGI-3 rank is stated as a fact)"
+  ],
+  "verified": true
+}

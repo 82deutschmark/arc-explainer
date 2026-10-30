@@ -1,0 +1,80 @@
+{
+  "personId": "aquaursa-research",
+  "handle": "aquaursaresearch",
+  "name": "AquaUrsa Research",
+  "checkedAt": "2026-10-30T14:22:12Z",
+  "method": "Built-in app browser (read-only), 2026-10-30: loaded the public Kaggle profile page and the competitions page once each, read page text, a screenshot, and the page's own image elements. No older draft existed. The profile avatar was identified from the page's profile-picture image element and compared against Kaggle's default avatar file downloaded with curl.",
+  "sources": [
+    "https://www.kaggle.com/aquaursaresearch",
+    "https://www.kaggle.com/aquaursaresearch/competitions"
+  ],
+  "profile": {
+    "displayName": "AquaUrsa Research",
+    "competitionTier": null,
+    "competitionTierNote": "No competition tier badge or medal count is displayed on the public profile.",
+    "medals": null,
+    "competitionRank": null,
+    "joinedTooltip": "Wed Mar 25 2026 20:22:17 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2026-03",
+    "joinedLabel": "Joined 7 months ago",
+    "bioPresent": false,
+    "bioText": null,
+    "tabCounts": {
+      "competitions": 2,
+      "code": 1,
+      "discussion": 4
+    },
+    "bioNote": "The page reads 'No bio yet...' followed by the filler line 'Quietly working away'; treated as no bio written."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [],
+    "activityPanel": {
+      "competitionsSolo": 2,
+      "competitionsInATeam": 0,
+      "competitionsHosted": 0
+    },
+    "scopeNote": "Both listed competitions were active with 3 days to go. No completed competition was displayed, so there is no finish, rank or medal to record."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/aquaursaresearch",
+    "note": "The profile-picture element for aquaursaresearch loads Kaggle's stock default avatar (an engraved goose on a grey field, default-thumb.png). It is a site placeholder, not a picture of this account's own, so none was saved. No portrait file exists for this id in the people image folder. A separate custom avatar visible in the page header belongs to the signed-in viewer of the browser, not to this account, and was discarded."
+  },
+  "facts": [
+    {
+      "text": "AquaUrsa Research is the display name of the aquaursaresearch account on Kaggle. The public profile dates the account to March 2026 and shows no bio.",
+      "sourceUrl": "https://www.kaggle.com/aquaursaresearch",
+      "sourceTitle": "AquaUrsa Research - public Kaggle profile",
+      "checkedAt": "2026-10-30T14:22:12Z"
+    },
+    {
+      "text": "AquaUrsa Research's Kaggle competition page lists two active entries, ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2, both marked as solo entries.",
+      "sourceUrl": "https://www.kaggle.com/aquaursaresearch/competitions",
+      "sourceTitle": "AquaUrsa Research - Kaggle competitions page",
+      "checkedAt": "2026-10-30T14:22:12Z"
+    },
+    {
+      "text": "The same page shows no completed competitions, so the account has no finished result or medal on public display.",
+      "sourceUrl": "https://www.kaggle.com/aquaursaresearch/competitions",
+      "sourceTitle": "AquaUrsa Research - Kaggle competitions page",
+      "checkedAt": "2026-10-30T14:22:12Z"
+    }
+  ],
+  "teamNotes": "Kaggle's activity panel counts both entries as solo, with no team entries and no hosted competitions. The existing newsroom roster observations (22:52 UTC on 2026-10-29, not re-checked in this pass) list a team named AquaUrsa Research on each ARC track with this account as the member; those are provisional public standings and are not repeated as facts. No result is credited to any other person.",
+  "unverified": [
+    "Any real-person, company or outside professional identity behind the AquaUrsa Research account; the profile shows none.",
+    "Competition tier and medal totals: neither is displayed on the public profile, so none is claimed.",
+    "Current ARC-AGI-2 and ARC-AGI-3 standings for this account; the profile shows no rank for active competitions, and the roster observations were not re-read this pass.",
+    "The contents of the one public code item and four discussion items counted on the profile tabs; those tabs were not opened.",
+    "A custom own picture: none is shown, only Kaggle's default avatar."
+  ],
+  "verified": true
+}

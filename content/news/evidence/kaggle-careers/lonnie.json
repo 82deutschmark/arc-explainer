@@ -1,0 +1,310 @@
+{
+  "personId": "lonnie",
+  "handle": "lonnieqin",
+  "name": "Lonnie",
+  "checkedAt": "2026-10-30T11:51:19Z",
+  "method": "Claude Sonnet 5.5 read the public Kaggle profile page and the public Competitions page with the Claude desktop app's built-in browser pane (one tab, no other browser) on 2026-10-30, waiting about six seconds after each load and five seconds between the two pages. Page text was read, the medal icons were read from the page (alt text on each medal image, cross-checked against screenshots of the list), and the avatar image address was read from the profile picture element. No rate limit, captcha or block appeared. This replaces an earlier draft written while Kaggle was blocking: none of that draft was carried over except the facts it cited from the existing record, which are re-sourced below or listed as unverified.",
+  "sources": [
+    "https://www.kaggle.com/lonnieqin",
+    "https://www.kaggle.com/lonnieqin/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 1,
+      "silver": 5,
+      "bronze": 5
+    },
+    "competitionRank": 101,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 46,
+    "otherTiers": {
+      "datasets": "Expert",
+      "notebooks": "Master"
+    },
+    "joinedLabel": "Joined 6 years ago",
+    "joinedMonth": null,
+    "joinedNote": "Only the relative label was readable. The exact-date tooltip did not appear on hover, so no join month is claimed.",
+    "bioPresent": true,
+    "activityPanel": "Kaggle's activity panel on the Competitions page shows 207 competitions entered solo, 2 entered in a team, and 0 hosted."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 9,
+    "completedCount": 199,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "Name That LLM",
+      "Squares in Squares",
+      "Misconception Detection in K-12 Student Math Workings",
+      "Smart Buildings Competition",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Google - The Gemma 4 Developer Agent Competition",
+      "Enveda CASMI 2026 - Molecule ID From Mass Spectra"
+    ],
+    "scopeNote": "Kaggle lists 199 completed competitions over nine pages. Only the first page, sorted by Best Result, was read (twenty entries, including every one of the eleven medals the profile counts: one gold, five silver, five bronze). The other pages were not opened, so nothing about them is claimed and the list below is not the account's whole history."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 4,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MITSUI&CO. Commodity Prediction Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
+      "rank": 15,
+      "teams": 1711,
+      "medal": "silver",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Linking Writing Processes to Writing Quality",
+      "competitionUrl": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
+      "rank": 63,
+      "teams": 1876,
+      "medal": "silver",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2024 - Predict New Medicines with BELKA",
+      "competitionUrl": "https://www.kaggle.com/competitions/leash-BELKA",
+      "rank": 97,
+      "teams": 1950,
+      "medal": "silver",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 156,
+      "teams": 4185,
+      "medal": "silver",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Optiver Realized Volatility Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/optiver-realized-volatility-prediction",
+      "rank": 163,
+      "teams": 3852,
+      "medal": "silver",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 1",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "rank": 87,
+      "teams": 1161,
+      "medal": "bronze",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2025",
+      "rank": 153,
+      "teams": 2031,
+      "medal": "bronze",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CSIRO - Image2Biomass Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+      "rank": 236,
+      "teams": 3805,
+      "medal": "bronze",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 388,
+      "teams": 3947,
+      "medal": "bronze",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 427,
+      "teams": 6299,
+      "medal": "bronze",
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "7 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM 20 Questions",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+      "rank": 110,
+      "teams": 832,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LEAP - Atmospheric Physics using AI (ClimSim)",
+      "competitionUrl": "https://www.kaggle.com/competitions/leap-atmospheric-physics-ai-climsim",
+      "rank": 158,
+      "teams": 693,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Vesuvius Challenge - Ink Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
+      "rank": 172,
+      "teams": 1249,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF 2022",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2022",
+      "rank": 183,
+      "teams": 801,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "IceCube - Neutrinos in Deep Ice",
+      "competitionUrl": "https://www.kaggle.com/competitions/icecube-neutrinos-in-deep-ice",
+      "rank": 188,
+      "teams": 812,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 190,
+      "teams": 1427,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "USPTO - Explainable AI for Patent Professionals",
+      "competitionUrl": "https://www.kaggle.com/competitions/uspto-explainable-ai",
+      "rank": 194,
+      "teams": 571,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google - American Sign Language Fingerspelling Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+      "rank": 200,
+      "teams": 1314,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Open Problems – Single-Cell Perturbations",
+      "competitionUrl": "https://www.kaggle.com/competitions/open-problems-single-cell-perturbations",
+      "rank": 208,
+      "teams": 1097,
+      "medal": null,
+      "displayedHandles": ["lonnieqin"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/lonnie.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/4562457-kg.png?t=2025-04-20-14-30-21",
+    "note": "The stored 320px portrait is the same picture as the current Kaggle profile picture shown on https://www.kaggle.com/lonnieqin (the large round avatar in the profile header, 400px original). It was compared by eye against the downloaded original resized to 320px: same composition, a Ghibli-style illustrated head-and-shoulders portrait of one person with dark hair, round glasses, green shirt and backpack, a lamp post and brick street behind. It is Lonnie's own chosen profile picture (an illustration, not a photo), not a group image and not the grey default avatar. The existing file was kept and not overwritten; no -v2 file was made."
+  },
+  "facts": [
+    {
+      "text": "Lonnie is a Kaggle Competitions Master, ranked 101st of 225,021 on Kaggle's competitions ranking, with one gold, five silver and five bronze competition medals on the public profile.",
+      "sourceUrl": "https://www.kaggle.com/lonnieqin",
+      "sourceTitle": "Lonnie - public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T11:51:19Z"
+    },
+    {
+      "text": "Kaggle lists Lonnie's ARC Prize 2025 result as 4th of 1,455 teams, with a gold medal; the entry shows the lonnieqin account only.",
+      "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+      "sourceTitle": "Lonnie - completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T11:51:19Z"
+    },
+    {
+      "text": "Kaggle lists Lonnie's earlier ARC Prize 2024 result as 190th of 1,427 teams, with no medal.",
+      "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+      "sourceTitle": "Lonnie - completed ARC Prize 2024 result on Kaggle",
+      "checkedAt": "2026-10-30T11:51:19Z"
+    },
+    {
+      "text": "Kaggle shows Lonnie in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3; any standing there is provisional until the private results settle.",
+      "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+      "sourceTitle": "Lonnie - active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T11:51:19Z"
+    }
+  ],
+  "teamNotes": "Every one of the twenty entries read shows only the lonnieqin account beside it, and Kaggle's activity panel counts 207 solo entries against 2 in a team, so none of the medals listed here is a shared team medal as far as the page shows. The list does not display team names, so none is recorded (teamName is null on each row). The repo's earlier records, not re-read today, put a team named Lonnie with lonnieqin as the only seen member in both the ARC-AGI-2 and ARC-AGI-3 2026 competitions; that is not repeated here as a Kaggle-page fact.",
+  "unverified": [
+    "The exact month Lonnie joined Kaggle: only 'Joined 6 years ago' was readable.",
+    "The other eight pages of the 199 completed competitions: not opened, so no claim is made about them or about which two entries were team entries.",
+    "That ARC Prize's own 2025 results page (arcprize.org) lists Lonnie fourth: carried over from the repo record, not re-read today, so it is not used as a source here; the Kaggle competitions page is the source for the fourth-place finish instead.",
+    "Any team name for the ARC Prize 2025 entry: the profile list shows only the lonnieqin avatar.",
+    "Current ARC Prize 2026 standings: the profile shows only that Lonnie is entered, not a rank, and any public standing would be provisional."
+  ],
+  "verified": true
+}

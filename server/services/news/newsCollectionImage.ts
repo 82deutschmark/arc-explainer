@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-29
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026: blurred backdrop behind contained portraits,
+ *         seeded puzzle-grid monogram for players with no individual picture)
+ * Date: 2026-10-30
  * PURPOSE: Render permanent Card Cabinet fronts and readable sourced reverses as 750×1050
  *          PNGs. Player fronts preserve both contest teams. All labels and
  *          dated statistics are drawn programmatically; the commissioned art is only
@@ -61,7 +62,7 @@ export function loadCollectionCardFonts() {
 }
 
 /** One guarded read boundary: no URLs, encoded paths, traversal or out-of-tree symlinks. */
-export async function readCollectionArtwork(src: string, dimensions = { width: ART_WIDTH, height: ART_HEIGHT }): Promise<Buffer | null> {
+export async function readCollectionArtwork(src: string, dimensions = { width: ART_WIDTH, height: ART_HEIGHT }, backdrop = false): Promise<Buffer | null> {
   if (!/^\/news-images\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:png|jpe?g|webp)$/u.test(src)) {
     throw new Error('Invalid collection artwork path.');
   }
@@ -82,9 +83,19 @@ export async function readCollectionArtwork(src: string, dimensions = { width: A
   const bytes = await fs.promises.readFile(resolved);
   try {
     // A contained derivative is embedded in the SVG. The registered original stays untouched.
-    return await sharp(bytes, { limitInputPixels: 40_000_000 }).rotate().resize({
-      width: dimensions.width, height: dimensions.height, fit: 'contain', background: PAPER,
+    const source = sharp(bytes, { limitInputPixels: 40_000_000 }).rotate();
+    const contained = await source.clone().resize({
+      width: dimensions.width, height: dimensions.height, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 },
     }).png().toBuffer();
+    // A square portrait in a wide window used to leave blank paper bars. Instead, the same
+    // picture, enlarged, blurred and dimmed, fills the window behind the untouched contained copy.
+    if (!backdrop) {
+      // Share previews keep the exact paper-bar contract their tests and crawlers rely on.
+      return await sharp(contained).flatten({ background: PAPER }).png().toBuffer();
+    }
+    const blurred = await source.clone().resize({ width: dimensions.width, height: dimensions.height, fit: 'cover' })
+      .blur(22).modulate({ brightness: 0.82, saturation: 1.15 }).png().toBuffer();
+    return await sharp(blurred).composite([{ input: contained }]).png().toBuffer();
   } catch {
     return null;
   }
@@ -164,6 +175,36 @@ function recordStrip(entry: CollectionEntry | undefined): Node {
     box({ marginTop: 4, fontFamily: SANS, fontWeight: 500, fontSize: 14, color: MUTED }, dateLabel(entry.observedAt)));
 }
 
+// ARC-style puzzle colours, muted to sit inside the newspaper palette.
+const GRID_COLOURS = ['#1d2a44', '#2b3f6b', '#8d1c12', '#c9892b', '#2f6b4f', '#4a2f6b', '#a24a6b', '#3d7a8f'];
+
+/** Stable 32-bit hash so a player without a picture always gets the same monogram grid. */
+function nameHash(name: string): number {
+  let hash = 0x811c9dc5;
+  for (const char of name) { hash ^= char.codePointAt(0) ?? 0; hash = Math.imul(hash, 0x01000193) >>> 0; }
+  return hash;
+}
+
+/**
+ * Stand-in for a player with no individual picture: a seeded ARC-puzzle grid behind a cream
+ * monogram plate. It never pretends to be a photograph and never uses a stranger's image.
+ */
+function monogramWindow(name: string, height: number): Node {
+  const size = 56;
+  const columns = Math.ceil(ART_WIDTH / size);
+  const rows = Math.ceil(height / size);
+  let seed = nameHash(name);
+  const next = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed; };
+  const grid = Array.from({ length: rows }, () => box({},
+    ...Array.from({ length: columns }, () => box({ width: size, height: size, background: GRID_COLOURS[next() % GRID_COLOURS.length], border: '1px solid rgba(247,240,223,0.12)' }))));
+  return box({ width: ART_WIDTH, height, position: 'relative', overflow: 'hidden', flexDirection: 'column' },
+    ...grid,
+    box({ position: 'absolute', left: 0, top: 0, width: ART_WIDTH, height, alignItems: 'center', justifyContent: 'center' },
+      box({ flexDirection: 'column', alignItems: 'center', padding: '22px 44px', background: PAPER, border: `4px solid ${GOLD}` },
+        box({ fontFamily: `${SERIF}, ${CJK}`, fontSize: 118, fontWeight: 700, color: OXBLOOD, lineHeight: 1 }, initials(name)),
+        label('Portrait not on file', { marginTop: 10, color: MUTED, fontSize: 14, letterSpacing: 1.8 }))));
+}
+
 function cardNode(card: CollectionCard, artwork: Buffer | null): Node {
   const entries = frontEntries(card);
   const artHeight = frontArtHeight(card);
@@ -173,9 +214,7 @@ function cardNode(card: CollectionCard, artwork: Buffer | null): Node {
   const honor = card.honors[0];
   const artWindow = artwork
     ? { type: 'img', props: { src: `data:image/png;base64,${artwork.toString('base64')}`, width: ART_WIDTH, height: artHeight } }
-    : box({ width: ART_WIDTH, height: artHeight, alignItems: 'center', justifyContent: 'center', flexDirection: 'column', background: '#ede2c9', border: `4px solid ${HAIR}` },
-      box({ fontFamily: `${SERIF}, ${CJK}`, fontSize: 130, fontWeight: 700, color: OXBLOOD }, initials(card.name)),
-      label('The ARC Daily Digest', { marginTop: 24, color: GOLD, fontSize: 18 }));
+    : monogramWindow(card.name, artHeight);
 
   return box({ width: WIDTH, height: HEIGHT, padding: 20, background: EDGE, color: INK, fontFamily: `${SANS}, ${CJK}`, fontWeight: 500 },
     box({ width: 710, height: 1010, padding: 14, border: `2px solid ${GOLD}`, flexDirection: 'column', background: PAPER },
@@ -278,7 +317,7 @@ function backNode(card: CollectionCard, selection: BackSelection): Node {
  */
 export async function buildCollectionCardNode(card: CollectionCard, side: 'front' | 'back' = 'front'): Promise<Node> {
   if (side === 'front') {
-    const artwork = card.art ? await readCollectionArtwork(card.art.src, { width: ART_WIDTH, height: frontArtHeight(card) }) : null;
+    const artwork = card.art ? await readCollectionArtwork(card.art.src, { width: ART_WIDTH, height: frontArtHeight(card) }, true) : null;
     return cardNode(card, artwork);
   }
   const selection: BackSelection = {

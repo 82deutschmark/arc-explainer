@@ -1,0 +1,88 @@
+{
+  "personId": "grigoriy-zatravkin",
+  "handle": "grigoriyzatravkin",
+  "name": "Grigoriy Zatravkin",
+  "checkedAt": "2026-10-30T13:06:00Z",
+  "method": "Built-in browser (the Claude app's Browser pane), 30 October 2026. Read the public Kaggle profile page and the competitions page once each, with about six seconds of load time and a pause between them. The profile's own-picture element was inspected in the page to see which image file it uses. The join date comes from the profile page's join tooltip. The newsroom's public ARC roster boards (ARC-AGI-3 and ARC-AGI-2) were fetched with curl. No rate limiting, captcha or block appeared. No earlier draft existed for this player; nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/grigoriyzatravkin",
+    "https://www.kaggle.com/grigoriyzatravkin/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+  ],
+  "profile": {
+    "displayName": "Grigoriy Zatravkin",
+    "competitionTier": null,
+    "medals": null,
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "highestCompetitionRank": null,
+    "joinedTooltip": "Mon Oct 26 2020 15:23:12 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2020-10",
+    "bioPresent": false,
+    "activityLine": "0 competitions solo, 1 competitions in a team, 0 competitions hosted",
+    "tabCounts": {
+      "competitions": 1,
+      "discussion": 14,
+      "followers": 2
+    },
+    "tierNote": "No competition tier, medal tally or rank appeared in the profile page text or the screenshot, so none are recorded. The Bio area showed only Kaggle's stock placeholder lines, which are not his words and are not stored."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "activeNote": "The active card showed '3 days to go' on 30 October 2026 and four small team-member pictures.",
+    "completedNames": [],
+    "scopeNote": "The Competitions page showed only the one active ARC-AGI-3 entry and no Completed Competitions section. Nothing was displayed that could be read as a finish, rank or medal, so none is recorded. This is the public list only and is not proof of the account's entire history."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/grigoriyzatravkin",
+    "note": "The profile picture in the page is Kaggle's stock default avatar (an engraving of a goose, served from the Kaggle default-avatar file), not a photo of the person. The share-card image for the profile is also Kaggle's default thumbnail. The pictures on the competition card belong to team members and are not used. The player's record in people.json carries no portrait field, and no portrait file exists for this player under client/public/news-images/people/, so there was nothing saved to re-check, and none was created."
+  },
+  "facts": [
+    {
+      "text": "Grigoriy Zatravkin's public Kaggle profile dates his account's joining to October 2020.",
+      "sourceUrl": "https://www.kaggle.com/grigoriyzatravkin",
+      "sourceTitle": "Grigoriy Zatravkin - public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T13:06:00Z"
+    },
+    {
+      "text": "Kaggle's competitions page for Grigoriy Zatravkin lists one competition, ARC Prize 2026 - ARC-AGI-3, entered as part of a team, with no solo entries and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/grigoriyzatravkin/competitions",
+      "sourceTitle": "Grigoriy Zatravkin - competitions on Kaggle",
+      "checkedAt": "2026-10-30T13:06:00Z"
+    },
+    {
+      "text": "On the newsroom's public ARC-AGI-3 board, the team Grigoriy Zatravkin & co, which lists his account, stood 9th of 4,984 teams with a score of 47.19, as read on 30 October 2026. This is a provisional public standing, not a final result.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public board - team Grigoriy Zatravkin & co",
+      "checkedAt": "2026-10-30T13:06:00Z"
+    },
+    {
+      "text": "The public ARC-AGI-3 board lists four accounts on the Grigoriy Zatravkin & co team: aizealotwu, deepdreamer, florenciasolange and grigoriyzatravkin.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public board - team Grigoriy Zatravkin & co members",
+      "checkedAt": "2026-10-30T13:06:00Z"
+    }
+  ],
+  "teamNotes": [
+    "The ARC-AGI-3 entry is a four-account team, so its standing belongs to the team and is never credited as Grigoriy Zatravkin's individual honour. Kaggle's competition card showed four team-member pictures, which agrees with the four accounts on the public board.",
+    "The board shows the team name as 'Grigoriy Zatravkin & co'. Its team id is 16490178, and the board's own movement log names the team 'Grigoriy Zatravkin' on 16, 17 and 19 October, with the team's rank moving from 10th to 7th to 6th as scores rose to 47.19. Those are provisional public positions.",
+    "A separate team called 'Ivan Zatravkin' (team id 17051313) also appears on the ARC-AGI-3 board. The two pages do not link them, so no relationship is assumed.",
+    "No Grigoriy Zatravkin team or account appears on the ARC-AGI-2 public board."
+  ],
+  "unverified": [
+    "Competition tier, medal counts and ranking: the profile page displays none, so nothing is claimed.",
+    "Any competition finishes before ARC Prize 2026 - ARC-AGI-3: none are displayed, and the account's earlier activity (14 discussion items, two followers) was not opened.",
+    "Whether the profile picture is anything other than Kaggle's default: no individual picture was found.",
+    "Where he is based, what he does, and any employer: the profile has no bio, headline or linked accounts.",
+    "Whether the 'Ivan Zatravkin' team is connected to him."
+  ],
+  "verified": true
+}

@@ -1,0 +1,126 @@
+{
+  "personId": "fshindo",
+  "handle": "ffsscf",
+  "name": "fshindo",
+  "checkedAt": "2026-10-30T12:09:21Z",
+  "method": "Read-only visits to the public Kaggle profile and Competitions pages of ffsscf in the app's built-in browser on 2026-10-30, one page at a time with a pause between them. Text was read from each page; the medal icons were read from the page and from a screenshot of the completed list; the join date was read from the page's join tooltip; the profile picture was compared by eye with the saved portrait file. The older draft of this file was discarded and every claim rebuilt from the live pages. Nothing was downloaded and the saved portrait was left unchanged.",
+  "sources": [
+    "https://www.kaggle.com/ffsscf",
+    "https://www.kaggle.com/ffsscf/competitions"
+  ],
+  "profile": {
+    "displayName": "fshindo",
+    "kaggleHandle": "ffsscf",
+    "xHandle": "crysis44k",
+    "githubHandle": "f-shindo",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 2,
+      "bronze": 0
+    },
+    "competitionRank": 2980,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 2947,
+    "joinedTooltip": "Fri Jun 09 2023 10:46:27 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2023-06",
+    "bioPresent": false,
+    "bioText": null,
+    "activitySummary": "Kaggle's activity panel reads: 7 competitions solo, 0 competitions in a team, 0 competitions hosted. The count of 7 does not match the 6 competitions listed on the profile, so it is recorded as displayed and not used in any fact.",
+    "followers": 3,
+    "following": 3,
+    "bioNote": "The Bio section reads 'No bio yet...' followed by Kaggle's stock line 'Quietly working away'; no personal bio is shown."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 4,
+    "completedCount": 2,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "completedNames": [
+      "Kaggriculture",
+      "RSNA Knee Abnormality Detection"
+    ],
+    "scopeNote": "Only these two completed records are publicly displayed. Do not invent additional finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 149,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": [
+        "ffsscf"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null,
+      "note": "Featured simulation competition. The list row's own medal icon is silver (one medal image in the row), which matches the profile's medal box: two silver, no gold, no bronze. The row shows one account picture, titled ffsscf, and no team name."
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 192,
+      "teams": 6299,
+      "medal": "silver",
+      "displayedHandles": [
+        "ffsscf"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null,
+      "note": "Research code competition. The list row's own medal icon is silver (one medal image in the row), which matches the profile's medal box: two silver, no gold, no bronze. The row shows one account picture, titled ffsscf, and no team name."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/fshindo.webp",
+    "sourceUrl": "https://www.kaggle.com/ffsscf",
+    "note": "Checked against the live Kaggle profile picture on 2026-10-30: the same single-person photograph of a man in a dark blue shirt and light trousers on a dark rock by the sea, making a peace sign. Kaggle's picture file for this account was last changed on 2026-10-02, before the saved copy was taken on 2026-10-13. It is the person's own individual picture, not a group image, a default avatar or a stand-in, and no other portrait file in the folder is a byte-identical copy. Saved 320 by 320 file left unchanged; nothing was downloaded or replaced."
+  },
+  "facts": [
+    {
+      "text": "fshindo is a Kaggle Competitions Expert whose public profile shows two silver competition medals and a join date of June 2023.",
+      "sourceUrl": "https://www.kaggle.com/ffsscf",
+      "sourceTitle": "fshindo - public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T12:09:21Z"
+    },
+    {
+      "text": "Kaggle lists fshindo's completed Kaggriculture entry 149th of 10,148 teams, with a silver medal. The displayed entry shows the ffsscf account.",
+      "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+      "sourceTitle": "fshindo - completed Kaggriculture result on Kaggle",
+      "checkedAt": "2026-10-30T12:09:21Z"
+    },
+    {
+      "text": "Kaggle lists fshindo's completed RSNA Knee Abnormality Detection entry 192nd of 6,299 teams, with a silver medal. The displayed entry shows the ffsscf account.",
+      "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+      "sourceTitle": "fshindo - completed RSNA Knee Abnormality Detection result on Kaggle",
+      "checkedAt": "2026-10-30T12:09:21Z"
+    },
+    {
+      "text": "Kaggle lists fshindo's ffsscf account in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which were still running when checked; any public standing in them is provisional until they close.",
+      "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+      "sourceTitle": "fshindo - active ARC Prize 2026 competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:09:21Z"
+    },
+    {
+      "text": "The Kaggle profile ffsscf displays the name fshindo and links to the X account @crysis44k.",
+      "sourceUrl": "https://www.kaggle.com/ffsscf",
+      "sourceTitle": "fshindo - Kaggle profile with direct Twitter account link",
+      "checkedAt": "2026-10-30T12:09:21Z"
+    }
+  ],
+  "teamNotes": "Both completed entries show only the ffsscf account, and the profile's activity panel reports no competitions done in a team, so the two silver medals appear to be individual results; the pages do not show a team name for either. Public ARC rosters seen by this site's own board feeds list ffsscf as the only member of a team named fshindo in the ARC-AGI-3 and ARC-AGI-2 2026 competitions (observed 10-13 October 2026). These are provisional public standings, not final results, and the roster feeds were not re-checked on Kaggle today. Kaggle's profile does show both ARC competitions among ffsscf's active competitions.",
+  "unverified": [
+    "Exact end dates of the two completed competitions (Kaggle shows only relative times such as 16 days ago and 8 days ago)",
+    "Whether either completed entry was a team entry under a team name (the list shows one account and no team name; the activity panel says 0 in a team)",
+    "Final ARC-AGI-3 and ARC-AGI-2 standings (both are still running and any public ranking is provisional)",
+    "Earlier competitions before Kaggriculture and RSNA (not displayed; the activity panel's count of 7 solo competitions is more than the 6 listed)",
+    "Write-ups, solution posts or prizes outside the two completed entries"
+  ],
+  "verified": true
+}

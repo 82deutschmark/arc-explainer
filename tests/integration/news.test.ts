@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * Date: 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
@@ -126,7 +126,7 @@ it('discovers every archived article and separate competitor identity through th
     expect(response.status).toBe(200);
     expect(await response.text()).toContain(escapeHtml(record.name));
   }
-});
+}, 60_000); // the archive keeps growing; each of these walks all of it
 it('serves the newest 40 editions in RSS order without including older archive entries', async () => {
   const articles = getNewsIndex().articles;
   const rss = await fetch(`${base}/news/feed.xml`);
@@ -170,7 +170,7 @@ it('serves a drawn 1200x630 card for every article and the front page', async ()
   expect(section.status).toBe(200);
   expect(section.headers.get('cache-control')).not.toContain('immutable');
   await expectDrawnCard(Buffer.from(await section.arrayBuffer()));
-});
+}, 60_000);
 it('gives the front page and notebook the newspaper card and list structured data', async () => {
   for (const [path, type] of [['/news', 'CollectionPage'], ['/news/competitors', 'CollectionPage']]) {
     const html = await (await fetch(`${base}${path}`)).text();
@@ -300,9 +300,17 @@ it('gives people faces from their own sources and puts cited people first in a s
     expect(fs.existsSync(path.join(process.cwd(), 'client/public', person.portrait!.src))).toBe(true);
   }
   const jack = people.find(person => person.id === 'jack-cole')!;
-  expect(jack.portrait?.kind).toBe('hall-of-fame');
+  expect(jack.portrait?.kind).toBe('kaggle');
   const profile = await (await fetch(`${base}/news/people/jack-cole`)).text();
-  expect(profile).toContain('/news-images/people/jack-cole.webp');
+  expect(profile).toContain(jack.portrait!.src);
+  // Each ARC Prize founder has an individual picture from a public page that names them, never the shared two-man image.
+  for (const id of ['francois-chollet', 'mike-knoop']) {
+    const founder = people.find(person => person.id === id)!;
+    expect(founder.portrait?.kind).toBe('web');
+    expect(founder.portrait?.src).not.toContain('arc-founders');
+  }
+  const stranger = people.find(person => person.id === 'mike-knoop')!;
+  expect(newsPersonSchema.safeParse({ ...stranger, name: 'Someone Else' }).success).toBe(false);
   expect(profile).toContain(escapeHtml('ARC Prize 2025 third place · MindsAI & Tufa Labs'));
   expect((await fetch(`${base}/news/people/ivan-sorokin`)).status).toBe(200);
   // A Kaggle picture may only come from the person's own verified account.

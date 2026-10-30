@@ -1266,6 +1266,54 @@
       ]
     },
     {
+      "id": "team-nvarc3-2026",
+      "kind": "team",
+      "name": "NVARC3",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15770880"
+        }
+      ],
+      "artNotes": [],
+      "number": "T017",
+      "issuedAt": "2026-10-30T13:00:00.000Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-arc-raiders-2026",
+      "kind": "team",
+      "name": "この遥かなる旅路に祝福を",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "15526034"
+        }
+      ],
+      "artNotes": [],
+      "number": "T018",
+      "issuedAt": "2026-10-30T13:00:00.000Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-fukkatsu-no-kon-tekisuto-2026",
+      "kind": "team",
+      "name": "復活の混テキスト",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16569125"
+        }
+      ],
+      "artNotes": [],
+      "number": "T019",
+      "issuedAt": "2026-10-30T13:00:00.000Z",
+      "season": "2026"
+    },
+    {
       "id": "person-mistyotter-ai-2026",
       "number": "P067",
       "kind": "person",

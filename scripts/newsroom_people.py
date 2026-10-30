@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
-# Date: 2026-10-29
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; Claude Sonnet 5.5
+# Date: 2026-10-30 (portrait kind 'web': a public page that names the person; Boss, 30-Oct-2026)
 # PURPOSE: Validate persistent public identities and preserve sourced roster observations
 # across competition teams. Called by newsroom preparation/publication; no model calls.
 # 09-Oct-2026 (Claude Opus 5.5): optional person portraits, and the `portrait` command that
@@ -13,6 +13,7 @@ import copy
 import io
 from datetime import datetime
 import re
+import unicodedata
 import urllib.request
 from pathlib import Path
 from newsroom import ROOT, UTC, iso, load, write, text, web_source, contract_stamp
@@ -43,6 +44,12 @@ def validate_portrait(person):
     elif portrait['kind'] == 'hall-of-fame':
         if portrait['sourceUrl'] not in {HALL_OF_FAME_ORIGIN + card['path'] for card in person['hallOfFame']}:
             raise ValueError('a Hall of Fame portrait must come from one of the person’s own cards')
+    elif portrait['kind'] == 'web':
+        # Boss, 30-Oct-2026: a public page that names the person is enough (official team page, author page).
+        def plain(value):
+            return ''.join(c for c in unicodedata.normalize('NFD', value) if not unicodedata.combining(c)).lower()
+        if plain(person['name']) not in plain(portrait['sourceTitle'] + ' ' + portrait['alt']):
+            raise ValueError('a web portrait must name the person in its source title or description')
     else:
         raise ValueError('invalid portrait kind')
 
@@ -240,8 +247,8 @@ def save_kaggle_portrait(person_id, root=ROOT, fetch=_get, now=None):
     person = next((p for p in people if p['id'] == person_id), None)
     if person is None:
         raise ValueError(f'no verified person {person_id}')
-    if person.get('portrait', {}).get('kind') == 'hall-of-fame':
-        return f'{person_id}: kept the Hall of Fame portrait'
+    if person.get('portrait', {}).get('kind') in ('hall-of-fame', 'web'):
+        return f'{person_id}: kept the {person["portrait"]["kind"]} portrait'
     account = next((a for a in person['accounts'] if a['platform'] == 'kaggle'), None)
     if account is None:
         raise ValueError(f'{person_id} has no verified Kaggle account')

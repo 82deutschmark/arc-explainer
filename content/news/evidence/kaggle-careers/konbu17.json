@@ -1,0 +1,254 @@
+{
+  "personId": "konbu17",
+  "handle": "konbu17",
+  "name": "konbu17",
+  "checkedAt": "2026-10-30T13:39:14Z",
+  "method": "Built-in browser (Claude app browser pane), October 30, 2026. Loaded only https://www.kaggle.com/konbu17 and https://www.kaggle.com/konbu17/competitions, five seconds apart, no refreshes; no block, captcha or rate limit appeared. Medal icons read from a screenshot of the completed-competition list and cross-checked against the page's medal labels. Profile picture URL read from the visible profile-picture element. An earlier draft evidence file did not exist, so nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/konbu17",
+    "https://www.kaggle.com/konbu17/competitions"
+  ],
+  "profile": {
+    "displayName": "海の幸(ふよふよ)",
+    "location": "Ebina, Kanagawa, Japan",
+    "workLine": "17 at 17",
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 9
+    },
+    "competitionRank": 457,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": null,
+    "joinedTooltip": "Mon Jan 26 2026 07:53:18 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2026-01",
+    "bioPresent": true,
+    "bioText": "あざまるすいさんせいしょくぶつ。",
+    "notebooksTier": "Expert",
+    "notebooksMedals": {
+      "gold": 2,
+      "silver": 7,
+      "bronze": 4
+    },
+    "notebooksRank": 115,
+    "notebooksRankOutOf": 58895,
+    "notebooksHighestRank": 105,
+    "competitionsTabCount": 15,
+    "completedCount": 12,
+    "activeCount": 3,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Enveda CASMI 2026 - Molecule ID From Mass Spectra"
+    ],
+    "activityPanelAsDisplayed": "12 competitions solo, 7 competitions in a team, 0 competitions hosted",
+    "scopeNote": "Twelve completed competitions are listed, nine with a silver medal and three without a medal. The competition medal tally (nine silver, no gold or bronze) matches the nine silver icons in the list. The notebook medals are a separate Kaggle category and are not competition honours."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 3,
+    "completedCount": 12,
+    "sortOrderShown": "Best Result",
+    "completedNames": [
+      "Stanford RNA 3D Folding Part 2",
+      "Kaggriculture",
+      "Biohub - Cell Tracking During Development",
+      "AI Agent Security - Multi-Step Tool Attacks",
+      "ROGII - Wellbore Geology Prediction",
+      "The 2026 NeuroGolf Championship",
+      "BirdCLEF+ 2026",
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "RSNA Knee Abnormality Detection",
+      "Deep Past Challenge - Translate Akkadian to English",
+      "Orbit Wars",
+      "Handwritten to Data"
+    ],
+    "scopeNote": "The list shows relative dates only (for example 'a month ago'), never exact completion dates, and never a team name. Do not invent finishes beyond these twelve rows."
+  },
+  "completedResults": [
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 55,
+      "teams": 1867,
+      "medal": "silver",
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 58,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": ["behindkun", "forrestxlz", "midnqly", "konbu17", "mechi22"],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 67,
+      "teams": 3947,
+      "medal": "silver",
+      "displayedHandles": ["yuki0731", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 79,
+      "teams": 4186,
+      "medal": "silver",
+      "displayedHandles": ["pompom555", "argon1215", "tanakaai24", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 101,
+      "teams": 6125,
+      "medal": "silver",
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 132,
+      "teams": 2963,
+      "medal": "silver",
+      "displayedHandles": ["lowking", "marksix", "kentorio", "hikari30", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 178,
+      "teams": 4094,
+      "medal": "silver",
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 204,
+      "teams": 4185,
+      "medal": "silver",
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 210,
+      "teams": 6299,
+      "medal": "silver",
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 332,
+      "teams": 2674,
+      "medal": null,
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 726,
+      "teams": 4729,
+      "medal": null,
+      "displayedHandles": ["konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Handwritten to Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/handwritten-to-data",
+      "rank": 10,
+      "teams": 198,
+      "medal": null,
+      "displayedHandles": ["vladyslavmorozov", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null,
+      "note": "Community competition. No medal icon is shown on this row."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/konbu17.webp",
+    "sourceUrl": "https://www.kaggle.com/konbu17",
+    "note": "Visually compared with the profile picture currently shown on the Kaggle profile (a cartoon green seaweed-leaf illustration, original 400 by 400 at https://storage.googleapis.com/kaggle-avatars/images/31990162-kg.png). The saved 320 by 320 file shows the same single illustration, cropped slightly tighter at the edges. It is the person's own profile picture, not a group image, stand-in or default avatar. No new portrait file was made. Saved file sha256 10260e45cff4a9fa60978d073fa65fa2ec578e2c7f892935a3b8628531027d77; profile original sha256 565a1b846474fe1b6413d12dd62c6c537fe8663f569b427ca23d5f4eeae76b73."
+  },
+  "facts": [
+    {
+      "text": "konbu17 is a Kaggle Competitions Expert, ranked 457th of 225,021, with nine silver competition medals across twelve completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+      "sourceTitle": "konbu17 — Kaggle competitions page: tier, rank, medals and completed list",
+      "checkedAt": "2026-10-30T13:39:14Z"
+    },
+    {
+      "text": "Kaggle lists konbu17's best completed result as 55th of 1,867 teams in Stanford RNA 3D Folding Part 2, a silver medal, with only the konbu17 account shown on the entry.",
+      "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+      "sourceTitle": "konbu17 — Stanford RNA 3D Folding Part 2 result on Kaggle",
+      "checkedAt": "2026-10-30T13:39:14Z"
+    },
+    {
+      "text": "Kaggle lists Kaggriculture as 58th of 10,148 teams with a silver medal; five accounts are shown on that entry (behindkun, forrestxlz, midnqly, konbu17 and mechi22), so the silver is a shared team medal.",
+      "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+      "sourceTitle": "konbu17 — Kaggriculture result and listed accounts on Kaggle",
+      "checkedAt": "2026-10-30T13:39:14Z"
+    },
+    {
+      "text": "The 2026 NeuroGolf Championship, a competition about solving ARC-AGI image puzzles with the smallest possible neural networks, is listed as 132nd of 2,963 teams with a silver medal, shared by five accounts including konbu17.",
+      "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+      "sourceTitle": "konbu17 — NeuroGolf Championship result and listed accounts on Kaggle",
+      "checkedAt": "2026-10-30T13:39:14Z"
+    },
+    {
+      "text": "On October 30, 2026 the Kaggle competitions page shows konbu17 entered in both ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3, each marked three days to go; no finish exists yet, and any public ARC standing is provisional until the private scoring.",
+      "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+      "sourceTitle": "konbu17 — active ARC Prize 2026 competitions on Kaggle",
+      "checkedAt": "2026-10-30T13:39:14Z"
+    }
+  ],
+  "teamNotes": [
+    "Kaggle's list never prints a team name, only avatar labels, so every teamName above is null rather than guessed.",
+    "The existing people record places konbu17 on the team named 復活の混テキスト in both ARC-2 and ARC-3, taken from the public roster observation at arc.markbarney.net. That name was not visible on the Kaggle pages read here, so it is not repeated as a Kaggle fact.",
+    "Kaggle's active-competition cards show these avatar labels. ARC-AGI-3: yuto0712, ttyn4519, pompom555, isakatsuyoshi, tanakaai24, refv00, tk256ailab, konbu17. ARC-AGI-2: pompom555, isakatsuyoshi, tanakaai24, refv00, konbu17. These are avatar labels on the page, not a verified roster.",
+    "Medals on shared entries (Kaggriculture, Biohub, AI Agent Security, NeuroGolf) belong to the listed accounts as a team and must not be written as konbu17's individual honour."
+  ],
+  "unverified": [
+    "Exact completion dates: Kaggle shows only relative labels such as 'a month ago'.",
+    "Team names for every Kaggle entry: not displayed on the profile or competitions pages.",
+    "Highest-ever competition rank: not displayed on the pages read (only the notebook highest, 105, is shown).",
+    "The activity panel reads '12 competitions solo, 7 competitions in a team', which does not reconcile with the fifteen rows listed; not used in any fact.",
+    "Whether the ARC-2 and ARC-3 team entries on the public board are the same accounts as the avatar labels on Kaggle's active cards.",
+    "Any current public ARC leaderboard position: not checked here and would be provisional."
+  ],
+  "verified": true
+}

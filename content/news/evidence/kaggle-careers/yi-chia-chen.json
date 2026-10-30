@@ -1,0 +1,276 @@
+{
+  "personId": "yi-chia-chen",
+  "handle": "threerabbits",
+  "name": "Yi-Chia Chen",
+  "checkedAt": "2026-10-30T11:08:00Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude app's built-in browser on 2026-10-30. Page text read after each load; medal icons, rank labels and displayed account avatars read from the rendered competition list (medal alt text), and the join date read from the Joined tooltip. Only the profile and competitions pages were loaded, once each. The older draft of this file was discarded and rebuilt from these live pages.",
+  "sources": [
+    "https://www.kaggle.com/threerabbits",
+    "https://www.kaggle.com/threerabbits/competitions"
+  ],
+  "profile": {
+    "displayName": "Yi-Chia Chen",
+    "pronouns": "she/her",
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 1,
+      "silver": 5,
+      "bronze": 3
+    },
+    "competitionRank": 335,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 75,
+    "joinedTooltip": "Sun Dec 04 2022 23:56:34 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2022-12",
+    "affiliation": "National Taiwan University & Waseda University",
+    "employer": "Fields Model Initiative",
+    "location": "Taipei, Taiwan",
+    "bioPresent": false,
+    "bioText": "No bio yet... (profile tagline: Quietly working away)",
+    "activity": "25 competitions solo, 8 in a team, 0 hosted (as displayed)",
+    "notebooksTier": "Expert",
+    "writeups": 1
+  },
+  "visibleCompetitionList": {
+    "activeCount": 3,
+    "completedCount": 30,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "pagesRead": "Page one of two of the completed list (twenty rows, sorted by Best Result). Page two (ten rows, lower finishes) was not opened. The nine medals shown on page one equal the nine on the profile card (1 gold, 5 silver, 3 bronze), so page two carries no medals.",
+    "scopeNote": "The ten completed competitions on page two are not transcribed and no finish is claimed for them."
+  },
+  "completedResults": [
+    {
+      "competition": "Eedi - Mining Misconceptions in Mathematics",
+      "competitionUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics",
+      "rank": 3,
+      "teams": 1446,
+      "medal": "gold",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "LLM Prompt Recovery",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "rank": 17,
+      "teams": 2175,
+      "medal": "silver",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 26,
+      "teams": 1427,
+      "medal": "silver",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "WSDM Cup - Multilingual Chatbot Arena",
+      "competitionUrl": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
+      "rank": 26,
+      "teams": 950,
+      "medal": "silver",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 55,
+      "teams": 6807,
+      "medal": "silver",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+      "rank": 64,
+      "teams": 1514,
+      "medal": "silver",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 159,
+      "teams": 2212,
+      "medal": "bronze",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "LMSYS - Chatbot Arena Human Preference Predictions",
+      "competitionUrl": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
+      "rank": 174,
+      "teams": 1849,
+      "medal": "bronze",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 248,
+      "teams": 4138,
+      "medal": "bronze",
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "FIDE & Google Efficient Chess AI Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
+      "rank": 128,
+      "teams": 1120,
+      "medal": null,
+      "displayedHandles": ["cancanhzw", "popcorn314", "threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 260,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "Drawing with LLMs",
+      "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+      "rank": 350,
+      "teams": 1309,
+      "medal": null,
+      "displayedHandles": ["cancanhzw", "popcorn314", "r11922a10", "threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "Learning Agency Lab - Automated Essay Scoring 2.0",
+      "competitionUrl": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+      "rank": 407,
+      "teams": 2706,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "Konwinski Prize",
+      "competitionUrl": "https://www.kaggle.com/competitions/konwinski-prize",
+      "rank": 423,
+      "teams": 617,
+      "medal": null,
+      "displayedHandles": ["cancanhzw", "popcorn314", "threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "LLM 20 Questions",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+      "rank": 614,
+      "teams": 832,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "NeurIPS 2025 - Google Code Golf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-code-golf-2025",
+      "rank": 694,
+      "teams": 1142,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 1",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "rank": 796,
+      "teams": 1161,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "LLMs - You Can't Please Them All",
+      "competitionUrl": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+      "rank": 1461,
+      "teams": 1692,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "MAP - Charting Student Math Misunderstandings",
+      "competitionUrl": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+      "rank": 1831,
+      "teams": 1857,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    },
+    {
+      "competition": "Jigsaw - Agile Community Rules Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+      "rank": 2389,
+      "teams": 2445,
+      "medal": null,
+      "displayedHandles": ["threerabbits"],
+      "teamName": null
+    }
+  ],
+  "completedResultsNote": "These are the twenty rows on page one of the completed list, as displayed on 2026-10-30. 'medal: null' means the list showed no medal icon on that row. The list does not display team names, so teamName is null throughout (not seen). displayedHandles are the account avatars Kaggle shows on each row; a row with several handles is a team entry. Competition URLs are the links the page itself carries.",
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/yi-chia-chen.webp",
+    "sourceUrl": "https://www.kaggle.com/threerabbits",
+    "note": "The saved file matches the large avatar on her live Kaggle profile: a dark-and-white upright-eared rabbit above a gray lop-eared rabbit, same pose and framing. It is her own chosen profile picture (not a group of people, not a default avatar). It is a pet picture, not a photo of her face, and no other public photo of her was found. The live image is storage.googleapis.com/kaggle-avatars/images/12752459-kg.jpeg (version stamp 2026-10-01); it was compared by eye and not downloaded. The AI editorial version (yi-chia-chen-editorial-v1.webp) is a separate artwork made from this avatar."
+  },
+  "facts": [
+    {
+      "text": "Yi-Chia Chen is a Kaggle Competitions Master, ranked 335th of 225,021 with a highest-ever rank of 75th, and her account dates from December 2022.",
+      "sourceUrl": "https://www.kaggle.com/threerabbits",
+      "sourceTitle": "Yi-Chia Chen — public Kaggle profile",
+      "checkedAt": "2026-10-30T11:08:00Z"
+    },
+    {
+      "text": "Her Kaggle profile shows nine competition medals: one gold, five silver and three bronze.",
+      "sourceUrl": "https://www.kaggle.com/threerabbits",
+      "sourceTitle": "Yi-Chia Chen — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T11:08:00Z"
+    },
+    {
+      "text": "Kaggle lists her Eedi - Mining Misconceptions in Mathematics entry 3rd of 1,446 teams with a gold medal; only her account is displayed on that entry.",
+      "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+      "sourceTitle": "Yi-Chia Chen — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:08:00Z"
+    },
+    {
+      "text": "Her silver medals are listed for LLM Prompt Recovery (17th of 2,175), ARC Prize 2024 (26th of 1,427), WSDM Cup (26th of 950), the Pokémon Company PTCG AI Battle Challenge (55th of 6,807) and Santa 2024 (64th of 1,514).",
+      "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+      "sourceTitle": "Yi-Chia Chen — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:08:00Z"
+    },
+    {
+      "text": "Kaggle also lists her ARC Prize 2025 entry at 260th of 1,455 with no medal, and shows her active in ARC Prize 2026 for both ARC-AGI-2 and ARC-AGI-3, where public standings are provisional until the private leaderboard settles.",
+      "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+      "sourceTitle": "Yi-Chia Chen — active and completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:08:00Z"
+    }
+  ],
+  "teamNotes": "Current: on her competitions page the ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3 cards each show only her account; the team name 'Yi-Chia Chen @ Fields Model' comes from the repo's earlier public-roster observation and was not re-read on Kaggle in this pass. Her Gemma 4 Developer Agent card also shows the account lowasitgoes. Past teams on page one: FIDE & Google Efficient Chess AI Challenge (cancanhzw, popcorn314, threerabbits), Drawing with LLMs (cancanhzw, popcorn314, r11922a10, threerabbits) and Konwinski Prize (cancanhzw, popcorn314, threerabbits); none of the three carries a medal, and team names are not shown. Her profile says eight competitions were in a team; the other five are on page two, which was not opened. All nine medals sit on rows that show only her account, but Kaggle awards medals per team entry, so none is described here as a purely individual honour beyond what the page displays.",
+  "unverified": [
+    "Page two of the completed list (ten lower-finish competitions), not opened.",
+    "Team names for any past team entry; the list does not show them.",
+    "The five team competitions beyond the three visible on page one (her profile says eight in a team).",
+    "The ARC Prize 2026 team name and current public standings, not re-read on Kaggle in this pass.",
+    "Exact completion dates; the list gives only relative labels such as '2 years ago'.",
+    "A photo of her face; only the two-rabbit avatar is public."
+  ],
+  "verified": true
+}

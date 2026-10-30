@@ -1,0 +1,165 @@
+{
+  "personId": "lohit-siriki",
+  "handle": "sirikilohit",
+  "name": "Lohit Siriki",
+  "checkedAt": "2026-10-30T12:15:00Z",
+  "method": "Read-only visit to the public Kaggle About and Competitions pages in the app's built-in browser on 2026-10-30 (profile first, then the competitions page after a pause). Page text read after the pages rendered; medal icons and the profile picture checked by screenshot and by reading the page's own image elements. No rate limit, captcha or block was shown. The older draft of this file, written while Kaggle was blocking us, was discarded and rebuilt from these live pages only.",
+  "sources": [
+    "https://www.kaggle.com/sirikilohit",
+    "https://www.kaggle.com/sirikilohit/competitions",
+    "https://x.com/arcprize/status/2105737436450201734",
+    "https://x.com/arcprize/status/2105737441021997106"
+  ],
+  "profile": {
+    "displayName": "rellik13",
+    "headline": "Machine Learning Engineer",
+    "competitionTier": null,
+    "competitionTierNote": "No competition tier label is shown on the public About page text or screenshot. Not inferred.",
+    "medals": null,
+    "medalsNote": "No medal counts are shown on the About page. No medal icon appears on any completed competition row (all four rows carry the plain trophy mark only).",
+    "joinedMonth": "2022-09",
+    "joinedTooltip": "Mon Sep 26 2022 10:22:39 GMT-0400 (Eastern Daylight Time)",
+    "joinedLabel": "Joined 4 years ago",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "linkedInLinkShown": true,
+    "followers": 1,
+    "tabCounts": {
+      "competitions": 6,
+      "datasets": 1,
+      "code": 3,
+      "discussion": 15,
+      "writeups": 1,
+      "followers": 1
+    },
+    "activityBox": "6 competitions solo; 1 competitions in a team; 0 competitions hosted (as displayed)"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 4,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "completedNames": [
+      "AI Agent Security - Multi-Step Tool Attacks",
+      "RSNA Knee Abnormality Detection",
+      "Data Analytics (UE20CS312) Assignment",
+      "UE20CS344 NAM Assignment 2"
+    ],
+    "scopeNote": "Only these four completed records were publicly displayed. The profile lists ARC-AGI-3 as active and does not list ARC-AGI-2 among the active competitions. Do not invent additional finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "competitionType": "Featured, Code Competition",
+      "rank": 3333,
+      "teams": 4186,
+      "medal": null,
+      "medalNote": "No medal icon shown on the row.",
+      "displayedHandles": [
+        "sirikilohit"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "competitionType": "Research, Code Competition",
+      "rank": 3354,
+      "teams": 6299,
+      "medal": null,
+      "medalNote": "No medal icon shown on the row.",
+      "displayedHandles": [
+        "sirikilohit"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Data Analytics (UE20CS312) Assignment",
+      "competitionUrl": "https://www.kaggle.com/competitions/data-analytics-ue20cs312",
+      "competitionType": "Community, Invitation Only (PES University course contest)",
+      "rank": 162,
+      "teams": 177,
+      "medal": null,
+      "medalNote": "No medal icon shown on the row.",
+      "displayedHandles": [
+        "manonmanaudupa",
+        "hemachandrans",
+        "sirikilohit",
+        "khushihiremath"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "UE20CS344 NAM Assignment 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ue20cs344-nam-assignment-2",
+      "competitionType": "Community, Invitation Only (PES University course contest)",
+      "rank": 168,
+      "teams": 394,
+      "medal": null,
+      "medalNote": "No medal icon shown on the row.",
+      "displayedHandles": [
+        "sirikilohit"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/sirikilohit",
+    "note": "The public profile shows Kaggle's stock default avatar (an engraving of a goose), served from /static/images/profile/default-avatar.png. It is not a picture of Lohit Siriki, so nothing was saved and no portrait file exists for lohit-siriki under client/public/news-images/people/. No group image or stand-in is to be used. The profile links a LinkedIn page, which was not visited under this task's browsing rules; a real own picture could only come from there or from the person."
+  },
+  "facts": [
+    {
+      "text": "ARC Prize announced Lohit Siriki as the third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026.",
+      "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+      "sourceTitle": "ARC Prize official Milestone 2 winners",
+      "checkedAt": "2026-10-13T03:15:37Z"
+    },
+    {
+      "text": "Lohit Siriki's public Kaggle profile, handle sirikilohit and display name rellik13, lists the job title Machine Learning Engineer and dates the account to September 2022.",
+      "sourceUrl": "https://www.kaggle.com/sirikilohit",
+      "sourceTitle": "rellik13 (sirikilohit) public Kaggle profile",
+      "checkedAt": "2026-10-30T12:15:00Z"
+    },
+    {
+      "text": "Kaggle lists Lohit Siriki's completed AI Agent Security - Multi-Step Tool Attacks entry 3,333rd of 4,186 teams and the completed RSNA Knee Abnormality Detection entry 3,354th of 6,299 teams, with no medal shown on either row.",
+      "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+      "sourceTitle": "rellik13 (sirikilohit) completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:15:00Z"
+    },
+    {
+      "text": "The Kaggle record also holds two 2022 PES University course contests, UE20CS312 Data Analytics (162nd of 177, shown with four accounts) and UE20CS344 Network Analysis and Mining (168th of 394).",
+      "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+      "sourceTitle": "rellik13 (sirikilohit) completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:15:00Z"
+    },
+    {
+      "text": "On October 30, 2026 Kaggle listed ARC Prize 2026 - ARC-AGI-3 and the Google Gemma 4 Developer Agent Competition as the two competitions the profile was still active in.",
+      "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+      "sourceTitle": "rellik13 (sirikilohit) active competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:15:00Z"
+    }
+  ],
+  "teamNotes": "The Kaggle display name rellik13 matches the team name in the repo's dated ARC-AGI-3 and ARC-AGI-2 public roster observations for sirikilohit (team ids 16706087 and 16779554). The competition rows on the profile show only account handles, not team names, so no teamName is recorded for any completed result. Only the Data Analytics (UE20CS312) row shows more than one account. No medal is credited to this person, and no team medal is claimed. No public ARC standing is quoted here; any ARC-AGI-3 rank for rellik13 is provisional until the private leaderboard settles at the November 2 close.",
+  "unverified": [
+    "Competition tier (not displayed on the public page)",
+    "Medal counts (none displayed; the page did not show a medal summary)",
+    "Exact completion dates for the four completed competitions (only relative labels shown)",
+    "The October 1, 2026 Milestone 2 third-place announcement was carried from the record and its ARC Prize post, not re-read in this session",
+    "Whether the person has any picture of their own that is public (the LinkedIn link on the profile was not visited)",
+    "Any Kaggle team name for the completed competitions"
+  ],
+  "verified": true
+}
