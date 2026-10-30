@@ -1,0 +1,78 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Friday Night Special, commissioned by head editor Mark Barney. Standings observed October 30 at 4:55 pm EDT.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Friday Night Special: Jeroen Cottaar, the Grandmaster in the Tufa Citadel",
+  "id": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+  "image": {
+    "alt": "Jeroen Cottaar with glasses and a wry smile seated in the Tufa Citadel, wearing charcoal and ivory with restrained crimson, surrounded by monumental GPU racks and friendly black spiders.",
+    "caption": "Jeroen Cottaar in the Tufa Citadel. His ARC Prize card: https://arc.markbarney.net/news/cards/person-jeroen-cottaar-2026",
+    "src": "/news-images/2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover.webp"
+  },
+  "publishedAt": "2026-10-30T21:18:59Z",
+  "sections": [
+    {
+      "heading": "The man behind the portrait",
+      "sourceIds": [
+        "person-jeroen-cottaar-identity-0",
+        "person-dawid-kopiczko-fact-3"
+      ],
+      "text": "Who is the man with the wry smile on the GPU throne? Jeroen Cottaar, a Kaggle Competitions Grandmaster whose Tufa Labs team leads ARC2 by just 0.84 points heading into the final weekend.\n\nHis public profile, checked Friday morning, placed him sixth in the competitions ranking, with five gold and two silver medals. He joined Kaggle in May 2023. Three and a half years later, he has assembled the sort of record that makes a Friday-night close-up overdue."
+    },
+    {
+      "heading": "The trophy cabinet",
+      "sourceIds": [
+        "person-jeroen-cottaar-fact-2"
+      ],
+      "text": "Start with two outright victories: first among 3,357 teams in the Santa 2025 Christmas Tree Packing Challenge, and first among 860 in the NeurIPS Ariel Data Challenge 2025. Both completed entries show his account alone.\n\nThen add second among 1,365 teams in the Yale/UNC-CH Geophysical Waveform Inversion competition and second among 1,151 in the 2024 Ariel challenge. Four podium finishes across that collection would make a handsome career montage. Cottaar is still adding to it."
+    },
+    {
+      "heading": "Before the citadel",
+      "sourceIds": [
+        "tufa-official-team-biography"
+      ],
+      "text": "Tufa’s own biography fills in the man behind those results. Cottaar holds a PhD in Applied Physics from Eindhoven University of Technology and spent more than a decade at ASML, where he architected Bayesian machine-learning approaches for semiconductor metrology.\n\nHis competition work, Tufa says, has ranged from Bayesian inference to genetic algorithms using custom CUDA kernels. His current interests include reasoning, abstraction, program synthesis and test-time computation. He now wants to bring Bayesian methods together with LLM reasoning.\n\nThere is the character beneath our illustration: a scientist and an experienced builder, with the competition results to give the grandmaster title some weight."
+    },
+    {
+      "heading": "The throne has company",
+      "sourceIds": [
+        "person-dawid-kopiczko-fact-3",
+        "person-elad-sarafian-fact-2"
+      ],
+      "text": "On Friday’s 4:55 pm EDT ARC2 board, Tufa leads at 88.06. Yi-Chia Chen’s Fields Model is second at 87.22—a gap of just 0.84. Across on ARC3, Chen leads and Tufa is second. The two entries have given the final weekend a title race on both fronts.\n\nCottaar shares Tufa’s ARC2 roster with Dries Smit, Isaiah Pressman and Stefano Viel. This is a team campaign; our mastermind portrait gives one of its distinguished competitors the spotlight. With Tufa defending that narrow lead, Cottaar belongs in the Friday-night spotlight.\n\nA slender lead, a decorated grandmaster and a final weekend with everything still to play for. That is a Friday-night main event."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jeroen-cottaar-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-30T12:59:34Z",
+      "id": "person-dawid-kopiczko-fact-3",
+      "title": "ARC Prize 2026 ARC-AGI-2 public leaderboard snapshot (provisional)",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-2",
+      "title": "Jeroen Cottaar — completed Santa 2025 and Ariel 2025 results on Kaggle",
+      "url": "https://www.kaggle.com/jeroencottaar/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T21:18:59Z",
+      "id": "tufa-official-team-biography",
+      "title": "Tufa Labs — Jeroen Cottaar official biography",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-30T12:25:17Z",
+      "id": "person-elad-sarafian-fact-2",
+      "title": "ARC-3 public leaderboard mirror — team NVARC3",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ]
+}

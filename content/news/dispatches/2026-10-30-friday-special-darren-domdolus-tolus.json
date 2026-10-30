@@ -1,0 +1,127 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Friday Night Special, commissioned by head editor Mark Barney. Standings observed October 30 at 4:55 pm EDT.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Friday Night Special: Darren Amadeus Martin and Domdolus Tolus—fifth-place gold, now fourth and hunting",
+  "id": "2026-10-30-friday-special-darren-domdolus-tolus",
+  "image": {
+    "alt": "The Domdolus Tolus team in the scoring hall: Darren’s two dogs at centre, Alwin and Yassir as their own characters, and Billy and Tri as helmeted figures. Five competitors are represented.",
+    "caption": "Domdolus Tolus takes the scoring hall: five competitors, with Darren represented by his two dogs. Darren’s ARC Prize card: https://arc.markbarney.net/news/cards/person-darren-amadeus-martin-2026",
+    "src": "/news-images/2026-10-30-friday-special-darren-domdolus-tolus-cover.webp"
+  },
+  "publishedAt": "2026-10-30T21:18:59Z",
+  "sections": [
+    {
+      "heading": "Put all five names on the marquee",
+      "sourceIds": [
+        "person-darren-amadeus-martin-fact-5",
+        "person-dawid-kopiczko-fact-3"
+      ],
+      "text": "Fifth out of 4,185. Gold. Put that on the marquee.\n\nBefore their ARC2 campaign brought them into the leading group, Domdolus Tolus earned that finish in the NVIDIA Nemotron Model Reasoning Challenge. The team was Darren Amadeus Martin, Alwin Theodoric, Muhammad Yassir Ramadhan, Billy Anggara and Tri Ardian Rinalda. All five are together on the current ARC2 roster.\n\nFriday’s 4:55 pm EDT public board places them fourth at 83.47, only 0.42 behind third-placed nvbanana. That puts them directly behind Jean-François Puget and Darragh Hanley as the final weekend begins. The students have some distinguished company in their sights."
+    },
+    {
+      "heading": "The students behind the name",
+      "sourceIds": [
+        "person-darren-amadeus-martin-identity-0",
+        "person-alwin-theodoric-identity-0",
+        "person-billy-anggara-identity-0",
+        "person-tri-ardian-rinalda-identity-0",
+        "person-muhammad-yassir-ramadhan-identity-0",
+        "person-darren-amadeus-martin-fact-1",
+        "person-alwin-theodoric-fact-1"
+      ],
+      "text": "The university roll call introduces a team of students with a major gold-medal result already behind them. Darren lists Waseda University; Alwin, Tokyo University of Science; Billy, Chuo University; and Tri, Institute of Science Tokyo. Yassir also describes himself as a student.\n\nThey have already learned how to produce a serious result together. And the back catalogue has personality: Darren and Alwin share a first-place finish in the community competition Fake or Real: The Impostor Hunt in Texts. Darren’s record also includes a shared eighteenth-place finish, with silver, in the 1,142-team NeurIPS 2025 Google Code Golf Championship."
+    },
+    {
+      "heading": "A gold-medal origin story",
+      "sourceIds": [
+        "person-darren-amadeus-martin-fact-5"
+      ],
+      "text": "Their Nemotron write-up has a title worthy of the sports pages: Jack of Trades, Loser of Cryptarithm. Its opening describes near-zero experience in machine learning, particularly language-model fine-tuning.\n\nTheir response was to spend much of the competition solving puzzles themselves and refining the reasoning they wanted a model to learn. They then pushed into engineering and training during the closing weeks, building synthetic puzzle generators and drawing on public community work. They finished fourth on the public board and fifth on the private one, and published their experiments, failures and final model afterward.\n\nIt is a terrific introduction to a team: a gold-medal finish accompanied by a candid account of how much they had to learn to get there."
+    },
+    {
+      "heading": "Their next move is ARC2",
+      "sourceIds": [
+        "darren-current-focus",
+        "darren-speed-work",
+        "darren-closed-playbook"
+      ],
+      "text": "Darren has supplied a clear answer about the closing stretch. On October 28, discussing the team’s low ARC3 result and the time remaining, he wrote: “we prefer to continue arc agi 2 only”.\n\nHe has also discussed extensive code-optimisation work while keeping the full method private. His own follow-up acknowledged that greater speed had not produced the hoped-for leaderboard result. That gives readers something more interesting than a generic success story: a decorated team still working out how to turn its engineering gains into the next competitive breakthrough.\n\nNow the same five names sit fourth in ARC2. The immediate target is third: nvbanana is less than half a point ahead."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T23:43:35Z",
+      "id": "person-darren-amadeus-martin-fact-5",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T12:59:34Z",
+      "id": "person-dawid-kopiczko-fact-3",
+      "title": "ARC Prize 2026 ARC-AGI-2 public leaderboard snapshot (provisional)",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-27T01:44:45Z",
+      "id": "person-darren-amadeus-martin-identity-0",
+      "title": "Author-linked Kaggle profile on his public Flash Next eligibility question",
+      "url": "https://www.kaggle.com/darrenamadeusmartin"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34Z",
+      "id": "person-alwin-theodoric-identity-0",
+      "title": "Alwin Theodoric — own Kaggle profile",
+      "url": "https://www.kaggle.com/alwintheodoric"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34Z",
+      "id": "person-billy-anggara-identity-0",
+      "title": "Billy Anggara — own Kaggle profile",
+      "url": "https://www.kaggle.com/billyanggara"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34Z",
+      "id": "person-tri-ardian-rinalda-identity-0",
+      "title": "Tri Ardian Rinalda — own Kaggle profile",
+      "url": "https://www.kaggle.com/rinnnntt"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34Z",
+      "id": "person-muhammad-yassir-ramadhan-identity-0",
+      "title": "Muhammad Yassir Ramadhan — own Kaggle profile",
+      "url": "https://www.kaggle.com/yassirramadhan"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-1",
+      "title": "Darren Amadeus Martin — completed NVIDIA Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/darrenamadeusmartin/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:23:29Z",
+      "id": "person-alwin-theodoric-fact-1",
+      "title": "Alwin Theodoric — completed NVIDIA Nemotron entry on Kaggle",
+      "url": "https://www.kaggle.com/alwintheodoric/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T23:45:22Z",
+      "id": "darren-current-focus",
+      "title": "Darren — October28 decision to focus on ARC2 after ARC3 trial",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546036"
+    },
+    {
+      "accessedAt": "2026-10-29T23:45:22Z",
+      "id": "darren-speed-work",
+      "title": "Darren — October27 account of extensive ClaudeCode optimizations",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3545810"
+    },
+    {
+      "accessedAt": "2026-10-29T23:45:22Z",
+      "id": "darren-closed-playbook",
+      "title": "Darren — October28 comparison and decision to keep the full method private",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546160"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T20:11:59.652Z",
+  "updatedAt": "2026-10-30T21:21:45.209214Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1367,7 +1367,9 @@
       "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
       "nativeOriginalSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-native.png",
       "status": "character-reference",
-      "articleUses": [],
+      "articleUses": [
+        "2026-10-30-friday-special-darren-domdolus-tolus"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -1376,6 +1378,14 @@
           "postedAt": "2026-10-29T23:49:16.811181+00:00",
           "attachmentSha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
           "purpose": "Boss-requested contender cheat sheet for Darren Amadeus Martin and all five Domdolus Tolus accounts; full feature held and X held."
+        },
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838137564078200",
+          "postedAt": "2026-10-30T21:21:45.208557Z",
+          "attachmentSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+          "articleId": "2026-10-30-friday-special-darren-domdolus-tolus",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
         }
       ],
       "episode": "Five roster accounts represented by two central dogs plus four humanoids.",
@@ -1674,9 +1684,21 @@
       "generationRecord": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
       "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
       "status": "saved-character-reference",
-      "articleUses": [],
+      "articleUses": [
+        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+      ],
       "xAttachments": [],
-      "selectionNote": "Retains the editor-liked wry glamorous face and seated mastermind pose. Now inside the established Tufa Citadel: monumental GPU racks, yellow gantries, copper/turquoise cooling pipes, black spiders with white eyes, white spider pictogram on black banner. Charcoal/ivory clothing has restrained crimson lapels and cuffs; navy/gold academy brocade and university setting removed. No villain coding, text or card border."
+      "selectionNote": "Retains the editor-liked wry glamorous face and seated mastermind pose. Now inside the established Tufa Citadel: monumental GPU racks, yellow gantries, copper/turquoise cooling pipes, black spiders with white eyes, white spider pictogram on black banner. Charcoal/ivory clothing has restrained crimson lapels and cuffs; navy/gold academy brocade and university setting removed. No villain coding, text or card border.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838072241725610",
+          "postedAt": "2026-10-30T21:21:30.034663Z",
+          "attachmentSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ]
     },
     {
       "id": "2026-10-30-jean-francois-puget-nvidia-mastermind-v1",
@@ -1731,6 +1753,50 @@
       "articleUses": [],
       "xAttachments": [],
       "selectionNote": "Preserves Gal's own illustrated swept hair, narrow moustache/stubble, long face and raised sunglasses motifs. Crimson flight jacket, open finned cyber headset and hands on GPU hover-skimmer controls distinguish him from other NVIDIA characters. Painted adult face, giant cooling-engine foreground, emerald citadel and no labels or card frame."
+    },
+    {
+      "id": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover",
+      "title": "Friday Night Special: Jeroen Cottaar, the Grandmaster in the Tufa Citadel — original illustration archive copy",
+      "generationRecord": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover",
+      "src": "/news-images/2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838072241725610",
+          "postedAt": "2026-10-30T21:21:30.034663Z",
+          "attachmentSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "selectionNote": "Byte-identical archive copy of 2026-10-30-jeroen-cottaar-tufa-citadel-v4; both records track the same first-published scene."
+    },
+    {
+      "id": "2026-10-30-friday-special-darren-domdolus-tolus-cover",
+      "title": "Friday Night Special: Darren Amadeus Martin and Domdolus Tolus—fifth-place gold, now fourth and hunting — original illustration archive copy",
+      "generationRecord": "2026-10-30-friday-special-darren-domdolus-tolus-cover",
+      "src": "/news-images/2026-10-30-friday-special-darren-domdolus-tolus-cover.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-30-friday-special-darren-domdolus-tolus"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838137564078200",
+          "postedAt": "2026-10-30T21:21:45.208557Z",
+          "attachmentSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+          "articleId": "2026-10-30-friday-special-darren-domdolus-tolus",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "selectionNote": "Byte-identical archive copy of 2026-10-29-domdolus-tolus-avatar-v1-base; both records track the same first-published scene."
     }
   ],
   "existingXPosts": [

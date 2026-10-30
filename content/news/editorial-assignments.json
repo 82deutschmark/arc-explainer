@@ -1187,5 +1187,31 @@
     "artworkGenerationRecord": "2026-10-29-domdolus-tolus-avatar-v1-base",
     "discordCheatSheetUrl": "https://discord.com/channels/@me/1550165647911034940/1565512874628096143",
     "discordCheatSheetMessageId": "1565512874628096143"
+  },
+  {
+    "id": "oct30-friday-night-jeroen-front-page",
+    "competition": "arc-2",
+    "createdAt": "2026-10-30T21:17:58.035796Z",
+    "expiresAt": "2026-10-31T03:00:00Z",
+    "status": "pending",
+    "title": "Jeroen Cottaar and Darren Amadeus Martin — Friday Night Special",
+    "priority": "Boss-commissioned special edition",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16756524",
+      "16559402"
+    ],
+    "subjectNames": [
+      "Jeroen Cottaar",
+      "Darren Amadeus Martin"
+    ],
+    "targetEditionId": "2026-10-30-evening-arc-2-preview",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+    "instructions": "The Boss has authorized the Friday Night Special for publication. Print the Jeroen feature in full with its approved Tufa Citadel cover, and develop Darren / Domdolus Tolus with all five names and their gold-medal history. Deliver both exact covers to rollout-feed for human reaction before X. This commission does not replace the scheduled 6 pm edition.",
+    "sourceUrls": [
+      "https://www.kaggle.com/jeroencottaar",
+      "https://www.kaggle.com/darrenamadeusmartin"
+    ]
   }
 ]
