@@ -4228,5 +4228,41 @@
       }
     ],
     "name": "NT"
+  },
+  {
+    "id": "mistyotter-ai",
+    "name": "Yegor",
+    "accounts": [
+      {
+        "platform": "x",
+        "handle": "mistyotter_ai",
+        "url": "https://x.com/mistyotter_ai",
+        "sourceUrl": "https://x.com/mistyotter_ai",
+        "sourceTitle": "Yegor — own public X profile",
+        "checkedAt": "2026-10-30T17:00:18.943Z"
+      }
+    ],
+    "facts": [
+      {
+        "text": "Documents AI-agent, Kaggle competition and reinforcement-learning work as mistyotter_ai.",
+        "sourceUrl": "https://x.com/mistyotter_ai",
+        "sourceTitle": "Yegor — own public biography",
+        "checkedAt": "2026-10-30T17:00:18.943Z"
+      },
+      {
+        "text": "Publicly documents work in the Kaggle Gemma 4 agent competition.",
+        "sourceUrl": "https://x.com/mistyotter_ai/status/2115894731779576204",
+        "sourceTitle": "Yegor — Day11 competition update",
+        "checkedAt": "2026-10-30T17:00:18.943Z"
+      },
+      {
+        "text": "On October29, described reaching silver territory on the public ARC-AGI-2 leaderboard; this is his attributed report of a provisional position, not a final medal.",
+        "sourceUrl": "https://x.com/mistyotter_ai/status/2115715480329621814",
+        "sourceTitle": "Yegor — public ARC2 progress post",
+        "checkedAt": "2026-10-30T17:00:18.943Z"
+      }
+    ],
+    "memberships": [],
+    "hallOfFame": []
   }
 ]

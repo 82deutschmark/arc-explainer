@@ -1434,9 +1434,51 @@
         "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
       ],
       "provenance": "Native edit preserves the old crew and corrects NT using the own-profile screenshot supplied by Boss. Original image and all inputs retained."
+    },
+    {
+      "id": "mistyotter-ai",
+      "personId": "mistyotter-ai",
+      "status": "ready",
+      "names": [
+        "Yegor",
+        "mistyotter_ai"
+      ],
+      "description": "Anonymous dark-haired cyber engineer based on Yegor’s own posted styling, with face concealed.",
+      "referenceType": "Own-post styling and explicitly anonymous editorial character",
+      "references": [
+        {
+          "src": "/news-images/people/mistyotter-avatar-v1.webp",
+          "sha256": "f86496130227dd7918a44ffd3e06c924cdd79120ccd2f867baa0f42888ede14f",
+          "generationRecord": "2026-10-30-mistyotter-avatar-v1",
+          "kind": "native-character",
+          "label": "Yegor — anonymous cyber avatar",
+          "role": "Preserve black hoodie, tousled dark hair, cyan visor and concealed face. Do not assign a team, surname or adult facial likeness."
+        },
+        {
+          "src": "/news-images/references/2026-10-30-mistyotter-own-header.jpg",
+          "sourceUrl": "https://x.com/mistyotter_ai",
+          "role": "Own public header: dark adult hair, rear view and snowy setting. Not a verified front-facing likeness.",
+          "sha256": "1eb68edbb01ef39b3db522bbcf5f6cd895320967b0db307378a3ab3f3dc316a9",
+          "kind": "source-reference",
+          "label": "Own public header: dark adult hair, rear view and snowy setting. Not a verified front-facing likeness."
+        },
+        {
+          "src": "/news-images/references/2026-10-30-mistyotter-own-hoodie.jpg",
+          "sourceUrl": "https://x.com/mistyotter_ai/status/2101658849073606697",
+          "role": "Own pinned Drip check clothing post, black zip hoodie. Styling only; remove all logos.",
+          "sha256": "9940d7ac131e32542c0c3c475ed348d0eac1fb8d3fd357101c58c4ec2d8fc14f",
+          "kind": "source-reference",
+          "label": "Own pinned Drip check clothing post, black zip hoodie. Styling only; remove all logos."
+        }
+      ],
+      "identityNotes": [
+        "Own X profile verifies the first name Yegor. Kaggle account and team remain unverified; no roster or rank is assigned.",
+        "Adult rear-view header and pinned hoodie post supply styling. Face is concealed; no adult facial likeness is invented from his childhood profile photo."
+      ],
+      "provenance": "Boss commissioned the individual card. Own X profile, header and pinned post inspected; no childhood photo used for generation."
     }
   ],
-  "updatedAt": "2026-10-30T03:52:09.683Z",
+  "updatedAt": "2026-10-30T17:00:18.943Z",
   "version": 1,
   "reusableScenes": [
     {

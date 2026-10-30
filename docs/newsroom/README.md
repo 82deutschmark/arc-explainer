@@ -11,6 +11,11 @@ Before competitor reporting or artwork selection, read the [team playbook](TEAM_
 Use its exact competition/team/handle lookup, Card Cabinet and saved dossiers for informed
 background; the run’s fresh board remains the source for current standings.
 
+This lookup applies **whenever anyone is mentioned**, including briefings, handoffs,
+captions and social drafts. Use the improved Cabinet's permanent individual/team pages,
+linked roster histories, complete sourced careers and approved art. All seven active
+Codex reporting jobs reference this rule; backup and check-in guides follow it too.
+
 Every desk must follow the [head editor's completion order](FINISHING.md): verify once,
 finish publishing at the successful push, accept human send confirmation, and stop. The
 rule applies to manual work as well as scheduled shifts and overrides older wait instructions.

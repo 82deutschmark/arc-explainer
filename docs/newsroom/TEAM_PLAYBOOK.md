@@ -35,6 +35,31 @@ and the guarded posting command in [X_POSTING.md](X_POSTING.md).
 
 ## Where to look
 
+### Mandatory lookup for every mention
+
+Before mentioning any person, competitor or team in an article, wire item, briefing,
+handoff, caption or social draft, search the Cabinet by name, exact handle and aliases.
+Check the local `people.json`, `cards.json` and `competitors.json` as well: a missing
+browser search result alone does not establish that a subject is absent. For a match,
+read the individual card and linked team cards, current and previous roster observations,
+complete sourced career record, approved artwork and corrections. Keep separate contest
+entries distinct. Use relevant verified background to make the mention informed.
+
+The improved Cabinet has permanent `/news/cards/:id` links, linked player/team records,
+full career highlights and downloadable front/back PNGs. The back uses
+`/api/news/cards/:id/image.png?side=back`; landscape sharing previews use
+`/api/news/cards/:id/share.png`. Include the exact card permalink in a relevant handoff
+or profile announcement. These previews are distinct from the collectible card front.
+
+If no exact match exists, keep the verified name/handle and record the missing card or
+identity evidence in the private handoff for the publishing desk. Do not invent a face,
+biography, account connection, team membership or honor to fill it. A missing card does
+not prevent a sourced mention. Research-only jobs do not gain repository-write permission.
+Cabinet dates remain visible; refresh current standings from the run's board evidence.
+
+This applies to all six regular Codex desks, the developing-story watch, the backup
+edition/wire desk and the morning check-in. It adds no sends, releases or schedule changes.
+
 | Place | What it supplies |
 |---|---|
 | `/news/cards` | The permanent ARC Daily Card Cabinet: individual and team collectibles. |
@@ -109,6 +134,11 @@ Owner-selected cartoons, abstract paintings and dog avatars are not human photog
 Do not replace them with an invented face or silently convert them into real appearance.
 
 Concrete mappings that prevent repeat mistakes:
+
+- **Yegor / `mistyotter_ai`:** P067 uses his own public X header and pinned hoodie post
+  for adult styling, with face deliberately concealed. His profile photo is a childhood
+  image and was not used to invent an adult likeness. Only the first name and X account
+  are verified; do not infer a Kaggle handle, exact team, age or final medal from his posts.
 
 - **Darren / Domdolus Tolus:** five accounts, six figures. Darren's two dogs together
   represent `darrenamadeusmartin`; Alwin and Yassir use their own separate portraits;

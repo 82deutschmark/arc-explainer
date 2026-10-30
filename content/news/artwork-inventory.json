@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T03:52:09.683Z",
+  "updatedAt": "2026-10-30T17:00:18.943Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1515,6 +1515,24 @@
       "xAttachments": [],
       "discordShares": [],
       "selectionNote": "Corrected NT yellow bird in seven-account ARC3 crew, used on T014. Old native retained; no article or social send."
+    },
+    {
+      "id": "2026-10-30-mistyotter-avatar-v1",
+      "generationRecord": "2026-10-30-mistyotter-avatar-v1",
+      "src": "/news-images/people/mistyotter-avatar-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "messageId": "1565772739707535560",
+          "destination": "channel:1550165647911034940",
+          "sharedAt": "2026-10-30T17:03:40.655725+00:00",
+          "imageSha256": "0886e4d248af2aa0a49446eecaa000590a90041fa82e67606c506578d7dcac93",
+          "purpose": "Finished P067 card preview for commissioned X announcement"
+        }
+      ],
+      "selectionNote": "Boss-commissioned Yegor / mistyotter_ai individual card and one X announcement; preserve original and own-post styling references."
     }
   ],
   "existingXPosts": [

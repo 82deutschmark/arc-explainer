@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.22  Oct 30, 2026
+
+- **Look up every mentioned person and team** (Author: GPT-6 / Codex). Update all seven active Codex reporting jobs and the canonical prompt copies to consult the shared Card Cabinet before any mention. Preserve their schedules, models, status and permissions. Extend the permanent playbook, backup and morning check-in guides to use the improved linked player/team pages, complete careers, card backs and individual sharing previews.
+- **Give Yegor his player card.** Save P067 and the commissioned anonymous cyber avatar for mistyotter_ai, using his own rear-view header and hoodie post as styling references. Preserve native art, actual sources and prompt; leave the adult face concealed and unverified Kaggle/team identities unknown. Prepare the editor-authorized image-led X announcement with a protected outbox and Discord preview receipt.
+
 ### Version 9.159.20  Oct 29, 2026
 
 - **Correct NT to his own yellow-bird avatar** (Author: GPT-6 / Codex). Replace the mistaken banana-kitten identity on P066, the people portrait and active character references using the Boss-supplied Kaggle screenshot. Correct NT's figure in the full Turducken crew and T014 too. Keep Keith's separate black-capped mascot and the rest of the crew intact.

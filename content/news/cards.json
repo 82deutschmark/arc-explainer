@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T03:52:09.683Z",
+  "updatedAt": "2026-10-30T17:00:18.943Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -1263,6 +1263,28 @@
         "Boss supplied NT’s own Kaggle profile screenshot: a yellow bird with black eyebrows, half-lidded eyes, broad ochre beak and black feather marks.",
         "The earlier banana-suit kitten was a mistaken identity assignment and is retired as an NT reference. Preserve it only as a superseded archive.",
         "P066 remains NT / mitubant; the character and lead statistics belong to ARC3 Turducken."
+      ]
+    },
+    {
+      "id": "person-mistyotter-ai-2026",
+      "number": "P067",
+      "kind": "person",
+      "name": "Yegor",
+      "personId": "mistyotter-ai",
+      "season": "2026",
+      "issuedAt": "2026-10-30T17:00:18.943Z",
+      "entries": [],
+      "description": "Yegor · mistyotter_ai. Building agents, working on Kaggle competitions and documenting the process.",
+      "art": {
+        "src": "/news-images/people/mistyotter-avatar-v1.webp",
+        "alt": "Yegor’s anonymous cyber-engineer character: tousled dark hair, black zip hoodie, cyan visor and face covering, with ARC-grid gear.",
+        "credit": "Commissioned anonymous character based on his own posted clothing and header styling",
+        "artworkId": "2026-10-30-mistyotter-avatar-v1",
+        "commissionedAt": "2026-10-30T17:00:18.943Z"
+      },
+      "artNotes": [
+        "Own X profile verifies the first name Yegor. Kaggle account and team remain unverified; no roster or rank is assigned.",
+        "Adult rear-view header and pinned hoodie post supply styling. Face is concealed; no adult facial likeness is invented from his childhood profile photo."
       ]
     }
   ],

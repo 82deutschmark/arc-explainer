@@ -2,6 +2,10 @@
 
 Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a person or team or selecting their artwork; the Card Cabinet and saved dossiers are the shared reporting record.
 
+Apply its mandatory lookup to every person/team mention, including captions, handoffs
+and social copy. Use the exact individual/team card permalink and approved current avatar;
+record a missing card without inventing a match. This applies to edition and wire rescue runs.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Author: Claude Opus 5.5 · 10 October 2026, at the Boss's request · rewritten by Claude Opus 5.5 Max,

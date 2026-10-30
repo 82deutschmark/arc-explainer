@@ -21,6 +21,10 @@ the newsroom or wire checkouts, the Codex job settings or database (read only), 
 
 ## What to check
 
+Before naming any person or team in the report, follow the mandatory mention lookup in
+[TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and the shared [Card Cabinet](https://arc.markbarney.net/news/cards).
+Use exact player/team links and recorded identities; note an absent card without guessing.
+
 1. **Editions.** `git fetch origin` in the fallback checkout, then look for this half-day's files on
    `origin/main`: `content/news/articles/<date>-morning-arc-3.json` and `-arc-2.json` (or
    `-evening-`). Confirm `https://arc.markbarney.net/news/<id>` answers. Read both editions quickly:

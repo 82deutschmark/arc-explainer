@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "2026-10-30-mistyotter-avatar-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T17:00:18.943Z",
+  "rawSrc": "/news-images/people/mistyotter-avatar-v1.webp",
+  "nativeOriginalSrc": "/news-images/references/2026-10-30-mistyotter-avatar-v1-native.png",
+  "toolOutput": "exec-4d8f0738-61f4-4bc2-ad57-3dcb27f17b28.png",
+  "prompt": "Use case: stylized-concept. Create a polished reusable individual esports competitor illustration for Yegor, X handle mistyotter_ai, for the ARC Daily Digest Card Cabinet. Input1 is his own public X header photograph: an adult man seen from behind with tousled medium-length dark brown hair and a dark high-collared jacket in snowy mountains. Preserve that observable hairstyle and understated dark-clothing silhouette; this photo does NOT establish a front-facing likeness. Input2 is his own pinned 'Drip check' hoodie photograph: use the black zip hoodie, fabric and relaxed streetwear styling; remove all company logos and lettering. Depict ONE youthful ADULT male competitor in his twenties as the editor requested, wearing that dark zip hoodie integrated with spectacular tasteful cyber-engineer gear: layered charcoal/navy armor, compact GPU modules at shoulders and backpack, luminous cyan visor and lower-face respirator concealing his facial features, copper/amber circuit trim and vivid square ARC puzzle patches on chest and sleeves. Tousled dark hair visible above visor, hood partially raised behind head, confident relaxed stance, full figure or three-quarter portrait with hands in frame. One gloved hand holds a small luminous colored square ARC puzzle; other rests on utility belt. Face stays concealed: this is a deliberately anonymous editorial character based on his own observed styling, not an invented verified facial portrait, and no childhood photo is used. Scene: magnificent softly focused ARC scoring-hall workshop, large geometric multicolored grid panels and warm bronze architecture, moody midnight blue with cyan and amber rim light, a narrow distant window showing snowy mountains subtly echoes his own header. Premium highly detailed 3D-comic cinematic art, rich materials, charismatic esports sports-star energy, strong readable silhouette, respectful adult proportions. Landscape4:3, main character large and centered, all headgear/hair/hands within frame. No other people or animals, no words, names, letters, labels, digits, scores, ranks, medals, logos, watermark or card border. No inferred team membership, nationality, job, real hardware budget or technical method encoded in the image.",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Create a polished reusable individual esports competitor illustration for Yegor, X handle mistyotter_ai, for the ARC Daily Digest Card Cabinet. Input1 is his own public X header photograph: an adult man seen from behind with tousled medium-length dark brown hair and a dark high-collared jacket in snowy mountains. Preserve that observable hairstyle and understated dark-clothing silhouette; this photo does NOT establish a front-facing likeness. Input2 is his own pinned 'Drip check' hoodie photograph: use the black zip hoodie, fabric and relaxed streetwear styling; remove all company logos and lettering. Depict ONE youthful ADULT male competitor in his twenties as the editor requested, wearing that dark zip hoodie integrated with spectacular tasteful cyber-engineer gear: layered charcoal/navy armor, compact GPU modules at shoulders and backpack, luminous cyan visor and lower-face respirator concealing his facial features, copper/amber circuit trim and vivid square ARC puzzle patches on chest and sleeves. Tousled dark hair visible above visor, hood partially raised behind head, confident relaxed stance, full figure or three-quarter portrait with hands in frame. One gloved hand holds a small luminous colored square ARC puzzle; other rests on utility belt. Face stays concealed: this is a deliberately anonymous editorial character based on his own observed styling, not an invented verified facial portrait, and no childhood photo is used. Scene: magnificent softly focused ARC scoring-hall workshop, large geometric multicolored grid panels and warm bronze architecture, moody midnight blue with cyan and amber rim light, a narrow distant window showing snowy mountains subtly echoes his own header. Premium highly detailed 3D-comic cinematic art, rich materials, charismatic esports sports-star energy, strong readable silhouette, respectful adult proportions. Landscape4:3, main character large and centered, all headgear/hair/hands within frame. No other people or animals, no words, names, letters, labels, digits, scores, ranks, medals, logos, watermark or card border. No inferred team membership, nationality, job, real hardware budget or technical method encoded in the image.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-30-mistyotter-own-header.jpg",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-30-mistyotter-own-hoodie.jpg"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "mistyotter-ai",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-30-mistyotter-own-header.jpg",
+      "sourceUrl": "https://x.com/mistyotter_ai",
+      "role": "Own public header: dark adult hair, rear view and snowy setting. Not a verified front-facing likeness.",
+      "sha256": "1eb68edbb01ef39b3db522bbcf5f6cd895320967b0db307378a3ab3f3dc316a9"
+    },
+    {
+      "src": "/news-images/references/2026-10-30-mistyotter-own-hoodie.jpg",
+      "sourceUrl": "https://x.com/mistyotter_ai/status/2101658849073606697",
+      "role": "Own pinned Drip check clothing post, black zip hoodie. Styling only; remove all logos.",
+      "sha256": "9940d7ac131e32542c0c3c475ed348d0eac1fb8d3fd357101c58c4ec2d8fc14f"
+    }
+  ],
+  "review": "Reviewed one adult male editorial character with tousled dark hair, black zip hoodie, cyan visor and opaque lower-face covering. Face remains concealed, so no adult likeness is invented from his childhood profile photo. ARC-grid patches, compact cyber gear and snowy workshop echo the two observed own-post styling references. No text, rank, medal, branding or inferred team.",
+  "reviewStatus": "reviewed",
+  "commissionAuthority": "Boss commissioned Yegor / mistyotter_ai's anonymous cyber avatar, individual card and one X announcement.",
+  "archiveNote": "Exact native PNG and actual references retained. Only the first name Yegor and X account are verified; no Kaggle account or team identity is inferred.",
+  "rawSha256": "f86496130227dd7918a44ffd3e06c924cdd79120ccd2f867baa0f42888ede14f",
+  "nativeOriginalSha256": "3ce0db3611f04411cd404a674acdf28cd2baa111e481ada1f37e1c98baf737bf"
+}
