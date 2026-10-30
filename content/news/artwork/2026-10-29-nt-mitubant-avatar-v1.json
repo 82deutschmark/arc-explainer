@@ -59,5 +59,10 @@
     "maxEdge": 1200,
     "nativeUnchanged": true
   },
-  "referenceSystem": "https://arc.markbarney.net/news/cards"
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "identityCorrection": {
+    "state": "superseded-incorrect-identity",
+    "replacement": "2026-10-29-nt-mitubant-avatar-v2",
+    "note": "Boss corrected this misassigned banana kitten with NT’s own yellow-bird profile avatar. Do not use this image as an NT reference."
+  }
 }

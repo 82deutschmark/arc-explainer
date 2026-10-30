@@ -122,8 +122,9 @@ Concrete mappings that prevent repeat mistakes:
   [the October 29 Mutants reserve](2026-10-29-arc-mutants-art-reserve.md); their four-person
   cast never authorizes adding Jack or the Mutants costumes to ARC3 Turducken.
 - **NT = `mitubant`:** Boss directly confirmed the Discord/Kaggle mapping on October29,
-  and the own Kaggle profile is headed NT. Use P066 and the dedicated orange banana-suit
-  kitten avatar, with blue comic tears and Turducken's ARC3 setting. The character is
+  and the own Kaggle profile is headed NT. Use P066 and NT’s own yellow-bird avatar, with black eyebrows, half-lidded eyes,
+  a broad ochre beak and Turducken’s ARC3 setting. The earlier banana kitten was a
+  mistaken identity assignment and is retired as an NT reference. The character is
   recorded under `mitubant` in the visual registry. Do not assign NT to ARC2 ARC Mutants.
   The saved October29 ARC2 board instead places `mitubant`, `keithtyser`, `dzjiann` and
   `ngyzly` together on team `15526034`, この遥かなる旅路に祝福を. Preserve that separate

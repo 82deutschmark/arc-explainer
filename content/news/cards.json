@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T02:38:40.181Z",
+  "updatedAt": "2026-10-30T03:52:09.683Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -1170,15 +1170,15 @@
         }
       ],
       "art": {
-        "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
-        "alt": "Team Turducken commissioned team illustration",
-        "credit": "Commissioned ARC Daily team artwork",
-        "artworkId": "2026-10-18-turducken-whole-crew-flight-v1-base",
-        "commissionedAt": "2026-10-19T03:07:38Z"
+        "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+        "alt": "The complete Turducken crew aboard the mechanical airship, with NT’s corrected yellow-bird character and exactly two Yorkies.",
+        "credit": "Commissioned Turducken team artwork with NT’s own-avatar identity correction",
+        "artworkId": "2026-10-29-turducken-nt-corrected-v2",
+        "commissionedAt": "2026-10-30T03:52:09.683Z"
       },
       "artNotes": [
-        "Seven approved competitor characters and exactly two Yorkies; retain the established fictional bot/mascot roles.",
-        "The airborne turkey, chicken and sunglasses duck form the fantasy nested vehicle/mascot, not extra roster accounts. The clean native scene has no rank, score, date or headline overlay."
+        "Seven ARC3 competitor characters and exactly two Yorkies. NT / mitubant is the yellow bird at upper right; Keith is the separate black-capped yellow mascot.",
+        "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
       ],
       "number": "T014",
       "issuedAt": "2026-10-30T00:23:50.049Z",
@@ -1251,18 +1251,18 @@
           "teamId": "15605182"
         }
       ],
-      "description": "NT · mitubant · Team Turducken, ARC-AGI-3. The orange kitten in the banana suit is his established recurring character.",
+      "description": "NT · mitubant · Team Turducken, ARC-AGI-3. His own yellow-bird avatar in Turducken engineering gear.",
       "art": {
-        "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
-        "alt": "NT’s orange kitten in a banana suit, with comic tears and ARC-grid engineering harness, aboard Turducken’s hangar deck.",
-        "credit": "Commissioned NT / mitubant individual Turducken artwork",
-        "artworkId": "2026-10-29-nt-mitubant-avatar-v1",
-        "commissionedAt": "2026-10-30T02:38:40.181Z"
+        "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
+        "alt": "NT’s own yellow bird character with black eyebrows and a broad ochre beak, wearing ARC-grid Turducken engineering gear.",
+        "credit": "Commissioned NT illustration based on his own yellow-bird avatar",
+        "artworkId": "2026-10-29-nt-mitubant-avatar-v2",
+        "commissionedAt": "2026-10-30T03:50:38.966Z"
       },
       "artNotes": [
-        "Boss confirmed that Discord teammate NT is Kaggle mitubant on October29.",
-        "Preserve the orange kitten, banana hood/brown stem and blue comic tears. Dedicated individual illustration, not a crop of the crew.",
-        "ARC3 Team Turducken only; no ARC2 ARC Mutants membership or honors are implied."
+        "Boss supplied NT’s own Kaggle profile screenshot: a yellow bird with black eyebrows, half-lidded eyes, broad ochre beak and black feather marks.",
+        "The earlier banana-suit kitten was a mistaken identity assignment and is retired as an NT reference. Preserve it only as a superseded archive.",
+        "P066 remains NT / mitubant; the character and lead statistics belong to ARC3 Turducken."
       ]
     }
   ],

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T02:38:40.181Z",
+  "updatedAt": "2026-10-30T03:52:09.683Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -586,7 +586,11 @@
           "replacedArtworkId": "2026-10-20-morning-arc-3-d05a1f1a92",
           "revisionId": "2026-10-20-morning-arc-3-artwork-revision-1"
         }
-      ]
+      ],
+      "identityCorrection": {
+        "replacement": "2026-10-29-turducken-nt-corrected-v2",
+        "note": "Preserve historical image; banana kitten was wrongly assigned to NT. Use corrected crew reference for current identity."
+      }
     },
     {
       "id": "arc-mutants-academy-v1",
@@ -1486,11 +1490,31 @@
       "generationRecord": "2026-10-29-nt-mitubant-avatar-v1",
       "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
       "title": "NT — Turducken's banana-suit kitten",
+      "status": "superseded-incorrect-identity",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Wrong NT identity: banana kitten retired. Preserve archive only; use 2026-10-29-nt-mitubant-avatar-v2."
+    },
+    {
+      "id": "2026-10-29-nt-mitubant-avatar-v2",
+      "generationRecord": "2026-10-29-nt-mitubant-avatar-v2",
+      "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
       "status": "saved-character-reference",
       "articleUses": [],
       "xAttachments": [],
       "discordShares": [],
-      "selectionNote": "Dedicated individual ARC3 Turducken avatar/card for NT (mitubant), explicitly commissioned by Boss. Exact native PNG preserved separately; no article/social send."
+      "selectionNote": "Corrected yellow-bird NT avatar from own profile screenshot; supersedes mistaken banana kitten."
+    },
+    {
+      "id": "2026-10-29-turducken-nt-corrected-v2",
+      "generationRecord": "2026-10-29-turducken-nt-corrected-v2",
+      "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Corrected NT yellow bird in seven-account ARC3 crew, used on T014. Old native retained; no article or social send."
     }
   ],
   "existingXPosts": [

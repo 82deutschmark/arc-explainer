@@ -80,7 +80,7 @@ newsroom checkout. Inspect selected images before native generation; preserve th
 | Ronen, ARC2 | No human portrait. Use the Boss-approved opaque-helmet character in the ARC Mutants academy scene below, not Herminator. |
 | Keith, ARC3 | `2026-10-12-keith-tyser-reference-1-v1.webp` — established yellow mascot, black cap. |
 | DZ, ARC3 | `2026-10-18-turducken-dzj-avatar-v1.png` — blonde chibi, red eyes, pink bunny. |
-| NT / `mitubant`, ARC3 | `2026-10-18-turducken-nt-avatar-v1.png` — orange kitten in banana costume with comic tears. Boss confirmed the exact Kaggle handle on October29; dedicated avatar `2026-10-29-nt-mitubant-avatar-v1`. |
+| NT / `mitubant`, ARC3 | Own yellow-bird avatar from the Boss-supplied Kaggle screenshot; current `2026-10-29-nt-mitubant-avatar-v2`. Earlier banana kitten was misassigned and is retired. |
 | Choryu, ARC3 | `2026-10-18-turducken-choryu-avatar-v1.png` — grayscale cardiac-MRI display head; no health claim. |
 | Ronen’s Herminator stand-in, ARC3 | `2026-10-18-turducken-herminator-avatar-v1.png` — silver/cobalt knight with blue plume. |
 | ARC2 aesthetic reference | `2026-10-19-arc-mutants-owner-aesthetic-v1.png` — ARC grids and dense GPU equipment; ignore old ARC Raiders branding. |
@@ -110,13 +110,15 @@ are saved with the gallery.
 
 ## Team Turducken’s commissioned crew
 
-The October 18 full-crew commission uses Son’s supplied Discord avatars directly: DZ is the blonde, red-eyed chibi with a pink plush bunny; NT is the orange kitten in a banana suit with comic tears; Choryu uses a grayscale cardiac-MRI display as a head; Herminator, the silver/cobalt plumed knight, stands in for Ronen’s bot. These are approved editorial characters, not claims about real faces or health. Preserve Mark, Son, Keith’s black-capped yellow mascot and exactly two Yorkies. The four frozen inputs are `client/public/news-images/references/2026-10-18-turducken-{dzj,nt,choryu,herminator}-avatar-v1.png`; the full-crew generation record preserves their hashes and roles.
+The October 18 full-crew commission uses Son’s supplied Discord avatars directly: DZ is the blonde, red-eyed chibi with a pink plush bunny; the figure originally assigned to NT was an orange banana-suit kitten (incorrect; see the October29 correction below); Choryu uses a grayscale cardiac-MRI display as a head; Herminator, the silver/cobalt plumed knight, stands in for Ronen’s bot. These are approved editorial characters, not claims about real faces or health. Preserve Mark, Son, Keith’s black-capped yellow mascot and exactly two Yorkies. The four frozen inputs are `client/public/news-images/references/2026-10-18-turducken-{dzj,nt,choryu,herminator}-avatar-v1.png`; the full-crew generation record preserves their hashes and roles.
 
 **NT = Kaggle `mitubant` (Boss, October29).** The exact profile is
 `https://www.kaggle.com/mitubant`, headed NT. His dedicated individual illustration and
-P066 card retain the orange banana-suit kitten, blue comic tears and Turducken's snowy
+P066 card now use his own yellow bird, black eyebrows and ochre beak in Turducken’s snowy
 brass/cobalt engineering world. Preserve its exact native PNG, original community avatar
-and full crew style reference. This account is on ARC3 Turducken, not ARC2 ARC Mutants.
+and full crew style reference. The banana kitten was the wrong identity and is retired.
+The corrected whole-crew reference is `2026-10-29-turducken-nt-corrected-v2`; preserve
+the October18 image as historical art. This account is on ARC3 Turducken, not ARC2 ARC Mutants.
 This direct confirmation resolves NT's mapping; it does not establish the other Discord
 names' exact handles by elimination.
 His separate ARC2 entry is team `15526034`, この遥かなる旅路に祝福を, alongside

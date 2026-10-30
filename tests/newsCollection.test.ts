@@ -343,7 +343,8 @@ describe('the real permanent commissioned collection', () => {
     expect(card.entries[0]).toMatchObject({ competition: 'arc-3', teamId: '15605182' });
     expect(card.entries.some(entry => entry.competition === 'arc-2' && entry.teamId === '15526034')).toBe(true);
     expect(card.entries.some(entry => entry.teamId === '17023174')).toBe(false);
-    expect(card.art?.artworkId).toBe('2026-10-29-nt-mitubant-avatar-v1');
+    expect(card.art?.artworkId).toBe('2026-10-29-nt-mitubant-avatar-v2');
+    expect(card.art?.alt).toMatch(/yellow bird/i);
   });
   it('resolves every current individual/team card, including all nine new commissions', () => {
     const collection = getNewsCollection();

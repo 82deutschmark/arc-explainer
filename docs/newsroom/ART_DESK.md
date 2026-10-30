@@ -59,8 +59,9 @@ separately. Curated team art never supplies an invented personal likeness or rel
   in the fresh roster; the machines are metaphors, not claims about hardware or spending.
 - **Team Turducken pictures include the whole ARC3 crew.** For the team's current picture and
   future Turducken-focused illustrations, show Mark, Son, Keith, DZ, NT, Choryu and Herminator
-  standing in for Ronen together on the mechanical turkey, with both Yorkies. Use the approved
-  `2026-10-18-turducken-whole-crew-flight-v1-base` for the current team picture. The earlier
+  standing in for Ronen together on the mechanical turkey, with both Yorkies. Use the corrected
+  `2026-10-29-turducken-nt-corrected-v2` for the current team picture: NT is his own yellow bird,
+  not the previously misassigned banana kitten. Preserve the October18 original as historical art. The earlier
   three-character First Flight and hangar are historical episodes; do not select them as a
   current team picture. Check the full cast in [CHARACTERS.md](CHARACTERS.md) before publishing.
 - **The future scene.** When new art is needed after stock is used, the Boss's concept is two GPU

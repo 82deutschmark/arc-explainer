@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.20  Oct 29, 2026
+
+- **Correct NT to his own yellow-bird avatar** (Author: GPT-6 / Codex). Replace the mistaken banana-kitten identity on P066, the people portrait and active character references using the Boss-supplied Kaggle screenshot. Correct NT's figure in the full Turducken crew and T014 too. Keep Keith's separate black-capped mascot and the rest of the crew intact.
+- Preserve both new native originals, actual prompts, screenshot input and the earlier artwork as superseded history. Update the permanent playbook and art directions so future scenes use NT's yellow bird. No article or social send.
+- Validation: 42 collection, image and HTTP checks plus character-library validation pass; corrected P066 and T014 print proofs are saved and reviewed.
+
 ### Version 9.159.19  Oct 29, 2026
 
 - **Show the whole player** (Author: GPT-6 / Codex). Player PNG fronts now name both ARC teams and show both dated team standings. Add a downloadable reverse with Kaggle career results, earlier teams, source notes and account links. Give Son's card his verified Expert credential, Orbit Wars silver and shared RSNA Knee bronze; add Mark's three completed results. Use Son's unchanged full-size own-profile portrait and retain earlier artwork.

@@ -71,3 +71,9 @@ medals remain distinct from current public ARC positions.
 
 `person-son-pham-2026-share-preview.png` and `team-turducken-2026-share-preview.png` show the
 separate landscape link previews: a player's own portrait and career, or the full team scene.
+
+**Correction, October29:** the banana kitten was wrongly assigned to NT. Boss supplied
+his own Kaggle profile screenshot, which shows a yellow bird with black eyebrows,
+half-lidded eyes and an ochre beak. Use `person-mitubant-2026-v2.png` and the corrected
+`team-turducken-2026-v2.png`. Earlier proofs and the old attempt remain historical;
+the active P066/T014 bindings and permanent character notes use the corrected bird.

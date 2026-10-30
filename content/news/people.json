@@ -4221,12 +4221,12 @@
     ],
     "name": "NT",
     "editorialPortrait": {
-      "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
-      "alt": "NT’s orange kitten in a banana suit, with comic tears and ARC-grid engineering harness, aboard Turducken’s hangar deck.",
-      "artworkId": "2026-10-29-nt-mitubant-avatar-v1",
+      "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
+      "alt": "NT’s own yellow bird character with black eyebrows and a broad ochre beak, wearing ARC-grid Turducken engineering gear.",
+      "artworkId": "2026-10-29-nt-mitubant-avatar-v2",
       "sourceUrl": "https://www.kaggle.com/mitubant",
-      "sourceTitle": "NT — commissioned Turducken mascot from his established community avatar",
-      "checkedAt": "2026-10-30T02:38:40.181Z"
+      "sourceTitle": "NT — corrected illustration based on his own yellow-bird profile avatar",
+      "checkedAt": "2026-10-30T03:50:38.966Z"
     }
   }
 ]

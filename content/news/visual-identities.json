@@ -1359,48 +1359,84 @@
         "NT",
         "mitubant"
       ],
-      "description": "NT / mitubant, Turducken’s orange kitten in a banana suit with comic tears and ARC-grid engineer harness.",
-      "referenceType": "Boss-confirmed individual ARC3 Turducken avatar",
+      "description": "NT · mitubant · Team Turducken, ARC-AGI-3. His own yellow-bird avatar in Turducken engineering gear.",
+      "referenceType": "Corrected own-avatar reference: NT’s yellow bird",
       "references": [
         {
-          "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
-          "sha256": "990387f3afb33dc31353286db08a2157110c129d88d3ff8b2c998ec5b718e336",
-          "generationRecord": "2026-10-29-nt-mitubant-avatar-v1",
+          "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
+          "sha256": "216ff895f8d6c5fa5ab99edec192da4f0558524408ad61a3910df6d9339fb2a7",
+          "generationRecord": "2026-10-29-nt-mitubant-avatar-v2",
           "kind": "native-character",
-          "label": "NT — dedicated Turducken avatar",
-          "role": "Exactly one orange kitten in banana costume with comic tears. Preserve character details and ARC3 mechanical-turkey world."
+          "label": "NT — corrected yellow-bird character",
+          "role": "Authoritative current NT identity. Preserve yellow bird, black eyebrows, half-lidded eyes, ochre beak and feather marks."
         },
         {
-          "src": "/news-images/references/2026-10-29-nt-mitubant-avatar-v1-native.png",
-          "sha256": "044a1aa4bbdd8044f0efd952392a17473fa929618a0eae13c2ecad4cf4ce43da",
-          "kind": "native-original",
-          "label": "Exact selected native NT PNG",
-          "role": "Lossless original of NT’s dedicated commissioned avatar; preserve unchanged."
-        },
-        {
-          "src": "/news-images/references/2026-10-18-turducken-nt-avatar-v1.png",
-          "role": "NT's established orange kitten in a banana suit with comic tears, supplied by Son for the Turducken cast. Boss explicitly confirmed NT is Kaggle mitubant on October29.",
-          "sha256": "057d0fc3f004dde233d65c16e196fbfd683a48d4a47e4c629c7e158ed93da9ee",
-          "kind": "source-reference",
-          "label": "NT's established orange kitten in a banana suit with comic tears, supplied by Son for the Turducken cast. Boss explicitly confirmed NT is Kaggle mitubant on October29."
+          "src": "/news-images/references/2026-10-29-nt-mitubant-own-profile-screenshot.png",
+          "role": "Authoritative user-supplied own Kaggle profile screenshot showing NT's yellow bird. Supersedes the incorrectly assigned banana kitten.",
+          "sourceUrl": "https://www.kaggle.com/mitubant",
+          "sha256": "28ae6393d94cd77df8aaf618af71a1bda5508ab97a50cde58c40bbbc044db055",
+          "label": "Authoritative user-supplied own Kaggle profile screenshot showing NT's yellow bird. Supersedes the incorrectly assigned banana kitten.",
+          "kind": "source-reference"
         },
         {
           "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
-          "role": "Approved ARC3 Turducken world/style reference; use mechanical turkey, snowy GPU Valley and warm brass/cobalt engineering. Do not crop the group.",
+          "role": "Turducken engineering/world style only. The old banana kitten is not NT and is excluded from this identity reference.",
           "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
-          "kind": "source-reference",
-          "label": "Approved ARC3 Turducken world/style reference; use mechanical turkey, snowy GPU Valley and warm brass/cobalt engineering. Do not crop the group."
+          "label": "Turducken engineering/world style only. The old banana kitten is not NT and is excluded from this identity reference.",
+          "kind": "source-reference"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-nt-mitubant-avatar-v2-native.png",
+          "sha256": "983cef6526ddfc8603dc66a5778f7d844888a5cd3e3546a041438ccac1da617d",
+          "kind": "native-original",
+          "label": "Exact corrected native PNG",
+          "role": "Preserve unchanged."
         }
       ],
       "identityNotes": [
-        "Boss directly confirmed NT = Kaggle mitubant on October29; his own Kaggle profile is headed NT.",
-        "Orange kitten/banana suit/comic tears follow the established Son-supplied community avatar. No human face is invented.",
-        "This is the ARC3 Turducken character; NT is not part of the four-account ARC2 ARC Mutants cast."
+        "Boss supplied NT’s own Kaggle profile screenshot: a yellow bird with black eyebrows, half-lidded eyes, broad ochre beak and black feather marks.",
+        "The earlier banana-suit kitten was a mistaken identity assignment and is retired as an NT reference. Preserve it only as a superseded archive.",
+        "P066 remains NT / mitubant; the character and lead statistics belong to ARC3 Turducken."
       ],
-      "provenance": "Boss-requested individual avatar with exact native PNG, prompt, actual arguments, own/community character input and full team style reference archived."
+      "provenance": "Boss corrected the earlier misassignment using NT’s own Kaggle profile screenshot. This yellow bird supersedes the banana kitten for all future NT appearances."
+    },
+    {
+      "id": "turducken",
+      "status": "ready",
+      "names": [
+        "Team Turducken — corrected ARC3 crew"
+      ],
+      "description": "The complete Turducken crew aboard the mechanical airship, with NT’s corrected yellow-bird character and exactly two Yorkies.",
+      "referenceType": "Corrected seven-account team character reference",
+      "teamIds": {
+        "arc-3": [
+          "15605182"
+        ]
+      },
+      "includePeople": [
+        "mark-barney",
+        "son-pham",
+        "keith-tyser",
+        "mitubant"
+      ],
+      "references": [
+        {
+          "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+          "sha256": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
+          "generationRecord": "2026-10-29-turducken-nt-corrected-v2",
+          "kind": "native-character",
+          "label": "Corrected Turducken crew — NT yellow bird",
+          "role": "Current crew reference. Exactly seven main characters and two Yorkies. NT is the uncapped yellow bird upper right; Keith is the separate black-capped mascot."
+        }
+      ],
+      "identityNotes": [
+        "Seven ARC3 competitor characters and exactly two Yorkies. NT / mitubant is the yellow bird at upper right; Keith is the separate black-capped yellow mascot.",
+        "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
+      ],
+      "provenance": "Native edit preserves the old crew and corrects NT using the own-profile screenshot supplied by Boss. Original image and all inputs retained."
     }
   ],
-  "updatedAt": "2026-10-30T02:38:40.181Z",
+  "updatedAt": "2026-10-30T03:52:09.683Z",
   "version": 1,
   "reusableScenes": [
     {
