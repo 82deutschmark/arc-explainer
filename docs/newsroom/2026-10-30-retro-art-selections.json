@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-30",
+  "authority": "Boss's direct art corrections in this chat, 30 October 2026",
+  "direction": [
+    "Reuse established individual cards and usable team portraits before commissioning replacements. Boss expressly authorizes extracting individual portraits from team art.",
+    "Anime human avatars become 1950s pulp/space-western human-proportioned characters with integrated facial cybernetics. Fictional avatar adaptations do not establish real owner facial likenesses.",
+    "Vary character silhouette, equipment, pose, palette and setting. No repeated bubble-helmet/twin-GPU template.",
+    "Keep outsized GPUs but vary their packaging: field cases, compute saddlebags, vacuum-tube radios, side-mounted engines, maintenance rigs and optical survey equipment.",
+    "No scarves in new space costumes. No photo-head-on-generic-armor appearance. Faces and equipment share one coherent ink/paint/print treatment.",
+    "Preserve existing mascots and approved cyber characters; no wholesale recasting."
+  ],
+  "selected": [
+    {
+      "personId": "punkcyber",
+      "cardNumber": "P021",
+      "artworkId": "2026-10-30-punkcyber-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp",
+      "note": "Accepted retro heroine direction with targeted scarf removal."
+    },
+    {
+      "personId": "isaka-tsuyoshi",
+      "cardNumber": "P051",
+      "artworkId": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp",
+      "note": "Reviewed varied frontier radio equipment; current first corrected male avatar."
+    }
+  ],
+  "animeConversionsRemaining": [
+    {
+      "personId": "lonnie",
+      "cardNumber": "P015",
+      "motifs": "Dark bob, round glasses, teal clothing; fictional illustrated account avatar."
+    },
+    {
+      "personId": "itsu",
+      "cardNumber": "P033",
+      "motifs": "White hair, blue eyes, black/gold diamond headband; rework animal-ear shapes as retro antenna/headgear details, no anime face."
+    },
+    {
+      "personId": "dongming-sheng",
+      "cardNumber": "P059",
+      "motifs": "Dark bob and navy palette; fictional illustrated account avatar, also appears in Grigoriy quartet."
+    },
+    {
+      "personId": "lukas-aichberger",
+      "cardNumber": "P036",
+      "motifs": "Swept chestnut hair, blue/navy grid streetwear; replace overly cartoon face with pulp hero treatment while preserving Last Dance identity."
+    },
+    {
+      "character": "DZ",
+      "motifs": "Blonde/pink-bunny character in Turducken ARC3 crew. Rework chibi human treatment into adult retro space heroine while preserving pink bunny motif. No new account identity inferred."
+    }
+  ],
+  "portraitRepairsRemaining": [
+    "jeroen-cottaar",
+    "mykyta-ielanskyi",
+    "fses91",
+    "darragh-hanley",
+    "alijs",
+    "fshindo"
+  ],
+  "reuseEstablished": [
+    "jean-francois-puget",
+    "dries-smit",
+    "jack-cole",
+    "mark-barney",
+    "son-pham"
+  ],
+  "markAuthority": "/news-images/references/2026-10-30-mark-barney-owner-avatar-v2.png",
+  "teamContinuity": "Reuse unaffected roster members and composition; replace anime character regions after the corresponding individual design is established. ARC2 Mutants and ARC3 Turducken remain distinct teams.",
+  "scope": "Artwork, image files and provenance only. Page implementation is owned by the other assistant."
+}

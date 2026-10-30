@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "id": "2026-10-30-punkcyber-retro-space-proof-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:41:32.354400+00:00",
+  "purpose": "style-proof",
+  "subjectId": "punkcyber",
+  "rawSrc": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-proof-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-proof-v1-native.png",
+  "toolOutput": "exec-5da137c8-48c5-45a8-8045-7b1ecef2fc5b.png",
+  "prompt": "Use case: style-transfer. Create ONE finished portrait illustration for the ARC Daily Card Cabinet. Transform the specific fictional illustrated avatar in input1 into a charismatic adult 1950s retro-futuristic space-adventure heroine. Inputs2 and3 are visual references for vintage printed comic/pulp illustration technique only; do not copy their characters, writing, cover compositions or logos.\n\nRetain this avatar's chestnut brown bob with subtle blue-violet tips, round black spectacles, warm expression, ochre scarf and red/cream clothing accents. Depict a confident adult woman with naturally proportioned human facial features, realistically sized eyes, strong hand-inked cheekbones and nose, restrained vintage lipstick. Entirely hand-painted and inked, never photographic. Absolutely no anime or manga, no chibi or huge cartoon eyes. This is a reimagining of an illustrated account mascot, not a claim about the real account owner's face.\n\nShe is an ingenious space engineer and space queen of absurd compute. Integrated substantial cybernetic face equipment: heavy circular chrome-and-brass radio earpieces, bolted temple plates, a small square blue CRT optical attachment mechanically hinged onto one spectacle lens, riveted cheek communications hardware and insulated cables visibly connected into a heavy chrome neck collar. A clear bubble space helmet accommodates her hair and mechanical headset. Preserve readable expression. Face, neck, torso and equipment share coherent anatomy, perspective, lighting and the SAME hand-painted ink treatment.\n\nOutrageously oversized graphics-card shoulder/back apparatus: TWO recognizable triple-fan graphics cards, each nearly torso-sized, visibly identifiable huge circular cooling fans, thick aluminum heat sinks, exposed green circuit board edges, copper coolant pipes and braided cabling. Equipment imagined by a 1950s pulp artist: riveted scarlet enamel and cream housings, chrome rocket fins, glowing vacuum tubes, analog amber indicator lamps, small multicolored ARC square-grid screens mounted on temple, breastplate and gloves. A gloved hand turns a big rotary selector on the chest computer. Inventive funny bulk, beautiful readable engineering, no generic fantasy armor.\n\nThe visual language is vintage American pulp space adventure: powerful black brush contours, painted gouache shading, subtly visible fine halftone, slight offset print misregistration, gently textured warm paper. Saturated scarlet, turquoise, cream, mustard yellow and deep violet/navy. Heroic theatrical slightly cheesy space-age optimism. More illustrated magazine cover than glossy 3D render. Background: orbital scoring-hall window with ringed planet, tiny distant rocket and colored square ARC constellations; quiet enough that heroine and enormous GPUs dominate.\n\nFull bleed PORTRAIT 5:7, ideally1500x2100. Head-to-waist, complete helmet and entire enormous shoulder rig contained within frame, face near upper third. Bottom quarter calmer navy print shading for future code-added stats. Artwork only, absolutely no words, names, letters, digits, title, speech bubbles, caption boxes, logos, watermark, card border or printed medals. No other people.",
+  "toolArguments": {
+    "prompt": "Use case: style-transfer. Create ONE finished portrait illustration for the ARC Daily Card Cabinet. Transform the specific fictional illustrated avatar in input1 into a charismatic adult 1950s retro-futuristic space-adventure heroine. Inputs2 and3 are visual references for vintage printed comic/pulp illustration technique only; do not copy their characters, writing, cover compositions or logos.\n\nRetain this avatar's chestnut brown bob with subtle blue-violet tips, round black spectacles, warm expression, ochre scarf and red/cream clothing accents. Depict a confident adult woman with naturally proportioned human facial features, realistically sized eyes, strong hand-inked cheekbones and nose, restrained vintage lipstick. Entirely hand-painted and inked, never photographic. Absolutely no anime or manga, no chibi or huge cartoon eyes. This is a reimagining of an illustrated account mascot, not a claim about the real account owner's face.\n\nShe is an ingenious space engineer and space queen of absurd compute. Integrated substantial cybernetic face equipment: heavy circular chrome-and-brass radio earpieces, bolted temple plates, a small square blue CRT optical attachment mechanically hinged onto one spectacle lens, riveted cheek communications hardware and insulated cables visibly connected into a heavy chrome neck collar. A clear bubble space helmet accommodates her hair and mechanical headset. Preserve readable expression. Face, neck, torso and equipment share coherent anatomy, perspective, lighting and the SAME hand-painted ink treatment.\n\nOutrageously oversized graphics-card shoulder/back apparatus: TWO recognizable triple-fan graphics cards, each nearly torso-sized, visibly identifiable huge circular cooling fans, thick aluminum heat sinks, exposed green circuit board edges, copper coolant pipes and braided cabling. Equipment imagined by a 1950s pulp artist: riveted scarlet enamel and cream housings, chrome rocket fins, glowing vacuum tubes, analog amber indicator lamps, small multicolored ARC square-grid screens mounted on temple, breastplate and gloves. A gloved hand turns a big rotary selector on the chest computer. Inventive funny bulk, beautiful readable engineering, no generic fantasy armor.\n\nThe visual language is vintage American pulp space adventure: powerful black brush contours, painted gouache shading, subtly visible fine halftone, slight offset print misregistration, gently textured warm paper. Saturated scarlet, turquoise, cream, mustard yellow and deep violet/navy. Heroic theatrical slightly cheesy space-age optimism. More illustrated magazine cover than glossy 3D render. Background: orbital scoring-hall window with ringed planet, tiny distant rocket and colored square ARC constellations; quiet enough that heroine and enormous GPUs dominate.\n\nFull bleed PORTRAIT 5:7, ideally1500x2100. Head-to-waist, complete helmet and entire enormous shoulder rig contained within frame, face near upper third. Bottom quarter calmer navy print shading for future code-added stats. Artwork only, absolutely no words, names, letters, digits, title, speech bubbles, caption boxes, logos, watermark, card border or printed medals. No other people.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/punkcyber.webp",
+      "/var/folders/yt/gpbb89jn1_97dpj4gl0_g2x80000gn/T/codex-clipboard-65dd989d-326c-4732-950a-4ae47f67ea70.png",
+      "/var/folders/yt/gpbb89jn1_97dpj4gl0_g2x80000gn/T/codex-clipboard-d5191976-7608-4415-bd49-d5007be6b152.png"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/punkcyber.webp",
+      "role": "Owner-selected fictional character to transform",
+      "sha256": "01acde188cac15ef3a8697b2d19ff9e6bf4e6768260969b9fd4d18f14033adb7"
+    },
+    {
+      "src": "/news-images/references/2026-10-30-retro-pulp-owner-style-1-v1.png",
+      "role": "Boss-supplied vintage pulp printing/style reference only",
+      "sha256": "f3b9d9dd8b9f5e4b691a8c7a11ef6c091abe6373a34950ca4cf109333797b5c7"
+    },
+    {
+      "src": "/news-images/references/2026-10-30-retro-pulp-owner-style-2-v1.png",
+      "role": "Boss-supplied vintage pulp printing/style reference only",
+      "sha256": "0d350df1411d7de04e6651ec957f31167efa97a905c2286f61039eb9444180b8"
+    }
+  ],
+  "reviewStatus": "editor-approved-direction",
+  "review": "First requested retro-space style proof. One adult illustrated heroine, preserved bob/glasses/scarf colors, mechanically attached optical display and headset, huge triple-fan GPU rigs, scarlet/cream vintage print treatment. No text. Presented for editor response; not automatically selected for a card.",
+  "nativeOriginalSha256": "f615bf808663e045adf632907e9e88baaec4ee49236a2bc3459b95638a5b1f1a",
+  "archiveNote": "Exact native PNG retained; prior art and all card selections unchanged.",
+  "commissionAuthority": "Boss approved 1950s pulp/cyberpunk hybrid and requested first image on 30 October 2026.",
+  "editorDecision": "Boss accepted this as the replacement and asked for scarf removal. See 2026-10-30-punkcyber-retro-space-v2 for that correction."
+}
