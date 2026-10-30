@@ -1,0 +1,324 @@
+{
+  "personId": "xz",
+  "handle": "xiaoz259",
+  "name": "xz",
+  "checkedAt": "2026-10-30T13:15:19Z",
+  "method": "Read-only visit to the public Kaggle profile and Competitions pages in the Claude desktop app's built-in browser on 2026-10-30. Page text read after load, medal icons read from screenshots of the competition list, and the profile picture URL and join tooltip read from the page. No earlier draft was relied on (none existed for this player).",
+  "sources": [
+    "https://www.kaggle.com/xiaoz259",
+    "https://www.kaggle.com/xiaoz259/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Competitions Master",
+    "medals": {
+      "gold": 1,
+      "silver": 3,
+      "bronze": 5
+    },
+    "competitionRank": 15,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 10,
+    "joinedTooltip": "Sat Oct 28 2023 13:37:06 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2023-10",
+    "bioPresent": false,
+    "activity": "21 competitions solo, 0 in a team, 0 hosted (as shown on the competitions page)"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 20,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "AI Agent Security - Multi-Step Tool Attacks",
+      "Jane Street Real-Time Market Data Forecasting",
+      "AI Mathematical Olympiad - Progress Prize 2",
+      "NFL Big Data Bowl 2026 - Prediction",
+      "MABe Challenge - Social Action Recognition in Mice",
+      "Konwinski Prize",
+      "MITSUI&CO. Commodity Prediction Challenge",
+      "Santa 2025 - Christmas Tree Packing Challenge",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "ARC Prize 2024",
+      "Hull Tactical - Market Prediction",
+      "ARC Prize 2025",
+      "AI Mathematical Olympiad - Progress Prize 1",
+      "The Learning Agency Lab - PII Data Detection",
+      "CMI - Detect Behavior with Sensor Data",
+      "LLM Prompt Recovery",
+      "Kaggriculture",
+      "LLM - Detect AI Generated Text",
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "ROGII - Wellbore Geology Prediction"
+    ],
+    "scopeNote": "All 20 completed entries and the one active entry were displayed, sorted by Best Result. The nine medal icons seen in the list match the profile totals of one gold, three silver and five bronze. The list shows rank and team count only; it does not show scores or the date of each finish."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 1,
+      "teams": 4186,
+      "medal": "gold",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jane Street Real-Time Market Data Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+      "rank": 37,
+      "teams": 3757,
+      "medal": "silver",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 52,
+      "teams": 2212,
+      "medal": "silver",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NFL Big Data Bowl 2026 - Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
+      "rank": 52,
+      "teams": 1899,
+      "medal": "silver",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MABe Challenge - Social Action Recognition in Mice",
+      "competitionUrl": "https://www.kaggle.com/competitions/MABe-mouse-behavior-detection",
+      "rank": 78,
+      "teams": 1412,
+      "medal": "bronze",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Konwinski Prize",
+      "competitionUrl": "https://www.kaggle.com/competitions/konwinski-prize",
+      "rank": 79,
+      "teams": 617,
+      "medal": "bronze",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MITSUI&CO. Commodity Prediction Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
+      "rank": 87,
+      "teams": 1711,
+      "medal": "bronze",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "rank": 261,
+      "teams": 3357,
+      "medal": "bronze",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 286,
+      "teams": 4138,
+      "medal": "bronze",
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 341,
+      "teams": 1427,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Hull Tactical - Market Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+      "rank": 402,
+      "teams": 3677,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 602,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 1",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "rank": 672,
+      "teams": 1161,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Learning Agency Lab - PII Data Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+      "rank": 1261,
+      "teams": 2048,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CMI - Detect Behavior with Sensor Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+      "rank": 1384,
+      "teams": 2657,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM Prompt Recovery",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "rank": 1522,
+      "teams": 2175,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 1970,
+      "teams": 10148,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM - Detect AI Generated Text",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+      "rank": 2254,
+      "teams": 4358,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 2315,
+      "teams": 4185,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 2806,
+      "teams": 6125,
+      "medal": null,
+      "displayedHandles": ["xiaoz259"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/xz.webp",
+    "sourceUrl": "https://www.kaggle.com/xiaoz259",
+    "note": "The saved 320-pixel file was compared by eye with the live own-profile picture (storage.googleapis.com/kaggle-avatars/images/17460940-kg.jpg, 400 by 400, shown on the profile page and beside every competition row). Same picture: a close-up of a cream-coloured cat looking out of a cardboard box. It is xz's own chosen Kaggle profile picture, a single individual image, not a group photo, default avatar or stand-in. No replacement saved."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists xz as a Competitions Master, ranked 15th of 225,021 in the competitions ranking and 10th at best, with one gold, three silver and five bronze medals.",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259",
+      "sourceTitle": "xz - public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T13:15:19Z"
+    },
+    {
+      "text": "Kaggle lists xz first of 4,186 teams, with a gold medal, in AI Agent Security - Multi-Step Tool Attacks; the entry shows only the xiaoz259 account.",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+      "sourceTitle": "xz - Kaggle competition history",
+      "checkedAt": "2026-10-30T13:15:19Z"
+    },
+    {
+      "text": "xz's other medals on Kaggle are silver in Jane Street Real-Time Market Data Forecasting (37th), AI Mathematical Olympiad Progress Prize 2 (52nd) and NFL Big Data Bowl 2026 (52nd), plus five bronzes including Progress Prize 3 (286th).",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+      "sourceTitle": "xz - Kaggle competition history",
+      "checkedAt": "2026-10-30T13:15:19Z"
+    },
+    {
+      "text": "Kaggle lists xz 341st of 1,427 in ARC Prize 2024 and 602nd of 1,455 in ARC Prize 2025, with no medal in either.",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+      "sourceTitle": "xz - prior ARC Prize results on Kaggle",
+      "checkedAt": "2026-10-30T13:15:19Z"
+    },
+    {
+      "text": "xz's Kaggle profile features a 1st place solution write-up dated September 2, 2026 for the AI Agent Security competition; it is about that separate competition, not an ARC method.",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259",
+      "sourceTitle": "xz - featured write-up on Kaggle",
+      "checkedAt": "2026-10-30T13:15:19Z"
+    }
+  ],
+  "teamNotes": "Kaggle shows all 21 of xz's competitions as solo entries and every competition row displays only the xiaoz259 account. The list never shows a team name, so none is recorded for completed results. The people.json record gives a team name of faster machine is all you need and a team id for ARC-AGI-3 from the arc.markbarney.net public roster; those were not visible on the Kaggle pages read today, so they are not repeated as facts here.",
+  "unverified": [
+    "The ARC Prize 2026 - ARC-AGI-3 team name (faster machine is all you need) and any ARC-AGI-3 standing for xz: the Kaggle pages read today only list the competition as active with 3 days to go. Any public ARC standing is provisional until the private leaderboard settles at close.",
+    "Exact completion dates of each finish: the list shows only relative labels such as 2 months ago.",
+    "Scores: the competition list does not show scores.",
+    "The September 2, 2026 write-up body was read only as shown on the profile page; the write-up page itself was not opened."
+  ],
+  "verified": true
+}

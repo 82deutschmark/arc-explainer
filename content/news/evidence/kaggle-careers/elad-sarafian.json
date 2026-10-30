@@ -1,0 +1,85 @@
+{
+  "personId": "elad-sarafian",
+  "handle": "eladsarafian",
+  "name": "Elad Sarafian",
+  "checkedAt": "2026-10-30T12:25:17Z",
+  "method": "Built-in browser (Claude desktop app browser pane), 2026-10-30: read the public Kaggle profile page and the competitions page as text, took screenshots of both, and read the profile picture URL from the page's own avatar element. The earlier draft file (written while Kaggle was blocking) was discarded and every claim rebuilt from the live pages. The team standing was read from the team's own board mirror of the public Kaggle leaderboard with a plain read-only request. No rate limit, captcha or block appeared.",
+  "sources": [
+    "https://www.kaggle.com/eladsarafian",
+    "https://www.kaggle.com/eladsarafian/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "displayName": "Elad Sarafian",
+    "competitionTier": null,
+    "medals": null,
+    "tierAndMedalNote": "Neither page displays a competition tier or a medal summary for this account, and the competitions page lists no completed competitions, so there is nothing to credit. Tier and medal counts are left null, not zero.",
+    "joinedTooltip": "Tue Oct 28 2025 17:14:06 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2025-10",
+    "joinedLabelShown": "Joined a year ago",
+    "bioPresent": false,
+    "bioText": "Page shows 'No bio yet...' and the line 'Quietly working away'.",
+    "modelsTabCount": 1,
+    "followersTabCount": 2,
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInATeam": 1,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The competitions page shows only one active competition and no completed ones. This is what is publicly displayed, not proof that he took part in nothing else (private or unlisted work would not show)."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/elad-sarafian.webp",
+    "sourceUrl": "https://www.kaggle.com/eladsarafian",
+    "note": "The saved 320 pixel file is the same picture as his current Kaggle profile picture (compared by eye against the live 400 pixel original): a red, orange and yellow flame illustration with sparkles on white. It is his own single profile picture, not a group image and not a default avatar. It is an illustration he chose, not a photograph of him. No file was changed or added.",
+    "liveOriginalUrl": "https://storage.googleapis.com/kaggle-avatars/images/29907394-kg.png?t=2026-09-13-19-17-16",
+    "liveOriginalSize": "400x400",
+    "savedFileSize": "320x320"
+  },
+  "facts": [
+    {
+      "text": "Elad Sarafian's public Kaggle profile lists one competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/eladsarafian/competitions",
+      "sourceTitle": "Elad Sarafian — Kaggle competitions page",
+      "checkedAt": "2026-10-30T12:25:17Z"
+    },
+    {
+      "text": "Elad Sarafian's Kaggle account dates to October 2025.",
+      "sourceUrl": "https://www.kaggle.com/eladsarafian",
+      "sourceTitle": "Elad Sarafian — Kaggle profile join date",
+      "checkedAt": "2026-10-30T12:25:17Z"
+    },
+    {
+      "text": "On the public ARC-AGI-3 leaderboard mirror, eladsarafian is listed on team NVARC3, provisionally 8th of 4,984 teams. That is the team's standing, not an individual honour, and it is not final until the competition closes.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-3 public leaderboard mirror — team NVARC3",
+      "checkedAt": "2026-10-30T12:25:17Z"
+    },
+    {
+      "text": "His Kaggle profile picture is a flame illustration, not a photograph.",
+      "sourceUrl": "https://www.kaggle.com/eladsarafian",
+      "sourceTitle": "Elad Sarafian — Kaggle profile picture",
+      "checkedAt": "2026-10-30T12:25:17Z"
+    }
+  ],
+  "teamNotes": "Current: NVARC3 in ARC Prize 2026 ARC-AGI-3 (team id 15770880), already in people.json memberships. The board mirror (fetched 2026-10-30T12:24:11Z) lists the team members as cpmpml, darraghdog, eladsarafian, galkaplun, sorokin, titericz and yeyinzhu, 77 submissions, 49.54 provisional score. The Kaggle profile page itself does not print the team name, only the competition and a row of teammate avatars. No past teams are visible because no completed competitions are listed.",
+  "unverified": [
+    "Competition tier and medal counts (not displayed on his public pages)",
+    "Any completed competition, rank, team size, medal or past team name (none listed)",
+    "The one public model shown on the Models tab (tab not opened)",
+    "Any write-ups, prizes or work outside Kaggle",
+    "The team name NVARC3 on the Kaggle site itself (taken from the board mirror, not read on a Kaggle page today)"
+  ],
+  "rateLimited": false,
+  "verified": true
+}

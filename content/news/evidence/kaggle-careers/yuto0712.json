@@ -1,0 +1,433 @@
+{
+  "personId": "yuto0712",
+  "handle": "yuto0712",
+  "name": "yuto083",
+  "checkedAt": "2026-10-30T13:57:09Z",
+  "method": "Read-only public Kaggle About page and Competitions page in the app's built-in browser, 30 October 2026, one visit each with a pause between them. Medals read from the medal icons shown beside each completed row (the row's gold, silver and bronze medal images, confirmed by eye in screenshots) and cross-checked against the profile medal counts; avatar image address read from the profile header's own picture element, downloaded once and compared by eye with the saved portrait. No older draft file existed for this person, so nothing earlier was used.",
+  "sources": [
+    "https://www.kaggle.com/yuto0712",
+    "https://www.kaggle.com/yuto0712/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 4,
+      "silver": 5,
+      "bronze": 8
+    },
+    "competitionRank": 54,
+    "competitionRankOutOf": 225021,
+    "joinedTooltip": "Tue Aug 20 2019 06:48:15 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-08",
+    "displayName": "yuto083",
+    "username": "yuto0712",
+    "pronouns": "he/him",
+    "headline": "CAIO at Prox Industries",
+    "location": "Tokyo, Tokyo, Japan",
+    "bioPresent": true,
+    "bioText": "(^~^)",
+    "competitionsTabCount": 48,
+    "activity": {
+      "solo": 32,
+      "inATeam": 16,
+      "hosted": 0
+    },
+    "linkedAccounts": [
+      {
+        "platform": "linkedin",
+        "url": "https://www.linkedin.com/in/yuto-kosugi/",
+        "note": "Link shown on his own Kaggle profile; the page itself was not opened."
+      },
+      {
+        "platform": "x",
+        "url": "https://twitter.com/kujiranoonaka",
+        "handle": "kujiranoonaka",
+        "note": "Link shown on his own Kaggle profile; the page itself was not opened."
+      }
+    ]
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 47,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "activeEntryDisplayedHandles": [
+      "yuto0712",
+      "ttyn4519",
+      "pompom555",
+      "isakatsuyoshi",
+      "tanakaai24",
+      "refv00",
+      "tk256ailab",
+      "konbu17"
+    ],
+    "activeEntryNote": "Shown as '3 days to go' on 30 October 2026.",
+    "sortOrder": "Best Result",
+    "rowsRead": 20,
+    "scopeNote": "Only the first page of the completed list (20 of 47, sorted by Best Result) was read. Those 20 rows hold all 17 medals the profile shows (4 gold, 5 silver, 8 bronze), so no medal is missing; the last three rows show no medal icon, and medal null in completedResults means exactly that. The other 27 completed entries were not read and no claim is made about them."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 4,
+      "teams": 4186,
+      "medal": "gold",
+      "displayedHandles": [
+        "confirm",
+        "bio4eta",
+        "yuto0712",
+        "isakatsuyoshi",
+        "rikitomo0526"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 8,
+      "teams": 6125,
+      "medal": "gold",
+      "displayedHandles": [
+        "sggpls",
+        "bluepill",
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 9,
+      "teams": 3947,
+      "medal": "gold",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 19,
+      "teams": 6299,
+      "medal": "gold",
+      "displayedHandles": [
+        "ogurtsov",
+        "asimandia",
+        "shin0000",
+        "yuto0712",
+        "ignatgotin"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "UBC Ovarian Cancer Subtype Classification and Outlier Detection (UBC-OCEAN)",
+      "competitionUrl": "https://www.kaggle.com/competitions/UBC-OCEAN",
+      "rank": 27,
+      "teams": 1326,
+      "medal": "silver",
+      "displayedHandles": [
+        "shin0000",
+        "yuto0712",
+        "ponsuk",
+        "chickenta2ta",
+        "kamano905"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 38,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "1st and Future - Player Contact Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-player-contact-detection",
+      "rank": 38,
+      "teams": 939,
+      "medal": "silver",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 129,
+      "teams": 4729,
+      "medal": "silver",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 270,
+      "teams": 6807,
+      "medal": "silver",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CZII - CryoET Object Identification",
+      "competitionUrl": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+      "rank": 57,
+      "teams": 931,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "G2Net Detecting Continuous Gravitational Waves",
+      "competitionUrl": "https://www.kaggle.com/competitions/g2net-detecting-continuous-gravitational-waves",
+      "rank": 60,
+      "teams": 936,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Benetech - Making Graphs Accessible",
+      "competitionUrl": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
+      "rank": 76,
+      "teams": 608,
+      "medal": "bronze",
+      "displayedHandles": [
+        "undonuts",
+        "yuto0712",
+        "atsushikarasawa",
+        "mizuochi"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF 2023",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2023",
+      "rank": 114,
+      "teams": 1189,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Child Mind Institute - Detect Sleep States",
+      "competitionUrl": "https://www.kaggle.com/competitions/child-mind-institute-detect-sleep-states",
+      "rank": 131,
+      "teams": 1877,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 161,
+      "teams": 1867,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "HMS - Harmful Brain Activity Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification",
+      "rank": 252,
+      "teams": 2767,
+      "medal": "bronze",
+      "displayedHandles": [
+        "shin0000",
+        "yuto0712",
+        "ponsuk",
+        "chickenta2ta"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Optiver - Trading at the Close",
+      "competitionUrl": "https://www.kaggle.com/competitions/optiver-trading-at-the-close",
+      "rank": 294,
+      "teams": 4436,
+      "medal": "bronze",
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NFL Health & Safety - Helmet Assignment",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
+      "rank": 103,
+      "teams": 825,
+      "medal": null,
+      "displayedHandles": [
+        "undonuts",
+        "yuto0712",
+        "yut7g8",
+        "shimahal"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Foursquare - Location Matching",
+      "competitionUrl": "https://www.kaggle.com/competitions/foursquare-location-matching",
+      "rank": 140,
+      "teams": 1079,
+      "medal": null,
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Coleridge Initiative - Show US the Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/coleridgeinitiative-show-us-the-data",
+      "rank": 170,
+      "teams": 1610,
+      "medal": null,
+      "displayedHandles": [
+        "yuto0712"
+      ],
+      "teamName": null,
+      "teamNameSource": "Kaggle's competition list does not display a team name for this entry.",
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/yuto0712.webp",
+    "sourceUrl": "https://www.kaggle.com/yuto0712",
+    "sourceImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/3602324-kg.PNG?t=2026-05-26-00-06-29",
+    "note": "The saved 320 pixel picture is the same single blue-whale illustration shown in the profile header today (a round header picture, not a group image and not Kaggle's default avatar). It is a drawn avatar, not a photograph. It is noticeably soft because it was enlarged from a small thumbnail; the live 400 pixel original at the image address above is sharper, and could replace it in a later pass. No new file was saved."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists yuto083, whose account is yuto0712, as a Competitions Master with 4 gold, 5 silver and 8 bronze competition medals, ranked 54th of 225,021, as checked on October 30, 2026.",
+      "sourceUrl": "https://www.kaggle.com/yuto0712",
+      "sourceTitle": "yuto083 — Kaggle profile tier, medals and rank",
+      "checkedAt": "2026-10-30T13:57:09Z"
+    },
+    {
+      "text": "His Kaggle profile lists him as CAIO at Prox Industries in Tokyo, and dates his account to August 2019.",
+      "sourceUrl": "https://www.kaggle.com/yuto0712",
+      "sourceTitle": "yuto083 — Kaggle profile headline, location and join date",
+      "checkedAt": "2026-10-30T13:57:09Z"
+    },
+    {
+      "text": "Kaggle credits his account with four gold medals, three of them as part of a team: AI Agent Security (4th of 4,186, five accounts on the entry), ROGII (8th of 6,125, three accounts) and RSNA Knee Abnormality Detection (19th of 6,299, five accounts). The fourth, Biohub (9th of 3,947), shows only his account.",
+      "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+      "sourceTitle": "yuto083 — completed gold-medal results and listed accounts on Kaggle",
+      "checkedAt": "2026-10-30T13:57:09Z"
+    },
+    {
+      "text": "Kaggle credits his account with five silver medals: UBC-OCEAN (27th of 1,326, a team entry with five accounts shown), then four entries showing only his account, Kaggriculture (38th of 10,148), 1st and Future (38th of 939), Orbit Wars (129th of 4,729) and the Pokémon Company PTCG AI Battle Challenge (270th of 6,807).",
+      "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+      "sourceTitle": "yuto083 — completed silver-medal results on Kaggle",
+      "checkedAt": "2026-10-30T13:57:09Z"
+    },
+    {
+      "text": "His Kaggle competitions page shows ARC Prize 2026 - ARC-AGI-3 as active with three days to go on October 30, 2026, with eight accounts on his entry, including isakatsuyoshi, pompom555, refv00 and konbu17.",
+      "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+      "sourceTitle": "yuto083 — active ARC Prize 2026 - ARC-AGI-3 entry on Kaggle",
+      "checkedAt": "2026-10-30T13:57:09Z"
+    }
+  ],
+  "teamNotes": [
+    "AI Agent Security (4th of 4,186, gold) is a team entry: Kaggle shows five accounts on it (confirm, bio4eta, yuto0712, isakatsuyoshi, rikitomo0526). The gold medal belongs to the team, not to him alone.",
+    "ROGII (8th of 6,125, gold) is a team entry: Kaggle shows three accounts on it (sggpls, bluepill, yuto0712). The medal is the team's.",
+    "RSNA Knee Abnormality Detection (19th of 6,299, gold) is a team entry: Kaggle shows five accounts on it (ogurtsov, asimandia, shin0000, yuto0712, ignatgotin). The medal is the team's.",
+    "Biohub (9th of 3,947, gold) shows only his account on the list row, so it is the only gold medal Kaggle displays as his alone.",
+    "UBC-OCEAN (silver) and HMS (bronze) also show shin0000 beside him, and Benetech (bronze) shows three other accounts (undonuts, atsushikarasawa, mizuochi). Those medals are team results.",
+    "His ARC Prize 2026 - ARC-AGI-3 entry on Kaggle shows eight accounts: yuto0712, ttyn4519, pompom555, isakatsuyoshi, tanakaai24, refv00, tk256ailab and konbu17. Kaggle's page does not display a team name for it.",
+    "isakatsuyoshi appears with him on both the finished AI Agent Security entry and the active ARC-AGI-3 entry."
+  ],
+  "unverified": [
+    "The team name 復活の混テキスト (team 16569113) comes only from the stored public ARC-3 roster observation of 29 October 2026; Kaggle's pages read today do not display any team name, so it was not re-confirmed.",
+    "His real name 小杉雄斗 and the LinkedIn description (CAIO at Prox Industries, University of Tokyo doctoral student on leave) come from the earlier stored record. The Kaggle profile links linkedin.com/in/yuto-kosugi and itself says CAIO at Prox Industries, but the LinkedIn page was not opened today.",
+    "The X account kujiranoonaka is linked from his Kaggle profile (the link address uses twitter.com); that account was not opened.",
+    "The 27 completed entries beyond the first page of the list were not read. The highest competition rank he has held was not read.",
+    "Kaggle shows five accounts on the AI Agent Security row on his page, including 'confirm'; the sibling record for isakatsuyoshi lists four accounts without it. This difference was not reconciled.",
+    "Who contributed what on any team entry is not shown by Kaggle's list. Exact completion dates were not shown, only relative labels such as '2 months ago'.",
+    "His ARC-AGI-3 public leaderboard standing was not checked in this pass; any standing quoted elsewhere must be labelled provisional."
+  ],
+  "verified": true
+}

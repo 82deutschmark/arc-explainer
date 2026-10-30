@@ -1,0 +1,116 @@
+{
+  "personId": "stefano-viel",
+  "handle": "stefano1283",
+  "name": "Stefano Viel",
+  "checkedAt": "2026-10-30T12:31:15Z",
+  "method": "Built-in browser (the Claude desktop app's browser pane), 30 October 2026. Loaded https://www.kaggle.com/stefano1283 and https://www.kaggle.com/stefano1283/competitions once each, with a wait before reading; read the page text, took screenshots of the competition list to look for medal icons, and read the join-date tooltip and the own-profile avatar address from the page. No rate limit or block was shown. The earlier draft of this file (written while Kaggle was blocking) was discarded and rebuilt from these two pages only.",
+  "sources": [
+    "https://www.kaggle.com/stefano1283",
+    "https://www.kaggle.com/stefano1283/competitions"
+  ],
+  "profile": {
+    "displayName": "Stefano Viel",
+    "headline": "Research Scientist at Tufa Labs",
+    "location": "Zürich, Zurich, Switzerland",
+    "competitionTier": null,
+    "medals": null,
+    "tierAndMedalsNote": "Kaggle displayed no competition tier, no ranking and no medal counts on either page, so none are claimed. This is not proof that the account has zero medals.",
+    "joinedTooltip": "Thu Dec 06 2018 07:00:01 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2018-12",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "followers": 29,
+    "competitionsListed": 3,
+    "activity": {
+      "competitionsSolo": 1,
+      "competitionsInATeam": 2,
+      "competitionsHosted": 0
+    },
+    "linkedAccounts": [
+      {
+        "platform": "github",
+        "handle": "stefanoviel"
+      },
+      {
+        "platform": "linkedin",
+        "handle": null
+      },
+      {
+        "platform": "x",
+        "handle": "Stefan0Vl"
+      }
+    ]
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 1,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge"
+    ],
+    "scopeNote": "Only this one completed record is publicly displayed. The two ARC Prize 2026 entries are still running (three days to go when read) and carry no final result."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "competitionType": "Featured",
+      "rank": 3887,
+      "teams": 4185,
+      "medal": null,
+      "medalNote": "No medal icon appears on this row in the screenshot of the competition list.",
+      "displayedHandles": [
+        "stefano1283"
+      ],
+      "teamName": null,
+      "teamNameNote": "The list row shows no team name; only the stefano1283 profile picture is displayed, matching the profile's one-solo-competition count.",
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/stefano-viel.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/2585541-kg.jpg?t=2026-05-23-06-44-37",
+    "note": "The saved 320-pixel portrait was compared by eye with the full 400-pixel original taken from the live own-profile avatar: the same smiling man in a black beanie and blue-grey zip hoodie in front of snowy mountains, one person only. It is his own individual picture, not a group image and not Kaggle's default avatar. The saved file was kept and not overwritten; the 400-pixel original is a better source if a larger one is ever wanted."
+  },
+  "facts": [
+    {
+      "text": "Stefano Viel’s Kaggle profile gives his job as Research Scientist at Tufa Labs, based in Zürich, Switzerland, and links to his GitHub, LinkedIn and X accounts.",
+      "sourceUrl": "https://www.kaggle.com/stefano1283",
+      "sourceTitle": "Stefano Viel — own Kaggle profile",
+      "checkedAt": "2026-10-30T12:31:15Z"
+    },
+    {
+      "text": "Stefano Viel’s Kaggle account dates from December 2018.",
+      "sourceUrl": "https://www.kaggle.com/stefano1283",
+      "sourceTitle": "Stefano Viel — Kaggle account join date",
+      "checkedAt": "2026-10-30T12:31:15Z"
+    },
+    {
+      "text": "Kaggle lists Stefano Viel’s completed NVIDIA Nemotron Model Reasoning Challenge entry at 3887th of 4185 teams, with no medal shown. Only his own account appears on the entry.",
+      "sourceUrl": "https://www.kaggle.com/stefano1283/competitions",
+      "sourceTitle": "Stefano Viel — completed Nemotron result on Kaggle",
+      "checkedAt": "2026-10-30T12:31:15Z"
+    },
+    {
+      "text": "Kaggle shows Stefano Viel as an entrant in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which were still running when this was read.",
+      "sourceUrl": "https://www.kaggle.com/stefano1283/competitions",
+      "sourceTitle": "Stefano Viel — active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T12:31:15Z"
+    }
+  ],
+  "teamNotes": "The two ARC Prize 2026 entries are team entries (the profile counts two competitions in a team). The Kaggle pages show only small teammate pictures, so no teammate names are claimed here. The team name Tufa Labs for both the ARC-AGI-3 and ARC-AGI-2 2026 entries comes from the repository's own public-roster observations (last seen 29 October), not from the Kaggle pages read today. The only completed finish is solo, so no team result or team medal is attributed to him.",
+  "unverified": [
+    "Competition tier, ranking and medal counts: the profile displays none, so they could not be read.",
+    "Whether the account has any medal at all; only the absence of a medal icon on the one completed entry was seen.",
+    "Names of his teammates on the two ARC Prize 2026 entries (only small pictures shown).",
+    "The Tufa Labs team name on the ARC entries, taken from the repository's roster observations rather than the Kaggle pages.",
+    "The EPFL master's degree and research interests from the Tufa Labs team page, carried over from the 13 October check and not re-read today (only the two Kaggle pages were allowed this run).",
+    "Current ARC Prize standings, which are provisional until the private leaderboard settles; none were read on these pages."
+  ],
+  "verified": true
+}

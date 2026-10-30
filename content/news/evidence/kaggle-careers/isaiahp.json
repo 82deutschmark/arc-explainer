@@ -1,0 +1,239 @@
+{
+  "personId": "isaiahp",
+  "handle": "pressman1",
+  "name": "Isaiah Pressman",
+  "checkedAt": "2026-10-30T11:48:32Z",
+  "method": "App built-in browser, 30 October 2026. Loaded the public Kaggle About page and Competitions page for pressman1 (one page at a time, six-second waits, no block or rate limit shown), read the page text and the page's element labels, and took screenshots of the profile header, the medal counters and the completed-competitions list. Medal colours were read from the gold and silver medal icons on each list row and match the page's own element labels. The own-profile avatar address was read from the profile header's background image. This file replaces an older draft that was written from Kaggle's data endpoints while the site was blocking the browser; no claim from that draft was carried over unless the live pages show it now.",
+  "sources": [
+    "https://www.kaggle.com/pressman1",
+    "https://www.kaggle.com/pressman1/competitions"
+  ],
+  "profile": {
+    "displayName": "IsaiahP",
+    "competitionTier": "Competitions Grandmaster",
+    "medals": {
+      "gold": 5,
+      "silver": 3,
+      "bronze": 0
+    },
+    "competitionRank": 14,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 8,
+    "joinedTooltip": "Fri Oct 05 2018 16:33:19 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2018-10",
+    "occupation": "AI Researcher at Tufa Labs",
+    "location": "Cleveland, Ohio, United States",
+    "bioPresent": true,
+    "linkedAccountsShown": [
+      "GitHub IsaiahPressman",
+      "LinkedIn (link text only)"
+    ],
+    "followers": 279,
+    "following": 2,
+    "tabCounters": {
+      "competitions": 11,
+      "datasets": 7,
+      "code": 2,
+      "discussion": 160,
+      "writeups": 6
+    },
+    "activity": {
+      "competitionsSolo": 3,
+      "competitionsInATeam": 8,
+      "competitionsHosted": 0
+    },
+    "rankNote": "Current and highest ranks are live Kaggle figures and move."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 9,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "Orbit Wars",
+      "Lux AI",
+      "Hungry Geese",
+      "NeurIPS 2024 - Lux AI Season 3",
+      "ARC Prize 2025",
+      "Santa 2020 - The Candy Cane Contest",
+      "Kore 2022",
+      "Kaggriculture",
+      "AI Village Capture the Flag @ DEFCON"
+    ],
+    "scopeNote": "The Competitions tab counts 11 entries: 9 completed and 2 active. The page's own activity box says 3 solo and 8 in a team, which adds up to the same 11."
+  },
+  "completedResults": [
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 1,
+      "teams": 4729,
+      "medal": "gold",
+      "displayedHandles": ["pressman1"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": "Tue Jul 07 2026 19:59:00 GMT-0400 (Eastern Daylight Time)",
+      "note": "Single account shown on the entry."
+    },
+    {
+      "competition": "Lux AI",
+      "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-2021",
+      "rank": 1,
+      "teams": 1178,
+      "medal": "gold",
+      "displayedHandles": ["robertsturrock", "lpkirwin", "pressman1"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": "Mon Dec 20 2021 18:59:00 GMT-0500 (Eastern Standard Time)",
+      "note": "Team medal; three accounts shown."
+    },
+    {
+      "competition": "Hungry Geese",
+      "competitionUrl": "https://www.kaggle.com/competitions/hungry-geese",
+      "rank": 2,
+      "teams": 879,
+      "medal": "gold",
+      "displayedHandles": ["lpkirwin", "pressman1", "vishvishysingh"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": "Mon Aug 09 2021 19:59:00 GMT-0400 (Eastern Daylight Time)",
+      "note": "Team medal; three accounts shown."
+    },
+    {
+      "competition": "NeurIPS 2024 - Lux AI Season 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-season-3",
+      "rank": 2,
+      "teams": 701,
+      "medal": "gold",
+      "displayedHandles": ["pressman1", "doublepress"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": "Mon Mar 24 2025 19:59:00 GMT-0400 (Eastern Daylight Time)",
+      "note": "Team medal; two accounts shown."
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 3,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": ["jcole75", "driessmit1", "pressman1", "moeosman", "michaelhodel"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": "Mon Nov 03 2025 18:59:00 GMT-0500 (Eastern Standard Time)",
+      "note": "Team medal; five accounts shown."
+    },
+    {
+      "competition": "Santa 2020 - The Candy Cane Contest",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2020",
+      "rank": 16,
+      "teams": 792,
+      "medal": "silver",
+      "displayedHandles": ["pressman1", "elchananhaas"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null,
+      "note": "Team medal; two accounts shown."
+    },
+    {
+      "competition": "Kore 2022",
+      "competitionUrl": "https://www.kaggle.com/competitions/kore-2022",
+      "rank": 23,
+      "teams": 469,
+      "medal": "silver",
+      "displayedHandles": ["del=1706b42dee6ba6d1", "lpkirwin", "pressman1"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null,
+      "note": "Team medal; the first displayed account has no readable handle (shown by Kaggle as a deleted-user placeholder)."
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 75,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": ["pressman1"],
+      "teamName": null,
+      "relativeDateLabel": "15 days ago",
+      "exactCompletionDate": null,
+      "note": "Single account shown on the entry."
+    },
+    {
+      "competition": "AI Village Capture the Flag @ DEFCON",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-village-ctf",
+      "rank": 1,
+      "teams": 668,
+      "medal": null,
+      "displayedHandles": ["pressman1"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": "Sun Sep 11 2022 20:00:00 GMT-0400 (Eastern Daylight Time)",
+      "note": "Research competition. Kaggle shows rank 1 of 668 and no medal icon; not claimed as a medal result. Single account shown on the entry."
+    }
+  ],
+  "activeEntries": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "status": "active, 4 days to go when checked",
+      "displayedHandles": ["dlorah", "driessmit1", "pressman1", "stefano1283", "infinitecreativity", "jeroencottaar"]
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "status": "active, 4 days to go when checked",
+      "displayedHandles": ["driessmit1", "pressman1", "stefano1283", "jeroencottaar"]
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/isaiahp.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/2326925-kg.png?t=2024-12-27-15-40-33",
+    "note": "The stored picture is the same grey-scale Canada goose cut-out that his live Kaggle profile shows as his own profile picture (address read from the profile header on 30 October 2026, set on Kaggle in December 2024). It is his own single picture, not a group image and not Kaggle's default avatar. It is an animal avatar, not a photo of his face; no face photo was looked for beyond the two Kaggle pages above. No image file was changed."
+  },
+  "facts": [
+    {
+      "text": "IsaiahP (pressman1) is a Kaggle Competitions Grandmaster with five gold and three silver competition medals, ranked 14th of 225,021 when checked and 8th at his best.",
+      "sourceUrl": "https://www.kaggle.com/pressman1",
+      "sourceTitle": "IsaiahP — public Kaggle profile",
+      "checkedAt": "2026-10-30T11:48:32Z"
+    },
+    {
+      "text": "Kaggle lists his Orbit Wars result as 1st of 4,729 teams with a gold medal, on an entry that shows only his account.",
+      "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+      "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:48:32Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2025 as 3rd of 1,455 teams with a gold medal, on an entry that shows five accounts: jcole75, driessmit1, pressman1, moeosman and michaelhodel. The medal belongs to that team.",
+      "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+      "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:48:32Z"
+    },
+    {
+      "text": "His other team gold medals on Kaggle are Lux AI (1st of 1,178 teams), Hungry Geese (2nd of 879) and NeurIPS 2024 - Lux AI Season 3 (2nd of 701); he shares each entry with other accounts.",
+      "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+      "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:48:32Z"
+    },
+    {
+      "text": "His Kaggle competitions tab also lists active entries in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which still had days to go when checked, so neither has a final result.",
+      "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+      "sourceTitle": "IsaiahP — active competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:48:32Z"
+    }
+  ],
+  "teamNotes": "Medals belong to teams, so none of the team results above is claimed as an individual honour. Kaggle's competition rows show the accounts on each entry but not the team name, so no team name is recorded here (teamName is null throughout); names in the older draft are not carried over. The profile's own activity box counts three solo competitions and eight in a team, and the three rows that show only pressman1 are Orbit Wars, Kaggriculture and AI Village Capture the Flag. The two active ARC Prize 2026 cards show the accounts listed under activeEntries; the repo already holds Tufa Labs team memberships for both from the public ARC rosters, and no standing is read from Kaggle here, so any leaderboard position seen elsewhere stays provisional.",
+  "unverified": [
+    "Team names for every row (not shown on the two allowed pages; the older draft's names came from data endpoints and are not confirmed).",
+    "Exact completion dates for Santa 2020, Kore 2022 and Kaggriculture (only relative labels shown); the six dates that are recorded come from the profile's pinned-work tooltips, matched to their cards by order.",
+    "The real identity of the displayed accounts other than pressman1 (handles only; for example doublepress, dlorah and infinitecreativity are not identified).",
+    "How the Kore 2022 placeholder account maps to a person.",
+    "Any leaderboard position in the active ARC Prize 2026 competitions (not read; public standings are provisional).",
+    "Any face photo of him; the portrait is his goose profile picture."
+  ],
+  "verified": true
+}

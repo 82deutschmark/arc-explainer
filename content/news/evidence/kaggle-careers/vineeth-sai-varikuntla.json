@@ -1,0 +1,108 @@
+{
+  "personId": "vineeth-sai-varikuntla",
+  "handle": "vineethsaivs",
+  "name": "Vineeth Sai Varikuntla",
+  "checkedAt": "2026-10-30T12:57:25Z",
+  "method": "Built-in browser (Claude app Browser pane, one existing tab), 2026-10-30: loaded the public About page and the public Competitions page once each, about 6 seconds of render wait per page and 5 seconds between them, no rate limiting or block seen. Text read with get_page_text, completed-competition row read from a screenshot and zoom, own-profile image URL read from the page's background-image elements, then fetched once with curl into a scratch folder and compared by eye with the saved portrait. This replaces an earlier draft written while Kaggle was blocking; none of that draft's claims were carried over except those re-read live.",
+  "sources": [
+    "https://www.kaggle.com/vineethsaivs",
+    "https://www.kaggle.com/vineethsaivs/competitions"
+  ],
+  "profile": {
+    "displayName": "Vineeth Sai Varikuntla",
+    "headline": "Machine Learning Engineer at AT&T",
+    "location": "San Francisco, California, United States",
+    "competitionTier": null,
+    "medals": null,
+    "competitionRank": null,
+    "joinedMonth": "2021-01",
+    "joinedTooltip": "Wed Jan 06 2021 02:59:10 GMT-0500 (Eastern Standard Time)",
+    "joinedLabel": "Joined 5 years ago",
+    "bioPresent": true,
+    "bioSummary": "Says he is a data scientist by trade, with long-standing interests in astrophysics, cosmology and philosophy, a sports fan, and interested in using AI for healthcare.",
+    "followers": 3,
+    "linkedAccounts": ["GitHub vineethsaivs", "LinkedIn", "X @vineeth_sai_vs", "website vineethsai.me"],
+    "activityPanel": "2 competitions solo, 0 in a team, 0 hosted",
+    "tierNote": "No performance tier, ranking panel or medal summary is shown on the About page or the Competitions page, so tier and medal counts stay null rather than guessed."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 1,
+    "activeNames": ["ARC Prize 2026 - ARC-AGI-3"],
+    "completedNames": ["Google IO Demo Competition"],
+    "scopeNote": "Only these two entries are publicly displayed. Do not treat the list as proof of his whole participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "Google IO Demo Competition",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-io-demo-competition",
+      "rank": 18,
+      "teams": 18,
+      "medal": null,
+      "medalNote": "The row shows a plain trophy icon, not a gold, silver or bronze medal. It is a Community competition (a Kaggle codelab demo), which carries no medals.",
+      "displayedHandles": ["vineethsaivs"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "activeEntries": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "status": "Active on his Competitions page, 3 days to go at check time",
+      "note": "No final result exists yet. Public leaderboard standing is provisional and was not read on this visit."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/vineeth-sai-varikuntla.webp",
+    "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/6472478-gr.jpg",
+    "originalWidth": 400,
+    "originalHeight": 400,
+    "originalSha256": "a5d1081695cd29b676888bd0d9d6a339c993feebeec92c7b108210d221f65c38",
+    "note": "The saved 320 pixel file shows a lone figure standing on a loaded off-road vehicle under the Milky Way with one bright star at upper right. The live own-profile picture (round avatar on his page, 400 pixel original) is the same image: same figure, vehicle, star and sky. It is his own chosen profile picture, not a group photo and not Kaggle's default avatar. Existing file kept; nothing overwritten and no v2 saved."
+  },
+  "facts": [
+    {
+      "text": "Vineeth Sai Varikuntla's public Kaggle profile (vineethsaivs) lists him as a Machine Learning Engineer at AT&T, based in San Francisco.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+      "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile",
+      "checkedAt": "2026-10-30T12:57:25Z"
+    },
+    {
+      "text": "His Kaggle profile dates his account to January 2021 and says he is a data scientist by trade with a lifelong interest in astrophysics, cosmology and philosophy.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+      "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile and bio",
+      "checkedAt": "2026-10-30T12:57:25Z"
+    },
+    {
+      "text": "His bio says he is especially interested in using AI to make a positive impact in healthcare.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+      "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile bio",
+      "checkedAt": "2026-10-30T12:57:25Z"
+    },
+    {
+      "text": "Kaggle lists one completed competition on his page, the community Google IO Demo Competition, where he finished 18th of 18 teams with no medal shown.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs/competitions",
+      "sourceTitle": "Vineeth Sai Varikuntla | Completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:57:25Z"
+    },
+    {
+      "text": "His Competitions page shows ARC Prize 2026 - ARC-AGI-3 as his one active entry and counts both of his competitions as solo, with none in a team.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs/competitions",
+      "sourceTitle": "Vineeth Sai Varikuntla | Active competitions and activity on Kaggle",
+      "checkedAt": "2026-10-30T12:57:25Z"
+    }
+  ],
+  "teamNotes": "No team entries are shown on his Kaggle page: the activity panel reads two solo competitions and zero in a team, and the Google IO row shows a single avatar. The repo's own roster record (not re-read from Kaggle today) has him as a one-person ARC-AGI-3 team under his own name, team 16537511, observed 14 to 15 October 2026 on the public board. Public ARC standings are provisional and no team medal is credited to him.",
+  "unverified": [
+    "Competition performance tier, medal counts and ranking, none of which the public pages displayed",
+    "The exact date the Google IO Demo Competition ended (only 'a year ago' is shown)",
+    "The handle label on the single avatar of the Google IO row (avatar read, name not hovered); solo status rests on the activity panel",
+    "His current ARC-AGI-3 leaderboard position, not read on this visit",
+    "His X account (vineeth_sai_vs), GitHub, LinkedIn and personal site, listed on his profile but not opened"
+  ],
+  "verified": true
+}

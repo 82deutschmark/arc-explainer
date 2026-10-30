@@ -20,22 +20,40 @@
     },
     "facts": [
       {
-        "checkedAt": "2026-10-08T13:46:44Z",
-        "sourceTitle": "Yi-Chia Chen — Kaggle profile",
+        "checkedAt": "2026-10-30T11:08:00Z",
+        "sourceTitle": "Yi-Chia Chen — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/threerabbits",
-        "text": "Yi-Chia Chen’s Kaggle profile lists her as a Competitions Master and a double-degree student at National Taiwan University and Waseda University."
+        "text": "Yi-Chia Chen is a Kaggle Competitions Master, ranked 335th of 225,021 with a highest-ever rank of 75th, and her account dates from December 2022."
+      },
+      {
+        "checkedAt": "2026-10-30T11:08:00Z",
+        "sourceTitle": "Yi-Chia Chen — public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "text": "Her Kaggle profile shows nine competition medals: one gold, five silver and three bronze."
+      },
+      {
+        "checkedAt": "2026-10-30T11:08:00Z",
+        "sourceTitle": "Yi-Chia Chen — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+        "text": "Kaggle lists her Eedi - Mining Misconceptions in Mathematics entry 3rd of 1,446 teams with a gold medal; only her account is displayed on that entry."
+      },
+      {
+        "checkedAt": "2026-10-30T11:08:00Z",
+        "sourceTitle": "Yi-Chia Chen — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+        "text": "Her silver medals are listed for LLM Prompt Recovery (17th of 2,175), ARC Prize 2024 (26th of 1,427), WSDM Cup (26th of 950), the Pokémon Company PTCG AI Battle Challenge (55th of 6,807) and Santa 2024 (64th of 1,514)."
+      },
+      {
+        "checkedAt": "2026-10-30T11:08:00Z",
+        "sourceTitle": "Yi-Chia Chen — active and completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/threerabbits/competitions",
+        "text": "Kaggle also lists her ARC Prize 2025 entry at 260th of 1,455 with no medal, and shows her active in ARC Prize 2026 for both ARC-AGI-2 and ARC-AGI-3, where public standings are provisional until the private leaderboard settles."
       },
       {
         "checkedAt": "2026-10-08T13:46:44Z",
         "sourceTitle": "Yi-Chia Chen — Eedi third-place solution write-up",
         "sourceUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost",
         "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
-      },
-      {
-        "checkedAt": "2026-10-09T17:16:30Z",
-        "sourceTitle": "Yi-Chia Chen — public Kaggle profile and avatar",
-        "sourceUrl": "https://www.kaggle.com/threerabbits",
-        "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits."
       }
     ],
     "hallOfFame": [],
@@ -96,6 +114,36 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T11:11:01Z",
+        "sourceTitle": "Jean-François Puget — public Kaggle profile, tier and medal tile",
+        "sourceUrl": "https://www.kaggle.com/cpmpml",
+        "text": "Kaggle lists cpmpml (CPMP) as a Competitions Grandmaster, ranked 30th of 225,021, with a highest-ever rank of 6th and a medal tile showing 29 gold, 37 silver and 5 bronze; the tile does not separate solo from team medals."
+      },
+      {
+        "checkedAt": "2026-10-30T11:11:01Z",
+        "sourceTitle": "Jean-François Puget — public Kaggle profile and bio",
+        "sourceUrl": "https://www.kaggle.com/cpmpml",
+        "text": "His Kaggle profile calls him a director of competitive machine learning and KGMON team lead at NVIDIA, based in France, and says he entered his first Kaggle competition in May 2016."
+      },
+      {
+        "checkedAt": "2026-10-30T11:11:01Z",
+        "sourceTitle": "Jean-François Puget — completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+        "text": "His completed list shows 1st place of 1,455 teams in ARC Prize 2025 with a gold medal, on a team entry that also shows the account sorokin."
+      },
+      {
+        "checkedAt": "2026-10-30T11:11:01Z",
+        "sourceTitle": "Jean-François Puget — completed Predict Student Performance result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+        "text": "His completed list also shows 1st place of 2,051 teams in Predict Student Performance from Game Play with a gold medal, on a team entry that also shows the account pdnartreb."
+      },
+      {
+        "checkedAt": "2026-10-30T11:11:01Z",
+        "sourceTitle": "Jean-François Puget — active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+        "text": "Kaggle shows him in both active ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2; any public standing there is provisional until the private results."
+      },
       {
         "checkedAt": "2026-10-09T03:23:31Z",
         "sourceTitle": "Jean-François Puget — public professional profile",
@@ -162,12 +210,12 @@
     ],
     "name": "Jean-François Puget (CPMP)",
     "portrait": {
-      "alt": "Jean-François Puget, from his 2025 NVARC Hall of Fame card",
-      "checkedAt": "2026-10-09T21:30:00Z",
-      "kind": "hall-of-fame",
-      "sourceTitle": "ARC Explainer Hall of Fame — 2025 NVARC card",
-      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-7",
-      "src": "/news-images/people/jean-francois-puget.webp"
+      "alt": "Jean-François Puget, his own Kaggle profile photo",
+      "checkedAt": "2026-10-30T11:11:01Z",
+      "kind": "kaggle",
+      "sourceTitle": "Jean-François Puget (CPMP) — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/cpmpml",
+      "src": "/news-images/people/jean-francois-puget-v3.webp"
     }
   },
   {
@@ -183,16 +231,46 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-08T03:38:00Z",
-        "sourceTitle": "NVIDIA — 2025 NVARC competition report",
-        "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
-        "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize."
-      },
-      {
         "checkedAt": "2026-10-09T21:30:00Z",
         "sourceTitle": "ARC Prize — 2025 results",
         "sourceUrl": "https://arcprize.org/competitions/2025",
         "text": "ARC Prize’s 2025 results list NVARC first and credit the paper “NVARC solution to ARC-AGI-2 2025” to I. Sorokin and Jean-François Puget."
+      },
+      {
+        "checkedAt": "2026-10-30T11:15:23Z",
+        "sourceTitle": "ivan | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sorokin",
+        "text": "Kaggle lists Ivan Sorokin (account sorokin, shown as ivan) as a Competitions Grandmaster with six gold, four silver and one bronze medal, ranked 104th of 225,021, with a best-ever rank of 25th; the profile names NVIDIA as his organization."
+      },
+      {
+        "checkedAt": "2026-10-30T11:15:23Z",
+        "sourceTitle": "ivan | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sorokin",
+        "text": "His Kaggle profile dates the account to January 2016."
+      },
+      {
+        "checkedAt": "2026-10-30T11:15:23Z",
+        "sourceTitle": "ivan | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+        "text": "Kaggle lists ARC Prize 2025 as a completed entry placed first of 1,455 teams with a gold medal; the entry displays two accounts, cpmpml and sorokin, so it is a team result and not his alone."
+      },
+      {
+        "checkedAt": "2026-10-30T11:15:23Z",
+        "sourceTitle": "ivan | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+        "text": "Kaggle lists ARC Prize 2024 as placed 61st of 1,427 teams with a silver medal, and he is entered in the active ARC Prize 2026 - ARC-AGI-3; public ARC-AGI-3 standings are provisional until the private close."
+      },
+      {
+        "checkedAt": "2026-10-30T11:15:23Z",
+        "sourceTitle": "ivan | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+        "text": "Kaggle also lists gold-medal finishes at first of 2,212 teams in AI Mathematical Olympiad - Progress Prize 2 (an entry displaying seven accounts) and second of 2,664 teams in Kaggle - LLM Science Exam (an entry displaying only his account)."
+      },
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "NVIDIA — 2025 NVARC competition report",
+        "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+        "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize."
       }
     ],
     "hallOfFame": [
@@ -225,12 +303,12 @@
     ],
     "name": "Ivan Sorokin",
     "portrait": {
-      "alt": "Ivan Sorokin, from his 2025 NVARC Hall of Fame card",
-      "checkedAt": "2026-10-09T21:30:00Z",
-      "kind": "hall-of-fame",
-      "sourceTitle": "ARC Explainer Hall of Fame — 2025 NVARC card",
-      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-7",
-      "src": "/news-images/people/ivan-sorokin.webp"
+      "alt": "Ivan Sorokin’s own Kaggle profile picture",
+      "checkedAt": "2026-10-30T11:15:23Z",
+      "kind": "kaggle",
+      "sourceTitle": "Ivan Sorokin — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/sorokin",
+      "src": "/news-images/people/ivan-sorokin-v2.webp"
     }
   },
   {
@@ -270,6 +348,36 @@
         "sourceTitle": "ARC Mutants and Team Turducken — separate dated public rosters, 19 October 2026",
         "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
         "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+      },
+      {
+        "checkedAt": "2026-10-30T11:18:45Z",
+        "sourceTitle": "Jack Cole — public Kaggle profile, tier, rank and medals",
+        "sourceUrl": "https://www.kaggle.com/jcole75",
+        "text": "Jack Cole's Kaggle profile (jcole75) shows him as a Competitions Expert, ranked 483rd of 225,021 with a best-ever rank of 333rd, and two gold and two bronze competition medals."
+      },
+      {
+        "checkedAt": "2026-10-30T11:18:45Z",
+        "sourceTitle": "Jack Cole — public Kaggle account join date",
+        "sourceUrl": "https://www.kaggle.com/jcole75",
+        "text": "Jack Cole's Kaggle profile dates his account joining to June 2017."
+      },
+      {
+        "checkedAt": "2026-10-30T11:18:45Z",
+        "sourceTitle": "Jack Cole — completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+        "text": "Kaggle lists the ARC Prize 2025 entry on Jack Cole's profile as 3rd of 1,455 teams with a gold medal. The entry shows five accounts (jcole75, driessmit1, pressman1, moeosman and michaelhodel), so the gold is a team result."
+      },
+      {
+        "checkedAt": "2026-10-30T11:18:45Z",
+        "sourceTitle": "Jack Cole — completed Stanford RNA 3D Folding Part 2 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+        "text": "Kaggle lists Jack Cole's Stanford RNA 3D Folding Part 2 entry as 13th of 1,867 teams with a gold medal. The entry shows two accounts, jcole75 and bradleyshervheim, so it is a team result."
+      },
+      {
+        "checkedAt": "2026-10-30T11:18:45Z",
+        "sourceTitle": "Jack Cole — bronze-medal results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jcole75/competitions",
+        "text": "Jack Cole's two bronze medals on Kaggle are The 2026 NeuroGolf Championship (184th of 2,963 teams) and ROGII - Wellbore Geology Prediction (411th of 6,125 teams). Each entry shows only the jcole75 account."
       }
     ],
     "hallOfFame": [
@@ -337,12 +445,12 @@
     ],
     "name": "Jack Cole",
     "portrait": {
-      "alt": "Jack Cole, from his 2025 MindsAI Hall of Fame card",
-      "checkedAt": "2026-10-09T21:30:00Z",
-      "kind": "hall-of-fame",
-      "sourceTitle": "ARC Explainer Hall of Fame — 2025 MindsAI card",
-      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-9",
-      "src": "/news-images/people/jack-cole.webp"
+      "alt": "Jack Cole, from his own Kaggle profile picture",
+      "checkedAt": "2026-10-30T11:18:45Z",
+      "kind": "kaggle",
+      "sourceTitle": "Jack Cole — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/jcole75",
+      "src": "/news-images/people/jack-cole-v2.webp"
     }
   },
   {
@@ -357,6 +465,30 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T14:33:20Z",
+        "sourceTitle": "Mithil A Vakde, public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/mithilavakde",
+        "text": "Mithil A Vakde's public Kaggle account, mithilavakde, dates its joining to December 2019 and describes itself as quietly working away."
+      },
+      {
+        "checkedAt": "2026-10-30T14:33:20Z",
+        "sourceTitle": "Mithil A Vakde, completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+        "text": "Kaggle lists his completed ARC Prize 2025 entry 653rd of 1455 teams, with no medal shown."
+      },
+      {
+        "checkedAt": "2026-10-30T14:33:20Z",
+        "sourceTitle": "Mithil A Vakde, Kaggle competition activity",
+        "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+        "text": "His profile counts two competitions, both entered solo and none in a team."
+      },
+      {
+        "checkedAt": "2026-10-30T14:33:20Z",
+        "sourceTitle": "Mithil A Vakde, active ARC Prize 2026 ARC-AGI-2 entry",
+        "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+        "text": "He is also entered in the active ARC Prize 2026 ARC-AGI-2 competition; any public standing there is provisional until the final close."
+      },
       {
         "checkedAt": "2026-10-09T03:23:31Z",
         "sourceTitle": "Mithil A Vakde — Kaggle mdlARC model",
@@ -402,6 +534,36 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T11:23:25Z",
+        "sourceTitle": "chiefkeith | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/keithtyser",
+        "text": "Kaggle lists Keith Tyser (account keithtyser, display name chiefkeith) as a Competitions Master, and his profile tallies 1 gold, 3 silver and 6 bronze competition medals, one of the silvers being a shared five-account team entry."
+      },
+      {
+        "checkedAt": "2026-10-30T11:23:25Z",
+        "sourceTitle": "chiefkeith | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/keithtyser",
+        "text": "His Kaggle competitions rank is 329th of 225,021, with a highest ever of 291st, and the account dates from September 2019."
+      },
+      {
+        "checkedAt": "2026-10-30T11:23:25Z",
+        "sourceTitle": "chiefkeith | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+        "text": "His best completed result is 14th of 6,125 teams in ROGII - Wellbore Geology Prediction, a gold medal; Kaggle shows that entry under his account alone."
+      },
+      {
+        "checkedAt": "2026-10-30T11:23:25Z",
+        "sourceTitle": "chiefkeith | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+        "text": "His Kaggriculture silver medal (302nd of 10,148 teams) is a shared entry: Kaggle shows five accounts on it, so it is a team medal, not an individual one."
+      },
+      {
+        "checkedAt": "2026-10-30T11:23:25Z",
+        "sourceTitle": "chiefkeith | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+        "text": "Kaggle lists his ARC Prize 2024 result as 122nd of 1,427 teams with a bronze medal, and shows him in the active ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3 competitions, whose public standings are provisional until the private leaderboard closes."
+      },
       {
         "checkedAt": "2026-10-09T19:23:29Z",
         "sourceTitle": "Keith Tyser — professional site",
@@ -484,16 +646,46 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-09T19:23:29Z",
-        "sourceTitle": "Tufa Labs — team profiles",
-        "sourceUrl": "https://tufalabs.ai/team/",
-        "text": "Tufa Labs lists Dries Smit as an AI researcher working on reinforcement learning, multi-agent systems and large language models."
-      },
-      {
         "checkedAt": "2026-10-09T21:30:00Z",
         "sourceTitle": "ARC Prize — ARC-AGI-3 Preview Agents results",
         "sourceUrl": "https://arcprize.org/competitions/arc-agi-3-preview-agents",
         "text": "ARC Prize lists Dries Smit as lead developer of StochasticGoose @ Tufa Labs, which won the 2025 ARC-AGI-3 Preview competition."
+      },
+      {
+        "checkedAt": "2026-10-30T11:27:46Z",
+        "sourceTitle": "Dries Smit | Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/driessmit1",
+        "text": "Dries Smit is a Kaggle Competitions Expert with one gold and one silver competition medal on his public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T11:27:46Z",
+        "sourceTitle": "Dries Smit | Kaggle completed competitions",
+        "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+        "text": "Kaggle lists ARC Prize 2025 as his best completed result, 3rd of 1,455 teams with a gold medal. The row displays five accounts, jcole75, driessmit1, pressman1, moeosman and michaelhodel, so the medal is a team result."
+      },
+      {
+        "checkedAt": "2026-10-30T11:27:46Z",
+        "sourceTitle": "Dries Smit | Kaggle completed competitions",
+        "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+        "text": "Kaggle lists his Pokémon Company PTCG AI Battle Challenge result as 80th of 6,807 teams with a silver medal, with only his own account displayed."
+      },
+      {
+        "checkedAt": "2026-10-30T11:27:46Z",
+        "sourceTitle": "Dries Smit | Kaggle active competitions",
+        "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+        "text": "His Kaggle profile lists him as an AI Researcher at Tufa Labs and shows him active in both ARC Prize 2026 competitions, whose public standings are provisional until the private leaderboard settles."
+      },
+      {
+        "checkedAt": "2026-10-30T11:27:46Z",
+        "sourceTitle": "Dries Smit | Kaggle account join tooltip",
+        "sourceUrl": "https://www.kaggle.com/driessmit1",
+        "text": "Dries Smit's Kaggle profile dates his account joining to May 2018."
+      },
+      {
+        "checkedAt": "2026-10-09T19:23:29Z",
+        "sourceTitle": "Tufa Labs — team profiles",
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "text": "Tufa Labs lists Dries Smit as an AI researcher working on reinforcement learning, multi-agent systems and large language models."
       }
     ],
     "hallOfFame": [
@@ -570,6 +762,36 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T11:30:21Z",
+        "sourceTitle": "Jeroen Cottaar — public Kaggle profile, tier, rank and medals",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+        "text": "Jeroen Cottaar is a Kaggle Competitions Grandmaster, ranked 6th of 225,021 in the competitions ranking, with five gold and two silver competition medals on his public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T11:30:21Z",
+        "sourceTitle": "Jeroen Cottaar — public Kaggle profile headline and join date",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+        "text": "His Kaggle profile lists him as an AI Researcher at Tufa Labs, based in Eindhoven in the Netherlands, and dates his account to May 2023."
+      },
+      {
+        "checkedAt": "2026-10-30T11:30:21Z",
+        "sourceTitle": "Jeroen Cottaar — completed Santa 2025 and Ariel 2025 results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar/competitions",
+        "text": "Kaggle lists his completed Santa 2025 Christmas Tree Packing Challenge entry 1st of 3,357 teams and his NeurIPS Ariel Data Challenge 2025 entry 1st of 860 teams, both with gold medals and both shown under his account alone."
+      },
+      {
+        "checkedAt": "2026-10-30T11:30:21Z",
+        "sourceTitle": "Jeroen Cottaar — completed Waveform Inversion and Ariel 2024 results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar/competitions",
+        "text": "He is also listed 2nd of 1,365 teams in the Yale/UNC-CH Geophysical Waveform Inversion competition and 2nd of 1,151 teams in the 2024 NeurIPS Ariel Data Challenge, both with gold medals."
+      },
+      {
+        "checkedAt": "2026-10-30T11:30:21Z",
+        "sourceTitle": "Jeroen Cottaar — active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar/competitions",
+        "text": "His Kaggle competitions page shows him entered in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, which it lists as still running."
+      },
+      {
         "checkedAt": "2026-10-09T19:23:29Z",
         "sourceTitle": "Tufa Labs — team profiles",
         "sourceUrl": "https://tufalabs.ai/team/",
@@ -626,6 +848,36 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T11:34:45Z",
+        "sourceTitle": "Jan Disselhoff — public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/insanitycheck",
+        "text": "Jan Disselhoff is a Kaggle Competitions Expert with two gold competition medals shown on his public profile, both from team entries."
+      },
+      {
+        "checkedAt": "2026-10-30T11:34:45Z",
+        "sourceTitle": "Jan Disselhoff — completed ARC Prize 2024 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+        "text": "Kaggle lists ARC Prize 2024 as a completed entry for Disselhoff, finished 1st of 1,427 teams with a gold medal; the entry shows the insanitycheck and dfranzen accounts."
+      },
+      {
+        "checkedAt": "2026-10-30T11:34:45Z",
+        "sourceTitle": "Jan Disselhoff — completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+        "text": "Kaggle lists ARC Prize 2025 as a completed entry for Disselhoff, finished 2nd of 1,455 teams with a gold medal; the entry shows the insanitycheck, dfranzen and dvhrtm accounts."
+      },
+      {
+        "checkedAt": "2026-10-30T11:34:45Z",
+        "sourceTitle": "Jan Disselhoff — Kaggle account join date and competition activity",
+        "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+        "text": "Disselhoff's Kaggle account dates to March 2017, and his profile shows eight competitions entered, four solo and four in a team."
+      },
+      {
+        "checkedAt": "2026-10-30T11:34:45Z",
+        "sourceTitle": "Jan Disselhoff — active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+        "text": "Kaggle shows Disselhoff currently entered in both ARC Prize 2026 competitions: ARC-AGI-3 alongside the sbrodehl, dfranzen and dvhrtm accounts, and ARC-AGI-2 with only his own account displayed."
+      },
       {
         "checkedAt": "2026-10-08T03:38:00Z",
         "sourceTitle": "The ARChitects — 2025 team solution",
@@ -725,6 +977,30 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T11:37:28Z",
+        "sourceTitle": "David Hartmann | Kaggle - Competitions",
+        "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+        "text": "Kaggle lists David Hartmann's ARC Prize 2025 entry as finished 2nd of 1,455 teams, with a gold medal icon, shown with the teammates insanitycheck and dfranzen."
+      },
+      {
+        "checkedAt": "2026-10-30T11:37:28Z",
+        "sourceTitle": "David Hartmann | Kaggle - Competitions",
+        "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+        "text": "His profile also lists AI Mathematical Olympiad - Progress Prize 3, finished 1,286th of 4,138 teams with no medal, again shown with insanitycheck and dfranzen."
+      },
+      {
+        "checkedAt": "2026-10-30T11:37:28Z",
+        "sourceTitle": "David Hartmann | Kaggle - Competitions",
+        "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+        "text": "His profile shows an active entry in ARC Prize 2026 - ARC-AGI-3, with 4 days to go when checked, alongside sbrodehl, insanitycheck and dfranzen. Public standings in that contest are provisional until it closes."
+      },
+      {
+        "checkedAt": "2026-10-30T11:37:28Z",
+        "sourceTitle": "David Hartmann | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dvhrtm",
+        "text": "His Kaggle account dates from July 2025, and his featured write-up there is the ARChitects' ARC Prize 2025 solution, marked 2nd Place."
+      },
+      {
         "checkedAt": "2026-10-08T03:38:00Z",
         "sourceTitle": "The ARChitects — 2025 team solution",
         "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
@@ -788,22 +1064,46 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-08T03:38:00Z",
-        "sourceTitle": "The ARChitects — 2025 team solution",
-        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
-        "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
-      },
-      {
         "checkedAt": "2026-10-09T21:30:00Z",
         "sourceTitle": "ARC Prize — 2024 results",
         "sourceUrl": "https://arcprize.org/competitions/2024",
         "text": "ARC Prize’s 2024 results list “The LLM ARChitect: Solving ARC-AGI Is a Matter of Perspective” by Franzen et al. among the paper award runners-up."
       },
       {
-        "checkedAt": "2026-10-18T10:02:36.670593+00:00",
-        "sourceTitle": "Daniel Franzen — own Kaggle profile",
+        "checkedAt": "2026-10-30T11:39:34Z",
+        "sourceTitle": "Daniel Franzen — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/dfranzen",
-        "text": "His own Kaggle profile identifies dfranzen as Daniel Franzen, a deep learning researcher at the University of Mainz."
+        "text": "Daniel Franzen is a Kaggle Competitions Expert, ranked 246th of 225,021 with a highest-ever rank of 77th, and his profile shows two gold competition medals."
+      },
+      {
+        "checkedAt": "2026-10-30T11:39:34Z",
+        "sourceTitle": "Daniel Franzen — completed ARC Prize 2024 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dfranzen/competitions",
+        "text": "Kaggle lists his ARC Prize 2024 entry first of 1,427 teams with a gold medal. It was a team entry, shown with the account insanitycheck."
+      },
+      {
+        "checkedAt": "2026-10-30T11:39:34Z",
+        "sourceTitle": "Daniel Franzen — completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dfranzen/competitions",
+        "text": "Kaggle lists his ARC Prize 2025 entry second of 1,455 teams with a gold medal. It was a team entry, shown with the accounts insanitycheck and dvhrtm."
+      },
+      {
+        "checkedAt": "2026-10-30T11:39:34Z",
+        "sourceTitle": "Daniel Franzen — Kaggle profile bio",
+        "sourceUrl": "https://www.kaggle.com/dfranzen",
+        "text": "His profile calls him a deep learning researcher at the University of Mainz, working on a PhD about equivariant neural networks, and says he grows Riesling wine in the Moselle valley on the side."
+      },
+      {
+        "checkedAt": "2026-10-30T11:39:34Z",
+        "sourceTitle": "Daniel Franzen — ARC-AGI-3 Milestone 2 write-up on his Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/dfranzen",
+        "text": "In a September 30, 2026 write-up on his profile he says his open-sourced ARC-AGI-3 notebook scored 27.89 on the public leaderboard, a provisional standing until the private scores settle at the close; he built it on the Tufa Labs Duck harness."
+      },
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
       }
     ],
     "hallOfFame": [
@@ -892,6 +1192,18 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T11:43:53Z",
+        "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+        "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+        "text": "The ARC Explainer Hall of Fame describes François Chollet, creator of Keras, as the person who defined the ARC-AGI benchmark in 2019 to measure general intelligence."
+      },
+      {
+        "checkedAt": "2026-10-30T11:43:53Z",
+        "sourceTitle": "fchollet/ARC-AGI — The Abstraction and Reasoning Corpus (GitHub)",
+        "sourceUrl": "https://github.com/fchollet/ARC-AGI",
+        "text": "The Abstraction and Reasoning Corpus repository, ARC-AGI, is hosted on GitHub under his own fchollet account, and the Hall of Fame entry links to it."
+      },
+      {
         "checkedAt": "2026-10-09T19:28:44Z",
         "sourceTitle": "ARC Prize — official profile",
         "sourceUrl": "https://x.com/arcprize",
@@ -935,6 +1247,24 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T11:46:00Z",
+        "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+        "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+        "text": "The ARC Explainer Hall of Fame describes Mike Knoop, co-founder of Zapier, as the person who launched the ARC Prize in 2024 to accelerate progress toward artificial general intelligence."
+      },
+      {
+        "checkedAt": "2026-10-30T11:46:00Z",
+        "sourceTitle": "ARC Prize — Mission page, Team section",
+        "sourceUrl": "https://arcprize.org/about",
+        "text": "The official ARC Prize website lists Mike Knoop in its Team section as Co-founder and Board Member."
+      },
+      {
+        "checkedAt": "2026-10-30T11:46:00Z",
+        "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+        "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+        "text": "The Hall of Fame lists Mike Knoop together with François Chollet in a single Founders entry, under the team name ARC Prize Foundation."
+      },
       {
         "checkedAt": "2026-10-09T19:28:44Z",
         "sourceTitle": "ARC Prize — official profile",
@@ -986,10 +1316,34 @@
         "text": "ARC Prize’s 2025 results list MindsAI third; the final Kaggle leaderboard lists pressman1 (displayed as IsaiahP) on that MindsAI & Tufa Labs team with jcole75, driessmit1, moeosman and michaelhodel."
       },
       {
-        "checkedAt": "2026-10-13T17:31:31Z",
-        "sourceTitle": "IsaiahP — own Kaggle profile and direct professional identity links",
+        "checkedAt": "2026-10-30T11:48:32Z",
+        "sourceTitle": "IsaiahP — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/pressman1",
-        "text": "IsaiahP’s pressman1 Kaggle profile links directly to GitHub IsaiahPressman and LinkedIn isaiah-pressman-b4b431221, confirming the full name Isaiah Pressman."
+        "text": "IsaiahP (pressman1) is a Kaggle Competitions Grandmaster with five gold and three silver competition medals, ranked 14th of 225,021 when checked and 8th at his best."
+      },
+      {
+        "checkedAt": "2026-10-30T11:48:32Z",
+        "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+        "text": "Kaggle lists his Orbit Wars result as 1st of 4,729 teams with a gold medal, on an entry that shows only his account."
+      },
+      {
+        "checkedAt": "2026-10-30T11:48:32Z",
+        "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+        "text": "Kaggle lists ARC Prize 2025 as 3rd of 1,455 teams with a gold medal, on an entry that shows five accounts: jcole75, driessmit1, pressman1, moeosman and michaelhodel. The medal belongs to that team."
+      },
+      {
+        "checkedAt": "2026-10-30T11:48:32Z",
+        "sourceTitle": "IsaiahP — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+        "text": "His other team gold medals on Kaggle are Lux AI (1st of 1,178 teams), Hungry Geese (2nd of 879) and NeurIPS 2024 - Lux AI Season 3 (2nd of 701); he shares each entry with other accounts."
+      },
+      {
+        "checkedAt": "2026-10-30T11:48:32Z",
+        "sourceTitle": "IsaiahP — active competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pressman1/competitions",
+        "text": "His Kaggle competitions tab also lists active entries in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which still had days to go when checked, so neither has a final result."
       },
       {
         "checkedAt": "2026-10-13T17:33:14Z",
@@ -1067,6 +1421,30 @@
         "sourceTitle": "ARC Prize — 2025 results",
         "sourceUrl": "https://arcprize.org/competitions/2025",
         "text": "ARC Prize’s 2025 results list Lonnie fourth; the final Kaggle leaderboard lists lonnieqin as that team’s only account."
+      },
+      {
+        "checkedAt": "2026-10-30T11:51:19Z",
+        "sourceTitle": "Lonnie - public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/lonnieqin",
+        "text": "Lonnie is a Kaggle Competitions Master, ranked 101st of 225,021 on Kaggle's competitions ranking, with one gold, five silver and five bronze competition medals on the public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T11:51:19Z",
+        "sourceTitle": "Lonnie - completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+        "text": "Kaggle lists Lonnie's ARC Prize 2025 result as 4th of 1,455 teams, with a gold medal; the entry shows the lonnieqin account only."
+      },
+      {
+        "checkedAt": "2026-10-30T11:51:19Z",
+        "sourceTitle": "Lonnie - completed ARC Prize 2024 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+        "text": "Kaggle lists Lonnie's earlier ARC Prize 2024 result as 190th of 1,427 teams, with no medal."
+      },
+      {
+        "checkedAt": "2026-10-30T11:51:19Z",
+        "sourceTitle": "Lonnie - active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/lonnieqin/competitions",
+        "text": "Kaggle shows Lonnie in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3; any standing there is provisional until the private results settle."
       }
     ],
     "hallOfFame": [
@@ -1132,6 +1510,36 @@
         "sourceTitle": "ARC Prize — 2024 results",
         "sourceUrl": "https://arcprize.org/competitions/2024",
         "text": "ARC Prize’s 2024 results list alijs third; the final Kaggle leaderboard lists alijs1 as that team’s only account."
+      },
+      {
+        "checkedAt": "2026-10-30T11:54:05Z",
+        "sourceTitle": "alijs — Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/alijs1",
+        "text": "Kaggle ranks alijs1 a Competitions Grandmaster with 11 gold, 19 silver and 13 bronze competition medals, currently 241st of 225,021 and 9th at his best."
+      },
+      {
+        "checkedAt": "2026-10-30T11:54:05Z",
+        "sourceTitle": "alijs — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/alijs1",
+        "text": "His Kaggle profile dates the account to July 2016 and describes him as a Software Architect and Data Scientist at Gravity Team in Riga, Latvia."
+      },
+      {
+        "checkedAt": "2026-10-30T11:54:05Z",
+        "sourceTitle": "alijs — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/alijs1/competitions",
+        "text": "Kaggle’s completed-competitions list shows alijs1 fifth of 913 teams in the original Abstraction and Reasoning Challenge and third of 1,427 teams in ARC Prize 2024, both with gold medals and both entries showing only the alijs1 account."
+      },
+      {
+        "checkedAt": "2026-10-30T11:54:05Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list alijs in third place among the high-score winners, with a 40 percent private score and a $5k prize."
+      },
+      {
+        "checkedAt": "2026-10-30T11:54:05Z",
+        "sourceTitle": "alijs — completed Sberbank Russian Housing Market result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/alijs1/competitions",
+        "text": "Kaggle shows a Sberbank Russian Housing Market entry placed first of 3,264 teams with a gold medal; that entry is displayed with two accounts, johnpateha and alijs1, so it is a team result."
       }
     ],
     "hallOfFame": [
@@ -1197,6 +1605,36 @@
         "sourceTitle": "ARC Prize — 2024 results",
         "sourceUrl": "https://arcprize.org/competitions/2024",
         "text": "ARC Prize’s 2024 results list PoohAI fifth; the final Kaggle leaderboard lists gromml among PoohAI’s four accounts."
+      },
+      {
+        "checkedAt": "2026-10-30T11:56:14Z",
+        "sourceTitle": "gromml - public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/gromml",
+        "text": "Kaggle lists gromml as a Competitions Master, ranked 598th of 225,021 (highest ever 230th), with one gold, two silver and nine bronze competition medals."
+      },
+      {
+        "checkedAt": "2026-10-30T11:56:14Z",
+        "sourceTitle": "gromml - completed ARC Prize 2024 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/gromml/competitions",
+        "text": "Kaggle lists gromml's ARC Prize 2024 entry 5th of 1,427 teams with a gold medal. It was a four-account team (greylord1996, gromml, leadnvalidate, samalkubentayeva), so the medal is a team result, not an individual honour."
+      },
+      {
+        "checkedAt": "2026-10-30T11:56:14Z",
+        "sourceTitle": "gromml - completed ARC Prize 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/gromml/competitions",
+        "text": "Kaggle lists gromml's ARC Prize 2025 entry 85th of 1,455 teams with a bronze medal; the entry shows only the gromml account."
+      },
+      {
+        "checkedAt": "2026-10-30T11:56:14Z",
+        "sourceTitle": "gromml - Kaggle competitions list and activity panel",
+        "sourceUrl": "https://www.kaggle.com/gromml/competitions",
+        "text": "Kaggle's activity panel shows gromml has entered 29 competitions solo and 13 in a team, and lists both ARC Prize 2026 contests (ARC-AGI-2 and ARC-AGI-3) as active."
+      },
+      {
+        "checkedAt": "2026-10-30T11:56:14Z",
+        "sourceTitle": "gromml - public Kaggle profile, join date and notebook medals",
+        "sourceUrl": "https://www.kaggle.com/gromml",
+        "text": "Kaggle dates gromml's account to June 2019 and also lists a Notebooks Expert tier with two gold, one silver and six bronze medals."
       }
     ],
     "hallOfFame": [
@@ -1562,10 +2000,28 @@
         "text": "Peter_Findley is among the 100% WIN entries with the minimum action count on the official ARC-AGI-3 human leaderboard for lf52."
       },
       {
-        "checkedAt": "2026-10-11T21:58:18.820449+00:00",
-        "sourceTitle": "Peter Findley — Kaggle profile; cross-platform identity remains unverified",
+        "checkedAt": "2026-10-30T12:01:43Z",
+        "sourceTitle": "Peter Findley - public Kaggle profile and join-date tooltip",
         "sourceUrl": "https://www.kaggle.com/raist321",
-        "text": "The Kaggle profile identifies raist321 as Peter Findley. The desk has not verified a direct identity link to the official human leaderboard handle Peter_Findley."
+        "text": "Peter Findley's public Kaggle profile, under the handle raist321, dates his account to June 2023."
+      },
+      {
+        "checkedAt": "2026-10-30T12:01:43Z",
+        "sourceTitle": "Peter Findley - completed NVIDIA Nemotron Model Reasoning Challenge result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/raist321/competitions",
+        "text": "Kaggle lists Peter Findley's completed NVIDIA Nemotron Model Reasoning Challenge entry 384th of 4,185 teams, with a bronze medal; the entry shows the raist321 account alone."
+      },
+      {
+        "checkedAt": "2026-10-30T12:01:43Z",
+        "sourceTitle": "Peter Findley - pinned AI Mathematical Olympiad - Progress Prize 3 result",
+        "sourceUrl": "https://www.kaggle.com/raist321",
+        "text": "Peter Findley's profile pins the AI Mathematical Olympiad - Progress Prize 3, where Kaggle shows him 1583rd of 4,138 teams."
+      },
+      {
+        "checkedAt": "2026-10-30T12:01:43Z",
+        "sourceTitle": "Peter Findley - active ARC-AGI-3 entry and solo-versus-team activity on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/raist321/competitions",
+        "text": "Kaggle lists the ARC Prize 2026 - ARC-AGI-3 competition among Peter Findley's active competitions, and its activity panel shows none of his competitions as team entries."
       }
     ],
     "hallOfFame": [],
@@ -1627,28 +2083,40 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T12:06:45Z",
+        "sourceTitle": "Tanaka Ai24 - public Kaggle profile, tier and medals",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24",
+        "text": "Kaggle shows Tanaka Ai24 (tanakaai24) as a Competitions Expert with four silver competition medals, no gold or bronze tally, and an account that joined in May 2021."
+      },
+      {
+        "checkedAt": "2026-10-30T12:06:45Z",
+        "sourceTitle": "Tanaka Ai24 - own direct link to @cunkpyber",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24",
+        "text": "The tanakaai24 profile links the X account @cunkpyber, which ties this Kaggle account to the PunkCyber identity."
+      },
+      {
+        "checkedAt": "2026-10-30T12:06:45Z",
+        "sourceTitle": "Tanaka Ai24 - completed Santa 2024 result and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+        "text": "Kaggle lists Santa 2024 as the best completed result, 23rd of 1,514 teams with a silver medal, on a shared entry that displays five accounts including tanakaai24."
+      },
+      {
+        "checkedAt": "2026-10-30T12:06:45Z",
+        "sourceTitle": "Tanaka Ai24 - completed AI Mathematical Olympiad Progress Prize 3 result",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+        "text": "Kaggle lists a silver medal for AI Mathematical Olympiad - Progress Prize 3, 130th of 4,138 teams, on an entry that displays only the tanakaai24 account."
+      },
+      {
+        "checkedAt": "2026-10-30T12:06:45Z",
+        "sourceTitle": "Tanaka Ai24 - completed AI Agent Security and Kaggriculture results and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+        "text": "Two more silvers are shared team entries: AI Agent Security, 79th of 4,186 teams, shown with pompom555, argon1215 and konbu17, and Kaggriculture, 267th of 10,148 teams, shown with gnux1408."
+      },
+      {
         "checkedAt": "2026-10-12T19:02:36Z",
         "sourceTitle": "PunkCyber — public team-identification reply to the ARC Daily Digest",
         "sourceUrl": "https://x.com/cunkpyber/status/2109599257980555583",
         "text": "PunkCyber (@cunkpyber) identifies 復活の混テキスト as their team in a public reply to the ARC Daily Digest."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "Tanaka Ai24 — own Kaggle tier and medal record",
-        "sourceUrl": "https://www.kaggle.com/tanakaai24",
-        "text": "Own Kaggle profile displays Competitions Expert and 4 silver competition medals, as checked on October 29, 2026."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "Tanaka Ai24 — own direct cunkpyber account link",
-        "sourceUrl": "https://www.kaggle.com/tanakaai24",
-        "text": "The Tanaka Ai24 Kaggle profile directly links twitter.com/cunkpyber, establishing that this Kaggle account and the existing PunkCyber X identity belong together."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "Tanaka Ai24 — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
-        "text": "Completed results include 23rd of 1,514 with silver in Santa 2024 and 79th of 4,186 with silver in AI Agent Security, shared with current teammates konbu17 and pompom555."
       }
     ],
     "hallOfFame": [],
@@ -1710,10 +2178,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
-        "sourceTitle": "fshindo — Kaggle profile with direct Twitter account link",
+        "checkedAt": "2026-10-30T12:09:21Z",
+        "sourceTitle": "fshindo - public Kaggle profile and competition medals",
         "sourceUrl": "https://www.kaggle.com/ffsscf",
-        "text": "The Kaggle profile ffsscf displays fshindo and directly links to the X account @crysis44k."
+        "text": "fshindo is a Kaggle Competitions Expert whose public profile shows two silver competition medals and a join date of June 2023."
+      },
+      {
+        "checkedAt": "2026-10-30T12:09:21Z",
+        "sourceTitle": "fshindo - completed Kaggriculture result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+        "text": "Kaggle lists fshindo's completed Kaggriculture entry 149th of 10,148 teams, with a silver medal. The displayed entry shows the ffsscf account."
+      },
+      {
+        "checkedAt": "2026-10-30T12:09:21Z",
+        "sourceTitle": "fshindo - completed RSNA Knee Abnormality Detection result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+        "text": "Kaggle lists fshindo's completed RSNA Knee Abnormality Detection entry 192nd of 6,299 teams, with a silver medal. The displayed entry shows the ffsscf account."
+      },
+      {
+        "checkedAt": "2026-10-30T12:09:21Z",
+        "sourceTitle": "fshindo - active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ffsscf/competitions",
+        "text": "Kaggle lists fshindo's ffsscf account in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which were still running when checked; any public standing in them is provisional until they close."
+      },
+      {
+        "checkedAt": "2026-10-30T12:09:21Z",
+        "sourceTitle": "fshindo - Kaggle profile with direct Twitter account link",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "text": "The Kaggle profile ffsscf displays the name fshindo and links to the X account @crysis44k."
       }
     ],
     "hallOfFame": [],
@@ -1767,6 +2259,24 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T12:13:00Z",
+        "sourceTitle": "Lord Han Solo - public Kaggle profile and join tooltip",
+        "sourceUrl": "https://www.kaggle.com/lordhansolo",
+        "text": "Lord Han Solo's public Kaggle profile (handle lordhansolo) dates his account joining to August 2020."
+      },
+      {
+        "checkedAt": "2026-10-30T12:13:00Z",
+        "sourceTitle": "Lord Han Solo - completed BYU Locating Bacterial Flagellar Motors 2025 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/lordhansolo/competitions",
+        "text": "Kaggle's only listed completed competition for Lord Han Solo is BYU - Locating Bacterial Flagellar Motors 2025, where he placed 815th of 1,136 teams; no medal is shown."
+      },
+      {
+        "checkedAt": "2026-10-30T12:13:00Z",
+        "sourceTitle": "Lord Han Solo - active ARC Prize 2026 ARC-AGI-3 entry and competition activity on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/lordhansolo/competitions",
+        "text": "Kaggle lists ARC Prize 2026 - ARC-AGI-3 as an active competition on Lord Han Solo's profile, and its activity panel counts both of his competitions as solo entries."
+      },
+      {
         "checkedAt": "2026-10-13T03:15:37.495573+00:00",
         "sourceTitle": "ARC Prize — official Milestone 2 winners",
         "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
@@ -1803,6 +2313,36 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-13T03:15:37Z",
+        "sourceTitle": "ARC Prize official Milestone 2 winners",
+        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "text": "ARC Prize announced Lohit Siriki as the third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026."
+      },
+      {
+        "checkedAt": "2026-10-30T12:15:00Z",
+        "sourceTitle": "rellik13 (sirikilohit) public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/sirikilohit",
+        "text": "Lohit Siriki's public Kaggle profile, handle sirikilohit and display name rellik13, lists the job title Machine Learning Engineer and dates the account to September 2022."
+      },
+      {
+        "checkedAt": "2026-10-30T12:15:00Z",
+        "sourceTitle": "rellik13 (sirikilohit) completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+        "text": "Kaggle lists Lohit Siriki's completed AI Agent Security - Multi-Step Tool Attacks entry 3,333rd of 4,186 teams and the completed RSNA Knee Abnormality Detection entry 3,354th of 6,299 teams, with no medal shown on either row."
+      },
+      {
+        "checkedAt": "2026-10-30T12:15:00Z",
+        "sourceTitle": "rellik13 (sirikilohit) completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+        "text": "The Kaggle record also holds two 2022 PES University course contests, UE20CS312 Data Analytics (162nd of 177, shown with four accounts) and UE20CS344 Network Analysis and Mining (168th of 394)."
+      },
+      {
+        "checkedAt": "2026-10-30T12:15:00Z",
+        "sourceTitle": "rellik13 (sirikilohit) active competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
+        "text": "On October 30, 2026 Kaggle listed ARC Prize 2026 - ARC-AGI-3 and the Google Gemma 4 Developer Agent Competition as the two competitions the profile was still active in."
+      },
       {
         "checkedAt": "2026-10-13T03:15:37.495573+00:00",
         "sourceTitle": "ARC Prize — official Milestone 2 winners",
@@ -1859,7 +2399,38 @@
         "url": "https://x.com/menphim"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T11:05:27Z",
+        "sourceTitle": "Takuma Mori (menphim) — public Kaggle profile, medals and join date",
+        "sourceUrl": "https://www.kaggle.com/menphim",
+        "text": "Takuma Mori is a Kaggle Competitions Expert with one silver and four bronze competition medals, ranked 2,462nd of 225,021 and 828th at his best, and his account dates to March 2016."
+      },
+      {
+        "checkedAt": "2026-10-30T11:05:27Z",
+        "sourceTitle": "Takuma Mori — completed RSNA Knee Abnormality Detection result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+        "text": "Kaggle lists his completed RSNA Knee Abnormality Detection entry 70th of 6,299 teams with a silver medal, and his write-up on that entry is featured on his profile."
+      },
+      {
+        "checkedAt": "2026-10-30T11:05:27Z",
+        "sourceTitle": "Takuma Mori — completed bronze-medal results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+        "text": "His four bronze medals are in Text Normalization Challenge - Russian Language (47th of 162), Market Basket Analysis (180th of 2,621), TalkingData AdTracking Fraud Detection (268th of 3,943) and Biohub - Cell Tracking During Development (334th of 3,947), each shown under his own account only."
+      },
+      {
+        "checkedAt": "2026-10-30T11:05:27Z",
+        "sourceTitle": "Takuma Mori (menphim) — public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/menphim",
+        "text": "His Kaggle profile describes him as a Machine Learning Engineer at Honda R&D in Tokyo, Japan."
+      },
+      {
+        "checkedAt": "2026-10-30T11:05:27Z",
+        "sourceTitle": "Takuma Mori — active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+        "text": "His Kaggle profile lists ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2 as his two active competitions; any current ARC standing is provisional until the private leaderboard settles."
+      }
+    ],
     "hallOfFame": [],
     "id": "takuma-mori",
     "memberships": [
@@ -1919,10 +2490,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-15T02:22:14Z",
-        "sourceTitle": "Darragh — Kaggle profile and direct professional links",
+        "checkedAt": "2026-10-30T12:21:41Z",
+        "sourceTitle": "Darragh — public Kaggle profile, tier, rank and medal counts",
         "sourceUrl": "https://www.kaggle.com/darraghdog",
-        "text": "Darragh’s Kaggle profile links to his GitHub profile, which displays the full name Darragh Hanley."
+        "text": "Kaggle lists Darragh (darraghdog) as a Competitions Grandmaster, ranked 53rd of 225,021, with a highest-ever competition rank of 4. His profile shows 28 gold, 14 silver and 3 bronze competition medals."
+      },
+      {
+        "checkedAt": "2026-10-30T12:21:41Z",
+        "sourceTitle": "Darragh — public Kaggle account join date",
+        "sourceUrl": "https://www.kaggle.com/darraghdog",
+        "text": "Darragh’s Kaggle account dates from July 2014, according to the join date shown on his profile."
+      },
+      {
+        "checkedAt": "2026-10-30T12:21:41Z",
+        "sourceTitle": "Darragh — completed Kaggle competitions, best results",
+        "sourceUrl": "https://www.kaggle.com/darraghdog/competitions",
+        "text": "Two entries at the top of his Kaggle competitions list are first-place finishes by teams that included his account: the AI Mathematical Olympiad - Progress Prize 2 (1st of 2,212 teams, seven account handles listed) and the Google American Sign Language Fingerspelling Recognition competition (1st of 1,314 teams, two handles listed)."
+      },
+      {
+        "checkedAt": "2026-10-30T12:21:41Z",
+        "sourceTitle": "NVIDIA — Darragh Hanley author biography",
+        "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
+        "text": "NVIDIA’s author biography calls Darragh Hanley a senior LLM technologist on its applied agent research team and a member of NVIDIA’s Kaggle Grandmaster team with multiple competition wins, with a peak rank in the top four worldwide."
+      },
+      {
+        "checkedAt": "2026-10-30T12:21:41Z",
+        "sourceTitle": "Darragh — active Kaggle competitions",
+        "sourceUrl": "https://www.kaggle.com/darraghdog/competitions",
+        "text": "Kaggle’s competitions page lists Darragh as an active entrant in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3."
       },
       {
         "checkedAt": "2026-10-15T02:22:14Z",
@@ -1982,10 +2577,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
-        "sourceTitle": "Elad Sarafian — own Kaggle profile",
+        "checkedAt": "2026-10-30T12:25:17Z",
+        "sourceTitle": "Elad Sarafian — Kaggle competitions page",
+        "sourceUrl": "https://www.kaggle.com/eladsarafian/competitions",
+        "text": "Elad Sarafian's public Kaggle profile lists one competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T12:25:17Z",
+        "sourceTitle": "Elad Sarafian — Kaggle profile join date",
         "sourceUrl": "https://www.kaggle.com/eladsarafian",
-        "text": "The eladsarafian Kaggle profile displays the name Elad Sarafian."
+        "text": "Elad Sarafian's Kaggle account dates to October 2025."
+      },
+      {
+        "checkedAt": "2026-10-30T12:25:17Z",
+        "sourceTitle": "ARC-3 public leaderboard mirror — team NVARC3",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the public ARC-AGI-3 leaderboard mirror, eladsarafian is listed on team NVARC3, provisionally 8th of 4,984 teams. That is the team's standing, not an individual honour, and it is not final until the competition closes."
+      },
+      {
+        "checkedAt": "2026-10-30T12:25:17Z",
+        "sourceTitle": "Elad Sarafian — Kaggle profile picture",
+        "sourceUrl": "https://www.kaggle.com/eladsarafian",
+        "text": "His Kaggle profile picture is a flame illustration, not a photograph."
       }
     ],
     "hallOfFame": [],
@@ -2027,10 +2640,22 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
-        "sourceTitle": "Gal Kaplun — own Kaggle profile",
+        "checkedAt": "2026-10-30T12:26:47Z",
+        "sourceTitle": "Gal Kaplun, own public Kaggle profile and join date",
         "sourceUrl": "https://www.kaggle.com/galkaplun",
-        "text": "The galkaplun Kaggle profile displays the name Gal Kaplun."
+        "text": "Gal Kaplun's public Kaggle profile is under the handle galkaplun and dates his account joining to November 2025."
+      },
+      {
+        "checkedAt": "2026-10-30T12:26:47Z",
+        "sourceTitle": "Gal Kaplun, Kaggle competitions list",
+        "sourceUrl": "https://www.kaggle.com/galkaplun/competitions",
+        "text": "Kaggle lists one competition for Gal Kaplun, the active ARC Prize 2026 - ARC-AGI-3, entered with a team, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T12:26:47Z",
+        "sourceTitle": "Gal Kaplun, own public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/galkaplun",
+        "text": "His Kaggle profile shows one model and no biography."
       }
     ],
     "hallOfFame": [],
@@ -2072,10 +2697,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
-        "sourceTitle": "Yeyin Zhu — own Kaggle profile",
+        "checkedAt": "2026-10-30T12:31:00Z",
+        "sourceTitle": "Yeyin Zhu | Kaggle",
         "sourceUrl": "https://www.kaggle.com/yeyinzhu",
-        "text": "The yeyinzhu Kaggle profile displays the name Yeyin Zhu."
+        "text": "Yeyin Zhu's Kaggle account (yeyinzhu) joined in September 2026, according to the join date on the public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:00Z",
+        "sourceTitle": "Yeyin Zhu | Kaggle (Competitions)",
+        "sourceUrl": "https://www.kaggle.com/yeyinzhu/competitions",
+        "text": "Kaggle's competitions page for Yeyin Zhu lists one competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:00Z",
+        "sourceTitle": "ARC-AGI-3 public leaderboard roster, snapshot of 2026-10-30",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "Yeyin Zhu is listed on team NVARC3, which was 8th of 4,984 teams on the public ARC-AGI-3 board at the latest check. These public standings are provisional until the competition closes, and the position is the team's, not an individual honour."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:00Z",
+        "sourceTitle": "Yeyin Zhu | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yeyinzhu",
+        "text": "The yeyinzhu profile says \"Quietly working away\" and has no other bio."
       }
     ],
     "hallOfFame": [],
@@ -2117,10 +2760,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
-        "sourceTitle": "Stefano Viel — own Kaggle profile and direct account links",
+        "checkedAt": "2026-10-30T12:31:15Z",
+        "sourceTitle": "Stefano Viel — own Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/stefano1283",
-        "text": "Stefano Viel’s Kaggle profile lists him as a research scientist at Tufa Labs and links to his GitHub, LinkedIn and X accounts."
+        "text": "Stefano Viel’s Kaggle profile gives his job as Research Scientist at Tufa Labs, based in Zürich, Switzerland, and links to his GitHub, LinkedIn and X accounts."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:15Z",
+        "sourceTitle": "Stefano Viel — Kaggle account join date",
+        "sourceUrl": "https://www.kaggle.com/stefano1283",
+        "text": "Stefano Viel’s Kaggle account dates from December 2018."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:15Z",
+        "sourceTitle": "Stefano Viel — completed Nemotron result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/stefano1283/competitions",
+        "text": "Kaggle lists Stefano Viel’s completed NVIDIA Nemotron Model Reasoning Challenge entry at 3887th of 4185 teams, with no medal shown. Only his own account appears on the entry."
+      },
+      {
+        "checkedAt": "2026-10-30T12:31:15Z",
+        "sourceTitle": "Stefano Viel — active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/stefano1283/competitions",
+        "text": "Kaggle shows Stefano Viel as an entrant in both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, which were still running when this was read."
       },
       {
         "checkedAt": "2026-10-13T17:33:14Z",
@@ -2186,6 +2847,36 @@
         "text": "The ruichardliu Kaggle profile displays the name Reki. ARC Prize links this account’s notebook as its second-place ARC-AGI-3 Milestone 1 entry in July 2026."
       },
       {
+        "checkedAt": "2026-10-30T12:35:00Z",
+        "sourceTitle": "Reki — public Kaggle profile, tier, medals and rank",
+        "sourceUrl": "https://www.kaggle.com/ruichardliu",
+        "text": "Reki, whose Kaggle handle is ruichardliu, is shown on Kaggle as a Competitions Master, with one gold, three silver and two bronze competition medals displayed on the public profile, ranked 1,529 of 225,021 and 951 at best."
+      },
+      {
+        "checkedAt": "2026-10-30T12:35:00Z",
+        "sourceTitle": "Reki — public Kaggle account join tooltip",
+        "sourceUrl": "https://www.kaggle.com/ruichardliu",
+        "text": "Reki's Kaggle profile dates the account to February 2023."
+      },
+      {
+        "checkedAt": "2026-10-30T12:35:00Z",
+        "sourceTitle": "Reki — completed Child Mind Institute result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ruichardliu/competitions",
+        "text": "Kaggle lists Reki's best completed result as 13th of 3,559 teams in Child Mind Institute — Problematic Internet Use, with a gold medal; the entry shows ruichardliu and leoziangchen, so it is a shared team medal."
+      },
+      {
+        "checkedAt": "2026-10-30T12:35:00Z",
+        "sourceTitle": "Reki — completed silver and bronze results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ruichardliu/competitions",
+        "text": "The same list shows silver medals at Orbit Wars (78th of 4,729 teams), Deep Past Challenge (100th of 2,674) and ICR (197th of 6,430), and bronze medals at MABe Challenge (114th of 1,412) and LLM - Detect AI Generated Text (294th of 4,358); only ICR is shown as a solo entry."
+      },
+      {
+        "checkedAt": "2026-10-30T12:35:00Z",
+        "sourceTitle": "Reki — active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/ruichardliu/competitions",
+        "text": "Kaggle lists Reki as currently entered in both ARC Prize 2026 - ARC-AGI-3 and ARC-AGI-2, each marked three days to go; public ARC standings are provisional until the contest closes."
+      },
+      {
         "checkedAt": "2026-10-13T17:37:12Z",
         "sourceTitle": "ARC Prize — July 7, 2026 Milestone 1 prize announcement",
         "sourceUrl": "https://x.com/arcprize/status/2074557069215313931",
@@ -2249,16 +2940,40 @@
         "text": "The mbmmurad Kaggle profile displays Md Boktiar Mahbub Murad. ARC Prize links this account’s notebook as its third-place ARC-AGI-3 Milestone 1 entry in July 2026."
       },
       {
+        "checkedAt": "2026-10-30T12:39:22Z",
+        "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile, competition tier and medals",
+        "sourceUrl": "https://www.kaggle.com/mbmmurad",
+        "text": "Md Boktiar Mahbub Murad is a Kaggle Competitions Expert, ranked 443rd of 225,021, with three silver and five bronze competition medals shown on his public profile; one of the silvers is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T12:39:22Z",
+        "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/mbmmurad",
+        "text": "His Kaggle profile lists him as a PhD student at Iowa State University in Ames, Iowa, and dates his account to April 2019."
+      },
+      {
+        "checkedAt": "2026-10-30T12:39:22Z",
+        "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile, Notebooks tier and medals",
+        "sourceUrl": "https://www.kaggle.com/mbmmurad",
+        "text": "He is also a Kaggle Notebooks Master, ranked 142nd of 58,895, with eight gold, seven silver and ten bronze notebook medals."
+      },
+      {
+        "checkedAt": "2026-10-30T12:39:22Z",
+        "sourceTitle": "Md Boktiar Mahbub Murad — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/mbmmurad/competitions",
+        "text": "Kaggle lists his completed PII Data Detection entry 76th of 2,048 teams and his AI Agent Security entry 205th of 4,186 teams, each with a silver medal and each displayed under his account alone."
+      },
+      {
+        "checkedAt": "2026-10-30T12:39:22Z",
+        "sourceTitle": "Md Boktiar Mahbub Murad — ARC Prize entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/mbmmurad/competitions",
+        "text": "His completed list also shows ARC Prize 2024 (216th of 1,427 teams) and ARC Prize 2025 (266th of 1,455 teams) with no medal, and ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3 as active competitions."
+      },
+      {
         "checkedAt": "2026-10-13T17:37:12Z",
         "sourceTitle": "ARC Prize — July 7, 2026 Milestone 1 prize announcement",
         "sourceUrl": "https://x.com/arcprize/status/2074557069215313931",
         "text": "Md Boktiar Mahbub Murad won the July 2026 ARC-AGI-3 Milestone 1 third prize of $5,000 at a recorded score of 0.864%; the milestone deadline was June 30."
-      },
-      {
-        "checkedAt": "2026-10-13T17:35:03Z",
-        "sourceTitle": "Md Boktiar Mahbub Murad — own Kaggle profile",
-        "sourceUrl": "https://www.kaggle.com/mbmmurad",
-        "text": "Md Boktiar Mahbub Murad’s Kaggle profile lists him as a PhD student at Iowa State University."
       }
     ],
     "hallOfFame": [],
@@ -2318,7 +3033,32 @@
         "url": "https://x.com/iiiiitsu_ne"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T12:42:16Z",
+        "sourceTitle": "nisshokuitsuki — public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+        "text": "The Kaggle account nisshokuitsuki, which appears on Kaggle under the display name amn, dates its joining to March 2023."
+      },
+      {
+        "checkedAt": "2026-10-30T12:42:16Z",
+        "sourceTitle": "nisshokuitsuki — completed Bengali.AI Speech Recognition result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+        "text": "Kaggle lists the account's Bengali.AI Speech Recognition entry 22nd of 744 teams, with a silver medal. The entry shows two members, hongori and nisshokuitsuki, so it is a team medal, not a solo honour."
+      },
+      {
+        "checkedAt": "2026-10-30T12:42:16Z",
+        "sourceTitle": "nisshokuitsuki — completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+        "text": "Three more completed entries are listed, each shared with hongori and none showing a medal: CommonLit - Evaluate Student Summaries 491st of 2,064 teams, NVIDIA Nemotron Model Reasoning Challenge 583rd of 4,185 teams, and ISIC 2024 - Skin Cancer Detection 911th of 2,739 teams."
+      },
+      {
+        "checkedAt": "2026-10-30T12:42:16Z",
+        "sourceTitle": "nisshokuitsuki — active competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+        "text": "The account is currently listed in two active competitions, ARC Prize 2026 - ARC-AGI-2 and Name That LLM."
+      }
+    ],
     "hallOfFame": [],
     "id": "itsu",
     "memberships": [
@@ -2365,6 +3105,30 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T12:46:20Z",
+        "sourceTitle": "Richard Csaky, own public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/richardcsaky",
+        "text": "Richard Csaky's public Kaggle profile is under the handle richardcsaky and dates his account joining to May 2019. It shows no competition tier, no medals and no bio beyond the line 'Quietly working away'."
+      },
+      {
+        "checkedAt": "2026-10-30T12:46:20Z",
+        "sourceTitle": "Richard Csaky, Kaggle competitions page",
+        "sourceUrl": "https://www.kaggle.com/richardcsaky/competitions",
+        "text": "Kaggle's Competitions page for Richard Csaky lists two active entries, ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T12:46:20Z",
+        "sourceTitle": "Richard Csaky, Kaggle competitions page and entry accounts",
+        "sourceUrl": "https://www.kaggle.com/richardcsaky/competitions",
+        "text": "On that page his ARC-AGI-3 entry shows two accounts, richardcsaky and cmechevalier, while his ARC-AGI-2 entry shows richardcsaky alone; Kaggle counts one of his competitions as solo and one as in a team."
+      },
+      {
+        "checkedAt": "2026-10-30T12:46:20Z",
+        "sourceTitle": "Artificial Agency Lab, own biography of Richard Csaky",
+        "sourceUrl": "https://artificialagencylab.com/",
+        "text": "Artificial Agency Lab's own site says Richard Csaky holds a PhD in Machine Learning and Neuroscience from the University of Oxford and worked on the ARC-AGI-3 agent that the lab reports placing 8th at both the June 30 and September 30, 2026 milestones; that is a lab statement about a team agent, not a Kaggle-confirmed individual honour."
+      },
       {
         "checkedAt": "2026-10-14T10:07:47.955742+00:00",
         "sourceTitle": "Artificial Agency Lab — own research and account links",
@@ -2429,16 +3193,40 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T12:48:08Z",
+        "sourceTitle": "fses91 | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/fses91",
+        "text": "Kaggle lists fses91 as a Competitions Expert ranked 6,819 of 225,021, with one silver and three bronze competition medals, and a highest-ever rank of 1,226."
+      },
+      {
+        "checkedAt": "2026-10-30T12:48:08Z",
+        "sourceTitle": "fses91 | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/fses91",
+        "text": "His Kaggle bio reads “Hi I am Florian”, and the profile places him in Vienna, Austria, with links to GitHub, LinkedIn and X accounts under the handle fses91."
+      },
+      {
+        "checkedAt": "2026-10-30T12:48:08Z",
+        "sourceTitle": "fses91 completed competitions | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "His silver medal is for 38th place out of 4,463 teams in the Santander Value Prediction Challenge, an entry that shows only his own account."
+      },
+      {
+        "checkedAt": "2026-10-30T12:48:08Z",
+        "sourceTitle": "fses91 completed competitions | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "His bronze medals are for NFL Helmet Assignment (90th of 825 teams), Jigsaw Unintended Bias in Toxicity Classification (163rd of 3,165, a shared entry with the account phseidl, so a team medal) and Porto Seguro’s Safe Driver Prediction (364th of 5,156)."
+      },
+      {
+        "checkedAt": "2026-10-30T12:48:08Z",
+        "sourceTitle": "fses91 competitions | Kaggle",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "His profile lists the live ARC Prize 2026 - ARC-AGI-3 entry with three other accounts, gklambauer, dwellement0baser and lukasaichberger, and shows him 765th of 1,455 teams in last year’s ARC Prize 2025, with no medal."
+      },
+      {
         "checkedAt": "2026-10-29T19:41:08.261436+00:00",
         "sourceTitle": "Florian Sestak — directly linked GitHub identity",
         "sourceUrl": "https://github.com/fses91",
         "text": "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak."
-      },
-      {
-        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
-        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
-        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
-        "text": "His Kaggle completed-results page records silver for 38/4463 in Santander Value Prediction Challenge and bronze results in NFL Helmet Assignment (90/825), Jigsaw Unintended Bias (163/3165, shared entry) and Porto Seguro (364/5156)."
       },
       {
         "checkedAt": "2026-10-29T19:41:08.261436+00:00",
@@ -2493,6 +3281,36 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T12:53:47Z",
+        "sourceTitle": "Lukas Aichberger — public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+        "text": "Kaggle shows Lukas Aichberger (handle lukasaichberger) as having joined in October 2024, according to the join date on his public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T12:53:47Z",
+        "sourceTitle": "Lukas Aichberger — Kaggle competitions page",
+        "sourceUrl": "https://www.kaggle.com/lukasaichberger/competitions",
+        "text": "His Kaggle competitions page lists one entry, a team entry in the active ARC Prize 2026 - ARC-AGI-3 competition, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T12:53:47Z",
+        "sourceTitle": "Lukas Aichberger — public Kaggle profile, hidden sections",
+        "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+        "text": "His Kaggle profile hides all of its sections, so the page shows no competition tier and no medal counts for him."
+      },
+      {
+        "checkedAt": "2026-10-30T12:53:47Z",
+        "sourceTitle": "ARC-AGI-3 public roster board — team the last dance",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the newsroom's public ARC-AGI-3 roster board, the four-account team that includes his account (dwellement0baser, fses91, gklambauer and lukasaichberger), named the last dance, is listed 5th of 4,984 teams. This is a provisional public-leaderboard standing and it is the whole team's, not an individual honour."
+      },
+      {
+        "checkedAt": "2026-10-30T12:53:47Z",
+        "sourceTitle": "Lukas Aichberger — own GitHub biography",
+        "sourceUrl": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+        "text": "His own GitHub biography says he completed a PhD in artificial intelligence at JKU Linz through the ELLIS PhD Program, co-supervised by Sepp Hochreiter and Yarin Gal, and has worked on LLM reasoning and post-training at Apple and done research with OATML at the University of Oxford."
+      },
       {
         "checkedAt": "2026-10-29T19:41:08.261436+00:00",
         "sourceTitle": "Lukas Aichberger — own biography and research directions",
@@ -2551,7 +3369,38 @@
         "url": "https://x.com/vineeth_sai_vs"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T12:57:25Z",
+        "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+        "text": "Vineeth Sai Varikuntla's public Kaggle profile (vineethsaivs) lists him as a Machine Learning Engineer at AT&T, based in San Francisco."
+      },
+      {
+        "checkedAt": "2026-10-30T12:57:25Z",
+        "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile and bio",
+        "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+        "text": "His Kaggle profile dates his account to January 2021 and says he is a data scientist by trade with a lifelong interest in astrophysics, cosmology and philosophy."
+      },
+      {
+        "checkedAt": "2026-10-30T12:57:25Z",
+        "sourceTitle": "Vineeth Sai Varikuntla | Kaggle profile bio",
+        "sourceUrl": "https://www.kaggle.com/vineethsaivs",
+        "text": "His bio says he is especially interested in using AI to make a positive impact in healthcare."
+      },
+      {
+        "checkedAt": "2026-10-30T12:57:25Z",
+        "sourceTitle": "Vineeth Sai Varikuntla | Completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/vineethsaivs/competitions",
+        "text": "Kaggle lists one completed competition on his page, the community Google IO Demo Competition, where he finished 18th of 18 teams with no medal shown."
+      },
+      {
+        "checkedAt": "2026-10-30T12:57:25Z",
+        "sourceTitle": "Vineeth Sai Varikuntla | Active competitions and activity on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/vineethsaivs/competitions",
+        "text": "His Competitions page shows ARC Prize 2026 - ARC-AGI-3 as his one active entry and counts both of his competitions as solo, with none in a team."
+      }
+    ],
     "hallOfFame": [],
     "id": "vineeth-sai-varikuntla",
     "memberships": [
@@ -2597,7 +3446,32 @@
         "url": "https://x.com/dawkopi"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T12:59:34Z",
+        "sourceTitle": "Dawid Kopiczko - public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/dawkopi",
+        "text": "Kaggle lists Dawid Kopiczko (dawkopi) as a Competitions Master, ranked 923rd of 225,021 (highest ever 735th), with one gold and two silver competition medals."
+      },
+      {
+        "checkedAt": "2026-10-30T12:59:34Z",
+        "sourceTitle": "Dawid Kopiczko - completed ARC Prize 2024 result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dawkopi/competitions",
+        "text": "Kaggle lists his ARC Prize 2024 entry 8th of 1,427 teams with a gold medal. The displayed entry shows only the dawkopi account, and Kaggle's activity panel counts all of his competitions as solo."
+      },
+      {
+        "checkedAt": "2026-10-30T12:59:34Z",
+        "sourceTitle": "Dawid Kopiczko - completed Nemotron and NeuroGolf results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dawkopi/competitions",
+        "text": "Kaggle lists two further silver-medal finishes for him: 29th of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge, and 112th of 2,963 teams in The 2026 NeuroGolf Championship."
+      },
+      {
+        "checkedAt": "2026-10-30T12:59:34Z",
+        "sourceTitle": "ARC Prize 2026 ARC-AGI-2 public leaderboard snapshot (provisional)",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Provisional public standing: on the ARC Prize 2026 ARC-AGI-2 leaderboard snapshot of 30 October 2026, his team Dawid Kopiczko (member dawkopi) was 9th of 3,534 teams. Standings can change until the private results settle at the 2 November close."
+      }
+    ],
     "hallOfFame": [],
     "id": "dawid-kopiczko",
     "memberships": [
@@ -2639,7 +3513,20 @@
         "url": "https://x.com/mhmazur"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T13:00:48Z",
+        "sourceTitle": "Contact | Matt Mazur",
+        "sourceUrl": "https://mattmazur.com/contact/",
+        "text": "Matt Mazur's own website lists his Twitter (X) account as @mhmazur."
+      },
+      {
+        "checkedAt": "2026-10-30T13:00:48Z",
+        "sourceTitle": "Contact | Matt Mazur",
+        "sourceUrl": "https://mattmazur.com/contact/",
+        "text": "The same contact page lists his GitHub profile (mattm) and a LinkedIn profile (mhmazur) next to his X account."
+      }
+    ],
     "hallOfFame": [],
     "id": "matt-mazur",
     "memberships": [],
@@ -2664,7 +3551,38 @@
         "url": "https://x.com/bogoconic1"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T13:03:39Z",
+        "sourceTitle": "Geremie Yeo - public Kaggle profile, medals and rank",
+        "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+        "text": "Kaggle shows Geremie Yeo as a Competitions Master with four gold, ten silver and three bronze medals, ranked 103rd of 225,021 in competitions and 61st at his highest."
+      },
+      {
+        "checkedAt": "2026-10-30T13:03:39Z",
+        "sourceTitle": "Geremie Yeo - completed NeuroGolf result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+        "text": "Kaggle lists The 2026 NeuroGolf Championship, a contest on designing the smallest neural networks to solve ARC-AGI image transformations, as a 2nd-place finish of 2,963 teams with a gold medal; the entry shows five team accounts, his among them, so it is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:03:39Z",
+        "sourceTitle": "Geremie Yeo - completed PII Data Detection result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+        "text": "Kaggle lists The Learning Agency Lab - PII Data Detection as a 1st-place finish of 2,048 teams with a gold medal; five accounts are shown on the entry, so it is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:03:39Z",
+        "sourceTitle": "Geremie Yeo - completed Make Data Count result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie/competitions",
+        "text": "Kaggle lists Make Data Count - Finding Data References as 9th of 1,282 teams with a gold medal, and the entry shows only his own account."
+      },
+      {
+        "checkedAt": "2026-10-30T13:03:39Z",
+        "sourceTitle": "Geremie Yeo - public Kaggle profile, join date and listed role",
+        "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+        "text": "His Kaggle profile dates his account to June 2020 and lists him as a Founding Engineer at Solvea in San Francisco."
+      }
+    ],
     "hallOfFame": [],
     "id": "geremie-yeo",
     "memberships": [],
@@ -2689,7 +3607,32 @@
         "url": "https://www.kaggle.com/grigoriyzatravkin"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-30T13:06:00Z",
+        "sourceTitle": "Grigoriy Zatravkin - public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/grigoriyzatravkin",
+        "text": "Grigoriy Zatravkin's public Kaggle profile dates his account's joining to October 2020."
+      },
+      {
+        "checkedAt": "2026-10-30T13:06:00Z",
+        "sourceTitle": "Grigoriy Zatravkin - competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/grigoriyzatravkin/competitions",
+        "text": "Kaggle's competitions page for Grigoriy Zatravkin lists one competition, ARC Prize 2026 - ARC-AGI-3, entered as part of a team, with no solo entries and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T13:06:00Z",
+        "sourceTitle": "ARC-AGI-3 public board - team Grigoriy Zatravkin & co",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the newsroom's public ARC-AGI-3 board, the team Grigoriy Zatravkin & co, which lists his account, stood 9th of 4,984 teams with a score of 47.19, as read on 30 October 2026. This is a provisional public standing, not a final result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:06:00Z",
+        "sourceTitle": "ARC-AGI-3 public board - team Grigoriy Zatravkin & co members",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "The public ARC-AGI-3 board lists four accounts on the Grigoriy Zatravkin & co team: aizealotwu, deepdreamer, florenciasolange and grigoriyzatravkin."
+      }
+    ],
     "hallOfFame": [],
     "id": "grigoriy-zatravkin",
     "memberships": [
@@ -2720,6 +3663,30 @@
       }
     ],
     "facts": [
+      {
+        "checkedAt": "2026-10-30T13:09:45Z",
+        "sourceTitle": "Sebastian Brodehl — public Kaggle profile and join date",
+        "sourceUrl": "https://www.kaggle.com/sbrodehl",
+        "text": "Sebastian Brodehl's public Kaggle profile (handle sbrodehl) lists him as an AI Engineer and dates his account joining to July 2016."
+      },
+      {
+        "checkedAt": "2026-10-30T13:09:45Z",
+        "sourceTitle": "Sebastian Brodehl — Kaggle competitions list and activity panel",
+        "sourceUrl": "https://www.kaggle.com/sbrodehl/competitions",
+        "text": "Kaggle lists Sebastian Brodehl in the active ARC Prize 2026 - ARC-AGI-3 competition as one team entry; his profile shows one competition in a team and none solo, and it lists no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T13:09:45Z",
+        "sourceTitle": "Mainz Visual Computing — people and alumni",
+        "sourceUrl": "https://www.visualcomputing.informatik.uni-mainz.de/people/",
+        "text": "Johannes Gutenberg University Mainz's Visual Computing group lists Dr. Sebastian Brodehl among its alumni as a former PhD student."
+      },
+      {
+        "checkedAt": "2026-10-30T13:09:45Z",
+        "sourceTitle": "Frontiers in Artificial Intelligence — 2021 coauthored research paper",
+        "sourceUrl": "https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.642374/full",
+        "text": "David Hartmann, Daniel Franzen and Sebastian Brodehl are the three authors of the 2021 paper Studying the Evolution of Neural Activation Patterns During Training of Feed-Forward ReLU Networks, affiliated with the Visual Computing Group at Johannes Gutenberg University."
+      },
       {
         "checkedAt": "2026-10-27T01:16:06.263620+00:00",
         "sourceTitle": "Mainz Visual Computing — people and alumni",
@@ -2772,28 +3739,46 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T13:12:41Z",
+        "sourceTitle": "Darren Amadeus Martin — public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+        "text": "Darren Amadeus Martin is a Kaggle Competitions Expert, with one gold and one silver competition medal shown on his public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T13:12:41Z",
+        "sourceTitle": "Darren Amadeus Martin — completed NVIDIA Nemotron result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+        "text": "Kaggle lists his completed NVIDIA Nemotron Model Reasoning Challenge entry fifth of 4,185 teams with a gold medal; the entry shows five accounts, so it is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:12:41Z",
+        "sourceTitle": "Darren Amadeus Martin — completed Google Code Golf Championship result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+        "text": "Kaggle lists his completed NeurIPS 2025 - Google Code Golf Championship entry 18th of 1,142 teams with a silver medal; the entry shows five accounts, so it is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:12:41Z",
+        "sourceTitle": "Darren Amadeus Martin — active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+        "text": "His Kaggle competitions page lists him in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each alongside the same four other accounts; no standing is shown there."
+      },
+      {
+        "checkedAt": "2026-10-30T13:12:41Z",
+        "sourceTitle": "Darren Amadeus Martin — own Kaggle profile biography and join date",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+        "text": "His own Kaggle profile says he is a student at Waseda University in Nerima City, Tokyo, and dates his account to April 2022."
+      },
+      {
         "checkedAt": "2026-10-29T23:43:35.884923Z",
         "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
         "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
         "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result."
       },
       {
-        "checkedAt": "2026-10-29T23:43:35.884923Z",
-        "sourceTitle": "Darren Amadeus Martin — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
-        "text": "His own completed competition record lists 18th of 1,142 and a silver medal in Code Golf Championship 2025."
-      },
-      {
         "checkedAt": "2026-10-27T01:44:45.672194+00:00",
         "sourceTitle": "Domdolus Tolus — fifth-place solution write-up and author credits",
         "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
         "text": "Kaggle lists Darren Amadeus Martin among the authors of the Domdolus Tolus fifth-place NVIDIA Nemotron Model Reasoning Challenge write-up."
-      },
-      {
-        "checkedAt": "2026-10-29T23:43:35.884923Z",
-        "sourceTitle": "Darren Amadeus Martin — own Kaggle biography",
-        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
-        "text": "His own Kaggle profile identifies him as a student at Waseda University."
       }
     ],
     "hallOfFame": [],
@@ -2847,22 +3832,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
-        "sourceTitle": "xz — public Kaggle profile, October 29, 2026",
+        "checkedAt": "2026-10-30T13:15:19Z",
+        "sourceTitle": "xz - public Kaggle profile and competition medals",
         "sourceUrl": "https://www.kaggle.com/xiaoz259",
-        "text": "Kaggle profile lists Competitions Master, one gold medal, three silver medals and five bronze medals; observed October 29, 2026."
+        "text": "Kaggle lists xz as a Competitions Master, ranked 15th of 225,021 in the competitions ranking and 10th at best, with one gold, three silver and five bronze medals."
       },
       {
-        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
-        "sourceTitle": "xz — Kaggle competition history",
+        "checkedAt": "2026-10-30T13:15:19Z",
+        "sourceTitle": "xz - Kaggle competition history",
         "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
-        "text": "Kaggle competition history lists first of 4,186 teams in AI Agent Security – Multi-Step Tool Attacks."
+        "text": "Kaggle lists xz first of 4,186 teams, with a gold medal, in AI Agent Security - Multi-Step Tool Attacks; the entry shows only the xiaoz259 account."
       },
       {
-        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
-        "sourceTitle": "xz — prior ARC competition results",
+        "checkedAt": "2026-10-30T13:15:19Z",
+        "sourceTitle": "xz - Kaggle competition history",
         "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
-        "text": "Kaggle competition history lists 341st of 1,427 in ARC Prize 2024 and 602nd of 1,455 in ARC Prize 2025."
+        "text": "xz's other medals on Kaggle are silver in Jane Street Real-Time Market Data Forecasting (37th), AI Mathematical Olympiad Progress Prize 2 (52nd) and NFL Big Data Bowl 2026 (52nd), plus five bronzes including Progress Prize 3 (286th)."
+      },
+      {
+        "checkedAt": "2026-10-30T13:15:19Z",
+        "sourceTitle": "xz - prior ARC Prize results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+        "text": "Kaggle lists xz 341st of 1,427 in ARC Prize 2024 and 602nd of 1,455 in ARC Prize 2025, with no medal in either."
+      },
+      {
+        "checkedAt": "2026-10-30T13:15:19Z",
+        "sourceTitle": "xz - featured write-up on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259",
+        "text": "xz's Kaggle profile features a 1st place solution write-up dated September 2, 2026 for the AI Agent Security competition; it is about that separate competition, not an ARC method."
       },
       {
         "checkedAt": "2026-10-29T18:24:45.054449+00:00",
@@ -2910,10 +3907,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
-        "sourceTitle": "Mykyta Ielanskyi — own Kaggle identity and research role",
+        "checkedAt": "2026-10-30T13:18:08Z",
+        "sourceTitle": "Mykyta Ielanskyi — public Kaggle profile and join date",
         "sourceUrl": "https://www.kaggle.com/dwellement0baser",
-        "text": "His Kaggle profile names Mykyta Ielanskyi and identifies his role as Research Scientist at IML JKU."
+        "text": "Kaggle shows Mykyta Ielanskyi (handle dwellement0baser) as a Research Scientist at IML JKU in Linz, Upper Austria, and dates his account joining to April 2020."
+      },
+      {
+        "checkedAt": "2026-10-30T13:18:08Z",
+        "sourceTitle": "Mykyta Ielanskyi — completed Kaggriculture result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser/competitions",
+        "text": "His Kaggle competitions page lists one completed competition, Kaggriculture, with a result of 3254 out of 10148 teams and no medal icon shown. The entry is a team entry displaying four accounts: dwellement0baser, wilhelmberghammer, michaellist and oneupkiwi."
+      },
+      {
+        "checkedAt": "2026-10-30T13:18:08Z",
+        "sourceTitle": "ARC-AGI-3 public roster board — team the last dance",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the newsroom's public ARC-AGI-3 roster board, the four-account team that includes his account (dwellement0baser, fses91, gklambauer and lukasaichberger), named the last dance, is listed 5th of 4,984 teams. This is a provisional public-leaderboard standing and it is the whole team's, not an individual honour."
+      },
+      {
+        "checkedAt": "2026-10-30T13:18:08Z",
+        "sourceTitle": "JKU — Outstanding Paper Award at ICLR 2026 Workshop on Logical Reasoning of Large Language Models",
+        "sourceUrl": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+        "text": "JKU's research portal lists him as one of six recipients of the Outstanding Paper Award, awarded 23 April 2026 at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models, for the paper From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles. It is a shared paper award, not a solo honour."
+      },
+      {
+        "checkedAt": "2026-10-30T13:18:08Z",
+        "sourceTitle": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT on arXiv",
+        "sourceUrl": "https://arxiv.org/abs/2606.06475",
+        "text": "He is the first-listed author of the paper RREDCoT: Segment-Level Reward Redistribution for Reasoning Models, posted to arXiv on 4 June 2026 with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter."
       },
       {
         "checkedAt": "2026-10-29T19:41:08.261436+00:00",
@@ -2967,10 +3988,22 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
-        "sourceTitle": "gklambauer — own Kaggle profile; no real name or personal portrait supplied",
+        "checkedAt": "2026-10-30T13:20:02Z",
+        "sourceTitle": "gklambauer | Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/gklambauer",
-        "text": "The Kaggle account supplies no real name or personal portrait. Its default Kaggle goose is not a personal likeness. No direct account link confirming ownership by professor Günter Klambauer was found in this focused investigation."
+        "text": "gklambauer's public Kaggle profile shows only the handle: no real name, no biography and no personal photo."
+      },
+      {
+        "checkedAt": "2026-10-30T13:20:02Z",
+        "sourceTitle": "gklambauer | Kaggle profile (join and last-seen dates)",
+        "sourceUrl": "https://www.kaggle.com/gklambauer",
+        "text": "Kaggle dates the gklambauer account to February 2017 and shows it last active in July 2026."
+      },
+      {
+        "checkedAt": "2026-10-30T13:20:02Z",
+        "sourceTitle": "gklambauer | Kaggle Competitions page",
+        "sourceUrl": "https://www.kaggle.com/gklambauer/competitions",
+        "text": "The only competition on the gklambauer profile is the still-running ARC Prize 2026 - ARC-AGI-3, entered as part of a team; no completed competitions, finishes or medals are listed."
       }
     ],
     "hallOfFame": [],
@@ -3004,22 +4037,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:42:34.924080+00:00",
-        "sourceTitle": "Alwin Theodoric — own Kaggle biography",
+        "checkedAt": "2026-10-30T13:23:29Z",
+        "sourceTitle": "Alwin Theodoric — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/alwintheodoric",
-        "text": "Alwin Theodoric’s own Kaggle profile lists him as a student at Tokyo University of Science in Tokyo."
+        "text": "Alwin Theodoric's Kaggle profile lists him as a student at Tokyo University of Science in Katsushika City, Tokyo, and shows his account was created in April 2024."
+      },
+      {
+        "checkedAt": "2026-10-30T13:23:29Z",
+        "sourceTitle": "Alwin Theodoric — completed NVIDIA Nemotron entry on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+        "text": "Kaggle lists a completed NVIDIA Nemotron Model Reasoning Challenge entry placed 5th of 4,185 teams with a gold medal. Five accounts, his among them, are shown on the entry, so it is a team result, not a solo honour."
+      },
+      {
+        "checkedAt": "2026-10-30T13:23:29Z",
+        "sourceTitle": "Alwin Theodoric — completed Fake or Real entry on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+        "text": "Kaggle lists his completed entry in the community competition Fake or Real: The Impostor Hunt in Texts as 1st of 992 teams, shared with the darrenamadeusmartin account. Kaggle shows no medal on that card."
+      },
+      {
+        "checkedAt": "2026-10-30T13:23:29Z",
+        "sourceTitle": "Alwin Theodoric — Kaggle competitions activity",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+        "text": "His Kaggle competitions page counts eight competitions, seven of them in a team and one solo, and shows him active in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3."
       },
       {
         "checkedAt": "2026-10-29T23:43:35.884923Z",
         "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
         "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
         "text": "Member of the five-account Domdolus Tolus team that finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal. The public team write-up credits all five members."
-      },
-      {
-        "checkedAt": "2026-10-29T23:42:34.924080+00:00",
-        "sourceTitle": "Alwin Theodoric — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
-        "text": "His own completed-result card records first of 992 in the community competition Fake or Real: The Impostor Hunt in Texts, shared with darrenamadeusmartin; no medal is displayed for this result."
       }
     ],
     "hallOfFame": [],
@@ -3073,10 +4118,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:42:34.924211+00:00",
-        "sourceTitle": "Billy Anggara — own Kaggle biography",
+        "checkedAt": "2026-10-30T13:27:01Z",
+        "sourceTitle": "Billy Anggara — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/billyanggara",
-        "text": "Billy Anggara’s own Kaggle profile lists him as a student at Chuo University in Tokyo."
+        "text": "Billy Anggara's Kaggle profile lists him as a student at Chuo University, based in Tachikawa, Tokyo, Japan."
+      },
+      {
+        "checkedAt": "2026-10-30T13:27:01Z",
+        "sourceTitle": "Billy Anggara — public Kaggle account join tooltip",
+        "sourceUrl": "https://www.kaggle.com/billyanggara",
+        "text": "Billy Anggara's Kaggle account dates its joining to April 2026."
+      },
+      {
+        "checkedAt": "2026-10-30T13:27:01Z",
+        "sourceTitle": "Billy Anggara — completed NVIDIA Nemotron result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/billyanggara/competitions",
+        "text": "Kaggle lists one completed competition on Billy Anggara's profile: the NVIDIA Nemotron Model Reasoning Challenge, fifth of 4,185 teams, with a gold medal. The entry shows five accounts, his among them, so the result is a team result shared by all five."
+      },
+      {
+        "checkedAt": "2026-10-30T13:27:01Z",
+        "sourceTitle": "Billy Anggara — Kaggle competitions and activity",
+        "sourceUrl": "https://www.kaggle.com/billyanggara/competitions",
+        "text": "Billy Anggara's profile shows all three of his competitions as team entries, none solo, and lists him in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, which Kaggle showed as three days from closing."
       },
       {
         "checkedAt": "2026-10-29T23:43:35.884923Z",
@@ -3128,10 +4191,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:42:34.924214+00:00",
-        "sourceTitle": "Tri Ardian Rinalda — own Kaggle biography",
+        "checkedAt": "2026-10-30T13:30:00Z",
+        "sourceTitle": "Tri Ardian Rinalda — public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/rinnnntt",
-        "text": "Tri Ardian Rinalda’s own Kaggle profile lists him as a student at Institute of Science Tokyo and directly links his triardianrnd LinkedIn account."
+        "text": "Tri Ardian Rinalda lists a student role at Institute of Science Tokyo, based in Meguro City, Tokyo, and has been on Kaggle since March 2024."
+      },
+      {
+        "checkedAt": "2026-10-30T13:30:00Z",
+        "sourceTitle": "Tri Ardian Rinalda — completed Nemotron result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/rinnnntt/competitions",
+        "text": "Kaggle lists the NVIDIA Nemotron Model Reasoning Challenge entry as 5th of 4,185 teams with a gold medal, shown beside five team accounts including rinnnntt. It is a shared team result."
+      },
+      {
+        "checkedAt": "2026-10-30T13:30:00Z",
+        "sourceTitle": "ARC-AGI-2 public board snapshot — Domdolus Tolus",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "On the public ARC-AGI-2 leaderboard snapshot of 30 October, the five-account Domdolus Tolus team that includes rinnnntt sits 4th of 3,535 teams. This standing is provisional until the private leaderboard decides it."
+      },
+      {
+        "checkedAt": "2026-10-30T13:30:00Z",
+        "sourceTitle": "ARC-AGI-3 public board snapshot — Domdolus Tolus",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the public ARC-AGI-3 leaderboard snapshot of 30 October, the same five-account Domdolus Tolus team sits 2,225th of 4,984 teams. This standing is provisional until the private leaderboard decides it."
       },
       {
         "checkedAt": "2026-10-29T23:43:35.884923Z",
@@ -3183,10 +4264,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:42:34.924217+00:00",
-        "sourceTitle": "Muhammad Yassir Ramadhan — own Kaggle biography",
+        "checkedAt": "2026-10-30T13:33:13Z",
+        "sourceTitle": "Muhammad Yassir Ramadhan - own Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/yassirramadhan",
-        "text": "Muhammad Yassir Ramadhan’s own Kaggle profile lists Student and Tokyo, without naming an institution."
+        "text": "Muhammad Yassir Ramadhan's own Kaggle profile lists him as a student in Hino, Tokyo, Japan, and shows him as having joined Kaggle in November 2025."
+      },
+      {
+        "checkedAt": "2026-10-30T13:33:13Z",
+        "sourceTitle": "Muhammad Yassir Ramadhan - completed NVIDIA Nemotron result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+        "text": "Kaggle lists the completed NVIDIA Nemotron Model Reasoning Challenge entry as fifth of 4,185 teams, with a gold medal. The entry shows five accounts, his among them, so the medal is a shared team medal."
+      },
+      {
+        "checkedAt": "2026-10-30T13:33:13Z",
+        "sourceTitle": "Muhammad Yassir Ramadhan - completed BirdCLEF+ 2026 and ROGII results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+        "text": "Kaggle also lists a BirdCLEF+ 2026 finish of 2,505th of 4,094 teams, shared with two other accounts, and a solo ROGII Wellbore Geology Prediction finish of 5,184th of 6,125 teams. Neither shows a medal."
+      },
+      {
+        "checkedAt": "2026-10-30T13:33:13Z",
+        "sourceTitle": "Muhammad Yassir Ramadhan - active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+        "text": "His Kaggle profile shows him in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, with the same five accounts displayed on each entry as on the Nemotron entry."
       },
       {
         "checkedAt": "2026-10-29T23:43:35.884923Z",
@@ -3254,22 +4353,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "ISAKA Tsuyoshi — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:36:36Z",
+        "sourceTitle": "ISAKA Tsuyoshi — Kaggle profile tier, medals and rank",
         "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
-        "text": "Own Kaggle profile displays Competitions Master and 3 gold, 7 silver, 8 bronze competition medals, as checked on October 29, 2026."
+        "text": "ISAKA Tsuyoshi is a Kaggle Competitions Master with 3 gold, 7 silver and 8 bronze competition medals, ranked 78th of 225,021 on the profile as checked on October 30, 2026."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "ISAKA Tsuyoshi — own biography and direct account links",
+        "checkedAt": "2026-10-30T13:36:36Z",
+        "sourceTitle": "ISAKA Tsuyoshi — Kaggle profile headline, location and join date",
         "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
-        "text": "Own Kaggle biography describes a Principal AI Engineer at Elith; the profile directly links the AInebosuke X account."
+        "text": "His Kaggle profile lists him as a Principal AI Engineer at Elith in Osaka, Japan, with an account dating from October 2020."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "ISAKA Tsuyoshi — own completed competition record",
+        "checkedAt": "2026-10-30T13:36:36Z",
+        "sourceTitle": "ISAKA Tsuyoshi — completed competitions with gold medals",
         "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
-        "text": "Completed results include fourth of 4,186 with gold in AI Agent Security, shared with current teammate yuto0712; seventh of 1,857 with gold in MAP; and ninth of 832 with gold in LLM 20 Questions."
+        "text": "Kaggle lists his three gold-medal finishes as 4th of 4,186 teams in AI Agent Security, 7th of 1,857 in MAP and 9th of 832 in LLM 20 Questions; the first two are shared team entries and the third shows only his own account."
+      },
+      {
+        "checkedAt": "2026-10-30T13:36:36Z",
+        "sourceTitle": "ISAKA Tsuyoshi — completed ARC Prize 2025 result",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+        "text": "Kaggle lists his ARC Prize 2025 result as 92nd of 1,455 teams with a bronze medal, shown with the account hikari30 on the same entry."
+      },
+      {
+        "checkedAt": "2026-10-30T13:36:36Z",
+        "sourceTitle": "ISAKA Tsuyoshi — active competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+        "text": "His Kaggle competitions page shows ARC Prize 2026 ARC-AGI-3 and ARC-AGI-2 among his four active competitions as of October 30, 2026."
       }
     ],
     "hallOfFame": [],
@@ -3323,16 +4434,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "konbu17 — own Kaggle tier and medal record",
-        "sourceUrl": "https://www.kaggle.com/konbu17",
-        "text": "Own Kaggle profile displays Competitions Expert and 9 silver competition medals, as checked on October 29, 2026."
+        "checkedAt": "2026-10-30T13:39:14Z",
+        "sourceTitle": "konbu17 — Kaggle competitions page: tier, rank, medals and completed list",
+        "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+        "text": "konbu17 is a Kaggle Competitions Expert, ranked 457th of 225,021, with nine silver competition medals across twelve completed competitions."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "konbu17 — own completed competition record",
+        "checkedAt": "2026-10-30T13:39:14Z",
+        "sourceTitle": "konbu17 — Stanford RNA 3D Folding Part 2 result on Kaggle",
         "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
-        "text": "Completed results include 55th of 1,867 in Stanford RNA 3D Folding Part 2, 58th of 10,148 in Kaggriculture, and 67th of 3,947 in Biohub, all silver-medal finishes."
+        "text": "Kaggle lists konbu17's best completed result as 55th of 1,867 teams in Stanford RNA 3D Folding Part 2, a silver medal, with only the konbu17 account shown on the entry."
+      },
+      {
+        "checkedAt": "2026-10-30T13:39:14Z",
+        "sourceTitle": "konbu17 — Kaggriculture result and listed accounts on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+        "text": "Kaggle lists Kaggriculture as 58th of 10,148 teams with a silver medal; five accounts are shown on that entry (behindkun, forrestxlz, midnqly, konbu17 and mechi22), so the silver is a shared team medal."
+      },
+      {
+        "checkedAt": "2026-10-30T13:39:14Z",
+        "sourceTitle": "konbu17 — NeuroGolf Championship result and listed accounts on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+        "text": "The 2026 NeuroGolf Championship, a competition about solving ARC-AGI image puzzles with the smallest possible neural networks, is listed as 132nd of 2,963 teams with a silver medal, shared by five accounts including konbu17."
+      },
+      {
+        "checkedAt": "2026-10-30T13:39:14Z",
+        "sourceTitle": "konbu17 — active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+        "text": "On October 30, 2026 the Kaggle competitions page shows konbu17 entered in both ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3, each marked three days to go; no finish exists yet, and any public ARC standing is provisional until the private scoring."
       }
     ],
     "hallOfFame": [],
@@ -3394,22 +4523,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "pomcho555 — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:41:53Z",
+        "sourceTitle": "pomcho555 — public Kaggle profile, tier and medals",
         "sourceUrl": "https://www.kaggle.com/pompom555",
-        "text": "Own Kaggle profile displays Competitions Expert and 2 silver, 2 bronze competition medals, as checked on October 29, 2026."
+        "text": "pomcho555 is a Kaggle Competitions Expert with two silver and two bronze competition medals shown on the public profile."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "pomcho555 — own biography and direct account links",
-        "sourceUrl": "https://www.kaggle.com/pompom555",
-        "text": "The account displays pomcho555 and directly links the k8s_pomcho X account and pomcho555 GitHub account; its stated interests include MLOps, SRE, HPC, distributed systems and eBPF."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "pomcho555 — own completed competition record",
+        "checkedAt": "2026-10-30T13:41:53Z",
+        "sourceTitle": "pomcho555 — completed AI Agent Security result on Kaggle",
         "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
-        "text": "Completed results include 79th of 4,186 with silver in AI Agent Security, shared with current teammates konbu17 and tanakaai24, and 110th of 2,618 with silver in Liverpool Ion Switching."
+        "text": "Kaggle lists the completed AI Agent Security - Multi-Step Tool Attacks entry 79th of 4,186 teams with a silver medal. The entry shows four accounts: pompom555, argon1215, tanakaai24 and konbu17."
+      },
+      {
+        "checkedAt": "2026-10-30T13:41:53Z",
+        "sourceTitle": "pomcho555 — completed Ion Switching result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+        "text": "Kaggle lists the completed University of Liverpool - Ion Switching entry 110th of 2,618 teams with a silver medal, shown with the accounts shinnyayoshida, akihirokkkkk, soji0804 and pompom555."
+      },
+      {
+        "checkedAt": "2026-10-30T13:41:53Z",
+        "sourceTitle": "pomcho555 — completed bronze-medal results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+        "text": "Kaggle lists a bronze medal for LLM Prompt Recovery, 193rd of 2,175 teams, shown with only the pompom555 account, and a bronze for the Pokémon Company PTCG AI Battle Challenge Simulation, 532nd of 6,807 teams, shown with the accounts ysakuragi, pompom555 and yutori3."
+      },
+      {
+        "checkedAt": "2026-10-30T13:41:53Z",
+        "sourceTitle": "pomcho555 — active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+        "text": "pomcho555's Kaggle profile lists both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, as active, each showing three days to go when checked on October 30, 2026. No final result exists yet, and any public standing is provisional."
       }
     ],
     "hallOfFame": [],
@@ -3471,22 +4612,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "re — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:46:00Z",
+        "sourceTitle": "re - public Kaggle profile, tier, rank and medals",
         "sourceUrl": "https://www.kaggle.com/refv00",
-        "text": "Own Kaggle profile displays Competitions Master and 2 gold, 2 silver, 1 bronze competition medals, as checked on October 29, 2026."
+        "text": "re is a Kaggle Competitions Master, ranked 88th of 225,021 on Kaggle's competitions ranking (58th at best), with two gold, two silver and one bronze competition medal on the public profile. The profile lists a data scientist in Sapporo, Japan, who joined Kaggle in July 2022."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "re — own biography and direct account links",
-        "sourceUrl": "https://www.kaggle.com/refv00",
-        "text": "Own Kaggle profile displays re, describes a data scientist in Sapporo, and directly links the refv00 X account; no full real name has been established."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "re — own completed competition record",
+        "checkedAt": "2026-10-30T13:46:00Z",
+        "sourceTitle": "re - completed Nemotron Model Reasoning Challenge result and teammates",
         "sourceUrl": "https://www.kaggle.com/refv00/competitions",
-        "text": "Member of the first-place team of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, alongside goodmeatday and reopon; also 14th of 2,963 with gold in NeuroGolf 2026."
+        "text": "re is one of three accounts, with goodmeatday and reopon, on the Kaggle entry that finished 1st of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge and won a gold medal. It is a team result, not a solo one."
+      },
+      {
+        "checkedAt": "2026-10-30T13:46:00Z",
+        "sourceTitle": "re - completed NeuroGolf Championship result and teammates",
+        "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+        "text": "re is one of five accounts on the Kaggle entry that finished 14th of 2,963 teams in The 2026 NeuroGolf Championship, a challenge about building the smallest neural networks to solve ARC-AGI image puzzles, and won a gold medal. The others shown are stmx35, tomo1314, tknakamu and schrodinger0112."
+      },
+      {
+        "checkedAt": "2026-10-30T13:46:00Z",
+        "sourceTitle": "re - remaining competition medals on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+        "text": "re's other three medals are a silver in RSNA Knee Abnormality Detection (42nd of 6,299, on a four-account team entry), a silver in the Geophysical Waveform Inversion competition (54th of 1,365) and a bronze in CMI - Detect Behavior with Sensor Data (143rd of 2,657), the last two entered with only the refv00 account shown."
+      },
+      {
+        "checkedAt": "2026-10-30T13:46:00Z",
+        "sourceTitle": "re - active ARC Prize 2026 entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+        "text": "As of October 30, 2026, Kaggle lists re as active in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each with three days to go. No standing is claimed here."
       }
     ],
     "hallOfFame": [],
@@ -3548,22 +4701,40 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "TK256 — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:49:29Z",
+        "sourceTitle": "TK256 - public Kaggle profile, tier, medals and join date",
         "sourceUrl": "https://www.kaggle.com/tk256ailab",
-        "text": "Own Kaggle profile displays Competitions Expert and 3 silver, 1 bronze competition medals, as checked on October 29, 2026."
+        "text": "TK256 is a Kaggle Competitions Expert with three silver medals and one bronze medal on his own profile, and the profile dates the account to June 2025."
+      },
+      {
+        "checkedAt": "2026-10-30T13:49:29Z",
+        "sourceTitle": "TK256 - completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab/competitions",
+        "text": "Kaggle lists his NVIDIA Nemotron Model Reasoning Challenge entry 62nd of 4,185 with silver and his ROGII Wellbore Geology Prediction entry 225th of 6,125 with silver, and shows only his account on each. It also lists his Orbit Wars entry 393rd of 4,729 with bronze, again showing only his account."
+      },
+      {
+        "checkedAt": "2026-10-30T13:49:29Z",
+        "sourceTitle": "TK256 - NeuroGolf entry and listed accounts on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab/competitions",
+        "text": "The 2026 NeuroGolf Championship entry finished 55th of 2,963 with silver, and Kaggle shows four accounts on it: akihirokkkkk, k256net, tk256ailab and ktajpn. That silver is a shared entry medal, not his alone."
+      },
+      {
+        "checkedAt": "2026-10-30T13:49:29Z",
+        "sourceTitle": "ARC-AGI-3 public board snapshot, team 復活の混テキスト (provisional)",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "His account is one of eight shown on the active ARC-AGI-3 entry, and the public ARC board lists that team, named 復活の混テキスト, 10th of 4,984 on October 30, 2026. That is a provisional public standing, not a medal, until the competition closes."
+      },
+      {
+        "checkedAt": "2026-10-30T13:49:29Z",
+        "sourceTitle": "tk256ailab (Takeru Sato | TK256) - GitHub profile linked from Kaggle",
+        "sourceUrl": "https://github.com/tk256ailab",
+        "text": "His Kaggle profile links to the GitHub account tk256ailab, whose profile is titled Takeru Sato | TK256 and describes him as part of the Tohoku NLP Group and an aspiring AI engineer."
       },
       {
         "checkedAt": "2026-10-29T23:26:08.724960Z",
         "sourceTitle": "Takeru Sato | TK256 — own GitHub profile directly linked by Kaggle",
         "sourceUrl": "https://github.com/tk256ailab",
         "text": "The TK256 Kaggle profile directly links github.com/tk256ailab, whose own public name is Takeru Sato | TK256. His Kaggle biography describes a Tohoku NLP student."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "TK256 — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/tk256ailab/competitions",
-        "text": "Completed results include 55th of 2,963 with silver in NeuroGolf 2026, 62nd of 4,185 with silver in the NVIDIA Nemotron Model Reasoning Challenge, and 225th of 6,125 with silver in ROGII."
       }
     ],
     "hallOfFame": [],
@@ -3625,22 +4796,40 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "t fuku — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:52:54Z",
+        "sourceTitle": "t fuku — public Kaggle profile, tier, medals and rank",
         "sourceUrl": "https://www.kaggle.com/ttyn4519",
-        "text": "Own Kaggle profile displays Competitions Master and 1 gold, 9 silver, 1 bronze competition medals, as checked on October 29, 2026."
+        "text": "t fuku, whose Kaggle handle is ttyn4519, is a Kaggle Competitions Master with 1 gold, 9 silver and 1 bronze competition medals, ranked 366th of 225,021 and 348th at best."
+      },
+      {
+        "checkedAt": "2026-10-30T13:52:54Z",
+        "sourceTitle": "t fuku — completed Kaggriculture result and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+        "text": "Kaggle lists his completed Kaggriculture entry 26th of 10,148 teams with a gold medal, an entry that shows four accounts: pavelsavchenkov, jjinho, ttyn4519 and giovannibaldon."
+      },
+      {
+        "checkedAt": "2026-10-30T13:52:54Z",
+        "sourceTitle": "t fuku — completed silver-medal results",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+        "text": "Silver medals on his page include MAP - Charting Student Math Misunderstandings at 15th of 1,857, Jigsaw - Agile Community Rules Classification at 28th of 2,445 and Stanford RNA 3D Folding Part 2 at 33rd of 1,867, each on an entry that lists other accounts besides his."
+      },
+      {
+        "checkedAt": "2026-10-30T13:52:54Z",
+        "sourceTitle": "t fuku — completed NeuroGolf Championship result",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+        "text": "Kaggle lists his completed entry in The 2026 NeuroGolf Championship, a contest about designing the smallest neural networks to solve ARC-AGI image transformations, 50th of 2,963 teams with a silver medal; the entry shows four accounts: ttyn4519, hyh273279, sigmaborov and zejunfool."
+      },
+      {
+        "checkedAt": "2026-10-30T13:52:54Z",
+        "sourceTitle": "t fuku — public Kaggle profile details and join date",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519",
+        "text": "His profile lists him as a Software Engineer at Honda in Minato City, Tokyo, Japan, and its join date tooltip shows October 2019."
       },
       {
         "checkedAt": "2026-10-29T23:26:08.724960Z",
         "sourceTitle": "Teppei (t fuku) Fukutomi — directly linked professional profile",
         "sourceUrl": "https://www.linkedin.com/in/teppei-fukutomi-3344313b6/",
         "text": "The t fuku Kaggle profile directly links the professional profile that names Teppei (t fuku) Fukutomi, identifies @ttyn4519 as his Kaggle account, and describes a software engineer at Honda."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "t fuku — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
-        "text": "Completed results include 26th of 10,148 with gold in Kaggriculture, 15th of 1,857 with silver in MAP, and 28th of 2,445 with silver in Jigsaw Agile."
       }
     ],
     "hallOfFame": [],
@@ -3702,22 +4891,40 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "yuto083 — own Kaggle tier and medal record",
+        "checkedAt": "2026-10-30T13:57:09Z",
+        "sourceTitle": "yuto083 — Kaggle profile tier, medals and rank",
         "sourceUrl": "https://www.kaggle.com/yuto0712",
-        "text": "Own Kaggle profile displays Competitions Master and 4 gold, 5 silver, 8 bronze competition medals, as checked on October 29, 2026."
+        "text": "Kaggle lists yuto083, whose account is yuto0712, as a Competitions Master with 4 gold, 5 silver and 8 bronze competition medals, ranked 54th of 225,021, as checked on October 30, 2026."
+      },
+      {
+        "checkedAt": "2026-10-30T13:57:09Z",
+        "sourceTitle": "yuto083 — Kaggle profile headline, location and join date",
+        "sourceUrl": "https://www.kaggle.com/yuto0712",
+        "text": "His Kaggle profile lists him as CAIO at Prox Industries in Tokyo, and dates his account to August 2019."
+      },
+      {
+        "checkedAt": "2026-10-30T13:57:09Z",
+        "sourceTitle": "yuto083 — completed gold-medal results and listed accounts on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+        "text": "Kaggle credits his account with four gold medals, three of them as part of a team: AI Agent Security (4th of 4,186, five accounts on the entry), ROGII (8th of 6,125, three accounts) and RSNA Knee Abnormality Detection (19th of 6,299, five accounts). The fourth, Biohub (9th of 3,947), shows only his account."
+      },
+      {
+        "checkedAt": "2026-10-30T13:57:09Z",
+        "sourceTitle": "yuto083 — completed silver-medal results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+        "text": "Kaggle credits his account with five silver medals: UBC-OCEAN (27th of 1,326, a team entry with five accounts shown), then four entries showing only his account, Kaggriculture (38th of 10,148), 1st and Future (38th of 939), Orbit Wars (129th of 4,729) and the Pokémon Company PTCG AI Battle Challenge (270th of 6,807)."
+      },
+      {
+        "checkedAt": "2026-10-30T13:57:09Z",
+        "sourceTitle": "yuto083 — active ARC Prize 2026 - ARC-AGI-3 entry on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+        "text": "His Kaggle competitions page shows ARC Prize 2026 - ARC-AGI-3 as active with three days to go on October 30, 2026, with eight accounts on his entry, including isakatsuyoshi, pompom555, refv00 and konbu17."
       },
       {
         "checkedAt": "2026-10-29T23:26:08.724960Z",
         "sourceTitle": "小杉雄斗 / yuto-kosugi — directly linked professional profile",
         "sourceUrl": "https://www.linkedin.com/in/yuto-kosugi/",
         "text": "The yuto083 Kaggle profile directly links the professional profile displaying 小杉雄斗, which describes CAIO at Prox Industries and a University of Tokyo doctoral student on leave."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "yuto083 — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
-        "text": "Completed results include fourth of 4,186 with gold in AI Agent Security, shared with current teammate isakatsuyoshi; eighth of 6,125 with gold in ROGII; ninth of 3,947 with gold in Biohub; and 19th of 6,299 with gold in RSNA Knee."
       }
     ],
     "hallOfFame": [],
@@ -3759,16 +4966,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "common-people — own Kaggle biography",
+        "checkedAt": "2026-10-30T14:03:47Z",
+        "sourceTitle": "common-people — public Kaggle profile and competition medals",
         "sourceUrl": "https://www.kaggle.com/aizealotwu",
-        "text": "Own Kaggle profile displays common-people and describes a Peking University student in Shenzhen interested in LLMs, information retrieval, recommendation and AI for science; no real name has been established."
+        "text": "On Kaggle, common-people (account aizealotwu) is a Competitions Expert ranked 1,416th of 225,021, with one silver and two bronze competition medals. The profile header lists a Peking University student in Shenzhen interested in LLMs, information retrieval, recommendation and AI for science; there is no written bio and no real name is shown."
       },
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "common-people — own completed competition record",
+        "checkedAt": "2026-10-30T14:03:47Z",
+        "sourceTitle": "common-people — completed CAFA 6 result on Kaggle",
         "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
-        "text": "Completed results include 19th of 2,259 with silver in CAFA 6 Protein Function Prediction, a shared team result; 132nd of 1,857 with bronze in MAP, also shared; and 134th of 1,412 with bronze in MABe."
+        "text": "Kaggle lists a five-account entry including aizealotwu, xaxipirulazo, mohsenalzzaqri, leo123321 and aksh1t finishing 19th of 2,259 in CAFA 6 Protein Function Prediction with a silver medal. It is a shared team medal, not an individual one."
+      },
+      {
+        "checkedAt": "2026-10-30T14:03:47Z",
+        "sourceTitle": "common-people — completed MAP and MABe results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+        "text": "A three-account entry of aizealotwu, jimmykudoqiao and sirius81 finished 132nd of 1,857 in MAP - Charting Student Math Misunderstandings with a bronze medal, shared by the team. In the MABe mouse-behaviour challenge, an entry displaying only aizealotwu finished 134th of 1,412, also with bronze."
+      },
+      {
+        "checkedAt": "2026-10-30T14:03:47Z",
+        "sourceTitle": "common-people — completed competition list on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+        "text": "The same list shows fourteen completed competitions in all, including ARC Prize 2025 (1,323rd of 1,455) and The 2026 NeuroGolf Championship (713th of 2,963), neither with a medal."
+      },
+      {
+        "checkedAt": "2026-10-30T14:03:47Z",
+        "sourceTitle": "common-people — active competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+        "text": "As of 30 October 2026 the account is listed as entered in both ARC Prize 2026 - ARC-AGI-3 and ARC-AGI-2, each showing three days to go. The Kaggle page shows no placing for either entry, so no ARC standing is claimed here."
       }
     ],
     "hallOfFame": [],
@@ -3822,16 +5047,40 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T14:06:41Z",
+        "sourceTitle": "_hans (deepdreamer) — public Kaggle profile and competition medals",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer",
+        "text": "The Kaggle account _hans (username deepdreamer) is a Competitions Expert with two silver medals and one bronze medal, ranked 8,743rd of 225,021 and 803rd at its best."
+      },
+      {
+        "checkedAt": "2026-10-30T14:06:41Z",
+        "sourceTitle": "_hans (deepdreamer) — completed Corporación Favorita result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+        "text": "Kaggle lists the account 31st of 1,671 teams in Corporación Favorita Grocery Sales Forecasting, with a silver medal. The entry shows only the deepdreamer account."
+      },
+      {
+        "checkedAt": "2026-10-30T14:06:41Z",
+        "sourceTitle": "_hans (deepdreamer) — completed Toxic Comment Classification result and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+        "text": "Kaggle lists the account 53rd of 4,539 teams in the Toxic Comment Classification Challenge, with a silver medal. It was a four-account team entry shared with konohayui, christofhenkel and dzglalala, so the medal is a team result."
+      },
+      {
+        "checkedAt": "2026-10-30T14:06:41Z",
+        "sourceTitle": "_hans (deepdreamer) — completed Statoil/C-CORE Iceberg result on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+        "text": "Kaggle lists the account 223rd of 3,330 teams in the Statoil/C-CORE Iceberg Classifier Challenge, with a bronze medal. The entry shows only the deepdreamer account."
+      },
+      {
+        "checkedAt": "2026-10-30T14:06:41Z",
+        "sourceTitle": "_hans (deepdreamer) — active ARC Prize 2026 entries and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+        "text": "The account is entered in both ARC Prize 2026 competitions, ARC-AGI-2 on its own and ARC-AGI-3 alongside grigoriyzatravkin, aizealotwu and florenciasolange; both were still running when checked."
+      },
+      {
         "checkedAt": "2026-10-29T23:26:08.724960Z",
         "sourceTitle": "Dongming Sheng — professional profile directly linked by own Kaggle account",
         "sourceUrl": "https://uk.linkedin.com/in/hanssheng",
         "text": "The _hans Kaggle account directly links linkedin.com/in/hanssheng. That exact professional profile names Dongming Sheng and describes an NLP researcher at Tencent in Greater London."
-      },
-      {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "_hans / deepdreamer — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
-        "text": "Completed results include 31st of 1,671 with silver in Corporación Favorita Grocery Sales Forecasting, 53rd of 4,539 with silver in Toxic Comment Classification as a shared team result, and 223rd of 3,330 with bronze in the Statoil/C-CORE Iceberg Classifier Challenge."
       }
     ],
     "hallOfFame": [],
@@ -3885,10 +5134,22 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:26:08.724960Z",
-        "sourceTitle": "Florencia Solange — own Kaggle profile and competition listing",
+        "checkedAt": "2026-10-30T14:09:03Z",
+        "sourceTitle": "Florencia Solange — own Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/florenciasolange",
-        "text": "Own Kaggle profile displays Florencia Solange and a joined date of August 21, 2026. The inspected competition record lists the current ARC-AGI-3 entry; no earlier completed competition was displayed."
+        "text": "Florencia Solange's public Kaggle profile shows an account that joined in August 2026, with the one-line bio \"Quietly working away\"."
+      },
+      {
+        "checkedAt": "2026-10-30T14:09:03Z",
+        "sourceTitle": "Florencia Solange — Kaggle competitions list",
+        "sourceUrl": "https://www.kaggle.com/florenciasolange/competitions",
+        "text": "Her Kaggle Competitions tab lists a single competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team. It shows no completed competitions and no medals."
+      },
+      {
+        "checkedAt": "2026-10-30T14:09:03Z",
+        "sourceTitle": "ARC-3 public Kaggle board — team Grigoriy Zatravkin & co",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the ARC-3 public board she is listed with the team Grigoriy Zatravkin & co, which stood 9th of 4,984 teams when last read. That is a provisional team standing, not a medal and not an individual result."
       }
     ],
     "hallOfFame": [],
@@ -3922,6 +5183,36 @@
     ],
     "facts": [
       {
+        "checkedAt": "2026-10-30T14:11:54Z",
+        "sourceTitle": "Majkel1337 — public Kaggle profile, tier, medals and rank",
+        "sourceUrl": "https://www.kaggle.com/majkel1337",
+        "text": "The Kaggle account Majkel1337 is a Competitions Master ranked 290th of 225,021, with a best-ever rank of 274th; its profile displays two gold medals and one silver, the silver being a three-account team entry."
+      },
+      {
+        "checkedAt": "2026-10-30T14:11:54Z",
+        "sourceTitle": "Majkel1337 — completed Pokémon TCG and Kaggriculture results on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/majkel1337/competitions",
+        "text": "Kaggle lists the account's gold-medal finishes as 12th of 6,807 teams in the Pokémon TCG AI Battle Challenge Simulation and 18th of 10,148 teams in Kaggriculture, each shown with only the majkel1337 account."
+      },
+      {
+        "checkedAt": "2026-10-30T14:11:54Z",
+        "sourceTitle": "Majkel1337 — completed NVIDIA Nemotron result and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/majkel1337/competitions",
+        "text": "Kaggle lists a silver medal at 30th of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge. That entry shows three accounts (piotrwilczyski, majkel1337 and kaziakazanowska), so it is a team medal, not an individual one."
+      },
+      {
+        "checkedAt": "2026-10-30T14:11:54Z",
+        "sourceTitle": "Majkel1337 — active ARC Prize 2026 competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/majkel1337/competitions",
+        "text": "Both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, appear under the account's active competitions, each three days from its close as displayed on 30 October 2026."
+      },
+      {
+        "checkedAt": "2026-10-30T14:11:54Z",
+        "sourceTitle": "Michał Gromadzki — GitHub profile linked from his Kaggle account",
+        "sourceUrl": "https://github.com/Michal1337",
+        "text": "The Kaggle profile links to github.com/Michal1337, whose public name is Michał Gromadzki, described there as an ML Engineer at Samsung R&D Institute Poland."
+      },
+      {
         "checkedAt": "2026-10-29T23:24:17.895841Z",
         "sourceTitle": "Michał Gromadzki — GitHub profile directly linked by own Kaggle account",
         "sourceUrl": "https://github.com/Michal1337",
@@ -3932,12 +5223,6 @@
         "sourceTitle": "Michał Gromadzki — own professional biography",
         "sourceUrl": "https://github.com/Michal1337",
         "text": "Own GitHub biography describes an ML Engineer at Samsung R&D Institute Poland."
-      },
-      {
-        "checkedAt": "2026-10-29T23:24:17.895841Z",
-        "sourceTitle": "Majkel1337 — own completed competition record",
-        "sourceUrl": "https://www.kaggle.com/majkel1337/competitions",
-        "text": "Own Kaggle profile displays Competitions Master, two gold medals and one silver. Completed results include 12th of 6,807 in the Pokémon TCG AI Battle Challenge Simulation, 18th of 10,148 in Kaggriculture, and 30th of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge."
       }
     ],
     "hallOfFame": [],
@@ -3983,16 +5268,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:24:34.248388Z",
-        "sourceTitle": "yktori — own public Kaggle biography",
+        "checkedAt": "2026-10-30T14:16:00Z",
+        "sourceTitle": "yktori — public Kaggle profile and competition medals",
         "sourceUrl": "https://www.kaggle.com/yktori",
-        "text": "Own Kaggle biography describes a web engineer at LY Corporation in Tokyo; no full real name or external identity link has been established."
+        "text": "yktori is a Kaggle Competitions Expert whose public profile shows one silver and four bronze competition medals, and dates the account to October 2019."
       },
       {
-        "checkedAt": "2026-10-29T23:24:34.248388Z",
-        "sourceTitle": "yktori — own completed competition record",
+        "checkedAt": "2026-10-30T14:16:00Z",
+        "sourceTitle": "yktori — completed Drawing with LLMs result on Kaggle",
         "sourceUrl": "https://www.kaggle.com/yktori/competitions",
-        "text": "Own Kaggle profile displays Competitions Expert, one silver and four bronze medals. Completed results include 27th of 1,309 with silver in Drawing with LLMs, 74th of 812 with bronze in IceCube, and 82nd of 693 with bronze in LEAP."
+        "text": "Kaggle lists yktori's best completed result as 27th of 1,309 teams in Drawing with LLMs, with a silver medal. The entry shows only the yktori account."
+      },
+      {
+        "checkedAt": "2026-10-30T14:16:00Z",
+        "sourceTitle": "yktori — completed bronze-medal entries on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+        "text": "Three of the four bronze medals are on entries that show only yktori: 74th of 812 in IceCube, 82nd of 693 in LEAP, and 130th of 2,058 in Feedback Prize."
+      },
+      {
+        "checkedAt": "2026-10-30T14:16:00Z",
+        "sourceTitle": "yktori — Mechanisms of Action team entry on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+        "text": "The fourth bronze, 322nd of 4,373 in Mechanisms of Action Prediction, is a shared team result: the entry lists kuroironeko, yktori and yuishizaki."
+      },
+      {
+        "checkedAt": "2026-10-30T14:16:00Z",
+        "sourceTitle": "yktori — active and completed competitions on Kaggle",
+        "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+        "text": "Kaggle shows ARC Prize 2026 - ARC-AGI-3 among yktori's two active competitions, and lists The 2026 NeuroGolf Championship, an ARC-AGI image-transformation contest, among the completed ones at 1,892nd of 2,963 with no medal."
       }
     ],
     "hallOfFame": [],
@@ -4026,16 +5329,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:24:17.895841Z",
-        "sourceTitle": "Michael — own public Kaggle profile",
+        "checkedAt": "2026-10-30T14:20:11Z",
+        "sourceTitle": "Michael — public Kaggle profile and join date",
         "sourceUrl": "https://www.kaggle.com/michaeltgao",
-        "text": "Own Kaggle profile displays Michael and the handle michaeltgao. A surname, professional biography and external identity link have not been established; the handle alone does not verify a surname."
+        "text": "Michael's public Kaggle profile, under the handle michaeltgao, dates his joining to March 2026 and carries no bio."
       },
       {
-        "checkedAt": "2026-10-29T23:24:17.895841Z",
-        "sourceTitle": "Michael — own competition record",
+        "checkedAt": "2026-10-30T14:20:11Z",
+        "sourceTitle": "Michael — own Kaggle competitions page",
         "sourceUrl": "https://www.kaggle.com/michaeltgao/competitions",
-        "text": "The inspected own competition record displays the two active 2026 ARC competitions and no completed results; this describes the visible account record rather than a complete career history."
+        "text": "His public Kaggle competitions page lists two active competitions, ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3, both entered solo, and no completed competitions."
+      },
+      {
+        "checkedAt": "2026-10-30T14:20:11Z",
+        "sourceTitle": "ARC-AGI-2 public board snapshot — team mtg",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "In the provisional ARC-AGI-2 standings his one-person team mtg is listed 22nd of 3,535 teams in the 30 October snapshot; final results come at the close."
+      },
+      {
+        "checkedAt": "2026-10-30T14:20:11Z",
+        "sourceTitle": "ARC-AGI-3 public board snapshot — team mtg",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "In the provisional ARC-AGI-3 standings his separate one-person team, also named mtg, is listed 7th of 4,984 teams in the 30 October snapshot; final results come at the close."
       }
     ],
     "hallOfFame": [],
@@ -4081,16 +5396,22 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:20:24.063600Z",
-        "sourceTitle": "AquaUrsa Research — own public Kaggle profile",
+        "checkedAt": "2026-10-30T14:22:12Z",
+        "sourceTitle": "AquaUrsa Research - public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/aquaursaresearch",
-        "text": "AquaUrsa Research is the display name of the aquaursaresearch Kaggle account. No real-person, registered-company or externally linked professional identity has been established."
+        "text": "AquaUrsa Research is the display name of the aquaursaresearch account on Kaggle. The public profile dates the account to March 2026 and shows no bio."
       },
       {
-        "checkedAt": "2026-10-29T23:20:24.063600Z",
-        "sourceTitle": "AquaUrsa Research — own competition record",
+        "checkedAt": "2026-10-30T14:22:12Z",
+        "sourceTitle": "AquaUrsa Research - Kaggle competitions page",
         "sourceUrl": "https://www.kaggle.com/aquaursaresearch/competitions",
-        "text": "The inspected own competition record displays active entries in both 2026 ARC tracks and no completed competition results."
+        "text": "AquaUrsa Research's Kaggle competition page lists two active entries, ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2, both marked as solo entries."
+      },
+      {
+        "checkedAt": "2026-10-30T14:22:12Z",
+        "sourceTitle": "AquaUrsa Research - Kaggle competitions page",
+        "sourceUrl": "https://www.kaggle.com/aquaursaresearch/competitions",
+        "text": "The same page shows no completed competitions, so the account has no finished result or medal on public display."
       }
     ],
     "hallOfFame": [],
@@ -4136,10 +5457,34 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-29T23:20:24.063600Z",
-        "sourceTitle": "chev — own public Kaggle profile",
+        "checkedAt": "2026-10-30T14:25:21Z",
+        "sourceTitle": "chev - public Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/cmechevalier",
-        "text": "Own Kaggle profile displays chev for cmechevalier. Its exact mapping to a full real name remains unresolved."
+        "text": "chev, who goes by cmechevalier on Kaggle, joined in May 2026 and has no bio on the public profile."
+      },
+      {
+        "checkedAt": "2026-10-30T14:25:21Z",
+        "sourceTitle": "chev - Kaggle competitions list",
+        "sourceUrl": "https://www.kaggle.com/cmechevalier/competitions",
+        "text": "The public profile shows one competition, ARC Prize 2026 - ARC-AGI-3, still running when checked, and no completed competitions, medals or tier."
+      },
+      {
+        "checkedAt": "2026-10-30T14:25:21Z",
+        "sourceTitle": "chev - Kaggle competitions list and activity panel",
+        "sourceUrl": "https://www.kaggle.com/cmechevalier/competitions",
+        "text": "Kaggle counts that entry as a team entry rather than a solo one, and the card shows two members, richardcsaky and cmechevalier."
+      },
+      {
+        "checkedAt": "2026-10-30T14:25:21Z",
+        "sourceTitle": "chev - public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/cmechevalier",
+        "text": "The profile also lists two public datasets and one public notebook."
+      },
+      {
+        "checkedAt": "2026-10-30T14:25:21Z",
+        "sourceTitle": "ARC-3 public board mirror, row for artificialagencylab.com",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "On the ARC-AGI-3 public board mirrored on 30 October 2026, the team artificialagencylab.com (cmechevalier and richardcsaky) sat 11th of 4,985 teams; this is a provisional public standing, not a final result, and it belongs to the team rather than to one person."
       },
       {
         "checkedAt": "2026-10-29T23:20:24.063600Z",
@@ -4193,10 +5538,34 @@
         "text": "NT competes as mitubant with Team Turducken in ARC-AGI-3."
       },
       {
-        "checkedAt": "2026-10-30T02:32:35Z",
-        "sourceTitle": "NT — own Kaggle profile",
+        "checkedAt": "2026-10-30T14:29:33Z",
+        "sourceTitle": "NT — public Kaggle profile, tier, medals and join date",
         "sourceUrl": "https://www.kaggle.com/mitubant",
-        "text": "The mitubant Kaggle profile displays the name NT."
+        "text": "NT, who uses the Kaggle handle mitubant, joined Kaggle in November 2018 and is a Competitions Expert with three silver and two bronze competition medals, ranked 1,723rd of 225,021."
+      },
+      {
+        "checkedAt": "2026-10-30T14:29:33Z",
+        "sourceTitle": "NT — completed NeuroGolf result and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+        "text": "Kaggle lists the team entry that includes NT in The 2026 NeuroGolf Championship, a contest about the smallest neural networks that solve ARC-AGI puzzles, 18th of 2,963 teams with a silver medal. The entry shows five accounts: nahman, evilpsycho42, mitubant, calibrator and russcore; it is a team medal, not NT's solo result."
+      },
+      {
+        "checkedAt": "2026-10-30T14:29:33Z",
+        "sourceTitle": "NT — completed ROGII and Kaggriculture results and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+        "text": "NT's other two silver medals are team entries: ROGII Wellbore Geology Prediction, 171st of 6,125 teams, listed with ngyzly, yichengs, zzxhee and huangshunhao; and Kaggriculture, 302nd of 10,148 teams, listed with ngyzly, keithtyser, hdhsjdjd and dzjiann."
+      },
+      {
+        "checkedAt": "2026-10-30T14:29:33Z",
+        "sourceTitle": "NT — completed PTCG and RSNA results and listed accounts",
+        "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+        "text": "NT's two bronze medals are from the Pokémon Company PTCG AI Battle Challenge, 523rd of 6,807 teams, listed with ngyzly, and RSNA Knee Abnormality Detection, 540th of 6,299 teams, where only the mitubant account is shown."
+      },
+      {
+        "checkedAt": "2026-10-30T14:29:33Z",
+        "sourceTitle": "NT — active competitions, including both ARC Prize 2026 entries",
+        "sourceUrl": "https://www.kaggle.com/mitubant/competitions",
+        "text": "NT's Kaggle competitions page lists both ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2 among his five active competitions."
       }
     ],
     "hallOfFame": [],
@@ -4227,6 +5596,14 @@
         "teamName": "この遥かなる旅路に祝福を"
       }
     ],
-    "name": "NT"
+    "name": "NT",
+    "portrait": {
+      "alt": "NT’s own Kaggle profile picture",
+      "checkedAt": "2026-10-30T14:29:33Z",
+      "kind": "kaggle",
+      "sourceTitle": "NT — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/mitubant",
+      "src": "/news-images/people/mitubant-v2.webp"
+    }
   }
 ]

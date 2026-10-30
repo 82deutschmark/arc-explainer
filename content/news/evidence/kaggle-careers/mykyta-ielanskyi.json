@@ -1,0 +1,135 @@
+{
+  "personId": "mykyta-ielanskyi",
+  "handle": "dwellement0baser",
+  "name": "Mykyta Ielanskyi",
+  "checkedAt": "2026-10-30T13:18:08Z",
+  "method": "Built-in browser (the Claude app's Browser pane), 30 October 2026. Read the public Kaggle profile page and the competitions page once each, with a pause between them; the join date comes from the page's join tooltip, the profile picture address from the page's own profile image element, and the medal icon was read from a screenshot of the completed-competition row. The ARC-AGI-3 team standing, the JKU award page and the arXiv paper page were fetched with curl. No rate limiting, captcha or block appeared. No earlier draft file existed for him and nothing from any earlier record was carried over without being re-read on the live pages.",
+  "sources": [
+    "https://www.kaggle.com/dwellement0baser",
+    "https://www.kaggle.com/dwellement0baser/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+    "https://arxiv.org/abs/2606.06475"
+  ],
+  "profile": {
+    "displayName": "Mykyta Ielanskyi",
+    "roleLine": "Research Scientist at IML JKU",
+    "location": "Linz, Upper Austria, Austria",
+    "competitionTier": null,
+    "medals": null,
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "highestCompetitionRank": null,
+    "tierNote": "The profile page shows no competition tier, no medal counts and no rank, although its sections are not hidden (Bio, Public activity, Followers and Badges all display). Whatever Kaggle does not display here is recorded as null, not as zero.",
+    "joinedTooltip": "Thu Apr 02 2020 08:46:17 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2020-04",
+    "joinedLabel": "6 years ago",
+    "lastSeenLabel": "in the past day",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "followersCount": 5,
+    "profileSectionsHidden": false,
+    "activityLine": "0 competitions solo, 2 competitions in a team, 0 competitions hosted",
+    "competitionsTabCount": 2
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 1,
+    "hostedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "Kaggriculture"
+    ],
+    "activeEntries": [
+      {
+        "competition": "ARC Prize 2026 - ARC-AGI-3",
+        "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+        "statusLabel": "3 days to go",
+        "displayedHandles": [
+          "gklambauer",
+          "fses91",
+          "dwellement0baser",
+          "lukasaichberger"
+        ],
+        "teamName": null,
+        "note": "The Kaggle card shows four member pictures (alt text names the four handles) and no team name. The first of the four is Kaggle's default grey avatar."
+      }
+    ],
+    "scopeNote": "Only these two entries (one active, one completed) are displayed. Do not invent any earlier finish or treat the list as proof of his whole competition history."
+  },
+  "completedResults": [
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "competitionType": "Featured · Simulation Competition",
+      "rank": 3254,
+      "teams": 10148,
+      "medal": null,
+      "medalNote": "The row shows Kaggle's plain trophy badge on the competition thumbnail and no gold, silver or bronze icon (read from a screenshot and a zoomed crop). Medal is left null, which here means no medal was visible, not a confirmed medal check beyond the icon.",
+      "displayedHandles": [
+        "dwellement0baser",
+        "wilhelmberghammer",
+        "michaellist",
+        "oneupkiwi"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/mykyta-ielanskyi.webp",
+    "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/4795866-kg.jpg?t=2026-09-29-07-58-30",
+    "width": 320,
+    "height": 320,
+    "sha256OfLiveOriginal": "682588e5ee017bcea1dfcd0b4c28ecf0af2bf6c4982136497537cbc873a3ec6a",
+    "liveOriginalSize": "400x400",
+    "note": "The saved 320px file is the same photograph as the avatar on his live Kaggle profile (compared by eye and numerically after resizing the 400px original to 320px: average difference about 2 on a 0 to 255 scale, re-encoding only). It is a single person, a photograph of a bearded, reddish-brown-haired man in a blue shirt against a pale green background: not a group image and not Kaggle's default avatar. It is the picture on his own profile page, shown next to his name. No file was written or replaced."
+  },
+  "facts": [
+    {
+      "text": "Kaggle shows Mykyta Ielanskyi (handle dwellement0baser) as a Research Scientist at IML JKU in Linz, Upper Austria, and dates his account joining to April 2020.",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+      "sourceTitle": "Mykyta Ielanskyi — public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T13:18:08Z"
+    },
+    {
+      "text": "His Kaggle competitions page lists one completed competition, Kaggriculture, with a result of 3254 out of 10148 teams and no medal icon shown. The entry is a team entry displaying four accounts: dwellement0baser, wilhelmberghammer, michaellist and oneupkiwi.",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser/competitions",
+      "sourceTitle": "Mykyta Ielanskyi — completed Kaggriculture result on Kaggle",
+      "checkedAt": "2026-10-30T13:18:08Z"
+    },
+    {
+      "text": "On the newsroom's public ARC-AGI-3 roster board, the four-account team that includes his account (dwellement0baser, fses91, gklambauer and lukasaichberger), named the last dance, is listed 5th of 4,984 teams. This is a provisional public-leaderboard standing and it is the whole team's, not an individual honour.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public roster board — team the last dance",
+      "checkedAt": "2026-10-30T13:18:08Z"
+    },
+    {
+      "text": "JKU's research portal lists him as one of six recipients of the Outstanding Paper Award, awarded 23 April 2026 at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models, for the paper From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles. It is a shared paper award, not a solo honour.",
+      "sourceUrl": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+      "sourceTitle": "JKU — Outstanding Paper Award at ICLR 2026 Workshop on Logical Reasoning of Large Language Models",
+      "checkedAt": "2026-10-30T13:18:08Z"
+    },
+    {
+      "text": "He is the first-listed author of the paper RREDCoT: Segment-Level Reward Redistribution for Reasoning Models, posted to arXiv on 4 June 2026 with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter.",
+      "sourceUrl": "https://arxiv.org/abs/2606.06475",
+      "sourceTitle": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT on arXiv",
+      "checkedAt": "2026-10-30T13:18:08Z"
+    }
+  ],
+  "teamNotes": "Both of his Kaggle competition entries are team entries (his activity line reads 0 solo, 2 in a team), so no placing below is an individual one. Kaggle's own pages show the ARC-AGI-3 entry only as four member pictures with no team name, so teamName is null on the Kaggle entry. The name 'the last dance' (with a dancing-man emoji) comes from the newsroom's public ARC roster board (team id 16021367), fetched once during this check with the board's own snapshot stamp reading 12:54 UTC on 30 October 2026: rank 5 of 4,984 teams, handles dwellement0baser, fses91, gklambauer and lukasaichberger, the same four handles as the pictures on his Kaggle card. The newsroom's own record shows its first observation of his account on that team on 29 October 2026. These public standings stay provisional until the private leaderboard decides at the competition close (Kaggle's page showed 3 days to go). The Kaggriculture entry shows four handles and no team name; nothing from the Kaggle pages says which of the four ran the entry.",
+  "unverified": [
+    "Competition tier, medal counts and ranks: his profile shows none, so nothing is claimed. Absence of a display is not proof he holds no medals or tier.",
+    "Whether any medal was awarded for Kaggriculture: no medal icon was visible on the row, but Kaggle shows no text for it, so the medal field stays null.",
+    "Team name as Kaggle itself displays it for either entry: the pages show no team name; 'the last dance' is from the newsroom's roster board.",
+    "The exact completion date of Kaggriculture: Kaggle shows only '16 days ago'.",
+    "What the abbreviation IML JKU stands for as Kaggle uses it: the page text says only 'Research Scientist at IML JKU'. The JKU research portal lists the Institute for Machine Learning among the award recipients' units, but that does not state his job title.",
+    "Whether the roster board standing is current at publication time: it is a provisional public standing."
+  ],
+  "verified": true
+}

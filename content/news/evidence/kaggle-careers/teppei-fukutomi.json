@@ -1,0 +1,478 @@
+{
+  "personId": "teppei-fukutomi",
+  "handle": "ttyn4519",
+  "name": "Teppei Fukutomi",
+  "kaggleDisplayName": "t fuku",
+  "checkedAt": "2026-10-30T13:52:54Z",
+  "method": "Read-only public Kaggle About page and Completed Competitions list (pages 1 and 2 of 2) in the app's built-in browser on 2026-10-30. Page text read after the page rendered; medal type read from each row's medal image label (gold, silver, bronze) and cross-checked by screenshot for the top four rows and by the profile card totals; teammate accounts read from the row avatar labels. Portrait image URL read from the visible own-profile avatar element and fetched with curl. LinkedIn, GitHub and X were not opened. The earlier draft of this file did not exist and nothing was reused.",
+  "sources": [
+    "https://www.kaggle.com/ttyn4519",
+    "https://www.kaggle.com/ttyn4519/competitions",
+    "https://www.kaggle.com/ttyn4519/competitions?page=2"
+  ],
+  "profile": {
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 1,
+      "silver": 9,
+      "bronze": 1
+    },
+    "competitionRank": 366,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 348,
+    "joinedTooltip": "Tue Oct 01 2019 05:22:09 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-10",
+    "joinedLabel": "Joined 7 years ago",
+    "pronouns": "he/him",
+    "occupationLine": "Software Engineer at Honda",
+    "locationLine": "Minato City, Tokyo, Japan",
+    "bioPresent": false,
+    "followers": 46,
+    "linkedProfiles": {
+      "github": "https://github.com/T3pp31",
+      "linkedin": "https://www.linkedin.com/in/teppei-fukutomi-3344313b6/",
+      "x": "https://twitter.com/tfuku816150"
+    },
+    "teamVersusSolo": "Sidebar on the competitions tab: 9 competitions solo, 21 in a team, 0 hosted (all 30 entries, active included)."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 5,
+    "completedCount": 25,
+    "activeNames": [
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "Enveda CASMI 2026 - Molecule ID From Mass Spectra",
+      "ARC Prize 2026 - ARC-AGI-3",
+      "Smart Buildings Competition",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedSort": "Best Result",
+    "scopeNote": "All 25 completed entries were read, 20 on page 1 and 5 on page 2. The 11 medals on the profile card all sit on page 1 rows, so the medal table is complete."
+  },
+  "completedResults": [
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 26,
+      "teams": 10148,
+      "medal": "gold",
+      "displayedHandles": [
+        "pavelsavchenkov",
+        "jjinho",
+        "ttyn4519",
+        "giovannibaldon"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MAP - Charting Student Math Misunderstandings",
+      "competitionUrl": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+      "rank": 15,
+      "teams": 1857,
+      "medal": "silver",
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519",
+        "ky8ori",
+        "masasato1999",
+        "lizhecheng"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw - Agile Community Rules Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+      "rank": 28,
+      "teams": 2445,
+      "medal": "silver",
+      "displayedHandles": [
+        "ttyn4519",
+        "masasato1999",
+        "madarshbb",
+        "diptyajitdas"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 33,
+      "teams": 1867,
+      "medal": "silver",
+      "displayedHandles": [
+        "ttyn4519",
+        "masasato1999",
+        "keisukeyokota0428"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CAFA 6 Protein Function Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
+      "rank": 36,
+      "teams": 2259,
+      "medal": "silver",
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519",
+        "masasato1999"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "competitionUrl": "https://www.kaggle.com/competitions/waveform-inversion",
+      "rank": 38,
+      "teams": 1365,
+      "medal": "silver",
+      "displayedHandles": [
+        "jjinho",
+        "jaewook704",
+        "ttyn4519",
+        "masasato1999"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 41,
+      "teams": 6807,
+      "medal": "silver",
+      "displayedHandles": [
+        "pavelsavchenkov",
+        "jjinho",
+        "ttyn4519",
+        "crodoc",
+        "ebisuya"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 50,
+      "teams": 2963,
+      "medal": "silver",
+      "displayedHandles": [
+        "ttyn4519",
+        "hyh273279",
+        "sigmaborov",
+        "zejunfool"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 90,
+      "teams": 4185,
+      "medal": "silver",
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519",
+        "masasato1999"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CMI - Detect Behavior with Sensor Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+      "rank": 92,
+      "teams": 2657,
+      "medal": "silver",
+      "displayedHandles": [
+        "ttyn4519",
+        "masasato1999",
+        "xunden",
+        "leo123321",
+        "takahitomizunobyts"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS - Open Polymer Prediction 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025",
+      "rank": 120,
+      "teams": 2240,
+      "medal": "bronze",
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Make Data Count - Finding Data References",
+      "competitionUrl": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
+      "rank": 304,
+      "teams": 1282,
+      "medal": null,
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 372,
+      "teams": 2674,
+      "medal": null,
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 611,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "rank": 727,
+      "teams": 3357,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MITSUI&CO. Commodity Prediction Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
+      "rank": 1084,
+      "teams": 1711,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CSIRO - Image2Biomass Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+      "rank": 1199,
+      "teams": 3805,
+      "medal": null,
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519",
+        "ky8ori",
+        "lizhecheng"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "H&M Personalized Fashion Recommendations",
+      "competitionUrl": "https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations",
+      "rank": 1551,
+      "teams": 2952,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519",
+        "mk1001"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Ubiquant Market Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
+      "rank": 2114,
+      "teams": 2893,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519",
+        "mk1001"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "March Machine Learning Mania 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+      "rank": 2460,
+      "teams": 3462,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 2992,
+      "teams": 6125,
+      "medal": null,
+      "displayedHandles": [
+        "jjinho",
+        "ttyn4519",
+        "masasato1999",
+        "khori7"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 3470,
+      "teams": 4186,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519",
+        "hiroshigeaoki",
+        "tarobokuson"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 4909,
+      "teams": 6299,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predicting Optimal Fertilizers",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e6",
+      "rank": 2212,
+      "teams": 2648,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Neural Debris Removal in Streak Detection Models",
+      "competitionUrl": "https://www.kaggle.com/competitions/neural-debris-removal-in-streak-detection-models",
+      "rank": 314,
+      "teams": 567,
+      "medal": null,
+      "displayedHandles": [
+        "ttyn4519"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/teppei-fukutomi.webp",
+    "sourceUrl": "https://www.kaggle.com/ttyn4519",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/3790528-kg.png?t=2026-10-16-03-34-44",
+    "originalSize": "400x400",
+    "originalSha256": "3e0f4edb52c815eb6dacc5ef9e82216a4623c977c2e54e48c36af914d1b66017",
+    "savedAssetSize": "320x320",
+    "note": "The saved 320 pixel file is the same picture as the current own-profile avatar (checked by eye against a fresh download). It is his own individual profile picture, a photograph of the standing Gundam statue under a blue sky, not a group image, not a default avatar and not a stand-in made by us. It is not a photograph of his face; no public face photograph was found on the pages checked."
+  },
+  "facts": [
+    {
+      "text": "t fuku, whose Kaggle handle is ttyn4519, is a Kaggle Competitions Master with 1 gold, 9 silver and 1 bronze competition medals, ranked 366th of 225,021 and 348th at best.",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519",
+      "sourceTitle": "t fuku — public Kaggle profile, tier, medals and rank",
+      "checkedAt": "2026-10-30T13:52:54Z"
+    },
+    {
+      "text": "Kaggle lists his completed Kaggriculture entry 26th of 10,148 teams with a gold medal, an entry that shows four accounts: pavelsavchenkov, jjinho, ttyn4519 and giovannibaldon.",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+      "sourceTitle": "t fuku — completed Kaggriculture result and listed accounts",
+      "checkedAt": "2026-10-30T13:52:54Z"
+    },
+    {
+      "text": "Silver medals on his page include MAP - Charting Student Math Misunderstandings at 15th of 1,857, Jigsaw - Agile Community Rules Classification at 28th of 2,445 and Stanford RNA 3D Folding Part 2 at 33rd of 1,867, each on an entry that lists other accounts besides his.",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+      "sourceTitle": "t fuku — completed silver-medal results",
+      "checkedAt": "2026-10-30T13:52:54Z"
+    },
+    {
+      "text": "Kaggle lists his completed entry in The 2026 NeuroGolf Championship, a contest about designing the smallest neural networks to solve ARC-AGI image transformations, 50th of 2,963 teams with a silver medal; the entry shows four accounts: ttyn4519, hyh273279, sigmaborov and zejunfool.",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+      "sourceTitle": "t fuku — completed NeuroGolf Championship result",
+      "checkedAt": "2026-10-30T13:52:54Z"
+    },
+    {
+      "text": "His profile lists him as a Software Engineer at Honda in Minato City, Tokyo, Japan, and its join date tooltip shows October 2019.",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519",
+      "sourceTitle": "t fuku — public Kaggle profile details and join date",
+      "checkedAt": "2026-10-30T13:52:54Z"
+    }
+  ],
+  "teamNotes": [
+    "Kaggle's completed list shows teammate profile pictures with their handles, never a team name, so every teamName is null. Team medals are shared by everyone on the entry; none is an individual honour of one member.",
+    "Only the NeurIPS Open Polymer Prediction 2025 bronze shows his account alone. The other ten medals sit on entries that list two to four other accounts, such as jjinho and masasato1999 who appear on several of them.",
+    "ARC Prize 2026 - ARC-AGI-2 and ARC-AGI-3 both appear in his active competitions list, each three days from close on the day checked. The standings and team names for those two (public roster observations from the newsroom board, provisional until the private leaderboard settles on 2 November) were not re-read in this pass."
+  ],
+  "unverified": [
+    "The real name Teppei Fukutomi is not shown on Kaggle, where the display name is t fuku. It rests on his linked LinkedIn address (which names teppei-fukutomi) and on the person record; the LinkedIn page was not opened in this pass.",
+    "The employer line Software Engineer at Honda is his own profile text; it was not independently confirmed.",
+    "His GitHub (T3pp31) and X (tfuku816150) accounts are linked from his Kaggle profile and were not opened.",
+    "Exact completion dates are not shown, only relative labels such as 16 days ago.",
+    "The row avatar lists may be capped; the largest list seen was five accounts, so a team could be larger than the handles shown.",
+    "The ARC-AGI-2 and ARC-AGI-3 team names and ranks carried in the person record were not re-checked.",
+    "The Kaggle profile page does not say which of the 11 medals he led versus supported."
+  ],
+  "verified": true
+}

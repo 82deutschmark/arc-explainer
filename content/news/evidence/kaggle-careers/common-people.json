@@ -1,0 +1,309 @@
+{
+  "personId": "common-people",
+  "handle": "aizealotwu",
+  "name": "common-people",
+  "checkedAt": "2026-10-30T14:03:47Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the app's built-in browser on 2026-10-30, page text plus screenshots of the medal icons and read-only reads of the page's own avatar and entry elements; no other pages loaded. Rebuilt from the live pages only; no earlier draft was relied on. Checked by Claude Sonnet 5.5 Medium.",
+  "sources": [
+    "https://www.kaggle.com/aizealotwu",
+    "https://www.kaggle.com/aizealotwu/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 1,
+      "bronze": 2
+    },
+    "competitionRank": 1416,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 1217,
+    "joinedTooltip": "Fri Jul 05 2024 07:27:22 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2024-07",
+    "displayName": "common-people",
+    "headline": "LLM, Information Retrieval, Recommend, AI4science",
+    "workHeader": "Student at Peking University",
+    "locationHeader": "Shenzhen, Guangdong Province, China",
+    "bioPresent": false,
+    "activity": {
+      "competitionsSolo": 12,
+      "competitionsInATeam": 5,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 3,
+    "completedCount": 14,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "scopeNote": "All fourteen completed rows are recorded as displayed. Medal icons were read on the list: silver on CAFA 6, bronze on MAP and MABe, none on the other eleven, which matches the profile medal tile of one silver and two bronze."
+  },
+  "completedResults": [
+    {
+      "competition": "CAFA 6 Protein Function Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
+      "rank": 19,
+      "teams": 2259,
+      "medal": "silver",
+      "displayedHandles": [
+        "xaxipirulazo",
+        "mohsenalzzaqri",
+        "leo123321",
+        "aksh1t",
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research",
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MAP - Charting Student Math Misunderstandings",
+      "competitionUrl": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+      "rank": 132,
+      "teams": 1857,
+      "medal": "bronze",
+      "displayedHandles": [
+        "sirius81",
+        "jimmykudoqiao",
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MABe Challenge - Social Action Recognition in Mice",
+      "competitionUrl": "https://www.kaggle.com/competitions/MABe-mouse-behavior-detection",
+      "rank": 134,
+      "teams": 1412,
+      "medal": "bronze",
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research · Code Competition",
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NFL Big Data Bowl 2026 - Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
+      "rank": 191,
+      "teams": 1899,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2025 - Google Code Golf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-code-golf-2025",
+      "rank": 349,
+      "teams": 1142,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 713,
+      "teams": 2963,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research",
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "PhysioNet - Digitization of ECG Images",
+      "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+      "rank": 1084,
+      "teams": 1424,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research · Code Competition",
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 1323,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 1548,
+      "teams": 4185,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured",
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Hull Tactical - Market Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+      "rank": 1749,
+      "teams": 3677,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1909,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 2453,
+      "teams": 3947,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Research · Code Competition",
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 2742,
+      "teams": 6807,
+      "medal": null,
+      "displayedHandles": [
+        "aizealotwu"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Simulation Competition",
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 3797,
+      "teams": 4186,
+      "medal": null,
+      "displayedHandles": [
+        "daphne4sg",
+        "tom99763",
+        "mahdiseddigh",
+        "aizealotwu",
+        "mehranazad"
+      ],
+      "teamName": null,
+      "competitionKind": "Featured · Code Competition",
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/common-people.webp",
+    "sourceUrl": "https://www.kaggle.com/aizealotwu",
+    "note": "Saved 320 pixel file is the same artwork as the 400 pixel original on the account's own profile (about 200 pixels on the profile page): a gold-and-navy conference-paper graphic reading 'Got real papers' with ACL, KDD, SIGIR and ICCV book spines. It is the account's own chosen avatar, not a group image and not a default avatar. It is an illustration, not a photograph of a face, and no other public individual image of this person was found, so it was kept and no replacement file was made.",
+    "ownProfileOriginal": {
+      "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/21593429-kg.jpg?t=2025-10-25-12-46-10",
+      "width": 400,
+      "height": 400,
+      "sha256": "bed39e008a91548dd43a213f02dab914c7221a52be04e786cdde862eb8a2b368"
+    }
+  },
+  "facts": [
+    {
+      "text": "On Kaggle, common-people (account aizealotwu) is a Competitions Expert ranked 1,416th of 225,021, with one silver and two bronze competition medals. The profile header lists a Peking University student in Shenzhen interested in LLMs, information retrieval, recommendation and AI for science; there is no written bio and no real name is shown.",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu",
+      "sourceTitle": "common-people — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T14:03:47Z"
+    },
+    {
+      "text": "Kaggle lists a five-account entry including aizealotwu, xaxipirulazo, mohsenalzzaqri, leo123321 and aksh1t finishing 19th of 2,259 in CAFA 6 Protein Function Prediction with a silver medal. It is a shared team medal, not an individual one.",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+      "sourceTitle": "common-people — completed CAFA 6 result on Kaggle",
+      "checkedAt": "2026-10-30T14:03:47Z"
+    },
+    {
+      "text": "A three-account entry of aizealotwu, jimmykudoqiao and sirius81 finished 132nd of 1,857 in MAP - Charting Student Math Misunderstandings with a bronze medal, shared by the team. In the MABe mouse-behaviour challenge, an entry displaying only aizealotwu finished 134th of 1,412, also with bronze.",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+      "sourceTitle": "common-people — completed MAP and MABe results on Kaggle",
+      "checkedAt": "2026-10-30T14:03:47Z"
+    },
+    {
+      "text": "The same list shows fourteen completed competitions in all, including ARC Prize 2025 (1,323rd of 1,455) and The 2026 NeuroGolf Championship (713th of 2,963), neither with a medal.",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+      "sourceTitle": "common-people — completed competition list on Kaggle",
+      "checkedAt": "2026-10-30T14:03:47Z"
+    },
+    {
+      "text": "As of 30 October 2026 the account is listed as entered in both ARC Prize 2026 - ARC-AGI-3 and ARC-AGI-2, each showing three days to go. The Kaggle page shows no placing for either entry, so no ARC standing is claimed here.",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+      "sourceTitle": "common-people — active competitions on Kaggle",
+      "checkedAt": "2026-10-30T14:03:47Z"
+    }
+  ],
+  "teamNotes": [
+    "CAFA 6 (silver) and MAP (bronze) are shared team results; the other accounts shown on each entry are listed in completedResults. MABe (bronze) shows only aizealotwu on the entry. None of the three is an individual honour.",
+    "The AI Agent Security entry shows five accounts (daphne4sg, tom99763, mahdiseddigh, aizealotwu, mehranazad) and carries no medal.",
+    "The active ARC Prize 2026 - ARC-AGI-3 card shows four accounts (deepdreamer, grigoriyzatravkin, aizealotwu, florenciasolange); the ARC-AGI-2 card shows only aizealotwu. Both are active and unplaced on the page read, so any ARC standing elsewhere is provisional until the private leaderboard settles when the competitions close."
+  ],
+  "unverified": [
+    "Team names for the completed entries are not shown on the Kaggle competitions list, so teamName is empty for every row.",
+    "The team names of the two active ARC entries were not displayed on the pages read and are not verified here.",
+    "No ARC placing or score was read; the active entries show only the time remaining.",
+    "No real name is shown on the profile; the profile has no written bio, only header lines.",
+    "Exact completion dates are not shown, only relative labels such as '5 months ago'.",
+    "Kaggle rank and medal counts change over time; these are the values on 30 October 2026."
+  ],
+  "verified": true
+}

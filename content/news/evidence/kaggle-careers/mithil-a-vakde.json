@@ -1,0 +1,89 @@
+{
+  "personId": "mithil-a-vakde",
+  "handle": "mithilavakde",
+  "name": "Mithil A Vakde",
+  "checkedAt": "2026-10-30T14:33:20Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude app built-in browser on 2026-10-30, using the page text plus a screenshot of the competition list; the join tooltip and avatar image were read from the page elements. The older draft of this file was written while Kaggle was blocking us and was treated as unverified; this file was rebuilt only from the live pages.",
+  "sources": [
+    "https://www.kaggle.com/mithilavakde",
+    "https://www.kaggle.com/mithilavakde/competitions"
+  ],
+  "profile": {
+    "displayName": "Mithil A Vakde",
+    "competitionTier": null,
+    "tierNote": "No Competitions tier badge, rank or medal summary is displayed on the profile, so none is claimed.",
+    "medals": null,
+    "medalsNote": "No medal is displayed anywhere on the profile or competition list.",
+    "joinedTooltip": "Tue Dec 10 2019 03:05:56 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2019-12",
+    "joinedLabel": "Joined 6 years ago",
+    "lastSeenLabel": "last seen in the past day",
+    "bio": "Quietly working away",
+    "tabs": "Competitions (2), Code (3), Discussion (2), Followers (3); no Models tab was shown today",
+    "activity": "2 competitions solo, 0 competitions in a team, 0 competitions hosted",
+    "followersShown": ["Priyanshu Indra", "Alef Oliveira", "Mark Barney"]
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 1,
+    "activeNames": ["ARC Prize 2026 - ARC-AGI-2"],
+    "activeNote": "The card read 3 days to go at the time of the check.",
+    "completedNames": ["ARC Prize 2025"],
+    "scopeNote": "Only this one completed record is publicly displayed. Do not invent additional finishes or treat the list as the account's whole history."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 653,
+      "teams": 1455,
+      "medal": null,
+      "medalNote": "The list row shows a plain dark trophy glyph, not a gold, silver or bronze medal icon.",
+      "displayedHandles": ["mithilavakde"],
+      "teamName": null,
+      "teamNameNote": "Solo entry: the row shows only the account's own avatar and no team name.",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/mithilavakde",
+    "note": "Kaggle shows its stock default avatar (the grey goose drawing served from the site's default-avatar image) on both the profile and the competitions page, not a picture of this person. No file exists under client/public/news-images/people for him and none was added. No group image or stand-in is to be used."
+  },
+  "facts": [
+    {
+      "text": "Mithil A Vakde's public Kaggle account, mithilavakde, dates its joining to December 2019 and describes itself as quietly working away.",
+      "sourceUrl": "https://www.kaggle.com/mithilavakde",
+      "sourceTitle": "Mithil A Vakde, public Kaggle profile",
+      "checkedAt": "2026-10-30T14:33:20Z"
+    },
+    {
+      "text": "Kaggle lists his completed ARC Prize 2025 entry 653rd of 1455 teams, with no medal shown.",
+      "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+      "sourceTitle": "Mithil A Vakde, completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T14:33:20Z"
+    },
+    {
+      "text": "His profile counts two competitions, both entered solo and none in a team.",
+      "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+      "sourceTitle": "Mithil A Vakde, Kaggle competition activity",
+      "checkedAt": "2026-10-30T14:33:20Z"
+    },
+    {
+      "text": "He is also entered in the active ARC Prize 2026 ARC-AGI-2 competition; any public standing there is provisional until the final close.",
+      "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
+      "sourceTitle": "Mithil A Vakde, active ARC Prize 2026 ARC-AGI-2 entry",
+      "checkedAt": "2026-10-30T14:33:20Z"
+    }
+  ],
+  "teamNotes": "Current: a solo entry in ARC Prize 2026 ARC-AGI-2; the repo already holds the observed public roster membership under team name Mithil A Vakde (team id 15486728, last observed 2026-10-29). Past: ARC Prize 2025, solo, with no team name shown. No other teams are visible, and no team medal applies.",
+  "unverified": [
+    "Competitions tier and medal counts: the profile displays none, so none are claimed",
+    "The mdlARC model that the repo record cites from 2026-10-09: no Models tab appeared on the profile today and the model page was not reopened, so it is not used as a fact",
+    "Any write-ups, prize results or ARC-AGI-3 entry",
+    "Any individual photo of him elsewhere on the public web: none was sought beyond the Kaggle profile"
+  ],
+  "verified": true
+}

@@ -1,0 +1,182 @@
+{
+  "personId": "alwin-theodoric",
+  "handle": "alwintheodoric",
+  "name": "Alwin Theodoric",
+  "checkedAt": "2026-10-30T13:23:29Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the app's built-in browser on 2026-10-30; page text read after load, medal icons read from the competition list (screenshot and the list's own medal image labels), join date read from the hover label, own picture compared by eye with the saved portrait. No earlier draft existed at this path, so nothing unverified was carried forward; every claim below comes from these two pages. The competition list shows no team name on any row, so teamName is null throughout.",
+  "sources": [
+    "https://www.kaggle.com/alwintheodoric",
+    "https://www.kaggle.com/alwintheodoric/competitions"
+  ],
+  "profile": {
+    "displayName": "Alwin Theodoric アルウィン",
+    "pronouns": "he/him",
+    "occupation": "Student at Tokyo University of Science",
+    "location": "Katsushika City, Tokyo, Japan",
+    "competitionTier": null,
+    "tierNote": "No tier label, rank or medal tally is displayed on his About or Competitions page, so no tier is claimed. The avatar ring is a plain grey-blue.",
+    "medals": null,
+    "medalsNote": "Kaggle shows no medal tally for him. The only medal icon in his completed-competition list is one gold on the five-account NVIDIA Nemotron entry; it is a team medal, recorded on that result row only, and is not an individual honour.",
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "highestCompetitionRank": null,
+    "joinedTooltip": "Tue Apr 23 2024 03:30:39 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2024-04",
+    "lastSeenTooltip": "Tue Oct 27 2026 13:46:39 GMT-0400 (Eastern Daylight Time)",
+    "bioPresent": true,
+    "bioText": "Quietly working away",
+    "competitionActivity": {
+      "solo": 1,
+      "inATeam": 7,
+      "hosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 6,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "CSIRO - Image2Biomass Prediction",
+      "BirdCLEF+ 2026",
+      "Fake or Real: The Impostor Hunt in Texts",
+      "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+      "MALLORN Astronomical Classification Challenge"
+    ],
+    "scopeNote": "All six completed records on the page are listed below. The list is Kaggle's display, not proof of every entry he has ever made."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 5,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "type": "Featured",
+      "note": "Team entry: five accounts are shown on the card. The competition list does not display a team name."
+    },
+    {
+      "competition": "CSIRO - Image2Biomass Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+      "rank": 875,
+      "teams": 3805,
+      "medal": null,
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "alwintheodoric"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "type": "Research, Code Competition"
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 2505,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "alwintheodoric",
+        "yassirramadhan"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "type": "Research, Code Competition"
+    },
+    {
+      "competition": "Fake or Real: The Impostor Hunt in Texts",
+      "competitionUrl": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
+      "rank": 1,
+      "teams": 992,
+      "medal": null,
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "alwintheodoric"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "type": "Community",
+      "note": "Community competition; Kaggle displays no medal on this card."
+    },
+    {
+      "competition": "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
+      "rank": 23,
+      "teams": 290,
+      "medal": null,
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "alwintheodoric"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "type": "Community"
+    },
+    {
+      "competition": "MALLORN Astronomical Classification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
+      "rank": 30,
+      "teams": 893,
+      "medal": null,
+      "displayedHandles": [
+        "alwintheodoric"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "type": "Community"
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/alwin-theodoric.webp",
+    "sourceUrl": "https://www.kaggle.com/alwintheodoric",
+    "note": "The saved file shows the same photo as the current Kaggle profile picture (one young man in glasses and a beige sweater in front of a wooded mountain), cropped in a circle. It is his own individual picture, not a group image or the default avatar. Kaggle's profile picture, checked 2026-10-30, is the file stamped 2024-09-07. No new file was saved."
+  },
+  "facts": [
+    {
+      "text": "Alwin Theodoric's Kaggle profile lists him as a student at Tokyo University of Science in Katsushika City, Tokyo, and shows his account was created in April 2024.",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric",
+      "sourceTitle": "Alwin Theodoric — public Kaggle profile",
+      "checkedAt": "2026-10-30T13:23:29Z"
+    },
+    {
+      "text": "Kaggle lists a completed NVIDIA Nemotron Model Reasoning Challenge entry placed 5th of 4,185 teams with a gold medal. Five accounts, his among them, are shown on the entry, so it is a team result, not a solo honour.",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+      "sourceTitle": "Alwin Theodoric — completed NVIDIA Nemotron entry on Kaggle",
+      "checkedAt": "2026-10-30T13:23:29Z"
+    },
+    {
+      "text": "Kaggle lists his completed entry in the community competition Fake or Real: The Impostor Hunt in Texts as 1st of 992 teams, shared with the darrenamadeusmartin account. Kaggle shows no medal on that card.",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+      "sourceTitle": "Alwin Theodoric — completed Fake or Real entry on Kaggle",
+      "checkedAt": "2026-10-30T13:23:29Z"
+    },
+    {
+      "text": "His Kaggle competitions page counts eight competitions, seven of them in a team and one solo, and shows him active in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3.",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+      "sourceTitle": "Alwin Theodoric — Kaggle competitions activity",
+      "checkedAt": "2026-10-30T13:23:29Z"
+    }
+  ],
+  "teamNotes": "He often competes with darrenamadeusmartin (shown beside him on five of six completed entries) and shares the five-account Nemotron entry with darrenamadeusmartin, rinnnntt, yassirramadhan and billyanggara. His people.json record names the team Domdolus Tolus in both ARC competitions and cites a Kaggle write-up for the Nemotron team; those two pages were not loaded in this check, so the team name is not repeated in the facts above. The Nemotron gold is a team medal and must not be credited to him alone. Public ARC standings, where used, are provisional until the private leaderboard settles after the 2 November close.",
+  "unverified": [
+    "Team name Domdolus Tolus: carried by the record's ARC roster observations and a cited write-up, not re-read on the two permitted pages.",
+    "Overall Kaggle tier, competition rank and medal tally: not displayed on his pages.",
+    "Exact completion dates of the competitions: only relative labels such as '4 months ago' are shown.",
+    "Current ARC leaderboard position: not part of this check."
+  ],
+  "verified": true
+}

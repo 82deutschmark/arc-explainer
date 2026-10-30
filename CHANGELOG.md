@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.21  Oct 30, 2026
+
+- **Every player card now has a verified Kaggle record** (Author: Claude Sonnet 5.5). All 64 remaining players were read one at a time on their public Kaggle profile and competitions pages in the app's built-in browser (never in a person's own browser), with the earlier unverified drafts discarded. Each card back carries tier, medals, ranks and completed contests exactly as displayed, team medals are never credited as individual honours, and ARC standings stay labelled provisional. Evidence per player: `content/news/evidence/kaggle-careers/`; merged into `people.json` by `scripts/merge_kaggle_careers.py` (only files marked verified).
+- **Right picture for each person.** Portraits were checked against each player's own Kaggle picture; Ivan Sorokin, Jack Cole and Jean-Francois Puget now use their own Kaggle photographs. Players with no individual picture get a seeded ARC-puzzle monogram labelled "Portrait not on file" rather than a stand-in. Chollet and Knoop still share the founders image until an individual picture can be traced to a permitted source.
+- **Fronts look finished.** A square portrait in the wide window now sits on a soft blurred copy of itself instead of blank paper bars; share previews keep their exact-art contract.
+- Validation: card collection, image, share-image, route and view checks pass against a fresh production build.
+
 ### Version 9.159.20  Oct 29, 2026
 
 - **Correct NT to his own yellow-bird avatar** (Author: GPT-6 / Codex). Replace the mistaken banana-kitten identity on P066, the people portrait and active character references using the Boss-supplied Kaggle screenshot. Correct NT's figure in the full Turducken crew and T014 too. Keep Keith's separate black-capped mascot and the rest of the crew intact.

@@ -1,0 +1,109 @@
+{
+  "personId": "michaeltgao",
+  "handle": "michaeltgao",
+  "name": "Michael",
+  "checkedAt": "2026-10-30T14:20:11Z",
+  "method": "Built-in app browser, 30 Oct 2026: loaded only the public Kaggle profile and competitions pages, one wait of several seconds after each load, no refresh loops, no block or rate limit seen. Page text read, competition list checked by screenshot, join date read from the profile tooltip, avatar read from the page's own avatar element. ARC standings read from the already-cited public board mirror (read-only GET, 30 Oct 2026, snapshot time inside the file). An older draft evidence file did not exist, so nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/michaeltgao",
+    "https://www.kaggle.com/michaeltgao/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "displayName": "Michael",
+    "competitionTier": null,
+    "tierNote": "No tier name, rank or medal panel appears anywhere on the profile or competitions page, so no tier is claimed.",
+    "medals": null,
+    "joinedTooltip": "Fri Mar 27 2026 23:28:21 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2026-03",
+    "bioPresent": false,
+    "bioText": "No bio yet...",
+    "taglineShown": "Quietly working away",
+    "followers": 6,
+    "activity": {
+      "competitionsSolo": 2,
+      "competitionsInTeam": 0,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The own competitions page shows no Completed Competitions section at all. This describes the visible account record only; it is not proof that nothing else was ever entered under another account."
+  },
+  "completedResults": [],
+  "provisionalStandings": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "teamName": "mtg",
+      "teamId": "16153654",
+      "displayedHandles": ["michaeltgao"],
+      "rank": 22,
+      "teams": 3535,
+      "snapshotAt": "2026-10-30T13:54:23Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "status": "provisional public standing; the competition was still running with days to go, medals settle at the close"
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "teamName": "mtg",
+      "teamId": "16153655",
+      "displayedHandles": ["michaeltgao"],
+      "rank": 7,
+      "teams": 4984,
+      "snapshotAt": "2026-10-30T13:54:21Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "status": "provisional public standing; the competition was still running with days to go, medals settle at the close"
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/michaeltgao",
+    "note": "The large profile avatar element (200 pixels square) uses Kaggle's stock default-avatar image, a pen-and-ink drawing of a goose, not a picture this person chose. No individual picture of this person is public on the profile. No portrait file exists under client/public/news-images/people/ for this id. The card currently carries a newspaper-commissioned fictional mascot (2026-10-29-mtg-avatar-v1-base), which is a stand-in, not a human likeness, and does not meet the own-picture rule; it should be shown only as a labelled mascot or the card should say no own picture is available. Nothing was downloaded or saved."
+  },
+  "facts": [
+    {
+      "text": "Michael's public Kaggle profile, under the handle michaeltgao, dates his joining to March 2026 and carries no bio.",
+      "sourceUrl": "https://www.kaggle.com/michaeltgao",
+      "sourceTitle": "Michael — public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T14:20:11Z"
+    },
+    {
+      "text": "His public Kaggle competitions page lists two active competitions, ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3, both entered solo, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/michaeltgao/competitions",
+      "sourceTitle": "Michael — own Kaggle competitions page",
+      "checkedAt": "2026-10-30T14:20:11Z"
+    },
+    {
+      "text": "In the provisional ARC-AGI-2 standings his one-person team mtg is listed 22nd of 3,535 teams in the 30 October snapshot; final results come at the close.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "sourceTitle": "ARC-AGI-2 public board snapshot — team mtg",
+      "checkedAt": "2026-10-30T14:20:11Z"
+    },
+    {
+      "text": "In the provisional ARC-AGI-3 standings his separate one-person team, also named mtg, is listed 7th of 4,984 teams in the 30 October snapshot; final results come at the close.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public board snapshot — team mtg",
+      "checkedAt": "2026-10-30T14:20:11Z"
+    }
+  ],
+  "teamNotes": "mtg is two separate Kaggle teams, one per competition (ARC-AGI-2 team 16153654, ARC-AGI-3 team 16153655), and the roster lists only michaeltgao on each, matching the profile's count of two solo entries and no team entries. The ARC-AGI-3 standing is a public-leaderboard position, not a medal; no team medal is credited as an individual honour.",
+  "unverified": [
+    "Surname, employer, location and professional background: the profile shows only the name Michael and no bio or links.",
+    "Any Kaggle tier: none displayed on the pages loaded.",
+    "Any medal: none displayed; medals do not appear in page text and the competition list showed only active entries, so there was nothing to read.",
+    "Whether a different account of the same person has past finishes.",
+    "A real individual picture: the profile shows Kaggle's stock default avatar only.",
+    "The exact final ARC-AGI-2 and ARC-AGI-3 finishes: standings are provisional until the close, and medal ranks are only set then."
+  ],
+  "verified": true
+}

@@ -1,0 +1,49 @@
+{
+  "personId": "francois-chollet",
+  "handle": null,
+  "xHandle": "fchollet",
+  "name": "François Chollet",
+  "checkedAt": "2026-10-30T11:43:53Z",
+  "method": "No browser visit was made on 30 October 2026, because his record in people.json carries no Kaggle handle (its only account is X, fchollet) and so no Kaggle profile can be attributed to him from the record. The earlier draft of this file, written while Kaggle was blocking us, was treated as unverified and none of its Kaggle claims are repeated. What was read instead: the ARC Explainer Hall of Fame contributor entry as served by the site's own public contributors data endpoint (the data the Hall of Fame page renders from; the rendered page itself was not opened), the public GitHub repository record for fchollet/ARC-AGI (the repository the Hall of Fame entry links), and his local portrait file. One request to X's public embed endpoint for his profile picture was answered with a rate-limit refusal and was not retried.",
+  "sources": [
+    "https://arc.markbarney.net/hall-of-fame#contributor-19",
+    "https://github.com/fchollet/ARC-AGI"
+  ],
+  "profile": {
+    "kaggleHandleInRecord": false,
+    "competitionTier": null,
+    "medals": null,
+    "joinedMonth": null,
+    "note": "No Kaggle profile was read, so no tier, medal count, rank or join month is recorded."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "group-image",
+    "src": "/news-images/people/arc-founders.webp",
+    "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+    "note": "The portrait on his card is the shared ARC Prize founders image from the Hall of Fame: two men in one frame (checked by eye on 30 October 2026). It is not his own individual picture. No individual picture of him was confirmed from the sources his record cites: the one attempt at his X profile picture was refused by a rate limit, and the only other public profile image found, his GitHub avatar, is a felt-sculpture figure rather than a picture of him and comes from a source his record does not cite, so it was not saved. The file arc-founders.webp was left untouched and no new portrait file was made."
+  },
+  "facts": [
+    {
+      "text": "The ARC Explainer Hall of Fame describes François Chollet, creator of Keras, as the person who defined the ARC-AGI benchmark in 2019 to measure general intelligence.",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders entry",
+      "checkedAt": "2026-10-30T11:43:53Z"
+    },
+    {
+      "text": "The Abstraction and Reasoning Corpus repository, ARC-AGI, is hosted on GitHub under his own fchollet account, and the Hall of Fame entry links to it.",
+      "sourceUrl": "https://github.com/fchollet/ARC-AGI",
+      "sourceTitle": "fchollet/ARC-AGI — The Abstraction and Reasoning Corpus (GitHub)",
+      "checkedAt": "2026-10-30T11:43:53Z"
+    }
+  ],
+  "teamNotes": "No Kaggle team, entry or competing account was checked. The Hall of Fame founders entry shares one card with Mike Knoop and gives the team name ARC Prize Foundation, which is an organization label and not a Kaggle team. His record in people.json lists no team memberships.",
+  "unverified": [
+    "Whether he has a Kaggle account that belongs to this record: it cites no Kaggle handle, so none was visited.",
+    "Every Kaggle claim in the earlier draft of this file (competitions tier, medal counts and tiers, rank figures, organization line, hosted-competition count, the seven completed finishes with their ranks and team counts, and the default-avatar remark). That draft was written while Kaggle was blocking us and none of it was re-read, so none of it is used.",
+    "Any completed Kaggle competition, rank, team count, medal or team name for him.",
+    "Any role of his in ARC Prize beyond what the Hall of Fame entry says; the claim in his record that ARC Prize's official X profile names him as a co-founder was not reopened today and is left as it was recorded on 9 October.",
+    "An individual portrait of him: the card still shows the shared founders image."
+  ],
+  "verified": true
+}

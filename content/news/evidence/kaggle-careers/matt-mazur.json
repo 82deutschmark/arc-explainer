@@ -1,0 +1,48 @@
+{
+  "personId": "matt-mazur",
+  "handle": null,
+  "name": "Matt Mazur",
+  "checkedAt": "2026-10-30T13:00:48Z",
+  "method": "No browser visit. His record in content/news/people.json holds no Kaggle handle, only an X account (mhmazur) cited to his own site, so only that cited source was used. On 2026-10-30 the cited page https://mattmazur.com/contact/ was fetched with curl (HTTP 200) and read for its listed accounts, and his site headshot was downloaded from the same site and compared by eye with the saved portrait. The earlier draft of this file was treated as unverified and rebuilt from these reads only.",
+  "sources": [
+    "https://mattmazur.com/contact/",
+    "https://mattmazur.com/wp-content/uploads/2023/11/cropped-matt-250x250-1.png"
+  ],
+  "profile": {
+    "kaggleAccountLinkedToPerson": false,
+    "note": "Neither his record nor his own contact page names a Kaggle account (the page was searched for the word Kaggle and has none). No Kaggle profile was opened, so no tier, medal count or join month is recorded.",
+    "kaggleTier": null,
+    "medals": null,
+    "joinedMonth": null
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/matt-mazur.webp",
+    "sourceUrl": "https://mattmazur.com/wp-content/uploads/2023/11/cropped-matt-250x250-1.png",
+    "note": "The saved 400 by 400 picture shows one man alone, with the same pose, grin, grey-flecked hair and cafe background as the headshot on his own site, so it is his own individual picture, not a group image or default avatar. The earlier pass said the file came from his X profile picture; X was not visited this time, so that origin is not re-confirmed, and the site headshot is the cited proof."
+  },
+  "facts": [
+    {
+      "text": "Matt Mazur's own website lists his Twitter (X) account as @mhmazur.",
+      "sourceUrl": "https://mattmazur.com/contact/",
+      "sourceTitle": "Contact | Matt Mazur",
+      "checkedAt": "2026-10-30T13:00:48Z"
+    },
+    {
+      "text": "The same contact page lists his GitHub profile (mattm) and a LinkedIn profile (mhmazur) next to his X account.",
+      "sourceUrl": "https://mattmazur.com/contact/",
+      "sourceTitle": "Contact | Matt Mazur",
+      "checkedAt": "2026-10-30T13:00:48Z"
+    }
+  ],
+  "teamNotes": "No Kaggle team, current or past, was found for him in any source this check used. His record in people.json lists no team memberships.",
+  "unverified": [
+    "Whether he has a Kaggle account at all. An earlier draft noted a Kaggle page named mhmazur with the display name Matt Mazur, but nothing on his own site links it to him, and it was not reopened here, so it is not attributed to him.",
+    "Any Kaggle tier, medal, join month, completed competition, rank or team.",
+    "Any ARC Prize 2026 team membership.",
+    "Where the saved portrait file was first taken from (an earlier pass said his X profile picture); only its match to his own-site headshot is confirmed.",
+    "A retry is needed once he or a cited source publicly links a Kaggle handle."
+  ],
+  "verified": true
+}

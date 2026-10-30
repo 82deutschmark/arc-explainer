@@ -1,0 +1,80 @@
+{
+  "personId": "gal-kaplun",
+  "handle": "galkaplun",
+  "name": "Gal Kaplun",
+  "checkedAt": "2026-10-30T12:26:47Z",
+  "method": "Built-in browser (Claude desktop app), 2026-10-30: read-only visit to the public Kaggle profile page and the public Competitions page, five seconds apart, one visit each, no refreshes. Page text was read after a six second wait, a screenshot of each page was inspected, and the join tooltip and the profile picture address were read from the page. The profile picture was downloaded once with curl and compared by eye with the saved portrait. An older draft written while Kaggle was blocking us was discarded; nothing here is carried from it except the portrait file, which was re-checked against the live page.",
+  "sources": [
+    "https://www.kaggle.com/galkaplun",
+    "https://www.kaggle.com/galkaplun/competitions"
+  ],
+  "profile": {
+    "displayedName": "Gal Kaplun",
+    "competitionTier": null,
+    "medals": null,
+    "joinedTooltip": "Mon Nov 03 2025 04:12:33 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2025-11",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "tabs": {
+      "competitions": 1,
+      "models": 1,
+      "followers": 2
+    },
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInTeam": 1,
+      "competitionsHosted": 0
+    },
+    "note": "The profile header and About page show no competition tier badge and no medal section, so no tier and no medal count is recorded. The absence of a tier badge is not read as a stated tier."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions page shows only the active ARC-AGI-3 entry and no Completed Competitions section. This is what is publicly displayed, not proof of the account's whole history. Nothing is invented. The displayed entry does not show a team name; the NVARC3 team name below comes from the repo's public roster record."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/gal-kaplun.webp",
+    "sourceUrl": "https://www.kaggle.com/galkaplun",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/30056297-kg.jpeg?t=2026-09-12-11-05-15",
+    "width": 400,
+    "height": 400,
+    "sha256": "ee83f2230e50eade1ab5e204e507b5a33bf02db061a414eb0dfe55239396864d",
+    "note": "The live Kaggle profile picture (the large circle on his own profile page) is an illustrated caricature of one man with tousled brown hair and a moustache, in a red top, with a market-stall background and a sign reading Caminito. The saved 320 pixel file shows the same picture, same face, same background and same sign. It is a single individual picture, not a group image and not a default avatar. No replacement file was made."
+  },
+  "facts": [
+    {
+      "text": "Gal Kaplun's public Kaggle profile is under the handle galkaplun and dates his account joining to November 2025.",
+      "sourceUrl": "https://www.kaggle.com/galkaplun",
+      "sourceTitle": "Gal Kaplun, own public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T12:26:47Z"
+    },
+    {
+      "text": "Kaggle lists one competition for Gal Kaplun, the active ARC Prize 2026 - ARC-AGI-3, entered with a team, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/galkaplun/competitions",
+      "sourceTitle": "Gal Kaplun, Kaggle competitions list",
+      "checkedAt": "2026-10-30T12:26:47Z"
+    },
+    {
+      "text": "His Kaggle profile shows one model and no biography.",
+      "sourceUrl": "https://www.kaggle.com/galkaplun",
+      "sourceTitle": "Gal Kaplun, own public Kaggle profile",
+      "checkedAt": "2026-10-30T12:26:47Z"
+    }
+  ],
+  "teamNotes": "The only team on record is ARC-AGI-3 team NVARC3, from the repo's public roster record (first observed 2026-10-13, last observed 2026-10-29). Kaggle's own competitions page for him shows the ARC-AGI-3 entry with a row of teammate pictures but no team name. Public ARC standings are provisional until the competition closes. No past teams or finishes are displayed on his public profile, and no team medal is credited to him.",
+  "unverified": [
+    "Competition tier (none displayed on the profile)",
+    "Any medals (none displayed)",
+    "Any completed competitions, ranks, team sizes and past team names (none displayed)",
+    "What the one listed model is (the Models tab was not opened)",
+    "The names of his ARC-AGI-3 teammates (only small pictures are shown on the Kaggle page)"
+  ],
+  "verified": true
+}

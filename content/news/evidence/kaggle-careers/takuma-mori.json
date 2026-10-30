@@ -1,0 +1,126 @@
+{
+  "personId": "takuma-mori",
+  "handle": "menphim",
+  "name": "Takuma Mori",
+  "checkedAt": "2026-10-30T11:05:27Z",
+  "method": "Read-only visits to the public Kaggle profile and Competitions pages in the app's built-in browser on 2026-10-30 (one navigation each, about 5 seconds apart, no refresh loops, no rate limit or block seen). Page text was read for tier, ranks, team counts and displayed handles. Medal types were read from the medal icons on the competition list (screenshot) and cross-read from each row's medal tooltip. The profile picture was downloaded from the profile's own background-image URL and compared with the saved file. This replaces an earlier unverified draft; nothing from that draft was carried over except the already-saved portrait, which was re-checked.",
+  "sources": [
+    "https://www.kaggle.com/menphim",
+    "https://www.kaggle.com/menphim/competitions"
+  ],
+  "profile": {
+    "displayName": "Takuma Mori",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 1,
+      "bronze": 4
+    },
+    "competitionRank": 2462,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 828,
+    "joinedTooltip": "Sat Mar 26 2016 04:44:43 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2016-03",
+    "headline": "Machine Learning Engineer at Honda R&D, Tokyo, Japan",
+    "pronouns": "he/him",
+    "bioPresent": false,
+    "fieldsOfStudy": [
+      "Automatic Speech Recognition",
+      "Machine Learning"
+    ],
+    "activity": {
+      "competitionsSolo": 15,
+      "competitionsInATeam": 4,
+      "competitionsHosted": 0
+    },
+    "linkedAccounts": [
+      "https://github.com/menphim",
+      "https://x.com/menphim",
+      "https://menphim.github.io/"
+    ],
+    "writeups": [
+      {
+        "title": "70th Place: Training-only Site Bias, Image-reading LLM Labels, and a CV Trap",
+        "competition": "RSNA Knee Abnormality Detection"
+      }
+    ]
+  },
+  "visibleCompetitionList": {
+    "tabCount": 19,
+    "activeCount": 2,
+    "completedCount": 17,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "activeNote": "Both show '4 days to go' at the time of reading. The page text did not show a rank, team count or team name for either, so none is recorded here.",
+    "scopeNote": "All 17 completed rows are listed below as displayed, sorted by Kaggle's 'Best Result' order. Kaggle shows relative dates ('7 days ago', '9 years ago'), not exact dates."
+  },
+  "completedResults": [
+    {"competition": "RSNA Knee Abnormality Detection", "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection", "rank": 70, "teams": 6299, "medal": "silver", "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "7 days ago"},
+    {"competition": "Text Normalization Challenge - Russian Language", "competitionUrl": "https://www.kaggle.com/competitions/text-normalization-challenge-russian-language", "rank": 47, "teams": 162, "medal": "bronze", "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Market Basket Analysis", "competitionUrl": "https://www.kaggle.com/competitions/basket-analysis", "rank": 180, "teams": 2621, "medal": "bronze", "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "TalkingData AdTracking Fraud Detection Challenge", "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection", "rank": 268, "teams": 3943, "medal": "bronze", "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "8 years ago"},
+    {"competition": "Biohub - Cell Tracking During Development", "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development", "rank": 334, "teams": 3947, "medal": "bronze", "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "a month ago"},
+    {"competition": "Text Normalization Challenge - English Language", "competitionUrl": "https://www.kaggle.com/competitions/text-normalization-challenge-english-language", "rank": 170, "teams": 260, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Web Traffic Time Series Forecasting", "competitionUrl": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting", "rank": 171, "teams": 1095, "medal": null, "displayedHandles": ["kwnsiy", "menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Mercari Price Suggestion Challenge", "competitionUrl": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge", "rank": 264, "teams": 2380, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Cdiscount’s Image Classification Challenge", "competitionUrl": "https://www.kaggle.com/competitions/cdiscount-image-classification-challenge", "rank": 429, "teams": 626, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Recruit Restaurant Visitor Forecasting", "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting", "rank": 482, "teams": 2148, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Quora Question Pairs", "competitionUrl": "https://www.kaggle.com/competitions/quora-question-pairs", "rank": 566, "teams": 3295, "medal": null, "displayedHandles": ["kwnsiy", "menphim", "settenqb", "terasawa", "kazuya0126"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "TensorFlow Speech Recognition Challenge", "competitionUrl": "https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge", "rank": 761, "teams": 1313, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Zillow Prize: Zillow’s Home Value Prediction (Zestimate)", "competitionUrl": "https://www.kaggle.com/competitions/zillow-prize-1", "rank": 936, "teams": 3770, "medal": null, "displayedHandles": ["kwnsiy", "menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Traveling Santa 2018 - Prime Paths", "competitionUrl": "https://www.kaggle.com/competitions/traveling-santa-2018-prime-paths", "rank": 1073, "teams": 1866, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "8 years ago"},
+    {"competition": "Mercedes-Benz Greener Manufacturing", "competitionUrl": "https://www.kaggle.com/competitions/mercedes-benz-greener-manufacturing", "rank": 1193, "teams": 3823, "medal": null, "displayedHandles": ["kwnsiy", "menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Porto Seguro’s Safe Driver Prediction", "competitionUrl": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction", "rank": 2120, "teams": 5156, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "9 years ago"},
+    {"competition": "Santander Customer Transaction Prediction", "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction", "rank": 3631, "teams": 8751, "medal": null, "displayedHandles": ["menphim"], "teamName": null, "relativeDateLabel": "8 years ago"}
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/takuma-mori.webp",
+    "sourceUrl": "https://www.kaggle.com/menphim",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/568122-kg.png?t=2025-01-12-16-00-09",
+    "note": "The profile's large picture is a custom upload (a 400px illustration of a small blue robot), not Kaggle's grey default avatar and not a group image. The saved 320px file matches it (re-downloaded and compared, average pixel difference under one level per channel). It is his own chosen profile picture, an illustration rather than a photograph; no photo of him appears on his Kaggle profile. File left unchanged, no -v2 needed."
+  },
+  "facts": [
+    {
+      "text": "Takuma Mori is a Kaggle Competitions Expert with one silver and four bronze competition medals, ranked 2,462nd of 225,021 and 828th at his best, and his account dates to March 2016.",
+      "sourceUrl": "https://www.kaggle.com/menphim",
+      "sourceTitle": "Takuma Mori (menphim) — public Kaggle profile, medals and join date",
+      "checkedAt": "2026-10-30T11:05:27Z"
+    },
+    {
+      "text": "Kaggle lists his completed RSNA Knee Abnormality Detection entry 70th of 6,299 teams with a silver medal, and his write-up on that entry is featured on his profile.",
+      "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+      "sourceTitle": "Takuma Mori — completed RSNA Knee Abnormality Detection result on Kaggle",
+      "checkedAt": "2026-10-30T11:05:27Z"
+    },
+    {
+      "text": "His four bronze medals are in Text Normalization Challenge - Russian Language (47th of 162), Market Basket Analysis (180th of 2,621), TalkingData AdTracking Fraud Detection (268th of 3,943) and Biohub - Cell Tracking During Development (334th of 3,947), each shown under his own account only.",
+      "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+      "sourceTitle": "Takuma Mori — completed bronze-medal results on Kaggle",
+      "checkedAt": "2026-10-30T11:05:27Z"
+    },
+    {
+      "text": "His Kaggle profile describes him as a Machine Learning Engineer at Honda R&D in Tokyo, Japan.",
+      "sourceUrl": "https://www.kaggle.com/menphim",
+      "sourceTitle": "Takuma Mori (menphim) — public Kaggle profile",
+      "checkedAt": "2026-10-30T11:05:27Z"
+    },
+    {
+      "text": "His Kaggle profile lists ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2 as his two active competitions; any current ARC standing is provisional until the private leaderboard settles.",
+      "sourceUrl": "https://www.kaggle.com/menphim/competitions",
+      "sourceTitle": "Takuma Mori — active ARC Prize 2026 competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:05:27Z"
+    }
+  ],
+  "teamNotes": "Kaggle's competition list shows each entry's account avatars (hover names), not a typed team name, so no team name is recorded. Four completed entries show more than one account: Web Traffic Time Series Forecasting and Zillow Prize and Mercedes-Benz Greener Manufacturing (each with kwnsiy), and Quora Question Pairs (with kwnsiy, settenqb, terasawa and kazuya0126). None of those four carries a medal, and the profile's activity panel agrees (15 solo, 4 in a team). All five medals are on entries that show only menphim, so no team medal is credited here. The repo already holds the ARC-AGI-2 and ARC-AGI-3 roster memberships (team named menphim in both) from dated public roster observations; those are not duplicated or changed here.",
+  "unverified": [
+    "The exact calendar dates of each finish: Kaggle shows only relative labels such as '7 days ago' and '9 years ago'.",
+    "Any rank, team count or team name for the two active ARC Prize 2026 entries: the profile lists them as active without showing standings.",
+    "Whether the Market Basket Analysis competition is the Instacart one: Kaggle's displayed title is 'Market Basket Analysis' and no further title text was shown, so the displayed title is used.",
+    "Contest results on other platforms listed on his own site (menphim.github.io): that site was not re-read in this pass and none of those results are recorded here.",
+    "Final private-leaderboard medal status for the recently closed RSNA and Biohub entries: shown as awarded on his profile today, not independently checked against the competitions' own leaderboards."
+  ],
+  "verified": true
+}
