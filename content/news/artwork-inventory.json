@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T02:13:40.913Z",
+  "updatedAt": "2026-10-30T02:38:40.181Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -110,13 +110,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -168,13 +168,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -226,13 +226,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -1447,6 +1447,50 @@
       "xAttachments": [],
       "discordShares": [],
       "selectionNote": "Dedicated two-dog illustration for Darren’s individual collectible, commissioned during the Boss’s card review. Preserve native PNG, own source photo and full team art. No article or social send."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-danger-room-v1",
+      "generationRecord": "2026-10-29-arc-mutants-danger-room-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-danger-room-v1.png",
+      "title": "The Danger Grid",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-observatory-v1",
+      "generationRecord": "2026-10-29-arc-mutants-observatory-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-observatory-v1.png",
+      "title": "The Pattern Observatory",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-rooftop-v1",
+      "generationRecord": "2026-10-29-arc-mutants-rooftop-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+      "title": "Above the Academy",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-nt-mitubant-avatar-v1",
+      "generationRecord": "2026-10-29-nt-mitubant-avatar-v1",
+      "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+      "title": "NT — Turducken's banana-suit kitten",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Dedicated individual ARC3 Turducken avatar/card for NT (mitubant), explicitly commissioned by Boss. Exact native PNG preserved separately; no article/social send."
     }
   ],
   "existingXPosts": [

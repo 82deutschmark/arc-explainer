@@ -40,3 +40,11 @@ iterations get new filenames; this approved original is never overwritten.
 See `docs/newsroom/CHARACTERS.md` and `TEAM_PLAYBOOK.md` for the permanent direction.
 
 No held manuscript was released and no social announcement was sent by this review.
+
+## NT joins the individual collection
+
+Boss explicitly confirmed NT = Kaggle `mitubant` and requested his own ARC3 Turducken
+avatar. P066's separate print proof and `nt-mitubant-proof.json` retain its exact public
+card input and image/source hashes. The orange banana-suit kitten, comic tears and
+Turducken hangar follow his established character. His original community avatar,
+new native PNG and display copy remain saved with the generation record.

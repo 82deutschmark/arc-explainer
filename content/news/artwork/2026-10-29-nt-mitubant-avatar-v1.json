@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "id": "2026-10-29-nt-mitubant-avatar-v1",
+  "title": "NT — Turducken's banana-suit kitten",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T02:38:40.181Z",
+  "toolOutput": "exec-d1e68969-3b87-4247-9d43-7bad61b1e658.png",
+  "rawSrc": "/news-images/people/nt-mitubant-avatar-v1.webp",
+  "nativeOriginalSrc": "/news-images/references/2026-10-29-nt-mitubant-avatar-v1-native.png",
+  "prompt": "Use case: stylized-concept. Asset type: dedicated reusable individual competitor avatar for NT, Kaggle handle mitubant, of the ARC-AGI-3 TEAM TURDUCKEN crew. Create ONE new polished 3D-comic sports-star mascot illustration, landscape 4:3. Input1 is NT's exact established owner/community avatar: an orange kitten inside a bright yellow banana costume, curved banana hood with brown stem, orange striped cheeks, little triangular ears, smiling open mouth, eyes squeezed in joyous laughter and two exaggerated bright-blue cartoon tear fountains. Preserve this exact charming character identity and comic tears. Input2 is the approved full Turducken flight scene: use its snowy GPU Valley world, amber/cobalt mechanical turkey aesthetics and playful adventurous spirit ONLY. Do not copy or crop its group characters. EXACTLY ONE main character: NT's orange banana-suited kitten, full body large and centered, all ears, stem and paws comfortably visible, cheeky champion energy, one paw holding up a glowing multicolor square ARC puzzle tile and the other resting on a small bronze control lever. Add a tasteful dark navy/amber utility harness around the banana costume, small bright ARC-colored square patches and a few compact cyber-engineer tools while keeping the banana silhouette, big laughing face and flowing blue comic tears unmistakable. No helmet over the face, no human face, no extra characters, no other animals. Stage: on an ornate brass-and-cobalt control deck inside Team Turducken's cozy winter airship hangar, a blurred section of the mechanical turkey vehicle and a blue snowy mountain vista through an enormous arched window in the background. Warm golden key light on the orange fur and yellow peel, crisp blue edge light, detailed fabric, fur and brushed metal, magnificent but softly focused environment so NT remains the star. Consistent with the approved Turducken character universe, stylish, funny and lovable, no baby photo look. This is an ARC3 Turducken avatar; no ARC2 Mutants academy, Professor X chair, violet superhero helmet or other team costume. No generic Kaggle goose, words, names, lettering, numbers, ranks, scores, medals, watermarks, sponsors or logos. No trading-card frame or border. It is a new separate individual illustration based on the supplied avatar, not a crop from the team image.",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: dedicated reusable individual competitor avatar for NT, Kaggle handle mitubant, of the ARC-AGI-3 TEAM TURDUCKEN crew. Create ONE new polished 3D-comic sports-star mascot illustration, landscape 4:3. Input1 is NT's exact established owner/community avatar: an orange kitten inside a bright yellow banana costume, curved banana hood with brown stem, orange striped cheeks, little triangular ears, smiling open mouth, eyes squeezed in joyous laughter and two exaggerated bright-blue cartoon tear fountains. Preserve this exact charming character identity and comic tears. Input2 is the approved full Turducken flight scene: use its snowy GPU Valley world, amber/cobalt mechanical turkey aesthetics and playful adventurous spirit ONLY. Do not copy or crop its group characters. EXACTLY ONE main character: NT's orange banana-suited kitten, full body large and centered, all ears, stem and paws comfortably visible, cheeky champion energy, one paw holding up a glowing multicolor square ARC puzzle tile and the other resting on a small bronze control lever. Add a tasteful dark navy/amber utility harness around the banana costume, small bright ARC-colored square patches and a few compact cyber-engineer tools while keeping the banana silhouette, big laughing face and flowing blue comic tears unmistakable. No helmet over the face, no human face, no extra characters, no other animals. Stage: on an ornate brass-and-cobalt control deck inside Team Turducken's cozy winter airship hangar, a blurred section of the mechanical turkey vehicle and a blue snowy mountain vista through an enormous arched window in the background. Warm golden key light on the orange fur and yellow peel, crisp blue edge light, detailed fabric, fur and brushed metal, magnificent but softly focused environment so NT remains the star. Consistent with the approved Turducken character universe, stylish, funny and lovable, no baby photo look. This is an ARC3 Turducken avatar; no ARC2 Mutants academy, Professor X chair, violet superhero helmet or other team costume. No generic Kaggle goose, words, names, lettering, numbers, ranks, scores, medals, watermarks, sponsors or logos. No trading-card frame or border. It is a new separate individual illustration based on the supplied avatar, not a crop from the team image.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-18-turducken-nt-avatar-v1.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "mitubant",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-18-turducken-nt-avatar-v1.png",
+      "role": "NT's established orange kitten in a banana suit with comic tears, supplied by Son for the Turducken cast. Boss explicitly confirmed NT is Kaggle mitubant on October29.",
+      "sha256": "057d0fc3f004dde233d65c16e196fbfd683a48d4a47e4c629c7e158ed93da9ee"
+    },
+    {
+      "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "role": "Approved ARC3 Turducken world/style reference; use mechanical turkey, snowy GPU Valley and warm brass/cobalt engineering. Do not crop the group.",
+      "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37"
+    }
+  ],
+  "review": "Inspected native output: exactly one orange kitten in a bright banana suit with brown stem and blue comic tear fountains. Full mascot and paws visible, laughing face and original silhouette retained, navy/amber tool harness and ARC-grid patches, raised puzzle tile and control lever, mechanical turkey and snowy hangar backdrop. No human likeness, scores, names or other crew characters. Dedicated individual scene; native PNG retained unchanged.",
+  "reviewStatus": "reviewed",
+  "identityEvidence": {
+    "personId": "mitubant",
+    "displayName": "NT",
+    "profileUrl": "https://www.kaggle.com/mitubant",
+    "profileTitle": "NT | Kaggle",
+    "authority": "Boss explicitly identified Discord teammate NT as Kaggle mitubant and requested an avatar appropriate to ARC3 Turducken."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredRosterHandles": {
+      "15605182": [
+        "mitubant"
+      ]
+    },
+    "note": "NT is a Turducken ARC3 character. Do not add him to the four-account ARC2 ARC Mutants roster."
+  },
+  "commissionAuthority": "Boss directly requested NT / mitubant's dedicated individual ARC3 Turducken avatar.",
+  "archiveNote": "Native PNG retained alongside a web presentation copy; original supplied avatar and whole-crew scene remain unchanged. No article or social send.",
+  "nativeOriginalSha256": "044a1aa4bbdd8044f0efd952392a17473fa929618a0eae13c2ecad4cf4ce43da",
+  "rawSha256": "990387f3afb33dc31353286db08a2157110c129d88d3ff8b2c998ec5b718e336",
+  "webPresentation": {
+    "format": "webp",
+    "quality": 95,
+    "maxEdge": 1200,
+    "nativeUnchanged": true
+  },
+  "referenceSystem": "https://arc.markbarney.net/news/cards"
+}

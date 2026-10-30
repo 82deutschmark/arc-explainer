@@ -3,6 +3,7 @@
  * Date: 2026-10-29
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots and explicitly official final results. Never exposes desk drafts.
+ * Individual card entry preferences choose the lead contest without granting membership.
  * SRP/DRY check: Pass — newsStore owns identities; this projection owns collectible presentation.
  */
 import fs from 'node:fs';
@@ -40,6 +41,14 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     // An official credited roster can reconnect a former member without using today's roster.
     if (person) for (const row of final.filter(row => row.season === definition.season && row.creditedHandles.some(handle => handles.has(handle)))) {
       if (!entryRefs.some(ref => ref.competitionId === row.competitionId && ref.teamId === row.teamId)) entryRefs.push(row);
+    }
+    // An ARC3 character card can lead with its ARC3 team while retaining other verified entries.
+    if (person && definition.entries.length) {
+      const priority = (ref: { competitionId: string; teamId: string }) => {
+        const position = definition.entries.findIndex(entry => entry.competitionId === ref.competitionId && entry.teamId === ref.teamId);
+        return position < 0 ? definition.entries.length : position;
+      };
+      entryRefs.sort((a, b) => priority(a) - priority(b));
     }
     const honors: CollectionCard['honors'] = [];
     const entries = entryRefs.map(ref => {

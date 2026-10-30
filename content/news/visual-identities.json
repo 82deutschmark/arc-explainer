@@ -1292,9 +1292,115 @@
         "Preserve the own-avatar source photograph and the original full team scene."
       ],
       "provenance": "Boss requested the individual collectible beside the team card. Native imagegen illustration preserves the existing two-dog identity; exact arguments, source references and original native bytes are archived."
+    },
+    {
+      "id": "arc-mutants",
+      "status": "ready",
+      "names": [
+        "ARC Mutants — ARC2 academy quartet"
+      ],
+      "description": "Jack Cole, Mark Barney, Son Pham and Ronen’s opaque-helmet grid-shield character: the four-person ARC2 academy team.",
+      "referenceType": "Curated team reference and additional academy episodes",
+      "teamIds": {
+        "arc-2": [
+          "17023174"
+        ]
+      },
+      "includePeople": [
+        "jack-cole",
+        "mark-barney",
+        "son-pham"
+      ],
+      "references": [
+        {
+          "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+          "sha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3",
+          "kind": "native-character",
+          "label": "Approved October19 academy original",
+          "role": "Original four-person ARC2 academy cast; preserve all established identities. Provenance: 2026-10-19-arc-mutants-academy-v1."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-danger-room-v1.png",
+          "sha256": "70c30337584eb70d0a0ed7dc1c3e13dc845883a4d7cd3d01cd57136ddac95a71",
+          "generationRecord": "2026-10-29-arc-mutants-danger-room-v1",
+          "kind": "native-character",
+          "label": "The Danger Grid",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-observatory-v1.png",
+          "sha256": "4f8448dd05a90cdc45060cf83ce3dbb0a74831dd6e9b1d1e850286beb6c9a9e4",
+          "generationRecord": "2026-10-29-arc-mutants-observatory-v1",
+          "kind": "native-character",
+          "label": "The Pattern Observatory",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+          "sha256": "e3882a8c5a8dd923370a76dae262b0bf807589c5d45b5c9f5261a520b961a545",
+          "generationRecord": "2026-10-29-arc-mutants-rooftop-v1",
+          "kind": "native-character",
+          "label": "Above the Academy",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        }
+      ],
+      "identityNotes": [
+        "ARC2 team17023174 only: jcole75, markbarney, sonphamorg and scizical. ARC3 Turducken is a separate seven-account entry.",
+        "Jack occupies the Professor Xavier mentor role with his own established face/headset. Mark is the bearded GPU brawler; Son the visor energy specialist; Ronen the opaque violet grid-shield architect.",
+        "Preserve the October19 original and all new native episodes. These images have no mutable statistics and no automatic article/social reuse approval."
+      ],
+      "provenance": "Boss explicitly commissioned additional X-Men-inspired ARC Mutants team scenes on October29. Native arguments, exact source references, original PNGs and visual reviews are saved per episode."
+    },
+    {
+      "id": "mitubant",
+      "personId": "mitubant",
+      "status": "ready",
+      "names": [
+        "NT",
+        "mitubant"
+      ],
+      "description": "NT / mitubant, Turducken’s orange kitten in a banana suit with comic tears and ARC-grid engineer harness.",
+      "referenceType": "Boss-confirmed individual ARC3 Turducken avatar",
+      "references": [
+        {
+          "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+          "sha256": "990387f3afb33dc31353286db08a2157110c129d88d3ff8b2c998ec5b718e336",
+          "generationRecord": "2026-10-29-nt-mitubant-avatar-v1",
+          "kind": "native-character",
+          "label": "NT — dedicated Turducken avatar",
+          "role": "Exactly one orange kitten in banana costume with comic tears. Preserve character details and ARC3 mechanical-turkey world."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-nt-mitubant-avatar-v1-native.png",
+          "sha256": "044a1aa4bbdd8044f0efd952392a17473fa929618a0eae13c2ecad4cf4ce43da",
+          "kind": "native-original",
+          "label": "Exact selected native NT PNG",
+          "role": "Lossless original of NT’s dedicated commissioned avatar; preserve unchanged."
+        },
+        {
+          "src": "/news-images/references/2026-10-18-turducken-nt-avatar-v1.png",
+          "role": "NT's established orange kitten in a banana suit with comic tears, supplied by Son for the Turducken cast. Boss explicitly confirmed NT is Kaggle mitubant on October29.",
+          "sha256": "057d0fc3f004dde233d65c16e196fbfd683a48d4a47e4c629c7e158ed93da9ee",
+          "kind": "source-reference",
+          "label": "NT's established orange kitten in a banana suit with comic tears, supplied by Son for the Turducken cast. Boss explicitly confirmed NT is Kaggle mitubant on October29."
+        },
+        {
+          "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+          "role": "Approved ARC3 Turducken world/style reference; use mechanical turkey, snowy GPU Valley and warm brass/cobalt engineering. Do not crop the group.",
+          "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
+          "kind": "source-reference",
+          "label": "Approved ARC3 Turducken world/style reference; use mechanical turkey, snowy GPU Valley and warm brass/cobalt engineering. Do not crop the group."
+        }
+      ],
+      "identityNotes": [
+        "Boss directly confirmed NT = Kaggle mitubant on October29; his own Kaggle profile is headed NT.",
+        "Orange kitten/banana suit/comic tears follow the established Son-supplied community avatar. No human face is invented.",
+        "This is the ARC3 Turducken character; NT is not part of the four-account ARC2 ARC Mutants cast."
+      ],
+      "provenance": "Boss-requested individual avatar with exact native PNG, prompt, actual arguments, own/community character input and full team style reference archived."
     }
   ],
-  "updatedAt": "2026-10-29T23:49:13.619906Z",
+  "updatedAt": "2026-10-30T02:38:40.181Z",
   "version": 1,
   "reusableScenes": [
     {
@@ -1388,13 +1494,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -1425,13 +1531,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -1462,13 +1568,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -1506,10 +1612,6 @@
           "15486995": [
             "driessmit1"
           ],
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "dzjiann",
             "keithtyser",
@@ -1518,6 +1620,10 @@
             "ngyzly",
             "scizical",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Full background cast needs manual current-roster review. Other camps use anonymous helmeted builders, not likenesses or roster headcounts."

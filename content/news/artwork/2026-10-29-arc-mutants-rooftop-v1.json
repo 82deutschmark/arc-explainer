@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "id": "2026-10-29-arc-mutants-rooftop-v1",
+  "title": "Above the Academy",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T02:34:36.275Z",
+  "toolOutput": "exec-fc0688aa-f4a5-4749-be1b-7da84ee6317e.png",
+  "rawSrc": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+  "prompt": "Use case: illustration-story. Asset type: finished premium graphic-novel team illustration for the ARC Daily Digest and its ARC MUTANTS card collection. NEW EPISODE inspired by the X-Men gifted-hero academy lore the editor requested, continuing the established ARC Mutants quartet. Exactly FOUR adult male hero characters, no other people, no animals. Input1 is the APPROVED team image and locks the four identities, technology, graphic-novel rendering and costume continuity. Input2 is Jack's individual character identity: use his face, distinctive central circuit-board headset and cyan visor ONLY, ignore ALL old text and historical statistics. Input3 is Mark's own bearded cyber-engineer avatar, GPU headgear and cabling. Input4 is Son's own younger Asian face, broad luminous visor and black GPU headgear. Preserve recognizable lower faces and all established character identities; do not substitute actors or random superhero faces. JACK COLE: composed cerebral mentor in the Professor Charles Xavier role, central in a sleek hovering command chair, tailored navy academy coat, his recognizable cyan visor and circuit headset; intelligence and calm authority. MARK BARNEY: rugged bearded GPU-powered brawler with heavy asymmetrical teal/amber armor, enormous exposed graphics-card rig and short glowing circuit-prong gauntlets, broad confident silhouette. SON PHAM: agile precision energy specialist with his own broad visor and streamlined dark armor; focused cyan geometric energy, youthful friendly lower face. RONEN: tall ORIGINAL opaque-helmet grid-shield architect with violet-edged helmet and a shield of multicolored square cells; his face remains concealed. Detailed hand-inked cyberpunk graphic-novel art, rich graphic shapes, sophisticated readable hardware, cyan/teal with controlled amber and magenta light, tactile surfaces, spectacular colorful ARC input/output puzzle grids. Show all FOUR characters distinctly and give each a clear narrative action. No captions, lettering, words, title, logos, names, digits, ranks, scores, medals, watermarks, trading-card borders or old ARC Raiders branding. No snow, turkey vehicle or ARC3 crew. This is the separate FOUR-person ARC2 team. Wide cinematic 16:9 full-bleed image. Scene: ABOVE THE ACADEMY. A triumphant sunrise rooftop mission departure, heroic sports-star ensemble with the gifted academy's ornate domes, towers and bridges spread below the team. Four heroes move together toward the viewer across a high open terrace; broad cinematic low angle, wind catching long navy coats, warm sun bursting through clouds behind the skyline. Jack central in his hovering chair gliding forward over the stone terrace, wearing his own circuit headset and cyan visor; his raised hand projects a small colorful ARC-grid mission map. Mark strides forward on the left, rugged bearded face and huge GPU rig, relaxed formidable gauntlets sparking short amber geometric trails. Son moves forward on the right with his own broad luminous visor, directing a sweeping cyan ribbon of light into a floating square portal ahead. Ronen behind and to the far right, opaque violet helmet and a great translucent geometric shield unfurling like a protective mosaic. ALL FOUR full figures and distinct faces/helmet visible with breathing room. Glowing multicolored square puzzle fragments spiral upward around the terrace like a celebratory constellation, no text. Sunrise gold, cyan energy and violet shield against deep blue and warm stone, premium comic-book cover polish, confident camaraderie. No flying vehicle and no extra characters. A new expansive outdoor action episode rather than the original static courtyard pose.",
+  "toolArguments": {
+    "prompt": "Use case: illustration-story. Asset type: finished premium graphic-novel team illustration for the ARC Daily Digest and its ARC MUTANTS card collection. NEW EPISODE inspired by the X-Men gifted-hero academy lore the editor requested, continuing the established ARC Mutants quartet. Exactly FOUR adult male hero characters, no other people, no animals. Input1 is the APPROVED team image and locks the four identities, technology, graphic-novel rendering and costume continuity. Input2 is Jack's individual character identity: use his face, distinctive central circuit-board headset and cyan visor ONLY, ignore ALL old text and historical statistics. Input3 is Mark's own bearded cyber-engineer avatar, GPU headgear and cabling. Input4 is Son's own younger Asian face, broad luminous visor and black GPU headgear. Preserve recognizable lower faces and all established character identities; do not substitute actors or random superhero faces. JACK COLE: composed cerebral mentor in the Professor Charles Xavier role, central in a sleek hovering command chair, tailored navy academy coat, his recognizable cyan visor and circuit headset; intelligence and calm authority. MARK BARNEY: rugged bearded GPU-powered brawler with heavy asymmetrical teal/amber armor, enormous exposed graphics-card rig and short glowing circuit-prong gauntlets, broad confident silhouette. SON PHAM: agile precision energy specialist with his own broad visor and streamlined dark armor; focused cyan geometric energy, youthful friendly lower face. RONEN: tall ORIGINAL opaque-helmet grid-shield architect with violet-edged helmet and a shield of multicolored square cells; his face remains concealed. Detailed hand-inked cyberpunk graphic-novel art, rich graphic shapes, sophisticated readable hardware, cyan/teal with controlled amber and magenta light, tactile surfaces, spectacular colorful ARC input/output puzzle grids. Show all FOUR characters distinctly and give each a clear narrative action. No captions, lettering, words, title, logos, names, digits, ranks, scores, medals, watermarks, trading-card borders or old ARC Raiders branding. No snow, turkey vehicle or ARC3 crew. This is the separate FOUR-person ARC2 team. Wide cinematic 16:9 full-bleed image. Scene: ABOVE THE ACADEMY. A triumphant sunrise rooftop mission departure, heroic sports-star ensemble with the gifted academy's ornate domes, towers and bridges spread below the team. Four heroes move together toward the viewer across a high open terrace; broad cinematic low angle, wind catching long navy coats, warm sun bursting through clouds behind the skyline. Jack central in his hovering chair gliding forward over the stone terrace, wearing his own circuit headset and cyan visor; his raised hand projects a small colorful ARC-grid mission map. Mark strides forward on the left, rugged bearded face and huge GPU rig, relaxed formidable gauntlets sparking short amber geometric trails. Son moves forward on the right with his own broad luminous visor, directing a sweeping cyan ribbon of light into a floating square portal ahead. Ronen behind and to the far right, opaque violet helmet and a great translucent geometric shield unfurling like a protective mosaic. ALL FOUR full figures and distinct faces/helmet visible with breathing room. Glowing multicolored square puzzle fragments spiral upward around the terrace like a celebratory constellation, no text. Sunrise gold, cyan energy and violet shield against deep blue and warm stone, premium comic-book cover polish, confident camaraderie. No flying vehicle and no extra characters. A new expansive outdoor action episode rather than the original static courtyard pose.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-19-arc-mutants-academy-v1.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jack-cole-reference-1-v1.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "arc-mutants",
+  "references": [
+    {
+      "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+      "role": "Approved four-person academy cast and style reference; preserve original.",
+      "sha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-jack-cole-reference-1-v1.png",
+      "role": "Jack Cole's own individual character reference; discard all printed historical text.",
+      "sha256": "cafe1576142caf1fe85b74d60ff8a96ff895559a1cc1bf22f3104c33d2bf3d5f"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "role": "Mark Barney's own individual cyber-engineer avatar.",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "role": "Son Pham's own individual cyber-engineer avatar.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d"
+    }
+  ],
+  "review": "Reviewed the four established characters in a warm sunrise academy terrace departure: Mark left, Jack floating centrally in his command chair, Son right directing cyan geometry, Ronen behind/right with violet opaque helmet and shield. Distinct outdoor episode; original faces/costumes remain recognizable, no ranks, scores or old logos.",
+  "reviewStatus": "reviewed",
+  "commissionAuthority": "Boss explicitly requested additional ARC Mutants team images continuing the X-Men / Professor Xavier academy lore on 29 October 2026.",
+  "supportingCastConditions": {
+    "competition": "arc-2",
+    "requiredRosterHandles": {
+      "17023174": [
+        "jcole75",
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ]
+    },
+    "note": "ARC2 quartet only: Jack, Mark, Son and Ronen's fictional opaque-helmet grid-shield character. Separate from the seven-account ARC3 Team Turducken."
+  },
+  "archiveNote": "Exact selected native PNG retained unchanged alongside the October19 academy original and separate source identities. Additional saved episode; no article publication or social send.",
+  "rawSha256": "e3882a8c5a8dd923370a76dae262b0bf807589c5d45b5c9f5261a520b961a545",
+  "referenceSystem": "https://arc.markbarney.net/news/cards"
+}

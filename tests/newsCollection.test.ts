@@ -3,6 +3,7 @@
  * Date: 2026-10-29
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports and the newsroom's real commissioned-art collection.
+ *          NT's ARC3 card preference preserves his separate verified ARC2 membership.
  * SRP/DRY check: Pass — exercises the shared schemas and public collection projection;
  *              temporary CLI fixtures never modify the real collection or fetch a board.
  */
@@ -243,6 +244,15 @@ describe('official-result importer in an isolated collection', () => {
 });
 
 describe('the real permanent commissioned collection', () => {
+  it('leads NT’s individual avatar card with Turducken while preserving his separate ARC2 team', () => {
+    const card = getNewsCollection().cards.find(card => card.personId === 'mitubant')!;
+    expect(card.name).toBe('NT');
+    expect(card.accounts.some(account => account.label === 'mitubant')).toBe(true);
+    expect(card.entries[0]).toMatchObject({ competition: 'arc-3', teamId: '15605182' });
+    expect(card.entries.some(entry => entry.competition === 'arc-2' && entry.teamId === '15526034')).toBe(true);
+    expect(card.entries.some(entry => entry.teamId === '17023174')).toBe(false);
+    expect(card.art?.artworkId).toBe('2026-10-29-nt-mitubant-avatar-v1');
+  });
   it('resolves every current individual/team card, including all nine new commissions', () => {
     const collection = getNewsCollection();
     const people = getNewsIndex().people ?? [];

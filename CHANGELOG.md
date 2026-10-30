@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.15  Oct 29, 2026
+
+- **Give ARC Mutants three new episodes** (Author: GPT-6.1 Sol / Codex). Save The Danger Grid, The Pattern Observatory and Above the Academy with Jack, Mark, Son and Ronen's established characters. Preserve each exact native PNG, prompt, actual references, review and four-account ARC2 cast condition alongside the original academy illustration.
+- **NT gets his own Turducken avatar and card.** Record the Boss-confirmed NT / mitubant identity, dedicated orange banana-suit kitten illustration and P066 individual card. Preserve the original community avatar, new native PNG and web copy. Reaffirm the separate ARC3 Turducken and ARC2 Mutants rosters in the permanent playbook; no article or social send.
+- Individual card entry preferences can lead with the intended contest while retaining other verified memberships. NT's card leads with ARC3 Turducken and preserves his separate ARC2 team 15526034; no membership or honor is inferred from the artwork.
+- Validation: 33 focused collection/API/image checks, people and character-library validation, production build and visual review pass. All four new native originals and the original academy illustration are retained; NT's rendered P066 proof leads with ARC3.
+
 ### Version 9.159.14  Oct 29, 2026
 
 - **Show the collectible proofs** (Author: GPT-6.1 Sol / Codex). Save Darren, Domdolus Tolus, The Last Dance, Turducken and ARC Mutants with their artwork and dated statistics. Bring the shared Nemotron fifth-place gold and Florian's earlier competition record forward, and retain exact card inputs and original-art references with the print proofs.

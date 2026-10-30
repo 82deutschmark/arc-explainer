@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "competition": "arc-2",
+  "competitionId": "arc-prize-2026-arc-agi-2",
+  "teamId": "17023174",
+  "originalRetained": {
+    "artworkId": "2026-10-19-arc-mutants-academy-v1",
+    "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+    "sha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3"
+  },
+  "episodes": [
+    {
+      "artworkId": "2026-10-29-arc-mutants-danger-room-v1",
+      "title": "The Danger Grid",
+      "src": "/news-images/references/2026-10-29-arc-mutants-danger-room-v1.png",
+      "sha256": "70c30337584eb70d0a0ed7dc1c3e13dc845883a4d7cd3d01cd57136ddac95a71",
+      "record": "content/news/artwork/2026-10-29-arc-mutants-danger-room-v1.json"
+    },
+    {
+      "artworkId": "2026-10-29-arc-mutants-observatory-v1",
+      "title": "The Pattern Observatory",
+      "src": "/news-images/references/2026-10-29-arc-mutants-observatory-v1.png",
+      "sha256": "4f8448dd05a90cdc45060cf83ce3dbb0a74831dd6e9b1d1e850286beb6c9a9e4",
+      "record": "content/news/artwork/2026-10-29-arc-mutants-observatory-v1.json"
+    },
+    {
+      "artworkId": "2026-10-29-arc-mutants-rooftop-v1",
+      "title": "Above the Academy",
+      "src": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+      "sha256": "e3882a8c5a8dd923370a76dae262b0bf807589c5d45b5c9f5261a520b961a545",
+      "record": "content/news/artwork/2026-10-29-arc-mutants-rooftop-v1.json"
+    }
+  ],
+  "state": "saved-artwork-reserve; no social send"
+}

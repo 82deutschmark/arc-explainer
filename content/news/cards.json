@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T02:13:40.913Z",
+  "updatedAt": "2026-10-30T02:38:40.181Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -1235,6 +1235,35 @@
       "number": "T016",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
+    },
+    {
+      "id": "person-mitubant-2026",
+      "number": "P066",
+      "kind": "person",
+      "name": "NT",
+      "personId": "mitubant",
+      "season": "2026",
+      "issuedAt": "2026-10-30T02:38:40.181Z",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15605182"
+        }
+      ],
+      "description": "NT · mitubant · Team Turducken, ARC-AGI-3. The orange kitten in the banana suit is his established recurring character.",
+      "art": {
+        "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+        "alt": "NT’s orange kitten in a banana suit, with comic tears and ARC-grid engineering harness, aboard Turducken’s hangar deck.",
+        "credit": "Commissioned NT / mitubant individual Turducken artwork",
+        "artworkId": "2026-10-29-nt-mitubant-avatar-v1",
+        "commissionedAt": "2026-10-30T02:38:40.181Z"
+      },
+      "artNotes": [
+        "Boss confirmed that Discord teammate NT is Kaggle mitubant on October29.",
+        "Preserve the orange kitten, banana hood/brown stem and blue comic tears. Dedicated individual illustration, not a crop of the crew.",
+        "ARC3 Team Turducken only; no ARC2 ARC Mutants membership or honors are implied."
+      ]
     }
   ],
   "snapshots": [

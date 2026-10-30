@@ -71,7 +71,7 @@ newsroom checkout. Inspect selected images before native generation; preserve th
 | Ronen, ARC2 | No human portrait. Use the Boss-approved opaque-helmet character in the ARC Mutants academy scene below, not Herminator. |
 | Keith, ARC3 | `2026-10-12-keith-tyser-reference-1-v1.webp` — established yellow mascot, black cap. |
 | DZ, ARC3 | `2026-10-18-turducken-dzj-avatar-v1.png` — blonde chibi, red eyes, pink bunny. |
-| NT, ARC3 | `2026-10-18-turducken-nt-avatar-v1.png` — orange kitten in banana costume with comic tears. |
+| NT / `mitubant`, ARC3 | `2026-10-18-turducken-nt-avatar-v1.png` — orange kitten in banana costume with comic tears. Boss confirmed the exact Kaggle handle on October29; dedicated avatar `2026-10-29-nt-mitubant-avatar-v1`. |
 | Choryu, ARC3 | `2026-10-18-turducken-choryu-avatar-v1.png` — grayscale cardiac-MRI display head; no health claim. |
 | Ronen’s Herminator stand-in, ARC3 | `2026-10-18-turducken-herminator-avatar-v1.png` — silver/cobalt knight with blue plume. |
 | ARC2 aesthetic reference | `2026-10-19-arc-mutants-owner-aesthetic-v1.png` — ARC grids and dense GPU equipment; ignore old ARC Raiders branding. |
@@ -103,6 +103,17 @@ are saved with the gallery.
 
 The October 18 full-crew commission uses Son’s supplied Discord avatars directly: DZ is the blonde, red-eyed chibi with a pink plush bunny; NT is the orange kitten in a banana suit with comic tears; Choryu uses a grayscale cardiac-MRI display as a head; Herminator, the silver/cobalt plumed knight, stands in for Ronen’s bot. These are approved editorial characters, not claims about real faces or health. Preserve Mark, Son, Keith’s black-capped yellow mascot and exactly two Yorkies. The four frozen inputs are `client/public/news-images/references/2026-10-18-turducken-{dzj,nt,choryu,herminator}-avatar-v1.png`; the full-crew generation record preserves their hashes and roles.
 
+**NT = Kaggle `mitubant` (Boss, October29).** The exact profile is
+`https://www.kaggle.com/mitubant`, headed NT. His dedicated individual illustration and
+P066 card retain the orange banana-suit kitten, blue comic tears and Turducken's snowy
+brass/cobalt engineering world. Preserve its exact native PNG, original community avatar
+and full crew style reference. This account is on ARC3 Turducken, not ARC2 ARC Mutants.
+This direct confirmation resolves NT's mapping; it does not establish the other Discord
+names' exact handles by elimination.
+His separate ARC2 entry is team `15526034`, この遥かなる旅路に祝福を, alongside
+`keithtyser`, `dzjiann` and `ngyzly` in the dated October29 snapshot. Keep that record
+while leading his Turducken character card with the ARC3 entry.
+
 The seven-character hangar is `2026-10-18-turducken-full-crew-codex-v1-base`; the expanded ten-camp panorama is `2026-10-18-top-ten-siege-full-crew-v1-base`. Their records and clean assets live in the normal artwork folders. Earlier three-character hangar and first-flight episodes remain intact; a pictured subset is not a roster headcount.
 
 ## ARC Mutants Academy (ARC2)
@@ -126,6 +137,12 @@ energy specialist and Ronen as the opaque-helmet grid-shield architect. Archive 
 new iteration separately, retaining this base and all four individual references.
 Only Mark, Son and the `scizical` account overlap the two current rosters; ARC3's other
 four accounts do not inherit ARC Mutants membership or Jack's historical honors.
+
+The Boss commissioned **three additional finished episodes** on October 29: **The
+Danger Grid**, **The Pattern Observatory** and **Above the Academy**. Their exact native
+originals, references and reviews are archived under `2026-10-29-arc-mutants-*` in the
+normal artwork folders. See [the reserve](2026-10-29-arc-mutants-art-reserve.md) and its
+JSON manifest. They supplement the approved original; T016 retains its original binding.
 
 ## Darren’s individual two-dog collectible — 29 October 2026
 

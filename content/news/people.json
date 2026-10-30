@@ -4129,5 +4129,68 @@
       }
     ],
     "name": "chev"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-30T02:32:35Z",
+        "handle": "mitubant",
+        "platform": "kaggle",
+        "sourceTitle": "NT — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/mitubant",
+        "url": "https://www.kaggle.com/mitubant"
+      }
+    ],
+    "facts": [
+      {
+        "text": "NT competes as mitubant with Team Turducken in ARC-AGI-3.",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Team Turducken — dated public ARC3 roster",
+        "checkedAt": "2026-10-30T00:22:47Z"
+      },
+      {
+        "checkedAt": "2026-10-30T02:32:35Z",
+        "sourceTitle": "NT — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/mitubant",
+        "text": "The mitubant Kaggle profile displays the name NT."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "mitubant",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-30T00:22:47Z",
+        "lastObservedAt": "2026-10-30T00:22:47Z",
+        "memberHandle": "mitubant",
+        "season": "2026",
+        "sourceTitle": "Team Turducken — dated ARC-AGI-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15605182",
+        "teamName": "Team Turducken"
+      },
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "season": "2026",
+        "teamId": "15526034",
+        "teamName": "この遥かなる旅路に祝福を",
+        "memberHandle": "mitubant",
+        "firstObservedAt": "2026-10-30T00:22:48Z",
+        "lastObservedAt": "2026-10-30T00:22:48Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "sourceTitle": "NT — separate ARC2 team, dated public roster"
+      }
+    ],
+    "name": "NT",
+    "editorialPortrait": {
+      "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+      "alt": "NT’s orange kitten in a banana suit, with comic tears and ARC-grid engineering harness, aboard Turducken’s hangar deck.",
+      "artworkId": "2026-10-29-nt-mitubant-avatar-v1",
+      "sourceUrl": "https://www.kaggle.com/mitubant",
+      "sourceTitle": "NT — commissioned Turducken mascot from his established community avatar",
+      "checkedAt": "2026-10-30T02:38:40.181Z"
+    }
   }
 ]
