@@ -2,14 +2,16 @@
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex
  * Date: 2026-10-29
  * PURPOSE: The ARC Daily Digest's permanent, numbered Card Cabinet: commissioned team
- *          and player art, linked current/past teams, career records and shareable card pages.
+ *          and player art, linked current/past teams, sourced career records, front/back downloads and
+ *          shareable card pages whose artwork-led landscape metadata matches the server response.
  * SRP/DRY check: Pass — the collection API owns identity/art/stat selection; this page
  *          only filters and presents its shared contract inside the existing news shell.
  */
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { collectionCardPath, type CollectionCard, type CollectionEntry, type CollectionTeamHistory, type NewsCollection } from '@shared/newsCollection';
+import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionShareAlt, collectionSharePath,
+  COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry, type CollectionTeamHistory, type NewsCollection } from '@shared/newsCollection';
 import { competitionName, NEWS_NAME } from '@shared/news';
 import { SITE_ORIGIN } from '@shared/seo';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -72,11 +74,11 @@ export default function NewsCards() {
   const sectionImage = useNewsCardImage();
 
   usePageMeta({
-    title: selected ? `${selected.name} — ${selected.kind === 'person' ? 'Player' : 'Team'} card | ${NEWS_NAME}` : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Card Cabinet | ${NEWS_NAME}`,
-    description: selected?.description ?? 'The ARC Daily Digest’s permanent collection of player and team sports cards, with linked rosters, career history and dated ARC Prize standings.',
+    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Card Cabinet | ${NEWS_NAME}`,
+    description: selected ? collectionCardDescription(selected) : 'The ARC Daily Digest’s permanent collection of player and team sports cards, with linked rosters, career history and dated ARC Prize standings.',
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
     noindex: !!cardId && !!query.data && !selected,
-    image: selected ? { image: `${SITE_ORIGIN}/api/news/cards/${encodeURIComponent(selected.id)}/image.png`, imageAlt: `${selected.name} — ${selected.kind === 'person' ? 'player' : 'team'} card`, imageWidth: 750, imageHeight: 1050 } : sectionImage,
+    image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
   });
 
   if (cardId) return <NewsPaper>
@@ -182,7 +184,8 @@ export function CabinetCard({ card, contest }: { card: CollectionCard; contest: 
       <Link href={card.cardUrl}>Open {card.kind === 'person' ? 'player' : 'team'} card →</Link>
       <CopyCardLink card={card} />
       <CardLink href={card.profileUrl}>{card.kind === 'person' ? 'Player profile' : 'Team notebook'} →</CardLink>
-      <a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png`} download>Save card PNG ↓</a>
+      <a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png`} download>Save front PNG ↓</a>
+      <a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png?side=back`} download>Save back PNG ↓</a>
     </footer>
   </article>;
 }

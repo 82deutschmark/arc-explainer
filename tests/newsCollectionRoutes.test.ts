@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex
  * Date: 2026-10-29
- * PURPOSE: Exercise shareable player/team pages, linked records, exact PNG previews,
+ * PURPOSE: Exercise shareable player/team pages, linked records, artwork-led social previews and front/back PNG downloads,
  *          missing-card metadata and the crawlable Cabinet through production middleware
  * without exposing source-generation prompts, private paths or held manuscripts.
  * SRP/DRY check: Pass — reuses the production Express route and seeded collection.
@@ -15,6 +15,7 @@ import { resolveNewsMeta, newsSitemapEntries } from '../server/services/news/new
 import { metaTagInjector } from '../server/middleware/metaTagInjector';
 import { SITE_ORIGIN } from '../shared/seo';
 import { getNewsCollection } from '../server/services/news/newsCollection';
+import { collectionShareAlt, collectionSharePath } from '../shared/newsCollection';
 let server: Server;
 let origin: string;
 beforeAll(async () => {
@@ -48,6 +49,16 @@ it('provides the exact selected card, a real PNG and a missing-card response', a
   expect((await fetch(`${origin}/api/news/cards/unknown`)).status).toBe(404);
   expect((await fetch(`${origin}/api/news/cards/unknown/image.png`)).status).toBe(404);
 }, 20_000);
+it('downloads the player reverse separately and rejects unsupported card sides', async () => {
+  const id = 'person-mark-barney-2026';
+  const response = await fetch(`${origin}/api/news/cards/${id}/image.png?side=back`);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-type')).toContain('image/png');
+  expect(response.headers.get('content-disposition')).toContain(`${id}-back.png`);
+  expect(await sharp(Buffer.from(await response.arrayBuffer())).metadata()).toMatchObject({ width: 750, height: 1050 });
+  expect((await fetch(`${origin}/api/news/cards/${id}/image.png?side=invalid`)).status).toBe(400);
+  expect((await fetch(`${origin}/api/news/cards/unknown/image.png?side=back`)).status).toBe(404);
+}, 20_000);
 it('publishes the Cabinet in initial HTML and sitemap with complete names and approved artwork', () => {
   const meta = resolveNewsMeta('/news/cards');
   expect(meta?.status).toBe(200);
@@ -59,13 +70,18 @@ it('publishes the Cabinet in initial HTML and sitemap with complete names and ap
 
 it('shares a team card with its own canonical page, exact preview and linked players', async () => {
   const id = 'team-domdolus-tolus-2026';
+  const card = getNewsCollection().cards.find(item => item.id === id)!;
+  const preview = `${SITE_ORIGIN}${collectionSharePath(card)}`;
   const response = await fetch(`${origin}/news/cards/${id}`);
   expect(response.status).toBe(200);
   const html = await response.text();
   expect(html).toContain(`<link rel="canonical" href="${SITE_ORIGIN}/news/cards/${id}"`);
-  expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}/api/news/cards/${id}/image.png"`);
-  expect(html).toContain('property="og:image:width" content="750"');
-  expect(html).toContain('property="og:image:height" content="1050"');
+  expect(html).toContain(`property="og:image" content="${preview}"`);
+  expect(html).toContain(`name="twitter:image" content="${preview}"`);
+  expect(html).toContain('name="twitter:card" content="summary_large_image"');
+  expect(html).toContain('property="og:image:width" content="1200"');
+  expect(html).toContain('property="og:image:height" content="630"');
+  expect(html).toContain('Domdolus Tolus — Team card');
   expect(html).toContain('Team card');
   expect(html).toContain('href="/news/cards/person-darren-amadeus-martin-2026"');
   expect(html).toContain('href="/news/cards/person-alwin-theodoric-2026"');
@@ -73,6 +89,32 @@ it('shares a team card with its own canonical page, exact preview and linked pla
   expect(html).not.toContain('content="noindex');
   expect(newsSitemapEntries().some(entry => entry.url === `${SITE_ORIGIN}/news/cards/${id}`)).toBe(true);
 });
+it('serves the actual team artwork preview inline at landscape size and refreshes stale versions', async () => {
+  const card = getNewsCollection().cards.find(item => item.id === 'team-turducken-2026')!;
+  const response = await fetch(`${origin}${collectionSharePath(card)}`);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-type')).toContain('image/png');
+  expect(response.headers.get('content-disposition')).toContain('inline');
+  expect(response.headers.get('cache-control')).toContain('immutable');
+  expect(await sharp(Buffer.from(await response.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
+  const stale = await fetch(`${origin}/api/news/cards/${card.id}/share.png?v=old`, { redirect: 'manual' });
+  expect(stale.status).toBe(302);
+  expect(stale.headers.get('location')).toBe(collectionSharePath(card));
+  expect((await fetch(`${origin}/api/news/cards/unknown/share.png`)).status).toBe(404);
+}, 20_000);
+it('player links use that player’s portrait preview and sourced career description', async () => {
+  const card = getNewsCollection().cards.find(item => item.id === 'person-son-pham-2026')!;
+  const response = await fetch(`${origin}${card.cardUrl}`);
+  const html = await response.text();
+  expect(response.status).toBe(200);
+  expect(html).toContain('Son Pham — Player card');
+  expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
+  expect(html).toContain(`name="twitter:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
+  expect(html).toContain(collectionShareAlt(card).replaceAll('&', '&amp;').replaceAll('"', '&quot;'));
+  expect(html).toContain('Competitions Expert');
+  const preview = await fetch(`${origin}${collectionSharePath(card)}`);
+  expect(await sharp(Buffer.from(await preview.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
+}, 20_000);
 it('shares player history and links current and earlier teams to their cards', async () => {
   const id = 'person-mark-barney-2026';
   const response = await fetch(`${origin}/news/cards/${id}`);

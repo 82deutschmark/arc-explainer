@@ -1,7 +1,8 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 / Codex
  * Date: 2026-10-29
- * PURPOSE: Render one permanent Card Cabinet front as a 750×1050 PNG. All labels and
+ * PURPOSE: Render permanent Card Cabinet fronts and readable sourced reverses as 750×1050
+ *          PNGs. Player fronts preserve both contest teams. All labels and
  *          dated statistics are drawn programmatically; the commissioned art is only
  *          read and contained inside its window, never modified or cropped in place.
  * SRP/DRY check: Pass — accepts the shared CollectionCard contract; reuses committed
@@ -20,7 +21,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
 import sharp from 'sharp';
-import type { CollectionCard, CollectionEntry } from '../../../shared/newsCollection';
+import type { CollectionCard, CollectionEntry, CollectionTeamHistory } from '../../../shared/newsCollection';
+import type { CompetitorFact } from '../../../shared/news';
 
 const WIDTH = 750;
 const HEIGHT = 1050;
@@ -46,7 +48,7 @@ const box = (style: Style, ...children: (Node | string | null | false)[]): Node 
 });
 
 let fonts: Parameters<typeof satori>[1]['fonts'] | undefined;
-function loadFonts() {
+export function loadCollectionCardFonts() {
   const read = (file: string) => fs.readFileSync(path.join(FONT_DIRECTORY, file));
   fonts ??= [
     { name: SERIF, data: read('IBMPlexSerif-Bold.ttf'), weight: 700, style: 'normal' },
@@ -59,7 +61,7 @@ function loadFonts() {
 }
 
 /** One guarded read boundary: no URLs, encoded paths, traversal or out-of-tree symlinks. */
-async function localArtwork(src: string): Promise<Buffer | null> {
+export async function readCollectionArtwork(src: string, dimensions = { width: ART_WIDTH, height: ART_HEIGHT }): Promise<Buffer | null> {
   if (!/^\/news-images\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:png|jpe?g|webp)$/u.test(src)) {
     throw new Error('Invalid collection artwork path.');
   }
@@ -81,7 +83,7 @@ async function localArtwork(src: string): Promise<Buffer | null> {
   try {
     // A contained derivative is embedded in the SVG. The registered original stays untouched.
     return await sharp(bytes, { limitInputPixels: 40_000_000 }).rotate().resize({
-      width: ART_WIDTH, height: ART_HEIGHT, fit: 'contain', background: PAPER,
+      width: dimensions.width, height: dimensions.height, fit: 'contain', background: PAPER,
     }).png().toBuffer();
   } catch {
     return null;
@@ -107,10 +109,43 @@ function primaryEntry(card: CollectionCard) {
     ?? card.entries[0];
 }
 
+function frontEntries(card: CollectionCard) {
+  return (['arc-3', 'arc-2'] as const).flatMap(competition => {
+    const candidates = card.entries.filter(entry => entry.competition === competition);
+    const current = card.teamHistory.find(row => row.competition === competition && row.status === 'current' && row.season === card.season);
+    const chosen = candidates.find(entry => entry.competitionId === current?.competitionId && entry.teamId === current?.teamId)
+      ?? candidates.find(entry => entry.status === 'final') ?? candidates[0];
+    return chosen ? [chosen] : [];
+  });
+}
+
+function frontArtHeight(card: CollectionCard) {
+  return card.kind === 'person' && frontEntries(card).length > 1 ? 390 : ART_HEIGHT;
+}
+
 const label = (text: string, style: Style = {}) => box({
   fontFamily: `${SANS}, ${CJK}`, fontWeight: 700, fontSize: 15, color: MUTED,
   letterSpacing: 1.4, textTransform: 'uppercase', ...style,
 }, text);
+
+function playerRecordStrip(entry: CollectionEntry): Node {
+  const visible = entry.status !== 'unavailable';
+  const rank = visible && entry.rank != null ? `#${entry.rank.toLocaleString('en-US')}` : '—';
+  const score = visible && entry.score != null ? entry.score.toFixed(2) : '—';
+  return box({ flexDirection: 'column', borderTop: `2px solid ${INK}`, paddingTop: 7, flexShrink: 0 },
+    box({ justifyContent: 'space-between', alignItems: 'baseline' },
+      label(contestLabel(entry.competition), { color: INK, fontSize: 15 }),
+      label(standingStatus(entry), { fontSize: 11, letterSpacing: .3 })),
+    box({ display: 'block', fontFamily: `${SERIF}, ${CJK}`, fontWeight: 700, fontSize: 21, lineHeight: 1.15, marginTop: 2, lineClamp: 1, overflow: 'hidden' }, entry.teamName),
+    box({ justifyContent: 'space-between', alignItems: 'baseline', marginTop: 3 },
+      box({ alignItems: 'baseline', gap: 9 }, label('Team rank', { fontSize: 12 }), box({ fontFamily: SERIF, fontWeight: 700, fontSize: 28 }, rank)),
+      box({ alignItems: 'baseline', gap: 9 }, label('Score', { fontSize: 12 }), box({ fontFamily: SERIF, fontWeight: 700, fontSize: 28 }, score))),
+    box({ marginTop: 2, fontFamily: SANS, fontSize: 12, color: MUTED }, dateLabel(entry.observedAt)));
+}
+
+const contestLabel = (competition: CollectionEntry['competition']) => competition === 'arc-3' ? 'ARC-AGI-3' : 'ARC-AGI-2';
+const standingStatus = (entry: CollectionEntry) => entry.status === 'final' ? 'Official final'
+  : entry.status === 'public' ? 'Public · provisional' : 'Standing unavailable';
 
 function recordStrip(entry: CollectionEntry | undefined): Node {
   if (!entry) return box({ flexDirection: 'column', borderTop: `2px solid ${INK}`, paddingTop: 11 },
@@ -130,12 +165,15 @@ function recordStrip(entry: CollectionEntry | undefined): Node {
 }
 
 function cardNode(card: CollectionCard, artwork: Buffer | null): Node {
+  const entries = frontEntries(card);
+  const artHeight = frontArtHeight(card);
+  const twoPlayerTeams = card.kind === 'person' && entries.length > 1;
   const nameLength = Array.from(card.name).length;
   const nameSize = nameLength <= 23 ? 44 : nameLength <= 42 ? 36 : 30;
   const honor = card.honors[0];
   const artWindow = artwork
-    ? { type: 'img', props: { src: `data:image/png;base64,${artwork.toString('base64')}`, width: ART_WIDTH, height: ART_HEIGHT } }
-    : box({ width: ART_WIDTH, height: ART_HEIGHT, alignItems: 'center', justifyContent: 'center', flexDirection: 'column', background: '#ede2c9', border: `4px solid ${HAIR}` },
+    ? { type: 'img', props: { src: `data:image/png;base64,${artwork.toString('base64')}`, width: ART_WIDTH, height: artHeight } }
+    : box({ width: ART_WIDTH, height: artHeight, alignItems: 'center', justifyContent: 'center', flexDirection: 'column', background: '#ede2c9', border: `4px solid ${HAIR}` },
       box({ fontFamily: `${SERIF}, ${CJK}`, fontSize: 130, fontWeight: 700, color: OXBLOOD }, initials(card.name)),
       label('The ARC Daily Digest', { marginTop: 24, color: GOLD, fontSize: 18 }));
 
@@ -143,13 +181,16 @@ function cardNode(card: CollectionCard, artwork: Buffer | null): Node {
     box({ width: 710, height: 1010, padding: 14, border: `2px solid ${GOLD}`, flexDirection: 'column', background: PAPER },
       box({ justifyContent: 'space-between', alignItems: 'baseline' },
         label(`No. ${card.number}`, { color: INK, fontSize: 17, letterSpacing: 1 }),
-        label(`${card.kind === 'person' ? 'Individual' : 'Team'} · ${card.season}`, { fontSize: 15 })),
+        label(`${card.kind === 'person' ? 'Player' : 'Team'} · ${card.season}`, { fontSize: 15 })),
       box({ justifyContent: 'center', marginTop: 8, paddingBottom: 9, borderBottom: `3px solid ${INK}`, fontFamily: SERIF, fontWeight: 700, fontSize: 29, color: INK }, 'The ARC Daily Digest'),
-      box({ width: ART_WIDTH + 4, height: ART_HEIGHT + 4, marginTop: 12, border: `2px solid ${INK}`, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, artWindow),
+      box({ width: ART_WIDTH + 4, height: artHeight + 4, marginTop: 12, border: `2px solid ${INK}`, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }, artWindow),
       box({ marginTop: 11, minHeight: 90, padding: '12px 15px', background: OXBLOOD, border: `2px solid ${GOLD}`, alignItems: 'center', justifyContent: 'center' },
         box({ display: 'block', textAlign: 'center', width: '100%', fontFamily: `${SERIF}, ${CJK}`, fontWeight: 700, fontSize: nameSize, lineHeight: 1.12, lineClamp: 2, overflow: 'hidden', color: '#fff3d5' }, card.name)),
-      box({ marginTop: 14, flexDirection: 'column' }, recordStrip(primaryEntry(card))),
-      honor ? box({ marginTop: 11, padding: '8px 10px', flexDirection: 'column', borderLeft: `4px solid ${GOLD}`, background: '#eee2c6' },
+      box({ marginTop: 14, flexDirection: 'column', gap: twoPlayerTeams ? 8 : 0 },
+        ...(card.kind === 'person' && entries.length ? entries.map(playerRecordStrip) : [recordStrip(primaryEntry(card))])),
+      twoPlayerTeams ? box({ marginTop: 10, paddingLeft: 10, borderLeft: `4px solid ${GOLD}`, flexDirection: 'column', flexShrink: 0 },
+        card.highlights[0] ? box({ display: 'block', fontFamily: `${SERIF}, ${CJK}`, fontSize: 18, fontWeight: 400, lineHeight: 1.22, lineClamp: 2, overflow: 'hidden' }, card.highlights[0].text) : null,
+        label('Kaggle career & team history on the reverse →', { marginTop: 5, fontSize: 12, letterSpacing: .3 })) : honor ? box({ marginTop: 11, padding: '8px 10px', flexDirection: 'column', borderLeft: `4px solid ${GOLD}`, background: '#eee2c6' },
         label(`${honor.kind === 'arc-prize' ? 'ARC Prize award' : 'Kaggle medal'} · ${honor.season}`, { color: GOLD, fontSize: 12, letterSpacing: .8 }),
         box({ display: 'block', marginTop: 3, fontFamily: `${SERIF}, ${CJK}`, fontWeight: 700, fontSize: 19, lineHeight: 1.22, lineClamp: 2, overflow: 'hidden' }, honor.label))
         : card.highlights[0] ? box({ display: 'block', marginTop: 12, fontFamily: `${SERIF}, ${CJK}`, fontWeight: 400, fontSize: 18, lineHeight: 1.3, color: MUTED, lineClamp: 2, overflow: 'hidden' }, card.highlights[0].text) : null,
@@ -159,11 +200,127 @@ function cardNode(card: CollectionCard, artwork: Buffer | null): Node {
         label('arc.markbarney.net/news/cards', { fontSize: 12, letterSpacing: .3 }))));
 }
 
-/** Render a fresh card from already-curated public data; no statistics or honors are inferred. */
-export async function buildCollectionCardImage(card: CollectionCard): Promise<Buffer> {
-  const artwork = card.art ? await localArtwork(card.art.src) : null;
-  const svg = await satori(cardNode(card, artwork) as Parameters<typeof satori>[0], {
-    width: WIDTH, height: HEIGHT, fonts: loadFonts(),
+function shortDate(value: string) {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric',
+  }).format(date) : 'date unavailable';
+}
+
+interface BackSelection {
+  entries: CollectionEntry[];
+  history: CollectionTeamHistory[];
+  highlights: CompetitorFact[];
+  fontSize: number;
+  continued: boolean;
+}
+
+function backNode(card: CollectionCard, selection: BackSelection): Node {
+  const sources: { url: string; title: string; checkedAt: string }[] = [];
+  const cite = (url: string | undefined, title: string, checkedAt: string | null) => {
+    if (!url) return '';
+    let index = sources.findIndex(source => source.url === url && source.checkedAt === (checkedAt ?? ''));
+    if (index < 0) {
+      index = sources.length;
+      sources.push({ url, title, checkedAt: checkedAt ?? '' });
+    }
+    return ` [${index + 1}]`;
+  };
+  const text = (value: string, style: Style = {}) => box({ display: 'block', fontSize: selection.fontSize,
+    lineHeight: 1.22, flexShrink: 0, ...style }, value);
+  const heading = (value: string) => label(value, { color: OXBLOOD, fontSize: 15, marginTop: 11, marginBottom: 5, letterSpacing: 1.2 });
+  const teamRecords = selection.entries.map(entry => {
+    const visible = entry.status !== 'unavailable';
+    const rank = visible && entry.rank != null ? `#${entry.rank.toLocaleString('en-US')}` : 'unavailable';
+    const score = visible && entry.score != null ? entry.score.toFixed(2) : 'unavailable';
+    const reference = cite(entry.sourceUrl, `${contestLabel(entry.competition)} ${entry.status === 'final' ? 'official result' : 'public standings'}`, entry.observedAt);
+    return box({ flexDirection: 'column', flexShrink: 0, marginBottom: 7 },
+      text(`${contestLabel(entry.competition)} · ${entry.teamName}${reference}`, { fontWeight: 700, fontSize: 20 }),
+      text(`Team rank ${rank} · Score ${score} · ${standingStatus(entry)}`, { fontSize: 17, color: MUTED }),
+      text(dateLabel(entry.observedAt), { fontSize: 14, color: MUTED }));
+  });
+  const history = selection.history.map(row => text(`${row.teamName} · ${contestLabel(row.competition)} ${row.season} · ${row.status === 'previous' ? 'Earlier team observed' : row.status === 'current' ? 'Current team observed' : 'Last observed'} ${shortDate(row.firstObservedAt)}–${shortDate(row.lastObservedAt)}${cite(row.sourceUrl, row.sourceTitle, row.lastObservedAt)}`, { fontSize: 17, marginBottom: 6 }));
+  const facts = selection.highlights.map(fact => text(`${fact.text}${cite(fact.sourceUrl, fact.sourceTitle, fact.checkedAt)}`, { marginBottom: 7 }));
+  const members = card.kind === 'team' ? [...new Set(selection.entries.flatMap(entry => entry.members.map(member => member.name || member.handle)))] : [];
+  const body = box({ position: 'absolute', top: 166, left: 16, right: 16, flexDirection: 'column' },
+    heading(card.kind === 'person' ? 'Teams & competition record' : 'Team competition record'),
+    ...teamRecords,
+    members.length ? text(`Roster: ${members.join(' · ')}`, { fontSize: 17, marginBottom: 5 }) : null,
+    history.length ? heading('Team history & observations') : null,
+    ...history,
+    facts.length ? heading(card.kind === 'person' ? 'Kaggle career & highlights' : 'From the team file') : null,
+    ...facts,
+    sources.length ? heading('Sources · full links in the online record') : null,
+    ...sources.map((source, index) => text(`[${index + 1}] ${source.title} · checked ${shortDate(source.checkedAt)}`, { fontSize: 13, color: MUTED, lineHeight: 1.15, marginBottom: 3 })));
+  body.props.id = 'collection-back-body';
+  const account = card.accounts.find(item => /^https:\/\/(?:www\.)?kaggle\.com\/[a-z0-9_-]+\/?$/iu.test(item.url));
+  const cardUrl = `arc.markbarney.net${card.cardUrl}`;
+  return box({ width: WIDTH, height: HEIGHT, padding: 20, background: EDGE, color: INK, fontFamily: `${SANS}, ${CJK}`, fontWeight: 500 },
+    box({ width: 710, height: 1010, padding: 14, border: `2px solid ${GOLD}`, flexDirection: 'column', background: PAPER, position: 'relative' },
+      box({ justifyContent: 'space-between', alignItems: 'baseline' },
+        label(`No. ${card.number} · The record`, { color: INK, fontSize: 17, letterSpacing: .6 }),
+        label(`${card.kind === 'person' ? 'Player' : 'Team'} · ${card.season}`, { fontSize: 15 })),
+      box({ justifyContent: 'center', marginTop: 6, paddingBottom: 7, borderBottom: `3px solid ${INK}`, fontFamily: SERIF, fontWeight: 700, fontSize: 25 }, 'The ARC Daily Digest'),
+      box({ marginTop: 9, minHeight: 65, padding: '10px 12px', background: OXBLOOD, border: `2px solid ${GOLD}`, alignItems: 'center', justifyContent: 'center' },
+        box({ display: 'block', textAlign: 'center', width: '100%', fontFamily: `${SERIF}, ${CJK}`, fontWeight: 700,
+          fontSize: Array.from(card.name).length > 34 ? 28 : 34, lineHeight: 1.12, lineClamp: 2, overflow: 'hidden', color: '#fff3d5' }, card.name)),
+      body,
+      box({ position: 'absolute', left: 16, right: 16, bottom: 14, height: 76, paddingTop: 7, borderTop: `2px solid ${GOLD}`, flexDirection: 'column', gap: 4 },
+        label(selection.continued ? 'Record continues online · full history & source links' : 'Full record & source links', { color: OXBLOOD, fontSize: 13, letterSpacing: .4 }),
+        text(cardUrl, { fontSize: 15, lineHeight: 1.15 }),
+        account ? text(`Kaggle: ${account.url.replace(/^https:\/\//u, '')}`, { fontSize: 16, color: MUTED, lineHeight: 1.15 }) : null)));
+}
+
+/**
+ * This is the exact tree sent to Satori, exposed so tests inspect the drawn record rather
+ * than guessing from different pixels. Reverse selection is measured with the actual fonts;
+ * every omitted item has an explicit continuation notice and its permanent full-record URL.
+ */
+export async function buildCollectionCardNode(card: CollectionCard, side: 'front' | 'back' = 'front'): Promise<Node> {
+  if (side === 'front') {
+    const artwork = card.art ? await readCollectionArtwork(card.art.src, { width: ART_WIDTH, height: frontArtHeight(card) }) : null;
+    return cardNode(card, artwork);
+  }
+  const selection: BackSelection = {
+    entries: [...card.entries].sort((a, b) => a.competition === b.competition ? 0 : a.competition === 'arc-3' ? -1 : 1),
+    history: card.teamHistory.filter(row => row.status !== 'current' || !card.entries.some(entry => entry.competitionId === row.competitionId && entry.teamId === row.teamId)),
+    highlights: [...card.honors.map(honor => ({
+      text: `${honor.season} ${honor.label} — ${honor.scope === 'team' ? 'team honor' : 'individual honor'} (${contestLabel(honor.competition)}).`,
+      sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle,
+      checkedAt: card.entries.find(entry => entry.competition === honor.competition && entry.sourceUrl === honor.sourceUrl)?.observedAt ?? '',
+    })), ...card.highlights], fontSize: 21, continued: false,
+  };
+  for (;;) {
+    const node = backNode(card, selection);
+    let bottom = 0;
+    await satori(node as Parameters<typeof satori>[0], { width: WIDTH, height: HEIGHT, fonts: loadCollectionCardFonts(),
+      onNodeDetected: detected => {
+        if (detected.props.id === 'collection-back-body') bottom = detected.top + detected.height;
+      },
+    });
+    if (bottom <= 920) return node;
+    if (selection.fontSize > 19) selection.fontSize--;
+    else if (selection.history.length) { selection.history.pop(); selection.continued = true; }
+    else if (selection.entries.length > 2) { selection.entries.pop(); selection.continued = true; }
+    else if (selection.highlights.length > 1) { selection.highlights.pop(); selection.continued = true; }
+    else if (selection.highlights[0]?.text.length > 100) {
+      const fact = selection.highlights[0];
+      const shortened = fact.text.slice(0, Math.max(80, fact.text.length - 120)).replace(/\s+\S*$/u, '');
+      selection.highlights = [{ ...fact, text: `${shortened}…` }];
+      selection.continued = true;
+    } else {
+      // Extremely long team/source names still point to the complete public record.
+      selection.highlights = [];
+      selection.continued = true;
+      return backNode(card, selection);
+    }
+  }
+}
+
+/** Render curated public data; team positions never become personal or inferred honors. */
+export async function buildCollectionCardImage(card: CollectionCard, side: 'front' | 'back' = 'front'): Promise<Buffer> {
+  const svg = await satori(await buildCollectionCardNode(card, side) as Parameters<typeof satori>[0], {
+    width: WIDTH, height: HEIGHT, fonts: loadCollectionCardFonts(),
   });
   return sharp(Buffer.from(svg)).flatten({ background: PAPER }).png({ compressionLevel: 9 }).toBuffer();
 }

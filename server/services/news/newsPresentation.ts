@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-29
- * PURPOSE: Shareable player/team card pages with canonical collectible previews, linked rosters,
+ * PURPOSE: Shareable player/team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
  *          illustrated article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
@@ -33,7 +33,8 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { collectionCardPath, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
+import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionShareAlt, collectionSharePath,
+  COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
 import { getNewsIndex } from './newsStore';
 export const boardPath = (competition: string) => competition === 'arc-2' ? '/kaggle-leaderboard/arc-2' : '/kaggle-leaderboard';
@@ -157,19 +158,16 @@ function collectionEntryHtml(entry: CollectionEntry): string {
 function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const heading = standalone ? 'h1' : 'h2';
   const history = card.teamHistory.length ? `<section><h3>Team history</h3><ul>${card.teamHistory.map(team => `<li><a href="${esc(team.cardUrl ?? team.profileUrl)}">${esc(team.teamName)}</a> · ${esc(competitionName(team.competition))} ${esc(team.season)} · ${team.status === 'current' ? 'Current team' : team.status === 'previous' ? 'Previous team' : 'Last observed team'} · observed ${timeTag(team.firstObservedAt, false)}–${timeTag(team.lastObservedAt, false)} · <a href="${esc(team.sourceUrl)}">${esc(team.sourceTitle)}</a></li>`).join('')}</ul></section>` : '';
-  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.number)} · ${esc(card.name)}</a></${heading}><p>${card.kind === 'person' ? 'Player card' : 'Team card'} · ${esc(card.season)}</p>${card.art ? `<img src="${esc(card.art.src)}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${history}${card.entries.map(collectionEntryHtml).join('')}${card.highlights.length ? `<section><h3>${card.kind === 'person' ? 'Kaggle career &amp; highlights' : 'Team highlights'}</h3><ul>${card.highlights.map(fact => `<li>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></li>`).join('')}</ul></section>` : ''}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Public accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Competitor profile' : 'Team notebook'}</a> · <a href="${esc(card.cardUrl)}">Share this ${card.kind === 'person' ? 'player' : 'team'} card</a> · <a href="/api/news/cards/${esc(card.id)}/image.png">Save card PNG</a></p></article>`;
+  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.number)} · ${esc(card.name)}</a></${heading}><p>${card.kind === 'person' ? 'Player card' : 'Team card'} · ${esc(card.season)}</p>${card.art ? `<img src="${esc(card.art.src)}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${history}${card.entries.map(collectionEntryHtml).join('')}${card.highlights.length ? `<section><h3>${card.kind === 'person' ? 'Kaggle career &amp; highlights' : 'Team highlights'}</h3><ul>${card.highlights.map(fact => `<li>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></li>`).join('')}</ul></section>` : ''}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Public accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Competitor profile' : 'Team notebook'}</a> · <a href="${esc(card.cardUrl)}">Share this ${card.kind === 'person' ? 'player' : 'team'} card</a> · <a href="/api/news/cards/${esc(card.id)}/image.png">Save front PNG</a> · <a href="/api/news/cards/${esc(card.id)}/image.png?side=back">Save back PNG</a></p></article>`;
 }
 function collectionCardMeta(card: CollectionCard): RouteMetaTags {
-  const kind = card.kind === 'person' ? 'Player' : 'Team';
-  const title = `${card.name} — ${kind} card | ${NEWS_NAME}`;
-  const description = card.kind === 'person'
-    ? `${card.name}’s ${card.season} player card: current and past teams, Kaggle career highlights and dated ARC Prize competition records.`
-    : `${card.name}’s ${card.season} team card: the players, team highlights and dated ARC Prize competition records.`;
+  const title = collectionCardTitle(card);
+  const description = collectionCardDescription(card);
   const url = `${SITE_ORIGIN}${card.cardUrl}`;
-  const image = `${SITE_ORIGIN}/api/news/cards/${encodeURIComponent(card.id)}/image.png`;
-  return completeMeta({ title, description, url, image, imageAlt: `${card.name} · ${kind.toLowerCase()} card ${card.number} · ${card.season}`, imageWidth: 750, imageHeight: 1050,
+  const image = `${SITE_ORIGIN}${collectionSharePath(card)}`;
+  return completeMeta({ title, description, url, image, imageAlt: collectionShareAlt(card), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT,
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
-      isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: 750, height: 1050 },
+      isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
       mainEntity: { '@type': card.kind === 'person' ? 'Person' : 'Organization', name: card.name, url } }] },
     bodyHtml: `<main><p><a href="/news/cards">All player and team cards</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
 }

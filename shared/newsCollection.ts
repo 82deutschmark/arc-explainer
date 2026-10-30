@@ -2,13 +2,14 @@
  * Author: GPT-6 / Codex
  * Date: 2026-10-29
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
- * sourced official results, linked player/team cards and dated membership history. Clean
+ * sourced official results, linked player/team cards, dated membership history and shared
+ * search/social-preview wording and artwork-aware image versions. Clean
  * artwork is independent of every programmatically drawn label.
  * SRP/DRY check: Pass — reuses news identities and competition slugs; no medal inference.
  */
 import { z } from 'zod';
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
-import type { CompetitorFact, NewsCompetition } from './news';
+import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition } from './news';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const stamp = z.string().datetime({ offset: true });
@@ -95,3 +96,29 @@ export interface NewsCollection {
 }
 export const CARD_CABINET_PATH = '/news/cards';
 export const collectionCardPath = (cardId: string) => `${CARD_CABINET_PATH}/${encodeURIComponent(cardId)}`;
+
+export const COLLECTION_SHARE_WIDTH = 1200;
+export const COLLECTION_SHARE_HEIGHT = 630;
+/** Bump when the landscape share-preview layout changes. Original art paths are immutable. */
+const COLLECTION_SHARE_DESIGN = 1;
+export const collectionCardTitle = (card: CollectionCard) => `${card.name} — ${card.kind === 'person' ? 'Player' : 'Team'} card | ${NEWS_NAME}`;
+export function collectionCardDescription(card: CollectionCard): string {
+  const contests = [...new Set(card.entries.map(entry => competitionName(entry.competition)))].join(' and ');
+  const career = (card.highlights[0]?.text ?? card.description).replace(/\s+/g, ' ').trim();
+  return card.kind === 'team'
+    ? `${card.name}’s ${card.season} team card${contests ? ` for ${contests}` : ''}: meet the players, see the team artwork and explore its sourced competition record.`
+    : career ? `${card.name}’s ${card.season} player card. ${career}`
+      : `${card.name}’s ${card.season} player card: current and past teams, Kaggle career highlights and dated ARC Prize competition records.`;
+}
+export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${card.kind === 'person' ? 'player' : 'team'} card ${card.number}, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest Card Cabinet.'}`;
+/** Public-content fingerprint: a corrected identity, roster or immutable artwork gets a fresh image URL. */
+export function collectionShareVersion(card: CollectionCard): string {
+  const text = JSON.stringify([COLLECTION_SHARE_DESIGN, card]);
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < text.length; index++) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(36);
+}
+export const collectionSharePath = (card: CollectionCard) => `/api/news/cards/${encodeURIComponent(card.id)}/share.png?v=${collectionShareVersion(card)}`;

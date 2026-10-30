@@ -1,6 +1,6 @@
-# Author: GPT-6.1 Sol / Codex
+# Author: GPT-6 / Codex; GPT-6.1 Sol / Codex
 # Date: 2026-10-29
-# PURPOSE: Reject text-only edition sends, replaced attachments, wrong article links,
+# PURPOSE: Reject missing #Kaggle, over-budget copy, text-only edition sends, replaced attachments, wrong article links,
 # unapproved or bot-approved Discord previews and repeated posting attempts. Exercise
 # real image bytes and protected outboxes without sending or accessing the network.
 # SRP/DRY check: Pass — uses the production X helper and Pillow's existing conversion.
@@ -34,7 +34,7 @@ class EditionImageGateTests(unittest.TestCase):
         self.outbox = self.root / 'outbox.json'
         self.post = {'state': 'draft', 'edition': 'evening', 'articleIds': [self.article_id],
                      'link': x.SITE + '/news/' + self.article_id, 'media': dict(self.expected)}
-        self.post['message'] = 'The cat takes third\n' + self.post['link']
+        self.post['message'] = 'The cat takes third\n#Kaggle\n' + self.post['link']
         x.prepare_media(self.post, self.outbox)
         self.receipt = self.root / 'discord.json'
         self.delivery = {'state': 'sent', 'messageId': '123', 'destination': 'channel:1550165647911034940',
@@ -68,6 +68,26 @@ class EditionImageGateTests(unittest.TestCase):
         self.post.pop('media')
         self.save()
         self.assert_rejected_without_mutation(lambda: self.begin(sha='fake'))
+
+    def test_missing_or_inexact_hashtag_is_rejected_without_touching_draft(self):
+        for hashtag in ('', '#kaggle', '#Kaggle2026', 'https://example.com/#Kaggle'):
+            with self.subTest(hashtag=hashtag):
+                self.post['message'] = f'The cat takes third\n{hashtag}\n' + self.post['link']
+                self.save()
+                self.assert_rejected_without_mutation(self.begin)
+
+    def test_reviewed_post_must_keep_hashtag_inside_280_character_budget(self):
+        self.post['message'] = 'x' * 280 + '\n#Kaggle\n' + self.post['link']
+        self.save()
+        self.assert_rejected_without_mutation(self.begin)
+
+    def test_historical_posting_and_posted_outboxes_without_hashtag_are_protected(self):
+        self.post['message'] = 'Historical copy\n' + self.post['link']
+        for state in ('posting', 'posted'):
+            with self.subTest(state=state):
+                self.post['state'] = state
+                self.save()
+                self.assert_rejected_without_mutation(self.begin)
 
     def test_visual_attachment_review_is_required(self):
         self.assert_rejected_without_mutation(lambda: self.begin(reviewed=False))

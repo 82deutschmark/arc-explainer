@@ -1,7 +1,8 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-29; 08-October-2026; 10-October-2026
- * PURPOSE: Read-only Card Cabinet, downloadable collectibles, public archive and immutable reporting evidence for ARC Daily.
+ * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
+ *          public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
  *          card URLs carry a content version (shared/news.ts articleCardPath), so they are
  *          cached as immutable; the section card follows the day and the latest editions, so
@@ -22,6 +23,8 @@ import { buildArticleCard, buildSectionCard } from '../services/news/newsCardIma
 import { marketsResponse } from '../services/news/newsMarkets';
 import { getNewsCollection } from '../services/news/newsCollection';
 import { buildCollectionCardImage } from '../services/news/newsCollectionImage';
+import { buildCollectionShareImage } from '../services/news/newsCollectionShareImage';
+import { collectionSharePath, collectionShareVersion } from '../../shared/newsCollection';
 const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => card
   ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
   : res.status(404).set('Cache-Control', 'no-store').json({ error: 'Preview image not found' });
@@ -29,12 +32,25 @@ export function mountNews(app: Express) {
   app.get('/api/news/cards', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsCollection()); } catch (error) { next(error); }
   });
+  app.get('/api/news/cards/:id/share.png', async (req, res, next) => {
+    try {
+      const card = getNewsCollection().cards.find(item => item.id === req.params.id);
+      if (!card) return res.status(404).set('Cache-Control', 'no-store').json({ error: 'Collection share image not found' });
+      const version = collectionShareVersion(card);
+      if (req.query.v && req.query.v !== version) return res.set('Cache-Control', 'no-store').redirect(302, collectionSharePath(card));
+      return res.type('image/png').set('Content-Disposition', `inline; filename="${card.id}-share.png"`)
+        .set('Cache-Control', req.query.v === version ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
+        .send(await buildCollectionShareImage(card));
+    } catch (error) { next(error); }
+  });
   app.get('/api/news/cards/:id/image.png', async (req, res, next) => {
     try {
+      const side = req.query.side ?? 'front';
+      if (side !== 'front' && side !== 'back') return res.status(400).json({ error: 'Card side must be front or back' });
       const card = getNewsCollection().cards.find(item => item.id === req.params.id);
       if (!card) return res.status(404).json({ error: 'Collection card not found' });
       return res.type('image/png').set('Cache-Control', 'public, max-age=60')
-        .set('Content-Disposition', `attachment; filename="${card.id}.png"`).send(await buildCollectionCardImage(card));
+        .set('Content-Disposition', `attachment; filename="${card.id}${side === 'back' ? '-back' : ''}.png"`).send(await buildCollectionCardImage(card, side));
     } catch (error) { next(error); }
   });
   app.get('/api/news/cards/:id', (req, res, next) => {

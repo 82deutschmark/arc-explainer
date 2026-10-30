@@ -11,3 +11,5 @@ Keep your memory.md a short current note: replace it each run with what this run
 Finish with each contest's article link or the exact reason it was not published, the picture used or why there is none, the X post URL or concrete send blocker and protected outbox state, the Discord relay/status outcome, and each editorial assignment's outcome.
 
 Before reporting on a competitor or choosing artwork, read docs/newsroom/TEAM_PLAYBOOK.md. Look up the exact competition, team ID and verified handle in the Card Cabinet registries and saved dossier; use the recorded achievements, public discussion history and character mapping to make the coverage informed. Cards preserve dated background, so use the run’s fresh board evidence for current standings. Preserve commissioned artwork, held-feature release conditions and existing send-once state. This playbook adds no publication, social-send or schedule permission.
+
+Follow the standing #Kaggle requirement in docs/newsroom/X_POSTING.md for every new X announcement.

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-29 (mandatory edition image and guarded browser-send handoff)
+# Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+# Date: 2026-10-29 (required #Kaggle in new X drafts and guarded posting)
 # PURPOSE: Prepare afternoon X evidence and edition announcements with the current article's
-# reviewed custom artwork as the lead attachment. Save exact image bytes for browser posting;
+# reviewed custom artwork as the lead attachment and #Kaggle within the post budget.
+# Save exact image bytes for browser posting;
 # the browser journalist verifies and sends once, while this helper never sends to X.
 # Reconstruct archived roster/history evidence so reused scenes and charts remain verifiable.
 # 09-Oct-2026 (Claude Opus 5.5): --edition drafts the post announcing a published edition, labeled
@@ -25,12 +26,21 @@ from PIL import Image
 
 EDITION_WORD = {'morning': 'Early', 'evening': 'Late'}
 X_LINK_WEIGHT = 23  # X counts every link as 23 characters.
+REQUIRED_HASHTAG = '#Kaggle'
 
 
 def x_weight(message, link=None):
     """Conservative X length: ASCII counts 1, anything else 2; a link counts 23 when given."""
     body = message.replace(link, 'x' * X_LINK_WEIGHT) if link else message
     return sum(1 if ord(char) < 128 else 2 for char in body)
+
+
+def validate_post_text(message, link=None):
+    """Validate new reviewed copy; completed outboxes never pass through this edit gate."""
+    if not isinstance(message, str) or not re.search(r'(?<!\S)' + re.escape(REQUIRED_HASHTAG) + r'(?!\w)', message):
+        raise ValueError('X announcements require the exact #Kaggle hashtag')
+    if x_weight(message, link) > 280:
+        raise ValueError('X announcement exceeds 280 characters including #Kaggle')
 
 
 def edition_media(article, root=ROOT):
@@ -109,12 +119,13 @@ def edition_post(edition, day, root=ROOT):
     link = f"{SITE}/news/{lead['id']}"
     order = [lead_competition, *(competition for competition in found if competition != lead_competition)]
     lines = [f"{competition.replace('arc-', 'ARC-AGI-')}: {(media[competition] or {}).get('featureHeadline', found[competition]['headline'])}" for competition in order]
-    render = lambda rows: '\n'.join([f'The ARC Daily Digest · {label}', *rows, link])
+    render = lambda rows: '\n'.join([f'The ARC Daily Digest · {label}', *rows, REQUIRED_HASHTAG, link])
     message = render(lines)
     if x_weight(message, link) > 280:
         message = render(lines[:1])
     if x_weight(message, link) > 280:
         raise ValueError('Edition post is too long')
+    validate_post_text(message, link)
     post = {'date': day, 'edition': edition, 'label': label, 'state': 'draft', 'message': message, 'link': link,
             'articleIds': [found[competition]['id'] for competition in order], 'account': '82deutschmark'}
     if media[lead_competition]:
@@ -130,6 +141,7 @@ def begin_posting(target, attached_image_sha256, attachment_reviewed=False, root
     post = load(target)
     if post.get('state') != 'draft' or post.get('edition') not in EDITION_WORD:
         raise ValueError('only an unsent edition draft can begin posting')
+    validate_post_text(post.get('message'), post.get('link'))
     media = post.get('media') or {}
     if not attachment_reviewed or not attached_image_sha256:
         raise ValueError('visually review the uploaded image, alt text, copy and link in the X composer first')
@@ -225,7 +237,7 @@ def daily_post(brief):
             line += f' {mover["name"]} +{mover["scoreChange"]:.12g}, #{mover["rank"]}.'
             has_gains = True
         lines.append(line)
-    render = lambda rows, gains=False: lead_in + '\n' + '\n'.join(rows) + ('\nGains vs prior 6pm ET.' if gains else '') + f'\n{SITE}/news'
+    render = lambda rows, gains=False: lead_in + '\n' + '\n'.join(rows) + ('\nGains vs prior 6pm ET.' if gains else '') + f'\n{REQUIRED_HASHTAG}\n{SITE}/news'
     message = render(lines, has_gains)
     # Count full URLs and double non-ASCII characters conservatively; no dependency on X's short-link accounting.
     weight = lambda value: sum(1 if ord(char) < 128 else 2 for char in value)
@@ -235,6 +247,7 @@ def daily_post(brief):
         message = render(score_lines)
     if weight(message) > 280:
         raise ValueError('Daily post is too long')
+    validate_post_text(message)
     return {'date': day, 'state': 'draft', 'message': message, 'account': '82deutschmark',
             'dataAsOf': {competition: board['dataAsOf'] for competition, board in ready},
             'baselineAt': {competition: board['baselineAt'] for competition, board in ready}, 'failures': failures}

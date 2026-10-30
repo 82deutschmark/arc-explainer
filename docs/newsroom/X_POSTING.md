@@ -12,6 +12,19 @@ access limited to account/duplicate checks, composition, sending and one success
 shares the browser with the hourly organizer scan, and it now reads the research archive rather than
 repeating the research desk's searches.)
 
+## Required hashtag for every new X post
+
+Include the exact **#Kaggle** hashtag in every new newsroom Twitter/X announcement:
+Early and Late editions, the afternoon recap, specials and feature announcements.
+Reserve its space within the 280-character budget before saving or sending reviewed copy;
+shorten optional mentions or secondary copy when needed. Keep it when editing the helper's draft.
+This is an X hashtag instruction; it does not ask anyone to notify people on Discord.
+
+`scripts/newsroom_x.py` includes it in new edition and afternoon drafts. The required edition
+`--begin-posting` handoff rejects reviewed copy without the exact hashtag or over budget.
+Preserve historical `posting`/`posted` outboxes and explicit human send confirmations;
+this direction never authorizes editing or resending an existing announcement.
+
 ## Editorial review for every routine post
 
 Lead with the current issue's strongest verified news, using fresh, concise copy.
@@ -77,7 +90,7 @@ artwork in the 5 pm pass and finalize its score graphics from the 6 pm evidence.
    (the evening run uses `--edition evening` and `YYYY-MM-DD-late-edition.json`).
 2. The helper drafts the post from the published editions: `The ARC Daily Digest · Early
    edition` (or `Late edition`), the ARC-AGI-3 and ARC-AGI-2 headlines when both fit in 280
-   characters (otherwise the lead one), and the lead article's link. A published article
+   characters (otherwise the lead one), the required #Kaggle hashtag, and the lead article's link. A published article
    with reviewed, evidence-bound custom artwork leads; ARC-3 leads when both have art or
    neither does. The helper validates that artwork against the archived edition and saves
    a PNG attachment beside the outbox. Its `media` object records the exact local `path`,
@@ -133,7 +146,7 @@ python3.13 scripts/newsroom_x.py --output <edition-outbox.json> --begin-posting 
 ```
 
 This command checks the actual PNG bytes, original published artwork, edition link, confirmed
-Discord image delivery and approval before allowing `draft` → `posting`. `--attachment-reviewed`
+Discord image delivery and approval, and #Kaggle within 280 characters before allowing `draft` → `posting`. `--attachment-reviewed`
 attests to the visible X composer review; the helper cannot inspect the browser or click Post.
 A nonzero exit means stop: preserve the draft and concrete blocker. Never bypass it by changing
 state manually, removing `media`, using a generic link card, or sending the text first. The browser
@@ -154,7 +167,7 @@ Discord messages.
 
 Use lively, respectful sporting language for every contender, including Tufa Labs.
 Report verified moves and attribute public comments in context. Keep the recap
-under 280 characters and link to `https://arc.markbarney.net/news`. Do not invent
+under 280 characters including #Kaggle and link to `https://arc.markbarney.net/news`. Do not invent
 methods, motives, affiliations, quotes, hardware claims or final medals.
 
 ## Prepare board evidence and an afternoon draft
@@ -216,7 +229,8 @@ was performed because research is paused. The evening edition prepares its own c
 
 Confirm the X account is `82deutschmark` and inspect recent profile posts for today's
 ARC Daily afternoon recap. An existing matching post completes the send without
-another copy. Before the final Post action, save the exact reviewed text and set
+another copy. Before the final Post action, confirm the exact #Kaggle hashtag remains
+in the reviewed text within 280 characters, save that text and set
 outbox `state` to `posting`. After sending, visibly verify the post on the profile,
 save its permanent X URL and actual completion time, then set `state` to `posted`.
 

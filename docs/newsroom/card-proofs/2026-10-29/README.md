@@ -55,3 +55,19 @@ At the Boss's request, `mark-and-turducken-proof.png` places P018 (Mark Barney, 
 beside T014 (Team Turducken, right). Both complete PNG fronts come from the production
 renderer and current committed collection. Only the canvas arrangement is new; artwork,
 statistics and highlights are unchanged. The visible standings retain their observation dates.
+
+## Complete player records
+
+The later `son-pham-front-and-back.png` and `mark-barney-front-and-back.png` proofs correct
+the single-contest print export. Each front shows both Team Turducken in ARC3 and ARC Mutants
+in ARC2, with dates and a career highlight. The reverse contains researched Kaggle results,
+source notes and the account/card links. Individual front/back PNGs and their exact public
+inputs are retained in `complete-player-card-proof.json`.
+
+`son-kaggle-history-evidence.json` and `mark-kaggle-history-evidence.json` record the public
+profile observations behind the new career text. Son's own 400-pixel Kaggle portrait is saved
+unchanged; earlier portraits and character references remain available. Historical competition
+medals remain distinct from current public ARC positions.
+
+`person-son-pham-2026-share-preview.png` and `team-turducken-2026-share-preview.png` show the
+separate landscape link previews: a player's own portrait and career, or the full team scene.

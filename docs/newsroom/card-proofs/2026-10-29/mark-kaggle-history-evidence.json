@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "checkedAt": "2026-10-30T03:42:10Z",
+  "personId": "mark-barney",
+  "handle": "markbarney",
+  "sourceUrls": [
+    "https://www.kaggle.com/markbarney/competitions",
+    "https://www.kaggle.com/markbarney/about"
+  ],
+  "method": "Read rendered public profile in Chrome; only public profile facts retained.",
+  "joined": "2025-08-10",
+  "counts": {
+    "activeCompetitions": 6,
+    "completedCompetitions": 3
+  },
+  "completedCompetitions": [
+    {
+      "title": "RSNA Knee Abnormality Detection",
+      "url": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 412,
+      "teams": 6299,
+      "medalShown": "bronze",
+      "listedHandles": [
+        "markbarney",
+        "sonphamorg"
+      ]
+    },
+    {
+      "title": "Kaggriculture",
+      "url": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 1608,
+      "teams": 10148,
+      "listedHandles": [
+        "markbarney"
+      ]
+    },
+    {
+      "title": "Predicting Electric Vehicle Purchases",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e9",
+      "rank": 280,
+      "teams": 3575,
+      "listedHandles": [
+        "markbarney"
+      ]
+    }
+  ],
+  "activeArcRosters": {
+    "arc-prize-2026-arc-agi-2": [
+      "jcole75",
+      "markbarney",
+      "sonphamorg",
+      "scizical"
+    ],
+    "arc-prize-2026-arc-agi-3": [
+      "ngyzly",
+      "mitubant",
+      "keithtyser",
+      "dzjiann",
+      "markbarney",
+      "sonphamorg",
+      "scizical"
+    ]
+  },
+  "notes": [
+    "Competition placings and bronze are read from the completed-competition profile list.",
+    "No individual responsibility for a shared team score is inferred.",
+    "Only RSNA displayed a medal in these three records; absence of another medal is not published as a career-wide medal count.",
+    "Current ARC public standings remain provisional and separate from the historical RSNA bronze."
+  ]
+}

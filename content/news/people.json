@@ -1250,10 +1250,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-19T18:01:43.005825Z",
-        "sourceTitle": "ARC Mutants and Team Turducken — separate dated public rosters, 19 October 2026",
-        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        "text": "RSNA Knee Abnormality Detection — bronze medal; 412th of 6,299 teams with Son Pham.",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
+        "sourceTitle": "Mark Barney — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:42:10Z"
+      },
+      {
+        "text": "Predicting Electric Vehicle Purchases (Playground S6E9) — 280th of 3,575 teams; markbarney is the sole listed account.",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
+        "sourceTitle": "Mark Barney — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:42:10Z"
+      },
+      {
+        "text": "Kaggriculture — 1,608th of 10,148 teams; markbarney is the sole listed account.",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
+        "sourceTitle": "Mark Barney — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:42:10Z"
+      },
+      {
+        "text": "Joined Kaggle on 10 August 2025. His public profile lists nine competition entries: six active and three completed.",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
+        "sourceTitle": "Mark Barney — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:42:10Z"
       }
     ],
     "hallOfFame": [],
@@ -1263,11 +1281,11 @@
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
         "firstObservedAt": "2026-10-11T20:02:55Z",
-        "lastObservedAt": "2026-10-29T21:52:30Z",
+        "lastObservedAt": "2026-10-30T03:42:10Z",
         "memberHandle": "markbarney",
         "season": "2026",
-        "sourceTitle": "ARC-2 public roster observation",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "sourceTitle": "Mark Barney — public Kaggle active competition rosters",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
         "teamId": "17023174",
         "teamName": "ARC Mutants"
       },
@@ -1275,11 +1293,11 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-11T20:02:53Z",
-        "lastObservedAt": "2026-10-29T21:52:29Z",
+        "lastObservedAt": "2026-10-30T03:42:10Z",
         "memberHandle": "markbarney",
         "season": "2026",
-        "sourceTitle": "ARC-3 public roster observation",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Mark Barney — public Kaggle active competition rosters",
+        "sourceUrl": "https://www.kaggle.com/markbarney/competitions",
         "teamId": "15605182",
         "teamName": "Team Turducken"
       }
@@ -1307,10 +1325,28 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-19T18:01:43.005825Z",
-        "sourceTitle": "ARC Mutants and Team Turducken — separate dated public rosters, 19 October 2026",
-        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        "text": "Kaggle Competitions Expert — one silver and one bronze competition medal.",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg",
+        "sourceTitle": "Son Pham — public Kaggle profile and competition medals",
+        "checkedAt": "2026-10-30T03:44:27Z"
+      },
+      {
+        "text": "Orbit Wars — silver medal; 119th of 4,729 teams. The listed entry shows sonphamorg.",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
+        "sourceTitle": "Son Pham — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:44:27Z"
+      },
+      {
+        "text": "RSNA Knee Abnormality Detection — bronze medal; 412th of 6,299 teams with Mark Barney.",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
+        "sourceTitle": "Son Pham — public Kaggle completed competition record",
+        "checkedAt": "2026-10-30T03:44:27Z"
+      },
+      {
+        "text": "Joined Kaggle in January 2026.",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg",
+        "sourceTitle": "Son Pham — public Kaggle account join tooltip",
+        "checkedAt": "2026-10-30T03:44:27Z"
       }
     ],
     "hallOfFame": [],
@@ -1332,11 +1368,11 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-11T20:02:53Z",
-        "lastObservedAt": "2026-10-29T21:52:29Z",
+        "lastObservedAt": "2026-10-30T03:44:27Z",
         "memberHandle": "sonphamorg",
         "season": "2026",
-        "sourceTitle": "ARC-3 public roster observation",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Son Pham — public Kaggle active competition rosters",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
         "teamId": "15605182",
         "teamName": "Team Turducken"
       },
@@ -1344,11 +1380,11 @@
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
         "firstObservedAt": "2026-10-12T21:36:52Z",
-        "lastObservedAt": "2026-10-29T21:52:30Z",
+        "lastObservedAt": "2026-10-30T03:44:27Z",
         "memberHandle": "sonphamorg",
         "season": "2026",
-        "sourceTitle": "ARC-2 public roster observation",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "sourceTitle": "Son Pham — public Kaggle active competition rosters",
+        "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
         "teamId": "17023174",
         "teamName": "ARC Mutants"
       }
@@ -1356,11 +1392,11 @@
     "name": "Son Pham",
     "portrait": {
       "alt": "Son Pham’s Kaggle profile picture",
-      "checkedAt": "2026-10-11T20:34:40Z",
+      "checkedAt": "2026-10-30T03:44:27Z",
       "kind": "kaggle",
-      "sourceTitle": "Son Pham — Kaggle profile picture",
+      "sourceTitle": "Son Pham — unchanged full-size own Kaggle profile portrait",
       "sourceUrl": "https://www.kaggle.com/sonphamorg",
-      "src": "/news-images/people/son-pham.webp"
+      "src": "/news-images/people/son-pham-kaggle-original.jpeg"
     }
   },
   {

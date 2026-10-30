@@ -2,7 +2,7 @@
  * Author: GPT-6 / Codex
  * Date: 2026-10-29
  * PURPOSE: Render real player/team cards and permanent pages to protect roster navigation,
- *          simultaneous teams, complete career records and useful missing-card handling.
+ *          simultaneous teams, complete sourced career records, reverse downloads and missing-card handling.
  * SRP/DRY check: Pass — production components and collection data, with a seeded query cache.
  */
 import React, { createElement } from 'react';
@@ -37,6 +37,27 @@ it('puts both of Mark’s teams on his player card and offers a permanent share 
   expect(html).toContain(`href="${card.cardUrl}"`);
   expect(html).toContain('Copy Mark Barney card link');
   expect(html).toContain('Current team');
+  expect(html).toContain('Save back PNG');
+  expect(html).toContain(`/api/news/cards/${card.id}/image.png?side=back`);
+});
+
+it('Mark’s back leads with his sourced Kaggle results and includes both ARC teams', () => {
+  const card = prepare().cards.find(card => card.personId === 'mark-barney')!;
+  const html = renderCard(createElement(CardRecord, { card, entries: card.entries }));
+  for (const text of ['RSNA Knee Abnormality Detection', 'bronze medal', '412th of 6,299', 'Kaggriculture', '1,608th of 10,148', '280th of 3,575', 'ARC Mutants', 'Team Turducken']) expect(html).toContain(text);
+  expect(html).toContain('https://www.kaggle.com/markbarney/competitions');
+});
+
+it('Son has his own portrait card with sourced silver and bronze results and both teams', () => {
+  const card = prepare().cards.find(card => card.personId === 'son-pham')!;
+  const front = renderCard(createElement(CabinetCard, { card, contest: 'all' }));
+  expect(front).toContain('son-pham-kaggle-original.jpeg');
+  expect(front).toContain('href="/news/cards/team-turducken-2026"');
+  expect(front).toContain('href="/news/cards/team-arc-mutants-2026"');
+  const back = renderCard(createElement(CardRecord, { card, entries: card.entries }));
+  for (const text of ['Competitions Expert', 'Orbit Wars', 'silver medal', '119th of 4,729', 'RSNA Knee Abnormality Detection', '412th of 6,299', 'with Mark Barney']) expect(back).toContain(text);
+  expect(back).toContain('Previous teams');
+  expect(back).toContain('https://www.kaggle.com/sonphamorg/competitions');
 });
 
 it('team cards link every known roster member to their player card', () => {

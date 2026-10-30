@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.19  Oct 29, 2026
+
+- **Show the whole player** (Author: GPT-6 / Codex). Player PNG fronts now name both ARC teams and show both dated team standings. Add a downloadable reverse with Kaggle career results, earlier teams, source notes and account links. Give Son's card his verified Expert credential, Orbit Wars silver and shared RSNA Knee bronze; add Mark's three completed results. Use Son's unchanged full-size own-profile portrait and retain earlier artwork.
+- **Make player and team links worth sharing.** Separate landscape previews use each player's own portrait or the complete team illustration. Unify browser/server Open Graph, Twitter, descriptions and image dimensions; refresh the preview URL when public card content changes. Preserve collectible PNGs, permanent links and real missing-card responses.
+- **Require #Kaggle in automated newsroom X posts.** Save the standing rule, reserve its space in edition/afternoon drafts and validate it before the guarded edition send. Apply canonical prompts to the existing Early, Late and afternoon X jobs without changing their cadence or permissions; preserve historical sends. No social post or Discord message is sent by this maintenance.
+- Validation: 95 card/news checks, two frontend sharing checks and all 84 newsroom Python checks pass; TypeScript reports zero errors and the production build passes. Son/Mark fronts and backs and distinct player/team share previews were visually inspected. Plan: `docs/2026-10-29-complete-player-card-plan.md`.
+
 ### Version 9.159.18  Oct 29, 2026
 
 - **Clear the remaining TypeScript errors** (Author: GPT-6 / Codex). Reuse the shared matchup response type, preserve unknown imported timing as null, update stream test events, type repository spies and complete placement rating fixtures. Declare the missing frontend testing libraries and connect their typed Vitest matchers; keep strict compiler checks and existing assertions.
