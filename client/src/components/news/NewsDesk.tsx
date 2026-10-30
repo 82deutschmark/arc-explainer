@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-29; 2026-10-12
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5
+ * Date: 2026-10-30 (2026-10-29; 2026-10-12 earlier)
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -67,10 +67,27 @@ export function datelineDate(value: string): string {
 }
 
 /** Days until both boards close (they share a deadline) and the close date in Eastern time; null once past or unknown. */
-function theClose(now = Date.now()): { days: number; date: string } | null {
+export function theClose(now = Date.now()): { days: number; date: string } | null {
   const close = closeMs(KAGGLE_COMPETITIONS['arc-3']);
   const days = daysToClose(KAGGLE_COMPETITIONS['arc-3'], now);
   return close != null && days ? { days, date: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
+}
+
+/** The paper's section links; the slim Cabinet bar and the broadsheet masthead print the same list. */
+export function NewsNav({ className = 'news-nav' }: { className?: string }) {
+  return <nav className={className} aria-label="ARC Daily sections">
+    <Link href="/news">Front page</Link>
+    <Link href={wirePath()}>The wire</Link>
+    <Link href="/news/cards">Card Cabinet</Link>
+    <Link href="/news/competitors">Notebook</Link>
+    <Link href="/news/people">People</Link>
+    <Link href="/news/community">Around the contests</Link>
+    <Link href={NEWS_STAFF_PATH}>About the paper</Link>
+    <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>
+    <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 board ↗</a>
+    <a href="/human-records.html">Records ↗</a>
+    <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Discord ↗</a>
+  </nav>;
 }
 
 export function NewsPaper({ children, frontPage = false, date, edition, issue }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number }) {
@@ -90,19 +107,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
             <MastheadAd />
           </div>
           <div className="news-edition-line"><span>ARC Prize 2026 · ARC-AGI-3 &amp; ARC-AGI-2 on Kaggle</span><span>Early edition 6 am · Late edition 6 pm Eastern · The wire all day</span></div>
-          <nav className="news-nav" aria-label="ARC Daily sections">
-            <Link href="/news">Front page</Link>
-            <Link href={wirePath()}>The wire</Link>
-            <Link href="/news/cards">Card Cabinet</Link>
-            <Link href="/news/competitors">Notebook</Link>
-            <Link href="/news/people">People</Link>
-            <Link href="/news/community">Around the contests</Link>
-            <Link href={NEWS_STAFF_PATH}>About the paper</Link>
-            <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>
-            <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 board ↗</a>
-            <a href="/human-records.html">Records ↗</a>
-            <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Discord ↗</a>
-          </nav>
+          <NewsNav />
         </header>
         {children}
         <NewsWelcome />

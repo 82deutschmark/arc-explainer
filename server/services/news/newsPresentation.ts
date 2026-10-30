@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-29
- * PURPOSE: Shareable player/team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
+ * Date: 2026-10-30 (2026-10-29 earlier)
+ * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
  *          illustrated article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
@@ -33,7 +33,7 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionShareAlt, collectionSharePath,
+import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionRoleLabel, collectionShareAlt, collectionSharePath,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
 import { getNewsIndex } from './newsStore';
@@ -148,17 +148,28 @@ function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]):
   return { ...tags, jsonLd: collection(tags, competitors.map(record => ({ name: `${record.name} (${competitionName(record.competition)})`, path: competitorPath(record.id) }))),
     bodyHtml: `<main><h1>Competitor notebook</h1><p>Sourced background and observed public team identities. Teams in different competitions have separate records.</p><ul>${competitors.map(record => `<li><a href="${competitorPath(record.id)}">${esc(record.name)}</a> — ${esc(competitionName(record.competition))}</li>`).join('')}</ul><p><a href="/news">Back to the sports page</a></p></main>` };
 }
-/** Card pages and the collection list share the same sourced player/team record and links. */
+/** Card pages and the collection list share the same sourced record and links, drawn here as plain HTML for readers and crawlers. */
 function collectionEntryHtml(entry: CollectionEntry): string {
+  if (entry.status === 'unavailable') return '';
   const teamUrl = entry.cardUrl ?? entry.profileUrl;
-  const state = entry.status === 'final' ? 'Official final' : entry.status === 'public' ? 'Public provisional' : 'Standing unavailable';
-  const roster = entry.members.length ? `<ul>${entry.members.map(member => `<li><a href="${esc(member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`))}">${esc(member.name || member.handle)}</a>${member.cardUrl ? ' · player card' : ''}</li>`).join('')}</ul>` : '';
-  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${entry.rank == null ? 'Standing unavailable' : `rank ${entry.rank}, score ${entry.score ?? 'unknown'}`} · ${state} · ${entry.observedAt ? esc(newsDate(entry.observedAt)) : 'Observation unavailable'}</p>${entry.sourceUrl ? `<p><a href="${esc(entry.sourceUrl)}">Standings source</a></p>` : ''}${roster}</section>`;
+  const roster = entry.members.length ? `<ul>${entry.members.map(member => `<li><a href="${esc(member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`))}">${esc(member.name || member.handle)}</a></li>`).join('')}</ul>` : '';
+  const standing = entry.rank == null ? '' : `Rank ${entry.rank}${entry.score != null ? `, score ${entry.score}` : ''} · `;
+  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${standing}${entry.status === 'final' ? 'Final result' : 'Live standing'}${entry.observedAt ? ` as of ${esc(newsDate(entry.observedAt))}` : ''}</p>${entry.sourceUrl ? `<p><a href="${esc(entry.sourceUrl)}">Leaderboard</a></p>` : ''}${roster}</section>`;
 }
 function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const heading = standalone ? 'h1' : 'h2';
-  const history = card.teamHistory.length ? `<section><h3>Team history</h3><ul>${card.teamHistory.map(team => `<li><a href="${esc(team.cardUrl ?? team.profileUrl)}">${esc(team.teamName)}</a> · ${esc(competitionName(team.competition))} ${esc(team.season)} · ${team.status === 'current' ? 'Current team' : team.status === 'previous' ? 'Previous team' : 'Last observed team'} · observed ${timeTag(team.firstObservedAt, false)}–${timeTag(team.lastObservedAt, false)} · <a href="${esc(team.sourceUrl)}">${esc(team.sourceTitle)}</a></li>`).join('')}</ul></section>` : '';
-  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.number)} · ${esc(card.name)}</a></${heading}><p>${card.kind === 'person' ? 'Player card' : 'Team card'} · ${esc(card.season)}</p>${card.art ? `<img src="${esc(card.art.src)}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${history}${card.entries.map(collectionEntryHtml).join('')}${card.highlights.length ? `<section><h3>${card.kind === 'person' ? 'Kaggle career &amp; highlights' : 'Team highlights'}</h3><ul>${card.highlights.map(fact => `<li>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></li>`).join('')}</ul></section>` : ''}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Public accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Competitor profile' : 'Team notebook'}</a> · <a href="${esc(card.cardUrl)}">Share this ${card.kind === 'person' ? 'player' : 'team'} card</a> · <a href="/api/news/cards/${esc(card.id)}/image.png">Save front PNG</a> · <a href="/api/news/cards/${esc(card.id)}/image.png?side=back">Save back PNG</a></p></article>`;
+  const earned = collectionEarnedLine(card);
+  const career = card.career;
+  const medals = career?.medals;
+  const profile = career && (career.tier || medals || career.rank?.current || career.joinedYear || career.organisation)
+    ? `<section><h3>Kaggle profile</h3><ul>${[career.tier ? `Competitions tier: ${career.tier}` : '', medals ? `Medals: ${medals.gold} gold, ${medals.silver} silver, ${medals.bronze} bronze` : '',
+      career.rank?.current ? `Overall rank: ${career.rank.current}${career.rank.outOf ? ` of ${career.rank.outOf}` : ''}${career.rank.best ? `, best ${career.rank.best}` : ''}` : '',
+      career.joinedYear ? `On Kaggle since ${career.joinedYear}` : '', career.organisation ? `Organisation: ${career.organisation}` : ''].filter(Boolean).map(line => `<li>${esc(line)}</li>`).join('')}<li><a href="${esc(career.profileUrl)}">Kaggle profile</a></li></ul></section>` : '';
+  const past = card.pastCards.length ? `<section><h3>Earlier cards</h3><ul>${card.pastCards.map(item => `<li><a href="${esc(item.hallOfFameUrl)}">${esc(item.season ?? 'Earlier')} · ${esc(item.label)}</a>${item.imageSrc ? ` <img src="${esc(encodeURI(item.imageSrc))}" alt="${esc(item.imageAlt)}" loading="lazy"/>` : ''}</li>`).join('')}</ul></section>` : '';
+  const history = card.teamHistory.length ? `<section><h3>Teams</h3><ul>${card.teamHistory.map(team => `<li><a href="${esc(team.cardUrl ?? team.profileUrl)}">${esc(team.teamName)}</a> · ${esc(competitionName(team.competition))} ${esc(team.season)}${team.status === 'previous' ? ' · earlier team' : ''}</li>`).join('')}</ul></section>` : '';
+  const rows = career?.rows.length ? `<section><h3>Completed Kaggle competitions</h3><ul>${[...career.rows].sort((a, b) => a.rank / a.fieldSize - b.rank / b.fieldSize).slice(0, 14).map(row => `<li><a href="${esc(row.competitionUrl)}">${esc(row.competition)}</a>${row.year ? ` (${row.year})` : ''} · ${row.rank} of ${row.fieldSize}${row.medal ? ` · ${row.medal} medal` : ''}</li>`).join('')}</ul></section>` : '';
+  const stories = card.stories.length ? `<section><h3>In the Digest</h3><ul>${card.stories.map(story => `<li><a href="${esc(story.url)}">${esc(story.headline)}</a> · ${esc(newsDate(story.publishedAt))}</li>`).join('')}</ul></section>` : '';
+  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.number)} · ${esc(card.name)}</a></${heading}><p>${esc(collectionRoleLabel(card))} · ${esc(card.season)}${earned ? ` · Earned this card: ${esc(earned)}` : ''}</p>${card.art ? `<img src="${esc(encodeURI(card.art.src))}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${profile}${past}${history}${card.entries.map(collectionEntryHtml).join('')}${rows}${stories}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Profile in the Digest' : 'Team notebook'}</a> · <a href="${esc(card.cardUrl)}">Share this card</a></p></article>`;
 }
 function collectionCardMeta(card: CollectionCard): RouteMetaTags {
   const title = collectionCardTitle(card);
@@ -169,7 +180,7 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
       isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
       mainEntity: { '@type': card.kind === 'person' ? 'Person' : 'Organization', name: card.name, url } }] },
-    bodyHtml: `<main><p><a href="/news/cards">All player and team cards</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+    bodyHtml: `<main><p><a href="/news/cards">All cards in the Card Cabinet</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
 }
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
@@ -182,15 +193,15 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   if (route === '/news/cards') {
     const cabinet = getNewsCollection();
     const tags = completeMeta({ ...ROUTE_META_TAGS['/news/cards'], ...cardFor(articles),
-      bodyHtml: `<main><h1>Card Cabinet</h1><p>The ARC Daily Digest’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Individual players and teams have separate numbered cards, with shareable links between their records. Public standings remain dated observations; final honors require official results.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+      bodyHtml: `<main><h1>Card Cabinet</h1><p>The ARC Daily Digest’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
     return { status: 200, tags: { ...tags, jsonLd: collection(tags, cabinet.cards.map(card => ({ name: card.name, path: card.cardUrl }))) } };
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
   if (cardRoute) {
     const card = getNewsCollection().cards.find(item => item.id === cardRoute[1]);
     if (card) return { status: 200, tags: collectionCardMeta(card) };
-    return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This player or team card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
-      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse all player and team cards</a></p></main>' }) };
+    return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
+      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse every card in the Card Cabinet</a></p></main>' }) };
   }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };

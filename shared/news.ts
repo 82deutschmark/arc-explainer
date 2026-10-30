@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
- * Date: 29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5
+ * Date: 2026-10-30 (29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5; earlier)
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -81,6 +81,8 @@ export interface NewsEditorialPortrait extends Omit<NewsPortrait, 'kind'> { artw
 /** People persist across seasons; membership observations belong to a specific contest. */
 export interface NewsPerson {
   id: string; name: string;
+  /** Absent means a Kaggle competitor. A sponsor runs or funds the competition (the ARC Prize co-founders) and has no Kaggle tier. */
+  role?: 'competitor' | 'sponsor';
   accounts: ({ platform: 'kaggle' | 'x'; handle: string; url: string } & Omit<CompetitorFact, 'text'>)[];
   facts: CompetitorFact[];
   memberships: { competition: NewsCompetition; competitionId: string; season: string; teamId: string; teamName: string;

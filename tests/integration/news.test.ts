@@ -19,6 +19,7 @@
  *          15-Oct-2026 (Claude Opus 5.5 Max): the content check (every committed file loads, nothing
  *          left out) and the store leaving out one bad edition, dispatch or ledger record, with
  *          /api/news/health reporting it, instead of failing the whole paper.
+ *          30-Oct-2026 (Claude Sonnet 5.5 Low): the Card Cabinet face routes (front, back, thumbnail, share preview, cache headers).
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -28,6 +29,8 @@ import os from 'node:os';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
+import { getNewsCollection } from '../../server/services/news/newsCollection';
+import { collectionShareVersion } from '../../shared/newsCollection';
 import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
@@ -430,4 +433,27 @@ it('serves the reserved evening feature and cover in the permanent edition’s i
   expect(html).toContain(escapeHtml(article.sections[1].text));
   expect(html.indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
     .toBeLessThan(html.indexOf(escapeHtml(article.sections[1].text)));
+});
+
+it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and the share preview, with the right cache headers', { timeout: 60_000 }, async () => {
+  const card = getNewsCollection().cards.find(item => item.id === 'person-ivan-sorokin-2026')!;
+  const version = collectionShareVersion(card);
+  const png = (await fetch(`${base}/api/news/cards/${card.id}/image.png`));
+  expect(png.status).toBe(200);
+  expect(png.headers.get('content-type')).toBe('image/png');
+  expect(await sharp(Buffer.from(await png.arrayBuffer())).metadata()).toMatchObject({ width: 750, height: 1050 });
+  const back = await fetch(`${base}/api/news/cards/${card.id}/image.png?side=back`);
+  expect(back.headers.get('content-disposition')).toContain('-back.png');
+  expect((await fetch(`${base}/api/news/cards/${card.id}/image.png?side=sideways`)).status).toBe(400);
+  const thumb = await fetch(`${base}/api/news/cards/${card.id}/thumb.webp?w=300&v=${version}`);
+  expect(thumb.headers.get('content-type')).toBe('image/webp');
+  expect(thumb.headers.get('cache-control')).toContain('immutable');
+  expect(await sharp(Buffer.from(await thumb.arrayBuffer())).metadata()).toMatchObject({ format: 'webp', width: 300 });
+  expect((await fetch(`${base}/api/news/cards/${card.id}/thumb.webp?w=300&v=stale`)).headers.get('cache-control')).not.toContain('immutable');
+  const share = await fetch(`${base}/api/news/cards/${card.id}/share.png?v=${version}`);
+  expect(share.headers.get('cache-control')).toContain('immutable');
+  expect(await sharp(Buffer.from(await share.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
+  const stale = await fetch(`${base}/api/news/cards/${card.id}/share.png?v=stale`, { redirect: 'manual' });
+  expect(stale.status).toBe(302);
+  expect((await fetch(`${base}/api/news/cards/no-such-card/thumb.webp`)).status).toBe(404);
 });

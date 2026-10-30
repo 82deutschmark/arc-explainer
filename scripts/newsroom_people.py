@@ -87,8 +87,10 @@ def validate_people(people):
         raise ValueError('people.json must be an array')
     ids, accounts = set(), set()
     for person in people:
-        if set(person) - {'portrait', 'editorialPortrait'} != PERSON_FIELDS:
+        if set(person) - {'portrait', 'editorialPortrait', 'role'} != PERSON_FIELDS:
             raise ValueError('invalid person fields')
+        if person.get('role', 'competitor') not in ('competitor', 'sponsor'):
+            raise ValueError('invalid person role')
         pid = person['id']
         if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', pid) or pid in ids:
             raise ValueError('invalid or duplicate person identity')

@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-29
- * PURPOSE: Exercise the actual player-card sharing controls with the installed frontend
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5
+ * Date: 2026-10-30
+ * PURPOSE: Exercise the actual card sharing controls with the installed frontend
  *          test setup, including clipboard success and a selectable URL when copying fails.
  * SRP/DRY check: Pass — renders the production card and uses its real collection contract.
  */
@@ -9,7 +9,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Router } from 'wouter';
 import { afterEach, expect, it, vi } from 'vitest';
-import { CabinetCard } from '../../client/src/pages/NewsCards';
+import { CopyCardLink } from '../../client/src/pages/NewsCards';
 import type { CollectionCard } from '../../shared/newsCollection';
 import { SITE_ORIGIN } from '../../shared/seo';
 
@@ -17,7 +17,7 @@ const card: CollectionCard = {
   id: 'person-mark-barney-2026', number: 'P018', kind: 'person', name: 'Mark Barney',
   season: '2026', personId: 'mark-barney', cardUrl: '/news/cards/person-mark-barney-2026',
   profileUrl: '/news/people/mark-barney', art: null, description: '', highlights: [],
-  accounts: [], entries: [], honors: [], artNotes: [], teamHistory: [],
+  accounts: [], entries: [], honors: [], artNotes: [], teamHistory: [], role: 'competitor', pastCards: [], stories: [], career: null,
 };
 const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
 afterEach(() => {
@@ -26,10 +26,10 @@ afterEach(() => {
 });
 function showCard(writeText: (value: string) => Promise<void>) {
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
-  render(<Router><CabinetCard card={card} contest="all" /></Router>);
+  render(<Router><CopyCardLink card={card} /></Router>);
 }
 
-it('copies the permanent player-card URL and confirms completion', async () => {
+it('copies the permanent card URL and confirms completion', async () => {
   const writeText = vi.fn<(value: string) => Promise<void>>().mockResolvedValue(undefined);
   showCard(writeText);
   fireEvent.click(screen.getByRole('button', { name: 'Copy Mark Barney card link' }));

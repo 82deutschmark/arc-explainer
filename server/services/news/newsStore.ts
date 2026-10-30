@@ -72,7 +72,7 @@ const HALL_OF_FAME_ART = /^\/[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*\.(?:png|jpe?g)$/
 const PORTRAIT_FILE = /^\/news-images\/people\/[a-z0-9-]+\.(?:webp|png|jpe?g)$/;
 const HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net';
 export const newsPersonSchema = z.object({
-  id: safeId, name: text,
+  id: safeId, name: text, role: z.enum(['competitor', 'sponsor']).optional(),
   accounts: z.array(z.object({ platform: z.enum(['kaggle', 'x']), handle: z.string().regex(/^[A-Za-z0-9_]+$/), url: webUrl, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict()
     .refine(account => account.url.toLowerCase() === `https://${account.platform === 'kaggle' ? 'www.kaggle.com' : 'x.com'}/${account.handle}`.toLowerCase(), 'Account URL and handle must agree')).min(1),
   facts: z.array(factSchema),

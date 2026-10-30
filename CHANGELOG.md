@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.24  Oct 30, 2026
+
+- **Card Cabinet faces redesigned: the Topps-style 2026 set** (Author: Claude Sonnet 5.5 Low). Fronts and backs are drawn by the new `cardFace/` renderer (cream card-stock edge, tier-coloured border and medallion, LIVE/FINAL stamp with one as-of date, ribbon name bar, price-guide standings, medal coins; grey-cardboard two-ink backs with the career table). Master and Grandmaster borders and medallions are visibly bigger than the lower tiers. Wording is checked by a lint over every drawn tree: Kaggle's tier words for competitors, "competition sponsors", teams, SOLO ENTRY, and no internal bookkeeping text.
+- **One set row per season.** `content/news/series.json` names each season's series, publisher and look; `cardFace/looks.ts` maps the look key to its renderer, and an unknown look or season falls back to the newest one with a single warning. Next year's set is a data row.
+- **Share previews redesigned** (1200 x 630): the real front render at the left, a cardboard panel at the right with the name, tier line, lead contest rank and score, medal coins (or the sponsor's organisation and bio), the as-of date and the site address.
+- **Thumbnails, routes and caching.** The image, thumbnail and share routes use the new pipeline with unchanged cache headers; enrichment is cached on the collection's content, not per request. `RENDER_VERSION` (shared) is mixed into every image address so browsers and link-preview crawlers refetch after a design change. The old renderer and its wording are deleted.
+- Validation: whole-set front and back smoke with the wording lint, tier border pixel check, thumbnail widths, share size, unknown tier/look/season warnings, art-address guard, and the card routes in the integration test.
+
 ### Version 9.159.23  Oct 30, 2026
 
 - **Look up every mentioned person and team** (Author: GPT-6 / Codex). Update all seven active Codex reporting jobs and the canonical prompt copies to consult the shared Card Cabinet before any mention. Preserve their schedules, models, status and permissions. Extend the permanent playbook, backup and morning check-in guides to use the improved linked player/team pages, complete careers, card backs and individual sharing previews.

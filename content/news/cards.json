@@ -153,6 +153,11 @@
       "name": "François Chollet",
       "personId": "francois-chollet",
       "entries": [],
+      "art": {
+        "src": "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp",
+        "alt": "François Chollet as an ARC Hall of Fame cyberpunk rendering: a glowing gauntlet reaching out among floating ARC puzzle grids",
+        "credit": "The Boss's parody book-cover art for Deep Learning with Python, cropped to the figure"
+      },
       "artNotes": [],
       "number": "P012",
       "issuedAt": "2026-10-30T00:23:50.049Z",
@@ -219,6 +224,11 @@
       "name": "Mark Barney",
       "personId": "mark-barney",
       "entries": [],
+      "art": {
+        "src": "/news-images/people/mark-barney-instagram-original.jpg",
+        "alt": "Mark Barney as an ARC Hall of Fame cyberpunk rendering: a chrome visor, a crown of graphics cards, a CPU medallion, a Yorkshire terrier in each arm, and mechanical chickens among the server racks",
+        "credit": "Mark Barney's own ARC Hall of Fame rendering (his avatar)"
+      },
       "artNotes": [],
       "number": "P018",
       "issuedAt": "2026-10-30T00:23:50.049Z",
@@ -230,6 +240,11 @@
       "name": "Son Pham",
       "personId": "son-pham",
       "entries": [],
+      "art": {
+        "src": "/news-images/people/son-pham-kaggle-original.jpeg",
+        "alt": "Son Pham as an ARC Raiders cyberpunk rendering: puzzle-grid goggles, cables and graphics cards",
+        "credit": "Son Pham's own ARC Hall of Fame rendering (his Kaggle picture)"
+      },
       "artNotes": [],
       "number": "P019",
       "issuedAt": "2026-10-30T00:23:50.049Z",

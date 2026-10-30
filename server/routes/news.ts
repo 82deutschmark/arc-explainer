@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-29; 08-October-2026; 10-October-2026
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
+ * Date: 2026-10-30 (2026-10-29; 08-October-2026; 10-October-2026 earlier)
  * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
  *          public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
@@ -12,6 +12,8 @@
  *          wire story's immutable evidence at /api/news/wire/:id/evidence.
  *          15-Oct-2026 (Claude Opus 5.5 Max): GET /api/news/health lists any news file or ledger
  *          record the store left out, for the desk watchdog's Discord alert.
+ *          30-Oct-2026 (Claude Sonnet 5.5 Low): card image, thumbnail and share routes pass the collection to the new cardFace pipeline.
+ *          30-Oct-2026 (Claude Sonnet 5.5 Medium): the thumbnail route takes its width limits from the renderer instead of repeating them.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
 import type { Express, Response } from 'express';
@@ -22,8 +24,9 @@ import { newsRss } from '../services/news/newsPresentation';
 import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
 import { marketsResponse } from '../services/news/newsMarkets';
 import { getNewsCollection } from '../services/news/newsCollection';
-import { buildCollectionCardImage } from '../services/news/newsCollectionImage';
+import { buildCollectionCardImage, buildCollectionCardThumb } from '../services/news/newsCollectionImage';
 import { buildCollectionShareImage } from '../services/news/newsCollectionShareImage';
+import { THUMB_MIN_WIDTH, THUMB_MAX_WIDTH } from '../services/news/cardFace';
 import { collectionSharePath, collectionShareVersion } from '../../shared/newsCollection';
 const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => card
   ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
@@ -34,23 +37,41 @@ export function mountNews(app: Express) {
   });
   app.get('/api/news/cards/:id/share.png', async (req, res, next) => {
     try {
-      const card = getNewsCollection().cards.find(item => item.id === req.params.id);
+      const collection = getNewsCollection();
+      const card = collection.cards.find(item => item.id === req.params.id);
       if (!card) return res.status(404).set('Cache-Control', 'no-store').json({ error: 'Collection share image not found' });
       const version = collectionShareVersion(card);
       if (req.query.v && req.query.v !== version) return res.set('Cache-Control', 'no-store').redirect(302, collectionSharePath(card));
       return res.type('image/png').set('Content-Disposition', `inline; filename="${card.id}-share.png"`)
         .set('Cache-Control', req.query.v === version ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
-        .send(await buildCollectionShareImage(card));
+        .send(await buildCollectionShareImage(card, collection));
     } catch (error) { next(error); }
   });
   app.get('/api/news/cards/:id/image.png', async (req, res, next) => {
     try {
       const side = req.query.side ?? 'front';
       if (side !== 'front' && side !== 'back') return res.status(400).json({ error: 'Card side must be front or back' });
-      const card = getNewsCollection().cards.find(item => item.id === req.params.id);
+      const collection = getNewsCollection();
+      const card = collection.cards.find(item => item.id === req.params.id);
       if (!card) return res.status(404).json({ error: 'Collection card not found' });
       return res.type('image/png').set('Cache-Control', 'public, max-age=60')
-        .set('Content-Disposition', `attachment; filename="${card.id}${side === 'back' ? '-back' : ''}.png"`).send(await buildCollectionCardImage(card, side));
+        .set('Content-Disposition', `attachment; filename="${card.id}${side === 'back' ? '-back' : ''}.png"`).send(await buildCollectionCardImage(card, collection, side));
+    } catch (error) { next(error); }
+  });
+  // Small WebP of a card face for the Cabinet grid. The address carries the card's content version, so a
+  // matching version is cached as immutable and a stale one is sent to the current address.
+  app.get('/api/news/cards/:id/thumb.webp', async (req, res, next) => {
+    try {
+      const side = req.query.side ?? 'front';
+      if (side !== 'front' && side !== 'back') return res.status(400).json({ error: 'Card side must be front or back' });
+      const width = Math.min(THUMB_MAX_WIDTH, Math.max(THUMB_MIN_WIDTH, Number.parseInt(String(req.query.w ?? '360'), 10) || 360));
+      const collection = getNewsCollection();
+      const card = collection.cards.find(item => item.id === req.params.id);
+      if (!card) return res.status(404).json({ error: 'Collection card not found' });
+      const version = collectionShareVersion(card);
+      const fresh = req.query.v === version;
+      return res.type('image/webp').set('Cache-Control', fresh ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
+        .send(await buildCollectionCardThumb(card, collection, side, width, version));
     } catch (error) { next(error); }
   });
   app.get('/api/news/cards/:id', (req, res, next) => {

@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex
  * Date: 2026-10-29
- * PURPOSE: Exercise shareable player/team pages, linked records, artwork-led social previews and front/back PNG downloads,
+ * PURPOSE: Exercise shareable competitor/team pages, linked records, artwork-led social previews and front/back PNG downloads,
  *          missing-card metadata and the crawlable Cabinet through production middleware
  * without exposing source-generation prompts, private paths or held manuscripts.
  * SRP/DRY check: Pass — reuses the production Express route and seeded collection.
@@ -49,7 +49,7 @@ it('provides the exact selected card, a real PNG and a missing-card response', a
   expect((await fetch(`${origin}/api/news/cards/unknown`)).status).toBe(404);
   expect((await fetch(`${origin}/api/news/cards/unknown/image.png`)).status).toBe(404);
 }, 20_000);
-it('downloads the player reverse separately and rejects unsupported card sides', async () => {
+it('downloads the competitor reverse separately and rejects unsupported card sides', async () => {
   const id = 'person-mark-barney-2026';
   const response = await fetch(`${origin}/api/news/cards/${id}/image.png?side=back`);
   expect(response.status).toBe(200);
@@ -102,12 +102,12 @@ it('serves the actual team artwork preview inline at landscape size and refreshe
   expect(stale.headers.get('location')).toBe(collectionSharePath(card));
   expect((await fetch(`${origin}/api/news/cards/unknown/share.png`)).status).toBe(404);
 }, 20_000);
-it('player links use that player’s portrait preview and sourced career description', async () => {
+it('competitor links use that competitor’s portrait preview and sourced career description', async () => {
   const card = getNewsCollection().cards.find(item => item.id === 'person-son-pham-2026')!;
   const response = await fetch(`${origin}${card.cardUrl}`);
   const html = await response.text();
   expect(response.status).toBe(200);
-  expect(html).toContain('Son Pham — Player card');
+  expect(html).toContain('Son Pham — Kaggle Expert card');
   expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
   expect(html).toContain(`name="twitter:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
   expect(html).toContain(collectionShareAlt(card).replaceAll('&', '&amp;').replaceAll('"', '&quot;'));
@@ -115,20 +115,20 @@ it('player links use that player’s portrait preview and sourced career descrip
   const preview = await fetch(`${origin}${collectionSharePath(card)}`);
   expect(await sharp(Buffer.from(await preview.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
 }, 20_000);
-it('shares player history and links current and earlier teams to their cards', async () => {
+it('shares competitor history and links current and earlier teams to their cards', async () => {
   const id = 'person-mark-barney-2026';
   const response = await fetch(`${origin}/news/cards/${id}`);
   expect(response.status).toBe(200);
   const html = await response.text();
-  expect(html).toContain('Player card');
-  expect(html).toContain('Team history');
-  expect(html).toContain('Kaggle career &amp; highlights');
+  expect(html).toContain('Kaggle competitor card');
+  expect(html).toContain('<h3>Teams</h3>');
+  expect(html).toContain('Completed Kaggle competitions');
   expect(html).toContain('href="/news/cards/team-turducken-2026"');
   expect(html).toContain('href="/news/cards/team-arc-mutants-2026"');
   const card = getNewsCollection().cards.find(item => item.id === id)!;
   for (const team of card.teamHistory) {
     expect(html).toContain(`href="${team.cardUrl ?? team.profileUrl}"`);
-    expect(html).toContain(team.status === 'current' ? 'Current team' : team.status === 'previous' ? 'Previous team' : 'Last observed team');
+    if (team.status !== 'current') expect(html).toContain('earlier team');
   }
   expect(html).toContain(`property="og:url" content="${SITE_ORIGIN}/news/cards/${id}"`);
 });

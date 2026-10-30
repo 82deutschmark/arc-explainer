@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "sets": [
+    {
+      "id": "2026",
+      "season": "2026",
+      "name": "Card Cabinet",
+      "setName": "Card Cabinet",
+      "publisher": "The ARC Daily Digest",
+      "look": "topps86",
+      "timeZone": "America/New_York"
+    }
+  ],
+  "contestTitles": {
+    "arc-prize-2026-arc-agi-3": "ARC Prize 2026 - ARC-AGI-3",
+    "arc-prize-2026-arc-agi-2": "ARC Prize 2026 - ARC-AGI-2"
+  },
+  "sponsors": {
+    "mike-knoop": {
+      "organisation": "ARC Prize Foundation",
+      "bio": "Mike Knoop is a co-founder of Zapier and of the ARC Prize, which he launched in 2024 to speed progress toward artificial general intelligence. The ARC Prize site lists him as Co-founder and Board Member.",
+      "facts": [
+        { "text": "Zapier co-founder who launched the ARC Prize in 2024.", "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19" },
+        { "text": "Listed as Co-founder and Board Member on the ARC Prize team page.", "sourceUrl": "https://arcprize.org/about" }
+      ]
+    },
+    "francois-chollet": {
+      "organisation": "ARC Prize Foundation",
+      "bio": "François Chollet is the creator of Keras and defined the ARC-AGI benchmark in 2019 to measure general intelligence. The ARC Prize's official profile names him as a co-founder.",
+      "facts": [
+        { "text": "Creator of Keras.", "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19" },
+        { "text": "Defined the ARC-AGI benchmark in 2019 to measure general intelligence.", "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19" },
+        { "text": "The ARC-AGI repository is hosted under his own fchollet GitHub account.", "sourceUrl": "https://github.com/fchollet/ARC-AGI" }
+      ]
+    }
+  }
+}

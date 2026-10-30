@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; existing contributors credited below
- * Date: 2026-10-29
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5
+ * Date: 2026-10-30 (2026-10-29 earlier)
  * PURPOSE: Describe the permanent Card Cabinet and Mark Barney's research and original-game collection.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -104,7 +104,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/wire': { title: 'The wire | The ARC Daily Digest', description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', url: `${SITE}/news/wire`, ...NEWS_CARD },
   '/news/competitors': { title: 'Competitor notebook | The ARC Daily Digest', description: 'The ARC Daily Digest’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
-  '/news/cards': { title: 'Card Cabinet | The ARC Daily Digest', description: 'A permanent collection of commissioned individual and team cards: artwork, verified identities, dated statistics and officially awarded ARC Prize honors.', url: `${SITE}/news/cards`, ...NEWS_CARD },
+  '/news/cards': { title: 'Card Cabinet | The ARC Daily Digest', description: 'The ARC Daily Digest’s Card Cabinet: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with illustrations, Kaggle tiers, standings and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
