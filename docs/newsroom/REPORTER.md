@@ -116,6 +116,11 @@ Before publication, read the copy as a regular reader: does the opening deliver 
 does each section advance it, and can any explanation or caveat be removed without changing
 the reader's understanding? Tighten the copy while retaining the evidence and attribution.
 
+For Late editions, prepare the required lead illustration before 6 pm in the 5 pm prepress
+pass. Consult the [Card Cabinet](https://arc.markbarney.net/news/cards) and use the registered
+reference characters for all commissions. The published edition link and its reviewed image
+travel together in the routine X post; missing art blocks X rather than permitting text-only copy.
+
 ## 1. Start
 
 1. Work only in `/Users/macmini/GitHub/arc-explainer-newsroom` on branch `codex/newsroom-publisher`

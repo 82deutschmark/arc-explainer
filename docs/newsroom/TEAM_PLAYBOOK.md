@@ -9,6 +9,30 @@ Call him Boss. A fifth-place finish in a field of thousands deserves serious bil
 Write lively copy supported by evidence; invent neither quotes nor motives, rivalries,
 budgets, methods or future plans. Read the subject's record before writing about them.
 
+## Required notice for every desk and artwork commission
+
+The permanent shared page is **[The ARC Daily Card Cabinet](https://arc.markbarney.net/news/cards)**.
+Every Codex, Claude, OpenClaw, wire, backup, research, manual and scheduled newsroom run must
+consult this playbook and the selected subject’s Cabinet records before reporting or commissioning
+art. Include this exact page link in desk handoffs and commission briefs so the next assistant
+uses the same characters. The newsroom README, repository AGENTS and automation prompts point here.
+
+All existing artwork and every new commission belongs to this reference system: look up the
+exact competition, team ID and verified handles; inspect the registered character image files;
+attach those actual files to the native generation call; preserve the character’s face, mascot,
+full team cast and explicit fictional stand-ins. A card is a lookup, not permission to invent a
+likeness or crop one person from a group. Existing scenes remain preserved as dated episodes;
+use them as identity references only where documented, not as silently reused news covers.
+If older artwork lacks a complete mapping, record that gap and hold its reuse until reconciled;
+do not delete originals or silently remake the cast. Save the actual input roles, paths, hashes,
+prompt and visual review with each new artwork record. Follow [CHARACTERS.md](CHARACTERS.md)
+and [ART_DESK.md](ART_DESK.md) for generation and publication.
+
+Late artwork is prepared in the 5 pm prepress pass before the 6 pm release. The edition’s
+headline, permanent link and reviewed image form one X announcement. Missing art blocks that
+announcement; it does not authorize a text-only send. See [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md)
+and the guarded posting command in [X_POSTING.md](X_POSTING.md).
+
 ## Where to look
 
 | Place | What it supplies |

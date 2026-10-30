@@ -65,7 +65,11 @@ these differences:
    cannot generate images. After writing the lead contest's draft, run the art planner as
    `docs/newsroom/ART_DESK.md` describes. If the plan returns a job with `reuseBase`, compose from
    that exact approved base with the fresh brief, look at the finished image, attach it and validate.
-   If it returns no job, or a job that needs new generation, publish without an image. Never pick a
+   If it returns no job, or a job that needs new generation, verified text may still publish,
+   but the edition X announcement must remain blocked for missing artwork. Never send text-only
+   edition copy or bypass the guarded handoff in X_POSTING.md. Use the Card Cabinet
+   (https://arc.markbarney.net/news/cards) and registered reference characters for all existing
+   artwork selection; backup cannot invent a substitute likeness. Never pick a
    scene the planner did not approve, and never reuse a finished image from an earlier issue.
    State the picture outcome in your final OUTCOME line so the Boss sees it.
 6. **No posting.** Do not post to X or Discord yourself: the desk relay announces the live edition

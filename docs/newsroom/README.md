@@ -22,7 +22,7 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Desk | Who | When | Folder | Follows | May publish or send |
 |---|---|---|---|---|---|
 | Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
-| Late edition | Codex, GPT-6.1 Sol | 6:00 pm | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
+| Late edition | Codex, GPT-6.1 Sol | 5:00 pm artwork prepress; 6:00 pm release | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
 | Wire | Codex, GPT-6 Luna | every two hours (running; the Claude wire checks below only fill a missed shift) | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
 | Research | Codex, GPT-6.1 Sol | running (resumed by Mark; check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
 | Personal briefing | Codex, GPT-6.1 Sol | running (check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
@@ -31,6 +31,11 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |
 | Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
 | Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 7:05 am, after the morning edition | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |
+
+The Late automation has two passes: 5 pm prepares reference-based artwork before 6, and
+6 pm publishes the fixed-cutoff edition and its image-led announcement. Missing or unreviewed
+art blocks X; there is no text-only edition-send fallback. All desks use the full
+[Card Cabinet link](https://arc.markbarney.net/news/cards) in their handoffs and commissions.
 
 The scheduled editions use the bounded [publishing route](SCHEDULED_EDITIONS.md), then send one
 routine X announcement. Browser access is only for that send; Discord uses the existing relay.

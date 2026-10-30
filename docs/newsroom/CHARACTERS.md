@@ -14,6 +14,15 @@ Chen’s exact full-size owner-provided photo is saved as `client/public/news-im
 
 Native Codex image generation made these three selected assets. The scene has exactly two corrected bunnies, one Dries and five spiders. An initial extra spider was removed with one targeted native edit. The existing raw art and earlier editions remain preserved.
 
+## Required source for all commissions
+
+Every commission begins with the [Card Cabinet](https://arc.markbarney.net/news/cards) and
+[TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md). Look up the exact person/account or competition-specific
+team and use its registered character images as actual generation inputs. This governs existing
+artwork reuse and all newly commissioned episodes. Preserve references, character mappings and
+originals; record and resolve a missing mapping before reuse rather than guessing a likeness.
+Include the Cabinet URL and exact reference paths in every art-desk handoff.
+
 ## Casting and upkeep
 
 October 13 expanded-scene direction: follow the

@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.17  Oct 29, 2026
+
+- **Prepare the picture before the edition** (Author: GPT-6.1 Sol / Codex). Update the existing Late automation to run artwork prepress at 5 pm and publication at 6 pm Eastern. Authorize required native commissions from registered references when unused stock does not fit; retain the 6 pm standings cutoff, model, checkout, Discord approval and send-once protection.
+- **Block text-only edition announcements.** The X helper refuses missing or invalid artwork and provides a guarded `--begin-posting` handoff checking the exact PNG, published artwork, article link, Discord delivery and person approval. The sender must review the actual uploaded image with the headline/link before Post. Preserve historical posts and human confirmations; afternoon recaps are unchanged.
+- **Use the Card Cabinet everywhere.** Make https://arc.markbarney.net/news/cards and the registered character inputs mandatory in the shared playbook, AGENTS, newsroom map, art desk and commission handoffs. Preserve existing artwork and resolve missing mappings before reuse; do not invent replacement faces. Reserved feature covers may lead their full edition announcement with native provenance checked.
+- Validation: all 79 newsroom Python tests pass, including missing images, altered bytes, mismatched covers/links, missing or bot-only approval, protected retries and real reserved-feature provenance; no X send or deployment check is used to test the gate.
+
 ### Version 9.159.16  Oct 29, 2026
 
 - **Give ARC Mutants three new episodes** (Author: GPT-6.1 Sol / Codex). Save The Danger Grid, The Pattern Observatory and Above the Academy with Jack, Mark, Son and Ronen's established characters. Preserve each exact native PNG, prompt, actual references, review and four-account ARC2 cast condition alongside the original academy illustration.

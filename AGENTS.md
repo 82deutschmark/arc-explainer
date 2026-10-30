@@ -36,6 +36,12 @@
 > `SOCIAL_DESK.md`, `X_POSTING.md`, `ART_DESK.md`, `FALLBACK.md`). Standing rules live in those
 > guides, one-off orders in `content/news/editorial-assignments.json` (they expire), and each Codex
 > job's short instruction in `docs/newsroom/automation-prompts/`.
+> **Card Cabinet and artwork (Boss, 29-Oct-2026):** every Codex, Claude and OpenClaw newsroom
+> run reads `docs/newsroom/TEAM_PLAYBOOK.md` and the [Card Cabinet](https://arc.markbarney.net/news/cards).
+> All existing and new artwork commissions use the registered individual/team reference
+> characters and their actual image inputs. Never invent a replacement likeness. Late art is
+> prepared at 5 pm for the 6 pm release. Edition X sends require the attached reviewed image;
+> follow the guarded `--begin-posting` handoff in `X_POSTING.md`, never a text-only fallback.
 > **Head editor's completion order (22-Oct-2026):** every newsroom assistant follows
 > `docs/newsroom/FINISHING.md`. A successful push ends publication; the editor saying they
 > posted ends the send; one verification only; no deployment polling or work after completion.

@@ -8,9 +8,14 @@ file are folded into the principles below. What pictures exist, where each has r
 held in reserve is tracked in data, not prose: `content/news/artwork-inventory.json` and the
 `reusableScenes` in `content/news/visual-identities.json`.
 
-Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): one plan, approved
-reusable stock only, no generation or new commission, and publish verified text if no suitable
-stock is returned. The illustration requirement below does not delay these scheduled issues.
+Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md). The Late automation
+prepares artwork at 5 pm, before the 6 pm release. Use a suitable unused approved scene first;
+when none fits the news, commission one native illustration using the actual registered
+reference characters. The [Card Cabinet](https://arc.markbarney.net/news/cards),
+[TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and [CHARACTERS.md](CHARACTERS.md) govern every existing
+artwork reuse and new commission. Save a reviewed clean base before 6; bind final score/time
+graphics to the closing brief. Artwork is required for the edition X announcement. A genuine
+art failure may leave verified articles published, but must leave X blocked, never text-only.
 
 Before casting a contender, read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and the corresponding
 Card Cabinet/character record. Preserve commissioned native originals, actual source inputs,
@@ -134,8 +139,9 @@ It returns at most one job, with the exact rows, reference roles and native tool
 
 If no job is returned and the front page still needs a picture, pick suitable unused stock from
 the inventory and commission it for this issue as above. If generation is unavailable or fails,
-or no accurate scene fits, publish the verified text and report the concrete art outcome; never
-use a paid API or a stale illustration.
+or no accurate scene fits, publish the verified text and report the concrete art outcome,
+with the edition X announcement blocked for missing artwork. Never use a paid API, a stale
+illustration, or a text-only X fallback.
 
 ## Discord image delivery before X
 

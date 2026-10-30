@@ -67,7 +67,10 @@ lead the text with that article's headline, and retain its permanent link. Use t
 edition's composed image, including its current score/time overlays and branding. A
 generic link preview, raw scene without the score panel, or earlier edition's image is not
 a substitute. This image belongs in the existing routine announcement; it does not create
-an extra post. An edition without custom artwork keeps the normal text/link announcement.
+an extra post. Every routine edition announcement requires the reviewed image attachment.
+If neither contest has valid artwork, the helper saves `blocked` / `missing-edition-artwork`
+and exits nonzero. Do not compose or send a text-only edition announcement. Prepare Late
+artwork in the 5 pm pass and finalize its score graphics from the 6 pm evidence.
 
 1. Run, with today's Eastern date in the file name:
    `python3.13 scripts/newsroom_x.py --edition morning --output /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json`
@@ -82,11 +85,12 @@ an extra post. An edition without custom artwork keeps the normal text/link anno
    draft immediately, with no live-link check, deployment wait or polling. A site build after
    a successful push is expected; it does not reopen the publishing assignment.
 3. When the outbox state is `draft`: confirm the account is `82deutschmark` and look at its recent
-   posts for this edition's post (an existing one completes the job; save its URL). If `media`
-   is present, inspect its PNG, verify its saved hash, upload `media.path` through the browser's
+   posts for this edition's post (an existing one completes the job; save its URL). Require `media`;
+   if it is absent, stop with the artwork blocker. Inspect its PNG, verify its saved hash, upload `media.path` through the browser's
    file picker and add `media.alt` as image description. Confirm the compose preview shows
    the intended illustration with readable current overlays before sending. Save the exact
-   text and attachment metadata and set the state to `posting`, post it once, verify the text
+   text and attachment metadata, then use the guarded handoff below to set `posting`.
+   Never set an edition outbox to `posting` by directly editing JSON. Post it once, verify the text
    and attached illustration in one success result, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
    `posted` state is never overwritten; an uncertain send gets one profile check before any retry.
@@ -108,6 +112,34 @@ a separately named correction outbox with the old and new URLs. Check the profil
 if the human already posted the corrected image, verify it, record the existing result and
 do not send another copy. Deleting an old post is a separate irreversible action requiring
 the browser's action-time confirmation; it is not part of an unattended routine retry.
+
+## Required edition posting handoff
+
+After the account/duplicate check, upload `media.path`, add `media.alt`, and visually confirm
+that the X composer contains the correct image, readable overlays, reviewed headline and
+permanent edition link **together**. A saved file is not an uploaded attachment. If upload fails,
+the image is absent, or the preview shows the wrong cover, do not press Post.
+
+Save the confirmed Discord delivery in `discord.receiptPath`. The receipt records `state: sent`,
+`messageId`, `destination: channel:1550165647911034940`, `imageSha256`, and the `message` containing
+the edition link. Save `approval` with `approved: true`, `source: discord-reaction`, `messageId`,
+`imageSha256`, `checkedAt`, `userId`, `userIsBot: false` and `emoji`. An explicit release-specific
+editor waiver instead uses `source: editor-waiver` and the exact `instruction`; never invent one.
+Then run, with the saved attachment hash:
+
+```sh
+python3.13 scripts/newsroom_x.py --output <edition-outbox.json> --begin-posting \
+  --attached-image-sha256 <media.sha256> --attachment-reviewed
+```
+
+This command checks the actual PNG bytes, original published artwork, edition link, confirmed
+Discord image delivery and approval before allowing `draft` → `posting`. `--attachment-reviewed`
+attests to the visible X composer review; the helper cannot inspect the browser or click Post.
+A nonzero exit means stop: preserve the draft and concrete blocker. Never bypass it by changing
+state manually, removing `media`, using a generic link card, or sending the text first. The browser
+sender must keep the reviewed image attached through the final Post action. Verify one success
+result showing the text and image, then record the URL and `posted`. Already `posting`/`posted`
+outboxes and explicit human send confirmations remain protected, including historical text posts.
 
 # The afternoon recap (2:20 pm)
 
