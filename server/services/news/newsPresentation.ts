@@ -180,7 +180,7 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
       isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
       mainEntity: { '@type': card.kind === 'person' ? 'Person' : 'Organization', name: card.name, url } }] },
-    bodyHtml: `<main><p><a href="/news/cards">All cards in the Card Cabinet</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+    bodyHtml: `<main><p><a href="/news/cards">All ARC Prize cards</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
 }
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
@@ -193,7 +193,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   if (route === '/news/cards') {
     const cabinet = getNewsCollection();
     const tags = completeMeta({ ...ROUTE_META_TAGS['/news/cards'], ...cardFor(articles),
-      bodyHtml: `<main><h1>Card Cabinet</h1><p>The ARC Daily Digest’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+      bodyHtml: `<main><h1>ARC Prize 2026 cards</h1><p>The ARC Daily Digest’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
     return { status: 200, tags: { ...tags, jsonLd: collection(tags, cabinet.cards.map(card => ({ name: card.name, path: card.cardUrl }))) } };
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
@@ -201,7 +201,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     const card = getNewsCollection().cards.find(item => item.id === cardRoute[1]);
     if (card) return { status: 200, tags: collectionCardMeta(card) };
     return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
-      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse every card in the Card Cabinet</a></p></main>' }) };
+      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse every ARC Prize card</a></p></main>' }) };
   }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };

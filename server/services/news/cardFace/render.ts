@@ -220,8 +220,17 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   if (season) kids.push(at(FL.logo.cx - 30, FL.logo.cy - 30, 60, 60, { alignItems: 'center', justifyContent: 'center' },
     box({ fontFamily: ff(FONT.slab), fontSize: season.length > 4 ? 15 : 20, color: T.ink, lineHeight: 1, textShadow: T.ink === '#ffffff' ? '1.5px 1.5px 0 #000' : 'none' }, season)));
   const wm = vm.wordmark.toUpperCase();
+  // The ARC Prize mark (white blocky name with a magenta and a yellow cell after the first word) is drawn for the ARC Prize set;
+  // any other series name falls through to the plain Bebas wordmark below.
+  const arcMark = wm === 'ARC PRIZE';
   const wmSize = (await textWidth(wm, FONT.bebas, 400, 28, 1.6)) <= 160 ? 28 : 22;
-  kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center' },
+  if (arcMark) kids.push(at(FL.pennant.x + 14, FL.pennant.y, FL.pennant.w - 44, FL.pennant.h, { alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' },
+    box({ alignItems: 'center' },
+      nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, 'ARC'),
+      box({ width: 15, height: 15, backgroundColor: '#F012BE', marginLeft: 5, border: '1.5px solid #000' }),
+      box({ width: 15, height: 15, backgroundColor: '#FFDC00', marginLeft: 3, border: '1.5px solid #000' })),
+    nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, marginTop: 1, textShadow: '1.5px 1.5px 0 #000' }, 'PRIZE')));
+  else kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center' },
     nowrap({ fontFamily: ff(FONT.bebas), fontSize: wmSize, color: WHITE, letterSpacing: 1.6, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, wm),
     vm.publisher ? nowrap({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 10.5, color: T.light, letterSpacing: 0.8, marginTop: 2 }, vm.publisher.toUpperCase()) : null));
   const N = FL.numBox;

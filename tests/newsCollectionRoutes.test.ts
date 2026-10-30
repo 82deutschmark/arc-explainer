@@ -62,7 +62,7 @@ it('downloads the competitor reverse separately and rejects unsupported card sid
 it('publishes the Cabinet in initial HTML and sitemap with complete names and approved artwork', () => {
   const meta = resolveNewsMeta('/news/cards');
   expect(meta?.status).toBe(200);
-  expect(meta?.tags.bodyHtml).toContain('Card Cabinet');
+  expect(meta?.tags.bodyHtml).toContain('ARC Prize');
   expect(meta?.tags.bodyHtml).toContain('復活の混テキスト');
   expect(meta?.tags.bodyHtml).toContain('2026-10-29-domdolus-tolus-avatar-v1-base.webp');
   expect(newsSitemapEntries().some(entry => entry.url.endsWith('/news/cards'))).toBe(true);

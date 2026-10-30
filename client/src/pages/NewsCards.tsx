@@ -175,7 +175,7 @@ function Cabinet({ collection }: { collection: NewsCollection }) {
     <button key={value} type="button" aria-pressed={current === value} onClick={() => set(value)}>{label}{count != null ? <i>{count}</i> : null}</button>;
   return <main className="cb">
     <header className="cb-head">
-      <h1>Card Cabinet</h1>
+      <h1>ARC Prize 2026 Cards</h1>
       <p className="cb-sub">Every Kaggle competitor, sponsor and team in the ARC Prize {collection.season} competitions, one card each. Open a card for its full record.</p>
       <ul className="cb-ticker" aria-label="The set">
         <li><b>{cards.length}</b> cards</li><li><b>{counts.competitors}</b> competitors</li><li><b>{counts.sponsors}</b> sponsors</li><li><b>{counts.teams}</b> teams</li>
@@ -251,7 +251,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
-    { key: 'current', kind: 'current', label: `${card.season}`, sub: `Card Cabinet · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
+    { key: 'current', kind: 'current', label: `${card.season}`, sub: `ARC Prize · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
     ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);
@@ -260,7 +260,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
   ];
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
-    <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← Card Cabinet</Link><span>{card.number}</span></nav>
+    <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link><span>{card.number}</span></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
     <div className="cb-dgrid">
       <div className="cb-dcard">
@@ -321,15 +321,15 @@ export default function NewsCards() {
     queryKey: ['/api/news/cards'], staleTime: 60_000,
     queryFn: async () => {
       const response = await fetch('/api/news/cards');
-      if (!response.ok) throw new Error('The Card Cabinet could not be loaded.');
+      if (!response.ok) throw new Error('The cards could not be loaded.');
       return response.json() as Promise<NewsCollection>;
     },
   });
   const selected = query.data?.cards.find(card => card.id === cardId);
   const sectionImage = useNewsCardImage();
   usePageMeta({
-    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Card Cabinet | ${NEWS_NAME}`,
-    description: selected ? collectionCardDescription(selected) : 'The ARC Daily Digest’s Card Cabinet: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with linked teams, career records and standings.',
+    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `ARC Prize Cards | ${NEWS_NAME}`,
+    description: selected ? collectionCardDescription(selected) : 'The ARC Daily Digest’s ARC Prize cards: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with linked teams, career records and standings.',
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
     noindex: !!cardId && !!query.data && !selected,
     image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
@@ -337,7 +337,7 @@ export default function NewsCards() {
   return <CabinetShell>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
-      ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the Card Cabinet →</Link></div></main>
+      ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the ARC Prize cards →</Link></div></main>
       : <Cabinet collection={query.data} />)}
   </CabinetShell>;
 }

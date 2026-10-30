@@ -95,25 +95,25 @@ it('a team page links its roster to their cards', () => {
 
 it('the Cabinet page is a binder and a checklist with every tier named, starting with the cards', () => {
   const html = renderPage('/news/cards', '/news/cards');
-  expect(html).toContain('Card Cabinet');
+  expect(html).toContain('ARC Prize');
   for (const tier of ['Grandmaster', 'Master', 'Expert']) expect(html).toContain(tier);
   expect(html).toContain('Competition sponsor');
   // 30-Oct-2026 (Claude Sonnet 5.5 Medium): the redesigned Cabinet list no longer links the Hall of Fame itself (only each card's page
   // does, under "Everything else"). The link is checked on a card page; whether the list should link it too is for the page's owner.
   expect(renderPage('/news/cards/person-jean-francois-puget-2026', '/news/cards/:cardId')).toContain('href="/hall-of-fame"');
   expect(html).not.toMatch(/\bplayers?\b/i);
-  expect(html).toMatch(/<h1>Card Cabinet<\/h1>/);
+  expect(html).toMatch(/<h1>ARC Prize 2026 Cards<\/h1>/);
 });
 
 it('a shared card address opens that card with its record', () => {
   const html = renderPage('/news/cards/team-turducken-2026', '/news/cards/:cardId');
   expect(html).toContain('Team Turducken');
-  expect(html).toContain('← Card Cabinet');
+  expect(html).toContain('← All cards');
   expect(html).not.toContain('Find a name');
 });
 
 it('a missing shared card shows a return to the collection', () => {
   const html = renderPage('/news/cards/missing-card', '/news/cards/:cardId');
   expect(html).toContain('Card not found');
-  expect(html).toContain('Browse the Card Cabinet');
+  expect(html).toContain('Browse the ARC Prize cards');
 });

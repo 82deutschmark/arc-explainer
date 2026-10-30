@@ -199,6 +199,12 @@
 - **Summit notebook opens from a share-only link** (Author: GPT-6 / Codex). Add a stable, random reader URL that needs no Google sign-in. Keep publication authenticated and attendee content outside public source and assets. Shared pages remain out of navigation and sitemaps, with noindex, no-store and no-referrer policies; notes stay on each device. A stronger research pass improves selected unfamiliar guests' work summaries, verified MLST connections and conversation questions. Plan: `docs/2026-10-22-summit-share-plan.md`.
 
 
+
+## 30-Oct-2026 (Claude Sonnet 5.5 Medium): ARC Prize branding on the cards
+- The 2026 set is named "ARC Prize": the pennant draws the ARC Prize block mark (white name, magenta and yellow cells), backs and share previews read "ARC PRIZE 2026", and "Card Cabinet" (an internal development name) is gone from every visible page, title and crawler text.
+- Sponsor cards (Chollet, Knoop) no longer explain who they are or cite "ARC Prize lists him as"; one plain line each.
+- Chollet's card uses the "Master the AI before it masters you" art, cropped to the figure. FSES91 and Mykyta Ielanskyi get their reviewed artist pieces; rejected hero-v1 art stays unbound.
+
 ## 9.157.6 — 2026-10-22
 
 - Published the editor-requested Railway outage service note using the official 21:08 UTC status and saved an evening-edition assignment. Distinguishes filing from deployment and partial recovery from resolution.

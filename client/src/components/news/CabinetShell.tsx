@@ -29,7 +29,7 @@ export function CabinetShell({ children }: { children: ReactNode }) {
     {children}
     <NewsWelcome />
     <footer className="cb-foot">
-      <span>{NEWS_NAME} · Card Cabinet</span>
+      <span>{NEWS_NAME} · ARC Prize Cards</span>
       <span>Standings move until a competition closes; final results come from the private leaderboard.</span>
       <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">ARC Discord ↗</a>
       <Link href="/news">The Digest →</Link>

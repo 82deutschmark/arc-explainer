@@ -445,7 +445,14 @@
       "artNotes": [],
       "number": "P035",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-fses91-cyber-face-v2.webp",
+        "alt": "FSES91 as a cyberpunk illustration: a cap, goggles and a cyber-rig with a glowing holographic shark and puzzle grids",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-fses91-cyber-face-v2",
+        "commissionedAt": "2026-10-30T19:12:00.000Z"
+      }
     },
     {
       "id": "person-lukas-aichberger-2026",
@@ -572,7 +579,14 @@
       "artNotes": [],
       "number": "P045",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2.webp",
+        "alt": "Mykyta Ielanskyi as a bearded cyberpunk engineer with a graphics-card rig and puzzle-grid panels",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-mykyta-ielanskyi-cyber-face-v2",
+        "commissionedAt": "2026-10-30T19:12:00.000Z"
+      }
     },
     {
       "id": "person-gklambauer-2026",

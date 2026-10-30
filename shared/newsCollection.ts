@@ -227,7 +227,7 @@ export function collectionCardDescription(card: CollectionCard): string {
   const career = (card.highlights[0]?.text ?? card.description).replace(/\s+/g, ' ').trim();
   return `${card.name}’s ${card.season} card. ${parts.length > 1 ? `${parts.join('; ')}.` : career}`;
 }
-export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest Card Cabinet.'}`;
+export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest ARC Prize cards.'}`;
 /** Public-content fingerprint: a corrected identity, roster or immutable artwork gets a fresh image URL. */
 export function collectionShareVersion(card: CollectionCard): string {
   const text = JSON.stringify([RENDER_VERSION, card]);

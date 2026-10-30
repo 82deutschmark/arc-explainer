@@ -78,7 +78,7 @@ export function NewsNav({ className = 'news-nav' }: { className?: string }) {
   return <nav className={className} aria-label="ARC Daily sections">
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
-    <Link href="/news/cards">Card Cabinet</Link>
+    <Link href="/news/cards">ARC Prize Cards</Link>
     <Link href="/news/competitors">Notebook</Link>
     <Link href="/news/people">People</Link>
     <Link href="/news/community">Around the contests</Link>
