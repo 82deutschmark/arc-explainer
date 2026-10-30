@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.13
 # Author: Claude Sonnet 5.5 (effort unknown)
-# Date: 30-October-2026
+# Date: 30-October-2026 (web portraits allowed, Boss, 30-Oct-2026)
 # PURPOSE: Fold per-player Kaggle career evidence (content/news/evidence/kaggle-careers/<id>.json)
 # into content/news/people.json so every ARC Daily player card gets sourced career highlights and
 # its own portrait. Only evidence marked "verified": true is used, so drafts written while Kaggle
 # was blocking us never reach a card. Idempotent: facts that were sourced from the player's own
 # Kaggle pages are replaced by the verified ones; facts from other sources (Hall of Fame,
 # write-ups, X) are kept. Portraits change only when the evidence says "replaced" and the file
-# exists. Players whose portrait is a group image or missing are listed for human attention.
+# exists: from the player's own Kaggle account (kind kaggle) or, since the Boss allowed outside
+# pictures, from a public page that names them (kind web). Group images or missing portraits are
+# listed for human attention.
 # Makes no network requests. Usage: merge_kaggle_careers.py [--write]  (default is a dry run).
 # SRP/DRY check: Pass — one job (evidence -> people.json); reuses the file formats the card
 # registry already reads and does not touch cards.json.
@@ -63,7 +65,9 @@ def main() -> int:
         checked_at = evidence.get("checkedAt", "")
         new_facts = [fact_row(f, checked_at) for f in evidence.get("facts", []) if f.get("text") and f.get("sourceUrl") and f.get("sourceTitle")]
         if new_facts:
-            kept = [f for f in person.get("facts", []) if not is_own_kaggle_source(f, handles)]
+            # Facts from other sources stay, except exact repeats of the verified ones, so re-running never duplicates.
+            fresh = {(f["sourceUrl"], f["text"]) for f in new_facts}
+            kept = [f for f in person.get("facts", []) if not is_own_kaggle_source(f, handles) and (f.get("sourceUrl"), f.get("text")) not in fresh]
             # Official ARC Prize honours keep the lead (the card front shows the first highlight);
             # the verified Kaggle record follows, then any other earlier facts.
             honours = [f for f in kept if "arcprize.org" in (f.get("sourceUrl") or "") or "arc.markbarney.net" in (f.get("sourceUrl") or "")]
@@ -86,8 +90,21 @@ def main() -> int:
                     "sourceUrl": account["url"],
                     "src": portrait["src"],
                 }
+            elif (portrait.get("sourceUrl") or "").startswith("https://"):
+                # Boss, 30-Oct-2026: pictures from outside Kaggle are fine when a public page names the player.
+                title = portrait.get("sourceTitle") or f"Picture on {portrait['sourceUrl'].split('/')[2]}"
+                if person["name"].lower() not in title.lower():
+                    title = f"{person['name']} — {title}"
+                person["portrait"] = {
+                    "alt": portrait.get("alt") or f"{person['name']}, from {portrait['sourceUrl']}",
+                    "checkedAt": checked_at,
+                    "kind": "web",
+                    "sourceTitle": title,
+                    "sourceUrl": portrait["sourceUrl"],
+                    "src": portrait["src"],
+                }
             else:
-                attention.append((path.stem, f"new picture {portrait['src']} is not from their Kaggle account; loader rule blocks it"))
+                attention.append((path.stem, f"new picture {portrait['src']} has no public source page"))
         elif status in ("group-image", "none-available"):
             attention.append((path.stem, status))
         merged.append((path.stem, len(new_facts), status))

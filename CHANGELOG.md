@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.22  Oct 30, 2026
+
+- **Card Cabinet starts with the cards** (Author: Claude Sonnet 5.5). The tall title block, long intro and colophon above the first card are gone: the title, one-line dek and card counts share one slim line, the search and both filters share one row with the on-display count, and Front/Back sits beside each card's number instead of on its own row. The intro and commissioning line moved to a footnote under the grid; padding on the cards and the single-card page was cut the same way.
+- **Pictures from outside Kaggle are allowed** (Boss, 30-Oct-2026). A portrait may now come from any public page that names the person (portrait kind web); the loader and the Python validator check that the person's name appears in the source title or description. François Chollet and Mike Knoop each get their own single-person picture from the official ARC Prize team page instead of the shared two-man founders image, and Darragh Hanley uses his NVIDIA author-page photo.
+- **Three more team cards**: NVARC3 (T017), and the two multi-player ARC-AGI-2 teams that had none (T018, T019). They use the printed-initial plate until their art is commissioned.
+- `scripts/merge_kaggle_careers.py` no longer duplicates facts that came from non-Kaggle sources when it is run twice, and accepts web pictures. Two slow integration tests that walk the whole archive get a 60 second limit; Jack Cole's face test now expects his own Kaggle picture.
+- Validation: collection, image, share-image, route, view, integration and Python newsroom checks pass.
+
 ### Version 9.159.21  Oct 30, 2026
 
 - **Every player card now has a verified Kaggle record** (Author: Claude Sonnet 5.5). All 64 remaining players were read one at a time on their public Kaggle profile and competitions pages in the app's built-in browser (never in a person's own browser), with the earlier unverified drafts discarded. Each card back carries tier, medals, ranks and completed contests exactly as displayed, team medals are never credited as individual honours, and ARC standings stay labelled provisional. Evidence per player: `content/news/evidence/kaggle-careers/`; merged into `people.json` by `scripts/merge_kaggle_careers.py` (only files marked verified).

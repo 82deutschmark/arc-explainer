@@ -1227,12 +1227,12 @@
     "memberships": [],
     "name": "François Chollet",
     "portrait": {
-      "alt": "François Chollet and Mike Knoop, from the ARC Prize founders card",
-      "checkedAt": "2026-10-09T21:30:00Z",
-      "kind": "hall-of-fame",
-      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders card",
-      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
-      "src": "/news-images/people/arc-founders.webp"
+      "alt": "François Chollet, ARC Prize co-founder, in the official portrait on the ARC Prize website",
+      "checkedAt": "2026-10-30T11:43:53Z",
+      "kind": "web",
+      "sourceTitle": "ARC Prize — Mission page, Team section, François Chollet",
+      "sourceUrl": "https://arcprize.org/about",
+      "src": "/news-images/people/francois-chollet-v2.webp"
     }
   },
   {
@@ -1289,12 +1289,12 @@
     "memberships": [],
     "name": "Mike Knoop",
     "portrait": {
-      "alt": "François Chollet and Mike Knoop, from the ARC Prize founders card",
-      "checkedAt": "2026-10-09T21:30:00Z",
-      "kind": "hall-of-fame",
-      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders card",
-      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
-      "src": "/news-images/people/arc-founders.webp"
+      "alt": "Mike Knoop, ARC Prize co-founder, in the official portrait on the ARC Prize website",
+      "checkedAt": "2026-10-30T11:46:00Z",
+      "kind": "web",
+      "sourceTitle": "ARC Prize — Mission page, Team section, Mike Knoop",
+      "sourceUrl": "https://arcprize.org/about",
+      "src": "/news-images/people/mike-knoop-v2.webp"
     }
   },
   {
@@ -2342,12 +2342,6 @@
         "sourceTitle": "rellik13 (sirikilohit) active competitions on Kaggle",
         "sourceUrl": "https://www.kaggle.com/sirikilohit/competitions",
         "text": "On October 30, 2026 Kaggle listed ARC Prize 2026 - ARC-AGI-3 and the Google Gemma 4 Developer Agent Competition as the two competitions the profile was still active in."
-      },
-      {
-        "checkedAt": "2026-10-13T03:15:37.495573+00:00",
-        "sourceTitle": "ARC Prize — official Milestone 2 winners",
-        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
-        "text": "ARC Prize announced Lohit Siriki as the third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026."
       }
     ],
     "hallOfFame": [],
@@ -2556,12 +2550,12 @@
     ],
     "name": "Darragh Hanley",
     "portrait": {
-      "alt": "Darragh Hanley’s Kaggle profile picture",
-      "checkedAt": "2026-10-13T17:34:44Z",
-      "kind": "kaggle",
-      "sourceTitle": "Darragh Hanley — Kaggle profile picture",
-      "sourceUrl": "https://www.kaggle.com/darraghdog",
-      "src": "/news-images/people/darragh-hanley.webp"
+      "alt": "Darragh Hanley, from his NVIDIA Technical Blog author page",
+      "checkedAt": "2026-10-30T12:21:41Z",
+      "kind": "web",
+      "sourceTitle": "NVIDIA Technical Blog — author page, Darragh Hanley",
+      "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
+      "src": "/news-images/people/darragh-hanley-v2.webp"
     }
   },
   {

@@ -18,10 +18,19 @@
   },
   "completedResults": [],
   "portrait": {
-    "status": "group-image",
-    "src": "/news-images/people/arc-founders.webp",
-    "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
-    "note": "The portrait on his card is the shared ARC Prize founders image from the Hall of Fame: two men in one frame (checked by eye on 30 October 2026). It is not his own individual picture. No individual picture of him was confirmed from the sources his record cites: the one attempt at his X profile picture was refused by a rate limit, and the only other public profile image found, his GitHub avatar, is a felt-sculpture figure rather than a picture of him and comes from a source his record does not cite, so it was not saved. The file arc-founders.webp was left untouched and no new portrait file was made."
+    "status": "replaced",
+    "src": "/news-images/people/francois-chollet-v2.webp",
+    "sourceUrl": "https://arcprize.org/about",
+    "sourceTitle": "ARC Prize — Mission page, Team section, François Chollet",
+    "imageUrl": "https://arcprize.org/media/images/blog-françois-chollet.jpg",
+    "sha256OfSourceImage": "50717e93d7c7e5b02ed27a4fb0fb608bcf44ce5adcf8ca193e038b62576dcf22",
+    "alt": "François Chollet, ARC Prize co-founder, in the official portrait on the ARC Prize website",
+    "note": "His own single-person picture: black and white on a red field, labelled François Chollet (image alt text and caption) in the Team section of the official ARC Prize site. Saved at its native 500 by 500 as a new webp; the shared founders image was left untouched. Identified by the page's own label, not by appearance. Boss allowed pictures from outside Kaggle on 30 October 2026.",
+    "previousPortrait": {
+      "status": "group-image",
+      "src": "/news-images/people/arc-founders.webp",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19"
+    }
   },
   "facts": [
     {
