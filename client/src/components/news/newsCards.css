@@ -1,8 +1,8 @@
 /*
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex
  * Date: 2026-10-29
  * PURPOSE: A vintage baseball-card cabinet within the ARC Daily newspaper. Cream stock,
- *          double ruled ink, oxblood nameplates and gold trim frame uncropped commissioned art.
+ *          double ruled ink, linked players/teams and permanent shareable card dossiers.
  * SRP/DRY check: Pass — typography and colors inherit the existing .arc-daily news tokens;
  *          every cabinet-only rule is scoped by its news-cabinet prefix.
  */
@@ -63,6 +63,30 @@
 .news-cabinet-stamp > span { color: #8d1c12; }
 .news-cabinet-card-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; padding: 10px 3px 3px; font: 800 9px/1.4 var(--sans); }
 .news-cabinet-card-links a { text-decoration: underline; text-underline-offset: 3px; }
+.news-cabinet-nameplate a { color: inherit; }
+.news-cabinet-nameplate a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.news-cabinet-front-teams { display: grid; gap: 8px; margin: 12px 12px 0; padding: 0; list-style: none; }
+.news-cabinet-front-teams span { display: block; color: var(--muted); font: 800 8px/1.5 var(--sans); letter-spacing: .05em; text-transform: uppercase; }
+.news-cabinet-front-teams a, .news-cabinet-stat-team { display: block; margin-top: 3px; color: var(--accent); font: 700 12px/1.4 var(--serif); overflow-wrap: anywhere; }
+.news-cabinet-front-roster { margin: 12px 12px 0; }
+.news-cabinet-front-roster > strong { font: 800 8px/1.5 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.news-cabinet-front-roster .news-cabinet-roster { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 3px 0 0; padding: 0; border: 0; }
+.news-cabinet-front-roster .news-cabinet-roster li { margin: 0; font-size: 10px; }
+.news-cabinet-share { display: flex; flex-wrap: wrap; gap: 5px; align-items: baseline; min-width: 0; }
+.news-cabinet-share button { padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.news-cabinet-share button:disabled { cursor: wait; }
+.news-cabinet-share [role="status"] { color: var(--muted); font-weight: 400; }
+.news-cabinet-share input { flex: 1 1 100%; min-width: 0; max-width: 100%; padding: 7px; border: 1px solid var(--hair); border-radius: 0; background: var(--paper); color: var(--ink); font: 11px/1.5 var(--sans); }
+.news-cabinet-team-history { margin: 0; padding: 0; list-style: none; }
+.news-cabinet-team-history li + li { margin-top: 10px; }
+.news-cabinet-team-history li > a { font: 700 13px/1.45 var(--serif); overflow-wrap: anywhere; }
+.news-cabinet-team-history span, .news-cabinet-team-history small { display: block; margin-top: 3px; color: var(--muted); font: 9px/1.5 var(--sans); overflow-wrap: anywhere; }
+.news-cabinet-detail .news-cabinet-header h1 { font-size: clamp(35px, 6vw, 68px); overflow-wrap: anywhere; }
+.news-cabinet-detail-grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); align-items: start; gap: 30px; margin-top: 24px; }
+.news-cabinet-dossier { min-width: 0; padding: 20px; border: 1px solid #b7a47f; background: #fbf4e4; }
+.news-cabinet-dossier .news-cabinet-back-section h3 { font-size: 11px; }
+.news-cabinet-dossier .news-cabinet-facts p { font-size: 14px; }
+.news-cabinet a:focus-visible, .news-cabinet button:focus-visible, .news-cabinet input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .news-cabinet-face.is-back { padding: 12px; }
 .news-cabinet-back-header { padding-bottom: 10px; border-bottom: 4px double #9f8b62; }
@@ -120,6 +144,9 @@
   .news-cabinet-colophon { font-size: 9px; }
   .news-cabinet-turn button { min-height: 38px; }
   .news-cabinet-card-links { font-size: 10px; }
+  .news-cabinet-detail-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .news-cabinet-dossier { padding: 15px; }
+  .news-cabinet-share button, .news-cabinet-card-links > a { display: inline-flex; align-items: center; min-height: 36px; }
 }
 
 @media print {

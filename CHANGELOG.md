@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.15  Oct 29, 2026
+
+- **Connect the players and their teams** (Author: GPT-6 / Codex). Player cards now show their current observed teams, earlier teams and complete sourced Kaggle career highlights. Team cards show a linked player roster. Match verified accounts and competition-specific team identities; preserve simultaneous ARC2/ARC3 memberships and label uncertain older observations honestly.
+- **Give every card a shareable page.** Add `/news/cards/:id`, Open card and Copy card link controls, a selectable-link fallback, the selected card's own social preview, and permanent player/team links throughout the Cabinet. Retain the existing artwork, card numbers, front/back views, filters and PNG downloads. Teams without a published notebook link to their public source.
+- Validation: 79 collection, rendered-card, HTTP, PNG and existing news checks pass, along with the production build. Archive-wide tests pass with a longer timeout after the build completes. The broad TypeScript check retains 12 existing diagnostics outside changed files. Plan: `docs/plans/2026-10-29-player-and-team-cards.md`.
+
 ### Version 9.159.14  Oct 29, 2026
 
 - **Show the collectible proofs** (Author: GPT-6.1 Sol / Codex). Save Darren, Domdolus Tolus, The Last Dance, Turducken and ARC Mutants with their artwork and dated statistics. Bring the shared Nemotron fifth-place gold and Florian's earlier competition record forward, and retain exact card inputs and original-art references with the print proofs.

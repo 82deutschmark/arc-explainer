@@ -1,8 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 / Codex
  * Date: 2026-10-29
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
- * sourced official results. Clean artwork is independent of every programmatically drawn label.
+ * sourced official results, linked player/team cards and dated membership history. Clean
+ * artwork is independent of every programmatically drawn label.
  * SRP/DRY check: Pass — reuses news identities and competition slugs; no medal inference.
  */
 import { z } from 'zod';
@@ -74,15 +75,23 @@ export interface CollectionHonor {
 export interface CollectionEntry {
   competition: NewsCompetition; competitionId: string; teamId: string; teamName: string;
   observedAt: string | null; rank: number | null; score: number | null; submissions: number | null;
-  sourceUrl?: string;
-  members: { handle: string; name: string; personId?: string }[]; status: 'public' | 'final' | 'unavailable';
+  sourceUrl?: string; cardUrl?: string; profileUrl: string;
+  members: { handle: string; name: string; personId?: string; cardUrl?: string }[]; status: 'public' | 'final' | 'unavailable';
+}
+/** Positive roster observations, with an explicit uncertain state for stale membership. */
+export interface CollectionTeamHistory {
+  competition: NewsCompetition; competitionId: string; season: string; teamId: string; teamName: string;
+  memberHandle: string; firstObservedAt: string; lastObservedAt: string; sourceUrl: string; sourceTitle: string;
+  status: 'current' | 'previous' | 'last-observed'; cardUrl?: string; profileUrl: string;
 }
 export interface CollectionCard {
-  id: string; number: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string;
+  id: string; number: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
   personId?: string; art: CollectionArt | null; description: string; highlights: CompetitorFact[];
   accounts: { label: string; url: string }[]; entries: CollectionEntry[]; honors: CollectionHonor[]; artNotes: string[];
+  teamHistory: CollectionTeamHistory[];
 }
 export interface NewsCollection {
   season: string; commissionedBy: string; commissionedAt: string; updatedAt: string; cards: CollectionCard[];
 }
 export const CARD_CABINET_PATH = '/news/cards';
+export const collectionCardPath = (cardId: string) => `${CARD_CABINET_PATH}/${encodeURIComponent(cardId)}`;

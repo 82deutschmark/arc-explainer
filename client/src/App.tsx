@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex; existing contributors credited below
  * Date: 2026-10-29
- * PURPOSE: Register the permanent Card Cabinet alongside public play, references and newspaper routes.
+ * PURPOSE: Register the Card Cabinet and permanent player/team card pages alongside newspaper routes.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /*
@@ -205,6 +205,7 @@ function Router() {
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
         <Route path="/news" component={News} />
         <Route path="/news/cards" component={NewsCards} />
+        <Route path="/news/cards/:cardId" component={NewsCards} />
         <Route path="/news/competitors" component={NewsCompetitors} />
         <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
         <Route path="/news/people" component={NewsPeople} />
