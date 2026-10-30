@@ -1,5 +1,7 @@
 # The ARC Daily Digest wire desk
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Luna and any assistant running the wire.
@@ -19,7 +21,7 @@ ticker and the movers tables, so your job is the sentence a reader cannot get fr
 who moved, from where to where, why it matters for the medals, and who the people are.
 
 Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before choosing the contender angle or picture.
-Consult the exact team/handle’s Card Cabinet record and saved dossier for career context and
+Consult the exact team/handle’s card record and saved dossier for career context and
 character identity; use the current wire brief for today’s numbers. A held feature or saved
 illustration does not authorize a new publication or social send.
 

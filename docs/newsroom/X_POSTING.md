@@ -1,5 +1,7 @@
 # ARC Daily Digest posts on X
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Follow the [head editor's completion order](FINISHING.md) for every manual or scheduled post.
 One success result ends an authorized send. The editor saying they posted ends it immediately;
 record that confirmation locally without opening X, adding a reply or fetching the post URL.

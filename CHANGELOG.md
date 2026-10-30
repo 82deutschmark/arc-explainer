@@ -200,6 +200,12 @@
 
 
 
+
+## 30-Oct-2026 (Claude Sonnet 5.5 Medium): cards in stories, and a playbook for the writers
+- The story page's "In this story" shelf (browser and crawler HTML) now shows the real ARC Prize card of everyone the story names or cites, linking to each card page; people without a card keep the portrait tile.
+- New docs/newsroom/CARD_PLAYBOOK.md: how writers and Codex desks look up, feature, link and picture the cards; linked from the team playbook, reporter, wire, scheduled-edition, social and X guides.
+- Keith Tyser's fish-mascot art is bound to his card.
+
 ## 30-Oct-2026 (Claude Sonnet 5.5 Medium): ARC Prize branding on the cards
 - The 2026 set is named "ARC Prize": the pennant draws the ARC Prize block mark (white name, magenta and yellow cells), backs and share previews read "ARC PRIZE 2026", and "Card Cabinet" (an internal development name) is gone from every visible page, title and crawler text.
 - Sponsor cards (Chollet, Knoop) no longer explain who they are or cite "ARC Prize lists him as"; one plain line each.

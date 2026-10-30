@@ -1,4 +1,6 @@
-# The ARC Daily Digest — people, teams and the Card Cabinet
+# The ARC Daily Digest — people, teams and the ARC Prize cards
+
+> **Read first: [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md)**, how to use the cards in stories (the "In this story" shelf, naming, links, pictures). The set is called "ARC Prize"; "Card Cabinet" was an internal name and is not printed anywhere.
 
 Author: Codex · 29 October 2026
 Purpose: A durable reporting and collection map for every newsroom job.
@@ -11,7 +13,7 @@ budgets, methods or future plans. Read the subject's record before writing about
 
 ## Required notice for every desk and artwork commission
 
-The permanent shared page is **[The ARC Daily Card Cabinet](https://arc.markbarney.net/news/cards)**.
+The permanent shared page is **[The ARC Daily ARC Prize cards](https://arc.markbarney.net/news/cards)**.
 Every Codex, Claude, OpenClaw, wire, backup, research, manual and scheduled newsroom run must
 consult this playbook and the selected subject’s Cabinet records before reporting or commissioning
 art. Include this exact page link in desk handoffs and commission briefs so the next assistant

@@ -1,5 +1,7 @@
 # Scheduled editions: prepare the picture, then publish the edition
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Author: GPT-6.1 Sol / Codex · updated 29 October 2026 at Mark's direction.
 
 This is the route for scheduled Early and Late editions. Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md)

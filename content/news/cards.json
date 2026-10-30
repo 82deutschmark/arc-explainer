@@ -83,7 +83,14 @@
       "artNotes": [],
       "number": "P006",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/keith-tyser-hero-v1.webp",
+        "alt": "Keith Tyser as his fish mascot in a cap and gold-trimmed jacket in the glowing citadel",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-keith-tyser-hero-v1",
+        "commissionedAt": "2026-10-30T18:24:17.551Z"
+      }
     },
     {
       "id": "person-dries-smit-2026",

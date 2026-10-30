@@ -164,6 +164,10 @@
 
 /* Compact player cards borrow the Hall of Fame's portrait/name/honor hierarchy. */
 .news-story-people { clear: both; margin: 14px 0 20px; }
+.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 46%), 1fr)); gap: 10px; margin-bottom: 8px; }
+.arc-daily .news-story-card { display: block; line-height: 0; }
+.news-story-card img { width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 10px; box-shadow: 2px 3px 0 var(--ink); transition: transform .12s; }
+.arc-daily .news-story-card:hover img { transform: translateY(-3px) rotate(-.6deg); }
 .news-story-people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 8px; }
 .arc-daily .news-subject-card { display: flex; align-items: center; gap: 11px; padding: 7px; border: 1px solid var(--ink); border-left: 3px solid var(--accent); background: var(--paper); color: var(--ink); }
 .arc-daily .news-subject-card:hover { color: var(--accent); text-decoration: none; background: var(--tint); }

@@ -1,5 +1,7 @@
 # The ARC Daily Digest reporter (Early and Late editions)
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Authors: GPT-6.1 Sol / Codex and Claude Opus 5.5 (9–14 October 2026); reorganized by Claude Opus 5.5

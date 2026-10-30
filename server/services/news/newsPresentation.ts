@@ -33,7 +33,7 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionRoleLabel, collectionShareAlt, collectionSharePath,
+import { collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionRoleLabel, collectionShareAlt, collectionSharePath,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
 import { getNewsIndex } from './newsStore';
@@ -81,9 +81,12 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
 const personLink = (person: NewsPerson) => `<a href="${personPath(person.id)}">${esc(person.name)}</a>`;
 /** The crawler gets the same subjects and disclosed portrait choices as the browser sidebar. */
 function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition']): string {
+  const cabinet = getNewsCollection();
   return people.length ? `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
     const portrait = displayPortrait(person);
     const team = [...person.memberships].reverse().find(member => member.competition === competition);
+    const card = cabinet.cards.find(item => item.kind === 'person' && item.personId === person.id);
+    if (card) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card ${card.number}`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
     return `<article>${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="76" height="88"/>` : ''}${personLink(person)}${team ? `<p>${esc(team.teamName)}</p>` : ''}${person.hallOfFame[0] ? `<p>${esc(person.hallOfFame[0].label)}</p>` : ''}${person.editorialPortrait ? '<p>AI editorial portrait</p>' : ''}</article>`;
   }).join('')}</aside>` : '';
 }

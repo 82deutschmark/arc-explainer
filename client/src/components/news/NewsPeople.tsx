@@ -10,6 +10,8 @@
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { collectionRoleLabel, collectionShareVersion, type NewsCollection } from '@shared/newsCollection';
 import { displayPortrait, personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
@@ -28,18 +30,37 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
   return <span className="news-person-chip"><PersonPortrait person={person} size="chip" decorative /><span><Link href={personPath(person.id)}>{person.name} →</Link>{person.hallOfFame.slice(0, honors).map(card => <span key={card.path} className="news-person-history"> · <Link href={card.path}>{card.label} ↗</Link></span>)}</span></span>;
 }
 
-/** Compact collectible-style subject cards. Selection is shared with initial HTML, not inferred from team rosters. */
+/**
+ * "In this story": the real ARC Prize card of every person the story names or cites, side by side like a
+ * binder page, each linking to its card page. A person with no card yet falls back to the compact portrait
+ * tile. Selection is shared with the initial HTML, not inferred from team rosters.
+ */
 export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]; competition: NewsCompetition }) {
+  const cabinet = useQuery<NewsCollection>({
+    queryKey: ['/api/news/cards'], staleTime: 60_000,
+    queryFn: async () => {
+      const response = await fetch('/api/news/cards');
+      if (!response.ok) throw new Error('The cards could not be loaded.');
+      return response.json() as Promise<NewsCollection>;
+    },
+  });
   if (!people.length) return null;
+  const cardOf = (person: NewsPerson) => cabinet.data?.cards.find(card => card.kind === 'person' && card.personId === person.id);
+  const carded = people.map(person => ({ person, card: cardOf(person) }));
+  const withCard = carded.filter(item => item.card), without = carded.filter(item => !item.card);
   return <section className="news-story-people" aria-label="In this story">
     <h2 className="news-section-title">In this story</h2>
-    <div className="news-story-people-grid">{people.map(person => {
+    {!!withCard.length && <div className="news-story-cards">{withCard.map(({ person, card }) => <Link key={card!.id} href={card!.cardUrl} className="news-story-card">
+      <img src={`/api/news/cards/${encodeURIComponent(card!.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card!)}`} width={300} height={420} loading="lazy"
+        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} />
+    </Link>)}</div>}
+    {!!without.length && <div className="news-story-people-grid">{without.map(({ person }) => {
       const team = [...person.memberships].reverse().find(member => member.competition === competition);
       return <Link key={person.id} href={personPath(person.id)} className="news-subject-card">
         <PersonPortrait person={person} size="card" decorative />
-        <span className="news-subject-details"><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-subject-honor">{person.hallOfFame[0].label}</span>}<small>{person.editorialPortrait ? 'AI editorial portrait' : 'Player profile'} ↗</small></span>
+        <span className="news-subject-details"><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-subject-honor">{person.hallOfFame[0].label}</span>}</span>
       </Link>;
-    })}</div>
+    })}</div>}
   </section>;
 }
 
