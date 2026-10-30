@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-30T19:25:05Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nadeem leaps from 1,606th to 40th on ARC-3",
+  "id": "2026-10-30-1541-arc-3-nadeem-leaps-and-plzhecineedthis-climbs",
+  "personIds": [],
+  "publishedAt": "2026-10-30T19:41:41Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Nadeem gained 9.48 to reach 36.75 on the ARC-3 public board, moving from 1,606th to 40th in the past day. The team is still outside the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "plzhecineedthis also climbed 253 places, from 335th to 82nd, reaching 34.54 with a gain of 2.58. The gold line, the score at 19th, rose 0.71 in the past day to 39.69, so both teams sit below the medal places on the public table."
+    }
+  ],
+  "since": "2026-10-29T19:22:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T19:40:38Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16120761",
+    "17045290"
+  ]
+}
