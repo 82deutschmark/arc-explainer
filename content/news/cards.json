@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T19:57:00.496837+00:00",
+  "updatedAt": "2026-10-30T20:11:59.652Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -43,7 +43,14 @@
       "artNotes": [],
       "number": "P003",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp",
+        "alt": "Preserves Ivan's established clean-shaven adult character and signature cyan crystal. Distinct open optical helmet, silver/charcoal coat with crimson lining, large ARC prism between gloved hands and low GPU horseshoe harness, in emerald NVIDIA Citadel. Coherent illustration with no labels or card frame.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+        "commissionedAt": "2026-10-30T20:11:56.431Z"
+      }
     },
     {
       "id": "person-jack-cole-2026",
@@ -339,7 +346,14 @@
       "artNotes": [],
       "number": "P028",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp",
+        "alt": "Preserves Gal's own illustrated swept hair, narrow moustache/stubble, long face and raised sunglasses motifs. Crimson flight jacket, open finned cyber headset and hands on GPU hover-skimmer controls distinguish him from other NVIDIA characters. Painted adult face, giant cooling-engine foreground, emerald citadel and no labels or card frame.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+        "commissionedAt": "2026-10-30T20:11:59.652Z"
+      }
     },
     {
       "id": "person-yeyin-zhu-2026",

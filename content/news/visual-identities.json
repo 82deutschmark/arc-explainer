@@ -175,6 +175,14 @@
       "referenceType": "Established Hall of Fame character",
       "references": [
         {
+          "src": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp",
+          "sha256": "13d7715e411beba175c9d68dc978a321c9c08514e39d639346d904db6dadfeb5",
+          "generationRecord": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+          "kind": "native-character",
+          "label": "Ivan — NVIDIA prism architect",
+          "role": "Preserves Ivan's established clean-shaven adult character and signature cyan crystal. Distinct open optical helmet, silver/charcoal coat with crimson lining, large ARC prism between gloved hands and low GPU horseshoe harness, in emerald NVIDIA Citadel. Coherent illustration with no labels or card frame."
+        },
+        {
           "archivedAt": "2026-10-12T17:50:24Z",
           "kind": "hall-of-fame-character",
           "label": "Individual Hall of Fame character card",
@@ -1571,9 +1579,30 @@
       "identityNotes": [
         "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
       ]
+    },
+    {
+      "id": "gal-kaplun",
+      "personId": "gal-kaplun",
+      "status": "ready",
+      "names": [
+        "Gal Kaplun"
+      ],
+      "description": "Own illustrated avatar adapted into a cyberpunk competitor character.",
+      "referenceType": "Own illustrated avatar + commissioned cyber character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp",
+          "sha256": "8693024ddcea429c7d286884af14fd58aea0364cf923f0fd2865022f9519c405",
+          "generationRecord": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+          "kind": "native-character",
+          "label": "Gal — NVIDIA grid pilot",
+          "role": "Preserves Gal's own illustrated swept hair, narrow moustache/stubble, long face and raised sunglasses motifs. Crimson flight jacket, open finned cyber headset and hands on GPU hover-skimmer controls distinguish him from other NVIDIA characters. Painted adult face, giant cooling-engine foreground, emerald citadel and no labels or card frame."
+        }
+      ],
+      "identityNotes": []
     }
   ],
-  "updatedAt": "2026-10-30T19:53:48.793296+00:00",
+  "updatedAt": "2026-10-30T20:12:51.558304+00:00",
   "version": 1,
   "reusableScenes": [
     {
