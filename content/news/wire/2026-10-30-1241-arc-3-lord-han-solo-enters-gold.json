@@ -1,0 +1,51 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-30T16:24:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Lord Han Solo moves from 31st into the ARC-3 gold places",
+  "id": "2026-10-30-1241-arc-3-lord-han-solo-enters-gold",
+  "personIds": [
+    "lord-han-solo"
+  ],
+  "publishedAt": "2026-10-30T16:41:26Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-lord-han-solo-roster-0"
+      ],
+      "text": "Lord Han Solo moved into the gold places, from 31st to 17th, with a score of 39.94 after a gain of 2.87 in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-lord-han-solo-fact-2"
+      ],
+      "text": "The gold line, the score at 19th, rose 0.71 in the past day to 39.69, and this entry now sits above it. Lord Han Solo has an active ARC Prize 2026 entry on Kaggle, and public standings are provisional until the private board decides medals."
+    }
+  ],
+  "since": "2026-10-29T16:21:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T16:40:42Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-30T12:13:00Z",
+      "id": "person-lord-han-solo-fact-2",
+      "title": "Lord Han Solo - active ARC Prize 2026 ARC-AGI-3 entry and competition activity on Kaggle",
+      "url": "https://www.kaggle.com/lordhansolo/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-lord-han-solo-roster-0",
+      "title": "Dated ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "teamIds": [
+    "16371045"
+  ]
+}
