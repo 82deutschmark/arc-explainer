@@ -1,0 +1,51 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-30T03:53:15Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "faster machine is all you need vaults to third on ARC-3",
+  "id": "2026-10-30-0004-arc-3-faster-machine-jumps-to-third",
+  "personIds": [
+    "xz"
+  ],
+  "publishedAt": "2026-10-30T04:04:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "faster machine is all you need added 30.18 points to reach 58.59, leaping from 1,274th to third on the public ARC-AGI-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-xz-identity-0",
+        "person-xz-fact-0"
+      ],
+      "text": "The jump puts the entry into the gold places and just behind the top two. The roster lists xiaoz259, whose Kaggle profile identifies a decorated competitions competitor; the brief establishes no ARC method behind this result."
+    }
+  ],
+  "since": "2026-10-29T03:50:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T04:04:06Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-29T18:24:45.054449+00:00",
+      "id": "person-xz-identity-0",
+      "title": "xz — own public Kaggle profile",
+      "url": "https://www.kaggle.com/xiaoz259"
+    },
+    {
+      "accessedAt": "2026-10-29T18:24:45.054449+00:00",
+      "id": "person-xz-fact-0",
+      "title": "xz — public Kaggle profile, October 29, 2026",
+      "url": "https://www.kaggle.com/xiaoz259"
+    }
+  ],
+  "teamIds": [
+    "15487093"
+  ]
+}
