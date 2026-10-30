@@ -7,6 +7,7 @@
  *          and sourced notebook previews align with the ARC Explainer landing page.
  *          The masthead names both contests; compact links branch into people, community
  *          and the unified About the Paper page. Reader contacts reuse the shared masthead.
+ *          The permanent Card Cabinet is linked in every newspaper masthead.
  *          Each story credits its recorded writer. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  *          09-Oct-2026 (Claude Opus 5.5): story previews show the faces of the people each
@@ -92,6 +93,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
             <Link href={wirePath()}>The wire</Link>
+            <Link href="/news/cards">Card Cabinet</Link>
             <Link href="/news/competitors">Notebook</Link>
             <Link href="/news/people">People</Link>
             <Link href="/news/community">Around the contests</Link>

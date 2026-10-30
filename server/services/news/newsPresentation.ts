@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-29
- * PURPOSE: Server-readable newspaper, full reserved features on edition permalinks,
+ * PURPOSE: Card Cabinet discovery, crawlable collectible text, server-readable newspaper and full reserved features on edition permalinks,
  *          illustrated article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
@@ -32,6 +32,7 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
+import { getNewsCollection } from './newsCollection';
 import { getNewsIndex } from './newsStore';
 export const boardPath = (competition: string) => competition === 'arc-2' ? '/kaggle-leaderboard/arc-2' : '/kaggle-leaderboard';
 /** The front-page share card under today's address: ARC Daily pages without a card of their own use it. */
@@ -152,6 +153,11 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     return { status: 200, tags };
   }
   if (route === '/news/wire') return { status: 200, tags: wireMeta(wire, articles) };
+  if (route === '/news/cards') {
+    const collection = getNewsCollection();
+    return { status: 200, tags: completeMeta({ ...ROUTE_META_TAGS['/news/cards'], ...cardFor(articles),
+      bodyHtml: `<main><h1>Card Cabinet</h1><p>The ARC Daily Digest’s permanent ${esc(collection.season)} collection, commissioned by ${esc(collection.commissionedBy)}. Individual competitors and teams have separate numbered cards. Public standings remain dated observations; final honors require official results.</p>${collection.cards.map(card => `<article id="card-${esc(card.id)}"><h2>${esc(card.number)} · ${esc(card.name)}</h2>${card.art ? `<img src="${esc(card.art.src)}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${card.entries.map(entry => `<p>${esc(competitionName(entry.competition))} · ${esc(entry.teamName)} · ${entry.rank == null ? 'Standing unavailable' : `rank ${entry.rank}, score ${entry.score ?? 'unknown'}`} · ${entry.status === 'final' ? 'Official final' : 'Public provisional'} · ${entry.observedAt ? esc(newsDate(entry.observedAt)) : 'Observation unavailable'}</p>`).join('')}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Competitor profile' : 'Team notebook'}</a> · <a href="/api/news/cards/${esc(card.id)}/image.png">Save card PNG</a></p></article>`).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` }) };
+  }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };
   if (route === '/news/community') return { status: 200, tags: communityMeta(socialArchive, articles, discussions) };
@@ -173,6 +179,7 @@ export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
     { url: `${SITE_ORIGIN}/news/wire`, lastmod: latest(wire.map(story => story.publishedAt)) },
     { url: `${SITE_ORIGIN}/news/competitors`, lastmod: latest(competitors.map(record => record.lastObservedAt)) },
     { url: `${SITE_ORIGIN}/news/people`, lastmod: latest(people.flatMap(person => [...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)])) },
+    { url: `${SITE_ORIGIN}/news/cards`, lastmod: getNewsCollection().updatedAt },
     { url: `${SITE_ORIGIN}/news/community`, lastmod: latest([...socialArchive.map(post => post.checkedAt), ...discussions.map(thread => thread.checkedAt)]) },
     { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
     ...people.map(person => ({ url: `${SITE_ORIGIN}${personPath(person.id)}`, lastmod: latest([...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)]) })),

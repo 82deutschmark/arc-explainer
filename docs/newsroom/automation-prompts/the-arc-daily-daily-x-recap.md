@@ -9,3 +9,5 @@ Authorized: the one routine afternoon recap post on X from 82deutschmark, and wr
 Keep your memory.md a short current note: replace it each run with what this run did and what is still open, at most about forty lines. Rules never go there; they live in the docs.
 
 Finish with the handoff path and the post URL or outbox state, or the concrete reason either part could not complete.
+
+Before reporting on a competitor or choosing artwork, read docs/newsroom/TEAM_PLAYBOOK.md. Look up the exact competition, team ID and verified handle in the Card Cabinet registries and saved dossier; use the recorded achievements, public discussion history and character mapping to make the coverage informed. Cards preserve dated background, so use the run’s fresh board evidence for current standings. Preserve commissioned artwork, held-feature release conditions and existing send-once state. This playbook adds no publication, social-send or schedule permission.

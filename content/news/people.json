@@ -1579,6 +1579,14 @@
         "sourceTitle": "PunkCyber — public X profile",
         "sourceUrl": "https://x.com/cunkpyber",
         "url": "https://x.com/cunkpyber"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "tanakaai24",
+        "platform": "kaggle",
+        "sourceTitle": "Tanaka Ai24 — own Kaggle profile and direct account links",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24",
+        "url": "https://www.kaggle.com/tanakaai24"
       }
     ],
     "facts": [
@@ -1587,12 +1595,63 @@
         "sourceTitle": "PunkCyber — public team-identification reply to the ARC Daily Digest",
         "sourceUrl": "https://x.com/cunkpyber/status/2109599257980555583",
         "text": "PunkCyber (@cunkpyber) identifies 復活の混テキスト as their team in a public reply to the ARC Daily Digest."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Tanaka Ai24 — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24",
+        "text": "Own Kaggle profile displays Competitions Expert and 4 silver competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Tanaka Ai24 — own direct cunkpyber account link",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24",
+        "text": "The Tanaka Ai24 Kaggle profile directly links twitter.com/cunkpyber, establishing that this Kaggle account and the existing PunkCyber X identity belong together."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Tanaka Ai24 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+        "text": "Completed results include 23rd of 1,514 with silver in Santa 2024 and 79th of 4,186 with silver in AI Agent Security, shared with current teammates konbu17 and pompom555."
       }
     ],
     "hallOfFame": [],
     "id": "punkcyber",
-    "memberships": [],
-    "name": "PunkCyber"
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "tanakaai24",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16569125",
+        "teamName": "復活の混テキスト"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "tanakaai24",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "PunkCyber",
+    "portrait": {
+      "alt": "PunkCyber’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:59Z",
+      "kind": "kaggle",
+      "sourceTitle": "PunkCyber — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24",
+      "src": "/news-images/people/punkcyber.webp"
+    }
   },
   {
     "accounts": [
@@ -2275,6 +2334,12 @@
         "sourceTitle": "Artificial Agency Lab — own research and account links",
         "sourceUrl": "https://artificialagencylab.com/",
         "text": "Artificial Agency Lab’s own site links Richard Csaky to @ricsinaruto and its September 30 ARC-AGI-3 submission; its dated historical methods do not identify the method behind the October 14 score event."
+      },
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "sourceTitle": "Artificial Agency Lab — own named team biographies",
+        "sourceUrl": "https://artificialagencylab.com/",
+        "text": "Artificial Agency Lab’s own site identifies Richard Csaky as its research lead; Foresight’s project credit separately names Richard Csaky and Côme Chevalier as the lab team."
       }
     ],
     "hallOfFame": [],
@@ -2284,7 +2349,7 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-14T09:44:09Z",
-        "lastObservedAt": "2026-10-29T21:52:29Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
         "memberHandle": "richardcsaky",
         "season": "2026",
         "sourceTitle": "Public roster observation",
@@ -2296,7 +2361,7 @@
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
         "firstObservedAt": "2026-10-14T09:44:10Z",
-        "lastObservedAt": "2026-10-19T21:58:46Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
         "memberHandle": "richardcsaky",
         "season": "2026",
         "sourceTitle": "Public roster observation",
@@ -2596,7 +2661,7 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-17T09:52:12Z",
-        "lastObservedAt": "2026-10-29T21:52:29Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
         "memberHandle": "grigoriyzatravkin",
         "season": "2026",
         "sourceTitle": "Dated ARC-3 public roster observation",
@@ -2675,6 +2740,24 @@
         "sourceTitle": "Domdolus Tolus — fifth-place solution write-up and author credits",
         "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
         "text": "Kaggle lists Darren Amadeus Martin among the authors of the Domdolus Tolus fifth-place NVIDIA Nemotron Model Reasoning Challenge write-up."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Darren Amadeus Martin — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+        "text": "His own Kaggle profile identifies him as a student at Waseda University."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "The five-account Domdolus Tolus team finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal; the result is a shared team honor."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Darren Amadeus Martin — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+        "text": "His own completed competition record lists 18th of 1,142 and a silver medal in Code Golf Championship 2025."
       }
     ],
     "hallOfFame": [],
@@ -2684,12 +2767,24 @@
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
         "firstObservedAt": "2026-10-27T01:13:36Z",
-        "lastObservedAt": "2026-10-29T21:52:30Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
         "memberHandle": "darrenamadeusmartin",
         "season": "2026",
         "sourceTitle": "ARC2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
         "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "darrenamadeusmartin",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16534961",
         "teamName": "Domdolus Tolus"
       }
     ],
@@ -2859,5 +2954,1180 @@
       }
     ],
     "name": "gklambauer"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924080+00:00",
+        "handle": "alwintheodoric",
+        "platform": "kaggle",
+        "sourceTitle": "Alwin Theodoric — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric",
+        "url": "https://www.kaggle.com/alwintheodoric"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924080+00:00",
+        "sourceTitle": "Alwin Theodoric — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric",
+        "text": "Alwin Theodoric’s own Kaggle profile lists him as a student at Tokyo University of Science in Tokyo."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "Member of the five-account Domdolus Tolus team that finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal. The public team write-up credits all five members."
+      },
+      {
+        "checkedAt": "2026-10-29T23:42:34.924080+00:00",
+        "sourceTitle": "Alwin Theodoric — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/alwintheodoric/competitions",
+        "text": "His own completed-result card records first of 992 in the community competition Fake or Real: The Impostor Hunt in Texts, shared with darrenamadeusmartin; no medal is displayed for this result."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "alwin-theodoric",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "alwintheodoric",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "alwintheodoric",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16534961",
+        "teamName": "Domdolus Tolus"
+      }
+    ],
+    "name": "Alwin Theodoric",
+    "portrait": {
+      "alt": "Alwin Theodoric’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:58Z",
+      "kind": "kaggle",
+      "sourceTitle": "Alwin Theodoric — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric",
+      "src": "/news-images/people/alwin-theodoric.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924211+00:00",
+        "handle": "billyanggara",
+        "platform": "kaggle",
+        "sourceTitle": "Billy Anggara — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/billyanggara",
+        "url": "https://www.kaggle.com/billyanggara"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924211+00:00",
+        "sourceTitle": "Billy Anggara — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/billyanggara",
+        "text": "Billy Anggara’s own Kaggle profile lists him as a student at Chuo University in Tokyo."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "Member of the five-account Domdolus Tolus team that finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal. The public team write-up credits all five members."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "billy-anggara",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "billyanggara",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "billyanggara",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16534961",
+        "teamName": "Domdolus Tolus"
+      }
+    ],
+    "name": "Billy Anggara"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924214+00:00",
+        "handle": "rinnnntt",
+        "platform": "kaggle",
+        "sourceTitle": "Tri Ardian Rinalda — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/rinnnntt",
+        "url": "https://www.kaggle.com/rinnnntt"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924214+00:00",
+        "sourceTitle": "Tri Ardian Rinalda — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/rinnnntt",
+        "text": "Tri Ardian Rinalda’s own Kaggle profile lists him as a student at Institute of Science Tokyo and directly links his triardianrnd LinkedIn account."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "Member of the five-account Domdolus Tolus team that finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal. The public team write-up credits all five members."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "tri-ardian-rinalda",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "rinnnntt",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "rinnnntt",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16534961",
+        "teamName": "Domdolus Tolus"
+      }
+    ],
+    "name": "Tri Ardian Rinalda"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924217+00:00",
+        "handle": "yassirramadhan",
+        "platform": "kaggle",
+        "sourceTitle": "Muhammad Yassir Ramadhan — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/yassirramadhan",
+        "url": "https://www.kaggle.com/yassirramadhan"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:42:34.924217+00:00",
+        "sourceTitle": "Muhammad Yassir Ramadhan — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/yassirramadhan",
+        "text": "Muhammad Yassir Ramadhan’s own Kaggle profile lists Student and Tokyo, without naming an institution."
+      },
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "Member of the five-account Domdolus Tolus team that finished fifth of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, earning a competition gold medal. The public team write-up credits all five members."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "muhammad-yassir-ramadhan",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "yassirramadhan",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "yassirramadhan",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16534961",
+        "teamName": "Domdolus Tolus"
+      }
+    ],
+    "name": "Muhammad Yassir Ramadhan",
+    "portrait": {
+      "alt": "Muhammad Yassir Ramadhan’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:58Z",
+      "kind": "kaggle",
+      "sourceTitle": "Muhammad Yassir Ramadhan — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan",
+      "src": "/news-images/people/muhammad-yassir-ramadhan.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "isakatsuyoshi",
+        "platform": "kaggle",
+        "sourceTitle": "ISAKA Tsuyoshi — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+        "url": "https://www.kaggle.com/isakatsuyoshi"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "AInebosuke",
+        "platform": "x",
+        "sourceTitle": "ISAKA Tsuyoshi — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+        "url": "https://x.com/AInebosuke"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "ISAKA Tsuyoshi — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+        "text": "Own Kaggle profile displays Competitions Master and 3 gold, 7 silver, 8 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "ISAKA Tsuyoshi — own biography and direct account links",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+        "text": "Own Kaggle biography describes a Principal AI Engineer at Elith; the profile directly links the AInebosuke X account."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "ISAKA Tsuyoshi — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+        "text": "Completed results include fourth of 4,186 with gold in AI Agent Security, shared with current teammate yuto0712; seventh of 1,857 with gold in MAP; and ninth of 832 with gold in LLM 20 Questions."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "isaka-tsuyoshi",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "isakatsuyoshi",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16569125",
+        "teamName": "復活の混テキスト"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "isakatsuyoshi",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "ISAKA Tsuyoshi",
+    "portrait": {
+      "alt": "ISAKA Tsuyoshi’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:58Z",
+      "kind": "kaggle",
+      "sourceTitle": "ISAKA Tsuyoshi — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+      "src": "/news-images/people/isaka-tsuyoshi.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "konbu17",
+        "platform": "kaggle",
+        "sourceTitle": "konbu17 — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/konbu17",
+        "url": "https://www.kaggle.com/konbu17"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "konbu17 — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/konbu17",
+        "text": "Own Kaggle profile displays Competitions Expert and 9 silver competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "konbu17 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
+        "text": "Completed results include 55th of 1,867 in Stanford RNA 3D Folding Part 2, 58th of 10,148 in Kaggriculture, and 67th of 3,947 in Biohub, all silver-medal finishes."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "konbu17",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "konbu17",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16569125",
+        "teamName": "復活の混テキスト"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "konbu17",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "konbu17",
+    "portrait": {
+      "alt": "konbu17’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:58Z",
+      "kind": "kaggle",
+      "sourceTitle": "konbu17 — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/konbu17",
+      "src": "/news-images/people/konbu17.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "pompom555",
+        "platform": "kaggle",
+        "sourceTitle": "pomcho555 — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/pompom555",
+        "url": "https://www.kaggle.com/pompom555"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "k8s_pomcho",
+        "platform": "x",
+        "sourceTitle": "pomcho555 — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/pompom555",
+        "url": "https://x.com/k8s_pomcho"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "pomcho555 — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/pompom555",
+        "text": "Own Kaggle profile displays Competitions Expert and 2 silver, 2 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "pomcho555 — own biography and direct account links",
+        "sourceUrl": "https://www.kaggle.com/pompom555",
+        "text": "The account displays pomcho555 and directly links the k8s_pomcho X account and pomcho555 GitHub account; its stated interests include MLOps, SRE, HPC, distributed systems and eBPF."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "pomcho555 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+        "text": "Completed results include 79th of 4,186 with silver in AI Agent Security, shared with current teammates konbu17 and tanakaai24, and 110th of 2,618 with silver in Liverpool Ion Switching."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "pompom555",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "pompom555",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16569125",
+        "teamName": "復活の混テキスト"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "pompom555",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "pomcho555",
+    "portrait": {
+      "alt": "pomcho555’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:59Z",
+      "kind": "kaggle",
+      "sourceTitle": "pomcho555 — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/pompom555",
+      "src": "/news-images/people/pompom555.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "refv00",
+        "platform": "kaggle",
+        "sourceTitle": "re — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/refv00",
+        "url": "https://www.kaggle.com/refv00"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "refv00",
+        "platform": "x",
+        "sourceTitle": "re — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/refv00",
+        "url": "https://x.com/refv00"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "re — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/refv00",
+        "text": "Own Kaggle profile displays Competitions Master and 2 gold, 2 silver, 1 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "re — own biography and direct account links",
+        "sourceUrl": "https://www.kaggle.com/refv00",
+        "text": "Own Kaggle profile displays re, describes a data scientist in Sapporo, and directly links the refv00 X account; no full real name has been established."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "re — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+        "text": "Member of the first-place team of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge, alongside goodmeatday and reopon; also 14th of 2,963 with gold in NeuroGolf 2026."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "refv00",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "refv00",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16569125",
+        "teamName": "復活の混テキスト"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "refv00",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "re",
+    "portrait": {
+      "alt": "re’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:59Z",
+      "kind": "kaggle",
+      "sourceTitle": "re — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/refv00",
+      "src": "/news-images/people/refv00.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "tk256ailab",
+        "platform": "kaggle",
+        "sourceTitle": "Takeru Sato — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab",
+        "url": "https://www.kaggle.com/tk256ailab"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "tk256ailab",
+        "platform": "x",
+        "sourceTitle": "TK256 — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab",
+        "url": "https://x.com/tk256ailab"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "TK256 — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab",
+        "text": "Own Kaggle profile displays Competitions Expert and 3 silver, 1 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Takeru Sato | TK256 — own GitHub profile directly linked by Kaggle",
+        "sourceUrl": "https://github.com/tk256ailab",
+        "text": "The TK256 Kaggle profile directly links github.com/tk256ailab, whose own public name is Takeru Sato | TK256. His Kaggle biography describes a Tohoku NLP student."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "TK256 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/tk256ailab/competitions",
+        "text": "Completed results include 55th of 2,963 with silver in NeuroGolf 2026, 62nd of 4,185 with silver in the NVIDIA Nemotron Model Reasoning Challenge, and 225th of 6,125 with silver in ROGII."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "takeru-sato",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "tk256ailab",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16782676",
+        "teamName": "TK256"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "tk256ailab",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "Takeru Sato",
+    "portrait": {
+      "alt": "Takeru Sato’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:15:59Z",
+      "kind": "kaggle",
+      "sourceTitle": "Takeru Sato — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/tk256ailab",
+      "src": "/news-images/people/takeru-sato.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "ttyn4519",
+        "platform": "kaggle",
+        "sourceTitle": "Teppei Fukutomi — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519",
+        "url": "https://www.kaggle.com/ttyn4519"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "tfuku816150",
+        "platform": "x",
+        "sourceTitle": "t fuku — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519",
+        "url": "https://x.com/tfuku816150"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "t fuku — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519",
+        "text": "Own Kaggle profile displays Competitions Master and 1 gold, 9 silver, 1 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Teppei (t fuku) Fukutomi — directly linked professional profile",
+        "sourceUrl": "https://www.linkedin.com/in/teppei-fukutomi-3344313b6/",
+        "text": "The t fuku Kaggle profile directly links the professional profile that names Teppei (t fuku) Fukutomi, identifies @ttyn4519 as his Kaggle account, and describes a software engineer at Honda."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "t fuku — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/ttyn4519/competitions",
+        "text": "Completed results include 26th of 10,148 with gold in Kaggriculture, 15th of 1,857 with silver in MAP, and 28th of 2,445 with silver in Jigsaw Agile."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "teppei-fukutomi",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "ttyn4519",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "17012110",
+        "teamName": "t fuku"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "ttyn4519",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "Teppei Fukutomi",
+    "portrait": {
+      "alt": "Teppei Fukutomi’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:16:00Z",
+      "kind": "kaggle",
+      "sourceTitle": "Teppei Fukutomi — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/ttyn4519",
+      "src": "/news-images/people/teppei-fukutomi.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "yuto0712",
+        "platform": "kaggle",
+        "sourceTitle": "yuto083 — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/yuto0712",
+        "url": "https://www.kaggle.com/yuto0712"
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "kujiranoonaka",
+        "platform": "x",
+        "sourceTitle": "yuto083 — direct X account link on own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/yuto0712",
+        "url": "https://x.com/kujiranoonaka"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "yuto083 — own Kaggle tier and medal record",
+        "sourceUrl": "https://www.kaggle.com/yuto0712",
+        "text": "Own Kaggle profile displays Competitions Master and 4 gold, 5 silver, 8 bronze competition medals, as checked on October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "小杉雄斗 / yuto-kosugi — directly linked professional profile",
+        "sourceUrl": "https://www.linkedin.com/in/yuto-kosugi/",
+        "text": "The yuto083 Kaggle profile directly links the professional profile displaying 小杉雄斗, which describes CAIO at Prox Industries and a University of Tokyo doctoral student on leave."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "yuto083 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/yuto0712/competitions",
+        "text": "Completed results include fourth of 4,186 with gold in AI Agent Security, shared with current teammate isakatsuyoshi; eighth of 6,125 with gold in ROGII; ninth of 3,947 with gold in Biohub; and 19th of 6,299 with gold in RSNA Knee."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "yuto0712",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "yuto0712",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16569113",
+        "teamName": "復活の混テキスト"
+      }
+    ],
+    "name": "yuto083",
+    "portrait": {
+      "alt": "yuto083’s own Kaggle blue-whale profile picture",
+      "checkedAt": "2026-10-29T23:26:08.724960Z",
+      "kind": "kaggle",
+      "sourceTitle": "yuto083 — exact own-profile avatar with uppercase PNG suffix",
+      "sourceUrl": "https://www.kaggle.com/yuto0712",
+      "src": "/news-images/people/yuto0712.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "aizealotwu",
+        "platform": "kaggle",
+        "sourceTitle": "common-people — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu",
+        "url": "https://www.kaggle.com/aizealotwu"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "common-people — own Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu",
+        "text": "Own Kaggle profile displays common-people and describes a Peking University student in Shenzhen interested in LLMs, information retrieval, recommendation and AI for science; no real name has been established."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "common-people — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/aizealotwu/competitions",
+        "text": "Completed results include 19th of 2,259 with silver in CAFA 6 Protein Function Prediction, a shared team result; 132nd of 1,857 with bronze in MAP, also shared; and 134th of 1,412 with bronze in MABe."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "common-people",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "aizealotwu",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16450168",
+        "teamName": "win a real prize"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "aizealotwu",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16490178",
+        "teamName": "Grigoriy Zatravkin & co"
+      }
+    ],
+    "name": "common-people",
+    "portrait": {
+      "alt": "common-people’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:16:00Z",
+      "kind": "kaggle",
+      "sourceTitle": "common-people — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/aizealotwu",
+      "src": "/news-images/people/common-people.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "deepdreamer",
+        "platform": "kaggle",
+        "sourceTitle": "Dongming Sheng — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer",
+        "url": "https://www.kaggle.com/deepdreamer"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Dongming Sheng — professional profile directly linked by own Kaggle account",
+        "sourceUrl": "https://uk.linkedin.com/in/hanssheng",
+        "text": "The _hans Kaggle account directly links linkedin.com/in/hanssheng. That exact professional profile names Dongming Sheng and describes an NLP researcher at Tencent in Greater London."
+      },
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "_hans / deepdreamer — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+        "text": "Completed results include 31st of 1,671 with silver in Corporación Favorita Grocery Sales Forecasting, 53rd of 4,539 with silver in Toxic Comment Classification as a shared team result, and 223rd of 3,330 with bronze in the Statoil/C-CORE Iceberg Classifier Challenge."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "dongming-sheng",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "deepdreamer",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16768245",
+        "teamName": "_hans"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "deepdreamer",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16490178",
+        "teamName": "Grigoriy Zatravkin & co"
+      }
+    ],
+    "name": "Dongming Sheng",
+    "portrait": {
+      "alt": "Dongming Sheng’s Kaggle profile picture",
+      "checkedAt": "2026-10-30T00:16:00Z",
+      "kind": "kaggle",
+      "sourceTitle": "Dongming Sheng — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer",
+      "src": "/news-images/people/dongming-sheng.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "handle": "florenciasolange",
+        "platform": "kaggle",
+        "sourceTitle": "Florencia Solange — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/florenciasolange",
+        "url": "https://www.kaggle.com/florenciasolange"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:26:08.724960Z",
+        "sourceTitle": "Florencia Solange — own Kaggle profile and competition listing",
+        "sourceUrl": "https://www.kaggle.com/florenciasolange",
+        "text": "Own Kaggle profile displays Florencia Solange and a joined date of August 21, 2026. The inspected competition record lists the current ARC-AGI-3 entry; no earlier completed competition was displayed."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "florencia-solange",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "florenciasolange",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16490178",
+        "teamName": "Grigoriy Zatravkin & co"
+      }
+    ],
+    "name": "Florencia Solange"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "handle": "majkel1337",
+        "platform": "kaggle",
+        "sourceTitle": "Michał Gromadzki — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/majkel1337",
+        "url": "https://www.kaggle.com/majkel1337"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "sourceTitle": "Michał Gromadzki — GitHub profile directly linked by own Kaggle account",
+        "sourceUrl": "https://github.com/Michal1337",
+        "text": "Own Kaggle profile directly links github.com/Michal1337, whose public display name is Michał Gromadzki; his own LexiGen write-up also credits that full name."
+      },
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "sourceTitle": "Michał Gromadzki — own professional biography",
+        "sourceUrl": "https://github.com/Michal1337",
+        "text": "Own GitHub biography describes an ML Engineer at Samsung R&D Institute Poland."
+      },
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "sourceTitle": "Majkel1337 — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/majkel1337/competitions",
+        "text": "Own Kaggle profile displays Competitions Master, two gold medals and one silver. Completed results include 12th of 6,807 in the Pokémon TCG AI Battle Challenge Simulation, 18th of 10,148 in Kaggriculture, and 30th of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "michal-gromadzki",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "majkel1337",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16373916",
+        "teamName": "Majkel1337"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "majkel1337",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16958599",
+        "teamName": "Majkel1337"
+      }
+    ],
+    "name": "Michał Gromadzki"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:24:34.248388Z",
+        "handle": "yktori",
+        "platform": "kaggle",
+        "sourceTitle": "yktori — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/yktori",
+        "url": "https://www.kaggle.com/yktori"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:24:34.248388Z",
+        "sourceTitle": "yktori — own public Kaggle biography",
+        "sourceUrl": "https://www.kaggle.com/yktori",
+        "text": "Own Kaggle biography describes a web engineer at LY Corporation in Tokyo; no full real name or external identity link has been established."
+      },
+      {
+        "checkedAt": "2026-10-29T23:24:34.248388Z",
+        "sourceTitle": "yktori — own completed competition record",
+        "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+        "text": "Own Kaggle profile displays Competitions Expert, one silver and four bronze medals. Completed results include 27th of 1,309 with silver in Drawing with LLMs, 74th of 812 with bronze in IceCube, and 82nd of 693 with bronze in LEAP."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "yktori",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "yktori",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16760837",
+        "teamName": "yktori"
+      }
+    ],
+    "name": "yktori"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "handle": "michaeltgao",
+        "platform": "kaggle",
+        "sourceTitle": "Michael — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/michaeltgao",
+        "url": "https://www.kaggle.com/michaeltgao"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "sourceTitle": "Michael — own public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/michaeltgao",
+        "text": "Own Kaggle profile displays Michael and the handle michaeltgao. A surname, professional biography and external identity link have not been established; the handle alone does not verify a surname."
+      },
+      {
+        "checkedAt": "2026-10-29T23:24:17.895841Z",
+        "sourceTitle": "Michael — own competition record",
+        "sourceUrl": "https://www.kaggle.com/michaeltgao/competitions",
+        "text": "The inspected own competition record displays the two active 2026 ARC competitions and no completed results; this describes the visible account record rather than a complete career history."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "michaeltgao",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "michaeltgao",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16153654",
+        "teamName": "mtg"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "michaeltgao",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16153655",
+        "teamName": "mtg"
+      }
+    ],
+    "name": "Michael"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "handle": "aquaursaresearch",
+        "platform": "kaggle",
+        "sourceTitle": "AquaUrsa Research — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/aquaursaresearch",
+        "url": "https://www.kaggle.com/aquaursaresearch"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "sourceTitle": "AquaUrsa Research — own public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/aquaursaresearch",
+        "text": "AquaUrsa Research is the display name of the aquaursaresearch Kaggle account. No real-person, registered-company or externally linked professional identity has been established."
+      },
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "sourceTitle": "AquaUrsa Research — own competition record",
+        "sourceUrl": "https://www.kaggle.com/aquaursaresearch/competitions",
+        "text": "The inspected own competition record displays active entries in both 2026 ARC tracks and no completed competition results."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "aquaursa-research",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-29T22:52:37Z",
+        "lastObservedAt": "2026-10-29T22:52:37Z",
+        "memberHandle": "aquaursaresearch",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "15488773",
+        "teamName": "AquaUrsa Research"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "aquaursaresearch",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15488763",
+        "teamName": "AquaUrsa Research"
+      }
+    ],
+    "name": "AquaUrsa Research"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "handle": "cmechevalier",
+        "platform": "kaggle",
+        "sourceTitle": "chev — own Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/cmechevalier",
+        "url": "https://www.kaggle.com/cmechevalier"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "sourceTitle": "chev — own public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/cmechevalier",
+        "text": "Own Kaggle profile displays chev for cmechevalier. Its exact mapping to a full real name remains unresolved."
+      },
+      {
+        "checkedAt": "2026-10-29T23:20:24.063600Z",
+        "sourceTitle": "cmechevalier — own public FACE-OF-AGI notebook",
+        "sourceUrl": "https://www.kaggle.com/code/cmechevalier/face-of-agi-arc-agi-3-rtx6000",
+        "text": "The account publishes the public notebook FACE-OF-AGI ARC-AGI-3 RTX6000; notebook authorship does not by itself establish a full real name."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "cmechevalier",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T22:52:35Z",
+        "lastObservedAt": "2026-10-29T22:52:35Z",
+        "memberHandle": "cmechevalier",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16132261",
+        "teamName": "artificialagencylab.com"
+      }
+    ],
+    "name": "chev"
   }
 ]

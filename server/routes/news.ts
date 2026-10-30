@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-07; 08-October-2026; 10-October-2026
- * PURPOSE: Read-only public archive and immutable reporting evidence for ARC Daily.
+ * Date: 2026-10-29; 08-October-2026; 10-October-2026
+ * PURPOSE: Read-only Card Cabinet, downloadable collectibles, public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
  *          card URLs carry a content version (shared/news.ts articleCardPath), so they are
  *          cached as immutable; the section card follows the day and the latest editions, so
@@ -20,10 +20,29 @@ import { getNewsIndex, loadNewsArchive, NEWS_DIRECTORY, WIRE_ID } from '../servi
 import { newsRss } from '../services/news/newsPresentation';
 import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
 import { marketsResponse } from '../services/news/newsMarkets';
+import { getNewsCollection } from '../services/news/newsCollection';
+import { buildCollectionCardImage } from '../services/news/newsCollectionImage';
 const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => card
   ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
   : res.status(404).set('Cache-Control', 'no-store').json({ error: 'Preview image not found' });
 export function mountNews(app: Express) {
+  app.get('/api/news/cards', (_req, res, next) => {
+    try { res.set('Cache-Control', 'public, max-age=60').json(getNewsCollection()); } catch (error) { next(error); }
+  });
+  app.get('/api/news/cards/:id/image.png', async (req, res, next) => {
+    try {
+      const card = getNewsCollection().cards.find(item => item.id === req.params.id);
+      if (!card) return res.status(404).json({ error: 'Collection card not found' });
+      return res.type('image/png').set('Cache-Control', 'public, max-age=60')
+        .set('Content-Disposition', `attachment; filename="${card.id}.png"`).send(await buildCollectionCardImage(card));
+    } catch (error) { next(error); }
+  });
+  app.get('/api/news/cards/:id', (req, res, next) => {
+    try {
+      const card = getNewsCollection().cards.find(item => item.id === req.params.id);
+      return card ? res.set('Cache-Control', 'public, max-age=60').json(card) : res.status(404).json({ error: 'Collection card not found' });
+    } catch (error) { next(error); }
+  });
   app.get('/api/news', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsIndex()); } catch (error) { next(error); }
   });

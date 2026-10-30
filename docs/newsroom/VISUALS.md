@@ -3,6 +3,11 @@
 Author: Claude Opus 5.5 · 9 October 2026; desk assignments updated by GPT-6.1 Sol / Codex on 11 October 2026 · for GPT-6.1 Sol, GPT-6 Luna (the wire desk) and any assistant working on the newspaper.
 Updated the same evening: the front page's Hall of Fame band became the past-winners table, and wire stories pick a picture from their brief.
 
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before selecting a face, account mascot or complete
+team cast. Its Card Cabinet lookup preserves the distinction between verified people,
+owner-selected avatars and explicitly fictional stand-ins; retain the recorded source and
+role mapping when reusing commissioned art.
+
 ## Mark Barney's two capacities — 11 October 2026
 
 His Kaggle competitor portrait remains `/news-images/people/mark-barney.webp`,
@@ -28,6 +33,7 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 | Competitor notebook cards, team rosters, "Names in this edition" | verified people on that team | `peopleForTeam()` |
 | Community desk | the post's author when the X handle is a verified person, plus people in `personIds` | `personForXHandle()` |
 | People directory and profiles | everyone in `content/news/people.json`, with honors | `PersonCard`, profile header |
+| Permanent [Card Cabinet](https://arc.markbarney.net/news/cards) | curated individual and team cards, complete commissioned art, dated statistics and verified final honors | `people.json`, `cards.json`, `card-results.json`; the [team playbook](TEAM_PLAYBOOK.md) maintains their identity/art mappings |
 
 **The daily layout follows the reporting.** The editor’s 29 October direction replaces the
 older one-person strip: show **all people covered in the story**, as compact baseball-card-style

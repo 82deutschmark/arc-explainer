@@ -1,5 +1,7 @@
 # The ARC Daily Digest backup desk (Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire)
 
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a person or team or selecting their artwork; the Card Cabinet and saved dossiers are the shared reporting record.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Author: Claude Opus 5.5 · 10 October 2026, at the Boss's request · rewritten by Claude Opus 5.5 Max,

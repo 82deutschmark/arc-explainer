@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex; existing contributors credited below
- * Date: 2026-10-27
- * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * Date: 2026-10-29
+ * PURPOSE: Register the permanent Card Cabinet alongside public play, references and newspaper routes.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /*
@@ -67,6 +67,7 @@ const NewsMethod = lazy(() => import("@/pages/NewsMethod"));
 const NewsStaff = lazy(() => import("@/pages/NewsStaff"));
 const NewsWire = lazy(() => import("@/pages/NewsWire"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
+const NewsCards = lazy(() => import("@/pages/NewsCards"));
 const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
 const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
 const PuzzleDiscussion = lazy(() => import("@/pages/PuzzleDiscussion"));
@@ -203,6 +204,7 @@ function Router() {
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
         <Route path="/news" component={News} />
+        <Route path="/news/cards" component={NewsCards} />
         <Route path="/news/competitors" component={NewsCompetitors} />
         <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
         <Route path="/news/people" component={NewsPeople} />

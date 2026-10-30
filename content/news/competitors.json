@@ -114,6 +114,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: aquaursaresearch. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-15488773",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "aquaursaresearch"
+    ],
+    "name": "AquaUrsa Research",
+    "teamId": "15488773"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-29T09:50:52Z",
     "id": "arc-2-15494960",
@@ -728,6 +748,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: aizealotwu. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-16450168",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "aizealotwu"
+    ],
+    "name": "win a real prize",
+    "teamId": "16450168"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16461211",
@@ -1107,6 +1147,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: tk256ailab. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-16782676",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "tk256ailab"
+    ],
+    "name": "TK256",
+    "teamId": "16782676"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-26T09:41:48Z",
     "id": "arc-2-16784541",
@@ -1381,6 +1441,26 @@
     ],
     "name": "Charles Ran",
     "teamId": "16987610"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: ttyn4519. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-17012110",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "ttyn4519"
+    ],
+    "name": "t fuku",
+    "teamId": "17012110"
   },
   {
     "aliases": [],
@@ -2851,6 +2931,30 @@
     ],
     "name": "common-people-whereIsMyFuckingPrize",
     "teamId": "16498846"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:35Z",
+        "sourceTitle": "ARC-3 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "Observed public Kaggle roster: alwintheodoric,billyanggara,darrenamadeusmartin,rinnnntt,yassirramadhan. This is the separately identified ARC-3 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:35Z",
+    "id": "arc-3-16534961",
+    "lastObservedAt": "2026-10-29T22:52:35Z",
+    "members": [
+      "alwintheodoric",
+      "billyanggara",
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "yassirramadhan"
+    ],
+    "name": "Domdolus Tolus",
+    "teamId": "16534961"
   },
   {
     "aliases": [],

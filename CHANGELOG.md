@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.13  Oct 29, 2026
+
+- **Open the ARC Daily Card Cabinet** (Author: GPT-6.1 Sol / Codex). Add a permanent, searchable baseball-card collection at `/news/cards`, with 65 individual cards, 16 team cards, uncropped commissioned artwork, front/back records and printable PNGs. Names and dated statistics are drawn programmatically; Japanese names retain their lettering. Preserve stable card numbers, original art and source records.
+- **Prepare for official ARC Prize 2026 honors.** Keep current public snapshots separate from explicit final-result records, Kaggle medals and organizer awards. Repeatable imports credit the recorded recipients and preserve official corrections. Add 19 verified identities and 12 genuine account pictures without inventing faces or unresolved names.
+- **Give every scheduled desk the same playbook.** Commit `TEAM_PLAYBOOK.md`, link it from the newsroom guides and update all six existing job prompts to consult the Cabinet, verified dossiers, past results and character mappings. Preserve schedules, models, targets and send permissions. Held stories and X remain held.
+- Validation: 32 collection/API/image checks, 33 existing news checks, 70 newsroom Python checks and production build pass. Local desktop and narrow-layout card review completed. The broad TypeScript check retains 12 existing diagnostics outside the changed files.
+
 ### Version 9.159.12  Oct 29, 2026
 
 - **Save every commissioned contender artwork** (Author: GPT-6.1 Sol / Codex). Preserve the complete set of nine selected character illustrations, exact native outputs and generation arguments, owner-reference originals, explicit cast mappings and gallery/inventory notes. Keep the NVIDIA duo as art only, as the editor requested.

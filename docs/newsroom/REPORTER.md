@@ -13,6 +13,11 @@ bounded publishing route overrides discovery and new artwork below, and includes
 Discord distribution. This guide remains the reporting and evidence contract, and the route
 for explicitly commissioned manual work.
 
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a competitor or choosing art.
+Match the exact contest, team ID and verified handle, then use the saved achievements, public
+discussion history and character mapping alongside this issue’s fresh evidence. Preserve held
+feature conditions and commissioned art through the existing desk workflow.
+
 ## Who, when and what is authorized
 
 The scheduled **GPT-6.1 Sol** run is the journalist, on the signed-in Codex subscription: no paid

@@ -18,6 +18,11 @@ the picture you choose. The front page already prints the standings, the
 ticker and the movers tables, so your job is the sentence a reader cannot get from a table:
 who moved, from where to where, why it matters for the medals, and who the people are.
 
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before choosing the contender angle or picture.
+Consult the exact team/handle’s Card Cabinet record and saved dossier for career context and
+character identity; use the current wire brief for today’s numbers. A held feature or saved
+illustration does not authorize a new publication or social send.
+
 ## How breaking stories reach the editions
 
 Pushing a validated story publishes it immediately in the wire and front-page What's

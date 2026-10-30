@@ -12,6 +12,11 @@ Follow the [head editor's completion order](FINISHING.md). A successful push fin
 publication; no deployment check follows it. Complete the authorized distribution below as a
 separate step. Human send confirmation needs no browser proof.
 
+Before competitor reporting or artwork selection, read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md).
+Use the exact Card Cabinet/team dossier as dated background, with the run’s fresh brief for
+current standings. This lookup adds no discovery, generation, publication or send permission
+and preserves the bounded route, held-feature conditions and send-once state below.
+
 ## Bound the work
 
 - Use the signed-in Codex subscription, the existing model and one agent. Browser access is only

@@ -9,3 +9,5 @@ Authorized: publishing wire stories. Not authorized: application-code edits, oth
 Keep your memory.md a short current note: replace it each run with what this run did and what is still open, at most about forty lines. Rules never go there; they live in the docs.
 
 Finish with the published story links or the reason nothing was filed, and any board error.
+
+Before reporting on a competitor or choosing artwork, read docs/newsroom/TEAM_PLAYBOOK.md. Look up the exact competition, team ID and verified handle in the Card Cabinet registries and saved dossier; use the recorded achievements, public discussion history and character mapping to make the coverage informed. Cards preserve dated background, so use the run’s fresh board evidence for current standings. Preserve commissioned artwork, held-feature release conditions and existing send-once state. This playbook adds no publication, social-send or schedule permission.

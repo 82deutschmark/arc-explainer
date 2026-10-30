@@ -7,6 +7,10 @@ the configuration conversation.
 This is the map. Every desk reads it first. The rules each desk follows live in one guide per
 desk (below); the Codex job instructions only point at them, so a rule is written once.
 
+Before competitor reporting or artwork selection, read the [team playbook](TEAM_PLAYBOOK.md).
+Use its exact competition/team/handle lookup, Card Cabinet and saved dossiers for informed
+background; the run’s fresh board remains the source for current standings.
+
 Every desk must follow the [head editor's completion order](FINISHING.md): verify once,
 finish publishing at the successful push, accept human send confirmation, and stop. The
 rule applies to manual work as well as scheduled shifts and overrides older wait instructions.
@@ -54,6 +58,16 @@ dated folder under `reports/arc-daily-social/` that already exists for its kind.
 text is the article's own `discord` field and the relay announces the edition, so desks do not
 save separate Discord draft files. One-run briefs and drafts may live in `/tmp` (the backup desk
 uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100 SSD/`.
+
+The permanent [Card Cabinet](https://arc.markbarney.net/news/cards) is maintained through three core files:
+`content/news/people.json` keeps verified source identities, `cards.json` keeps stable card
+numbers, commissioned artwork bindings and dated snapshots, and `card-results.json` keeps
+explicitly official final honors. Follow [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) for their links
+to competitor facts, character mappings and artwork usage. Authorized maintenance uses
+`node --import tsx scripts/newsroom_cards.ts` with `refresh`, `check`, or
+`import-results <official.json>`; research-only desks leave changes to the publishing desk.
+Preserve native art and its inputs/provenance, held manuscripts and existing send receipts.
+Only verified official results supply final medals or awards; a public band does not.
 
 ## How to change what a desk does
 

@@ -12,6 +12,11 @@ Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): one pl
 reusable stock only, no generation or new commission, and publish verified text if no suitable
 stock is returned. The illustration requirement below does not delay these scheduled issues.
 
+Before casting a contender, read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and the corresponding
+Card Cabinet/character record. Preserve commissioned native originals, actual source inputs,
+exact role mappings and existing usage receipts; card labels and statistics are drawn
+separately. Curated team art never supplies an invented personal likeness or release permission.
+
 ## Principles (the Boss's standing art direction, 12–14 October 2026)
 
 - **Every front page has a picture.** Each Early and Late issue publishes at least one finished

@@ -1,0 +1,2094 @@
+{
+  "version": 1,
+  "season": "2026",
+  "commissionedBy": "Mark Barney",
+  "commissionedAt": "2026-10-30T00:23:50.049Z",
+  "updatedAt": "2026-10-30T00:23:50.049Z",
+  "cards": [
+    {
+      "id": "person-yi-chia-chen-2026",
+      "kind": "person",
+      "name": "Yi-Chia Chen",
+      "personId": "yi-chia-chen",
+      "entries": [],
+      "artNotes": [],
+      "number": "P001",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-jean-francois-puget-2026",
+      "kind": "person",
+      "name": "Jean-François Puget (CPMP)",
+      "personId": "jean-francois-puget",
+      "entries": [],
+      "artNotes": [],
+      "number": "P002",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-ivan-sorokin-2026",
+      "kind": "person",
+      "name": "Ivan Sorokin",
+      "personId": "ivan-sorokin",
+      "entries": [],
+      "artNotes": [],
+      "number": "P003",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-jack-cole-2026",
+      "kind": "person",
+      "name": "Jack Cole",
+      "personId": "jack-cole",
+      "entries": [],
+      "artNotes": [],
+      "number": "P004",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-mithil-a-vakde-2026",
+      "kind": "person",
+      "name": "Mithil A Vakde",
+      "personId": "mithil-a-vakde",
+      "entries": [],
+      "artNotes": [],
+      "number": "P005",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-keith-tyser-2026",
+      "kind": "person",
+      "name": "Keith Tyser",
+      "personId": "keith-tyser",
+      "entries": [],
+      "artNotes": [],
+      "number": "P006",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-dries-smit-2026",
+      "kind": "person",
+      "name": "Dries Smit",
+      "personId": "dries-smit",
+      "entries": [],
+      "artNotes": [],
+      "number": "P007",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-jeroen-cottaar-2026",
+      "kind": "person",
+      "name": "Jeroen Cottaar",
+      "personId": "jeroen-cottaar",
+      "entries": [],
+      "artNotes": [],
+      "number": "P008",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-jan-disselhoff-2026",
+      "kind": "person",
+      "name": "Jan Disselhoff",
+      "personId": "jan-disselhoff",
+      "entries": [],
+      "artNotes": [],
+      "number": "P009",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-david-hartmann-2026",
+      "kind": "person",
+      "name": "David Hartmann",
+      "personId": "david-hartmann",
+      "entries": [],
+      "artNotes": [],
+      "number": "P010",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-daniel-franzen-2026",
+      "kind": "person",
+      "name": "Daniel Franzen",
+      "personId": "daniel-franzen",
+      "entries": [],
+      "artNotes": [],
+      "number": "P011",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-francois-chollet-2026",
+      "kind": "person",
+      "name": "François Chollet",
+      "personId": "francois-chollet",
+      "entries": [],
+      "artNotes": [],
+      "number": "P012",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-mike-knoop-2026",
+      "kind": "person",
+      "name": "Mike Knoop",
+      "personId": "mike-knoop",
+      "entries": [],
+      "artNotes": [],
+      "number": "P013",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-isaiahp-2026",
+      "kind": "person",
+      "name": "Isaiah Pressman",
+      "personId": "isaiahp",
+      "entries": [],
+      "artNotes": [],
+      "number": "P014",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-lonnie-2026",
+      "kind": "person",
+      "name": "Lonnie",
+      "personId": "lonnie",
+      "entries": [],
+      "artNotes": [],
+      "number": "P015",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-alijs-2026",
+      "kind": "person",
+      "name": "alijs",
+      "personId": "alijs",
+      "entries": [],
+      "artNotes": [],
+      "number": "P016",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-gromml-2026",
+      "kind": "person",
+      "name": "gromml",
+      "personId": "gromml",
+      "entries": [],
+      "artNotes": [],
+      "number": "P017",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-mark-barney-2026",
+      "kind": "person",
+      "name": "Mark Barney",
+      "personId": "mark-barney",
+      "entries": [],
+      "artNotes": [],
+      "number": "P018",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-son-pham-2026",
+      "kind": "person",
+      "name": "Son Pham",
+      "personId": "son-pham",
+      "entries": [],
+      "artNotes": [],
+      "number": "P019",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-peter-findley-2026",
+      "kind": "person",
+      "name": "Peter Findley",
+      "personId": "peter-findley",
+      "entries": [],
+      "artNotes": [],
+      "number": "P020",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-punkcyber-2026",
+      "kind": "person",
+      "name": "PunkCyber",
+      "personId": "punkcyber",
+      "entries": [],
+      "artNotes": [],
+      "number": "P021",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-fshindo-2026",
+      "kind": "person",
+      "name": "fshindo",
+      "personId": "fshindo",
+      "entries": [],
+      "artNotes": [],
+      "number": "P022",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-lord-han-solo-2026",
+      "kind": "person",
+      "name": "Lord Han Solo",
+      "personId": "lord-han-solo",
+      "entries": [],
+      "artNotes": [],
+      "number": "P023",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-lohit-siriki-2026",
+      "kind": "person",
+      "name": "Lohit Siriki",
+      "personId": "lohit-siriki",
+      "entries": [],
+      "artNotes": [],
+      "number": "P024",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-takuma-mori-2026",
+      "kind": "person",
+      "name": "Takuma Mori",
+      "personId": "takuma-mori",
+      "entries": [],
+      "artNotes": [],
+      "number": "P025",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-darragh-hanley-2026",
+      "kind": "person",
+      "name": "Darragh Hanley",
+      "personId": "darragh-hanley",
+      "entries": [],
+      "artNotes": [],
+      "number": "P026",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-elad-sarafian-2026",
+      "kind": "person",
+      "name": "Elad Sarafian",
+      "personId": "elad-sarafian",
+      "entries": [],
+      "artNotes": [],
+      "number": "P027",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-gal-kaplun-2026",
+      "kind": "person",
+      "name": "Gal Kaplun",
+      "personId": "gal-kaplun",
+      "entries": [],
+      "artNotes": [],
+      "number": "P028",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-yeyin-zhu-2026",
+      "kind": "person",
+      "name": "Yeyin Zhu",
+      "personId": "yeyin-zhu",
+      "entries": [],
+      "artNotes": [],
+      "number": "P029",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-stefano-viel-2026",
+      "kind": "person",
+      "name": "Stefano Viel",
+      "personId": "stefano-viel",
+      "entries": [],
+      "artNotes": [],
+      "number": "P030",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-reki-2026",
+      "kind": "person",
+      "name": "Reki",
+      "personId": "reki",
+      "entries": [],
+      "artNotes": [],
+      "number": "P031",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-md-boktiar-mahbub-murad-2026",
+      "kind": "person",
+      "name": "Md Boktiar Mahbub Murad",
+      "personId": "md-boktiar-mahbub-murad",
+      "entries": [],
+      "artNotes": [],
+      "number": "P032",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-itsu-2026",
+      "kind": "person",
+      "name": "イツ (Itsu)",
+      "personId": "itsu",
+      "entries": [],
+      "artNotes": [],
+      "number": "P033",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-richard-csaky-2026",
+      "kind": "person",
+      "name": "Richard Csaky",
+      "personId": "richard-csaky",
+      "entries": [],
+      "artNotes": [],
+      "number": "P034",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-fses91-2026",
+      "kind": "person",
+      "name": "Florian Sestak",
+      "personId": "fses91",
+      "entries": [],
+      "artNotes": [],
+      "number": "P035",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-lukas-aichberger-2026",
+      "kind": "person",
+      "name": "Lukas Aichberger",
+      "personId": "lukas-aichberger",
+      "entries": [],
+      "artNotes": [],
+      "number": "P036",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-vineeth-sai-varikuntla-2026",
+      "kind": "person",
+      "name": "Vineeth Sai Varikuntla",
+      "personId": "vineeth-sai-varikuntla",
+      "entries": [],
+      "artNotes": [],
+      "number": "P037",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-dawid-kopiczko-2026",
+      "kind": "person",
+      "name": "Dawid Kopiczko",
+      "personId": "dawid-kopiczko",
+      "entries": [],
+      "artNotes": [],
+      "number": "P038",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-matt-mazur-2026",
+      "kind": "person",
+      "name": "Matt Mazur",
+      "personId": "matt-mazur",
+      "entries": [],
+      "artNotes": [],
+      "number": "P039",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-geremie-yeo-2026",
+      "kind": "person",
+      "name": "Geremie Yeo",
+      "personId": "geremie-yeo",
+      "entries": [],
+      "artNotes": [],
+      "number": "P040",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-grigoriy-zatravkin-2026",
+      "kind": "person",
+      "name": "Grigoriy Zatravkin",
+      "personId": "grigoriy-zatravkin",
+      "entries": [],
+      "artNotes": [],
+      "number": "P041",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-sebastian-brodehl-2026",
+      "kind": "person",
+      "name": "Sebastian Brodehl",
+      "personId": "sebastian-brodehl",
+      "entries": [],
+      "artNotes": [],
+      "number": "P042",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-darren-amadeus-martin-2026",
+      "kind": "person",
+      "name": "Darren Amadeus Martin",
+      "personId": "darren-amadeus-martin",
+      "entries": [],
+      "artNotes": [],
+      "number": "P043",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-xz-2026",
+      "kind": "person",
+      "name": "xz",
+      "personId": "xz",
+      "entries": [],
+      "artNotes": [],
+      "number": "P044",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-mykyta-ielanskyi-2026",
+      "kind": "person",
+      "name": "Mykyta Ielanskyi",
+      "personId": "mykyta-ielanskyi",
+      "entries": [],
+      "artNotes": [],
+      "number": "P045",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-gklambauer-2026",
+      "kind": "person",
+      "name": "gklambauer",
+      "personId": "gklambauer",
+      "entries": [],
+      "artNotes": [],
+      "number": "P046",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-alwin-theodoric-2026",
+      "kind": "person",
+      "name": "Alwin Theodoric",
+      "personId": "alwin-theodoric",
+      "entries": [],
+      "artNotes": [],
+      "number": "P047",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-billy-anggara-2026",
+      "kind": "person",
+      "name": "Billy Anggara",
+      "personId": "billy-anggara",
+      "entries": [],
+      "artNotes": [],
+      "number": "P048",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-tri-ardian-rinalda-2026",
+      "kind": "person",
+      "name": "Tri Ardian Rinalda",
+      "personId": "tri-ardian-rinalda",
+      "entries": [],
+      "artNotes": [],
+      "number": "P049",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-muhammad-yassir-ramadhan-2026",
+      "kind": "person",
+      "name": "Muhammad Yassir Ramadhan",
+      "personId": "muhammad-yassir-ramadhan",
+      "entries": [],
+      "artNotes": [],
+      "number": "P050",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-isaka-tsuyoshi-2026",
+      "kind": "person",
+      "name": "ISAKA Tsuyoshi",
+      "personId": "isaka-tsuyoshi",
+      "entries": [],
+      "artNotes": [],
+      "number": "P051",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-konbu17-2026",
+      "kind": "person",
+      "name": "konbu17",
+      "personId": "konbu17",
+      "entries": [],
+      "artNotes": [],
+      "number": "P052",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-pompom555-2026",
+      "kind": "person",
+      "name": "pomcho555",
+      "personId": "pompom555",
+      "entries": [],
+      "artNotes": [],
+      "number": "P053",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-refv00-2026",
+      "kind": "person",
+      "name": "re",
+      "personId": "refv00",
+      "entries": [],
+      "artNotes": [],
+      "number": "P054",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-takeru-sato-2026",
+      "kind": "person",
+      "name": "Takeru Sato",
+      "personId": "takeru-sato",
+      "entries": [],
+      "artNotes": [],
+      "number": "P055",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-teppei-fukutomi-2026",
+      "kind": "person",
+      "name": "Teppei Fukutomi",
+      "personId": "teppei-fukutomi",
+      "entries": [],
+      "artNotes": [],
+      "number": "P056",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-yuto0712-2026",
+      "kind": "person",
+      "name": "yuto083",
+      "personId": "yuto0712",
+      "entries": [],
+      "artNotes": [],
+      "number": "P057",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-common-people-2026",
+      "kind": "person",
+      "name": "common-people",
+      "personId": "common-people",
+      "entries": [],
+      "artNotes": [],
+      "number": "P058",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-dongming-sheng-2026",
+      "kind": "person",
+      "name": "Dongming Sheng",
+      "personId": "dongming-sheng",
+      "entries": [],
+      "artNotes": [],
+      "number": "P059",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-florencia-solange-2026",
+      "kind": "person",
+      "name": "Florencia Solange",
+      "personId": "florencia-solange",
+      "entries": [],
+      "artNotes": [],
+      "number": "P060",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "person-michal-gromadzki-2026",
+      "kind": "person",
+      "name": "Michał Gromadzki",
+      "personId": "michal-gromadzki",
+      "entries": [],
+      "artNotes": [
+        "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
+      ],
+      "number": "P061",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026",
+      "art": {
+        "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp",
+        "alt": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "credit": "Newspaper-commissioned fictional account mascot",
+        "artworkId": "2026-10-29-majkel1337-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      }
+    },
+    {
+      "id": "person-yktori-2026",
+      "kind": "person",
+      "name": "yktori",
+      "personId": "yktori",
+      "entries": [],
+      "artNotes": [
+        "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
+      ],
+      "number": "P062",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026",
+      "art": {
+        "src": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp",
+        "alt": "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+        "credit": "Newspaper-commissioned fictional account mascot",
+        "artworkId": "2026-10-29-yktori-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      }
+    },
+    {
+      "id": "person-michaeltgao-2026",
+      "kind": "person",
+      "name": "Michael",
+      "personId": "michaeltgao",
+      "entries": [],
+      "artNotes": [
+        "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
+      ],
+      "number": "P063",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026",
+      "art": {
+        "src": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp",
+        "alt": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "credit": "Newspaper-commissioned fictional account mascot",
+        "artworkId": "2026-10-29-mtg-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      }
+    },
+    {
+      "id": "person-aquaursa-research-2026",
+      "kind": "person",
+      "name": "AquaUrsa Research",
+      "personId": "aquaursa-research",
+      "entries": [],
+      "artNotes": [
+        "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
+      ],
+      "number": "P064",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026",
+      "art": {
+        "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp",
+        "alt": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "credit": "Newspaper-commissioned fictional account mascot",
+        "artworkId": "2026-10-29-aquaursa-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      }
+    },
+    {
+      "id": "person-cmechevalier-2026",
+      "kind": "person",
+      "name": "chev",
+      "personId": "cmechevalier",
+      "entries": [],
+      "artNotes": [],
+      "number": "P065",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-yi-chia-chen-2026",
+      "kind": "team",
+      "name": "Yi-Chia Chen",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "15501171"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15499660"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+        "alt": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-12-chen-bunnies-character-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Chen’s grey-brown lop has BOTH ears down beside its cheeks; keep its rounded face, grey coat and white rear toes.",
+        "Chen’s second rabbit has tall dark upright ears, a dark eye mask and a broad irregular white forehead/nose blaze, with white cheeks, chest and paws.",
+        "Always exactly two recognizable bunnies; the owner photo governs anatomy and markings. Giant scale is a scene choice."
+      ],
+      "description": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
+      "number": "T001",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-tufa-labs-2026",
+      "kind": "team",
+      "name": "Tufa Labs",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16756524"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15486995"
+        }
+      ],
+      "art": {
+        "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp",
+        "alt": "Five friendly black Tufa spider mascots and Dries Smit oversee two server racks in a vast imagined GPU citadel; distant rival strongholds appear through the arch.",
+        "credit": "Commissioned ARC Daily team illustration; original clean native base.",
+        "artworkId": "2026-10-19-tufa-citadel-interior-v2-base",
+        "commissionedAt": "2026-10-19T22:07:13Z"
+      },
+      "artNotes": [
+        "The five friendly black spiders are Tufa mascots, not a literal member count. Dries is the individual engineer shown; the illustration does not claim to portray every human teammate.",
+        "The two racks, immense citadel, machinery and distant rival strongholds are editorial fantasy. They do not establish real hardware, spending or current competition method.",
+        "Use the approved clean native citadel interior, which contains no rank, score, observation date or headline. Card names, dated statistics and honors are drawn separately; preserve the original image unchanged."
+      ],
+      "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
+      "number": "T002",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-xz-2026",
+      "kind": "team",
+      "name": "xz",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15487093"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-xz-kaggle-cat-v1.webp",
+        "alt": "xz’s own Kaggle profile photograph of a cream-faced, blue-eyed fluffy cat.",
+        "credit": "Own Kaggle avatar from the verified xiaoz259 account, preserved unchanged.",
+        "commissionedAt": "2026-10-29T18:31:05.562338+00:00"
+      },
+      "artNotes": [
+        "Preserve round flat cream/apricot face, blue eyes, pink nose, white ruff and solemn expression from exact avatar.",
+        "Face remains completely exposed. Modest dark GPU vest, natural fur, enormous fluffy tail. Giant scale is an editorial choice.",
+        "Himalayan-like appearance is an uncertain visual description, not a verified pedigree or owner fact.",
+        "This card uses the clean frozen owner-avatar photograph, not the giant scoring-hall composition with its historical scoreboard. No cyber-vest is present in this source photograph; future illustrated character details remain separate."
+      ],
+      "description": "xz’s cream-faced blue-eyed fluffy Kaggle cat, introduced as a giant cyber-vest newcomer.",
+      "number": "T003",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-last-dance-2026",
+      "kind": "team",
+      "name": "the last dance 🕺",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16021367"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+        "alt": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-last-dance-character-sheet-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Reference-sheet order: Lukas (blue/navy), Florian (orange/red, black cap and sunglasses), Mykyta (cyan/green, reddish beard), fictional opaque helmet (purple/yellow).",
+        "The fourth figure is an anonymous fictional stand-in for the roster handle, NOT a verified likeness of Günter Klambauer.",
+        "Retain colorful square ARC-grid streetwear and compact adult scale; no claim about actual height or dance ability.",
+        "Recheck all four exact roster handles before using the complete team."
+      ],
+      "description": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+      "number": "T004",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-yktori-team-2026",
+      "kind": "team",
+      "name": "yktori — Silver Comet",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16760837"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp",
+        "alt": "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-yktori-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+        "The generic Kaggle goose is not a personal identity. Preserve this as the newspaper’s fictional Silver Comet, not an owner-selected avatar."
+      ],
+      "description": "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+      "number": "T005",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-mtg-team-2026",
+      "kind": "team",
+      "name": "mtg / Michael — Two-board Rook",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16153655"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16153654"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp",
+        "alt": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-mtg-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
+      ],
+      "description": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+      "number": "T006",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-grigoriy-team-2026",
+      "kind": "team",
+      "name": "Grigoriy Zatravkin & co — quartet",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16490178"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-base.webp",
+        "alt": "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-grigoriy-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+        "The two helmets are fictional account stand-ins, and the scholarly mascot is an original adaptation of the owner graphic. The anime face is an avatar, not a claimed human likeness.",
+        "Dated four-account roster: grigoriyzatravkin, aizealotwu, deepdreamer, florenciasolange. Refresh exact current roster before a new team scene."
+      ],
+      "description": "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+      "number": "T007",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-kontext-team-2026",
+      "kind": "team",
+      "name": "復活の混テキスト — eight-avatar ensemble",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16569113"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-base.webp",
+        "alt": "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-japanese-ensemble-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+        "Preserve all eight separate motifs. The orca and whale are different characters. TK256’s masked explorer is fictional and respects a rear-view source without inventing a human face.",
+        "Owner-selected cartoons and mascot graphics are account avatars, not verified human appearances. Refresh all eight exact roster handles before later team scenes."
+      ],
+      "description": "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+      "number": "T008",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-artificial-agency-team-2026",
+      "kind": "team",
+      "name": "Artificial Agency Lab — Richard and Côme",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16132261"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp",
+        "alt": "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-artificial-agency-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+        "Their separately labelled own-lab portraits establish the two faces and documented lab roles. Costumes and grid staging are editorial fiction.",
+        "The exact cmechevalier-to-Côme account mapping remains unresolved. This team illustration credits the independently documented lab members, not an inferred account mapping."
+      ],
+      "description": "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+      "number": "T009",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-majkel1337-team-2026",
+      "kind": "team",
+      "name": "Majkel1337 — copper fox",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16958599"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16373916"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp",
+        "alt": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-majkel1337-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
+      ],
+      "description": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+      "number": "T010",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-aquaursa-team-2026",
+      "kind": "team",
+      "name": "AquaUrsa Research — aqua polar bear",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15488763"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "15488773"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp",
+        "alt": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-aquaursa-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
+      ],
+      "description": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+      "number": "T011",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-nvbanana-arc2-team-2026",
+      "kind": "team",
+      "name": "nvbanana — ARC2 duo artwork",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "15486939"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp",
+        "alt": "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-nvbanana-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+        "Hanley’s painting is not his human face. Keep the celestial figure completely opaque, with no invented facial features; preserve Puget’s established individual character.",
+        "Exactly two characters and a tiny banana ornament. This is ARC2 team 15486939, not NVARC3 or the full NVIDIA staff. No NVIDIA article has been commissioned; preserve artwork only."
+      ],
+      "description": "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+      "number": "T012",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-domdolus-tolus-2026",
+      "kind": "team",
+      "name": "DomdolusTolus",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16559402"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16534961"
+        }
+      ],
+      "art": {
+        "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+        "alt": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+        "credit": "Commissioned ARC Daily character artwork",
+        "artworkId": "2026-10-29-domdolus-tolus-avatar-v1-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+        "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+        "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+        "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+      ],
+      "description": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+      "number": "T013",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-turducken-2026",
+      "kind": "team",
+      "name": "Team Turducken",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "15605182"
+        }
+      ],
+      "art": {
+        "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+        "alt": "Team Turducken commissioned team illustration",
+        "credit": "Commissioned ARC Daily team artwork",
+        "artworkId": "2026-10-18-turducken-whole-crew-flight-v1-base",
+        "commissionedAt": "2026-10-19T03:07:38Z"
+      },
+      "artNotes": [
+        "Seven approved competitor characters and exactly two Yorkies; retain the established fictional bot/mascot roles.",
+        "The airborne turkey, chicken and sunglasses duck form the fantasy nested vehicle/mascot, not extra roster accounts. The clean native scene has no rank, score, date or headline overlay."
+      ],
+      "number": "T014",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-architects-2026",
+      "kind": "team",
+      "name": "The ARChitects",
+      "entries": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "teamId": "16032816"
+        }
+      ],
+      "art": {
+        "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+        "alt": "The ARChitects commissioned team illustration",
+        "credit": "Commissioned ARC Daily team artwork",
+        "artworkId": "2026-10-26-architects-dream-team-base",
+        "commissionedAt": "2026-10-30T00:23:50.049Z"
+      },
+      "artNotes": [
+        "David fox, Jan cat, Daniel duck and Sebastian mouse. Clean artwork; no old scoreboard."
+      ],
+      "number": "T015",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    },
+    {
+      "id": "team-arc-mutants-2026",
+      "kind": "team",
+      "name": "ARC Mutants",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "17023174"
+        }
+      ],
+      "art": {
+        "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+        "alt": "ARC Mutants commissioned team illustration",
+        "credit": "Commissioned ARC Daily team artwork",
+        "artworkId": "2026-10-19-arc-mutants-academy-v1",
+        "commissionedAt": "2026-10-19T17:49:52.613526Z"
+      },
+      "artNotes": [
+        "Jack Cole, Mark Barney, Son Pham and a fictional opaque-helmet Ronen character; keep separate from ARC3 Turducken.",
+        "The approved native academy illustration includes intrinsic ARC MUTANTS / ARC-AGI-2 title lettering. It contains no baked rank, score, observation date or honor; all card statistics are drawn separately. No existing title-free four-person source was found, and the original pixels remain unchanged."
+      ],
+      "number": "T016",
+      "issuedAt": "2026-10-30T00:23:50.049Z",
+      "season": "2026"
+    }
+  ],
+  "snapshots": [
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16756524",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Tufa Labs",
+      "rank": 1,
+      "score": 88.06,
+      "submissions": 61,
+      "members": [
+        "driessmit1",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15501171",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Yi-Chia Chen @ Fields Model",
+      "rank": 2,
+      "score": 87.22,
+      "submissions": 36,
+      "members": [
+        "threerabbits"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15486939",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "nvbanana",
+      "rank": 3,
+      "score": 83.89,
+      "submissions": 154,
+      "members": [
+        "cpmpml",
+        "darraghdog"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16559402",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Domdolus Tolus",
+      "rank": 4,
+      "score": 83.47,
+      "submissions": 47,
+      "members": [
+        "alwintheodoric",
+        "billyanggara",
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "yassirramadhan"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16373916",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Majkel1337",
+      "rank": 7,
+      "score": 76.81,
+      "submissions": 54,
+      "members": [
+        "majkel1337"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16461211",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Dawid Kopiczko",
+      "rank": 9,
+      "score": 75.14,
+      "submissions": 53,
+      "members": [
+        "dawkopi"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16297545",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "ｶﾎｳｼｭｳｾｲ",
+      "rank": 13,
+      "score": 73.47,
+      "submissions": 53,
+      "members": [
+        "nisshokuitsuki"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16768245",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "_hans",
+      "rank": 14,
+      "score": 71.81,
+      "submissions": 32,
+      "members": [
+        "deepdreamer"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "17077331",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "artificialagencylab.com",
+      "rank": 16,
+      "score": 70.56,
+      "submissions": 18,
+      "members": [
+        "richardcsaky"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15526034",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "この遥かなる旅路に祝福を",
+      "rank": 19,
+      "score": 69.72,
+      "submissions": 88,
+      "members": [
+        "dzjiann",
+        "keithtyser",
+        "mitubant",
+        "ngyzly"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16153654",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "mtg",
+      "rank": 22,
+      "score": 69.31,
+      "submissions": 14,
+      "members": [
+        "michaeltgao"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16569125",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "復活の混テキスト",
+      "rank": 31,
+      "score": 66.39,
+      "submissions": 100,
+      "members": [
+        "isakatsuyoshi",
+        "konbu17",
+        "pompom555",
+        "refv00",
+        "tanakaai24"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15607618",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Daniel Franzen",
+      "rank": 42,
+      "score": 59.17,
+      "submissions": 19,
+      "members": [
+        "dfranzen"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15487512",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Md Boktiar Mahbub Murad",
+      "rank": 57,
+      "score": 48.61,
+      "submissions": 42,
+      "members": [
+        "mbmmurad"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "17019785",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "fshindo",
+      "rank": 59,
+      "score": 47.08,
+      "submissions": 26,
+      "members": [
+        "ffsscf"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "17023174",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "ARC Mutants",
+      "rank": 62,
+      "score": 46.39,
+      "submissions": 218,
+      "members": [
+        "jcole75",
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16410256",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "griddy for grids",
+      "rank": 116,
+      "score": 35.42,
+      "submissions": 85,
+      "members": [
+        "badboiriri",
+        "cody11null",
+        "mahdiseddigh",
+        "ruichardliu",
+        "russcore"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15486728",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Mithil A Vakde",
+      "rank": 140,
+      "score": 33.89,
+      "submissions": 50,
+      "members": [
+        "mithilavakde"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "17038082",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "menphim",
+      "rank": 145,
+      "score": 33.75,
+      "submissions": 12,
+      "members": [
+        "menphim"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16724472",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "alijs",
+      "rank": 149,
+      "score": 33.61,
+      "submissions": 46,
+      "members": [
+        "alijs1"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16782676",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "TK256",
+      "rank": 855,
+      "score": 30.97,
+      "submissions": 2,
+      "members": [
+        "tk256ailab"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16779554",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "rellik13",
+      "rank": 866,
+      "score": 30.97,
+      "submissions": 11,
+      "members": [
+        "sirikilohit"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15488658",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Lonnie",
+      "rank": 988,
+      "score": 30.69,
+      "submissions": 95,
+      "members": [
+        "lonnieqin"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15509541",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "gromml",
+      "rank": 1290,
+      "score": 30.14,
+      "submissions": 9,
+      "members": [
+        "gromml"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "17012110",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "t fuku",
+      "rank": 1365,
+      "score": 30.14,
+      "submissions": 1,
+      "members": [
+        "ttyn4519"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15523648",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Peter Findley",
+      "rank": 1507,
+      "score": 29.72,
+      "submissions": 13,
+      "members": [
+        "raist321"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16450168",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "win a real prize",
+      "rank": 1528,
+      "score": 29.72,
+      "submissions": 4,
+      "members": [
+        "aizealotwu"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15507730",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "Jan Disselhoff",
+      "rank": 2307,
+      "score": 21.67,
+      "submissions": 8,
+      "members": [
+        "insanitycheck"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "15488773",
+      "observedAt": "2026-10-30T00:22:48Z",
+      "teamName": "AquaUrsa Research",
+      "rank": 2468,
+      "score": 8.61,
+      "submissions": 1,
+      "members": [
+        "aquaursaresearch"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15499660",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "score": 75.56,
+      "submissions": 45,
+      "members": [
+        "threerabbits"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15486995",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Tufa Labs",
+      "rank": 2,
+      "score": 70.02,
+      "submissions": 175,
+      "members": [
+        "dlorah",
+        "driessmit1",
+        "infinitecreativity",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15487093",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "faster machine is all you need",
+      "rank": 3,
+      "score": 58.59,
+      "submissions": 12,
+      "members": [
+        "xiaoz259"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15605182",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Team Turducken",
+      "rank": 4,
+      "score": 56.02,
+      "submissions": 213,
+      "members": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16021367",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "the last dance 🕺",
+      "rank": 5,
+      "score": 51.51,
+      "submissions": 94,
+      "members": [
+        "dwellement0baser",
+        "fses91",
+        "gklambauer",
+        "lukasaichberger"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16760837",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "yktori",
+      "rank": 6,
+      "score": 51.04,
+      "submissions": 31,
+      "members": [
+        "yktori"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16153655",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "mtg",
+      "rank": 7,
+      "score": 50.37,
+      "submissions": 82,
+      "members": [
+        "michaeltgao"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15770880",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "NVARC3",
+      "rank": 8,
+      "score": 49.54,
+      "submissions": 76,
+      "members": [
+        "cpmpml",
+        "darraghdog",
+        "eladsarafian",
+        "galkaplun",
+        "sorokin",
+        "titericz",
+        "yeyinzhu"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16490178",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Grigoriy Zatravkin & co",
+      "rank": 9,
+      "score": 47.19,
+      "submissions": 109,
+      "members": [
+        "aizealotwu",
+        "deepdreamer",
+        "florenciasolange",
+        "grigoriyzatravkin"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16569113",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "復活の混テキスト",
+      "rank": 10,
+      "score": 46.82,
+      "submissions": 100,
+      "members": [
+        "isakatsuyoshi",
+        "konbu17",
+        "pompom555",
+        "refv00",
+        "tanakaai24",
+        "tk256ailab",
+        "ttyn4519",
+        "yuto0712"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16132261",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "artificialagencylab.com",
+      "rank": 11,
+      "score": 45.41,
+      "submissions": 64,
+      "members": [
+        "cmechevalier",
+        "richardcsaky"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16958599",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Majkel1337",
+      "rank": 12,
+      "score": 45.03,
+      "submissions": 31,
+      "members": [
+        "majkel1337"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16032816",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "The ARChitects",
+      "rank": 13,
+      "score": 41.03,
+      "submissions": 204,
+      "members": [
+        "dfranzen",
+        "dvhrtm",
+        "insanitycheck",
+        "sbrodehl"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16537511",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Vineeth Sai Varikuntla",
+      "rank": 14,
+      "score": 40.98,
+      "submissions": 77,
+      "members": [
+        "vineethsaivs"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15488763",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "AquaUrsa Research",
+      "rank": 16,
+      "score": 39.69,
+      "submissions": 18,
+      "members": [
+        "aquaursaresearch"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16992721",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "fshindo",
+      "rank": 22,
+      "score": 38.2,
+      "submissions": 28,
+      "members": [
+        "ffsscf"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15490570",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Abstraction Lab & MindsAI",
+      "rank": 23,
+      "score": 38.14,
+      "submissions": 174,
+      "members": [
+        "alisalmanrana",
+        "jcole75",
+        "kimura0415",
+        "sumirinn",
+        "ultsaza"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16706087",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "rellik13",
+      "rank": 25,
+      "score": 37.97,
+      "submissions": 63,
+      "members": [
+        "sirikilohit"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15487522",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Md Boktiar Mahbub Murad",
+      "rank": 30,
+      "score": 37.12,
+      "submissions": 86,
+      "members": [
+        "mbmmurad"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16371045",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Lord Han Solo",
+      "rank": 31,
+      "score": 37.07,
+      "submissions": 106,
+      "members": [
+        "lordhansolo"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "17038083",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "menphim",
+      "rank": 85,
+      "score": 34.31,
+      "submissions": 13,
+      "members": [
+        "menphim"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15495211",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Peter Findley",
+      "rank": 130,
+      "score": 33.6,
+      "submissions": 52,
+      "members": [
+        "raist321"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "17022020",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "alijs",
+      "rank": 222,
+      "score": 32.74,
+      "submissions": 15,
+      "members": [
+        "alijs1"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15509536",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "gromml",
+      "rank": 516,
+      "score": 31.19,
+      "submissions": 10,
+      "members": [
+        "gromml"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16439788",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Dawid Kopiczko",
+      "rank": 563,
+      "score": 31,
+      "submissions": 74,
+      "members": [
+        "dawkopi"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15607034",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "i want to go lab😭",
+      "rank": 865,
+      "score": 29.97,
+      "submissions": 142,
+      "members": [
+        "ruichardliu",
+        "russcore"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "15488665",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Lonnie",
+      "rank": 1486,
+      "score": 27.66,
+      "submissions": 135,
+      "members": [
+        "lonnieqin"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-3",
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "teamId": "16534961",
+      "observedAt": "2026-10-30T00:22:47Z",
+      "teamName": "Domdolus Tolus",
+      "rank": 2204,
+      "score": 4.99,
+      "submissions": 7,
+      "members": [
+        "alwintheodoric",
+        "billyanggara",
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "yassirramadhan"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ]
+}
