@@ -1,9 +1,9 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-28 (reserved feature shared with edition permalinks)
+ * Date: 2026-10-30 (newer ARC2 specials can lead the front page)
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
- *          stories (the latest ARC-AGI-3 report printed in full, the ARC-AGI-2 report under it)
+ *          stories (the newest contest report printed in full, the other contest under it)
  *          and the board in agate type. Dated social dispatches and immutable editions still
  *          compete for each lead by publication time, and every story features at most one person.
  *          09-Oct-2026 (Claude Opus 5.5): rebuilt per the Boss ("information-dense, like a
@@ -51,6 +51,10 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
 export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: MarketsPayload }) {
   const articles = sortedArticles(index.articles);
   const dispatches = index.dispatches ?? [];
+  const newestStory = [...articles, ...dispatches].sort((a, b) =>
+    b.publishedAt.localeCompare(a.publishedAt) || b.competition.localeCompare(a.competition))[0];
+  const leadCompetition = newestStory?.competition ?? 'arc-3';
+  const competitions: NewsCompetition[] = [leadCompetition, leadCompetition === 'arc-3' ? 'arc-2' : 'arc-3'];
   const people = index.people ?? [];
   const boards = marketBoards(markets);
   const links = { competitors: index.competitors, people };
@@ -60,8 +64,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
     <div className={`news-front${boards.length ? '' : ' no-board'}`}>
       <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} compact /></section>
       <section className="news-col-lead" aria-label="Lead stories">
-        <CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-3" lead people={people} />
-        <CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-2" people={people} />
+        {competitions.map((competition, position) => <CompetitionDesk key={competition} articles={articles} dispatches={dispatches} competition={competition} lead={position === 0} people={people} />)}
       </section>
       {!!boards.length && <aside className="news-col-board" aria-label="The board">
         <h2 className="news-flag"><span>The board</span><em>Day = change since a day earlier</em></h2>

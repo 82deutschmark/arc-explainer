@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.25  Oct 30, 2026
+
+- **Let the Friday Night Special lead the paper** (Author: GPT-6.1 Sol / Codex). The newest contest edition or dispatch leads `/news`, so Jeroen Cottaar’s full Tufa Citadel feature and illustration appear above the older ARC3 issue. Simultaneous editions retain ARC3 first. Record the approved image-led X announcement in the artwork inventory.
+- Validation: 35 news/front-page tests and 86 Python newsroom tests pass.
+
 ### Version 9.159.24  Oct 30, 2026
 
 - **Card Cabinet faces redesigned: the Topps-style 2026 set** (Author: Claude Sonnet 5.5 Low). Fronts and backs are drawn by the new `cardFace/` renderer (cream card-stock edge, tier-coloured border and medallion, LIVE/FINAL stamp with one as-of date, ribbon name bar, price-guide standings, medal coins; grey-cardboard two-ink backs with the career table). Master and Grandmaster borders and medallions are visibly bigger than the lower tiers. Wording is checked by a lint over every drawn tree: Kaggle's tier words for competitors, "competition sponsors", teams, SOLO ENTRY, and no internal bookkeeping text.

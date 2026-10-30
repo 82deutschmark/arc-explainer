@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-29
+ * Date: 2026-10-30 (ARC2 special lead placement and simultaneous-edition ordering)
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
@@ -23,6 +23,7 @@ import News from '../client/src/pages/News';
 import NewsArticle from '../client/src/pages/NewsArticle';
 import NewsWire from '../client/src/pages/NewsWire';
 import NewsCommunity from '../client/src/pages/NewsCommunity';
+import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
@@ -62,6 +63,29 @@ function render(page: React.ComponentType, path: string, index: NewsIndex, paylo
 }
 
 afterEach(() => vi.unstubAllGlobals());
+
+test('a newer ARC2 special leads with its full reserved feature and illustration', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const special = JSON.parse(fs.readFileSync('content/news/articles/2026-10-30-evening-arc-2-preview.json', 'utf8'));
+  const feature = JSON.parse(fs.readFileSync(`content/news/dispatches/${special.frontPageFeatureId}.json`, 'utf8'));
+  const earlier = { ...special, id: 'earlier-arc3', competition: 'arc-3' as const, publishedAt: '2026-10-30T10:00:00Z', frontPageFeatureId: undefined, headline: 'Earlier ARC3 report' };
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles: [earlier, special], dispatches: [feature] } }) }));
+  const lead = html.split('aria-label="Lead stories"')[1];
+  expect(lead.indexOf(feature.headline)).toBeLessThan(lead.indexOf(earlier.headline));
+  expect(lead.slice(0, lead.indexOf(earlier.headline))).toContain(feature.image.src);
+  expect(lead).toContain(feature.sections.at(-1).text);
+});
+
+test('equally timed routine editions keep ARC3 first', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const base = index.articles[0];
+  const articles = (['arc-2', 'arc-3'] as const).map(competition => ({ ...base, competition, id: `same-time-${competition}`, headline: `Routine ${competition}`, frontPageFeatureId: undefined }));
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles, dispatches: [] } }) }));
+  const lead = html.split('aria-label="Lead stories"')[1];
+  expect(lead.indexOf('Routine arc-3')).toBeLessThan(lead.indexOf('Routine arc-2'));
+});
 
 test('the front page runs every live section against a populated digest', () => {
   vi.stubGlobal('React', React);
