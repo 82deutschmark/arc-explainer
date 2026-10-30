@@ -2,7 +2,7 @@
 #
 # daily-feedback-export.sh
 #
-# Author: Claude Sonnet 5
+# Author: Claude Sonnet 5; Railway login fix 30-Oct-2026 by Claude Sonnet 5.5 Medium
 # Date: 2026-09-06
 # PURPOSE: The command a launchd job runs once a day (see docs/ARC3-FEEDBACK-EXPORT.md).
 #          Pulls new player feedback out of arc-explainer's database via
@@ -30,19 +30,15 @@ export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 ARC_EXPLAINER="/Users/macmini/GitHub/arc-explainer"
 AUTORESEARCH_ARENA="/Users/macmini/GitHub/autoresearch-arena"
-RAILWAY_TOKEN_FILE="$HOME/.railway/bubba-token"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
-
-if [ ! -f "$RAILWAY_TOKEN_FILE" ]; then
-  log "ERROR: Railway token not found at $RAILWAY_TOKEN_FILE"
-  exit 1
-fi
 
 log "Starting arc3 feedback export"
 cd "$ARC_EXPLAINER"
 
-RAILWAY_API_TOKEN="$(cat "$RAILWAY_TOKEN_FILE")" \
+# 30-Oct-2026: use the Railway CLI's stored login. A set RAILWAY_API_TOKEN/RAILWAY_TOKEN overrides it, and the
+# old saved token file (~/.railway/bubba-token) is refused by Railway, so both are unset here.
+env -u RAILWAY_API_TOKEN -u RAILWAY_TOKEN \
   railway run node --import tsx server/scripts/export-arc3-feedback.ts
 
 log "Export script finished; checking for changes in autoresearch-arena"
