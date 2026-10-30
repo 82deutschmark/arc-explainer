@@ -1,9 +1,10 @@
 /**
- * Author: Cascade
- * Date: 2025-12-29
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-29
  * PURPOSE: Thin orchestrator facade for SnakeBench/Worm Arena.
  *          Delegates match execution to specialized runners and report generation
- *          to WormArenaReportService.
+ *          to WormArenaReportService. Matchup suggestions preserve the shared API's
+ *          complete ranked model summaries rather than restating a narrower return type.
  * 
  * SRP/DRY check: Pass - facade only, no business logic or formatting.
  */
@@ -28,6 +29,7 @@ import type {
   WormArenaModelInsightsSummary,
   WormArenaModelInsightsFailureMode,
   WormArenaModelInsightsOpponent,
+  WormArenaSuggestMatchupsResponse,
 } from '../../shared/types.js';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
@@ -401,17 +403,7 @@ class SnakeBenchService {
     mode: 'ladder' | 'entertainment' = 'ladder',
     limit: number = 20,
     minGames: number = 3
-  ): Promise<{
-    mode: 'ladder' | 'entertainment';
-    matchups: Array<{
-      modelA: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
-      modelB: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
-      history: { matchesPlayed: number; lastPlayedAt: string | null };
-      score: number;
-      reasons: string[];
-    }>;
-    totalCandidates: number;
-  }> {
+  ): Promise<Pick<WormArenaSuggestMatchupsResponse, 'mode' | 'matchups' | 'totalCandidates'>> {
     const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 50)) : 20;
     const safeMinGames = Number.isFinite(minGames) ? Math.max(1, minGames) : 3;
 
@@ -423,7 +415,7 @@ class SnakeBenchService {
     // No additional filtering needed - we want suggestions for any models that have played.
     const approvedModels = new Set(leaderboard.map(e => e.modelSlug));
 
-    return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels as Set<string>);
+    return suggestMatchups(mode, safeLimit, safeMinGames, leaderboard, pairingHistory, approvedModels);
   }
 
   /**

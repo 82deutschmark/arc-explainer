@@ -1,6 +1,6 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2026-01-08T20:25:33-05:00
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-29
  * PURPOSE: Validate AnalysisStreamService pending-session handshake, lifecycle cleanup,
  *          and streaming fallbacks without running full HTTP flows.
  * SRP/DRY check: Pass - Focused service and controller behavior only.
@@ -175,7 +175,7 @@ test('startStreaming streams when OpenAI-prefixed GPT-5 model is requested', asy
     puzzleCalls.push({ taskId, model });
     streamHarness?.emit?.({ type: 'output_text_delta', delta: 'hello' });
     streamHarness?.emitEvent?.('stream.status', { state: 'completed' });
-    streamHarness?.end?.({ status: 'done' });
+    streamHarness?.end?.({ status: 'success' });
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
   try {
@@ -201,6 +201,7 @@ test('startStreaming streams when OpenAI-prefixed GPT-5 model is requested', asy
     expect(chunkEvent?.payload?.metadata?.modelKey).toBe('openai/gpt-5-mini');
     expect(chunkEvent?.payload?.delta).toBe('hello');
     expect(completions.length).toBe(1);
+    expect(completions[0]).toEqual({ status: 'success' });
   } finally {
     process.env.STREAMING_ENABLED = previousEnabled;
     process.env.ENABLE_SSE_STREAMING = previousLegacyFlag;

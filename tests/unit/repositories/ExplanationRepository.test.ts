@@ -1,20 +1,28 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2026-01-08T20:25:33-05:00
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-29
  * PURPOSE: Validate ExplanationRepository filtering, sanitization, and parameter shaping
  *          for JSONB storage and multi-test payload handling.
  * SRP/DRY check: Pass - Focused repository behavior only.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { Client } from 'pg';
 import { ExplanationRepository } from '../../../server/repositories/ExplanationRepository.js';
 
+// Expose inherited database boundaries for typed spies without changing production visibility.
+class TestableExplanationRepository extends ExplanationRepository {
+  override isConnected = super.isConnected;
+  override getClient = super.getClient;
+  override query = super.query;
+}
+
 describe('ExplanationRepository', () => {
-  let repository: ExplanationRepository;
+  let repository: TestableExplanationRepository;
 
   beforeEach(() => {
-    repository = new ExplanationRepository();
-    vi.spyOn(repository as any, 'isConnected').mockReturnValue(true);
+    repository = new TestableExplanationRepository();
+    vi.spyOn(repository, 'isConnected').mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -50,7 +58,7 @@ describe('ExplanationRepository', () => {
       };
 
       const queryMock = vi
-        .spyOn(repository as any, 'query')
+        .spyOn(repository, 'query')
         .mockResolvedValue({
           rows: [fakeRow],
           rowCount: 1,
@@ -74,17 +82,17 @@ describe('ExplanationRepository', () => {
       expect(explanation.multiTestAllCorrect).toBe(true);
       expect(explanation.saturnImages).toEqual(['img']);
       expect(explanation.groverIterations).toEqual([{ step: 1 }]);
-      expect(explanation.beetreeModelResults).toEqual([{ model: 'x' }]);
+      expect(explanation).toHaveProperty('beetreeModelResults', [{ model: 'x' }]);
       expect(explanation.councilMetadata).toEqual({ round: 1 });
     });
   });
 
   describe('saveExplanation', () => {
     it('normalizes payload before persistence (numTestPairs, sanitization, JSON encoding)', async () => {
-      const client = { query: vi.fn(), release: vi.fn() };
-      vi.spyOn(repository as any, 'getClient').mockResolvedValue(client);
+      const client = Object.assign(new Client(), { release: vi.fn() });
+      vi.spyOn(repository, 'getClient').mockResolvedValue(client);
 
-      const queryMock = vi.spyOn(repository as any, 'query').mockResolvedValue({
+      const queryMock = vi.spyOn(repository, 'query').mockResolvedValue({
         rows: [{ id: 99 }],
         rowCount: 1,
       });
@@ -107,12 +115,13 @@ describe('ExplanationRepository', () => {
         multiTestResults,
         multiTestPredictionGrids: [[[1, 'bad']]], // invalid -> sanitized to 0s
         predictedOutputGrid: [[1, 'x']], // invalid cell -> sanitized to 0
-      } as any);
+      });
 
       expect(queryMock).toHaveBeenCalledTimes(1);
       const [, params, passedClient] = queryMock.mock.calls[0];
 
       expect(passedClient).toBe(client);
+      if (!params) throw new Error('Expected persistence query parameters');
       expect(params.at(-1)).toBe(2); // num_test_pairs
       expect(params[19]).toBe('[[1,0]]'); // sanitized predicted grid stringified
       expect(params[39]).toBe('[[[1,0]]]'); // sanitized multi-test prediction grids

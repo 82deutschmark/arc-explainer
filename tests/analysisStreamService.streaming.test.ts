@@ -1,6 +1,6 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2026-01-08T20:25:33-05:00
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-29
  * PURPOSE: Validate AnalysisStreamService streaming defaults, flag overrides,
  *          and pending-session TTL behavior.
  * SRP/DRY check: Pass - Scoped to streaming defaults and lifecycle only.
@@ -76,9 +76,9 @@ test('startStreaming streams by default in production when no overrides are pres
     _serviceOptions,
   ) => {
     analyzeCalled = true;
-    streamHarness.emit?.({ type: 'delta', text: 'hello' });
+    streamHarness.emit?.({ type: 'delta', delta: 'hello' });
     streamHarness.emitEvent?.('custom', { detail: 'ok' });
-    streamHarness.end?.({ state: 'completed' });
+    streamHarness.end?.({ status: 'success' });
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
   try {
@@ -96,6 +96,7 @@ test('startStreaming streams by default in production when no overrides are pres
     expect(events.some((event) => event.event === 'stream.chunk')).toBe(true);
     expect(events.some((event) => event.event === 'custom')).toBe(true);
     expect(completions.length).toBeGreaterThan(0);
+    expect(completions[0]).toEqual({ status: 'success' });
     expect(analysisStreamService.getPendingPayload(sessionId)).toBeUndefined();
   } finally {
     process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;

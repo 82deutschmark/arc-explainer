@@ -1,8 +1,8 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2026-01-08T20:25:33-05:00
+ * Author: GPT-6 / Codex; GPT-5 Codex
+ * Date: 2026-10-29
  * PURPOSE: Validate Worm Arena placement phase classification and progress tracking
- *          from SnakeBenchModelRating snapshots.
+ *          from complete SnakeBenchModelRating snapshots, including required cost totals.
  * SRP/DRY check: Pass - Focused on placement helper behavior only.
  */
 
@@ -22,6 +22,7 @@ function makeRating(partial: Partial<SnakeBenchModelRating>): SnakeBenchModelRat
     ties: 0,
     applesEaten: 0,
     gamesPlayed: 0,
+    totalCost: 0,
     ...partial,
   };
 }

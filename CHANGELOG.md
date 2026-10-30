@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.18  Oct 29, 2026
+
+- **Clear the remaining TypeScript errors** (Author: GPT-6 / Codex). Reuse the shared matchup response type, preserve unknown imported timing as null, update stream test events, type repository spies and complete placement rating fixtures. Declare the missing frontend testing libraries and connect their typed Vitest matchers; keep strict compiler checks and existing assertions.
+- **Show Mark and Turducken side by side.** Save the current P018 player and T014 team PNG fronts together using the production renderer, preserving the artwork and dated standings.
+- Validation: TypeScript reports zero errors; all 29 focused matchup, placement, streaming, repository, card and frontend-sharing checks pass, including clipboard denial fallback. Production build passes. Plan: `docs/2026-10-29-typescript-cleanup-plan.md`.
+
 ### Version 9.159.17  Oct 29, 2026
 
 - **Prepare the picture before the edition** (Author: GPT-6.1 Sol / Codex). Update the existing Late automation to run artwork prepress at 5 pm and publication at 6 pm Eastern. Authorize required native commissions from registered references when unused stock does not fit; retain the 6 pm standings cutoff, model, checkout, Discord approval and send-once protection.

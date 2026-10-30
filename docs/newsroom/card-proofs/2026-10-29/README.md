@@ -48,3 +48,10 @@ avatar. P066's separate print proof and `nt-mitubant-proof.json` retain its exac
 card input and image/source hashes. The orange banana-suit kitten, comic tears and
 Turducken hangar follow his established character. His original community avatar,
 new native PNG and display copy remain saved with the generation record.
+
+## Mark and Turducken side by side
+
+At the Boss's request, `mark-and-turducken-proof.png` places P018 (Mark Barney, left)
+beside T014 (Team Turducken, right). Both complete PNG fronts come from the production
+renderer and current committed collection. Only the canvas arrangement is new; artwork,
+statistics and highlights are unchanged. The visible standings retain their observation dates.
