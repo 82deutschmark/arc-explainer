@@ -1,5 +1,7 @@
 # Native illustrations for the ARC Daily Digest
 
+> **Card Cabinet art follows [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md) (30 October 2026, the Boss's direction).** Cards are renderings of the real competitor with no text in the picture and room for code-drawn tier borders and statistics. Where this file disagrees about card art, the brief wins. What each card needs: [CARD_ART_NEEDS.md](CARD_ART_NEEDS.md).
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Authors: GPT-6.1 Sol / Codex (12–14 October 2026); reorganized by Claude Opus 5.5 Max on

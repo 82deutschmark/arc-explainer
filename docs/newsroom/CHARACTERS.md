@@ -1,5 +1,7 @@
 # Competitor character reference library
 
+> **Card Cabinet art follows [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md) (30 October 2026, the Boss's direction).** Cards are renderings of the real competitor with no text in the picture and room for code-drawn tier borders and statistics. Where this file disagrees about card art, the brief wins. What each card needs: [CARD_ART_NEEDS.md](CARD_ART_NEEDS.md).
+
 Author: GPT-6.1 Sol / Codex · 12 October 2026; team-specific casting updated 19 October 2026
 
 The Boss commissioned the expanded library on October 12. The registry is `content/news/visual-identities.json`; browse `/news-images/references/index.html`. It contains established individual characters, curated team casts and the Tufa team mascot. Mithil A Vakde and gromml remain pending because the saved ledger has no individual reference for them. The gallery is generated from the registry, so the desk and the review view use the same cast.
