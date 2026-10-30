@@ -1,5 +1,7 @@
 # Native illustrations for the ARC Daily Digest
 
+> **Boss's hard image limit, 30 October 2026:** at most **two native image generations, including revisions**, between editor feedback. Show the results, say when finished, then stop; no silent next batch. Read the overriding corrections in [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md): glamorous idealized illustrated faces, story-specific roles and settings, existing art reused first, no literal photo heads. Jeroen's world is the Tufa Citadel with black spiders, enormous GPU racks and restrained crimson; the whole Tufa crew is assigned to another assistant.
+
 > **Card Cabinet art follows [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md) (30 October 2026, the Boss's direction).** Cards are renderings of the real competitor with no text in the picture and room for code-drawn tier borders and statistics. Where this file disagrees about card art, the brief wins. What each card needs: [CARD_ART_NEEDS.md](CARD_ART_NEEDS.md).
 
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.

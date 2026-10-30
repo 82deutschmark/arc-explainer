@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-jeroen-cottaar-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:19.150Z",
+  "rawSrc": "/news-images/cards/2026/jeroen-cottaar-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/jeroen-cottaar-hero-v1-native.png",
+  "toolOutput": "exec-eb52eadf-afae-4861-b61a-9691473291cd.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Maintain the actual reference person's face, age, hair, any glasses and facial hair accurately. Make a charismatic grandmaster in midnight blue and brilliant amber cyberpunk tactical jacket with pixel-square luminous shoulder panels; one compact transparent ARC matrix console at chest level. Noble gothic scoring hall, composed strategic confidence.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Maintain the actual reference person's face, age, hair, any glasses and facial hair accurately. Make a charismatic grandmaster in midnight blue and brilliant amber cyberpunk tactical jacket with pixel-square luminous shoulder panels; one compact transparent ARC matrix console at chest level. Noble gothic scoring hall, composed strategic confidence.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/jeroen-cottaar.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "jeroen-cottaar",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/jeroen-cottaar.webp",
+      "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "13c79f36278edd856e2454a4b77ef655c0980ffa930d5a11bfc22cb3ebadc58e"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "0de9bee0be67e539c56daba7df5d9a67baa290016a0f1d99e60b026a9b625398",
+  "nativeOriginalSha256": "05a05e5f0f56ea92a04ff4e99bf4cce5e897d3e0343b2156cc4477342ef524a1",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}

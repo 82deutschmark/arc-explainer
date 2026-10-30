@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-keith-tyser-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:17.551Z",
+  "rawSrc": "/news-images/cards/2026/keith-tyser-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/keith-tyser-hero-v1-native.png",
+  "toolOutput": "exec-dd1bcb6a-b99e-45d4-abe9-3bebfb45ab74.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve this established cartoon yellow bird mascot exactly: enormous dark round eyes, wide ochre bill, black baseball cap and black hoodie. Character is a yellow bird NOT a human and not a cat. Give him superb black/gold cyberpunk pit-crew gear and an ARC-grid wrist console, glinting mechanical feather shoulder plates. One bird only, no dog needed. Cap and hoodie have NO writing. Charming confident three-dimensional cinematic illustration.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve this established cartoon yellow bird mascot exactly: enormous dark round eyes, wide ochre bill, black baseball cap and black hoodie. Character is a yellow bird NOT a human and not a cat. Give him superb black/gold cyberpunk pit-crew gear and an ARC-grid wrist console, glinting mechanical feather shoulder plates. One bird only, no dog needed. Cap and hoodie have NO writing. Charming confident three-dimensional cinematic illustration.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/keith-tyser.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "keith-tyser",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/keith-tyser.webp",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "572ee4749a2a5205c717a555e9e9a4588edb458e3bac7d35f960769ee5a170af"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
+  "nativeOriginalSha256": "24b42b7e181b28a3659343933278ad4b9eefe2bc81f28ee6d26c8d77563a86e2",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}

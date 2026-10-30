@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T17:00:18.943Z",
+  "updatedAt": "2026-10-30T19:57:00.496837+00:00",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -25,7 +25,14 @@
       "artNotes": [],
       "number": "P002",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+        "alt": "CPMP: Jean-François Puget as a mature ponytailed cyber mastermind with engraved open helmet, crimson accents and the NVIDIA GPU Citadel.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+        "commissionedAt": "2026-10-30T19:52:22.980Z"
+      }
     },
     {
       "id": "person-ivan-sorokin-2026",
@@ -91,7 +98,14 @@
       "artNotes": [],
       "number": "P008",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+        "alt": "Jeroen Cottaar, Tufa’s wry cybernetic mastermind, seated in the GPU Citadel with crimson accents and friendly black spider mascots.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+        "commissionedAt": "2026-10-30T19:33:35.282Z"
+      }
     },
     {
       "id": "person-jan-disselhoff-2026",
@@ -234,7 +248,14 @@
       "artNotes": [],
       "number": "P021",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp",
+        "alt": "PunkCyber’s fictional avatar as a retro space heroine with facial optics, enormous GPUs and a chrome pressure collar; scarf removed.",
+        "credit": "Commissioned ARC Daily retro-futuristic illustration",
+        "artworkId": "2026-10-30-punkcyber-retro-space-v2",
+        "commissionedAt": "2026-10-30T18:52:58.020Z"
+      }
     },
     {
       "id": "person-fshindo-2026",
@@ -289,7 +310,14 @@
       "artNotes": [],
       "number": "P026",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+        "alt": "Illustrated mature NVIDIA tactician in emerald GPU citadel with crimson harness accents, distinctive field-rack and three floating compute carriages over a map table. Preserves warm broad smile as an idealized painted character rather than card typography. No stats or borders baked into art.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+        "commissionedAt": "2026-10-30T19:46:24.813Z"
+      }
     },
     {
       "id": "person-elad-sarafian-2026",
@@ -399,7 +427,14 @@
       "artNotes": [],
       "number": "P036",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+        "alt": "Adult pulp-comic conversion of established Lukas avatar, chestnut quiff, navy ARC-grid costume, amber hinged lens and cheek/ear receiver. Distinct horizontal dual-fan GPU jukebox harness and expressive dancer pose. No scarf, anime treatment, copied teammate face or photographic collage.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-30-lukas-aichberger-retro-space-v1",
+        "commissionedAt": "2026-10-30T19:06:13.017Z"
+      }
     },
     {
       "id": "person-vineeth-sai-varikuntla-2026",
@@ -574,7 +609,14 @@
       "artNotes": [],
       "number": "P051",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp",
+        "alt": "ISAKA’s fictional avatar as a space-western radio engineer with leather harness, enormous single-fan GPU case, dish antennas and round optical equipment.",
+        "credit": "Commissioned ARC Daily retro-futuristic illustration",
+        "artworkId": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
+        "commissionedAt": "2026-10-30T18:52:59.339Z"
+      }
     },
     {
       "id": "person-konbu17-2026",

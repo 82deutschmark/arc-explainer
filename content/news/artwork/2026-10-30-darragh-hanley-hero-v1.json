@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-darragh-hanley-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:20.761Z",
+  "rawSrc": "/news-images/cards/2026/darragh-hanley-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/darragh-hanley-hero-v1-native.png",
+  "toolOutput": "exec-5af7b201-ae45-46a9-b3e1-d36f007c671d.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Maintain the actual reference person's face, age, hair, glasses and facial hair accurately. A charismatic veteran esports strategist in brushed gunmetal and lime-lit cyber engineer armor, fine copper cabling and tiny cube grids, a tactile floating cube over one glove. Strong friendly expression in the scoring hall.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Maintain the actual reference person's face, age, hair, glasses and facial hair accurately. A charismatic veteran esports strategist in brushed gunmetal and lime-lit cyber engineer armor, fine copper cabling and tiny cube grids, a tactile floating cube over one glove. Strong friendly expression in the scoring hall.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/darragh-hanley-v2.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "darragh-hanley",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/darragh-hanley-v2.webp",
+      "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "c6d28905e592136280471725ceecd2f2e7cc12b1a1bcd8f67e6fd503e9d05986"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "14ea00e0101799d1e7c9ec0d7560eec749e562fe3ebd0022f1ef82562ba9e9ff",
+  "nativeOriginalSha256": "6cace4409dd2b230940dbdc7050cba99a4e4e87fe3f62e4d93983f3da1fa17b6",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}

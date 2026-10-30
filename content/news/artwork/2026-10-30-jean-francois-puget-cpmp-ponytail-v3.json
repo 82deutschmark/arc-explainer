@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T19:52:22.980Z",
+  "purpose": "character-reference",
+  "subjectId": "jean-francois-puget",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "rawSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png",
+  "toolOutput": "exec-925374a6-1058-4569-9616-a459c47511c3.png",
+  "prompt": "Use case: precise-object-edit. ONE focused likeness/hair/headgear revision to the NVIDIA mastermind portrait in IMAGE1. Preserve its NVIDIA-green citadel, towering graphics-card/server architecture, crimson/graphite commander costume, seated strategic pose, hand at beard, other hand at fortress hologram, visual polish and portrait composition.\n\nThe actual person is CPMP, Jean-François Puget. The editor says the current character is too lean and still does not resemble him sufficiently. IMAGE2 is his OWN VERIFIED PORTRAIT and clearly shows the correct broad facial structure and ponytail. IMAGE3 is his ORIGINAL illustrated card, which the editor liked as a character reference. Use these two sources to correct recognizable identity, while keeping IMAGE1's handsome COHERENTLY PAINTED cyberpunk illustration. Do not paste a photographic face.\n\nFACE AND BUILD: He is clearly an experienced man IN HIS SIXTIES, with a noticeably FULLER, BROADER face and heavier/stockier build. Broader forehead, softer fuller cheeks, substantial nose, fuller beard around jaw, less chiseled narrow jaw and more neck/upper-torso mass. Preserve his characteristic thoughtful, slightly wry and warm expression, distinctive brow/eye/nose arrangement suggested by image2 and the substantial bearded presence in image3. Thin rectangular wire-frame spectacles integrated into optics. Repaint him attractively as a recognizable idealized character, not a generic slim movie-star space captain. Mature face with appropriate stylized lines, good complexion and polished hand-painted planes; no copied photo pores, no anime.\n\nHAIR: NO short curly quiff. Long STRAIGHT/SOFTLY WAVED dark brown hair with silver-gray temples, brushed straight BACK from his broad high forehead into a clearly visible thick LOW PONYTAIL. The ponytail emerges from the back of the helmet and falls forward over one shoulder so it is plainly visible, long dark/silver strands against the crimson/graphite coat. Beard is full, well-kept salt-and-pepper with substantial gray/silver along cheeks, chin and moustache, darker brown still mixed in, suitable for his sixties; keep its natural broad shape from his reference, not a narrow sculpted young actor beard.\n\nHELMET: Give him a distinctive WEIRD OPEN-FACE CYBER COMMAND HELMET, mechanically substantial but leaving BOTH eyes behind his spectacles, nose, mouth, beard and cheeks largely exposed. An open armored crown follows head sides and occiput; deep gunmetal/copper ribbed top rails, a few little green PCB fins, emerald-lit ear modules and temple sensors, a small hinged optical magnifier PARKED just outside one spectacle lens rather than masking half the face. Open rear channel lets the tied long ponytail escape visibly. No face mask, no bald head or buzz cut, no enclosing dome. Skin/hair and metal all share the same cinematic painted illustration.\n\nEngrave the EXACT FOUR CAPITAL LETTERS 'CPMP' into a small clearly readable brushed-copper FOREHEAD/BROW PLATE on the helmet. It must look physically cut/engraved into metal, light-catching recesses, tasteful and readable. This one stable alias engraving is explicitly commissioned by the editor. No other added lettering anywhere; do not copy the old card's words, logo or statistics. No baseball-card labels, names, scores, badges, border or frame. The other assistant adds those later.\n\nKeep all original pose, citadel, hologram, GPUs, crimson accents and atmosphere as image1. Broaden clothing fit naturally for his stockier upper body without losing command elegance. A recognizably older, long-haired, fuller-faced CPMP, not a different generic elder hero. Portrait5:7 full bleed.",
+  "toolArguments": {
+    "prompt": "Use case: precise-object-edit. ONE focused likeness/hair/headgear revision to the NVIDIA mastermind portrait in IMAGE1. Preserve its NVIDIA-green citadel, towering graphics-card/server architecture, crimson/graphite commander costume, seated strategic pose, hand at beard, other hand at fortress hologram, visual polish and portrait composition.\n\nThe actual person is CPMP, Jean-François Puget. The editor says the current character is too lean and still does not resemble him sufficiently. IMAGE2 is his OWN VERIFIED PORTRAIT and clearly shows the correct broad facial structure and ponytail. IMAGE3 is his ORIGINAL illustrated card, which the editor liked as a character reference. Use these two sources to correct recognizable identity, while keeping IMAGE1's handsome COHERENTLY PAINTED cyberpunk illustration. Do not paste a photographic face.\n\nFACE AND BUILD: He is clearly an experienced man IN HIS SIXTIES, with a noticeably FULLER, BROADER face and heavier/stockier build. Broader forehead, softer fuller cheeks, substantial nose, fuller beard around jaw, less chiseled narrow jaw and more neck/upper-torso mass. Preserve his characteristic thoughtful, slightly wry and warm expression, distinctive brow/eye/nose arrangement suggested by image2 and the substantial bearded presence in image3. Thin rectangular wire-frame spectacles integrated into optics. Repaint him attractively as a recognizable idealized character, not a generic slim movie-star space captain. Mature face with appropriate stylized lines, good complexion and polished hand-painted planes; no copied photo pores, no anime.\n\nHAIR: NO short curly quiff. Long STRAIGHT/SOFTLY WAVED dark brown hair with silver-gray temples, brushed straight BACK from his broad high forehead into a clearly visible thick LOW PONYTAIL. The ponytail emerges from the back of the helmet and falls forward over one shoulder so it is plainly visible, long dark/silver strands against the crimson/graphite coat. Beard is full, well-kept salt-and-pepper with substantial gray/silver along cheeks, chin and moustache, darker brown still mixed in, suitable for his sixties; keep its natural broad shape from his reference, not a narrow sculpted young actor beard.\n\nHELMET: Give him a distinctive WEIRD OPEN-FACE CYBER COMMAND HELMET, mechanically substantial but leaving BOTH eyes behind his spectacles, nose, mouth, beard and cheeks largely exposed. An open armored crown follows head sides and occiput; deep gunmetal/copper ribbed top rails, a few little green PCB fins, emerald-lit ear modules and temple sensors, a small hinged optical magnifier PARKED just outside one spectacle lens rather than masking half the face. Open rear channel lets the tied long ponytail escape visibly. No face mask, no bald head or buzz cut, no enclosing dome. Skin/hair and metal all share the same cinematic painted illustration.\n\nEngrave the EXACT FOUR CAPITAL LETTERS 'CPMP' into a small clearly readable brushed-copper FOREHEAD/BROW PLATE on the helmet. It must look physically cut/engraved into metal, light-catching recesses, tasteful and readable. This one stable alias engraving is explicitly commissioned by the editor. No other added lettering anywhere; do not copy the old card's words, logo or statistics. No baseball-card labels, names, scores, badges, border or frame. The other assistant adds those later.\n\nKeep all original pose, citadel, hologram, GPUs, crimson accents and atmosphere as image1. Broaden clothing fit naturally for his stockier upper body without losing command elegance. A recognizably older, long-haired, fuller-faced CPMP, not a different generic elder hero. Portrait5:7 full bleed.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2-native.png",
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/jean-francois-puget-v3.webp",
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/jfPuget.png"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2-native.png",
+      "role": "Existing NVIDIA mastermind composition: retain setting, pose and overall illustration.",
+      "sha256": "4434a170ebbb6b84500a591683c126c5230dc20adf342dfa7ada1353e3c601ab"
+    },
+    {
+      "src": "/news-images/people/jean-francois-puget-v3.webp",
+      "role": "Own verified portrait: broad facial/build cues, swept-back long hair, ponytail, spectacles and beard identity; redraw in coherent illustration medium.",
+      "sha256": "e3d9d94c6ca96cf1a7ae53f45ea68f427ee94bd90d5ec858013b383acd0cd793"
+    },
+    {
+      "src": "/jfPuget.png",
+      "role": "Original individual illustrated card requested by the Boss: character identity and bearded presence, ignore old text/stats.",
+      "sha256": "8965a79ccebb1082121fc5b444107e659f4763809fd977c55342b0152573ed94"
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "review": "Corrected toward own verified face and original illustrated card: fuller broad face/build, wire spectacles, swept-back long hair in a clearly visible ponytail, mature salt-and-pepper beard, open cyber helmet with CPMP engraved on copper brow plate. Both eyes and most face remain visible. NVIDIA Citadel, mastermind pose, crimson accents and GPU model retained. The stable CPMP engraving is the editor's explicit exception to the otherwise text-free artwork rule.",
+  "commissionAuthority": "Boss prioritized Lukas and DZ retro conversions, then six integrated-face-hardware cyberpunk repairs on 30 October 2026.",
+  "archiveNote": "Exact native PNG, lossless 1500×2100 sRGB WebP derivative, full prompt and actual inputs retained. Earlier originals unchanged.",
+  "rawSha256": "1ee58454399676dabbaae4ca43c13205830045c5cfda7cde1af9091e52845737",
+  "nativeOriginalSha256": "ccaf233d839f8efd87b698e0527eb75e89487c2d8469ed1334564953e56e6295",
+  "previousCardArt": {
+    "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2.webp",
+    "alt": "Jean-François Puget as a silver-bearded senior cybernetic mastermind in the NVIDIA GPU Citadel.",
+    "credit": "Commissioned ARC Daily character illustration",
+    "artworkId": "2026-10-30-jean-francois-puget-nvidia-mastermind-v2",
+    "commissionedAt": "2026-10-30T19:46:26.245Z"
+  }
+}

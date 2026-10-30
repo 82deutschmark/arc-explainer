@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-itsu-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "itsu",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-itsu-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-itsu-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "0859bf1f908dd68e23d9f13f7346cdf195599a87e0266229e19dc9fe310be440",
+  "rawSha256": "0859bf1f908dd68e23d9f13f7346cdf195599a87e0266229e19dc9fe310be440",
+  "toolOutput": "exec-01ca6c88-b8c5-4caa-8447-b510eec283b0.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the owner's chosen fantasy anime avatar: white-haired adult feline-eared character, pale blue eyes, black-and-gold diamond headband, white high collar. An adult anime cyber engineer in luminous ivory and midnight blue armor with gold ARC diamond-square inlays, long white hair fully contained, playful confident expression and a small crystal ARC grid in one hand. Tasteful nonsexual adult depiction.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the owner's chosen fantasy anime avatar: white-haired adult feline-eared character, pale blue eyes, black-and-gold diamond headband, white high collar. An adult anime cyber engineer in luminous ivory and midnight blue armor with gold ARC diamond-square inlays, long white hair fully contained, playful confident expression and a small crystal ARC grid in one hand. Tasteful nonsexual adult depiction.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/itsu.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/itsu.webp",
+      "sha256": "1f32b4c0f2e56b507cc508051e60b5b3c2781de975d811bf1899114729e33980",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/nisshokuitsuki"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

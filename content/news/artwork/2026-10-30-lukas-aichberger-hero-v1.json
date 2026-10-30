@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-lukas-aichberger-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:12.548Z",
+  "rawSrc": "/news-images/cards/2026/lukas-aichberger-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/lukas-aichberger-hero-v1-native.png",
+  "toolOutput": "exec-81d9acc3-e005-4f3a-b89e-86f8e7a185cf.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is this person's chosen illustrated avatar. Preserve youthful clean-shaven face, swept chestnut hair and expressive eyes, navy hoodie silhouette. Reimagine in rich illustrated cinematic realism, blue and navy exosuit with bright multicolor ARC-square inlays, elegant compact forearm holographic puzzle console, lively dance-champion swagger.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is this person's chosen illustrated avatar. Preserve youthful clean-shaven face, swept chestnut hair and expressive eyes, navy hoodie silhouette. Reimagine in rich illustrated cinematic realism, blue and navy exosuit with bright multicolor ARC-square inlays, elegant compact forearm holographic puzzle console, lively dance-champion swagger.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/lukas-aichberger.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "lukas-aichberger",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/lukas-aichberger.webp",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "e6c4ca95b5585782748541f23c9977e7d4bbd53a081d410038b416aa233dfdad"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "aea88892a41f3a8de991231ada4d196739f6c3ba9755653ae361ba167923fd65",
+  "nativeOriginalSha256": "9e1afd4ce170b5d9bdea6a619e14725b861eb82630570621c504577c454d76fe",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}
