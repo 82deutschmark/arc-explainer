@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-30T13:24:19Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "azamat1ch vaults from 1,867th to 33rd on ARC-2",
+  "id": "2026-10-30-0941-arc-2-azamat1ch-vaults-to-33rd",
+  "personIds": [],
+  "publishedAt": "2026-10-30T13:41:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "On the ARC-2 public board, the team azamat1ch gained 35.55 points in the past day, reaching 64.58 and moving from 1,867th to 33rd. It is the biggest single gain on the board today."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The team is still outside the gold places, so this is a move in the medal chase rather than a medal. Public standings stay provisional until the private board decides."
+    }
+  ],
+  "since": "2026-10-29T13:21:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T13:40:37Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17189240"
+  ]
+}
