@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-30T19:55:12Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Noah's ARC surges into gold at 12th",
+  "id": "2026-10-30-1557-arc-2-noahs-arc-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-30T19:57:00Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Noah's ARC gained 21.39 points to reach 73.89, rising from 54th to 12th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move carries the team into the 17 gold places, making it one of the day's strongest advances near the top of the ARC-2 board."
+    }
+  ],
+  "since": "2026-10-29T19:52:16Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T19:56:49Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16987610"
+  ]
+}
