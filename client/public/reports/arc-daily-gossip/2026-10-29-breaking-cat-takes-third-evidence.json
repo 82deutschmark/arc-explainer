@@ -1,0 +1,104 @@
+{
+  "articleId": "2026-10-29-breaking-cat-takes-third",
+  "checkedAt": "2026-10-30T00:17:00Z",
+  "closingSnapshot": {
+    "bronze": 31.27,
+    "gold": 38.98,
+    "silver": 32.56,
+    "t": "2026-10-29T23:52:43Z",
+    "teams": 4975,
+    "top": 75.56
+  },
+  "competition": "arc-3",
+  "events": [
+    {
+      "from": 28.41,
+      "id": "15487093",
+      "name": "Xz",
+      "rankFrom": 1274,
+      "rankTo": 4,
+      "t": "2026-10-29T09:20:48Z",
+      "to": 52.95
+    },
+    {
+      "from": 52.95,
+      "id": "15487093",
+      "name": "faster machine is all you need",
+      "rankFrom": 4,
+      "rankTo": 3,
+      "t": "2026-10-29T20:22:18Z",
+      "to": 58.59
+    }
+  ],
+  "freshnessCheck": {
+    "checkedAt": "2026-10-30T00:17:00Z",
+    "sourceSha256": "9cbea389b3e3613dcf3cef760f0a5c25de89290fedd49ac826e846724b8ddb1f"
+  },
+  "observations": {
+    "15487093": {
+      "members": [
+        "xiaoz259"
+      ],
+      "name": "faster machine is all you need",
+      "observedAt": "2026-10-29T23:52:43Z"
+    },
+    "15605182": {
+      "members": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ],
+      "name": "Team Turducken",
+      "observedAt": "2026-10-29T23:52:43Z"
+    }
+  },
+  "observedAt": "2026-10-29T23:52:43Z",
+  "sourceSha256": "9cbea389b3e3613dcf3cef760f0a5c25de89290fedd49ac826e846724b8ddb1f",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.02,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "faster machine is all you need",
+      "rank": 3,
+      "rankChange": null,
+      "score": 58.59,
+      "scoreChange": null,
+      "teamId": "15487093"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 4,
+      "rankChange": -1,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 51.51,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    }
+  ]
+}

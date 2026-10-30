@@ -1,0 +1,46 @@
+{
+  "articleId": "2026-10-29-evening-arc-3-preview",
+  "briefSha256": "a59ff27dd9f091b57e9a3642498d9c56e47bbf74ffceb1d5a82250ed2c344027",
+  "dataAsOf": "2026-10-29T23:52:43Z",
+  "generationRecord": "2026-10-29-cat-takes-third-v1-base",
+  "headline": "The cat takes third: faster machine overtakes Turducken",
+  "historyChart": null,
+  "id": "2026-10-29-cat-takes-third-v1",
+  "image": {
+    "alt": "Editorial illustration for The cat takes third: faster machine overtakes Turducken. faster machine is all you need: rank 3, score 58.59; Team Turducken: rank 4, score 56.02.",
+    "artworkId": "2026-10-29-cat-takes-third-v1",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 29, 2026 · 7:52 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-29-cat-takes-third-v1.webp"
+  },
+  "imageSha256": "02afe1a872db0a354bfc91babeb743d13248ab14b42869ee522a5b0cbc31c515",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": null,
+  "personIds": [
+    "xz",
+    "mark-barney",
+    "son-pham",
+    "keith-tyser"
+  ],
+  "rawSha256": "c8db6f1081ff5b1ac0101228d2991c406c213e68f8c6c548156ed7091577831d",
+  "rows": [
+    {
+      "name": "faster machine is all you need",
+      "rank": 3,
+      "rankChange": null,
+      "score": 58.59,
+      "scoreChange": null,
+      "teamId": "15487093"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 4,
+      "rankChange": -1,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    }
+  ],
+  "trigger": "head-editor-commissioned-podium-overtake",
+  "version": 1
+}
