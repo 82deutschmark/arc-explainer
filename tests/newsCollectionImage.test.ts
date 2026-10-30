@@ -1,8 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex
  * Date: 2026-10-29
  * PURPOSE: Verify the collectible export's portable PNG, intact CJK lettering and local-only
- *          artwork boundary. These checks do not depend on installed system fonts or a server.
+ *          artwork boundary using the complete linked-card contract, without system fonts or a server.
+ * SRP/DRY check: Pass — the existing renderer receives the same contract as collection pages.
  */
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -14,7 +15,7 @@ import { buildCollectionCardImage } from '../server/services/news/newsCollection
 
 const card = (overrides: Partial<CollectionCard> = {}): CollectionCard => ({
   id: 'export-test', number: 'T001', kind: 'team', name: 'The Test Contenders', season: '2026',
-  profileUrl: '/news/cards', art: null, description: '', highlights: [], accounts: [], entries: [],
+  profileUrl: '/news/cards', cardUrl: '/news/cards/export-test', teamHistory: [], art: null, description: '', highlights: [], accounts: [], entries: [],
   honors: [], artNotes: [], ...overrides,
 });
 

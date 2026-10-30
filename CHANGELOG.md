@@ -1,11 +1,17 @@
 # New entries at the top, use proper SemVer!
 
-### Version 9.159.15  Oct 29, 2026
+### Version 9.159.16  Oct 29, 2026
 
 - **Give ARC Mutants three new episodes** (Author: GPT-6.1 Sol / Codex). Save The Danger Grid, The Pattern Observatory and Above the Academy with Jack, Mark, Son and Ronen's established characters. Preserve each exact native PNG, prompt, actual references, review and four-account ARC2 cast condition alongside the original academy illustration.
 - **NT gets his own Turducken avatar and card.** Record the Boss-confirmed NT / mitubant identity, dedicated orange banana-suit kitten illustration and P066 individual card. Preserve the original community avatar, new native PNG and web copy. Reaffirm the separate ARC3 Turducken and ARC2 Mutants rosters in the permanent playbook; no article or social send.
 - Individual card entry preferences can lead with the intended contest while retaining other verified memberships. NT's card leads with ARC3 Turducken and preserves his separate ARC2 team 15526034; no membership or honor is inferred from the artwork.
-- Validation: 33 focused collection/API/image checks, people and character-library validation, production build and visual review pass. All four new native originals and the original academy illustration are retained; NT's rendered P066 proof leads with ARC3.
+- Validation: 80 combined collection, rendered-card, API/image and existing news checks, people and character-library validation, production build and visual review pass. All four new native originals and the original academy illustration are retained; NT's rendered P066 proof leads with ARC3.
+
+### Version 9.159.15  Oct 29, 2026
+
+- **Connect the players and their teams** (Author: GPT-6 / Codex). Player cards now show their current observed teams, earlier teams and complete sourced Kaggle career highlights. Team cards show a linked player roster. Match verified accounts and competition-specific team identities; preserve simultaneous ARC2/ARC3 memberships and label uncertain older observations honestly.
+- **Give every card a shareable page.** Add `/news/cards/:id`, Open card and Copy card link controls, a selectable-link fallback, the selected card's own social preview, and permanent player/team links throughout the Cabinet. Retain the existing artwork, card numbers, front/back views, filters and PNG downloads. Teams without a published notebook link to their public source.
+- Validation: 79 collection, rendered-card, HTTP, PNG and existing news checks pass, along with the production build. Archive-wide tests pass with a longer timeout after the build completes. The broad TypeScript check retains 12 existing diagnostics outside changed files. Plan: `docs/plans/2026-10-29-player-and-team-cards.md`.
 
 ### Version 9.159.14  Oct 29, 2026
 
