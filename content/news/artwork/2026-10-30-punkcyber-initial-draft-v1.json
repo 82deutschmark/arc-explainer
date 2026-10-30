@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-punkcyber-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "punkcyber",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-punkcyber-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-punkcyber-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "2d046a97da82ed07ea35a9524fbb84512a906fe573d990ccd391db72d516255a",
+  "rawSha256": "2d046a97da82ed07ea35a9524fbb84512a906fe573d990ccd391db72d516255a",
+  "toolOutput": "exec-0e8fde82-5d0e-477d-9acf-d01162cf971b.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the owner's illustrated avatar: adult feminine anime character, short chestnut bob with blue-violet tips, enormous amber eyes behind black round glasses, beige scarf. Refine into dazzling detailed anime/cinematic hybrid cyber engineer portrait; copper, cream and violet armored jacket, scarf integrated with luminous square-grid fasteners. Hold a small transparent puzzle slate without writing. Adult proportions, warm competitive confidence.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the owner's illustrated avatar: adult feminine anime character, short chestnut bob with blue-violet tips, enormous amber eyes behind black round glasses, beige scarf. Refine into dazzling detailed anime/cinematic hybrid cyber engineer portrait; copper, cream and violet armored jacket, scarf integrated with luminous square-grid fasteners. Hold a small transparent puzzle slate without writing. Adult proportions, warm competitive confidence.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/punkcyber.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/punkcyber.webp",
+      "sha256": "01acde188cac15ef3a8697b2d19ff9e6bf4e6768260969b9fd4d18f14033adb7",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

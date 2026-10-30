@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "id": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T19:33:35.282Z",
+  "purpose": "character-reference",
+  "subjectId": "jeroen-cottaar",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "rawSrc": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4-native.png",
+  "toolOutput": "exec-01500842-517e-4d18-aae7-dc35d0e26a8a.png",
+  "prompt": "Use case: precise-object-edit. Make ONE targeted final revision to Jeroen's current illustrated mastermind portrait in IMAGE1. The editor likes THIS improved handsome face, its WRY knowing half-smile, the spectacles/face optics and the seated cerebral mastermind pose. PRESERVE those features and his natural proportions, hands and confident poised attitude. Keep the same polished cinematic illustrated cyberpunk medium; no return to photographic face, no anime or retro pulp texture.\n\nChange only the TEAM SETTING, restrained COSTUME COLOR DETAILS and TEAM IDENTITY:\n1. Replace the entire academy/gothic-university background with the actual TUFA CITADEL industrial interior from IMAGE2. He is seated on an elevated command balcony INSIDE that GPU fortress. HUGE HUGE GPU SERVER RACKS dominate the background: monumental floor-to-vault towering dense graphics-card cabinets with enormous cooling fans, green PCB modules, deep aluminum heatsinks, fat turquoise coolant pipes and copper conduits. Replicate IMAGE2's industrial gantries, yellow overhead cranes, grated catwalks, metal support beams, amber work lights and scale. Warm daylight through a distant industrial opening may show snowy peaks. Make the citadel unmistakeably a great GPU factory / command center, not Jack Cole's gifted-hero academy or the generic scoring hall. IMAGE3 reinforces the established Tufa GPU-fort scale and friendly black spider workforce; do not import its rabbits or its human figure.\n2. Give Jeroen a distinct restrained rival palette: elegant CHARCOAL BLACK structured jacket with an IVORY inner collar, subtle deep CRIMSON lapel facings, crimson cuffs and a small crimson inset on the chair. Warm brushed COPPER trim and muted teal hardware. Only a LITTLE crimson, not an all-red costume. Remove the conspicuous navy-and-gold brocade patterns that make his coat look like Jack's. The look is sophisticated, dignified and competitive, never sinister. Keep the chair's impressive compute architecture and mastermind pose; natural welcoming-wry expression.\n3. TUFA'S SPIDER IDENTITY is visible. Preserve the two friendly fluffy BLACK SPIDER mascots by his command chair, with expressive WHITE eyes, proper spider limbs and no hostile monster styling. In the GPU-rack background a few small same-family spiders operate gantry consoles. Include ONE tasteful black citadel banner with a WHITE stylized friendly spider pictogram derived from the flag symbol in IMAGE4; use the pictogram only, REMOVE ALL lettering and old score panels. A small matching spider lapel pin is welcome. This is Tufa's identity, not an evil mastermind motif. The Mastermind is a worthy charismatic rival at the top of the competition, not a villain.\n\nKeep face and gesture as in IMAGE1; do not change his expression to a grim scowl or borrow an actor's face. Maintain first-person focus and original portrait5:7 full-bleed format. Face and hands unobstructed, racks visibly immense but subordinate to hero. No extra human teammates, no bunnies, no speech bubbles, no text, words, names, digits, rank, logo lettering, score, watermark, border or frame. No additional new scene or unrelated redesign.",
+  "toolArguments": {
+    "prompt": "Use case: precise-object-edit. Make ONE targeted final revision to Jeroen's current illustrated mastermind portrait in IMAGE1. The editor likes THIS improved handsome face, its WRY knowing half-smile, the spectacles/face optics and the seated cerebral mastermind pose. PRESERVE those features and his natural proportions, hands and confident poised attitude. Keep the same polished cinematic illustrated cyberpunk medium; no return to photographic face, no anime or retro pulp texture.\n\nChange only the TEAM SETTING, restrained COSTUME COLOR DETAILS and TEAM IDENTITY:\n1. Replace the entire academy/gothic-university background with the actual TUFA CITADEL industrial interior from IMAGE2. He is seated on an elevated command balcony INSIDE that GPU fortress. HUGE HUGE GPU SERVER RACKS dominate the background: monumental floor-to-vault towering dense graphics-card cabinets with enormous cooling fans, green PCB modules, deep aluminum heatsinks, fat turquoise coolant pipes and copper conduits. Replicate IMAGE2's industrial gantries, yellow overhead cranes, grated catwalks, metal support beams, amber work lights and scale. Warm daylight through a distant industrial opening may show snowy peaks. Make the citadel unmistakeably a great GPU factory / command center, not Jack Cole's gifted-hero academy or the generic scoring hall. IMAGE3 reinforces the established Tufa GPU-fort scale and friendly black spider workforce; do not import its rabbits or its human figure.\n2. Give Jeroen a distinct restrained rival palette: elegant CHARCOAL BLACK structured jacket with an IVORY inner collar, subtle deep CRIMSON lapel facings, crimson cuffs and a small crimson inset on the chair. Warm brushed COPPER trim and muted teal hardware. Only a LITTLE crimson, not an all-red costume. Remove the conspicuous navy-and-gold brocade patterns that make his coat look like Jack's. The look is sophisticated, dignified and competitive, never sinister. Keep the chair's impressive compute architecture and mastermind pose; natural welcoming-wry expression.\n3. TUFA'S SPIDER IDENTITY is visible. Preserve the two friendly fluffy BLACK SPIDER mascots by his command chair, with expressive WHITE eyes, proper spider limbs and no hostile monster styling. In the GPU-rack background a few small same-family spiders operate gantry consoles. Include ONE tasteful black citadel banner with a WHITE stylized friendly spider pictogram derived from the flag symbol in IMAGE4; use the pictogram only, REMOVE ALL lettering and old score panels. A small matching spider lapel pin is welcome. This is Tufa's identity, not an evil mastermind motif. The Mastermind is a worthy charismatic rival at the top of the competition, not a villain.\n\nKeep face and gesture as in IMAGE1; do not change his expression to a grim scowl or borrow an actor's face. Maintain first-person focus and original portrait5:7 full-bleed format. Face and hands unobstructed, racks visibly immense but subordinate to hero. No extra human teammates, no bunnies, no speech bubbles, no text, words, names, digits, rank, logo lettering, score, watermark, border or frame. No additional new scene or unrelated redesign.",
+    "referenced_image_paths": [
+      "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-258890a6-aff6-4838-abeb-6f9ea6c96b4a.png",
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp",
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/2026-10-13-tufa-gpu-citadel-base.webp",
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-mastermind-v3-native.png",
+      "role": "Edit target: editor-liked wry illustrated face and mastermind pose, preserved in this revision.",
+      "sha256": "2ce88859382670a082d1c68b74b7786b1cf44500f7ad12aee0ab54726ad95217",
+      "actualToolInput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-258890a6-aff6-4838-abeb-6f9ea6c96b4a.png"
+    },
+    {
+      "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp",
+      "role": "Established Tufa Citadel interior: monumental GPU racks, gantries, coolant pipes and industrial architecture.",
+      "sha256": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a"
+    },
+    {
+      "src": "/news-images/2026-10-13-tufa-gpu-citadel-base.webp",
+      "role": "Established Tufa GPU fortress and friendly black spider character family; no rabbits or other human imported.",
+      "sha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp",
+      "role": "Tufa spider insignia and mascot reference only; ignore all old lettering, labels and scores.",
+      "sha256": "43c0218e4224989ed749d1ef93e980f0df6d30690927784dd9986cee902b2757"
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "review": "Retains the editor-liked wry glamorous face and seated mastermind pose. Now inside the established Tufa Citadel: monumental GPU racks, yellow gantries, copper/turquoise cooling pipes, black spiders with white eyes, white spider pictogram on black banner. Charcoal/ivory clothing has restrained crimson lapels and cuffs; navy/gold academy brocade and university setting removed. No villain coding, text or card border.",
+  "commissionAuthority": "Boss prioritized Lukas and DZ retro conversions, then six integrated-face-hardware cyberpunk repairs on 30 October 2026.",
+  "archiveNote": "Exact native PNG, lossless 1500×2100 sRGB WebP derivative, full prompt and actual inputs retained. Earlier originals unchanged.",
+  "rawSha256": "a0fa111fa7e5e2bb4f4dd1269ca57e23ccd2544a83893e3f041b9007bbb74e9d",
+  "nativeOriginalSha256": "01e67bc9d460c71b0376cc5b267fae5683172979cbe1a59025a1dbe43ae2eb7d",
+  "previousCardArt": {
+    "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-cyber-face-v2.webp",
+    "alt": "Preserved Jeroen's own face, short dark curls and wire spectacles. Amber hinged optical lens physically connects to temple/ear hardware and jaw-to-collar supports. Navy/bronze suit, horizontal GPU cooling rack, three stacked ARC screens and held tile matrix; all in established cyber-engineer illustration family. No retro print, anime or card lettering.",
+    "credit": "Commissioned ARC Daily character illustration",
+    "artworkId": "2026-10-30-jeroen-cottaar-cyber-face-v2",
+    "commissionedAt": "2026-10-30T19:12:00.166Z"
+  }
+}

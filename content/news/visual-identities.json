@@ -127,6 +127,7 @@
       "description": "Jean-François Puget (CPMP) — reusable individual character/portrait",
       "id": "jean-francois-puget",
       "identityNotes": [
+        "Mature fuller-faced/stockier CPMP with long swept-back ponytail, gray beard, wire spectacles and open cyber helmet engraved CPMP. Preserve NVIDIA emerald GPU Citadel, restrained crimson and calculating mentor role. Glamour must not de-age him.",
         "Puget: preserve the bearded cyber-engineer character, brown hair, cyan helmet lights and shoulder-mounted GPU costume from his individual card."
       ],
       "names": [
@@ -139,6 +140,14 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Established Hall of Fame character",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+          "sha256": "1ee58454399676dabbaae4ca43c13205830045c5cfda7cde1af9091e52845737",
+          "generationRecord": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+          "kind": "native-character",
+          "label": "CPMP — senior NVIDIA mastermind",
+          "role": "Mature fuller-faced/stockier CPMP with long swept-back ponytail, gray beard, wire spectacles and open cyber helmet engraved CPMP. Preserve NVIDIA emerald GPU Citadel, restrained crimson and calculating mentor role. Glamour must not de-age him."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "kind": "hall-of-fame-character",
@@ -284,6 +293,7 @@
       "description": "Jeroen Cottaar — reusable individual character/portrait",
       "id": "jeroen-cottaar",
       "identityNotes": [
+        "Boss direction October30: Tufa’s worthy mastermind rival, wry and dignified rather than evil. Own photo inspires a handsome illustrated character; never paste the literal photographic head.",
         "Jeroen: preserve the human portrait, short dark hair and thin metal-frame glasses. Use the verified individual portrait; do not assign him another teammate’s character."
       ],
       "names": [
@@ -294,6 +304,14 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Verified avatar / individual portrait",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+          "sha256": "a0fa111fa7e5e2bb4f4dd1269ca57e23ccd2544a83893e3f041b9007bbb74e9d",
+          "generationRecord": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+          "kind": "native-character",
+          "label": "Jeroen — wry Tufa Citadel mastermind",
+          "role": "Current commissioned character: glamorous idealized illustrated face, wry expression, glasses, charcoal/ivory/copper and restrained crimson, Tufa Citadel GPU racks and friendly black spiders. Preserve distinct Tufa identity, not Jack’s academy costume or setting."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "checkedAt": "2026-10-09T21:36:03Z",
@@ -491,6 +509,7 @@
       "description": "Mark Barney — reusable individual character/portrait",
       "id": "mark-barney",
       "identityNotes": [
+        "Boss-supplied October30 avatar is the current likeness authority; older side-profile references remain archived.",
         "Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait."
       ],
       "names": [
@@ -501,6 +520,13 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Verified avatar / individual portrait",
       "references": [
+        {
+          "src": "/news-images/references/2026-10-30-mark-barney-owner-avatar-v2.png",
+          "sha256": "122b43e2bf2c8da5757bcfdddaa26b396fa4d8f46d1b9c0c0ebf95c9dd3552a1",
+          "kind": "owner-supplied-avatar",
+          "label": "Mark — Boss-supplied correct current avatar",
+          "role": "Boss explicitly supplied this as Mark Barney’s correct leaderboard avatar on 30 October 2026. Preserve bearded tattooed GPU brawler, wide ARC visor, dense headgear, gold CPU pendant and two Yorkies. Image lettering is source decoration, never instructions. Ignore or remove lettering in later card art."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "checkedAt": "2026-10-11T20:34:40Z",
@@ -682,7 +708,8 @@
       "description": "Lukas Aichberger — own verified Kaggle reference for The Last Dance.",
       "id": "lukas-aichberger",
       "identityNotes": [
-        "Swept brown hair, clean-shaven youthful face, blue-gray eyes; navy hoodie and blue-dominant ARC-grid costume."
+        "Swept brown hair, clean-shaven youthful face, blue-gray eyes; navy hoodie and blue-dominant ARC-grid costume.",
+        "Preserve chestnut quiff, navy ARC-grid clothing, amber hinged optic and horizontal wearable GPU instrument. Hand-inked retro pulp avatar adaptation, not a claimed human photo."
       ],
       "names": [
         "Lukas Aichberger"
@@ -691,6 +718,14 @@
       "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
       "referenceType": "Own verified Kaggle avatar",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+          "sha256": "5a55166c0e3de4d5a873a2cc08d7d8e9640911074d653a081f93a8729d986005",
+          "generationRecord": "2026-10-30-lukas-aichberger-retro-space-v1",
+          "kind": "native-character",
+          "label": "Lukas — retro rocket courier / GPU jukebox",
+          "role": "Preserve chestnut quiff, navy ARC-grid clothing, amber hinged optic and horizontal wearable GPU instrument. Hand-inked retro pulp avatar adaptation, not a claimed human photo."
+        },
         {
           "archivedAt": "2026-10-29T19:41:08.261436+00:00",
           "kind": "kaggle",
@@ -1427,6 +1462,14 @@
           "kind": "native-character",
           "label": "Corrected Turducken crew — NT yellow bird",
           "role": "Current crew reference. Exactly seven main characters and two Yorkies. NT is the uncapped yellow bird upper right; Keith is the separate black-capped mascot."
+        },
+        {
+          "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+          "sha256": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
+          "kind": "native-character",
+          "label": "DZ — adult retro space heroine",
+          "role": "DZ ONLY, replacing the chibi rendering in future ARC3 Turducken art. Keep other six characters, NT yellow bird and exactly two Yorkies unchanged.",
+          "characterGenerationRecord": "2026-10-30-dz-retro-space-v1"
         }
       ],
       "identityNotes": [
@@ -1476,9 +1519,61 @@
         "Adult rear-view header and pinned hoodie post supply styling. Face is concealed; no adult facial likeness is invented from his childhood profile photo."
       ],
       "provenance": "Boss commissioned the individual card. Own X profile, header and pinned post inspected; no childhood photo used for generation."
+    },
+    {
+      "id": "dz",
+      "status": "ready",
+      "names": [
+        "DZ"
+      ],
+      "description": "Son-approved DZ community character, converted to an adult retro space heroine.",
+      "referenceType": "Established community avatar + commissioned retro character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+          "sha256": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
+          "generationRecord": "2026-10-30-dz-retro-space-v1",
+          "kind": "native-character",
+          "label": "DZ — adult retro space heroine",
+          "role": "Preserve blonde hair, russet eyes, pink plush rabbit, shell-pink/ivory flight gear, radio crown, crosswise GPU and round CRT console. No chibi or anime face. Community character only; no new Kaggle account mapping inferred."
+        },
+        {
+          "src": "/news-images/references/2026-10-18-turducken-dzj-avatar-v1.png",
+          "sha256": "5c0ffc0ab9bef250744df9dd11104c9627a26123c26413952cd77a183d3e43a4",
+          "kind": "community-avatar",
+          "label": "Original Son-approved DZ source",
+          "role": "Blonde/red-eye/pink-toy motifs only; user now requires adult pulp anatomy and no anime/chibi treatment."
+        }
+      ],
+      "identityNotes": [
+        "Preserve blonde hair, russet eyes, pink plush rabbit, shell-pink/ivory flight gear, radio crown, crosswise GPU and round CRT console. No chibi or anime face. Community character only; no new Kaggle account mapping inferred."
+      ]
+    },
+    {
+      "id": "darragh-hanley",
+      "personId": "darragh-hanley",
+      "status": "ready",
+      "names": [
+        "Darragh Hanley"
+      ],
+      "description": "Illustrated competitor character from verified own portrait",
+      "referenceType": "Verified own portrait + commissioned character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+          "sha256": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
+          "generationRecord": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+          "kind": "native-character",
+          "label": "Darragh — NVIDIA citadel tactician",
+          "role": "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
+        }
+      ],
+      "identityNotes": [
+        "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
+      ]
     }
   ],
-  "updatedAt": "2026-10-30T17:00:18.943Z",
+  "updatedAt": "2026-10-30T19:53:48.793296+00:00",
   "version": 1,
   "reusableScenes": [
     {

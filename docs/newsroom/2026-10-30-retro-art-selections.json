@@ -24,6 +24,38 @@
       "artworkId": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
       "src": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp",
       "note": "Reviewed varied frontier radio equipment; current first corrected male avatar."
+    },
+    {
+      "personId": "lukas-aichberger",
+      "characterId": "lukas-aichberger",
+      "artworkId": "2026-10-30-lukas-aichberger-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+      "note": "Preserve chestnut quiff, navy ARC-grid clothing, amber hinged optic and horizontal wearable GPU instrument. Hand-inked retro pulp avatar adaptation, not a claimed human photo."
+    },
+    {
+      "personId": null,
+      "characterId": "dz",
+      "artworkId": "2026-10-30-dz-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+      "note": "Preserve blonde hair, russet eyes, pink plush rabbit, shell-pink/ivory flight gear, radio crown, crosswise GPU and round CRT console. No chibi or anime face. Community character only; no new Kaggle account mapping inferred."
+    },
+    {
+      "personId": "jeroen-cottaar",
+      "artworkId": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+      "note": "Retains the editor-liked wry glamorous face and seated mastermind pose. Now inside the established Tufa Citadel: monumental GPU racks, yellow gantries, copper/turquoise cooling pipes, black spiders with white eyes, white spider pictogram on black banner. Charcoal/ivory clothing has restrained crimson lapels and cuffs; navy/gold academy brocade and university setting removed. No villain coding, text or card border."
+    },
+    {
+      "personId": "jean-francois-puget",
+      "artworkId": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+      "note": "Mature fuller-faced/stockier CPMP with long swept-back ponytail, gray beard, wire spectacles and open cyber helmet engraved CPMP. Preserve NVIDIA emerald GPU Citadel, restrained crimson and calculating mentor role. Glamour must not de-age him."
+    },
+    {
+      "personId": "darragh-hanley",
+      "artworkId": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+      "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+      "note": "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
     }
   ],
   "animeConversionsRemaining": [
@@ -41,15 +73,6 @@
       "personId": "dongming-sheng",
       "cardNumber": "P059",
       "motifs": "Dark bob and navy palette; fictional illustrated account avatar, also appears in Grigoriy quartet."
-    },
-    {
-      "personId": "lukas-aichberger",
-      "cardNumber": "P036",
-      "motifs": "Swept chestnut hair, blue/navy grid streetwear; replace overly cartoon face with pulp hero treatment while preserving Last Dance identity."
-    },
-    {
-      "character": "DZ",
-      "motifs": "Blonde/pink-bunny character in Turducken ARC3 crew. Rework chibi human treatment into adult retro space heroine while preserving pink bunny motif. No new account identity inferred."
     }
   ],
   "portraitRepairsRemaining": [
@@ -69,5 +92,14 @@
   ],
   "markAuthority": "/news-images/references/2026-10-30-mark-barney-owner-avatar-v2.png",
   "teamContinuity": "Reuse unaffected roster members and composition; replace anime character regions after the corresponding individual design is established. ARC2 Mutants and ARC3 Turducken remain distinct teams.",
-  "scope": "Artwork, image files and provenance only. Page implementation is owned by the other assistant."
+  "scope": "Artwork, image files and provenance only. Page implementation is owned by the other assistant.",
+  "latestInstruction": "Puget correction: sixties, fuller/stockier, long ponytail, gray beard, wire spectacles, open face helmet and CPMP engraving. NVIDIA citadel with green hardware/crimson accents. All artwork saved and committed; stop for editor feedback.",
+  "hardImageLimit": {
+    "maximumGenerationsIncludingRevisions": 2,
+    "afterBatch": "Show results, explicitly say finished, and stop for editor feedback. No silent next batch.",
+    "memoryEventId": "44fef434-de97-4850-aff8-877fcadb8444"
+  },
+  "glamourRule": "Idealized handsome illustrated face inspired by source, never literal photo head; give every character their own role, costume, palette and team setting.",
+  "glamourPreservesAge": true,
+  "stableEngravingException": "Boss explicitly requested CPMP engraved into helmet metal; all other names/stats/borders remain programmatic."
 }

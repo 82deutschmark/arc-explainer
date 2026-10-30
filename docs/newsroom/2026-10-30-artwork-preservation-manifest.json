@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-30T19:52:22.585929+00:00",
+  "scope": "All recoverable native artworks from this card-art session; exact originals retained and rejected drafts excluded from card selection.",
+  "identified": [
+    {
+      "id": "2026-10-30-lukas-aichberger-initial-draft-v1",
+      "src": "/news-images/cards/2026/lukas-aichberger-hero-v1-native.png",
+      "sha256": "9e1afd4ce170b5d9bdea6a619e14725b861eb82630570621c504577c454d76fe",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-fses91-initial-draft-v1",
+      "src": "/news-images/cards/2026/fses91-hero-v1-native.png",
+      "sha256": "3a58676e6dbece0eb37701af16a8f9d872c12bc8f69ed2d660b04674ead69b56",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-mykyta-ielanskyi-initial-draft-v1",
+      "src": "/news-images/cards/2026/mykyta-ielanskyi-hero-v1-native.png",
+      "sha256": "7c1c29960072c49966395beb29057125f16ff7a3b3151a7f6aac2e521d6b545b",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-keith-tyser-initial-draft-v1",
+      "src": "/news-images/cards/2026/keith-tyser-hero-v1-native.png",
+      "sha256": "24b42b7e181b28a3659343933278ad4b9eefe2bc81f28ee6d26c8d77563a86e2",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-initial-draft-v1",
+      "src": "/news-images/cards/2026/jeroen-cottaar-hero-v1-native.png",
+      "sha256": "05a05e5f0f56ea92a04ff4e99bf4cce5e897d3e0343b2156cc4477342ef524a1",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-darragh-hanley-initial-draft-v1",
+      "src": "/news-images/cards/2026/darragh-hanley-hero-v1-native.png",
+      "sha256": "6cace4409dd2b230940dbdc7050cba99a4e4e87fe3f62e4d93983f3da1fa17b6",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-lonnie-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-lonnie-initial-draft-v1-native.png",
+      "sha256": "41ae0720d871579794573f198a7c1baa350fa14f04993ccc4177f815e1899481",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-alijs-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-alijs-initial-draft-v1-native.png",
+      "sha256": "0f353e2aa07f1b76003d7fc02158fcdb862dfc254028d8d766edf0727d5ed38d",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-peter-findley-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-peter-findley-initial-draft-v1-native.png",
+      "sha256": "f74d7d4ca5a7b9fa370374182aba1ae820b48037ee3b749069eafb180a07d6f1",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-punkcyber-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-punkcyber-initial-draft-v1-native.png",
+      "sha256": "2d046a97da82ed07ea35a9524fbb84512a906fe573d990ccd391db72d516255a",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-fshindo-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-fshindo-initial-draft-v1-native.png",
+      "sha256": "bb044b3bcaf9f97e6c185b412d53456e70ebac44b94bece3b484c4bb1963272e",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-takuma-mori-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-takuma-mori-initial-draft-v1-native.png",
+      "sha256": "b3e956e57f07ad12c3a9daf197c008c3568cc07300cd94b6a4b0431c0a7f2036",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-elad-sarafian-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-elad-sarafian-initial-draft-v1-native.png",
+      "sha256": "26847b290a7a50fa8cff438e49acffe8faa4c357eb465fdad34e6959a113bb01",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-gal-kaplun-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-gal-kaplun-initial-draft-v1-native.png",
+      "sha256": "9faee9d2b74ce2780d8e45196db46f444a9ab8d18d9efbcc0e9d87c2fa872dd0",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-stefano-viel-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-stefano-viel-initial-draft-v1-native.png",
+      "sha256": "a95fb10414394f13dd5a5f0796cbabdec80a709d104bb3db2cd5f063916fb429",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-reki-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-reki-initial-draft-v1-native.png",
+      "sha256": "8d2dc8e61b30c8fb0c78196e2033e8eb206f6e140247025bef8f4e4e2a1652ad",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-md-boktiar-mahbub-murad-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-md-boktiar-mahbub-murad-initial-draft-v1-native.png",
+      "sha256": "73217f4901061e211046a1003822fbc07cb0fc5769a84a10ff842296e1ba0001",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-itsu-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-itsu-initial-draft-v1-native.png",
+      "sha256": "0859bf1f908dd68e23d9f13f7346cdf195599a87e0266229e19dc9fe310be440",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-vineeth-sai-varikuntla-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-vineeth-sai-varikuntla-initial-draft-v1-native.png",
+      "sha256": "a66f339e9d1404352984ddb68939d71b8fb2ba2a44748260df197cfd7a02f460",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-geremie-yeo-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-geremie-yeo-initial-draft-v1-native.png",
+      "sha256": "65d91af18240226b46f2ec64a4662297e0d5a0cc65e922071fb50ef2ca1eae44",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-sebastian-brodehl-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-sebastian-brodehl-initial-draft-v1-native.png",
+      "sha256": "9edb29813c7a206159c9ccf4542046654682f11af44cebaf15f627144b9b4294",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-xz-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-xz-initial-draft-v1-native.png",
+      "sha256": "3043a7fac12fec14d1a0e85ee5c37e0187e964f89dfcadd228803bf4f28bf799",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-alwin-theodoric-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-alwin-theodoric-initial-draft-v1-native.png",
+      "sha256": "831b11c9e9b13628db6e487f811ec2f6e4ec277ece8aafdcd6ef6b2ec34439e4",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-muhammad-yassir-ramadhan-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-muhammad-yassir-ramadhan-initial-draft-v1-native.png",
+      "sha256": "33352c560b3c56794e534b7f1669dc0fc7143c7b2975cf3d0c167fa9f13aa8f1",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-isaka-tsuyoshi-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-isaka-tsuyoshi-initial-draft-v1-native.png",
+      "sha256": "511a1690cdb7ded430ba15f058ef229564351a7a53997ae265820e0462b66f36",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-konbu17-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-konbu17-initial-draft-v1-native.png",
+      "sha256": "efefad39a7d08ceb10001d414a385b4ed922122144f4dd22fd55378f580af397",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-pompom555-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-pompom555-initial-draft-v1-native.png",
+      "sha256": "6277b4ded9de77fed5bd81023a53fcd7683b60ceed3bf3940d433bd43c3d10b2",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-refv00-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-refv00-initial-draft-v1-native.png",
+      "sha256": "87cd93eea06a5a357d8507a794a6327e9a86dd3203aa36df804f0852cfe37f04",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-takeru-sato-initial-draft-v1",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-takeru-sato-initial-draft-v1-native.png",
+      "sha256": "667c8e5a3e26fbfd6fe25ffef356df4f746642158ffbe1a7c9114c3a834444f4",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-cyber-face-v2-native.png",
+      "sha256": "14ac952ce6195f44fbc0b9826c54b7d1485689bd64b37815daf635da4a7b1ea9",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-mykyta-ielanskyi-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2-native.png",
+      "sha256": "b407ce5e7479171302adcc413ce5a524edfcf39ac7917c9edc7ed732cc9b1b16",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-fses91-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-fses91-cyber-face-v2-native.png",
+      "sha256": "07d87a6ca26abf7e1f9d98f09014d02f7091a5283c870cf907be48285c27f63d",
+      "status": "already-preserved"
+    },
+    {
+      "id": "2026-10-30-darragh-hanley-cyber-face-v2",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-darragh-hanley-cyber-face-v2-native.png",
+      "sha256": "e4d787664589989d1a4b6a50dc0d8fc6bc320f32021e9a227bdb1a20ebfdc5af",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-alijs-cyber-face-v2",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-alijs-cyber-face-v2-native.png",
+      "sha256": "2c660bf6b03d8e3ba9d083451dba59890e83644a5238508f2c6cd4881213a655",
+      "status": "unselected-draft"
+    },
+    {
+      "id": "2026-10-30-fshindo-cyber-face-v2",
+      "src": "/news-images/cards/2026/drafts/2026-10-30-fshindo-cyber-face-v2-native.png",
+      "sha256": "f4268edffe2f5f69737a7e50cccd628143f5d6429e0996dd66ecbcbd7ad97757",
+      "status": "unselected-draft"
+    }
+  ],
+  "unattributed": [
+    {
+      "originalToolOutput": "exec-a8347373-9958-4dc2-8a7b-b932fe552cd8.png",
+      "src": "/news-images/cards/2026/drafts/unmapped-exec-a8347373-9958-4dc2-8a7b-b932fe552cd8.png",
+      "sha256": "f29990fccbe36ee162e94c84bfea75dcb61f92df5a377f01d76a87c24e8d589d",
+      "status": "unattributed-unselected-draft",
+      "note": "Interrupted earlier native call; no person identity inferred. Raw original retained without selecting or publishing a character."
+    },
+    {
+      "originalToolOutput": "exec-925374a6-1058-4569-9616-a459c47511c3.png",
+      "src": "/news-images/cards/2026/drafts/unmapped-exec-925374a6-1058-4569-9616-a459c47511c3.png",
+      "sha256": "ccaf233d839f8efd87b698e0527eb75e89487c2d8469ed1334564953e56e6295",
+      "status": "duplicate-preserved-copy",
+      "note": "Interrupted earlier native call; no person identity inferred. Raw original retained without selecting or publishing a character.",
+      "canonicalPreservedSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png"
+    },
+    {
+      "originalToolOutput": "exec-09889e75-8be1-4dde-a752-04546715bf29.png",
+      "src": "/news-images/cards/2026/drafts/unmapped-exec-09889e75-8be1-4dde-a752-04546715bf29.png",
+      "sha256": "2c81de7949de00097cf48716ee3d8dbe5e15090a4902b174e45d4117ba6199c5",
+      "status": "unattributed-unselected-draft",
+      "note": "Interrupted earlier native call; no person identity inferred. Raw original retained without selecting or publishing a character."
+    },
+    {
+      "originalToolOutput": "exec-76154efc-02ef-4e92-ae31-de8e41ca02cc.png",
+      "src": "/news-images/cards/2026/drafts/unmapped-exec-76154efc-02ef-4e92-ae31-de8e41ca02cc.png",
+      "sha256": "6a5501f0c8c1522f0a686d028d2b7a0aa9f5e5ad8c40d6c86c8395d4637d8579",
+      "status": "unattributed-unselected-draft",
+      "note": "Interrupted earlier native call; no person identity inferred. Raw original retained without selecting or publishing a character."
+    },
+    {
+      "originalToolOutput": "exec-9fd00848-0989-4367-8edf-3fe5028284fc.png",
+      "src": "/news-images/cards/2026/drafts/unmapped-exec-9fd00848-0989-4367-8edf-3fe5028284fc.png",
+      "sha256": "46063b15c8c1fada6bcc4cfe4842db1a7a07c89b3b711c6f03f61ba3ad78f225",
+      "status": "unattributed-unselected-draft",
+      "note": "Interrupted earlier native call; no person identity inferred. Raw original retained without selecting or publishing a character."
+    }
+  ],
+  "newIdentifiedDraftsArchived": 26,
+  "lastReconciledAt": "2026-10-30T19:53:48.793296+00:00"
+}

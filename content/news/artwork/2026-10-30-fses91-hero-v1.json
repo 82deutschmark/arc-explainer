@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-fses91-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:14.308Z",
+  "rawSrc": "/news-images/cards/2026/fses91-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/fses91-hero-v1-native.png",
+  "toolOutput": "exec-cc83a4ce-a3f0-4871-81cb-2f63b36159f6.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the man in the reference: black cap, dark sunglasses, short beard, cheek and nose shape. Orange-red and charcoal cyber armor, electric ember square-grid pauldrons, a small holographic shark projected over one gauntlet as a nod to his reference photograph. Do not reproduce the outdoor setting. Upper-body hero glamour portrait, upbeat esports champion energy.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the man in the reference: black cap, dark sunglasses, short beard, cheek and nose shape. Orange-red and charcoal cyber armor, electric ember square-grid pauldrons, a small holographic shark projected over one gauntlet as a nod to his reference photograph. Do not reproduce the outdoor setting. Upper-body hero glamour portrait, upbeat esports champion energy.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/fses91.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "fses91",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/fses91.webp",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "9e9c8dc6d519f66c07bd4efaa60bb13f458d032c58fd335d945c2ef31424794d"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "0fce052a65c4afd618ac4bc36677593796c2ce5b778c71b5ae6c15c06d246e71",
+  "nativeOriginalSha256": "3a58676e6dbece0eb37701af16a8f9d872c12bc8f69ed2d660b04674ead69b56",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}

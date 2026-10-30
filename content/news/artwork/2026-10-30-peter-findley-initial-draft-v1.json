@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-peter-findley-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "peter-findley",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-peter-findley-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-peter-findley-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "f74d7d4ca5a7b9fa370374182aba1ae820b48037ee3b749069eafb180a07d6f1",
+  "rawSha256": "f74d7d4ca5a7b9fa370374182aba1ae820b48037ee3b749069eafb180a07d6f1",
+  "toolOutput": "exec-7a3ec95b-f369-4ed7-8c84-18f3f1c21b4b.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve this owner's distinctive gray British-shorthair detective cat, bright golden round eyes, tweed deerstalker and curved smoking pipe. NOT a human likeness. A glamorous cyber detective with tweed-textured armored coat, brass optics and subtle cyan circuitry, holographic ARC evidence grid at chest height. Keep pipe unlit, no smoke obscuring face. Individual cat only.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve this owner's distinctive gray British-shorthair detective cat, bright golden round eyes, tweed deerstalker and curved smoking pipe. NOT a human likeness. A glamorous cyber detective with tweed-textured armored coat, brass optics and subtle cyan circuitry, holographic ARC evidence grid at chest height. Keep pipe unlit, no smoke obscuring face. Individual cat only.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/peter-findley.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/peter-findley.webp",
+      "sha256": "a7e5935949c96090daa38b174d5ed0f5dc6c7c1be57d7bcab101f61799141377",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/raist321"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

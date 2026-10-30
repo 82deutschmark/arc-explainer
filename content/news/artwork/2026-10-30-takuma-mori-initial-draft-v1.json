@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-takuma-mori-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "takuma-mori",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-takuma-mori-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-takuma-mori-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "b3e956e57f07ad12c3a9daf197c008c3568cc07300cd94b6a4b0431c0a7f2036",
+  "rawSha256": "b3e956e57f07ad12c3a9daf197c008c3568cc07300cd94b6a4b0431c0a7f2036",
+  "toolOutput": "exec-2780e78d-7c61-4916-802b-b8f7444bf5bb.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is the owner's chosen adorable pale blue rounded robot avatar, not a human. Preserve oval toy-like blue body, stubby feet, charcoal rectangular visor with two simple eyes, circular blue ear hubs and antenna. Transform into exquisite high-end friendly cyberbot sports-star portrait with pale blue ceramic plating, violet/cyan ARC square console held by little robotic arms, precise brass joints. One robot.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is the owner's chosen adorable pale blue rounded robot avatar, not a human. Preserve oval toy-like blue body, stubby feet, charcoal rectangular visor with two simple eyes, circular blue ear hubs and antenna. Transform into exquisite high-end friendly cyberbot sports-star portrait with pale blue ceramic plating, violet/cyan ARC square console held by little robotic arms, precise brass joints. One robot.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/takuma-mori.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/takuma-mori.webp",
+      "sha256": "43e50fc23eff1e8e6785e3a2515ddb4f10f696053c6f5a1bc86a01b0f1b607b1",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/menphim"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

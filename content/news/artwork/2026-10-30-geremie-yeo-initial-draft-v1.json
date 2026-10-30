@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-geremie-yeo-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "geremie-yeo",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-geremie-yeo-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-geremie-yeo-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "65d91af18240226b46f2ec64a4662297e0d5a0cc65e922071fb50ef2ca1eae44",
+  "rawSha256": "65d91af18240226b46f2ec64a4662297e0d5a0cc65e922071fb50ef2ca1eae44",
+  "toolOutput": "exec-8a8eb7ca-f778-4fa4-b36d-db8340d4fe4f.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the actual man's face: short dark hair, black rectangular glasses, natural proportions and gentle smile. Black padded jacket reimagined as obsidian and red-orange cyber armor with bronze circuitry, ARC matrix handheld console, red suspension bridge silhouette visible distantly through scoring-hall arch as a reference nod. No lettering.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the actual man's face: short dark hair, black rectangular glasses, natural proportions and gentle smile. Black padded jacket reimagined as obsidian and red-orange cyber armor with bronze circuitry, ARC matrix handheld console, red suspension bridge silhouette visible distantly through scoring-hall arch as a reference nod. No lettering.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/geremie-yeo.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/geremie-yeo.webp",
+      "sha256": "4f24d578d18a6ddc2be233975df40d02fcd628358df25b2656da5d251abe4e5f",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/yeoyunsianggeremie"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

@@ -4,6 +4,17 @@ Author: Claude Sonnet 5.5 · 30 October 2026 · from the Boss's own words that d
 
 Companion files: [CARD_ART_NEEDS.md](CARD_ART_NEEDS.md) (who needs what, with the photo to build from) and [card-art-template.png](card-art-template.png) (the zones, 1500 × 2100, transparent: lay it over your work to check).
 
+## Boss's overriding corrections, 30 October 2026
+
+- **Hard limit: at most TWO image generations between editor feedback, including revisions.** Show the finished images, explicitly report completion, then stop. Never silently continue into another batch. A later narrowing instruction controls the current work: the latest assignment is Jeroen only; another assistant owns the full Tufa crew.
+- **Glamour character design, not a pasted photographic face.** Use the person's recognisable features as inspiration for a handsome, idealized, polished illustrated character. Redraw the whole face with flattering proportions, groomed hair and smooth painted skin; remove snapshot imperfections. Face and equipment must share one coherent illustration style. Literal photo-face preservation is a failed result.
+- **Story before equipment.** Decide what makes this competitor special and express it through pose, costume, setting and machinery. Jeroen is the editor's Tufa mastermind: keep his wry expression and cerebral command pose, place him inside the established **Tufa Citadel** with enormous GPU racks, friendly black spiders and the spider emblem. Charcoal/ivory/copper with a little crimson distinguishes him from Jack's navy/gold academy role. He is a respected formidable rival, never an evil villain; Professor X/Magneto is a rivalry analogy, not an actor likeness or costume to copy.
+- **Reuse good art first.** Existing individual cards and identified team characters can supply usable cuts; the Boss explicitly authorized extraction. Preserve originals. Do not regenerate a good established character merely because its individual card binding is absent.
+- **No anime.** Approved anime conversions use adult, human-proportioned 1950s retro-futuristic/pulp characters with varied equipment. The other portrait repairs retain the established cyberpunk aesthetic. No scarves in new space costumes. Avoid repeated bubble helmets, twin GPU pillars, poses, uniforms and generic backgrounds.
+- **Glamour preserves age, build and signature hair.** CPMP is a senior mastermind: visibly in his sixties, fuller face/build, long swept-back ponytail, salt-and-pepper beard and spectacles. Do not make every competitor a slim young hero. Weird open cyber helmets are welcome when most of the face remains visible. The Boss explicitly requested **CPMP engraved into helmet metal**; this stable character inscription is an exception to the no-text rule. Names, ranks, scores, borders and baseball-card graphics still belong to the other assistant's compositor.
+
+These direct corrections supersede any older literal-likeness wording below. The source still establishes identity; it does not require reproducing the photographic face.
+
 ## What the cards are
 
 The Card Cabinet is a collection of trading cards in the spirit of the 1980s baseball cards the Boss grew up on: an illustrated front with badges and a banner, a cardboard-style back full of small, dense statistics, a numbered set for each season, and every old card kept. Last year's ARC Hall of Fame cards are the model for the pictures.
@@ -33,7 +44,7 @@ So the artwork needs **room**. A good glamour shot of the competitor, with calm 
   - Eyes between y 560 and y 780.
   - Bottom 650 px (below y 1450): the name banner, stats and footer sit here. The picture may continue underneath (torso, floor, background), but nothing essential, and keep it darker and simpler than the subject so the overlays read.
 - **A glamour shot, three-quarter length at most.** Head to waist, facing the camera or turned a little. A full-length figure does not fit the zone; if you want one, make it a separate smaller-figure variant.
-- **Make them look like the person.** Keep their recognisable features, hair, glasses, beard, expression, from the reference photo, then add the cyberpunk gear: GPUs, cables, visors, armour, ARC puzzle grids glowing in the background, pixel blocks in the ARC palette. Never invent a different face and never use a stranger's.
+- **Recognisable inspiration with an illustrated glamour transformation.** Retain signature hair, glasses, beard and broad character cues, then idealize and redraw the face and body as a coherent, handsome cyberpunk character. Add GPUs, cables, mechanically fitted facial optics, armour and ARC grids. Do not paste the actual photographic head, retain incidental blemishes or borrow a stranger's likeness.
 - **Various poses are welcome**, up to three per person (a "hero" front-facing portrait first, then an action pose such as typing on a laptop, then a profile). They are for different seasons and for the card back. All must obey the zones.
 - **Optional, very welcome:** a second file with the same figure cut out on a transparent background, so the code can put a tier-coloured aura behind it. Same size, same position.
 
