@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+  Author: Claude Sonnet 5.5 Medium
+  Date: 31-October-2026
+  PURPOSE: ARC Daily Digest Weekend Magazine page "final-hours". Hand-written; the BEGIN/END marker regions are rewritten by
+  scripts/weekend_magazine.py refresh. Live bits (breaking bar, ticker, countdown, scoreboard) come from assets/magazine.js.
+  SRP/DRY check: Pass - markup only; look in assets/magazine.css, behaviour in assets/magazine.js, data in data/*.json.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Final Hours | The ARC Daily Digest Weekend Magazine</title>
+<meta name="description" content="The final bell for ARC Prize 2026 explained: bell times in your city, how the finals are decided, what is at stake and what to watch on Monday night.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Final Hours">
+<meta property="og:description" content="The final bell for ARC Prize 2026 explained: bell times in your city, how the finals are decided, what is at stake and what to watch on Monday night.">
+<meta property="og:image" content="https://arc.markbarney.net/specials/img/scoring-hall-clock-1400.webp">
+<meta property="og:url" content="https://arc.markbarney.net/specials/weekend/final-hours.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://arc.markbarney.net/specials/weekend/final-hours.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/specials/weekend/assets/magazine.css">
+<script src="/specials/weekend/assets/magazine.js" defer></script>
+</head>
+<body>
+<nav class="bar"><div class="wrap"><span class="brand">The ARC Daily Digest</span><a href="/specials/weekend.html">Cover</a><a href="/specials/2026-10-31-saturday-special.html">Legends</a><a href="/specials/weekend/arena-report.html">Arena Report</a><a href="/specials/weekend/field-guide.html">Field Guide</a><a href="/specials/weekend/whos-who.html">Who’s Who</a><a href="/specials/weekend/final-hours.html" class=on>Final Hours</a><a href="/news">The Paper</a></div></nav>
+<div class="breaking" id="breaking"><div class="wrap"></div></div>
+<header class="hero"><img src="/specials/img/scoring-hall-clock-1400.webp" width="1400" height="788" alt="A giant clock near midnight and a barely moving progress bar above a long queue of competitors and their mechanical mascots."><div class="hero-text"><div class="wrap"><span class="kicker">Weekend magazine · The Final Hours</span><h1>The final <em>hours</em></h1><p class="dek">Bell times in your city, how the finals are decided, what’s at stake and what to watch on Monday night.</p><div class="countdown" id="countdown" data-target="2026-11-02T23:59:00Z"><span class="n">Monday, 11:59 pm UTC</span><span class="l">the final bell</span></div></div></div></header>
+<div class="wrap">
+<p class="dateline"><span>Rules and dates from Kaggle’s contest pages</span><span>Boards read <!-- BEGIN:asof -->Sat 3:28 pm ET<!-- END:asof --></span></p>
+<section><span class="tag">The bell</span><h2>Monday, 11:59 pm UTC</h2><p>That is the Final Submission Deadline for both contests. Kaggle’s overview pages say every deadline is at 11:59 PM UTC unless noted. Here is the bell where you are:</p>
+<!-- BEGIN:zones --><table class="zones"><tr><td>UTC</td><td>Mon 11:59 pm (the official time)</td></tr><tr><td>New York</td><td>Mon 6:59 pm (UTC-5)</td></tr><tr><td>Los Angeles</td><td>Mon 3:59 pm (UTC-8)</td></tr><tr><td>London</td><td>Mon 11:59 pm (UTC+0)</td></tr><tr><td>Paris and Berlin</td><td>Tue 12:59 am (UTC+1)</td></tr><tr><td>Kolkata</td><td>Tue 5:29 am (UTC+5.5)</td></tr><tr><td>Ho Chi Minh City</td><td>Tue 6:59 am (UTC+7)</td></tr><tr><td>Tokyo</td><td>Tue 8:59 am (UTC+9)</td></tr></table><!-- END:zones -->
+<p class="small">US clocks fall back on Sunday, November 1, so Eastern time is on standard time by Monday evening.</p></section>
+<section><span class="tag">How it’s decided</span><h2>Two picks, one private board</h2><div class="facts"><div class="fact"><h3>Pick two</h3><p>Each team can select up to two final submissions. If a team doesn’t pick, Kaggle picks for it.</p></div><div class="fact"><h3>The private board</h3><p>The private leaderboard decides the final standings. The public board everyone watches is scored on a sample of the test data, so places can move when the private scores arrive.</p></div><div class="fact"><h3>Rosters are locked</h3><p>The entry and team-merger deadlines passed on October 26. The teams on the board now are the teams that finish.</p></div><div class="fact"><h3>Winners</h3><p>Kaggle lists the winners announcement for December 4, and says the organizers reserve the right to update the timeline.</p></div></div></section>
+<section><span class="tag">At stake</span><h2>What’s on the line</h2><p><b>ARC-2:</b> eight progress prizes, from $75,000 for first down to $15,000 for eighth, a $275,000 Grand Prize for the best open-source solution writeup (the artifacts are due within seven days of the deadline), and a $150,000 bonus prize with its own conditions.</p><p><b>ARC-3:</b> five final-leaderboard prizes, from $40,000 for first to $5,000 for fifth, and a $700,000 bonus that unlocks only if a team reaches 100% accuracy. Anyone eligible for a prize has to open-source their solution.</p></section>
+<section><span class="tag">Medals</span><h2>The gold line</h2>
+<!-- BEGIN:medals --><p>ARC-2: 3,564 teams, so gold would run to place 17, silver to 178 and bronze to 356; ARC-3: 5,009 teams, so gold would run to place 20, silver to 250 and bronze to 500. Medals follow Kaggle’s standard bands for the final team count and are decided on the private board, not today’s public one.</p><!-- END:medals -->
+</section>
+<section><span class="tag">Watch list</span><h2>What to watch Monday night</h2><div class="facts"><div class="fact"><h3>The last-day queue</h3><p>Does a run sent before the bell but scored after it count? Players are asking. Kaggle’s staff have said only that the deadline and the submission process stay as they are.</p></div><div class="fact"><h3>The two picks</h3><p>Which two submissions each top team chooses, and whether the choice holds up on the private board.</p></div><div class="fact"><h3>The swing</h3><p>How far the private board moves the public order. CPMP says the swings will tell us how much the platform’s speed differences mattered.</p></div><div class="fact"><h3>The clock itself</h3><p>Any change to the timeline would be posted by Kaggle on each contest’s overview page. We’ll flag it here the moment it appears.</p></div></div></section>
+<section><span class="tag">Coverage</span><h2>We’re staying up</h2><p>The paper’s editions land at 6 am and 6 pm Eastern with the wire running all day, and this magazine’s scoreboard and ticker refresh as the boards move. <a href="/specials/weekend.html">Back to the cover.</a></p></section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <h2>The clock</h2>
+    <p class="big">Monday, 11:59 pm UTC (6:59 pm Eastern). <em>Submit early.</em></p>
+    <p class="big">Good luck to every competitor: <em>the legends, the rookies, the one-person teams and the five students in Tokyo.</em> From first place to five-thousandth, it’s all the same universe.</p>
+    <p class="src">Sources: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview">Kaggle ARC-2 overview</a> · <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview">Kaggle ARC-3 overview</a> · <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/rules">Kaggle ARC-2 rules</a> · <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/rules">Kaggle ARC-3 rules</a></p>
+    <p class="credit">Written by Claude Sonnet 5.5 on the reporting of the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Commissioned by head editor Mark Barney.</p>
+  </div>
+</footer>
+</body>
+</html>

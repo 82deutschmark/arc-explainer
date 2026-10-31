@@ -1,0 +1,225 @@
+{
+  "asOf": "2026-10-31T19:28:52Z",
+  "contests": {
+    "arc-2": {
+      "teams": 3564,
+      "medalRanks": {
+        "gold": 17,
+        "silver": 178,
+        "bronze": 356
+      },
+      "top": [
+        {
+          "rank": 1,
+          "teamId": "16756524",
+          "name": "Tufa Labs",
+          "score": 88.06,
+          "prevRank": 1,
+          "prevScore": 88.06,
+          "members": 4,
+          "reached": "2026-10-09T05:21:54Z"
+        },
+        {
+          "rank": 2,
+          "teamId": "15501171",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "score": 87.22,
+          "prevRank": 2,
+          "prevScore": 87.22,
+          "members": 1,
+          "reached": "2026-10-29T18:52:07Z"
+        },
+        {
+          "rank": 3,
+          "teamId": "15486939",
+          "name": "nvbanana",
+          "score": 83.89,
+          "prevRank": 3,
+          "prevScore": 83.89,
+          "members": 2,
+          "reached": "2026-10-29T17:51:53Z"
+        },
+        {
+          "rank": 4,
+          "teamId": "16559402",
+          "name": "Domdolus Tolus",
+          "score": 83.47,
+          "prevRank": 4,
+          "prevScore": 83.47,
+          "members": 5,
+          "reached": "2026-10-29T00:49:53Z"
+        },
+        {
+          "rank": 5,
+          "teamId": "16442485",
+          "name": "Sakayori Lab",
+          "score": 81.81,
+          "prevRank": 5,
+          "prevScore": 81.81,
+          "members": 2,
+          "reached": "2026-10-30T21:55:28Z"
+        },
+        {
+          "rank": 6,
+          "teamId": "15789060",
+          "name": "rabbithole",
+          "score": 80.83,
+          "prevRank": 6,
+          "prevScore": 80.83,
+          "members": 5,
+          "reached": "2026-10-20T08:29:50Z"
+        },
+        {
+          "rank": 7,
+          "teamId": "16373916",
+          "name": "Majkel1337",
+          "score": 78.89,
+          "prevRank": 7,
+          "prevScore": 78.89,
+          "members": 1,
+          "reached": "2026-10-30T22:25:32Z"
+        },
+        {
+          "rank": 8,
+          "teamId": "17021430",
+          "name": "Ravi Teja Chilakala",
+          "score": 78.19,
+          "prevRank": 8,
+          "prevScore": 78.19,
+          "members": 1,
+          "reached": "2026-10-30T22:55:36Z"
+        },
+        {
+          "rank": 9,
+          "teamId": "16600664",
+          "name": "V | A | M",
+          "score": 76.25,
+          "prevRank": 9,
+          "prevScore": 76.25,
+          "members": 3,
+          "reached": "2026-10-30T21:25:24Z"
+        },
+        {
+          "rank": 10,
+          "teamId": "16505371",
+          "name": "guoqin gu",
+          "score": 75.69,
+          "prevRank": 12,
+          "prevScore": 74.72,
+          "members": 1,
+          "reached": "2026-10-31T18:58:49Z"
+        }
+      ]
+    },
+    "arc-3": {
+      "teams": 5009,
+      "medalRanks": {
+        "gold": 20,
+        "silver": 250,
+        "bronze": 500
+      },
+      "top": [
+        {
+          "rank": 1,
+          "teamId": "15499660",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "score": 75.56,
+          "prevRank": 1,
+          "prevScore": 75.56,
+          "members": 1,
+          "reached": "2026-10-27T06:14:10Z"
+        },
+        {
+          "rank": 2,
+          "teamId": "15486995",
+          "name": "Tufa Labs",
+          "score": 70.02,
+          "prevRank": 2,
+          "prevScore": 70.02,
+          "members": 6,
+          "reached": "2026-10-29T07:50:37Z"
+        },
+        {
+          "rank": 3,
+          "teamId": "15487093",
+          "name": "faster machine is all you need",
+          "score": 58.59,
+          "prevRank": 3,
+          "prevScore": 58.59,
+          "members": 1,
+          "reached": "2026-10-29T20:22:18Z"
+        },
+        {
+          "rank": 4,
+          "teamId": "15605182",
+          "name": "Team Turducken",
+          "score": 56.02,
+          "prevRank": 4,
+          "prevScore": 56.02,
+          "members": 7,
+          "reached": "2026-10-24T06:10:13Z"
+        },
+        {
+          "rank": 5,
+          "teamId": "16021367",
+          "name": "the last dance 🕺",
+          "score": 51.51,
+          "prevRank": 5,
+          "prevScore": 51.51,
+          "members": 4,
+          "reached": "2026-10-28T02:47:04Z"
+        },
+        {
+          "rank": 6,
+          "teamId": "16760837",
+          "name": "yktori",
+          "score": 51.04,
+          "prevRank": 6,
+          "prevScore": 51.04,
+          "members": 1,
+          "reached": "2026-10-28T03:17:07Z"
+        },
+        {
+          "rank": 7,
+          "teamId": "16153655",
+          "name": "mtg",
+          "score": 50.37,
+          "prevRank": 7,
+          "prevScore": 50.37,
+          "members": 1,
+          "reached": "2026-10-16T17:20:31Z"
+        },
+        {
+          "rank": 8,
+          "teamId": "15770880",
+          "name": "NVARC3",
+          "score": 49.89,
+          "prevRank": 8,
+          "prevScore": 49.54,
+          "members": 7,
+          "reached": "2026-10-31T08:27:32Z"
+        },
+        {
+          "rank": 9,
+          "teamId": "16490178",
+          "name": "Grigoriy Zatravkin & co",
+          "score": 47.19,
+          "prevRank": 9,
+          "prevScore": 47.19,
+          "members": 4,
+          "reached": "2026-10-19T08:57:20Z"
+        },
+        {
+          "rank": 10,
+          "teamId": "16569113",
+          "name": "復活の混テキスト",
+          "score": 46.82,
+          "prevRank": 10,
+          "prevScore": 46.82,
+          "members": 8,
+          "reached": "2026-10-23T11:22:33Z"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "at": "2026-10-31T19:55:00Z",
+      "text": "The deadline stands: Monday, 11:59 pm UTC (6:59 pm Eastern). ARC Prize says it is working with Kaggle on the slowdowns.",
+      "kicker": "No extension",
+      "link": {
+        "url": "/news#2026-10-30-special-arc-deadline-no-extension",
+        "text": "Our Friday-night report"
+      }
+    },
+    {
+      "at": "2026-10-31T19:52:00Z",
+      "text": "NVIDIA's CPMP calls the weekend a circus on X, quoting our no-extension report.",
+      "kicker": "CPMP",
+      "link": {
+        "url": "/specials/2026-10-31-saturday-special.html",
+        "text": "Legends of the Kaggleverse"
+      }
+    },
+    {
+      "at": "2026-10-31T19:50:00Z",
+      "text": "Walter Reade of Kaggle says the platform carries two to three times its old load since the ARC contests launched.",
+      "kicker": "Kaggle's side",
+      "link": {
+        "url": "/specials/weekend/arena-report.html",
+        "text": "The Arena Report"
+      }
+    },
+    {
+      "at": "2026-10-31T19:47:00Z",
+      "text": "Jeroen Cottaar says every submission loses about forty minutes before it starts. CPMP says startup delays are nothing new.",
+      "kicker": "Tufa's stopwatch",
+      "link": {
+        "url": "/specials/weekend/arena-report.html#tufa-stopwatch",
+        "text": "The Arena Report"
+      }
+    },
+    {
+      "at": "2026-10-31T19:44:00Z",
+      "text": "Tufa Labs leads ARC-2 at 88.06 and Yi-Chia Chen leads ARC-3 at 75.56. NVIDIA's nvbanana is third in ARC-2 and NVARC3 is eighth in ARC-3.",
+      "kicker": "Scoreboard",
+      "link": {
+        "url": "/specials/weekend.html#scoreboard-section",
+        "text": "Both top tens"
+      }
+    }
+  ]
+}
