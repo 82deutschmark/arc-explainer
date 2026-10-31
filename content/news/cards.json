@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-31T17:24:05Z",
+  "updatedAt": "2026-10-31T17:33:36Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -1443,14 +1443,14 @@
         }
       ],
       "art": {
-        "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
-        "alt": "Chan Kha Vu’s illustrated character in a GPU workshop, with his embroidered face covering and a rising trail of colorful puzzle tiles.",
+        "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp",
+        "alt": "Chan Kha Vu’s illustrated character in an embroidered, red and black cyberpunk suit and patterned protective mask with mechanical headgear, building colorful ARC tiles.",
         "credit": "Commissioned ARC Daily character illustration",
-        "artworkId": "2026-10-31-chan-kha-vu-arc-climb-v1",
-        "commissionedAt": "2026-10-31T17:24:05Z"
+        "artworkId": "2026-10-31-chan-kha-vu-arc-climb-v3",
+        "commissionedAt": "2026-10-31T17:33:36Z"
       },
       "artNotes": [
-        "The embroidered face covering follows the competitor’s own profile portrait; the covered portion of his face is not invented. The workshop and puzzle climb are editorial illustration."
+        "The cyberpunk armor and mask reinterpret the embroidered clothing in Chan’s own Kaggle profile photo. His covered face is not invented."
       ]
     },
     {

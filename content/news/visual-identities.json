@@ -1609,9 +1609,17 @@
         "Chan Kha Vu",
         "chankhavu"
       ],
-      "description": "Chan Kha Vu’s illustrated character in a GPU workshop, with his embroidered face covering and a rising trail of colorful puzzle tiles.",
+      "description": "Chan Kha Vu’s illustrated character in an embroidered, red and black cyberpunk suit and patterned protective mask with mechanical headgear, building colorful ARC tiles.",
       "referenceType": "Own Kaggle portrait and commissioned illustration",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp",
+          "sha256": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
+          "generationRecord": "2026-10-31-chan-kha-vu-arc-climb-v3",
+          "kind": "native-character",
+          "label": "Chan Kha Vu — cyber-embroidered ARC engineer",
+          "role": "Preserve the cybernetic red-black embroidery, opaque patterned mask, distinct brow/temple headgear and the subject’s visible eyes and hair."
+        },
         {
           "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
           "sha256": "c208508d1757ff7b885851301797d1590b3e556f363425576778cc120dc5cec1",
@@ -1622,11 +1630,12 @@
         }
       ],
       "identityNotes": [
-        "Own Kaggle avatar supplies the covered face and embroidered clothing. The illustrated workshop and puzzle climb are fictional."
+        "His own Kaggle avatar supplies the covered face and embroidered clothing; reinterpret the shirt, mask and jacket as integrated cyberpunk gear and preserve open-face mechanical headgear.",
+        "His mask stays in place and the face underneath is not invented."
       ]
     }
   ],
-  "updatedAt": "2026-10-31T17:24:05Z",
+  "updatedAt": "2026-10-31T17:33:36Z",
   "version": 1,
   "reusableScenes": [
     {
