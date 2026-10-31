@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T03:02:29.230813+00:00",
+  "updatedAt": "2026-10-31T03:05:34.671000+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1825,7 +1825,16 @@
         "2026-10-30-special-arc-deadline-no-extension"
       ],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565924667863203961",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565924667863203961",
+          "postedAt": "2026-10-31T03:05:34.671000+00:00",
+          "attachmentSha256": "e769075eafc5cb0562106eda4cfd20195fd7f7693cd61878a34c7cee922a4898",
+          "purpose": "Special edition image and story link delivered to Discord."
+        }
+      ],
       "selectionNote": "Head-editor commissioned illustration for the deadline announcement; corrected Turducken crew and two Yorkies reviewed."
     }
   ],
