@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-31-saturday-nvarc3-juggernaut",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-31T17:49:30Z",
+  "purpose": "commissioned-feature-cover",
+  "rawSrc": "/news-images/2026-10-31-saturday-nvarc3-juggernaut.webp",
+  "nativeOriginalSrc": "/news-images/2026-10-31-saturday-nvarc3-juggernaut-native.png",
+  "prompt": "Use case: precise-object-edit. IMAGE 1 is the exact existing NVARC3 juggernaut illustration. Make only the requested small distant edit: add the two individual rabbits from IMAGE 2 (Chen’s owner-supplied real rabbits), using IMAGE 3’s established character portrayal. Put them together beside the existing Tufa spider banner on the lofty snowy mountain in the upper right, precisely where CPMP is pointing, small in scale but clearly recognizable and visible as two separate rabbits. Rabbit one is fluffy grey/brown with BOTH ears hanging down, the lop. Rabbit two has a dark brown/black head, BOTH ears upright, a broad irregular WHITE blaze down the face and white chest. They are friendly, alert, and situated on the mountain, not inside the workshop. Preserve all existing scene composition and every character exactly: older bearded spectacles-wearing CPMP triumphant on the vehicle pointing toward the banner, Gal lower left, Darragh opaque blue/gold celestial face at center, Ivan at lower right, the huge GPU juggernaut, its green hall, Tufa flag and lights. Keep the same wide panoramic composition and hand-painted graphic-novel style; blend the two tiny rabbits with that scene’s scale and lighting. The rabbits represent Chen and the spider flag represents Tufa, separate competitors standing near one another in this fantasy scene. Do not change positions, clothes or expressions, no extra rabbits, no typography, scores, borders, new flags or watermark.",
+  "references": [
+    {
+      "path": "docs/newsroom/feature-reserve/2026-10-31/nvbanana/art/arc3-nvarc3-juggernaut.png",
+      "role": "Earlier approved juggernaut scene; edit target",
+      "sha256": "600dc1d8322780b6e84656e20ea1ea199383c9e77820dcb86d4566a805e40d6f"
+    },
+    {
+      "path": "client/public/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png",
+      "role": "Owner-supplied photographs of Chen’s two rabbits",
+      "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf"
+    },
+    {
+      "path": "client/public/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+      "role": "Established newspaper character depiction",
+      "sha256": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e"
+    }
+  ],
+  "rawSha256": "e12daf96fac2313c3a2d4e3260c5bf67143598c612f4d77f7cd201457acd2259",
+  "nativeOriginalSha256": "aade01fa69d2ab747a8f20082804744bf7ba01a560da71cb6f39eae7226a0170",
+  "reviewStatus": "reviewed",
+  "review": "Both distinct Chen rabbits added beside the distant Tufa spider flag; CPMP points toward them. Gal, Darragh, Ivan, vehicle and the hall remain in their established positions."
+}

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "id": "2026-10-31-saturday-chan-vam-top-ten",
+  "kind": "archive-copy",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-31-saturday-chan-vam-top-ten.webp",
+  "rawSha256": "5849071876f82eeba3372b692d2b65ca7e57042f2cb8e9aa2f9fc5f4a43f72cb",
+  "source": {
+    "sourceGenerationRecord": "2026-10-31-chan-kha-vu-arc-climb-v3",
+    "sourceCard": "person-chan-kha-vu-2026",
+    "note": "Existing editor-approved card share artwork, with dated card statistics."
+  },
+  "originalProvenance": {
+    "version": 1,
+    "id": "2026-10-31-chan-kha-vu-arc-climb-v3",
+    "kind": "native-generation",
+    "tool": "image_gen.imagegen",
+    "generatedAt": "2026-10-31T17:34:01Z",
+    "purpose": "character-reference",
+    "subjectId": "chan-kha-vu",
+    "referenceSystem": "https://arc.markbarney.net/news/cards",
+    "rawSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp",
+    "nativeOriginalSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3-native.png",
+    "prompt": "Use case: precise-object-edit, illustration-story. Edit Image 1 into a more visibly transformed, premium ARC Prize cyberpunk character portrait for Chan Kha Vu. Image 2 is his own Kaggle avatar and the source of the black-red-white embroidery and embroidered face covering, not an invitation to copy everyday clothes literally. The last version still has a normal white fabric shirt prominently down the middle. CHANGE THAT: the ENTIRE front placket and collar become a futuristic ivory, black and crimson segmented body armor breastplate, with the distinctive vertical red-and-black embroidered floral motifs reinterpreted as glowing red and black circuit tracery, inlaid geometric ceramic and programmable light-fiber embroidery. The repeating floral pattern must remain recognizable as his personal clothing inspiration, but the shirt is now TECHNOLOGICAL ARMOR, NOT plain fabric. The sleeves and jacket likewise become a complete custom armored cyberpunk outfit with physically integrated mechanical elements and bold red circuit-embroidery trim. Preserve the excellent geometric red-black-white engineered mask over nose and mouth and the unique folk-floral patterns. Give him a strongly readable, substantial OPEN-FACED CYBERPUNK HEADPIECE instead of headphones: articulated dark-and-ivory armored brow band, compact open crown and visibly integrated temple hardware with glowing red lens/optic near one eye, solid cabling and collar connectors. Hair and eyes remain visible; not a full-face helmet. All gear is one consistent illustrated design, no photographic face pasted on. Keep visible eyes, short dark hair and dignified friendly character inspired by image 2; do not invent the covered face. Retain the GPU workshop, rising multicolored ARC tiles, sunflower accent, pose, portrait crop and warm lighting from image 1. Draw the face and whole image in coherent idealized graphic-novel painted style rather than photoreal. No other people, no typography, score, name, borders, logos, weapons, flags, watermark or anime. Full bleed 5:7 composition with space for code-drawn card graphics.",
+    "toolArguments": {
+      "prompt": "Use case: precise-object-edit, illustration-story. Edit Image 1 into a more visibly transformed, premium ARC Prize cyberpunk character portrait for Chan Kha Vu. Image 2 is his own Kaggle avatar and the source of the black-red-white embroidery and embroidered face covering, not an invitation to copy everyday clothes literally. The last version still has a normal white fabric shirt prominently down the middle. CHANGE THAT: the ENTIRE front placket and collar become a futuristic ivory, black and crimson segmented body armor breastplate, with the distinctive vertical red-and-black embroidered floral motifs reinterpreted as glowing red and black circuit tracery, inlaid geometric ceramic and programmable light-fiber embroidery. The repeating floral pattern must remain recognizable as his personal clothing inspiration, but the shirt is now TECHNOLOGICAL ARMOR, NOT plain fabric. The sleeves and jacket likewise become a complete custom armored cyberpunk outfit with physically integrated mechanical elements and bold red circuit-embroidery trim. Preserve the excellent geometric red-black-white engineered mask over nose and mouth and the unique folk-floral patterns. Give him a strongly readable, substantial OPEN-FACED CYBERPUNK HEADPIECE instead of headphones: articulated dark-and-ivory armored brow band, compact open crown and visibly integrated temple hardware with glowing red lens/optic near one eye, solid cabling and collar connectors. Hair and eyes remain visible; not a full-face helmet. All gear is one consistent illustrated design, no photographic face pasted on. Keep visible eyes, short dark hair and dignified friendly character inspired by image 2; do not invent the covered face. Retain the GPU workshop, rising multicolored ARC tiles, sunflower accent, pose, portrait crop and warm lighting from image 1. Draw the face and whole image in coherent idealized graphic-novel painted style rather than photoreal. No other people, no typography, score, name, borders, logos, weapons, flags, watermark or anime. Full bleed 5:7 composition with space for code-drawn card graphics.",
+      "referenced_image_paths": [
+        "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v2-native.png",
+        "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg"
+      ],
+      "transparent_background": false
+    },
+    "references": [
+      {
+        "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v2-native.png",
+        "role": "Prior generated character; revise costume and headgear while preserving identity.",
+        "sha256": "75b48d350ba3ad5b3a68155f8db4b36a330ef4789bb3a6b4b788641d640b2f51"
+      },
+      {
+        "src": "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg",
+        "sourceUrl": "https://www.kaggle.com/chankhavu",
+        "role": "His own Kaggle avatar provides covered face, hair and embroidered clothing; do not invent the covered face.",
+        "sha256": "dcd6b3f55ef2a6a49372bf224ca4353f25fca5fd5999077b3d3dce0f16f24ff6"
+      }
+    ],
+    "reviewStatus": "reviewed",
+    "review": "Editor requested that the mask and embroidered outfit become integrated cyberpunk gear and that he wear substantial mechanical headgear. Version 3 replaces the remaining shirt with patterned armor.",
+    "commissionAuthority": "Mark Barney corrected the card art direction on 31 October 2026 and instructed that no X post be sent automatically.",
+    "rawSha256": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
+    "nativeOriginalSha256": "bcc9389e9ca927397532090ecda5f62220cbb2cee08da1a76f8f825c683736df"
+  }
+}

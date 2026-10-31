@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T03:05:34.671000+00:00",
+  "updatedAt": "2026-10-31T17:49:32Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1836,6 +1836,45 @@
         }
       ],
       "selectionNote": "Head-editor commissioned illustration for the deadline announcement; corrected Turducken crew and two Yorkies reviewed."
+    },
+    {
+      "id": "2026-10-31-saturday-nvarc3-juggernaut",
+      "title": "NVARC3 juggernaut with Chen’s rabbits",
+      "generationRecord": "2026-10-31-saturday-nvarc3-juggernaut",
+      "src": "/news-images/2026-10-31-saturday-nvarc3-juggernaut.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-nvarc3-juggernaut"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
+    },
+    {
+      "id": "2026-10-31-saturday-chan-vam-top-ten",
+      "title": "Chan Kha Vu ARC Prize card",
+      "generationRecord": "2026-10-31-saturday-chan-vam-top-ten",
+      "src": "/news-images/2026-10-31-saturday-chan-vam-top-ten.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-chan-vam-top-ten"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
+    },
+    {
+      "id": "2026-10-31-saturday-nvbanana-grandmasters",
+      "title": "NV Banana medal hall",
+      "generationRecord": "2026-10-31-saturday-nvbanana-grandmasters",
+      "src": "/news-images/2026-10-31-saturday-nvbanana-grandmasters.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-nvbanana-grandmasters"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
     }
   ],
   "existingXPosts": [

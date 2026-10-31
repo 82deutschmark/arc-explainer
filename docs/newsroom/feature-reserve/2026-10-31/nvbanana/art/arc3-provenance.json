@@ -1,0 +1,28 @@
+{
+  "tool": "image_gen.imagegen",
+  "prompt": "Use case: precise-object-edit / identity-preserve. Edit image 1, the existing ARC-3 NVIDIA juggernaut illustration. Make exactly these story changes while retaining the same panoramic composition, monumental tracked GPU machine, emerald-gold NVIDIA hall, sparkling construction and other workers. SWAP THE POSITIONS of the two specifically identified men: (1) Jean-François Puget / CPMP is currently foreground left, older, gray-bearded, with wire spectacles and a long gray-brown ponytail; move HIM to the elevated position atop the machine that Gal currently occupies. Use image 3 for CPMP's recognizable mature face, glasses, beard, ponytail and black-crimson/green GPU suit. On that high perch CPMP now STANDS clearly upright in a proud, triumphant pose, one arm extended with a single unmistakable pointing finger aiming toward the distant snowy mountain peak in the upper right, and looks in that direction. He is confident and determined. (2) Gal is currently elevated at the controls, brown swept hair, narrow moustache and crimson jacket; move HIM to the large lower-left foreground workstation previously occupied by CPMP, actively building circuitry. Use image 2 to keep Gal's own identifiable face, short moustache, raised sunglasses and red jacket. They are distinct people: do not duplicate either, do not give Gal CPMP's beard. (3) On the distant lofty snowy peak beyond CPMP's pointing hand, add a visible fluttering small GOLD flag planted on the summit, displaying a clear BLACK SPIDER emblem representing Tufa in the newspaper's imaginary sporting landscape; make the pointing gesture unmistakably directed at the flag. A subtle distant citadel below the peak is acceptable. Preserve Darragh's opaque blue-and-gold starry helmet and scarf in the center, Ivan with the blue prism at right, the anonymous helmeted workers, and the juggernaut's tracked GPU vehicle silhouette. Keep their relative positions, scale, identities, lighting, detail and recognizable graphic-novel art. Friendly competition and ambition, no combat or destruction. No words, lettering, scores, labels, banners with text, additional named competitors, extra main figures, invented human face for Darragh, or watermarks. The flag is an editorial symbol, not an official logo.",
+  "references": [
+    {
+      "path": "docs/newsroom/feature-reserve/2026-10-31/nvbanana/art/arc3-nvarc3-juggernaut-first-draft.png",
+      "role": "Edit target",
+      "sha256": "ef9813e81f4453b4cc7042b35b20f30a2af8aa96c9bedbc09c47f57e7b2ad7c9"
+    },
+    {
+      "path": "client/public/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1-native.png",
+      "role": "Gal character",
+      "sha256": "a5af5fc9d89f515d49a3291d943c12f2e7f30e845954fa26a03c4cd4d5011da4"
+    },
+    {
+      "path": "client/public/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png",
+      "role": "CPMP character",
+      "sha256": "ccaf233d839f8efd87b698e0527eb75e89487c2d8469ed1334564953e56e6295"
+    }
+  ],
+  "outputPath": "docs/newsroom/feature-reserve/2026-10-31/nvbanana/art/arc3-nvarc3-juggernaut.png",
+  "outputSha256": "600dc1d8322780b6e84656e20ea1ea199383c9e77820dcb86d4566a805e40d6f",
+  "visualReview": "Gal at lower-left workstation; CPMP stands atop juggernaut and points to spider flag on mountain; Darragh and Ivan retain positions.",
+  "discordMessageId": "1566137483677278311",
+  "discordChannelId": "1550165647911034940",
+  "sentAt": "2026-10-31T17:11:14.132Z",
+  "state": "sent-for-editor-review"
+}

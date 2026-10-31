@@ -1,0 +1,112 @@
+{
+  "id": "2026-10-31-saturday-nvarc3-juggernaut",
+  "competition": "arc-3",
+  "publishedAt": "2026-10-31T17:49:30Z",
+  "headline": "The NVIDIA juggernaut: NVARC3 aims for the ARC-3 summit",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "editorNote": "Saturday afternoon special. Leaderboard snapshot at 1:28 pm Eastern, October 31; public places are provisional.",
+  "sections": [
+    {
+      "heading": "A mountain to climb",
+      "text": "The machine is coming together in the NVIDIA hall. At the top of the mountain are Yi-Chia Chen and Tufa Labs; on the public ARC-AGI-3 board at 1:28 pm Eastern Saturday, they stood first and second. In eighth place, NVARC3 had 49.89 points and a formidable collection of competitors ready for the final stretch.\n\nThe artwork is our sporting fantasy, not a picture of the team’s actual equipment or methods. Chen’s rabbits and the Tufa spider flag mark two separate rivals on the distant summit.",
+      "sourceIds": [
+        "board3"
+      ]
+    },
+    {
+      "heading": "The seven behind the name",
+      "text": "NVARC3 is not simply the two-person nvbanana team from ARC-AGI-2. Its observed ARC-AGI-3 roster lists cpmpml, darraghdog, eladsarafian, galkaplun, sorokin, titericz and yeyinzhu. Jean-François Puget and Darragh Hanley appear in both contests; the teams and scores are separate.\n\nPuget and Ivan Sorokin have been here before. As NVARC they took the highest score in ARC Prize 2025; the competition’s Grand Prize went unclaimed. That was a different team and a different competition from this seven-person entry.",
+      "sourceIds": [
+        "board3",
+        "arc2025"
+      ]
+    },
+    {
+      "heading": "A field worth chasing",
+      "text": "Behind Chen and Tufa on that same snapshot came faster machine is all you need and Team Turducken. NVARC3 was close behind seventh-place mtg. These are public standings, not final awards; the private leaderboard decides the result.\n\nThe contest has also faced reported Kaggle execution and scoring problems. An acknowledged cache issue and subsequent rescore work are separate from any individual team’s score: there is no evidence here that they explain NVARC3’s particular standing. The published deadline remains November 2.",
+      "sourceIds": [
+        "board3",
+        "staff",
+        "rescores",
+        "calendar"
+      ]
+    },
+    {
+      "heading": "Meet the competitors",
+      "text": "Puget’s ARC Prize card: https://arc.markbarney.net/news/cards/person-jean-francois-puget-2026\nDarragh Hanley’s card: https://arc.markbarney.net/news/cards/person-darragh-hanley-2026\nThe NVARC3 team card: https://arc.markbarney.net/news/cards/team-nvarc3-2026",
+      "sourceIds": [
+        "puget-card",
+        "hanley-card",
+        "team-card"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "board3",
+      "title": "ARC-3 public board and team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "arc2025",
+      "title": "ARC Prize 2025 results",
+      "url": "https://arcprize.org/competitions/2025",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "cpmp",
+      "title": "CPMP on Kaggle",
+      "url": "https://www.kaggle.com/cpmpml",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "darragh",
+      "title": "Darragh on Kaggle",
+      "url": "https://www.kaggle.com/darraghdog",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "puget-card",
+      "title": "Jean-François Puget’s ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-jean-francois-puget-2026",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "hanley-card",
+      "title": "Darragh Hanley’s ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-darragh-hanley-2026",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "team-card",
+      "title": "NVARC3 ARC Prize team card",
+      "url": "https://arc.markbarney.net/news/cards/team-nvarc3-2026",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "accessedAt": "2026-10-31T02:57:48Z",
+      "id": "calendar",
+      "title": "ARC Prize 2026 official competition calendar",
+      "url": "https://arcprize.org/competitions/2026"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44Z",
+      "id": "staff",
+      "title": "Kaggle staff: ARC-AGI-3 broader platform investigation, October 26",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545231"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44Z",
+      "id": "rescores",
+      "title": "Kaggle staff: earlier rescores running, October 24",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543925"
+    }
+  ],
+  "image": {
+    "src": "/news-images/2026-10-31-saturday-nvarc3-juggernaut.webp",
+    "alt": "CPMP points from a massive GPU juggernaut toward Chen’s two rabbits and a Tufa spider flag on a distant mountain; Gal, Darragh’s starry avatar and Ivan work below.",
+    "caption": "The NVARC3 juggernaut, with Chen’s rabbits and Tufa’s flag on the distant peak. Editorial illustration."
+  }
+}

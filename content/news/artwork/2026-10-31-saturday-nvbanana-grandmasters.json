@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "2026-10-31-saturday-nvbanana-grandmasters",
+  "kind": "archive-copy",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-31-saturday-nvbanana-grandmasters.webp",
+  "rawSha256": "f0ea26329132e79d8790becdf0704d5fd2d0dfc029736c12cd88873c6f4c21ff",
+  "source": {
+    "sourceGenerationRecord": "2026-10-31-nvbanana-hall-v2",
+    "note": "Approved existing native feature art converted for web."
+  },
+  "originalProvenance": {
+    "tool": "image_gen.imagegen",
+    "prompt": "Use case: illustration-story. Create a NEW wide landscape feature illustration for ARC Daily's ARC-AGI-2 nvbanana story. Input image 1 is the existing nvbanana duo: preserve Darragh's right-hand character as a fictional adult-proportioned celestial contender, recognizable from its opaque round faceplate filled with cobalt, blue and golden swirling night sky, dark-blue/gold armor and starry scarf. No human facial features whatsoever on this figure; it represents his chosen Kaggle avatar, not his real face. Input image 2 is Darragh's actual starry painting avatar: echo its distinctive swirling blue and gold moonlit brushstrokes in that opaque faceplate and subtle accents. Input image 3 is Jean-François Puget's latest commissioned character: preserve his mature fuller face, spectacles, long swept-back ponytail, gray beard, recognizable black, crimson and NVIDIA-green cyber-engineer equipment. Put both equal partners side by side at an illuminated multicolored ARC puzzle table inside a magnificent NVIDIA-themed competitive hall: sweeping emerald-green and dark graphite GPU architecture, fans, cooling pipes and glowing server columns; distant snowy mountains. Behind them hang many gold, silver and bronze medals, ribbons and trophies on the hall walls, celebratory generic emblems evoking their remarkable competition careers, with no written text or attribution or specific counts. A small golden banana ornament on the puzzle table nods to nvbanana. Their stance is confident, friendly, worthy of elite champions. Match the lavish polished graphic-novel look and cinematic warm-gold/emerald lighting of the commissioned references, with clear readable faces and detailed environment. Exactly two characters, no other people. No spiders, no human face on the celestial character, no extra team members, no numbers, lettering, ranks, logos, wordmarks, plaques bearing legible text, or watermarks. Fantasy scenery and generic awards do not represent actual physical awards or reveal their competition method.",
+    "references": [
+      {
+        "path": "client/public/news-images/references/2026-10-29-nvbanana-avatar-v1-native.png",
+        "role": "Earlier nvbanana duo; opaque starry Hanley character",
+        "sha256": "ce58000172179eb30c312393d51120700dc27cb16fc6859571fa054d815187ad"
+      },
+      {
+        "path": "client/public/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+        "role": "Hanley’s own Kaggle painting avatar",
+        "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+      },
+      {
+        "path": "client/public/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png",
+        "role": "Puget current commissioned character",
+        "sha256": "ccaf233d839f8efd87b698e0527eb75e89487c2d8469ed1334564953e56e6295"
+      }
+    ],
+    "outputPath": "docs/newsroom/feature-reserve/2026-10-31/nvbanana/art/arc2-nvbanana-hall.png",
+    "outputSha256": "833b3e7f300ba91ff02efa98f1a2bc2aff3c75bcc344f3e598483bcd37b21411",
+    "visualReview": "Two established characters, Hanley opaque starry avatar, Puget mature with spectacles and ponytail; hall has hanging medals and trophies and a banana ornament. Selected for editor review.",
+    "state": "sent-awaiting-editor-approval",
+    "discordMessageId": "1566133226446262495",
+    "discordChannelId": "1550165647911034940",
+    "sentAt": "2026-10-31T16:54:19.045Z"
+  }
+}

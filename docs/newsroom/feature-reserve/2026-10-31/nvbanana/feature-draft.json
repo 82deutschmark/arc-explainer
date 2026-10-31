@@ -1,0 +1,125 @@
+{
+  "headline": "NV Banana: two Kaggle Grandmasters, one formidable ARC-2 challenge",
+  "sections": [
+    {
+      "heading": "Two Grandmasters in the front rank",
+      "text": "Jean-François Puget was already a Kaggle Grandmaster when NVIDIA recruited him. Darragh Hanley has reached the world's top four. Together they are in the front rank of ARC-AGI-2.\n\nThere are plenty of playful names on a Kaggle leaderboard. Do not let nvbanana fool you. Behind it are two competitors with decades of experience and a remarkable collection of results: Jean-François Puget, known as CPMP, and Darragh Hanley, darraghdog.\n\nOn the October 31 public ARC-AGI-2 board, their two-person team stood third of 3,559 teams, behind Tufa Labs and Yi-Chia Chen. Domdolus Tolus was close behind. The private leaderboard will decide the final result; for now, nvbanana is right in the thick of a superb race.",
+      "sourceIds": [
+        "board",
+        "person-jean-francois-puget-identity-0",
+        "person-darragh-hanley-identity-0"
+      ]
+    },
+    {
+      "heading": "CPMP: a Kaggle original",
+      "text": "Puget is an eminence grise of competitive machine learning, with the résumé to match. His PhD in machine learning dates to 1990—long before the current AI boom. After work in constraint programming and mathematical optimization, he returned to machine learning and entered his first Kaggle competition in 2016.\n\nHe became a Grandmaster before NVIDIA hired him. In a 2023 interview, Puget recalled that the job listing itself required Kaggle Grandmaster status. His Kaggle profile now lists 29 competition gold medals, a best competition rank of sixth, and his role as NVIDIA's director of competitive machine learning and leader of its KGMON team. That is a career measured in much more than one leaderboard. His advice to other competitors is characteristically direct: “evaluate your assumptions, evaluate your modifications.”\n\nAnd yes, NVIDIA really does have a Kaggle Grandmasters team. Puget has described a group of elite competitors who also work on internal and partner projects; NVIDIA says his team advances agentic AI and showcases its tools through competitions. Winning is part of the story, alongside the research and engineering.\n\nPuget's ARC record deserves its own line: in 2025, he and Ivan Sorokin competed as NVARC and took the ARC Prize competition's highest score. The Grand Prize itself went unclaimed. This year's nvbanana is a different team: Sorokin was Puget's 2025 teammate, while Hanley is his partner in this ARC-2 entry.",
+      "sourceIds": [
+        "person-jean-francois-puget-identity-0",
+        "cpmp-kaggle",
+        "cpmp-interview",
+        "phd-record",
+        "arc2025"
+      ]
+    },
+    {
+      "heading": "Darragh: a Grandmaster in his own right",
+      "text": "Hanley brings a formidable record of his own. Kaggle lists 28 competition gold medals and a highest-ever rank of fourth. His team victories include the AI Mathematical Olympiad Progress Prize 2 and Google's American Sign Language Fingerspelling Recognition competition. Those are team achievements, earned with his collaborators.\n\nNVIDIA describes Hanley as a senior LLM technologist on its applied agent research team and a member of its Kaggle Grandmaster team. He has also taught deep learning at UC Berkeley. Across mathematics, vision and now ARC, his record shows the breadth of a competitor who knows how to make a run count.",
+      "sourceIds": [
+        "person-darragh-hanley-identity-0",
+        "darragh-kaggle",
+        "darragh-results",
+        "darragh-nvidia"
+      ]
+    },
+    {
+      "heading": "Two contests, two teams",
+      "text": "Puget and Hanley also appear on NVARC3, the larger NVIDIA-linked entry in ARC-AGI-3. That is a separate competition and a separate roster. Here, in ARC-AGI-2, nvbanana is their two-person campaign.\n\nThe public board is a snapshot, not a trophy. But third place in a field of thousands is already a serious statement. As the final stretch unfolds, two of Kaggle's most decorated competitors have put a banana among the heavyweights—and given the teams chasing them a very demanding target.\n\nMeet the competitors: Jean-François Puget's ARC Prize card — https://arc.markbarney.net/news/cards/person-jean-francois-puget-2026 · Darragh Hanley's ARC Prize card — https://arc.markbarney.net/news/cards/person-darragh-hanley-2026",
+      "sourceIds": [
+        "board",
+        "arc3-board",
+        "person-jean-francois-puget-card",
+        "person-darragh-hanley-card"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "board",
+      "title": "ARC-2 public board and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-31T16:28:32Z"
+    },
+    {
+      "id": "arc3-board",
+      "title": "ARC-3 public board and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-31T16:58:34Z"
+    },
+    {
+      "id": "person-jean-francois-puget-identity-0",
+      "title": "Jean-François Puget — own GitHub identity and Kaggle link",
+      "url": "https://github.com/jfpuget",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "person-darragh-hanley-identity-0",
+      "title": "Darragh Hanley — NVIDIA author biography",
+      "url": "https://developer.nvidia.com/blog/author/dhanley/",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "cpmp-kaggle",
+      "title": "CPMP — Kaggle profile",
+      "url": "https://www.kaggle.com/cpmpml",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "cpmp-interview",
+      "title": "Jean-François Puget — Becoming a Kaggle Grandmaster interview",
+      "url": "https://www.datacamp.com/podcast/becoming-kaggle-grand-master",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "phd-record",
+      "title": "1990 research bibliography citing Puget’s PhD thesis",
+      "url": "https://citeseerx.ist.psu.edu/document?doi=5ab03b8946f8e9ae2137411bc61bda07bd21559c&repid=rep1&type=pdf",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "arc2025",
+      "title": "ARC Prize — 2025 high score results",
+      "url": "https://arcprize.org/competitions/2025",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "darragh-kaggle",
+      "title": "Darragh — Kaggle profile",
+      "url": "https://www.kaggle.com/darraghdog",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "darragh-results",
+      "title": "Darragh — Kaggle competition results",
+      "url": "https://www.kaggle.com/darraghdog/competitions",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "darragh-nvidia",
+      "title": "NVIDIA — Darragh Hanley author biography",
+      "url": "https://developer.nvidia.com/blog/author/dhanley/",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "person-jean-francois-puget-card",
+      "title": "Jean-François Puget — ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-jean-francois-puget-2026",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    },
+    {
+      "id": "person-darragh-hanley-card",
+      "title": "Darragh Hanley — ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-darragh-hanley-2026",
+      "accessedAt": "2026-10-31T17:18:58Z"
+    }
+  ]
+}

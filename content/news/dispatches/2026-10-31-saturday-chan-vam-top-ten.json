@@ -1,0 +1,95 @@
+{
+  "id": "2026-10-31-saturday-chan-vam-top-ten",
+  "competition": "arc-2",
+  "publishedAt": "2026-10-31T17:49:31Z",
+  "headline": "From 50 to 76: Chan Kha Vu and V | A | M charge into the ARC-2 top ten",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "editorNote": "Saturday afternoon special. Scores and placements are public-board observations, not final awards.",
+  "sections": [
+    {
+      "heading": "A climb worth celebrating",
+      "text": "Chan Kha Vu had every reason to be proud. On Friday he celebrated his team’s rise from about 50 points to 76 in five days, and set his sights on 80 or more. By Saturday’s 1:28 pm Eastern snapshot, V | A | M stood ninth on the ARC-AGI-2 public board with 76.25 points. The team had climbed as high as eighth in our observed history.\n\nThat is a team achievement. The three teammates are on the climb together.",
+      "sourceIds": [
+        "board",
+        "chan-post"
+      ]
+    },
+    {
+      "heading": "Three names on the team sheet",
+      "text": "The roster lists Kaggle accounts arazzd, chankhavu and nguyennguyen599. Chan’s post thanked his teammates as he celebrated the climb. The public leaderboard is provisional and can change; the private leaderboard will decide final results.",
+      "sourceIds": [
+        "board",
+        "chan-post"
+      ]
+    },
+    {
+      "heading": "A contender with gold already earned",
+      "text": "Chan is a Kaggle Competitions Master. His profile showed two competition gold medals and five silver when checked Saturday, with a career-best competition rank of 271. Those are career medals, not a claim that this ARC-2 campaign has already won one.\n\nHis completed competitions include second place among 2,963 teams in the 2026 NeuroGolf Championship, a result earned with a five-person team. His account also shows ninth among 642 teams in the Image Matching Challenge 2022.",
+      "sourceIds": [
+        "chan-kaggle",
+        "chan-results"
+      ]
+    },
+    {
+      "heading": "A card for the climb",
+      "text": "His new ARC Prize card celebrates his achievement and his distinctive embroidered look, reimagined as cyberpunk equipment. Find Chan’s card at https://arc.markbarney.net/news/cards/person-chan-kha-vu-2026 and the V | A | M team card at https://arc.markbarney.net/news/cards/team-v-a-m-arc2-2026.\n\nOn Kaggle and X he is @chankhavu. With the final weekend underway, his team’s next target is the one he named himself: 80 points and beyond.",
+      "sourceIds": [
+        "chan-kaggle",
+        "chan-github",
+        "chan-post",
+        "chan-card",
+        "team-card"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "board",
+      "title": "ARC-2 public board and observed roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "chan-post",
+      "title": "Chan Kha Vu celebrates the climb on X",
+      "url": "https://x.com/chankhavu/status/2116281051702280456",
+      "accessedAt": "2026-10-31T17:20:00Z"
+    },
+    {
+      "id": "chan-kaggle",
+      "title": "Chan Kha Vu on Kaggle",
+      "url": "https://www.kaggle.com/chankhavu",
+      "accessedAt": "2026-10-31T17:20:00Z"
+    },
+    {
+      "id": "chan-results",
+      "title": "Chan Kha Vu competition results",
+      "url": "https://www.kaggle.com/chankhavu/competitions",
+      "accessedAt": "2026-10-31T17:20:00Z"
+    },
+    {
+      "id": "chan-github",
+      "title": "Chan’s own GitHub profile links his X account",
+      "url": "https://github.com/hav4ik",
+      "accessedAt": "2026-10-31T17:20:00Z"
+    },
+    {
+      "id": "chan-card",
+      "title": "Chan Kha Vu’s ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-chan-kha-vu-2026",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    },
+    {
+      "id": "team-card",
+      "title": "V | A | M team card",
+      "url": "https://arc.markbarney.net/news/cards/team-v-a-m-arc2-2026",
+      "accessedAt": "2026-10-31T17:28:39Z"
+    }
+  ],
+  "image": {
+    "src": "/news-images/2026-10-31-saturday-chan-vam-top-ten.webp",
+    "alt": "Chan Kha Vu’s ARC Prize card, with his embroidered mask and clothing transformed into cyberpunk armor and headgear; the accompanying score panel records ninth place on October 31.",
+    "caption": "Chan Kha Vu’s new ARC Prize card. Rank and score reflect the October 31 public-board snapshot."
+  }
+}

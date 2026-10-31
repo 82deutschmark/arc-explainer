@@ -1,0 +1,1616 @@
+{
+  "baselineAt": "2026-10-30T21:55:28Z",
+  "competition": "arc-2",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. Launch/manual preview, actual cutoff 2026-10-31T17:49:40Z; this is not the scheduled edition.",
+  "dataAsOf": "2026-10-31T17:28:39Z",
+  "date": "2026-10-31",
+  "dek": "V | A | M surge into the ARC-2 top ten. Meet Chan, then the Grandmasters of NV Banana and the seven-person NVARC3 campaign.",
+  "discord": "Saturday Special: Chan Kha Vu and V | A | M’s top-ten climb, the Grandmasters behind NV Banana, and the NVARC3 juggernaut. https://arc.markbarney.net/news/2026-10-31-evening-arc-2-preview",
+  "edition": "evening",
+  "frontPageFeatureId": "2026-10-31-saturday-chan-vam-top-ten",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Saturday Special: Chan Kha Vu’s top-ten climb and the NVIDIA juggernauts",
+  "id": "2026-10-31-evening-arc-2-preview",
+  "publishedAt": "2026-10-31T17:49:40Z",
+  "sections": [
+    {
+      "heading": "Three stories, one final weekend",
+      "sourceIds": [
+        "dispatch-2026-10-31-saturday-chan-vam-top-ten",
+        "dispatch-2026-10-31-saturday-nvbanana-grandmasters"
+      ],
+      "text": "Chan Kha Vu and V | A | M lead our Saturday afternoon special after their dash into the ARC-2 top ten. His full illustrated profile is above. Next: Jean-François Puget and Darragh Hanley are NV Banana, two Kaggle Grandmasters with decades of experience and a wall of medals. Read their complete illustrated feature at https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
+    },
+    {
+      "heading": "The other NVIDIA campaign",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "In ARC-AGI-3, the separate seven-person NVARC3 team is chasing the leaders. Meet the team and see CPMP pointing toward Chen’s rabbits and Tufa’s banner in our juggernaut illustration: https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut. The two competitions have different rosters and standings."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486728-0",
+      "title": "Mithil A Vakde — Kaggle mdlARC model",
+      "url": "https://www.kaggle.com/models/mithilavakde/mdlarc"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15486939-0",
+      "title": "ARC-AGI-3 public team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486939-1",
+      "title": "Jean-François Puget — public professional profile",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486939-2",
+      "title": "NVIDIA — Jean-Francois Puget author biography",
+      "url": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15526034-0",
+      "title": "ARC-AGI-2 observed public roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "fact-16559402-0",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "fact-16600664-0",
+      "title": "Chan Kha Vu — public post, 30 October 2026",
+      "url": "https://x.com/chankhavu/status/2116281051702280456"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "fact-17023174-0",
+      "title": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
+    },
+    {
+      "accessedAt": "2026-10-27T09:22:16.075Z",
+      "id": "discussion-arc-2-751292",
+      "title": "Darren Amadeus Martin — Question on Grand Prize and Private Leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/751292"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-30T11:08:00Z",
+      "id": "person-yi-chia-chen-fact-0",
+      "title": "Yi-Chia Chen — public Kaggle profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-30T11:08:00Z",
+      "id": "person-yi-chia-chen-fact-1",
+      "title": "Yi-Chia Chen — public Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-30T11:08:00Z",
+      "id": "person-yi-chia-chen-fact-2",
+      "title": "Yi-Chia Chen — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/threerabbits/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:08:00Z",
+      "id": "person-yi-chia-chen-fact-3",
+      "title": "Yi-Chia Chen — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/threerabbits/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:08:00Z",
+      "id": "person-yi-chia-chen-fact-4",
+      "title": "Yi-Chia Chen — active and completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/threerabbits/competitions"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "person-yi-chia-chen-fact-5",
+      "title": "Yi-Chia Chen — Eedi third-place solution write-up",
+      "url": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-yi-chia-chen-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-yi-chia-chen-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-jean-francois-puget-identity-0",
+      "title": "Jean-François Puget — GitHub profile linked Kaggle account",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-09T19:22:22Z",
+      "id": "person-jean-francois-puget-identity-1",
+      "title": "Hall of Fame verified CPMP professional account",
+      "url": "https://arc.markbarney.net/api/contributors"
+    },
+    {
+      "accessedAt": "2026-10-30T11:11:01Z",
+      "id": "person-jean-francois-puget-fact-0",
+      "title": "Jean-François Puget — public Kaggle profile, tier and medal tile",
+      "url": "https://www.kaggle.com/cpmpml"
+    },
+    {
+      "accessedAt": "2026-10-30T11:11:01Z",
+      "id": "person-jean-francois-puget-fact-1",
+      "title": "Jean-François Puget — public Kaggle profile and bio",
+      "url": "https://www.kaggle.com/cpmpml"
+    },
+    {
+      "accessedAt": "2026-10-30T11:11:01Z",
+      "id": "person-jean-francois-puget-fact-2",
+      "title": "Jean-François Puget — completed ARC Prize 2025 result on Kaggle",
+      "url": "https://www.kaggle.com/cpmpml/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:11:01Z",
+      "id": "person-jean-francois-puget-fact-3",
+      "title": "Jean-François Puget — completed Predict Student Performance result on Kaggle",
+      "url": "https://www.kaggle.com/cpmpml/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:11:01Z",
+      "id": "person-jean-francois-puget-fact-4",
+      "title": "Jean-François Puget — active ARC Prize 2026 competitions on Kaggle",
+      "url": "https://www.kaggle.com/cpmpml/competitions"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-jean-francois-puget-fact-5",
+      "title": "Jean-François Puget — public professional profile",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-jean-francois-puget-fact-6",
+      "title": "NVIDIA — Jean-Francois Puget author biography",
+      "url": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jean-francois-puget-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jean-francois-puget-archive-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-jean-francois-puget-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-jean-francois-puget-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jack-cole-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/jcole75"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jack-cole-identity-1",
+      "title": "Jack Cole — linked X account on Kaggle profile",
+      "url": "https://www.kaggle.com/jcole75"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jack-cole-fact-0",
+      "title": "ARC Prize — ARC-AGI-3 Preview Agents results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jack-cole-fact-1",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "person-jack-cole-fact-2",
+      "title": "ARC Mutants and Team Turducken — separate dated public rosters, 19 October 2026",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
+    },
+    {
+      "accessedAt": "2026-10-30T11:18:45Z",
+      "id": "person-jack-cole-fact-3",
+      "title": "Jack Cole — public Kaggle profile, tier, rank and medals",
+      "url": "https://www.kaggle.com/jcole75"
+    },
+    {
+      "accessedAt": "2026-10-30T11:18:45Z",
+      "id": "person-jack-cole-fact-4",
+      "title": "Jack Cole — public Kaggle account join date",
+      "url": "https://www.kaggle.com/jcole75"
+    },
+    {
+      "accessedAt": "2026-10-30T11:18:45Z",
+      "id": "person-jack-cole-fact-5",
+      "title": "Jack Cole — completed ARC Prize 2025 result on Kaggle",
+      "url": "https://www.kaggle.com/jcole75/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:18:45Z",
+      "id": "person-jack-cole-fact-6",
+      "title": "Jack Cole — completed Stanford RNA 3D Folding Part 2 result on Kaggle",
+      "url": "https://www.kaggle.com/jcole75/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:18:45Z",
+      "id": "person-jack-cole-fact-7",
+      "title": "Jack Cole — bronze-medal results on Kaggle",
+      "url": "https://www.kaggle.com/jcole75/competitions"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jack-cole-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jack-cole-archive-1",
+      "title": "ARC Prize — 2024 winners and technical report",
+      "url": "https://arcprize.org/blog/arc-prize-2024-winners-technical-report"
+    },
+    {
+      "accessedAt": "2026-10-19T09:57:28Z",
+      "id": "person-jack-cole-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-jack-cole-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-jack-cole-roster-2",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-mithil-a-vakde-identity-0",
+      "title": "Mithil A Vakde — mdlARC model owner",
+      "url": "https://www.kaggle.com/models/mithilavakde/mdlarc"
+    },
+    {
+      "accessedAt": "2026-10-30T14:33:20Z",
+      "id": "person-mithil-a-vakde-fact-0",
+      "title": "Mithil A Vakde, public Kaggle profile",
+      "url": "https://www.kaggle.com/mithilavakde"
+    },
+    {
+      "accessedAt": "2026-10-30T14:33:20Z",
+      "id": "person-mithil-a-vakde-fact-1",
+      "title": "Mithil A Vakde, completed ARC Prize 2025 result on Kaggle",
+      "url": "https://www.kaggle.com/mithilavakde/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:33:20Z",
+      "id": "person-mithil-a-vakde-fact-2",
+      "title": "Mithil A Vakde, Kaggle competition activity",
+      "url": "https://www.kaggle.com/mithilavakde/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:33:20Z",
+      "id": "person-mithil-a-vakde-fact-3",
+      "title": "Mithil A Vakde, active ARC Prize 2026 ARC-AGI-2 entry",
+      "url": "https://www.kaggle.com/mithilavakde/competitions"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-mithil-a-vakde-fact-4",
+      "title": "Mithil A Vakde — Kaggle mdlARC model",
+      "url": "https://www.kaggle.com/models/mithilavakde/mdlarc"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-mithil-a-vakde-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-24T18:00:19Z",
+      "id": "person-keith-tyser-identity-1",
+      "title": "chiefkeith X profile directly links kaggle.com/keithtyser",
+      "url": "https://x.com/chiefkeitht"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "person-keith-tyser-fact-0",
+      "title": "chiefkeith | Kaggle",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "person-keith-tyser-fact-1",
+      "title": "chiefkeith | Kaggle",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "person-keith-tyser-fact-2",
+      "title": "chiefkeith | Kaggle",
+      "url": "https://www.kaggle.com/keithtyser/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "person-keith-tyser-fact-3",
+      "title": "chiefkeith | Kaggle",
+      "url": "https://www.kaggle.com/keithtyser/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "person-keith-tyser-fact-4",
+      "title": "chiefkeith | Kaggle",
+      "url": "https://www.kaggle.com/keithtyser/competitions"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-fact-5",
+      "title": "Keith Tyser — professional site",
+      "url": "https://keithtyser.com/"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-keith-tyser-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-12T10:04:19Z",
+      "id": "person-keith-tyser-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-16T21:50:59Z",
+      "id": "person-keith-tyser-roster-2",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-keith-tyser-roster-3",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-dries-smit-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/driessmit1"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-dries-smit-fact-0",
+      "title": "ARC Prize — ARC-AGI-3 Preview Agents results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-10-30T11:27:46Z",
+      "id": "person-dries-smit-fact-1",
+      "title": "Dries Smit | Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/driessmit1"
+    },
+    {
+      "accessedAt": "2026-10-30T11:27:46Z",
+      "id": "person-dries-smit-fact-2",
+      "title": "Dries Smit | Kaggle completed competitions",
+      "url": "https://www.kaggle.com/driessmit1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:27:46Z",
+      "id": "person-dries-smit-fact-3",
+      "title": "Dries Smit | Kaggle completed competitions",
+      "url": "https://www.kaggle.com/driessmit1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:27:46Z",
+      "id": "person-dries-smit-fact-4",
+      "title": "Dries Smit | Kaggle active competitions",
+      "url": "https://www.kaggle.com/driessmit1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:27:46Z",
+      "id": "person-dries-smit-fact-5",
+      "title": "Dries Smit | Kaggle account join tooltip",
+      "url": "https://www.kaggle.com/driessmit1"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-dries-smit-fact-6",
+      "title": "Tufa Labs — team profiles",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-dries-smit-archive-0",
+      "title": "ARC Prize — ARC-AGI-3 Preview Agents results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-dries-smit-archive-1",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-dries-smit-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-dries-smit-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jeroen-cottaar-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-0",
+      "title": "Jeroen Cottaar — public Kaggle profile, tier, rank and medals",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-1",
+      "title": "Jeroen Cottaar — public Kaggle profile headline and join date",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-2",
+      "title": "Jeroen Cottaar — completed Santa 2025 and Ariel 2025 results on Kaggle",
+      "url": "https://www.kaggle.com/jeroencottaar/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-3",
+      "title": "Jeroen Cottaar — completed Waveform Inversion and Ariel 2024 results on Kaggle",
+      "url": "https://www.kaggle.com/jeroencottaar/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:30:21Z",
+      "id": "person-jeroen-cottaar-fact-4",
+      "title": "Jeroen Cottaar — active ARC Prize 2026 entries on Kaggle",
+      "url": "https://www.kaggle.com/jeroencottaar/competitions"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jeroen-cottaar-fact-5",
+      "title": "Tufa Labs — team profiles",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-jeroen-cottaar-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-jeroen-cottaar-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-identity-0",
+      "title": "The ARChitects — author and Kaggle handle credits",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-30T11:34:45Z",
+      "id": "person-jan-disselhoff-fact-0",
+      "title": "Jan Disselhoff — public Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/insanitycheck"
+    },
+    {
+      "accessedAt": "2026-10-30T11:34:45Z",
+      "id": "person-jan-disselhoff-fact-1",
+      "title": "Jan Disselhoff — completed ARC Prize 2024 result on Kaggle",
+      "url": "https://www.kaggle.com/insanitycheck/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:34:45Z",
+      "id": "person-jan-disselhoff-fact-2",
+      "title": "Jan Disselhoff — completed ARC Prize 2025 result on Kaggle",
+      "url": "https://www.kaggle.com/insanitycheck/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:34:45Z",
+      "id": "person-jan-disselhoff-fact-3",
+      "title": "Jan Disselhoff — Kaggle account join date and competition activity",
+      "url": "https://www.kaggle.com/insanitycheck/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:34:45Z",
+      "id": "person-jan-disselhoff-fact-4",
+      "title": "Jan Disselhoff — active ARC Prize 2026 entries on Kaggle",
+      "url": "https://www.kaggle.com/insanitycheck/competitions"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-fact-5",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-fact-6",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jan-disselhoff-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jan-disselhoff-archive-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-jan-disselhoff-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-26T09:41:46Z",
+      "id": "person-jan-disselhoff-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-jan-disselhoff-roster-2",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-isaiahp-identity-0",
+      "title": "ARC Prize 2025 — final Kaggle leaderboard roster",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-isaiahp-fact-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-30T11:48:32Z",
+      "id": "person-isaiahp-fact-1",
+      "title": "IsaiahP — public Kaggle profile",
+      "url": "https://www.kaggle.com/pressman1"
+    },
+    {
+      "accessedAt": "2026-10-30T11:48:32Z",
+      "id": "person-isaiahp-fact-2",
+      "title": "IsaiahP — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/pressman1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:48:32Z",
+      "id": "person-isaiahp-fact-3",
+      "title": "IsaiahP — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/pressman1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:48:32Z",
+      "id": "person-isaiahp-fact-4",
+      "title": "IsaiahP — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/pressman1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T11:48:32Z",
+      "id": "person-isaiahp-fact-5",
+      "title": "IsaiahP — active competitions on Kaggle",
+      "url": "https://www.kaggle.com/pressman1/competitions"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-isaiahp-fact-6",
+      "title": "Tufa Labs — Isaiah Pressman biography",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-isaiahp-fact-7",
+      "title": "Isaiah Pressman — Orbit Wars solution write-up",
+      "url": "https://tufalabs.ai/research/orbit-wars/"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-isaiahp-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-isaiahp-roster-0",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-isaiahp-roster-1",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-11T20:33:19Z",
+      "id": "person-mark-barney-identity-0",
+      "title": "Public Kaggle profile",
+      "url": "https://www.kaggle.com/markbarney"
+    },
+    {
+      "accessedAt": "2026-10-30T03:42:10Z",
+      "id": "person-mark-barney-fact-0",
+      "title": "Mark Barney — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/markbarney/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T03:42:10Z",
+      "id": "person-mark-barney-fact-1",
+      "title": "Mark Barney — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/markbarney/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T03:42:10Z",
+      "id": "person-mark-barney-fact-2",
+      "title": "Mark Barney — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/markbarney/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T03:42:10Z",
+      "id": "person-mark-barney-fact-3",
+      "title": "Mark Barney — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/markbarney/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-mark-barney-roster-0",
+      "title": "Mark Barney — public Kaggle active competition rosters",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-mark-barney-roster-1",
+      "title": "Mark Barney — public Kaggle active competition rosters",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-11T20:33:19Z",
+      "id": "person-son-pham-identity-0",
+      "title": "Public Kaggle profile",
+      "url": "https://www.kaggle.com/sonphamorg"
+    },
+    {
+      "accessedAt": "2026-10-30T03:44:27Z",
+      "id": "person-son-pham-fact-0",
+      "title": "Son Pham — public Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/sonphamorg"
+    },
+    {
+      "accessedAt": "2026-10-30T03:44:27Z",
+      "id": "person-son-pham-fact-1",
+      "title": "Son Pham — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/sonphamorg/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T03:44:27Z",
+      "id": "person-son-pham-fact-2",
+      "title": "Son Pham — public Kaggle completed competition record",
+      "url": "https://www.kaggle.com/sonphamorg/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T03:44:27Z",
+      "id": "person-son-pham-fact-3",
+      "title": "Son Pham — public Kaggle account join tooltip",
+      "url": "https://www.kaggle.com/sonphamorg"
+    },
+    {
+      "accessedAt": "2026-10-12T15:34:53Z",
+      "id": "person-son-pham-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-son-pham-roster-1",
+      "title": "Son Pham — public Kaggle active competition rosters",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-son-pham-roster-2",
+      "title": "Son Pham — public Kaggle active competition rosters",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-15T02:22:14Z",
+      "id": "person-darragh-hanley-identity-0",
+      "title": "darraghdog — own public profile",
+      "url": "https://www.kaggle.com/darraghdog"
+    },
+    {
+      "accessedAt": "2026-10-15T02:22:14Z",
+      "id": "person-darragh-hanley-identity-1",
+      "title": "Darragh — direct X link from own Kaggle profile",
+      "url": "https://www.kaggle.com/darraghdog"
+    },
+    {
+      "accessedAt": "2026-10-30T12:21:41Z",
+      "id": "person-darragh-hanley-fact-0",
+      "title": "Darragh — public Kaggle profile, tier, rank and medal counts",
+      "url": "https://www.kaggle.com/darraghdog"
+    },
+    {
+      "accessedAt": "2026-10-30T12:21:41Z",
+      "id": "person-darragh-hanley-fact-1",
+      "title": "Darragh — public Kaggle account join date",
+      "url": "https://www.kaggle.com/darraghdog"
+    },
+    {
+      "accessedAt": "2026-10-30T12:21:41Z",
+      "id": "person-darragh-hanley-fact-2",
+      "title": "Darragh — completed Kaggle competitions, best results",
+      "url": "https://www.kaggle.com/darraghdog/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T12:21:41Z",
+      "id": "person-darragh-hanley-fact-3",
+      "title": "NVIDIA — Darragh Hanley author biography",
+      "url": "https://developer.nvidia.com/blog/author/dhanley/"
+    },
+    {
+      "accessedAt": "2026-10-30T12:21:41Z",
+      "id": "person-darragh-hanley-fact-4",
+      "title": "Darragh — active Kaggle competitions",
+      "url": "https://www.kaggle.com/darraghdog/competitions"
+    },
+    {
+      "accessedAt": "2026-10-15T02:22:14Z",
+      "id": "person-darragh-hanley-fact-5",
+      "title": "NVIDIA — Darragh Hanley author biography",
+      "url": "https://developer.nvidia.com/blog/author/dhanley/"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-darragh-hanley-roster-0",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-darragh-hanley-roster-1",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-stefano-viel-identity-0",
+      "title": "stefano1283 — own public profile",
+      "url": "https://www.kaggle.com/stefano1283"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-stefano-viel-identity-1",
+      "title": "Stefano Viel — direct X link from own Kaggle profile",
+      "url": "https://www.kaggle.com/stefano1283"
+    },
+    {
+      "accessedAt": "2026-10-30T12:31:15Z",
+      "id": "person-stefano-viel-fact-0",
+      "title": "Stefano Viel — own Kaggle profile",
+      "url": "https://www.kaggle.com/stefano1283"
+    },
+    {
+      "accessedAt": "2026-10-30T12:31:15Z",
+      "id": "person-stefano-viel-fact-1",
+      "title": "Stefano Viel — Kaggle account join date",
+      "url": "https://www.kaggle.com/stefano1283"
+    },
+    {
+      "accessedAt": "2026-10-30T12:31:15Z",
+      "id": "person-stefano-viel-fact-2",
+      "title": "Stefano Viel — completed Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/stefano1283/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T12:31:15Z",
+      "id": "person-stefano-viel-fact-3",
+      "title": "Stefano Viel — active ARC Prize 2026 entries on Kaggle",
+      "url": "https://www.kaggle.com/stefano1283/competitions"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-stefano-viel-fact-4",
+      "title": "Tufa Labs — Stefano Viel biography",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-stefano-viel-roster-0",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-stefano-viel-roster-1",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-14T10:07:47.955742+00:00",
+      "id": "person-itsu-identity-0",
+      "title": "Own profile and direct account links",
+      "url": "https://www.kaggle.com/nisshokuitsuki"
+    },
+    {
+      "accessedAt": "2026-10-14T10:07:47.955742+00:00",
+      "id": "person-itsu-identity-1",
+      "title": "Own profile and direct account links",
+      "url": "https://www.kaggle.com/nisshokuitsuki"
+    },
+    {
+      "accessedAt": "2026-10-30T12:42:16Z",
+      "id": "person-itsu-fact-0",
+      "title": "nisshokuitsuki — public Kaggle profile and join date",
+      "url": "https://www.kaggle.com/nisshokuitsuki"
+    },
+    {
+      "accessedAt": "2026-10-30T12:42:16Z",
+      "id": "person-itsu-fact-1",
+      "title": "nisshokuitsuki — completed Bengali.AI Speech Recognition result on Kaggle",
+      "url": "https://www.kaggle.com/nisshokuitsuki/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T12:42:16Z",
+      "id": "person-itsu-fact-2",
+      "title": "nisshokuitsuki — completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/nisshokuitsuki/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T12:42:16Z",
+      "id": "person-itsu-fact-3",
+      "title": "nisshokuitsuki — active competitions on Kaggle",
+      "url": "https://www.kaggle.com/nisshokuitsuki/competitions"
+    },
+    {
+      "accessedAt": "2026-10-28T09:47:51Z",
+      "id": "person-itsu-roster-0",
+      "title": "Public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-27T01:44:45.672194+00:00",
+      "id": "person-darren-amadeus-martin-identity-0",
+      "title": "Author-linked Kaggle profile on his public Flash Next eligibility question",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/752709"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-0",
+      "title": "Darren Amadeus Martin — public Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/darrenamadeusmartin"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-1",
+      "title": "Darren Amadeus Martin — completed NVIDIA Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/darrenamadeusmartin/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-2",
+      "title": "Darren Amadeus Martin — completed Google Code Golf Championship result on Kaggle",
+      "url": "https://www.kaggle.com/darrenamadeusmartin/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-3",
+      "title": "Darren Amadeus Martin — active ARC Prize 2026 entries on Kaggle",
+      "url": "https://www.kaggle.com/darrenamadeusmartin/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:12:41Z",
+      "id": "person-darren-amadeus-martin-fact-4",
+      "title": "Darren Amadeus Martin — own Kaggle profile biography and join date",
+      "url": "https://www.kaggle.com/darrenamadeusmartin"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "person-darren-amadeus-martin-fact-5",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-27T01:44:45.672194+00:00",
+      "id": "person-darren-amadeus-martin-fact-6",
+      "title": "Domdolus Tolus — fifth-place solution write-up and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-darren-amadeus-martin-roster-0",
+      "title": "ARC2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T22:52:35Z",
+      "id": "person-darren-amadeus-martin-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34.924080+00:00",
+      "id": "person-alwin-theodoric-identity-0",
+      "title": "Alwin Theodoric — own Kaggle profile",
+      "url": "https://www.kaggle.com/alwintheodoric"
+    },
+    {
+      "accessedAt": "2026-10-30T13:23:29Z",
+      "id": "person-alwin-theodoric-fact-0",
+      "title": "Alwin Theodoric — public Kaggle profile",
+      "url": "https://www.kaggle.com/alwintheodoric"
+    },
+    {
+      "accessedAt": "2026-10-30T13:23:29Z",
+      "id": "person-alwin-theodoric-fact-1",
+      "title": "Alwin Theodoric — completed NVIDIA Nemotron entry on Kaggle",
+      "url": "https://www.kaggle.com/alwintheodoric/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:23:29Z",
+      "id": "person-alwin-theodoric-fact-2",
+      "title": "Alwin Theodoric — completed Fake or Real entry on Kaggle",
+      "url": "https://www.kaggle.com/alwintheodoric/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:23:29Z",
+      "id": "person-alwin-theodoric-fact-3",
+      "title": "Alwin Theodoric — Kaggle competitions activity",
+      "url": "https://www.kaggle.com/alwintheodoric/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "person-alwin-theodoric-fact-4",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-alwin-theodoric-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T22:52:35Z",
+      "id": "person-alwin-theodoric-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34.924211+00:00",
+      "id": "person-billy-anggara-identity-0",
+      "title": "Billy Anggara — own Kaggle profile",
+      "url": "https://www.kaggle.com/billyanggara"
+    },
+    {
+      "accessedAt": "2026-10-30T13:27:01Z",
+      "id": "person-billy-anggara-fact-0",
+      "title": "Billy Anggara — public Kaggle profile",
+      "url": "https://www.kaggle.com/billyanggara"
+    },
+    {
+      "accessedAt": "2026-10-30T13:27:01Z",
+      "id": "person-billy-anggara-fact-1",
+      "title": "Billy Anggara — public Kaggle account join tooltip",
+      "url": "https://www.kaggle.com/billyanggara"
+    },
+    {
+      "accessedAt": "2026-10-30T13:27:01Z",
+      "id": "person-billy-anggara-fact-2",
+      "title": "Billy Anggara — completed NVIDIA Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/billyanggara/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:27:01Z",
+      "id": "person-billy-anggara-fact-3",
+      "title": "Billy Anggara — Kaggle competitions and activity",
+      "url": "https://www.kaggle.com/billyanggara/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "person-billy-anggara-fact-4",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-billy-anggara-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T22:52:35Z",
+      "id": "person-billy-anggara-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34.924214+00:00",
+      "id": "person-tri-ardian-rinalda-identity-0",
+      "title": "Tri Ardian Rinalda — own Kaggle profile",
+      "url": "https://www.kaggle.com/rinnnntt"
+    },
+    {
+      "accessedAt": "2026-10-30T13:30:00Z",
+      "id": "person-tri-ardian-rinalda-fact-0",
+      "title": "Tri Ardian Rinalda — public Kaggle profile",
+      "url": "https://www.kaggle.com/rinnnntt"
+    },
+    {
+      "accessedAt": "2026-10-30T13:30:00Z",
+      "id": "person-tri-ardian-rinalda-fact-1",
+      "title": "Tri Ardian Rinalda — completed Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/rinnnntt/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:30:00Z",
+      "id": "person-tri-ardian-rinalda-fact-2",
+      "title": "ARC-AGI-2 public board snapshot — Domdolus Tolus",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T13:30:00Z",
+      "id": "person-tri-ardian-rinalda-fact-3",
+      "title": "ARC-AGI-3 public board snapshot — Domdolus Tolus",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "person-tri-ardian-rinalda-fact-4",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-tri-ardian-rinalda-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T22:52:35Z",
+      "id": "person-tri-ardian-rinalda-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:42:34.924217+00:00",
+      "id": "person-muhammad-yassir-ramadhan-identity-0",
+      "title": "Muhammad Yassir Ramadhan — own Kaggle profile",
+      "url": "https://www.kaggle.com/yassirramadhan"
+    },
+    {
+      "accessedAt": "2026-10-30T13:33:13Z",
+      "id": "person-muhammad-yassir-ramadhan-fact-0",
+      "title": "Muhammad Yassir Ramadhan - own Kaggle profile",
+      "url": "https://www.kaggle.com/yassirramadhan"
+    },
+    {
+      "accessedAt": "2026-10-30T13:33:13Z",
+      "id": "person-muhammad-yassir-ramadhan-fact-1",
+      "title": "Muhammad Yassir Ramadhan - completed NVIDIA Nemotron result on Kaggle",
+      "url": "https://www.kaggle.com/yassirramadhan/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:33:13Z",
+      "id": "person-muhammad-yassir-ramadhan-fact-2",
+      "title": "Muhammad Yassir Ramadhan - completed BirdCLEF+ 2026 and ROGII results on Kaggle",
+      "url": "https://www.kaggle.com/yassirramadhan/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T13:33:13Z",
+      "id": "person-muhammad-yassir-ramadhan-fact-3",
+      "title": "Muhammad Yassir Ramadhan - active ARC Prize 2026 entries on Kaggle",
+      "url": "https://www.kaggle.com/yassirramadhan/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T23:43:35.884923Z",
+      "id": "person-muhammad-yassir-ramadhan-fact-4",
+      "title": "Domdolus Tolus — fifth-place solution and author credits",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-muhammad-yassir-ramadhan-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-29T22:52:35Z",
+      "id": "person-muhammad-yassir-ramadhan-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-29T23:24:17.895841Z",
+      "id": "person-michal-gromadzki-identity-0",
+      "title": "Michał Gromadzki — own Kaggle profile",
+      "url": "https://www.kaggle.com/majkel1337"
+    },
+    {
+      "accessedAt": "2026-10-30T14:11:54Z",
+      "id": "person-michal-gromadzki-fact-0",
+      "title": "Majkel1337 — public Kaggle profile, tier, medals and rank",
+      "url": "https://www.kaggle.com/majkel1337"
+    },
+    {
+      "accessedAt": "2026-10-30T14:11:54Z",
+      "id": "person-michal-gromadzki-fact-1",
+      "title": "Majkel1337 — completed Pokémon TCG and Kaggriculture results on Kaggle",
+      "url": "https://www.kaggle.com/majkel1337/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:11:54Z",
+      "id": "person-michal-gromadzki-fact-2",
+      "title": "Majkel1337 — completed NVIDIA Nemotron result and listed accounts",
+      "url": "https://www.kaggle.com/majkel1337/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:11:54Z",
+      "id": "person-michal-gromadzki-fact-3",
+      "title": "Majkel1337 — active ARC Prize 2026 competitions on Kaggle",
+      "url": "https://www.kaggle.com/majkel1337/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:11:54Z",
+      "id": "person-michal-gromadzki-fact-4",
+      "title": "Michał Gromadzki — GitHub profile linked from his Kaggle account",
+      "url": "https://github.com/Michal1337"
+    },
+    {
+      "accessedAt": "2026-10-29T23:24:17.895841Z",
+      "id": "person-michal-gromadzki-fact-5",
+      "title": "Michał Gromadzki — GitHub profile directly linked by own Kaggle account",
+      "url": "https://github.com/Michal1337"
+    },
+    {
+      "accessedAt": "2026-10-29T23:24:17.895841Z",
+      "id": "person-michal-gromadzki-fact-6",
+      "title": "Michał Gromadzki — own professional biography",
+      "url": "https://github.com/Michal1337"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-michal-gromadzki-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-michal-gromadzki-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T02:32:35Z",
+      "id": "person-mitubant-identity-0",
+      "title": "NT — own Kaggle profile",
+      "url": "https://www.kaggle.com/mitubant"
+    },
+    {
+      "accessedAt": "2026-10-30T00:22:47Z",
+      "id": "person-mitubant-fact-0",
+      "title": "Team Turducken — dated public ARC3 roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T14:29:33Z",
+      "id": "person-mitubant-fact-1",
+      "title": "NT — public Kaggle profile, tier, medals and join date",
+      "url": "https://www.kaggle.com/mitubant"
+    },
+    {
+      "accessedAt": "2026-10-30T14:29:33Z",
+      "id": "person-mitubant-fact-2",
+      "title": "NT — completed NeuroGolf result and listed accounts",
+      "url": "https://www.kaggle.com/mitubant/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:29:33Z",
+      "id": "person-mitubant-fact-3",
+      "title": "NT — completed ROGII and Kaggriculture results and listed accounts",
+      "url": "https://www.kaggle.com/mitubant/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:29:33Z",
+      "id": "person-mitubant-fact-4",
+      "title": "NT — completed PTCG and RSNA results and listed accounts",
+      "url": "https://www.kaggle.com/mitubant/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T14:29:33Z",
+      "id": "person-mitubant-fact-5",
+      "title": "NT — active competitions, including both ARC Prize 2026 entries",
+      "url": "https://www.kaggle.com/mitubant/competitions"
+    },
+    {
+      "accessedAt": "2026-10-30T09:53:54Z",
+      "id": "person-mitubant-roster-0",
+      "title": "Team Turducken — dated ARC-AGI-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-30T20:55:20Z",
+      "id": "person-mitubant-roster-1",
+      "title": "NT — separate ARC2 team, dated public roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-identity-0",
+      "title": "NeuroGolf 2026 — author list identifies Chan Kha Vu and chankhavu",
+      "url": "https://www.kaggle.com/competitions/neurogolf-2026/writeups/work-in-progress-2nd-place-neurogolf-team"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-identity-1",
+      "title": "Chan Kha Vu — GitHub profile directly links X account",
+      "url": "https://github.com/hav4ik"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-fact-0",
+      "title": "Chan Kha Vu — own Kaggle profile and medal record",
+      "url": "https://www.kaggle.com/chankhavu"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-fact-1",
+      "title": "Chan Kha Vu — completed Kaggle competitions",
+      "url": "https://www.kaggle.com/chankhavu/competitions"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-fact-2",
+      "title": "Chan Kha Vu — own Kaggle biography",
+      "url": "https://www.kaggle.com/chankhavu"
+    },
+    {
+      "accessedAt": "2026-10-31T17:24:05Z",
+      "id": "person-chan-kha-vu-fact-3",
+      "title": "Chan Kha Vu — public post, 30 October 2026",
+      "url": "https://x.com/chankhavu/status/2116281051702280456"
+    },
+    {
+      "accessedAt": "2026-10-31T16:58:35Z",
+      "id": "person-chan-kha-vu-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "wire-2026-10-30-0941-arc-2-azamat1ch-vaults-to-33rd",
+      "title": "azamat1ch vaults from 1,867th to 33rd on ARC-2",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-30-0941-arc-2-azamat1ch-vaults-to-33rd"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "wire-2026-10-30-1541-arc-2-nischay-and-ichnia-climb-toward-gold",
+      "title": "Nischay Dhankhar and Ichnia climb toward ARC-2 gold",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-30-1541-arc-2-nischay-and-ichnia-climb-toward-gold"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "wire-2026-10-30-1241-arc-2-yi-chia-chen-fields-model-closes-gap",
+      "title": "Yi-Chia Chen's Fields Model closes to 0.84 behind Tufa Labs at the top of ARC-2",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-30-1241-arc-2-yi-chia-chen-fields-model-closes-gap"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "wire-2026-10-31-0201-arc-2-sakayori-lab-enters-gold",
+      "title": "Sakayori Lab surges to fifth and enters ARC-2 gold",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-31-0201-arc-2-sakayori-lab-enters-gold"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "wire-2026-10-30-1557-arc-2-noahs-arc-enters-gold",
+      "title": "Noah's ARC surges into gold at 12th",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-30-1557-arc-2-noahs-arc-enters-gold"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-30-friday-special-darren-domdolus-tolus",
+      "title": "Friday Night Special: Darren Amadeus Martin and Domdolus Tolus—fifth-place gold, now fourth and hunting",
+      "url": "https://arc.markbarney.net/news#2026-10-30-friday-special-darren-domdolus-tolus"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-31-saturday-chan-vam-top-ten",
+      "title": "From 50 to 76: Chan Kha Vu and V | A | M charge into the ARC-2 top ten",
+      "url": "https://arc.markbarney.net/news#2026-10-31-saturday-chan-vam-top-ten"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-31-saturday-nvbanana-grandmasters",
+      "title": "NV Banana: two Kaggle Grandmasters, one formidable ARC-2 challenge",
+      "url": "https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+      "title": "Friday Night Special: Jeroen Cottaar, the Grandmaster in the Tufa Citadel",
+      "url": "https://arc.markbarney.net/news#2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 87.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 83.89,
+      "scoreChange": 0.0,
+      "teamId": "15486939"
+    },
+    {
+      "name": "Domdolus Tolus",
+      "rank": 4,
+      "rankChange": 0,
+      "score": 83.47,
+      "scoreChange": 0.0,
+      "teamId": "16559402"
+    },
+    {
+      "name": "Sakayori Lab",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 81.81,
+      "scoreChange": 0.0,
+      "teamId": "16442485"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 6,
+      "rankChange": 0,
+      "score": 80.83,
+      "scoreChange": 0.0,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 7,
+      "rankChange": 1,
+      "score": 78.89,
+      "scoreChange": 2.08,
+      "teamId": "16373916"
+    },
+    {
+      "name": "Ravi Teja Chilakala",
+      "rank": 8,
+      "rankChange": -1,
+      "score": 78.19,
+      "scoreChange": 0.97,
+      "teamId": "17021430"
+    },
+    {
+      "name": "V | A | M",
+      "rank": 9,
+      "rankChange": 0,
+      "score": 76.25,
+      "scoreChange": 0.0,
+      "teamId": "16600664"
+    },
+    {
+      "name": "ALbert RUehlman",
+      "rank": 10,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "16671221"
+    },
+    {
+      "name": "ｶﾎｳｼｭｳｾｲ",
+      "rank": 12,
+      "rankChange": 3,
+      "score": 75.14,
+      "scoreChange": 1.67,
+      "teamId": "16297545"
+    },
+    {
+      "name": "この遥かなる旅路に祝福を",
+      "rank": 25,
+      "rankChange": -2,
+      "score": 69.72,
+      "scoreChange": 0.0,
+      "teamId": "15526034"
+    },
+    {
+      "name": "redblackbst",
+      "rank": 52,
+      "rankChange": 24,
+      "score": 54.86,
+      "scoreChange": 12.64,
+      "teamId": "17097585"
+    },
+    {
+      "name": "yukichi0403",
+      "rank": 63,
+      "rankChange": 22,
+      "score": 50.28,
+      "scoreChange": 10.42,
+      "teamId": "17023569"
+    },
+    {
+      "name": "ARC Mutants",
+      "rank": 66,
+      "rankChange": -1,
+      "score": 47.08,
+      "scoreChange": 0.69,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Artem Arutyunov",
+      "rank": 72,
+      "rankChange": 29,
+      "score": 45.42,
+      "scoreChange": 8.34,
+      "teamId": "16961234"
+    },
+    {
+      "name": "ИТМОНЯ AI B2B 67 SaaS",
+      "rank": 78,
+      "rankChange": 8,
+      "score": 42.78,
+      "scoreChange": 2.92,
+      "teamId": "16809131"
+    },
+    {
+      "name": "ship ship",
+      "rank": 102,
+      "rankChange": 62,
+      "score": 38.06,
+      "scoreChange": 4.59,
+      "teamId": "17012502"
+    },
+    {
+      "name": "T0m0t0m0 W",
+      "rank": 103,
+      "rankChange": 29,
+      "score": 38.06,
+      "scoreChange": 3.34,
+      "teamId": "16767874"
+    },
+    {
+      "name": "yu_kuo14",
+      "rank": 123,
+      "rankChange": 26,
+      "score": 36.11,
+      "scoreChange": 2.22,
+      "teamId": "17086347"
+    },
+    {
+      "name": "Sophie555",
+      "rank": 124,
+      "rankChange": 12,
+      "score": 36.11,
+      "scoreChange": 1.8,
+      "teamId": "16690385"
+    },
+    {
+      "name": "Mithil A Vakde",
+      "rank": 155,
+      "rankChange": -9,
+      "score": 33.89,
+      "scoreChange": 0.0,
+      "teamId": "15486728"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 2341,
+      "rankChange": -12,
+      "score": 21.67,
+      "scoreChange": 0.0,
+      "teamId": "15507730"
+    }
+  ],
+  "teamIds": [
+    "16600664",
+    "15486939"
+  ]
+}
