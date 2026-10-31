@@ -6,6 +6,38 @@ Author: Claude Sonnet 5.5 Medium · 31 October 2026 · from [ART_DESK.md](../new
 
 ## The look
 
+### The Loose Goose mascot (31 October 2026)
+
+The Boss's direction is a riff on Kaggle's default goose reference: a gritty 1950s
+newspaper reporter in a PRESS hat, with a cigar or cigarette and a notebook. The
+goose belongs in a cyberpunk, retrofuturist, comic-book Kaggleverse, with data
+science, equations and computing imagery. Keep the bird recognizable as the supplied
+goose. The art is for a sports tabloid covering the real Kaggle community and its
+discussions.
+
+**Never invent fictional stories, incidents, post numbers or headlines for the paper,
+including in art concepts.** The Boss explicitly rejected the invented Post #47 cover.
+Do not reuse that cover. Use sourced, real reporting when an image calls for a story.
+
+The Boss liked the standalone original and both initial variations. No final mascot
+has been selected. The two equation-rich versions are new concepts awaiting feedback.
+These are preserved as concept originals, not yet approved publication assets:
+
+| Image | Status |
+|---|---|
+| [Supplied goose reference](art/goose-reference.png) | Boss's reference |
+| [Original reporter goose](art/goose-original-concept.png) | Liked |
+| [Magenta variation](art/goose-magenta.png) | Liked |
+| [Orange variation](art/goose-orange.png) | Liked |
+| [Chalkboard data science variation](art/goose-chalkboard.png) | Awaiting feedback |
+| [Neon data science variation](art/goose-data-neon.png) | Awaiting feedback |
+
+The reporter concepts were generated with the built-in image tool. The initial
+reporter used the supplied goose and the existing Lights Out and Colosseum v4 art
+as references. The next pair used the supplied goose and original reporter. The
+data science pair used the supplied goose and both liked variations. Equations and
+diagrams in the concepts are decorative and have not been checked for correctness.
+
 An evolving comic strip in a fantasy-industrial world: snowy valleys of glowing GPU strongholds, banners per team, mascots (rabbits for Chen, black friendly spiders for Tufa, the turkey airship and its crew for Team Turducken), crowds of small engineers under flashlights. Warm, bright, crowded, funny. Sports-page energy: the leaders are giants and the field is small on the sand.
 
 ## What carries over to every contest
