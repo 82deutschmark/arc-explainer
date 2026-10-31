@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-31T05:57:14Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sakayori Lab surges to fifth and enters ARC-2 gold",
+  "id": "2026-10-31-0201-arc-2-sakayori-lab-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-31T06:01:37Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Sakayori Lab gained 12.23 points to reach 81.81, rising from 20th to fifth in the past day and moving into the 17 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 2.78 to 72.92. Medals remain for the private standings to decide."
+    }
+  ],
+  "since": "2026-10-30T05:53:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T06:01:24Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16442485"
+  ]
+}
