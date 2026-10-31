@@ -49,21 +49,21 @@ SUNDAY SCOREBOARD. ARC-2: {arc2 first} leads at {arc2 first score}. ARC-3: {arc3
 https://arc.markbarney.net/specials/weekend.html
 ```
 
-### 4. Sunday 6 pm: one day out
+### 4. Sunday 8 pm: one day out
 Picture: the scoring-hall clock. Link: `/specials/weekend/final-hours.html`
 ```
 ONE DAY TO THE BELL. Monday, 11:59 pm UTC is 6:59 pm Eastern, 3:59 pm Pacific, 11:59 pm in London and 8:59 am Tuesday in Tokyo. How the finals are decided, what’s at stake and what to watch:
 https://arc.markbarney.net/specials/weekend/final-hours.html
 ```
 
-### 5. Monday 8 am: final day
+### 5. Monday 8:30 am: final day
 Picture: the Field Guide valley. Link: `/specials/weekend/field-guide.html`
 ```
 FINAL DAY. The bell rings at 6:59 pm Eastern tonight. Every team in both top tens, who’s playing and what they’ve won:
 https://arc.markbarney.net/specials/weekend/field-guide.html
 ```
 
-### 6. Monday 2:59 pm: four hours out
+### 6. Monday 3 pm: four hours out
 Picture: the scoring-hall clock. Link: `/specials/weekend.html`
 ```
 FOUR HOURS TO THE BELL. {arc2 first} leads ARC-2 at {arc2 first score}; {arc3 first} leads ARC-3 at {arc3 first score}. Live top tens, countdown and the latest from the arena:
@@ -90,6 +90,51 @@ Post only when you can add something true (a Kaggle or ARC Prize statement, or t
 {what changed, one sentence, who said it}. The private board is what counts. Latest on the ARC Prize finish:
 https://arc.markbarney.net/specials/weekend.html
 ```
+
+## The content bank: posts that need no news (Sunday and Monday)
+
+Author: Claude Sonnet 5.5 Medium, 31 October 2026. Every claim comes from the printed card or the published story. Space posts at least two hours from the 6 am and 6 pm editions and the 2:20 pm recap. Same gate as everything here: Discord preview with the picture first, X after the Boss's word. Card pictures are the card's share image (`/api/news/cards/<id>/share.png`). Posted from the signed-in X account in the app's own browser; schedule with X's Schedule post.
+
+Already sent or scheduled: Saturday 5:17 pm Legends of the Kaggleverse; Sunday 9 am No extension.
+
+Still to send from the kit above: Sunday 8 pm one day out (moved from 6 pm to clear the Late edition); Monday 8:30 am final day; Monday 3 pm four hours out; Monday 6:30 pm thirty minutes; Monday 7:05 pm the bell has rung.
+
+### Sun Nov 1, 11:30 am ET
+Picture: `team-last-dance-2026` (card share image)
+```
+CARD OF THE DAY: The Last Dance, T004. Two of its four accounts are listed at Johannes Kepler University Linz's Institute for Machine Learning, and Florian Sestak took silver, 38th of 4,463, in the Santander Value Prediction Challenge. #Kaggle
+https://arc.markbarney.net/news/cards/team-last-dance-2026
+```
+
+### Sun Nov 1, 4:00 pm ET
+Picture: `2026-10-22-arc3-lights-out-scoring-hall-v1.png`
+```
+LIGHTS OUT AT THE SCORING HALL. On October 22 the ARC-3 scores stopped showing and teams were flying blind. Son Pham reported it for the Digest. Tomorrow night the bell rings. #Kaggle
+https://arc.markbarney.net/news#2026-10-22-arc3-scoring-blackout-breaking
+```
+
+### Mon Nov 2, 10:30 am ET
+Picture: `team-architects-2026` (card share image)
+```
+CARD OF THE DAY: The ARChitects, T015. Last year's write-up credits Jan Disselhoff, Daniel Franzen and David Hartmann, who is listed at Lambda. The same names are on the ARC-3 board this year. The bell is tonight. #Kaggle
+https://arc.markbarney.net/news/cards/team-architects-2026
+```
+
+### Mon Nov 2, 12:30 pm ET
+Picture: `person-francois-chollet-2026` (card share image)
+```
+CARD OF THE DAY: François Chollet, P012. The creator of Keras defined the ARC-AGI benchmark in 2019 to measure general intelligence, and co-founded ARC Prize. Every team racing the clock today is answering his test. #Kaggle
+https://arc.markbarney.net/news/cards/person-francois-chollet-2026
+```
+
+### Mon Nov 2, 4:30 pm ET
+Picture: `team-domdolus-tolus-2026` (card share image)
+```
+CARD OF THE DAY: Domdolus Tolus, T013. Five accounts, one team, and a gold medal, fifth of 4,185, in the NVIDIA Nemotron Model Reasoning Challenge. They are on the ARC-3 board, and the bell is tonight. #Kaggle
+https://arc.markbarney.net/news/cards/team-domdolus-tolus-2026
+```
+
+Spare card posts if a slot opens: yktori (P062, Expert, one silver and four bronze, best 27th of 1,309 in Drawing with LLMs), Keith Tyser (P006), Majkel1337 (T010), and the Japanese ensemble 復活の混テキスト (T008). Read each card's highlights again before using it.
 
 ## Scenario drafts
 
