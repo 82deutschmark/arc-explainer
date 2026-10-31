@@ -1,0 +1,72 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "No extension: ARC deadline holds as Kaggle queues stretch",
+  "id": "2026-10-30-special-arc-deadline-no-extension",
+  "image": {
+    "alt": "Team Turducken and two Yorkies wait in a long queue in the scoring hall, looking toward a clock and a stalled progress display.",
+    "caption": "Team Turducken waits in the scoring hall as the final deadline approaches.",
+    "src": "/news-images/2026-10-30-deadline-scoring-hall.png"
+  },
+  "publishedAt": "2026-10-31T03:02:29.230813+00:00",
+  "sections": [
+    {
+      "heading": "The clock keeps running",
+      "sourceIds": [
+        "discord",
+        "calendar"
+      ],
+      "text": "There will be no extension to the ARC Prize competition deadline despite the long Kaggle scoring queues and GPU slowdowns. The deadline remains Monday, November 2, at 11:59 p.m. UTC, an ARC Prize Discord moderator said in an announcement shared with the Digest by its editor.\n\nThe moderator said the decision followed a conversation with the ARC Prize president and that Kaggle leadership strongly advised against extending the deadline. The schedule had been public for nine months, the moderator said, and a last-minute change would be unfair to teams that had planned their compute and submissions around it.\n\nThe moderator acknowledged the severity of the queue times and slowdowns and said ARC Prize was working directly with Kaggle. The advice to competitors: plan for delays and submit final runs as early as possible."
+    },
+    {
+      "heading": "A decision, but more questions remain",
+      "sourceIds": [
+        "discord",
+        "investigation",
+        "staff",
+        "rescores",
+        "arc2-guidance"
+      ],
+      "text": "The decision answers a question that has hung over the competition as teams reported failed runs, zeros and lost time. On October 26, Kaggle staff member María Cruz said engineers were investigating broader platform issues affecting ARC-AGI-3 runs and asked competitors to hold off on sending individual submission IDs or tagging engineers because of limited capacity. Earlier, a Kaggle engineer said some rescores were running.\n\nCompetitors have also asked how affected nonzero runs will be treated: a run can finish while still losing useful solving time. The moderator’s announcement did not set out a complete remedy or a timetable for resolving the slowdowns.\n\nFor ARC-AGI-2, previous Kaggle staff guidance said submissions made before the deadline could continue scoring afterward, but a pending run still had to be selected among the two final submissions before the deadline. That guidance was for ARC-AGI-2."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T02:59:56.313948+00:00",
+      "id": "discord",
+      "title": "ARC Prize Discord moderator announcement, message 1565885962515513415; text supplied by the editor",
+      "url": "https://discord.com/channels/1237180803335720961"
+    },
+    {
+      "accessedAt": "2026-10-31T02:57:48Z",
+      "id": "calendar",
+      "title": "ARC Prize 2026 official competition calendar",
+      "url": "https://arcprize.org/competitions/2026"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44Z",
+      "id": "staff",
+      "title": "Kaggle staff: ARC-AGI-3 broader platform investigation, October 26",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545231"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44Z",
+      "id": "rescores",
+      "title": "Kaggle staff: earlier rescores running, October 24",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543925"
+    },
+    {
+      "accessedAt": "2026-10-27T10:51:15Z",
+      "id": "investigation",
+      "title": "ARC Daily Digest: Kaggle run failures investigation and follow-up",
+      "url": "https://arc.markbarney.net/news/2026-10-27-kaggle-run-failures-investigation"
+    },
+    {
+      "accessedAt": "2026-10-27T10:51:15Z",
+      "id": "arc2-guidance",
+      "title": "ARC Daily Digest: Kaggle staff guidance for ARC-AGI-2 pending submissions",
+      "url": "https://arc.markbarney.net/news/2026-10-27-morning-arc-2"
+    }
+  ]
+}

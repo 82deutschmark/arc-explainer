@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-30T22:25:36.786635Z",
+  "updatedAt": "2026-10-31T03:02:29.230813+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1813,6 +1813,20 @@
         }
       ],
       "selectionNote": "Byte-identical archive copy of 2026-10-29-domdolus-tolus-avatar-v1-base; both records track the same first-published scene."
+    },
+    {
+      "id": "2026-10-30-deadline-scoring-hall",
+      "generationRecord": "2026-10-30-deadline-scoring-hall",
+      "src": "/news-images/2026-10-30-deadline-scoring-hall.png",
+      "title": "Turducken at the Scoring Hall",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-dispatch",
+      "articleUses": [
+        "2026-10-30-special-arc-deadline-no-extension"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Head-editor commissioned illustration for the deadline announcement; corrected Turducken crew and two Yorkies reviewed."
     }
   ],
   "existingXPosts": [
