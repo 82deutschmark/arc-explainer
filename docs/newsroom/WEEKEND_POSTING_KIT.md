@@ -24,7 +24,7 @@ tagged them (Chan tagged @razdaibi and @nguyen_manh599 in his own post).
 ### 1. Saturday evening: the cover story
 Picture: the juggernaut. Link: `/specials/2026-10-31-saturday-special.html`
 ```
-LEGENDS OF THE KAGGLEVERSE. By day they’re data scientists, researchers and students. This weekend they’re the heroes of the biggest arena in AI, and the lights are flickering. Meet @JFPuget, @gonedarragh, Giba, Tufa’s Jeroen Cottaar and the whole top ten.
+LEGENDS OF THE KAGGLEVERSE. By day they’re data scientists, researchers and students. This weekend they’re in the arena, and the scoring hall’s lights are flickering. Meet @JFPuget, @gonedarragh, Giba, Tufa’s Jeroen Cottaar and both top tens.
 https://arc.markbarney.net/specials/2026-10-31-saturday-special.html
 ```
 
@@ -35,10 +35,17 @@ THE ARENA REPORT. What’s going wrong in both ARC Prize contests, who’s sayin
 https://arc.markbarney.net/specials/weekend/arena-report.html
 ```
 
-### 3. Sunday 9 am: the scoreboard
+### 3. Sunday 9 am: no extension
+Picture: the scoring-hall clock. Link: `/specials/weekend/final-hours.html`
+```
+NO EXTENSION. ARC Prize tells competitors on its Discord the deadline holds: Monday, 6:59 pm Eastern. Kaggle’s leaders advised against moving it. The word to teams: plan for delays, submit early. The final hours:
+https://arc.markbarney.net/specials/weekend/final-hours.html
+```
+
+### 3b. Sunday midday (optional): the scoreboard
 Picture: the Field Guide valley. Link: `/specials/weekend.html#scoreboard-section`
 ```
-SUNDAY SCOREBOARD. ARC-2: {arc2 first} leads at {arc2 first score}. ARC-3: {arc3 first} leads at {arc3 first score}. Both top tens, with the time each score landed, and the field guide to every team in them.
+SUNDAY SCOREBOARD. ARC-2: {arc2 first} leads at {arc2 first score}. ARC-3: {arc3 first} leads at {arc3 first score}. Both top tens, with the time each score landed, and a field guide to every team in them.
 https://arc.markbarney.net/specials/weekend.html
 ```
 

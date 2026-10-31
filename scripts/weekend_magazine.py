@@ -148,7 +148,7 @@ NOTES = {
                   '3': 'In ARC-3 the Tufa roster grows to six accounts: those four plus dlorah and infinitecreativity.'},
     'Yi-Chia Chen @ Fields Model': {'*': 'A one-person team with two rabbits for an avatar, near the top of both boards. A Kaggle Competitions Master with a gold medal at Eedi (third of 1,446 teams).'},
     'nvbanana': {'*': 'NVIDIA’s two-person ARC-2 entry: CPMP (29 competition golds, peak world rank of sixth) and Darragh Hanley (28 golds, peak rank of fourth).'},
-    'NVARC3': {'*': 'NVIDIA’s seven-account ARC-3 squad: CPMP, Darragh Hanley, Ivan Sorokin, Giba (a former world No. 1) and the newcomers Elad Sarafian, Gal Kaplun and Yeyin Zhu.'},
+    'NVARC3': {'*': 'The seven-account ARC-3 squad of NVIDIA’s Grandmasters: CPMP, Darragh Hanley, Ivan Sorokin and Giba (a former world No. 1), plus the newer accounts Elad Sarafian, Gal Kaplun and Yeyin Zhu.'},
     'Domdolus Tolus': {'*': 'Five students from Tokyo who won gold at NVIDIA’s Nemotron challenge (fifth of 4,185). Also entered in ARC-3.'},
     'Sakayori Lab': {'*': 'A two-account lab (hongori and quarkliu) that jumped from 20th to fifth in a single day, according to our wire desk on Saturday morning.'},
     'rabbithole': {'*': 'A five-account squad: cookizesong, jiaxibi0220, xiezejian, yuhuake240506 and zhangsongxin.'},
@@ -179,7 +179,7 @@ def field_region(contest, board, ledger):
         who = member_line(ledger, r['members'])
         text = note_for(r['name'], contest) or f'{team_phrase(r["members"]).capitalize()}.'
         gained = r['prevRank'] - r['rank']
-        move = f' Up {gained} {"place" if gained == 1 else "places"} since the last 6 pm Eastern cutoff.' if gained > 0 else ''
+        move = f' Up {gained} {"place" if gained == 1 else "places"} since the previous evening’s reading.' if gained > 0 else ''
         when = f'reached {pretty_et(r["reached"], now)} ET' if r['reached'] else 'on the board before our tracker began'
         links = f'<a class="card" href="/news/cards/{card}">ARC Prize card</a>' if card else ''
         items.append(f'<li class="{cls}"><div class="n">{r["rank"]}</div><div><h3>{html.escape(r["name"])}</h3>'

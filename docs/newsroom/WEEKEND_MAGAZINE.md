@@ -98,8 +98,8 @@ disclaimers; the Boss ruled those out.
 ## Known limits
 
 The board API refreshes about every 30 minutes (`latest.fetched` says when); the page always prints the board's own time. The
-"reached" time is when our tracker first saw a score, not when Kaggle posted it. Arrows compare with the board's baseline, the
-previous 6 pm Eastern cutoff. The Legends page and the Arena Report are Saturday's reporting: update the Arena Report timeline and
+"reached" time is when our tracker first saw a score, not when Kaggle posted it. Arrows compare with the board's own baseline
+reading from the previous evening (Friday night when this was written); the board does not say exactly when. The Legends page and the Arena Report are Saturday's reporting: update the Arena Report timeline and
 the Final Hours watch list as the weekend moves; leave the Legends page as published. The ticker is hand-fed: if nobody adds a line,
 the paper feed on the cover still shows the newest stories.
 
