@@ -1,0 +1,30 @@
+{
+  "personId": "chan-kha-vu",
+  "checkedAt": "2026-10-31T17:24:05Z",
+  "profile": {
+    "displayName": "Chan Kha Vu",
+    "joinedMonth": "2018-09",
+    "completedCompetitions": 20,
+    "profileUrl": "https://www.kaggle.com/chankhavu",
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 2,
+      "silver": 5,
+      "bronze": 0
+    },
+    "rank": {
+      "current": 382,
+      "outOf": 225016,
+      "best": 271
+    }
+  },
+  "sourceUrls": [
+    "https://www.kaggle.com/chankhavu",
+    "https://www.kaggle.com/chankhavu/competitions",
+    "https://www.kaggle.com/competitions/neurogolf-2026/writeups/work-in-progress-2nd-place-neurogolf-team",
+    "https://github.com/hav4ik",
+    "https://x.com/chankhavu/status/2116281051702280456"
+  ],
+  "teamNote": "NeuroGolf second place was a five-person team. ARC-2 team V | A | M has three accounts; its top-ten place is provisional. The X accounts mentioned by Chan have not been individually mapped to the other Kaggle handles.",
+  "sourcePortrait": "https://storage.googleapis.com/kaggle-avatars/thumbnails/2270821-kg.jpg"
+}

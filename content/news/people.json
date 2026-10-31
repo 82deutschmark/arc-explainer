@@ -5637,5 +5637,77 @@
     "id": "mistyotter-ai",
     "memberships": [],
     "name": "Yegor"
+  },
+  {
+    "id": "chan-kha-vu",
+    "name": "Chan Kha Vu",
+    "role": "competitor",
+    "accounts": [
+      {
+        "platform": "kaggle",
+        "handle": "chankhavu",
+        "url": "https://www.kaggle.com/chankhavu",
+        "sourceUrl": "https://www.kaggle.com/competitions/neurogolf-2026/writeups/work-in-progress-2nd-place-neurogolf-team",
+        "sourceTitle": "NeuroGolf 2026 — author list identifies Chan Kha Vu and chankhavu",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      },
+      {
+        "platform": "x",
+        "handle": "chankhavu",
+        "url": "https://x.com/chankhavu",
+        "sourceUrl": "https://github.com/hav4ik",
+        "sourceTitle": "Chan Kha Vu — GitHub profile directly links X account",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      }
+    ],
+    "facts": [
+      {
+        "text": "Kaggle lists Chan Kha Vu as a Competitions Master, with two gold and five silver competition medals; his displayed rank was 382 of 225,016 and his highest rank was 271.",
+        "sourceUrl": "https://www.kaggle.com/chankhavu",
+        "sourceTitle": "Chan Kha Vu — own Kaggle profile and medal record",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      },
+      {
+        "text": "His account’s completed competition list shows second of 2,963 in the 2026 NeuroGolf Championship with a five-person team, and ninth of 642 in Image Matching Challenge 2022 as a solo entry; both received gold.",
+        "sourceUrl": "https://www.kaggle.com/chankhavu/competitions",
+        "sourceTitle": "Chan Kha Vu — completed Kaggle competitions",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      },
+      {
+        "text": "His own profile describes him as a software engineer at Microsoft and says he is from Ukraine.",
+        "sourceUrl": "https://www.kaggle.com/chankhavu",
+        "sourceTitle": "Chan Kha Vu — own Kaggle biography",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      },
+      {
+        "text": "Chan’s public post celebrates his team’s rise from about 50 to 76 points over five days, names two other X accounts, and says the team aims for 80 or more.",
+        "sourceUrl": "https://x.com/chankhavu/status/2116281051702280456",
+        "sourceTitle": "Chan Kha Vu — public post, 30 October 2026",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      }
+    ],
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "season": "2026",
+        "teamId": "16600664",
+        "teamName": "V | A | M",
+        "memberHandle": "chankhavu",
+        "firstObservedAt": "2026-10-31T16:58:35Z",
+        "lastObservedAt": "2026-10-31T16:58:35Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "sourceTitle": "ARC-2 public roster observation"
+      }
+    ],
+    "hallOfFame": [],
+    "portrait": {
+      "src": "/news-images/people/chan-kha-vu.webp",
+      "alt": "Chan Kha Vu’s own Kaggle profile portrait, with embroidered face covering",
+      "kind": "kaggle",
+      "sourceUrl": "https://www.kaggle.com/chankhavu",
+      "sourceTitle": "Chan Kha Vu — own Kaggle profile picture",
+      "checkedAt": "2026-10-31T17:24:05Z"
+    }
   }
 ]

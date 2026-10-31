@@ -983,18 +983,27 @@
     "teamId": "16598993"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Nguyen"
+    ],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "text": "Chan Kha Vu’s public post celebrates the team’s rise from about 50 to 76 points in five days and names @nguyen_manh599 and @razdaibi; those mentions alone do not map either X account to a particular Kaggle handle.",
+        "sourceUrl": "https://x.com/chankhavu/status/2116281051702280456",
+        "sourceTitle": "Chan Kha Vu — public post, 30 October 2026",
+        "checkedAt": "2026-10-31T17:24:05Z"
+      }
+    ],
     "firstObservedAt": "2026-10-15T09:47:20Z",
     "id": "arc-2-16600664",
-    "lastObservedAt": "2026-10-27T21:46:25Z",
+    "lastObservedAt": "2026-10-31T16:58:35Z",
     "members": [
       "arazzd",
       "chankhavu",
       "nguyennguyen599"
     ],
-    "name": "Nguyen",
+    "name": "V | A | M",
     "teamId": "16600664"
   },
   {

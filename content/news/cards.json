@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-30T20:11:59.652Z",
+  "updatedAt": "2026-10-31T17:24:05Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -1426,6 +1426,49 @@
         "Own X profile verifies the first name Yegor. Kaggle account and team remain unverified; no roster or rank is assigned.",
         "Adult rear-view header and pinned hoodie post supply styling. Face is concealed; no adult facial likeness is invented from his childhood profile photo."
       ]
+    },
+    {
+      "id": "person-chan-kha-vu-2026",
+      "number": "P068",
+      "kind": "person",
+      "name": "Chan Kha Vu",
+      "season": "2026",
+      "issuedAt": "2026-10-31T17:24:05Z",
+      "personId": "chan-kha-vu",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16600664"
+        }
+      ],
+      "art": {
+        "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
+        "alt": "Chan Kha Vu’s illustrated character in a GPU workshop, with his embroidered face covering and a rising trail of colorful puzzle tiles.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-10-31-chan-kha-vu-arc-climb-v1",
+        "commissionedAt": "2026-10-31T17:24:05Z"
+      },
+      "artNotes": [
+        "The embroidered face covering follows the competitor’s own profile portrait; the covered portion of his face is not invented. The workshop and puzzle climb are editorial illustration."
+      ]
+    },
+    {
+      "id": "team-v-a-m-arc2-2026",
+      "number": "T020",
+      "kind": "team",
+      "name": "V | A | M",
+      "season": "2026",
+      "issuedAt": "2026-10-31T17:24:05Z",
+      "entries": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "teamId": "16600664"
+        }
+      ],
+      "artNotes": [],
+      "description": "Three-person ARC-AGI-2 team: arazzd, chankhavu and nguyennguyen599."
     }
   ],
   "snapshots": [
@@ -2291,6 +2334,22 @@
         "yassirramadhan"
       ],
       "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "competition": "arc-2",
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "teamId": "16600664",
+      "observedAt": "2026-10-31T16:58:35Z",
+      "teamName": "V | A | M",
+      "rank": 9,
+      "score": 76.25,
+      "submissions": 96,
+      "members": [
+        "arazzd",
+        "chankhavu",
+        "nguyennguyen599"
+      ],
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
     }
   ]
 }

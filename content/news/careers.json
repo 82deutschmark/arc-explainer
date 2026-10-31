@@ -6707,6 +6707,89 @@
      "medal": null
     }
    ]
+  },
+  "chan-kha-vu": {
+   "checkedAt": "2026-10-31T17:24:05Z",
+   "profileUrl": "https://www.kaggle.com/chankhavu",
+   "tier": "Master",
+   "medals": {
+    "gold": 2,
+    "silver": 5,
+    "bronze": 0
+   },
+   "rank": {
+    "current": 382,
+    "outOf": 225016,
+    "best": 271
+   },
+   "joinedYear": 2018,
+   "organisation": "Microsoft",
+   "location": "Seattle, Washington, United States",
+   "rows": [
+    {
+     "year": 2026,
+     "competition": "The 2026 NeuroGolf Championship",
+     "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+     "team": null,
+     "rank": 2,
+     "fieldSize": 2963,
+     "medal": "gold"
+    },
+    {
+     "year": 2022,
+     "competition": "Image Matching Challenge 2022",
+     "competitionUrl": "https://www.kaggle.com/competitions/image-matching-challenge-2022",
+     "team": null,
+     "rank": 9,
+     "fieldSize": 642,
+     "medal": "gold"
+    },
+    {
+     "year": null,
+     "competition": "Rock, Paper, Scissors",
+     "competitionUrl": "https://www.kaggle.com/competitions/rock-paper-scissors",
+     "team": null,
+     "rank": 16,
+     "fieldSize": 1662,
+     "medal": "silver"
+    },
+    {
+     "year": null,
+     "competition": "Kaggle - LLM Science Exam",
+     "competitionUrl": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
+     "team": null,
+     "rank": 18,
+     "fieldSize": 2664,
+     "medal": "silver"
+    },
+    {
+     "year": 2020,
+     "competition": "Google Landmark Recognition 2020",
+     "competitionUrl": "https://www.kaggle.com/competitions/landmark-recognition-2020",
+     "team": null,
+     "rank": 22,
+     "fieldSize": 736,
+     "medal": "silver"
+    },
+    {
+     "year": 2020,
+     "competition": "Google Landmark Retrieval 2020",
+     "competitionUrl": "https://www.kaggle.com/competitions/landmark-retrieval-2020",
+     "team": null,
+     "rank": 39,
+     "fieldSize": 541,
+     "medal": "silver"
+    },
+    {
+     "year": null,
+     "competition": "AI Mathematical Olympiad - Progress Prize 2",
+     "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+     "team": null,
+     "rank": 50,
+     "fieldSize": 2212,
+     "medal": "silver"
+    }
+   ]
   }
  }
 }

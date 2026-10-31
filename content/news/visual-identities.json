@@ -1600,9 +1600,33 @@
         }
       ],
       "identityNotes": []
+    },
+    {
+      "id": "chan-kha-vu",
+      "personId": "chan-kha-vu",
+      "status": "ready",
+      "names": [
+        "Chan Kha Vu",
+        "chankhavu"
+      ],
+      "description": "Chan Kha Vu’s illustrated character in a GPU workshop, with his embroidered face covering and a rising trail of colorful puzzle tiles.",
+      "referenceType": "Own Kaggle portrait and commissioned illustration",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
+          "sha256": "c208508d1757ff7b885851301797d1590b3e556f363425576778cc120dc5cec1",
+          "generationRecord": "2026-10-31-chan-kha-vu-arc-climb-v1",
+          "kind": "native-character",
+          "label": "Chan Kha Vu — ARC climb",
+          "role": "Preserve the competitor’s embroidered face covering; never invent the covered face."
+        }
+      ],
+      "identityNotes": [
+        "Own Kaggle avatar supplies the covered face and embroidered clothing. The illustrated workshop and puzzle climb are fictional."
+      ]
     }
   ],
-  "updatedAt": "2026-10-30T20:12:51.558304+00:00",
+  "updatedAt": "2026-10-31T17:24:05Z",
   "version": 1,
   "reusableScenes": [
     {
