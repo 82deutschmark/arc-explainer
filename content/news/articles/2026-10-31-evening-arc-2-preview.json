@@ -4,29 +4,46 @@
   "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. Launch/manual preview, actual cutoff 2026-10-31T17:49:40Z; this is not the scheduled edition.",
   "dataAsOf": "2026-10-31T17:28:39Z",
   "date": "2026-10-31",
-  "dek": "V | A | M surge into the ARC-2 top ten. Meet Chan, then the Grandmasters of NV Banana and the seven-person NVARC3 campaign.",
-  "discord": "Saturday Special: Chan Kha Vu and V | A | M’s top-ten climb, the Grandmasters behind NV Banana, and the NVARC3 juggernaut. https://arc.markbarney.net/news/2026-10-31-evening-arc-2-preview",
+  "dek": "Submissions are failing, scores are crawling and the bell rings Monday night. CPMP calls it a circus, Tufa’s Jeroen Cottaar is timing the missing forty minutes with a stopwatch, and the NVIDIA seven are stuck in the same traffic as everybody else.",
+  "discord": "SATURDAY SPECIAL: Kaggle’s circus weekend. CPMP called the ARC contests a circus, Tufa’s Jeroen Cottaar is timing Kaggle’s missing forty minutes, Giba and the NVIDIA seven are stuck in the same traffic, and V | A | M gained 26 points in five days. https://arc.markbarney.net/news/2026-10-31-evening-arc-2-preview",
   "edition": "evening",
-  "frontPageFeatureId": "2026-10-31-saturday-chan-vam-top-ten",
-  "generatedBy": "gpt-6.1-sol",
-  "headline": "Saturday Special: Chan Kha Vu’s top-ten climb and the NVIDIA juggernauts",
+  "frontPageFeatureId": "2026-10-31-saturday-nvbanana-grandmasters",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "Saturday Special: Kaggle’s circus weekend, CPMP’s roar and the detective of Tufa",
   "id": "2026-10-31-evening-arc-2-preview",
   "publishedAt": "2026-10-31T17:49:40Z",
   "sections": [
     {
-      "heading": "Three stories, one final weekend",
+      "heading": "Welcome to the circus",
       "sourceIds": [
-        "dispatch-2026-10-31-saturday-chan-vam-top-ten",
+        "board",
         "dispatch-2026-10-31-saturday-nvbanana-grandmasters"
       ],
-      "text": "Chan Kha Vu and V | A | M lead our Saturday afternoon special after their dash into the ARC-2 top ten. His full illustrated profile is above. Next: Jean-François Puget and Darragh Hanley are NV Banana, two Kaggle Grandmasters with decades of experience and a wall of medals. Read their complete illustrated feature at https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
+      "text": "Two days to the bell and Kaggle’s biggest show has gone sideways. In ARC-AGI-3, competitors report submissions dying with system errors or finishing in half an hour with a flat zero. In ARC-AGI-2, scores take more than a day to come back, so last-day submissions may never count. The answer from the hosts and Kaggle staff: the deadline stands. Ours too: Monday, 11:59 pm UTC. Nobody has said it louder than Jean-François Puget, CPMP, who quoted our no-extension bulletin Saturday morning with one word for the weekend: circus. The full showdown, with Kaggle’s answer: https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
     },
     {
-      "heading": "The other NVIDIA campaign",
+      "heading": "The detective of Tufa",
       "sourceIds": [
-        "board"
+        "board",
+        "dispatch-2026-10-31-saturday-cottaar-forty-minutes"
       ],
-      "text": "In ARC-AGI-3, the separate seven-person NVARC3 team is chasing the leaders. Meet the team and see CPMP pointing toward Chen’s rabbits and Tufa’s banner in our juggernaut illustration: https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut. The two competitions have different rosters and standings."
+      "text": "Friday night we met Jeroen Cottaar in the Tufa Citadel. Saturday he is running experiments. His team’s empty-notebook tests say every submission loses forty to fifty minutes before the notebook even starts, and that the time counts against the nine-hour budget. CPMP says a delay before a notebook runs is not uncommon. Two of the sharpest minds in the field, politely at odds: https://arc.markbarney.net/news#2026-10-31-saturday-cottaar-forty-minutes"
+    },
+    {
+      "heading": "The NVIDIA seven",
+      "sourceIds": [
+        "board",
+        "dispatch-2026-10-31-saturday-nvarc3-juggernaut"
+      ],
+      "text": "In ARC-AGI-3 the separate seven-person NVARC3 team sits eighth: CPMP, Darragh Hanley, Ivan Sorokin, Elad Sarafian, Gal Kaplun, Yeyin Zhu and Giba, who once ranked No. 1 on all of Kaggle. Meet the squad and see CPMP pointing toward Chen’s rabbits and Tufa’s banner in our juggernaut illustration: https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut. The two competitions have different rosters and standings."
+    },
+    {
+      "heading": "Meanwhile, in the top ten",
+      "sourceIds": [
+        "board",
+        "dispatch-2026-10-31-saturday-chan-vam-top-ten"
+      ],
+      "text": "Chan Kha Vu’s V | A | M gained 26 points in five days and is ninth on the ARC-2 board at 76.25, with a loud voice in the scoring fight. Points, not places: https://arc.markbarney.net/news#2026-10-31-saturday-chan-vam-top-ten"
     }
   ],
   "sources": [
@@ -1407,13 +1424,13 @@
     {
       "accessedAt": "2026-10-31T17:49:40Z",
       "id": "dispatch-2026-10-31-saturday-chan-vam-top-ten",
-      "title": "From 50 to 76: Chan Kha Vu and V | A | M charge into the ARC-2 top ten",
+      "title": "Chan Kha Vu’s V | A | M: 26 points in five days, and ninth on the ARC-2 board",
       "url": "https://arc.markbarney.net/news#2026-10-31-saturday-chan-vam-top-ten"
     },
     {
       "accessedAt": "2026-10-31T17:49:40Z",
       "id": "dispatch-2026-10-31-saturday-nvbanana-grandmasters",
-      "title": "NV Banana: two Kaggle Grandmasters, one formidable ARC-2 challenge",
+      "title": "“A circus”: CPMP takes on Kaggle’s final weekend from third place on the ARC-2 board",
       "url": "https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
     },
     {
@@ -1421,6 +1438,18 @@
       "id": "dispatch-2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
       "title": "Friday Night Special: Jeroen Cottaar, the Grandmaster in the Tufa Citadel",
       "url": "https://arc.markbarney.net/news#2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-31-saturday-cottaar-forty-minutes",
+      "title": "Tufa’s detective on the case: Jeroen Cottaar clocks Kaggle’s missing forty minutes",
+      "url": "https://arc.markbarney.net/news#2026-10-31-saturday-cottaar-forty-minutes"
+    },
+    {
+      "accessedAt": "2026-10-31T17:49:40Z",
+      "id": "dispatch-2026-10-31-saturday-nvarc3-juggernaut",
+      "title": "The NVIDIA seven: the all-time No. 1, a 2025 champion and three fresh faces behind NVARC3",
+      "url": "https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut"
     }
   ],
   "stats": [
@@ -1610,7 +1639,8 @@
     }
   ],
   "teamIds": [
-    "16600664",
-    "15486939"
+    "15486939",
+    "16756524",
+    "16600664"
   ]
 }
