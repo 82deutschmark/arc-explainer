@@ -1,0 +1,3 @@
+# The Colosseum series, 31 October 2026
+
+Made by Son Pham and Bubba. Two giant rabbits (Chen's team) and a citadel (Tufa), with the rest of the field small on the sand. Son's pick, and the one used on the Two Crowns story, is `two-giants-colosseum-v4-freestanding-citadel`. The others are kept as options: v2 to v6 (each adds a request from Son, such as one big cat, the ARC-2 teams, or balanced sizes), `arena-fresh-render-v1` (fresh render, original references only) and `arena-fresh-render-v2-gpu-rabbits` (GPU gear on the rabbits). Full-size originals are on the Samsung SSD under arc-daily-artwork/2026-10-31-colosseum.
