@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Anastasia Razdaibiedina",
+    "kaggle": "arazzd",
+    "x": ["razdaibi"],
+    "confidence": "probable",
+    "evidence": "Chan Kha Vu's public post of 30 Oct 2026 tags @razdaibi and @nguyen_manh599 as teammates; V | A | M's roster is arazzd, chankhavu, nguyennguyen599. The Kaggle account shows the display name Anastasia (joined about seven years ago); @razdaibi is Anastasia Razdaibiedina, whose site is arazd.github.io (arazd ~ arazzd) and whom Chan Kha Vu follows. No direct link from either profile to the other was seen. Checked 31 Oct 2026."
+  },
+  {
+    "name": "Manh Nguyen",
+    "kaggle": "nguyennguyen599",
+    "x": ["nguyen_manh599"],
+    "confidence": "probable",
+    "evidence": "Same Chan Kha Vu post. The Kaggle account is displayed as Nguyen (Competitions Expert; Yi-Chia Chen is a follower); @nguyen_manh599 is Manh Nguyen, followed by both Yi-Chia Chen and Chan Kha Vu, and the 599 matches. No direct link between the profiles was seen. Checked 31 Oct 2026."
+  }
+]

@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.26  Oct 31, 2026
+
+- **Handle crosswalk, Kaggle primer and the final-weekend research note** (Author: Claude Sonnet 5.5 Medium). New `scripts/newsroom_crosswalk.py` builds `content/news/handle-crosswalk.json` and `docs/newsroom/HANDLE_CROSSWALK.md` from `people.json` and `competitors.json`: one row per Kaggle handle with its X handle and its team in ARC-2 and in ARC-3. `docs/newsroom/KAGGLE_PRIMER.md` explains handle versus team versus contest. `content/news/handle-candidates.json` holds probable, unconfirmed pairings (V | A | M teammates arazzd and nguyennguyen599) with evidence. `docs/newsroom/research/2026-10-31-submission-and-capacity-crisis.md` records what CPMP and Kaggle staff said about the submission and capacity trouble. No ledger, card or published copy changed.
+- Validation: crosswalk script runs clean on the current ledgers; Markdown table pipes escaped.
+
 ### Version 9.159.25  Oct 30, 2026
 
 - **Let the Friday Night Special lead the paper** (Author: GPT-6.1 Sol / Codex). The newest contest edition or dispatch leads `/news`, so Jeroen Cottaar’s full Tufa Citadel feature and illustration appear above the older ARC3 issue. Simultaneous editions retain ARC3 first. Record the approved image-led X announcement in the artwork inventory.

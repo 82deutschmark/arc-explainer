@@ -72,6 +72,8 @@ edition/wire desk and the morning check-in. It adds no sends, releases or schedu
 | `server/services/news/newsCollection.ts` | Validated collection projection used by the API and card renderer. |
 | `content/news/people.json` | Stable person IDs, verified accounts, sourced facts, individual portraits and historical honors. |
 | `content/news/competitors.json` | Contest-specific team dossiers, observed names, exact handles and dated facts. |
+| `HANDLE_CROSSWALK.md` / `content/news/handle-crosswalk.json` | One flat table: Kaggle handle, X handle, and the team in ARC-2 and in ARC-3. Read [KAGGLE_PRIMER.md](KAGGLE_PRIMER.md) first. Unconfirmed pairings live in `content/news/handle-candidates.json`. |
+| `research/` | Dated research notes (for example the 31 October submission and capacity crisis), so helpers do not re-find them. |
 | `content/news/visual-identities.json` | Curated character identities and their frozen reference images. |
 | `content/news/artwork-inventory.json` | Finished art, permitted cast, reservations and actual article/social uses. |
 | `content/news/artwork/<artworkId>.json` | Exact native generation arguments, input references, hashes and visual review. |
