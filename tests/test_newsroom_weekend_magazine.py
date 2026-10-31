@@ -32,7 +32,7 @@ def make_board(contest, fetched='2026-10-31T19:28:52Z', count=12):
 class TimeAndRows(unittest.TestCase):
     def test_pretty_et_wording_and_daylight_time(self):
         now = datetime(2026, 10, 31, 19, 28, tzinfo=timezone.utc)                    # Saturday 3:28 pm EDT
-        self.assertEqual(wm.pretty_et(datetime(2026, 10, 31, 18, 58, tzinfo=timezone.utc), now), 'Today 2:58 pm')
+        self.assertEqual(wm.pretty_et(datetime(2026, 10, 31, 18, 58, tzinfo=timezone.utc), now), 'Sat 2:58 pm')
         self.assertEqual(wm.pretty_et(datetime(2026, 10, 29, 18, 52, tzinfo=timezone.utc), now), 'Thu 2:52 pm')
         self.assertEqual(wm.pretty_et(datetime(2026, 10, 9, 5, 21, tzinfo=timezone.utc), now), 'Oct 9, 1:21 am')
         self.assertEqual(wm.stamp_et(now), 'Sat 3:28 pm ET')

@@ -1,8 +1,8 @@
 {
-  "asOf": "2026-10-31T19:28:52Z",
+  "asOf": "2026-10-31T20:29:01Z",
   "contests": {
     "arc-2": {
-      "teams": 3564,
+      "teams": 3567,
       "medalRanks": {
         "gold": 17,
         "silver": 178,
@@ -112,11 +112,11 @@
       ]
     },
     "arc-3": {
-      "teams": 5009,
+      "teams": 5011,
       "medalRanks": {
         "gold": 20,
         "silver": 250,
-        "bronze": 500
+        "bronze": 501
       },
       "top": [
         {

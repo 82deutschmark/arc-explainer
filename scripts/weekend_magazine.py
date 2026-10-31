@@ -57,12 +57,10 @@ def parse_utc(text):
 
 
 def pretty_et(when, now):
-    """'Today 2:58 pm', 'Thu 2:52 pm' within the last week, otherwise 'Oct 9, 1:21 am' (Eastern)."""
+    """'Sat 2:58 pm', 'Thu 2:52 pm' within the last week, otherwise 'Oct 9, 1:21 am' (Eastern)."""
     local, today = when.astimezone(ET), now.astimezone(ET)
     clock = local.strftime('%-I:%M %p').lower()
     days = (today.date() - local.date()).days
-    if days == 0:
-        return f'Today {clock}'
     if days < 7:
         return f'{local.strftime("%a")} {clock}'
     return f'{local.strftime("%b")} {local.day}, {clock}'
@@ -101,7 +99,7 @@ def board_table(label, board, count=10):
         elif r['rank'] > r['prevRank']:
             move = f' <span class="down">▼{r["rank"] - r["prevRank"]}</span>'
         gain = f' <span class="gain">+{r["score"] - r["prevScore"]:.2f}</span>' if r['score'] - r['prevScore'] > 0.004 else ''
-        when = f'reached {pretty_et(r["reached"], now)} ET' if r['reached'] else 'on the board before our tracker began'
+        when = f'reached {pretty_et(r["reached"], now)} ET' if r['reached'] else 'on the board before we started watching'
         out.append(f'<tr{cls}><td>{r["rank"]}</td><td>{html.escape(r["name"])}{move}<small>{team_phrase(r["members"])} · {when}</small></td>'
                    f'<td><b>{r["score"]:.2f}</b>{gain}</td></tr>')
     out.append('</table>')
@@ -144,24 +142,23 @@ def member_line(ledger, members):
 # is from a public Kaggle profile, the board or the newsroom ledgers (checked 30-31 October). A team without a line gets a
 # plain roster line, so a board that shifts cannot print a wrong blurb. Names of people with no stated pronouns stay neutral.
 NOTES = {
-    'Tufa Labs': {'*': 'The lab at the top of both boards. Jeroen Cottaar (a Grandmaster, sixth in the world), Isaiah Pressman (a Grandmaster, 14th, winner of Orbit Wars), Dries Smit (lead developer of the Tufa agent that won last year’s ARC-AGI-3 preview) and Stefano Viel.',
-                  '3': 'In ARC-3 the Tufa roster grows to six accounts: those four plus dlorah and infinitecreativity.'},
-    'Yi-Chia Chen @ Fields Model': {'*': 'A one-person team with two rabbits for an avatar, near the top of both boards. A Kaggle Competitions Master with a gold medal at Eedi (third of 1,446 teams).'},
-    'nvbanana': {'*': 'NVIDIA’s two-person ARC-2 entry: CPMP (29 competition golds, peak world rank of sixth) and Darragh Hanley (28 golds, peak rank of fourth).'},
-    'NVARC3': {'*': 'The seven-account ARC-3 squad of NVIDIA’s Grandmasters: CPMP, Darragh Hanley, Ivan Sorokin and Giba (a former world No. 1), plus the newer accounts Elad Sarafian, Gal Kaplun and Yeyin Zhu.'},
+    'Tufa Labs': {'2': 'Leads ARC-2 at 88.06. Jeroen Cottaar is a Grandmaster, sixth in the world. Isaiah Pressman is a Grandmaster, 14th in the world, and won Orbit Wars. Dries Smit led development of the Tufa AI agent that won last year’s ARC-AGI-3 preview. Stefano Viel is a research scientist based in Zürich.', '3': 'Second on this board behind Yi-Chia Chen. The ARC-3 roster grows to six: the four above plus dlorah and infinitecreativity.'},
+    'Yi-Chia Chen @ Fields Model': {'2': 'A one-person team with two rabbits for an avatar, and near the top of both boards. A Kaggle Competitions Master with a gold medal at Eedi (third of 1,446 teams).', '3': 'The same two rabbits, near the top here too: one player, no teammates.'},
+    'nvbanana': {'*': 'NVIDIA’s two-person ARC-2 entry: Jean-François Puget (CPMP), with 29 competition golds and a peak world rank of sixth, and Darragh Hanley, with 28 golds and a peak rank of fourth.'},
+    'NVARC3': {'*': 'Seven accounts. Four are NVIDIA Grandmasters: CPMP, Darragh Hanley, Ivan Sorokin and Giba (a former world No. 1), plus Elad Sarafian, Gal Kaplun and Yeyin Zhu, whose profiles list ARC-3 as their only contest.'},
     'Domdolus Tolus': {'*': 'Five students from Tokyo who won gold at NVIDIA’s Nemotron challenge (fifth of 4,185). Also entered in ARC-3.'},
-    'Sakayori Lab': {'*': 'A two-account lab (hongori and quarkliu) that jumped from 20th to fifth in a single day, according to our wire desk on Saturday morning.'},
-    'rabbithole': {'*': 'A five-account squad: cookizesong, jiaxibi0220, xiezejian, yuhuake240506 and zhangsongxin.'},
+    'Sakayori Lab': {'*': 'A two-player lab that jumped from 20th to fifth in a single day on Friday.'},
+    'rabbithole': {'*': 'A five-player squad that held third place on October 20.'},
     'Majkel1337': {'*': 'A one-person team and a Kaggle Master, 290th in the world, with golds in the Pokémon TCG AI Battle Challenge and Kaggriculture. Plays both contests.'},
-    'Ravi Teja Chilakala': {'*': 'A one-person entry (Kaggle account carriem7).'},
-    'V | A | M': {'*': 'Chan Kha Vu’s team: up 26 points in five days, from 50 to 76.'},
+    'Ravi Teja Chilakala': {'*': 'A one-person team that jumped from the 1,800s to the top 40 in a day on October 15, and was in the top ten by October 25.'},
+    'V | A | M': {'*': 'Chan Kha Vu’s team, which says it climbed from about 50 to 76 points in five days.'},
     'faster machine is all you need': {'*': 'The one-person team of xz: a Kaggle Master, 15th in the world and 10th at best, and winner of the AI Agent Security contest (first of 4,186).'},
-    'Team Turducken': {'*': 'That’s us: the head editor’s team, with Son Pham and five others. Same zeros as everyone else.'},
-    'the last dance 🕺': {'*': 'Four accounts: Mykyta Ielanskyi (a research scientist in Linz, Austria), Florian Sestak, Lukas Aichberger and the nameless gklambauer.'},
+    'Team Turducken': {'*': 'That’s us: the head editor’s team, with Son Pham and five others.'},
+    'the last dance 🕺': {'*': 'Four players, three with ties to Johannes Kepler University in Linz, Austria: Mykyta Ielanskyi, Florian Sestak and Lukas Aichberger, plus gklambauer.'},
     'yktori': {'*': 'A one-person team and a Kaggle Expert with a silver medal for Drawing with LLMs.'},
     'mtg': {'*': 'The rookie: a one-person team whose Kaggle account dates only from March 2026. Plays both contests.'},
-    'Grigoriy Zatravkin & co': {'*': 'Four accounts, including a Peking University student and Dongming Sheng.'},
-    '復活の混テキスト': {'*': 'An eight-account Japanese all-star squad with Kaggle Masters ISAKA Tsuyoshi (78th in the world), yuto083 (54th) and re (88th), a Nemotron challenge winner.'},
+    'Grigoriy Zatravkin & co': {'*': 'A four-player team that includes Dongming Sheng, a language-AI researcher at Tencent, and common-people, a Peking University student.'},
+    '復活の混テキスト': {'*': 'An eight-player Japanese all-star squad with four Kaggle Masters, among them yuto083 (54th in the world), ISAKA Tsuyoshi (78th) and re (88th), who was on the team that won NVIDIA’s Nemotron challenge.'},
 }
 
 
@@ -180,7 +177,7 @@ def field_region(contest, board, ledger):
         text = note_for(r['name'], contest) or f'{team_phrase(r["members"]).capitalize()}.'
         gained = r['prevRank'] - r['rank']
         move = f' Up {gained} {"place" if gained == 1 else "places"} since the previous evening’s reading.' if gained > 0 else ''
-        when = f'reached {pretty_et(r["reached"], now)} ET' if r['reached'] else 'on the board before our tracker began'
+        when = f'reached {pretty_et(r["reached"], now)} ET' if r['reached'] else 'on the board before we started watching'
         links = f'<a class="card" href="/news/cards/{card}">ARC Prize card</a>' if card else ''
         items.append(f'<li class="{cls}"><div class="n">{r["rank"]}</div><div><h3>{html.escape(r["name"])}</h3>'
                      f'<div class="meta">{r["score"]:.2f} points · {when}</div><p>{html.escape(text + move)}</p>'
