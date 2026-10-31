@@ -1,7 +1,7 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "arc-2",
-  "editorNote": "Saturday afternoon special, commissioned by head editor Mark Barney. Written by Claude Sonnet 5.5 on the reporting of the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
   "generatedBy": "claude-sonnet-5-5",
   "headline": "Tufa’s detective on the case: Jeroen Cottaar clocks Kaggle’s missing forty minutes",
   "id": "2026-10-31-saturday-cottaar-forty-minutes",
@@ -11,7 +11,8 @@
       "heading": "Friday’s portrait, Saturday’s stopwatch",
       "sourceIds": [
         "board",
-        "board3"
+        "board3",
+        "person-jeroen-cottaar-fact-0"
       ],
       "text": "Friday night we seated Jeroen Cottaar on the GPU throne in the Tufa Citadel. Saturday the portrait is working. Tufa Labs holds first place in ARC-2 at 88.06, with Yi-Chia Chen’s Fields Model second at 87.22. In ARC-3 the order flips: Chen leads at 75.56 and Tufa is second at 70.02. Two teams sit at the top of both boards, and Cottaar has spent the week poking at Kaggle’s machinery out loud."
     },
@@ -20,14 +21,14 @@
       "sourceIds": [
         "k3-normal"
       ],
-      "text": "In a forum thread asking whether things are back to normal, Cottaar said his team is “quite convinced” they are not. Every submission from his team, he reported, seems to lose about forty minutes. The model comes up at normal speed counted from notebook start, but the notebook itself starts roughly forty minutes after the container does.\n\nHow does he know? His team added a kill switch that stops the run if the machine’s uptime is past twenty minutes when the notebook begins, and the notebook kept erroring out about forty minutes after each submission. And the lost time counts against the clock: his team’s successful runs last nine hours, not nine hours and forty minutes."
+      "text": "In a forum thread asking whether things are back to normal, Cottaar said his team is “quite convinced” they are not. Every submission from his team, he reported, seems to lose about forty minutes: the model loads at normal speed once the notebook is running, but the notebook itself starts roughly forty minutes after the machine does.\n\nHow does he know? His team set a tripwire that stops a run if the machine has been up more than twenty minutes by the time the notebook begins. The tripwire kept firing, about forty minutes after each submission. And the lost time counts against the clock: the team’s successful runs last nine hours, not nine hours and forty minutes."
     },
     {
       "heading": "The control group",
       "sourceIds": [
         "k3-normal"
       ],
-      "text": "A day later he ran the cleaner test. An empty notebook with no datasets attached shows the same delay. It happens on the June container image and on the latest. It happens whether he submits from the United States or from Europe.\n\nSubmit an empty notebook with only the competition dataset on an RTX 6000, he wrote, and it used to come back with an error in a few minutes. Now it takes fifty, while real submissions still take nine hours. His reading: notebooks take about fifty minutes to kick off, and the time is charged to the nine-hour budget. He names the rival explanation himself: the error may simply be returned late while true scores are not."
+      "text": "A day later he ran the cleaner test. A completely empty notebook, nothing attached, shows the same delay. It shows up with Kaggle’s June software setup and with its latest, and whether he submits from the United States or from Europe.\n\nSubmit an empty notebook with only the contest data attached on an RTX 6000 graphics card, he wrote, and it used to come back with an error within minutes. Now it takes fifty, while real submissions still run nine hours. His reading: notebooks take about fifty minutes to kick off, and the time is charged to the nine-hour budget. He names the rival explanation himself: the error may simply be returned late while true scores are not."
     },
     {
       "heading": "Enter CPMP",
@@ -39,9 +40,10 @@
     {
       "heading": "Everybody’s workaround",
       "sourceIds": [
-        "k3-normal"
+        "k3-normal",
+        "card-tufa"
       ],
-      "text": "The field has not waited for a verdict. xz, whose team faster machine is all you need is third on ARC-3, starts the games at the ten-minute mark whether or not the model server is up and sends a reset every seven minutes. Van-Phuc Huynh trades solving time for longer waiting and more resets to avoid a zero. Grigoriy Zatravkin, ninth on ARC-3, wondered whether probe runs like Tufa’s could leak information about the hidden games; xz replied that probes cost real submissions.\n\nJeroen Cottaar’s ARC Prize card: https://arc.markbarney.net/news/cards/person-jeroen-cottaar-2026 · Tufa Labs team card: https://arc.markbarney.net/news/cards/team-tufa-labs-2026"
+      "text": "The field has not waited for a verdict. xz, whose team faster machine is all you need is third on ARC-3, starts the games at the ten-minute mark whether or not the model server is up and sends a reset every seven minutes. Van-Phuc Huynh trades solving time for longer waiting and more resets to avoid a zero. Grigoriy Zatravkin, ninth on ARC-3, wondered whether probe runs like Tufa’s could leak information about the hidden games; xz replied that probes cost real submissions."
     }
   ],
   "sources": [
@@ -62,6 +64,18 @@
       "id": "k3-normal",
       "title": "ARC-3 forum: “Is everything back to normal” (Cottaar, CPMP, Chen, xz and others)",
       "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843"
+    },
+    {
+      "accessedAt": "2026-10-30T12:00:00Z",
+      "id": "person-jeroen-cottaar-fact-0",
+      "title": "Jeroen Cottaar — Kaggle profile",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-31T18:00:00Z",
+      "id": "card-tufa",
+      "title": "Tufa Labs — ARC Prize team card",
+      "url": "https://arc.markbarney.net/news/cards/team-tufa-labs-2026"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "arc-2",
-  "editorNote": "Saturday afternoon special, commissioned by head editor Mark Barney. Written by Claude Sonnet 5.5 on the reporting of the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
   "generatedBy": "claude-sonnet-5-5",
   "headline": "“A circus”: CPMP takes on Kaggle’s final weekend from third place on the ARC-2 board",
   "id": "2026-10-31-saturday-nvbanana-grandmasters",
   "image": {
     "alt": "CPMP and Darragh’s opaque blue-and-gold starry avatar stand in an NVIDIA-themed hall filled with medals.",
-    "caption": "Jean-François Puget and Darragh Hanley in the NV Banana hall. The starry figure adapts Hanley’s own Kaggle avatar; medals are celebratory illustration.",
+    "caption": "CPMP and Darragh Hanley in the NV Banana hall, with Darragh’s starry Kaggle avatar.",
     "src": "/news-images/2026-10-31-saturday-nvbanana-grandmasters.webp"
   },
   "publishedAt": "2026-10-31T18:29:05Z",
@@ -17,10 +17,10 @@
       "sourceIds": [
         "board",
         "cpmp-x",
-        "phd-record",
+        "person-jean-francois-puget-identity-0",
         "cpmp-kaggle"
       ],
-      "text": "Friday night we told the world there would be no extension: the ARC Prize deadline stands at 11:59 pm UTC on Monday, queues or no queues. Saturday morning Jean-François Puget, CPMP, quoted our bulletin and put his own headline over the weekend. The ARC competitions on Kaggle, he wrote, have “turned into a circus”: most teams can’t submit in ARC-3, scoring takes more than a day in ARC-2, and the teams that do get a run see big swings in running speed and score. His verdict: “I never saw Kaggle platform being so bad since I started kaggling.”\n\nWeigh the source. This is a man who earned a machine-learning PhD in 1990, entered his first Kaggle contest in 2016, holds 29 competition golds and sits third on the ARC-2 board with Darragh Hanley. When he calls the building a circus, the building notices."
+      "text": "Friday night we told the world there would be no extension: the ARC Prize deadline stands at 11:59 pm UTC on Monday, queues or no queues. Saturday morning Jean-François Puget, CPMP, quoted our bulletin and put his own headline over the weekend. The ARC competitions on Kaggle, he wrote, have “turned into a circus”: most teams can’t submit in ARC-3, scoring takes more than a day in ARC-2, and the teams that do get a run see big swings in running speed and score. His verdict: “I never saw Kaggle platform being so bad since I started kaggling.”\n\nWeigh the source. This is a man with a machine-learning PhD from, as he puts it, “a previous millennium,” who entered his first Kaggle contest in 2016, holds 29 competition golds and sits third on the ARC-2 board with Darragh Hanley. When he calls the building a circus, the building notices."
     },
     {
       "heading": "The theory of the case",
@@ -55,10 +55,11 @@
         "cpmp-interview",
         "arc2025",
         "darragh-results",
+        "person-darragh-hanley-identity-0",
         "puget-card",
         "hanley-card"
       ],
-      "text": "The loudest critic of the circus is also a contender in it. nvbanana, CPMP and Darragh Hanley, is third on the ARC-2 board at 83.89, behind Tufa Labs and Yi-Chia Chen. CPMP’s own advice to competitors is “evaluate your assumptions, evaluate your modifications,” and this weekend he has evaluated Kaggle’s. In 2025 he and Ivan Sorokin won ARC Prize as NVARC. Hanley, a Kaggle Grandmaster with 28 golds and a best-ever rank of fourth, is CPMP’s partner this year.\n\nThe private board decides on Monday night. Whatever it says, the banana had its say first.\n\nMeet the competitors: Jean-François Puget’s ARC Prize card — https://arc.markbarney.net/news/cards/person-jean-francois-puget-2026 · Darragh Hanley’s card — https://arc.markbarney.net/news/cards/person-darragh-hanley-2026"
+      "text": "The loudest critic of the circus is also a contender in it. nvbanana, CPMP and Darragh Hanley, is third on the ARC-2 board at 83.89, behind Tufa Labs and Yi-Chia Chen. CPMP’s own advice to competitors is “evaluate your assumptions, evaluate your modifications,” and this weekend he has evaluated Kaggle’s. In 2025 he and Ivan Sorokin won ARC Prize as NVARC. Hanley, a Kaggle Grandmaster with 28 golds and a best-ever rank of fourth, is CPMP’s partner this year.\n\nThe private board decides on Monday night. Whatever it says, the banana had its say first."
     }
   ],
   "sources": [
@@ -112,12 +113,6 @@
     },
     {
       "accessedAt": "2026-10-31T17:18:58Z",
-      "id": "phd-record",
-      "title": "1990 research bibliography citing Puget’s PhD thesis",
-      "url": "https://citeseerx.ist.psu.edu/document?doi=5ab03b8946f8e9ae2137411bc61bda07bd21559c&repid=rep1&type=pdf"
-    },
-    {
-      "accessedAt": "2026-10-31T17:18:58Z",
       "id": "arc2025",
       "title": "ARC Prize — 2025 high score results",
       "url": "https://arcprize.org/competitions/2025"
@@ -139,6 +134,18 @@
       "id": "hanley-card",
       "title": "Darragh Hanley — ARC Prize card",
       "url": "https://arc.markbarney.net/news/cards/person-darragh-hanley-2026"
+    },
+    {
+      "accessedAt": "2026-10-31T17:18:58Z",
+      "id": "person-jean-francois-puget-identity-0",
+      "title": "Jean-François Puget — own GitHub identity and Kaggle link",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-31T17:18:58Z",
+      "id": "person-darragh-hanley-identity-0",
+      "title": "Darragh Hanley — NVIDIA author biography",
+      "url": "https://developer.nvidia.com/blog/author/dhanley/"
     }
   ]
 }

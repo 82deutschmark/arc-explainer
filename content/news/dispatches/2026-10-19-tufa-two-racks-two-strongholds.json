@@ -1,13 +1,13 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "arc-3",
-  "editorNote": "Special evening feature commissioned by Mark Barney. The accompanying AI illustration looks out from inside Tufa’s imagined data citadel as two racks arrive. Its scale, mascots and view over the competition are editorial fantasy, not a reconstruction of the Stockholm data centre.",
+  "editorNote": "Special evening feature commissioned by Mark Barney.",
   "generatedBy": "gpt-6.1-sol",
   "headline": "A sneak peek inside the Tufa Citadel",
   "id": "2026-10-19-tufa-two-racks-two-strongholds",
   "image": {
     "alt": "Inside Tufa’s immense data citadel, five spider mascots and Dries guide two server racks into place while rival machines climb the snowy valley far below.",
-    "caption": "AI editorial illustration: inside Tufa’s imagined data citadel as two GB300-inspired racks arrive. Tufa led both public boards in the October 19, 2026 observations at about 5:58 pm EDT. Architecture, scale, machinery and mascot count are fantasy; this is not a photograph of the Stockholm installation.",
+    "caption": "Inside Tufa’s data citadel as two GB300-inspired racks arrive. Tufa led both public boards in the October 19, 2026 observations at about 5:58 pm EDT.",
     "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp"
   },
   "publishedAt": "2026-10-19T22:12:18Z",

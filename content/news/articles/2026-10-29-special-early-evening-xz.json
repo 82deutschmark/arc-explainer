@@ -1,138 +1,22 @@
 {
-  "id": "2026-10-29-special-early-evening-xz",
-  "date": "2026-10-29",
-  "edition": "evening",
-  "competition": "arc-3",
-  "headline": "Eleven entries, fourth place: the cat on Turducken’s tail",
-  "dek": "Eleven public entries, a previous Kaggle win and an unfamiliar cat just behind third place. An early evening special.",
-  "publishedAt": "2026-10-29T20:02:30.033949+00:00",
-  "dataAsOf": "2026-10-29T19:52:15Z",
   "baselineAt": "2026-10-28T21:49:27Z",
-  "generatedBy": "gpt-6.1-sol",
+  "competition": "arc-3",
   "coverageNote": "Early evening special, published separately from the scheduled 6 pm closing report. Board observed October 29 at 3:52 pm Eastern and checked again before publication. Profile, history and selected public discussion reporting were checked earlier October 29; social/discussion discovery was not refreshed for this release. Entry counts describe the public board only. Public standings are provisional.",
-  "teamIds": [
-    "15499660",
-    "15486995",
-    "15605182",
-    "15487093",
-    "16021367"
-  ],
-  "stats": [
-    {
-      "name": "Yi-Chia Chen @ Fields Model",
-      "rank": 1,
-      "rankChange": 0,
-      "score": 75.56,
-      "scoreChange": 0.0,
-      "teamId": "15499660"
-    },
-    {
-      "name": "Tufa Labs",
-      "rank": 2,
-      "rankChange": null,
-      "score": 70.02,
-      "scoreChange": null,
-      "teamId": "15486995"
-    },
-    {
-      "name": "Team Turducken",
-      "rank": 3,
-      "rankChange": 0,
-      "score": 56.02,
-      "scoreChange": 0.0,
-      "teamId": "15605182"
-    },
-    {
-      "name": "xz",
-      "rank": 4,
-      "rankChange": null,
-      "score": 52.95,
-      "scoreChange": null,
-      "teamId": "15487093"
-    },
-    {
-      "name": "the last dance 🕺",
-      "rank": 5,
-      "rankChange": -1,
-      "score": 51.51,
-      "scoreChange": 0.0,
-      "teamId": "16021367"
-    }
-  ],
-  "sources": [
-    {
-      "id": "person-xz-identity-0",
-      "title": "xz — own Kaggle profile, checked October 29",
-      "url": "https://www.kaggle.com/xiaoz259",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "history",
-      "title": "xz — Kaggle competition history, checked October 29",
-      "url": "https://www.kaggle.com/xiaoz259/competitions",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "winning-writeup",
-      "title": "Read xz’s first-place solution — September 2, 2026",
-      "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "github",
-      "title": "Explore xz’s public reference code",
-      "url": "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "xz-startup",
-      "title": "xz — October 25 startup report, current text and October 29 replies",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "current-discussion",
-      "title": "October 29 public discussion: xz, Jeroen Cottaar and Yi-Chia Chen on current run conditions",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "staff-incident",
-      "title": "María Cruz — October 27 broader investigation/capacity statement",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843",
-      "accessedAt": "2026-10-29T16:55:43.190811+00:00"
-    },
-    {
-      "id": "incident-report",
-      "title": "The ARC Daily Digest — October 27 investigation into Kaggle run failures",
-      "url": "https://arc.markbarney.net/news/2026-10-27-morning-arc-3",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "early",
-      "title": "The ARC Daily Digest — October 29 Early edition",
-      "url": "https://arc.markbarney.net/news/2026-10-29-morning-arc-3",
-      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
-    },
-    {
-      "id": "board",
-      "title": "ARC-AGI-3 public leaderboard and observed history — October 29 early evening",
-      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-      "accessedAt": "2026-10-29T20:01:22.978725+00:00"
-    },
-    {
-      "id": "person-jeroen-cottaar-identity-0",
-      "title": "Jeroen Cottaar — verified Kaggle account",
-      "url": "https://www.kaggle.com/jeroencottaar",
-      "accessedAt": "2026-10-09T19:23:29Z"
-    },
-    {
-      "id": "person-yi-chia-chen-identity-0",
-      "title": "Yi-Chia Chen — verified Kaggle account",
-      "url": "https://www.kaggle.com/threerabbits",
-      "accessedAt": "2026-10-09T17:16:30Z"
-    }
-  ],
+  "dataAsOf": "2026-10-29T19:52:15Z",
+  "date": "2026-10-29",
+  "dek": "Eleven public entries, a previous Kaggle win and an unfamiliar cat just behind third place. An early evening special.",
+  "discord": "The cat on Turducken’s tail. xz remains fourth at 52.95, about three points behind Turducken, with eleven public entries. Meet the quiet Kaggle winner behind the giant cat. The ARC Daily Digest · Early evening edition · October 29. https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz",
+  "edition": "evening",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Eleven entries, fourth place: the cat on Turducken’s tail",
+  "id": "2026-10-29-special-early-evening-xz",
+  "image": {
+    "alt": "A gigantic cream-faced blue-eyed fluffy cat wearing a restrained GPU vest enters the scoring hall. Tall Dries, five spiders, Chen’s two rabbits, Puget and Ivan, seven Turducken crew members and two Yorkies all look warily toward it. A damaged screen shows 4, the cat icon and xz.",
+    "artworkId": "2026-10-29-xz-enters-scoring-hall-v1",
+    "caption": "The cat enters the scoring hall. xz’s arrival at fourth place, October 29.",
+    "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp"
+  },
+  "publishedAt": "2026-10-29T20:02:30.033949+00:00",
   "sections": [
     {
       "heading": "An entrance behind third place",
@@ -184,11 +68,127 @@
       "text": "With Monday’s deadline approaching, the immediate race is close enough to make another improvement matter. At the early evening check, Turducken’s 56.02 left xz 3.07 points behind; the last dance, on 51.51, was only 1.44 behind xz.\n\nThose are public-board positions. The private leaderboard will decide the final placing. For the competition desk, the live question is whether xz can turn this arrival into another move before the close.\n\nThe technical questions can wait for evidence: what changed, how reliably it worked, and how much of each run was available for solving games. The profile and security write-up give us some history. The discussion gives us a competitor willing to share the frustrating parts. The ARC breakthrough itself is still to be explained.\n\nOur illustrator has made the entrance literal: a giant cream cat in a GPU vest, fluffy tail filling the scoring hall, while the established cast looks up from its machinery. The damaged screen displays fourth place.\n\nThe public counter says eleven. The next entry has an audience."
     }
   ],
-  "discord": "The cat on Turducken’s tail. xz remains fourth at 52.95, about three points behind Turducken, with eleven public entries. Meet the quiet Kaggle winner behind the giant cat. The ARC Daily Digest · Early evening edition · October 29. https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz",
-  "image": {
-    "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
-    "alt": "A gigantic cream-faced blue-eyed fluffy cat wearing a restrained GPU vest enters the scoring hall. Tall Dries, five spiders, Chen’s two rabbits, Puget and Ivan, seven Turducken crew members and two Yorkies all look warily toward it. A damaged screen shows 4, the cat icon and xz.",
-    "caption": "The cat enters the scoring hall. xz’s arrival at fourth place, October 29.",
-    "artworkId": "2026-10-29-xz-enters-scoring-hall-v1"
-  }
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "person-xz-identity-0",
+      "title": "xz — own Kaggle profile, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "history",
+      "title": "xz — Kaggle competition history, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "winning-writeup",
+      "title": "Read xz’s first-place solution — September 2, 2026",
+      "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "github",
+      "title": "Explore xz’s public reference code",
+      "url": "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "xz-startup",
+      "title": "xz — October 25 startup report, current text and October 29 replies",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "current-discussion",
+      "title": "October 29 public discussion: xz, Jeroen Cottaar and Yi-Chia Chen on current run conditions",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843"
+    },
+    {
+      "accessedAt": "2026-10-29T16:55:43.190811+00:00",
+      "id": "staff-incident",
+      "title": "María Cruz — October 27 broader investigation/capacity statement",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "incident-report",
+      "title": "The ARC Daily Digest — October 27 investigation into Kaggle run failures",
+      "url": "https://arc.markbarney.net/news/2026-10-27-morning-arc-3"
+    },
+    {
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00",
+      "id": "early",
+      "title": "The ARC Daily Digest — October 29 Early edition",
+      "url": "https://arc.markbarney.net/news/2026-10-29-morning-arc-3"
+    },
+    {
+      "accessedAt": "2026-10-29T20:01:22.978725+00:00",
+      "id": "board",
+      "title": "ARC-AGI-3 public leaderboard and observed history — October 29 early evening",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jeroen-cottaar-identity-0",
+      "title": "Jeroen Cottaar — verified Kaggle account",
+      "url": "https://www.kaggle.com/jeroencottaar"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Yi-Chia Chen — verified Kaggle account",
+      "url": "https://www.kaggle.com/threerabbits"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.02,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "xz",
+      "rank": 4,
+      "rankChange": null,
+      "score": 52.95,
+      "scoreChange": null,
+      "teamId": "15487093"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 51.51,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15605182",
+    "15487093",
+    "16021367"
+  ]
 }

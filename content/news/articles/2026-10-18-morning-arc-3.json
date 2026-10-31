@@ -7,13 +7,14 @@
   "dek": "Franzen reaches 16th at 38.85, pushing fshindo outside the provisional gold band while the top ten stays unchanged.",
   "discord": "The ARC Daily Digest · Early edition\nDaniel Franzen enters gold as ARC-3’s leaders hold\nFranzen reaches 16th at 38.85, pushing fshindo outside the provisional gold band while the top ten stays unchanged.\nhttps://arc.markbarney.net/news/2026-10-18-morning-arc-3",
   "edition": "morning",
+  "frontPageFeatureId": "2026-10-18-arc3-superteam-merger-official",
   "generatedBy": "gpt-6.1-sol",
   "headline": "Daniel Franzen enters gold as ARC-3’s leaders hold",
   "id": "2026-10-18-morning-arc-3",
   "image": {
     "alt": "AI editorial illustration: head human editor Mark Barney studies a wall of illustrative replay diagrams with two Yorkies and three mechanical birds: a duck, chicken and turkey. ARC-3 score panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 18, 2026, 5:54 AM EDT.",
     "artworkId": "2026-10-18-morning-arc-3-f3622e5aad",
-    "caption": "AI-generated editorial illustration: The Replay Wall. Mark Barney appears as head human editor. Game displays, diagrams and equipment are illustrative. Score panel: Oct 18, 2026 · 5:54 AM EDT; provisional public standings.",
+    "caption": "The Replay Wall. Mark Barney appears as head human editor. Score panel: Oct 18, 2026 · 5:54 AM EDT; provisional public standings.",
     "src": "/news-images/2026-10-18-morning-arc-3-f3622e5aad.webp"
   },
   "publishedAt": "2026-10-18T10:03:04Z",
@@ -1148,6 +1149,5 @@
     "16153655",
     "16021367",
     "15605182"
-  ],
-  "frontPageFeatureId": "2026-10-18-arc3-superteam-merger-official"
+  ]
 }

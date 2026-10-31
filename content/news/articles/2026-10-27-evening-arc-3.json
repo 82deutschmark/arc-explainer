@@ -10,6 +10,12 @@
   "generatedBy": "gpt-6.1-sol",
   "headline": "Yi-Chia Chen widens ARC3 lead as insuperabilehart enters gold",
   "id": "2026-10-27-evening-arc-3",
+  "image": {
+    "alt": "AI editorial illustration: two colossal owner-reference rabbits stand upright over a snowy sunrise plaza while five Tufa spider mascots, the full Turducken crew, both Yorkies and other engineers look up.",
+    "artworkId": "2026-10-27-evening-arc-3-615ddd6e3e",
+    "caption": "Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-27-evening-arc-3-615ddd6e3e.webp"
+  },
   "publishedAt": "2026-10-27T22:00:07Z",
   "sections": [
     {
@@ -1140,11 +1146,5 @@
     "16021367",
     "16153655",
     "15770880"
-  ],
-  "image": {
-    "src": "/news-images/2026-10-27-evening-arc-3-615ddd6e3e.webp",
-    "alt": "AI editorial illustration: two colossal owner-reference rabbits stand upright over a snowy sunrise plaza while five Tufa spider mascots, the full Turducken crew, both Yorkies and other engineers look up.",
-    "caption": "AI-generated editorial illustration. Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings. Characters and props are metaphors.",
-    "artworkId": "2026-10-27-evening-arc-3-615ddd6e3e"
-  }
+  ]
 }

@@ -5,23 +5,22 @@
   "id": "2026-10-26-architects-superteam-enters-gold",
   "image": {
     "alt": "The four 2026 ARChitects assemble a glowing citadel together. Left to right: David Hartmann as a fox, Jan Disselhoff as an orange cat, Daniel Franzen as a duck and Sebastian Brodehl as a mouse, all based on their verified avatars. Individual baseball-card panels name each and give dated historical credits.",
-    "caption": "The 2026 ARChitects: the dream team comes together. Left to right: David Hartmann, Jan Disselhoff, Daniel Franzen and Sebastian Brodehl, drawn from their verified avatars. Baseball-card panels show historical honors and research credits. AI editorial artwork; ARC3 public standings dated October 26.",
+    "caption": "The 2026 ARChitects: the dream team comes together. Left to right: David Hartmann, Jan Disselhoff, Daniel Franzen and Sebastian Brodehl, drawn from their verified avatars. Baseball-card panels show historical honors and research credits. ARC3 public standings dated October 26.",
     "src": "/news-images/2026-10-26-architects-dream-team-labeled-v2.png"
   },
   "publishedAt": "2026-10-27T01:31:58.176738+00:00",
   "sections": [
     {
       "heading": "Four researchers, one entry",
-      "text": "The ARChitects are together for 2026. Daniel Franzen, Jan Disselhoff, David Hartmann and Sebastian Brodehl have joined forces in ARC-AGI-3, putting a championship name and a four-person lineup into the closing week’s provisional gold race. They stand sixteenth at 38.85, above the gold score line of 38.20.\n\nOn merger deadline day, Franzen and Disselhoff’s separate entries came together with Hartmann and Brodehl’s existing partnership under The ARChitects name. The result is a team with shared research roots and a substantial ARC pedigree, now facing the interactive competition together. The four accounts appear on the same surviving entry in the before-and-after roster record.",
       "sourceIds": [
         "both-contests",
         "merger-before",
         "merger-after"
-      ]
+      ],
+      "text": "The ARChitects are together for 2026. Daniel Franzen, Jan Disselhoff, David Hartmann and Sebastian Brodehl have joined forces in ARC-AGI-3, putting a championship name and a four-person lineup into the closing week’s provisional gold race. They stand sixteenth at 38.85, above the gold score line of 38.20.\n\nOn merger deadline day, Franzen and Disselhoff’s separate entries came together with Hartmann and Brodehl’s existing partnership under The ARChitects name. The result is a team with shared research roots and a substantial ARC pedigree, now facing the interactive competition together. The four accounts appear on the same surviving entry in the before-and-after roster record."
     },
     {
       "heading": "The Mainz connection—and a shout-out for Sebastian",
-      "text": "The university connection runs through Johannes Gutenberg University Mainz’s Visual Computing group. Its people page lists Disselhoff and Franzen among the academic staff and doctoral candidates, with Hartmann and Brodehl among the former doctoral students. This team’s links stretch well beyond the current leaderboard.\n\nIn 2021, Hartmann, Franzen and Brodehl coauthored a paper investigating how neural activation patterns change during training. All three were affiliated with the Mainz Visual Computing Group. Years before this merger, they were already working on understanding how neural networks learn.\n\nThe editor-in-chief met Sebastian at the ARC gathering in Boston and sends a personal shout-out: “Awesome guy.” For this new team picture, Sebastian’s own Kaggle avatar becomes the big-eared mouse in sunglasses, alongside Hartmann’s fox, Disselhoff’s orange cat and Franzen’s duck.",
       "sourceIds": [
         "mainz",
         "paper-2021",
@@ -30,18 +29,18 @@
         "person-daniel-franzen-identity-0",
         "person-jan-disselhoff-identity-0",
         "person-david-hartmann-identity-0"
-      ]
+      ],
+      "text": "The university connection runs through Johannes Gutenberg University Mainz’s Visual Computing group. Its people page lists Disselhoff and Franzen among the academic staff and doctoral candidates, with Hartmann and Brodehl among the former doctoral students. This team’s links stretch well beyond the current leaderboard.\n\nIn 2021, Hartmann, Franzen and Brodehl coauthored a paper investigating how neural activation patterns change during training. All three were affiliated with the Mainz Visual Computing Group. Years before this merger, they were already working on understanding how neural networks learn.\n\nThe editor-in-chief met Sebastian at the ARC gathering in Boston and sends a personal shout-out: “Awesome guy.” For this new team picture, Sebastian’s own Kaggle avatar becomes the big-eared mouse in sunglasses, alongside Hartmann’s fox, Disselhoff’s orange cat and Franzen’s duck."
     },
     {
       "heading": "Their ARC2 standing: Franzen leads the separate entries",
-      "text": "The shared four-person lineup is on the ARC3 board. In ARC-AGI-2, the October 26 board still lists Daniel Franzen separately in thirty-sixth at 57.64, inside the provisional silver places. Jan Disselhoff’s separate entry has 21.67 and ranks 2,190th. No joint ARChitects entry appears on that board.\n\nThe two contests tell different sporting stories. ARC2 continues the static-grid puzzle challenge on which the ARChitects built their earlier reputation. ARC3 asks agents to explore unfamiliar interactive games and work out their rules through play. The new combined entry is competing in that second arena.",
       "sourceIds": [
         "both-contests"
-      ]
+      ],
+      "text": "The shared four-person lineup is on the ARC3 board. In ARC-AGI-2, the October 26 board still lists Daniel Franzen separately in thirty-sixth at 57.64, inside the provisional silver places. Jan Disselhoff’s separate entry has 21.67 and ranks 2,190th. No joint ARChitects entry appears on that board.\n\nThe two contests tell different sporting stories. ARC2 continues the static-grid puzzle challenge on which the ARChitects built their earlier reputation. ARC3 asks agents to explore unfamiliar interactive games and work out their rules through play. The new combined entry is competing in that second arena."
     },
     {
       "heading": "A winning name, a new chapter",
-      "text": "The ARChitects won the 2024 ARC Prize high-score contest and finished runner-up in 2025. Franzen and Disselhoff carry the earlier championship; the 2025 team report credits Franzen, Disselhoff and Hartmann. Brodehl brings his documented research history with Hartmann and Franzen to the 2026 lineup.\n\nTheir 2025 report described a solver adapted to two-dimensional grids that could repeatedly refine its guesses and compare alternative views of a puzzle. It is a substantial public research record, although the team has yet to establish here how its current ARC3 agent works.\n\nSixteenth place also has a useful backstory. Franzen’s separate ARC3 entry already held 38.85 before the combination, and Disselhoff’s had reached 38.60. The merged entry carries Franzen’s existing best score. The immediate development is the four researchers joining forces; their next improvement will be the next chapter to watch.",
       "sourceIds": [
         "results-2024",
         "results-2025",
@@ -49,17 +48,18 @@
         "paper-2021",
         "merger-before",
         "merger-after"
-      ]
+      ],
+      "text": "The ARChitects won the 2024 ARC Prize high-score contest and finished runner-up in 2025. Franzen and Disselhoff carry the earlier championship; the 2025 team report credits Franzen, Disselhoff and Hartmann. Brodehl brings his documented research history with Hartmann and Franzen to the 2026 lineup.\n\nTheir 2025 report described a solver adapted to two-dimensional grids that could repeatedly refine its guesses and compare alternative views of a puzzle. It is a substantial public research record, although the team has yet to establish here how its current ARC3 agent works.\n\nSixteenth place also has a useful backstory. Franzen’s separate ARC3 entry already held 38.85 before the combination, and Disselhoff’s had reached 38.60. The merged entry carries Franzen’s existing best score. The immediate development is the four researchers joining forces; their next improvement will be the next chapter to watch."
     },
     {
       "heading": "A busy merger deadline across the field",
-      "text": "Both contests’ team-merger deadline fell on October 26. The ARChitects were part of a broader reshuffling: the desk documented same-day roster additions at at least thirteen entries across ARC3 and ARC2.\n\nIn ARC3, NVARC3 added titericz, the account displayed as Giba, while Grigoriy Zatravkin’s team expanded to include aizealotwu and deepdreamer. In ARC2, Khaotic Sethesis added cdeotte, and the entry previously displayed as Shin & Maciej & Natalia added sggpls and yuritosci. The saved rosters establish those additions; the archive provides a partial view of the full day’s activity.\n\nFor the 2026 ARChitects, the attraction is the people now working together: past contenders, familiar collaborators and a four-person team assembled for the finish. The public gold places remain provisional. They have a place to defend—and a new shared campaign to follow.",
       "sourceIds": [
         "deadline-3",
         "deadline-2",
         "merger-roundup",
         "giba-account"
-      ]
+      ],
+      "text": "Both contests’ team-merger deadline fell on October 26. The ARChitects were part of a broader reshuffling: the desk documented same-day roster additions at at least thirteen entries across ARC3 and ARC2.\n\nIn ARC3, NVARC3 added titericz, the account displayed as Giba, while Grigoriy Zatravkin’s team expanded to include aizealotwu and deepdreamer. In ARC2, Khaotic Sethesis added cdeotte, and the entry previously displayed as Shin & Maciej & Natalia added sggpls and yuritosci. The saved rosters establish those additions; the archive provides a partial view of the full day’s activity.\n\nFor the 2026 ARChitects, the attraction is the people now working together: past contenders, familiar collaborators and a four-person team assembled for the finish. The public gold places remain provisional. They have a place to defend—and a new shared campaign to follow."
     }
   ],
   "sources": [
@@ -160,10 +160,10 @@
       "url": "https://www.kaggle.com/titericz"
     },
     {
+      "accessedAt": "2026-10-27T01:31:58.176738+00:00",
       "id": "both-contests",
       "title": "October 26 public standings and rosters — the ARChitects in ARC3 and separate ARC2 entries",
-      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-architects-both-contests.json",
-      "accessedAt": "2026-10-27T01:31:58.176738+00:00"
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-architects-both-contests.json"
     }
   ]
 }

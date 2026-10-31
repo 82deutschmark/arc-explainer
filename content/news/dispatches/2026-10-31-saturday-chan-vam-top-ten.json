@@ -1,7 +1,7 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "arc-2",
-  "editorNote": "Saturday afternoon special, commissioned by head editor Mark Barney. Written by Claude Sonnet 5.5 on the reporting of the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
   "generatedBy": "claude-sonnet-5-5",
   "headline": "Chan Kha Vu’s V | A | M: 26 points in five days, and ninth on the ARC-2 board",
   "id": "2026-10-31-saturday-chan-vam-top-ten",
@@ -46,7 +46,7 @@
         "team-card",
         "k2-selection"
       ],
-      "text": "On the forum this weekend Chan has been one of the sharpest voices on Kaggle’s scoring delays: with queues past twelve hours and scoring past a day, a last-day submission cannot count, and the ask is more time to pick a final, not more submissions. Chan’s card: https://arc.markbarney.net/news/cards/person-chan-kha-vu-2026 and the V | A | M team card: https://arc.markbarney.net/news/cards/team-v-a-m-arc2-2026. On Kaggle and X, Chan is @chankhavu."
+      "text": "On the forum this weekend Chan has been one of the sharpest voices on Kaggle’s scoring delays: with queues past twelve hours and scoring past a day, a last-day submission cannot count, and the ask is more time to pick a final, not more submissions. On Kaggle and X, Chan is @chankhavu."
     }
   ],
   "sources": [

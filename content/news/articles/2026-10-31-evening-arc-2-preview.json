@@ -19,7 +19,7 @@
         "board",
         "dispatch-2026-10-31-saturday-nvbanana-grandmasters"
       ],
-      "text": "Two days to the bell and Kaggle’s biggest show has gone sideways. In ARC-AGI-3, competitors report submissions dying with system errors or finishing in half an hour with a flat zero. In ARC-AGI-2, scores take more than a day to come back, so last-day submissions may never count. The answer from the hosts and Kaggle staff: the deadline stands. Ours too: Monday, 11:59 pm UTC. Nobody has said it louder than Jean-François Puget, CPMP, who quoted our no-extension bulletin Saturday morning with one word for the weekend: circus. The full showdown, with Kaggle’s answer: https://arc.markbarney.net/news#2026-10-31-saturday-nvbanana-grandmasters"
+      "text": "Two days to the bell and Kaggle’s biggest show has gone sideways. In ARC-AGI-3, competitors report submissions dying with system errors or finishing in half an hour with a flat zero. In ARC-AGI-2, scores take more than a day to come back, so last-day submissions may never count. The answer from the hosts and Kaggle staff: the deadline stands. Ours too: Monday, 11:59 pm UTC. Nobody has said it louder than Jean-François Puget, CPMP, who quoted our no-extension bulletin Saturday morning with one word for the weekend: circus. The full showdown, with Kaggle’s answer, is our lead story."
     },
     {
       "heading": "The detective of Tufa",
@@ -27,7 +27,7 @@
         "board",
         "dispatch-2026-10-31-saturday-cottaar-forty-minutes"
       ],
-      "text": "Friday night we met Jeroen Cottaar in the Tufa Citadel. Saturday he is running experiments. His team’s empty-notebook tests say every submission loses forty to fifty minutes before the notebook even starts, and that the time counts against the nine-hour budget. CPMP says a delay before a notebook runs is not uncommon. Two of the sharpest minds in the field, politely at odds: https://arc.markbarney.net/news#2026-10-31-saturday-cottaar-forty-minutes"
+      "text": "Friday night we met Jeroen Cottaar in the Tufa Citadel. Saturday he is running experiments. His team’s empty-notebook tests say every submission loses forty to fifty minutes before the notebook even starts, and that the time counts against the nine-hour budget. CPMP says a delay before a notebook runs is not uncommon. Two of the sharpest minds in the field, politely at odds."
     },
     {
       "heading": "The NVIDIA seven",
@@ -35,7 +35,7 @@
         "board",
         "dispatch-2026-10-31-saturday-nvarc3-juggernaut"
       ],
-      "text": "In ARC-AGI-3 the separate seven-person NVARC3 team sits eighth: CPMP, Darragh Hanley, Ivan Sorokin, Elad Sarafian, Gal Kaplun, Yeyin Zhu and Giba, who once ranked No. 1 on all of Kaggle. Meet the squad and see CPMP pointing toward Chen’s rabbits and Tufa’s banner in our juggernaut illustration: https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut. The two competitions have different rosters and standings."
+      "text": "In ARC-AGI-3 the separate seven-person NVARC3 team sits eighth: CPMP, Darragh Hanley, Ivan Sorokin, Elad Sarafian, Gal Kaplun, Yeyin Zhu and Giba, who once ranked No. 1 in the world on Kaggle. Meet the squad, and watch CPMP point toward Chen’s rabbits and Tufa’s banner in our juggernaut art. The two contests have different rosters and standings."
     },
     {
       "heading": "Meanwhile, in the top ten",
@@ -43,7 +43,7 @@
         "board",
         "dispatch-2026-10-31-saturday-chan-vam-top-ten"
       ],
-      "text": "Chan Kha Vu’s V | A | M gained 26 points in five days and is ninth on the ARC-2 board at 76.25, with a loud voice in the scoring fight. Points, not places: https://arc.markbarney.net/news#2026-10-31-saturday-chan-vam-top-ten"
+      "text": "Chan Kha Vu’s V | A | M gained 26 points in five days and is ninth on the ARC-2 board at 76.25, with a loud voice in the scoring fight. Points, not places."
     }
   ],
   "sources": [
@@ -52,12 +52,6 @@
       "id": "board",
       "title": "ARC-2 public leaderboard and observed history",
       "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
-    },
-    {
-      "accessedAt": "2026-10-09T03:23:31Z",
-      "id": "fact-15486728-0",
-      "title": "Mithil A Vakde — Kaggle mdlARC model",
-      "url": "https://www.kaggle.com/models/mithilavakde/mdlarc"
     },
     {
       "accessedAt": "2026-10-08T03:38:00Z",
@@ -1448,7 +1442,7 @@
     {
       "accessedAt": "2026-10-31T17:49:40Z",
       "id": "dispatch-2026-10-31-saturday-nvarc3-juggernaut",
-      "title": "The NVIDIA seven: the all-time No. 1, a 2025 champion and three fresh faces behind NVARC3",
+      "title": "The NVIDIA seven: a former world No. 1, a 2025 champion and three fresh faces behind NVARC3",
       "url": "https://arc.markbarney.net/news#2026-10-31-saturday-nvarc3-juggernaut"
     }
   ],

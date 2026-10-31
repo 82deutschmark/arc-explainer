@@ -10,6 +10,12 @@
   "generatedBy": "gpt-6.1-sol",
   "headline": "mtg closes on ARC2 gold as Tufa Labs holds the lead",
   "id": "2026-10-27-evening-arc-2",
+  "image": {
+    "alt": "AI editorial illustration: mtg’s cyan bridge machine stops just short of a golden threshold while Tufa’s spiders hold a higher stronghold.",
+    "artworkId": "2026-10-27-evening-arc-2-short-fresh-v1",
+    "caption": "Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-27-evening-arc-2-short-fresh-v1.webp"
+  },
   "publishedAt": "2026-10-27T22:00:07Z",
   "sections": [
     {
@@ -914,11 +920,5 @@
     "16532134",
     "16600664",
     "17096234"
-  ],
-  "image": {
-    "src": "/news-images/2026-10-27-evening-arc-2-short-fresh-v1.webp",
-    "alt": "AI editorial illustration: mtg’s cyan bridge machine stops just short of a golden threshold while Tufa’s spiders hold a higher stronghold.",
-    "caption": "AI-generated editorial illustration. Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings. Characters and props are metaphors.",
-    "artworkId": "2026-10-27-evening-arc-2-short-fresh-v1"
-  }
+  ]
 }

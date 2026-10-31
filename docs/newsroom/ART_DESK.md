@@ -52,7 +52,11 @@ separately. Curated team art never supplies an invented personal likeness or rel
 - **Captions describe the scene.** For the paper’s obvious fantasy illustrations, the editor
   asked on October 29 to omit repetitive “AI editorial illustration” disclaimers from captions
   and announcements. Date any pictured standings when needed; preserve native generation
-  provenance internally.
+  provenance internally. The score-panel generator now prints only the dated score line (31 October),
+  and no caption, alt text or editor's note may say a picture is "editorial illustration", "fantasy",
+  "metaphor" or "not anyone's real equipment". Identity cautions (a stand-in, an unverified
+  likeness) stay. Never paste a bare web address into a caption or story text: cite the card or
+  story through the "In this story" shelf and source chips.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa

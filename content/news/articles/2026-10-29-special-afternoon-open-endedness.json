@@ -1,79 +1,22 @@
 {
-  "id": "2026-10-29-special-afternoon-open-endedness",
-  "date": "2026-10-29",
-  "edition": "evening",
-  "competition": "arc-3",
-  "headline": "The open-endedness of open-endedness",
-  "dek": "Kenneth Stanley’s challenge to ARC’s next frontier: how do you score discovery without telling the machine what to discover? A special afternoon feature.",
-  "publishedAt": "2026-10-29T16:29:06.514790+00:00",
-  "dataAsOf": "2026-10-29T16:29:06.514790+00:00",
   "baselineAt": null,
-  "generatedBy": "gpt-6.1-sol",
+  "competition": "arc-3",
   "coverageNote": "Commissioned special afternoon feature, not a scheduled closing report. Public organizer sources checked October 29. Stanley’s summit talk is reported through Matt Mazur’s October 26 notes and Stanley’s own September post; no recording or transcript was reviewed. No leaderboard figures used.",
-  "teamIds": [],
-  "stats": [],
-  "sources": [
-    {
-      "id": "greg-outlook",
-      "title": "Greg Kamradt — October 29, 2026: from games to open-ended innovation",
-      "url": "https://x.com/GregKamradt/status/2115823228090462626",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "stanley-challenge",
-      "title": "Kenneth Stanley — September 12, 2026: the open-ended benchmarking dilemma",
-      "url": "https://x.com/kenneth0stanley/status/2098955766845833451",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "summit",
-      "title": "ARC Prize — October 23, 2026 Research Summit speaker program",
-      "url": "https://arcprize.org/events/research-summit-2026",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "arc4",
-      "title": "ARC Prize — September 12, 2026: ARC-AGI-4 direction",
-      "url": "https://x.com/arcprize/status/2098849962754978152",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "mazur-notes",
-      "title": "Matt Mazur — October 26, 2026 notes on Kenneth Stanley’s summit keynote",
-      "url": "https://x.com/mhmazur/status/2114714032850473187",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "poet",
-      "title": "Wang and colleagues, including Stanley — Enhanced POET, ICML 2020",
-      "url": "https://proceedings.mlr.press/v119/wang20l.html",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "poet-measure",
-      "title": "Enhanced POET — Section 5: measuring environments created and solved, 2020",
-      "url": "https://proceedings.mlr.press/v119/wang20l/wang20l.pdf",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "novelty-learnability",
-      "title": "Hughes and colleagues — Open-Endedness is Essential for Artificial Superhuman Intelligence, June 6, 2024",
-      "url": "https://arxiv.org/abs/2406.04268",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "arc3",
-      "title": "ARC Prize — ARC-AGI-3 interactive reasoning benchmark",
-      "url": "https://arcprize.org/arc-agi/3",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    },
-    {
-      "id": "greg-redteam",
-      "title": "Greg Kamradt — October 6, 2026 invitation to red-team future ARC benchmarks",
-      "url": "https://x.com/GregKamradt/status/2107480627989938482",
-      "accessedAt": "2026-10-29T16:29:06.514790+00:00"
-    }
-  ],
+  "dataAsOf": "2026-10-29T16:29:06.514790+00:00",
+  "date": "2026-10-29",
+  "dek": "Kenneth Stanley’s challenge to ARC’s next frontier: how do you score discovery without telling the machine what to discover? A special afternoon feature.",
+  "discord": "Kenneth Stanley and the benchmark after games: how do you score discovery without choosing the discovery? The ARC Daily Digest special afternoon feature. https://arc.markbarney.net/news/2026-10-29-special-afternoon-open-endedness",
+  "edition": "evening",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "The open-endedness of open-endedness",
+  "id": "2026-10-29-special-afternoon-open-endedness",
+  "image": {
+    "alt": "An ARC grid unfolds into branching islands of tiled creatures, laboratories, bridges and portals, with a small mechanical explorer following a path into new worlds.",
+    "artworkId": "2026-10-29-open-endedness-cover-v1",
+    "caption": "The branching ARC-grid worlds symbolize cumulative discovery.",
+    "src": "/news-images/2026-10-29-open-endedness-cover-v1.webp"
+  },
+  "publishedAt": "2026-10-29T16:29:06.514790+00:00",
   "sections": [
     {
       "heading": "The test that has to leave the answer open",
@@ -125,11 +68,68 @@
       "text": "Our illustration turns the thought experiment into a strange little ecosystem. An ARC grid unfolds into a landscape. Paths branch into new grids; some become structures that support still more paths. The frame stops being a container and becomes material for the next invention.\n\nA useful test in that spirit might follow a lineage instead of admiring a single output: what did the system invent, what could it do afterward, and which later discovery depended on the earlier one? Give several systems the same resources, preserve the sequence of experiments, and ask whether new capabilities keep opening up. This is the desk’s sketch of a possible evaluation, not an ARC announcement.\n\nEven that sketch has a trap. Reward the number of branches and the system may learn to branch pointlessly. Reward the evaluator’s favorite kinds of invention and it may become a skilled imitator of that taste. Ask for endless novelty inside a small sandbox and the sandbox may run out before the intelligence does.\n\nFor ARC’s contenders, the shift suggests a different question to ask of an agent under construction. Beyond whether it solves the next game, does it retain anything that helps it discover the game after that—or imagine a useful one nobody assigned?\n\nStanley’s challenge is constructive. A modest test that says exactly which part of discovery it measures can still move research forward. The danger is giving a narrow victory the name of an unlimited capability.\n\nThe next frontier may begin with a machine choosing a worthwhile detour. The benchmark has to leave somewhere for it to go."
     }
   ],
-  "discord": "Kenneth Stanley and the benchmark after games: how do you score discovery without choosing the discovery? The ARC Daily Digest special afternoon feature. https://arc.markbarney.net/news/2026-10-29-special-afternoon-open-endedness",
-  "image": {
-    "src": "/news-images/2026-10-29-open-endedness-cover-v1.webp",
-    "alt": "An ARC grid unfolds into branching islands of tiled creatures, laboratories, bridges and portals, with a small mechanical explorer following a path into new worlds.",
-    "caption": "AI editorial illustration for the October 29 special afternoon edition. The branching ARC-grid worlds symbolize cumulative discovery; they do not depict announced ARC-AGI-4 tasks or measured results.",
-    "artworkId": "2026-10-29-open-endedness-cover-v1"
-  }
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "greg-outlook",
+      "title": "Greg Kamradt — October 29, 2026: from games to open-ended innovation",
+      "url": "https://x.com/GregKamradt/status/2115823228090462626"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "stanley-challenge",
+      "title": "Kenneth Stanley — September 12, 2026: the open-ended benchmarking dilemma",
+      "url": "https://x.com/kenneth0stanley/status/2098955766845833451"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "summit",
+      "title": "ARC Prize — October 23, 2026 Research Summit speaker program",
+      "url": "https://arcprize.org/events/research-summit-2026"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "arc4",
+      "title": "ARC Prize — September 12, 2026: ARC-AGI-4 direction",
+      "url": "https://x.com/arcprize/status/2098849962754978152"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "mazur-notes",
+      "title": "Matt Mazur — October 26, 2026 notes on Kenneth Stanley’s summit keynote",
+      "url": "https://x.com/mhmazur/status/2114714032850473187"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "poet",
+      "title": "Wang and colleagues, including Stanley — Enhanced POET, ICML 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l.html"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "poet-measure",
+      "title": "Enhanced POET — Section 5: measuring environments created and solved, 2020",
+      "url": "https://proceedings.mlr.press/v119/wang20l/wang20l.pdf"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "novelty-learnability",
+      "title": "Hughes and colleagues — Open-Endedness is Essential for Artificial Superhuman Intelligence, June 6, 2024",
+      "url": "https://arxiv.org/abs/2406.04268"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "arc3",
+      "title": "ARC Prize — ARC-AGI-3 interactive reasoning benchmark",
+      "url": "https://arcprize.org/arc-agi/3"
+    },
+    {
+      "accessedAt": "2026-10-29T16:29:06.514790+00:00",
+      "id": "greg-redteam",
+      "title": "Greg Kamradt — October 6, 2026 invitation to red-team future ARC benchmarks",
+      "url": "https://x.com/GregKamradt/status/2107480627989938482"
+    }
+  ],
+  "stats": [],
+  "teamIds": []
 }

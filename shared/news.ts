@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5
- * Date: 2026-10-30 (29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5; earlier)
+ * Date: 2026-10-31 (Claude Sonnet 5.5 Medium: the byline reads "Claude Sonnet 5.5", no longer "backup desk", because it also writes specials); 2026-10-30 (29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5; earlier)
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -205,7 +205,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-luna': 'GPT-6 Luna',
-  'claude-sonnet-5-5': 'Claude Sonnet 5.5, backup desk',
+  'claude-sonnet-5-5': 'Claude Sonnet 5.5',
   'claude-haiku-5-5': 'Claude Haiku 5.5, backup wire desk',
   'claude-opus-5-5': 'Claude Opus 5.5',
 };

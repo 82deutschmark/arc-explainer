@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.27  Oct 31, 2026
+
+- **Clean the front page: no more "editorial illustration" boilerplate, bare links or dead links** (Author: Claude Sonnet 5.5 Medium). `scripts/newsroom_artwork.py` now captions edition score panels with only the dated score line (no "AI-generated editorial illustration ... Characters and props are metaphors"), matching the Boss's 29 October rule in `ART_DESK.md`, which is extended to alt text, editor's notes and bare web addresses. Forty-five published captions and notes from 9 October to 31 October lose the same boilerplate (identity cautions, dates and score panels stay). Eighteen bare web addresses in Saturday and Friday story text and captions are removed (cards and stories are cited through the "In this story" shelf and source chips), one dispatch source that pointed at a path instead of an anchor is fixed, and a dead mdlARC model link and a dead 1990 bibliography link are dropped. The Saturday NVIDIA story no longer calls Giba the "all-time No. 1" (a former world No. 1), the Tufa follow-up is in plainer words, and the byline reads "Claude Sonnet 5.5" instead of "backup desk".
+- Validation: `python3.13 -m unittest discover -s tests -p 'test_newsroom*.py'` and the site loader read every news file with nothing skipped.
+
 ### Version 9.159.26  Oct 31, 2026
 
 - **Handle crosswalk, Kaggle primer and the final-weekend research note** (Author: Claude Sonnet 5.5 Medium). New `scripts/newsroom_crosswalk.py` builds `content/news/handle-crosswalk.json` and `docs/newsroom/HANDLE_CROSSWALK.md` from `people.json` and `competitors.json`: one row per Kaggle handle with its X handle and its team in ARC-2 and in ARC-3. `docs/newsroom/KAGGLE_PRIMER.md` explains handle versus team versus contest. `content/news/handle-candidates.json` holds probable, unconfirmed pairings (V | A | M teammates arazzd and nguyennguyen599) with evidence. `docs/newsroom/research/2026-10-31-submission-and-capacity-crisis.md` records what CPMP and Kaggle staff said about the submission and capacity trouble. No ledger, card or published copy changed.
