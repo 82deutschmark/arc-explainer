@@ -93,7 +93,7 @@ https://arc.markbarney.net/specials/weekend.html
 
 ## The content bank: posts that need no news (Sunday and Monday)
 
-Author: Claude Sonnet 5.5 Medium, 31 October 2026. Every claim comes from the printed card or the published story. Space posts at least two hours from the 6 am and 6 pm editions and the 2:20 pm recap. Same gate as everything here: Discord preview with the picture first, X after the Boss's word. Card pictures are the card's share image (`/api/news/cards/<id>/share.png`). Posted from the signed-in X account in the app's own browser; schedule with X's Schedule post.
+Author: Claude Sonnet 5.5 Medium, 31 October 2026. Every claim comes from the printed card or the published story. Space posts at least two hours from the 6 am and 6 pm editions and the 2:20 pm recap. Every X post tags @kaggle and carries #Kaggle (the Boss, 31 October). Same gate as everything here: Discord preview with the picture first, X after the Boss's word. Card pictures are the card's share image (`/api/news/cards/<id>/share.png`). Posted from the signed-in X account in the app's own browser; schedule with X's Schedule post.
 
 Already sent or scheduled: Saturday 5:17 pm Legends of the Kaggleverse; Sunday 9 am No extension.
 
@@ -102,35 +102,35 @@ Still to send from the kit above: Sunday 8 pm one day out (moved from 6 pm to cl
 ### Sun Nov 1, 11:30 am ET
 Picture: `team-last-dance-2026` (card share image)
 ```
-CARD OF THE DAY: The Last Dance, T004. Two of its four accounts are listed at Johannes Kepler University Linz's Institute for Machine Learning, and Florian Sestak took silver, 38th of 4,463, in the Santander Value Prediction Challenge. #Kaggle
+CARD OF THE DAY: The Last Dance, T004. Two of its four accounts are listed at Johannes Kepler University Linz's Institute for Machine Learning, and Florian Sestak took silver, 38th of 4,463, in the Santander Value Prediction Challenge. @kaggle #Kaggle
 https://arc.markbarney.net/news/cards/team-last-dance-2026
 ```
 
 ### Sun Nov 1, 4:00 pm ET
 Picture: `2026-10-22-arc3-lights-out-scoring-hall-v1.png`
 ```
-LIGHTS OUT AT THE SCORING HALL. On October 22 the ARC-3 scores stopped showing and teams were flying blind. Son Pham reported it for the Digest. Tomorrow night the bell rings. #Kaggle
+LIGHTS OUT AT THE SCORING HALL. On October 22 the ARC-3 scores stopped showing and teams were flying blind. Son Pham reported it for the Digest. Tomorrow night the bell rings. @kaggle #Kaggle
 https://arc.markbarney.net/news#2026-10-22-arc3-scoring-blackout-breaking
 ```
 
 ### Mon Nov 2, 10:30 am ET
 Picture: `team-architects-2026` (card share image)
 ```
-CARD OF THE DAY: The ARChitects, T015. Last year's write-up credits Jan Disselhoff, Daniel Franzen and David Hartmann, who is listed at Lambda. The same names are on the ARC-3 board this year. The bell is tonight. #Kaggle
+CARD OF THE DAY: The ARChitects, T015. Last year's write-up credits Jan Disselhoff, Daniel Franzen and David Hartmann, who is listed at Lambda. The same names are on the ARC-3 board this year. The bell is tonight. @kaggle #Kaggle
 https://arc.markbarney.net/news/cards/team-architects-2026
 ```
 
 ### Mon Nov 2, 12:30 pm ET
 Picture: `person-francois-chollet-2026` (card share image)
 ```
-CARD OF THE DAY: François Chollet, P012. The creator of Keras defined the ARC-AGI benchmark in 2019 to measure general intelligence, and co-founded ARC Prize. Every team racing the clock today is answering his test. #Kaggle
+CARD OF THE DAY: François Chollet, P012. The creator of Keras defined the ARC-AGI benchmark in 2019 to measure general intelligence, and co-founded ARC Prize. Every team racing the clock today is answering his test. @kaggle #Kaggle
 https://arc.markbarney.net/news/cards/person-francois-chollet-2026
 ```
 
 ### Mon Nov 2, 4:30 pm ET
 Picture: `team-domdolus-tolus-2026` (card share image)
 ```
-CARD OF THE DAY: Domdolus Tolus, T013. Five accounts, one team, and a gold medal, fifth of 4,185, in the NVIDIA Nemotron Model Reasoning Challenge. They are on the ARC-3 board, and the bell is tonight. #Kaggle
+CARD OF THE DAY: Domdolus Tolus, T013. Five accounts, one team, and a gold medal, fifth of 4,185, in the NVIDIA Nemotron Model Reasoning Challenge. They are on the ARC-3 board, and the bell is tonight. @kaggle #Kaggle
 https://arc.markbarney.net/news/cards/team-domdolus-tolus-2026
 ```
 
