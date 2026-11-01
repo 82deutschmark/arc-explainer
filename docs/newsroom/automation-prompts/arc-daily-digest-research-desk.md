@@ -1,3 +1,5 @@
+> RETIRED — November 1, 2026. Mark deleted these automations. Historical reference only; do not install, recreate, schedule or execute this prompt. The remaining ARC coverage is manual and requires editorial review. See ../CONSOLIDATION.md.
+
 Run The ARC Daily Digest's research desk for this hour (America/New_York). Use GPT-6.1 Sol through this signed-in Codex subscription: no paid model API, X API, model switching or subagents.
 
 Checkout: use /Users/macmini/GitHub/arc-explainer-newsroom (branch codex/newsroom-publisher, origin https://github.com/82deutschmark/arc-explainer.git) read-only. If it is clean, git pull --ff-only origin main; if an edition run has uncommitted work there, do not pull and do not touch its files, and carry on with what is there. If the folder is missing, report it (the edition jobs repair it).

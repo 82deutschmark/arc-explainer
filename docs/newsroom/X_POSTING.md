@@ -1,3 +1,5 @@
+> **Editor handover — November 1, 2026:** Mark authorized consolidation into `/Users/macmini/GitHub/arc-explainer`. The ten Digest Codex automations are deleted; all new sends require editorial review. This supersedes old permanent-checkout, automatic-repair, automatic-publish and distribution instructions below. Use [the consolidation record](CONSOLIDATION.md). Never recreate a retired checkout or resume a job without a new explicit editor instruction.
+
 # ARC Daily Digest posts on X
 
 > Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.

@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-01",
+  "status": "prepared-unpublished",
+  "reason": "CPMP supplied evidence of Gemma L4x4 access; correct misleading exclusivity inference",
+  "sources": [
+    "https://x.com/JFPuget/status/2116820499015836060",
+    "https://www.kaggle.com/competitions/gemma-4-developer-agent/overview"
+  ],
+  "changes": [
+    {
+      "path": "client/public/specials/2026-10-31-saturday-special.html",
+      "before": "<p>He pointed at the L4s early. ARC-2 runs on Kaggle’s L4x4 machines, four NVIDIA L4 chips apiece, and Kaggle’s own page calls them limited, which makes NVIDIA’s own chips the scarce thing this weekend. A month ago CPMP warned Kaggle staff the L4 queue was jammed, and Kaggle’s Dustin answered that demand had increased considerably and added capacity. CPMP’s own theory for this week is that a new Gemma contest is drawing on the same L4 pool. Kaggle’s own contest page says the L4x4 machines are reserved for ARC-2 entries, so the mystery stays open.</p>",
+      "after": "<p>He pointed at the L4s early. ARC-2 runs on Kaggle’s L4x4 machines, four NVIDIA L4 chips apiece, and Kaggle’s own page calls them limited, which makes NVIDIA’s own chips the scarce thing this weekend. A month ago CPMP warned Kaggle staff the L4 queue was jammed, and Kaggle’s Dustin answered that demand had increased considerably and added capacity. Gemma’s competition page explicitly offers Kaggle L4x4 machines. CPMP pointed this out in his November 1 reply to our article, and he was right: our earlier wording gave the misleading impression that the hardware was exclusive to ARC-2. Both competitions offer that hardware. Whether they compete for the same constrained allocation, and how much that contributed to ARC’s delays, remains unconfirmed by Kaggle.</p><p class=\"correction\"><strong>Correction · November 1, 2026:</strong> We have corrected the implication that L4x4 access was exclusive to ARC-2. Thanks to <a href=\"https://x.com/JFPuget/status/2116820499015836060\">CPMP’s reply</a>; see <a href=\"https://www.kaggle.com/competitions/gemma-4-developer-agent/overview\">Gemma’s Upgraded Accelerators section</a>. The cause of ARC’s delays is a separate question.</p>"
+    },
+    {
+      "path": "client/public/specials/weekend/arena-report.html",
+      "before": "<p>CPMP flagged the L4 line a month ago, and Kaggle’s Dustin answered that demand had risen sharply and that capacity had been added. CPMP’s theory today is that Kaggle’s new Gemma contest is pulling from the same supply of L4 machines. We haven’t seen Kaggle respond to that. Its ARC-2 page says those machines are reserved for ARC-2 and that Kaggle will build tools to enforce it if needed, so the question stays open.</p>",
+      "after": "<p>CPMP flagged the L4 line a month ago, and Kaggle’s Dustin answered that demand had risen sharply and that capacity had been added. Gemma’s competition page explicitly offers Kaggle L4x4 machines. CPMP pointed this out in his November 1 reply to our article, and he was right: our earlier wording gave the misleading impression that the hardware was exclusive to ARC-2. Both competitions offer that hardware. Whether they compete for the same constrained allocation, and how much that contributed to ARC’s delays, remains unconfirmed by Kaggle.</p><p class=\"correction\"><strong>Correction · November 1, 2026:</strong> We have corrected the implication that L4x4 access was exclusive to ARC-2. Thanks to <a href=\"https://x.com/JFPuget/status/2116820499015836060\">CPMP’s reply</a>; see <a href=\"https://www.kaggle.com/competitions/gemma-4-developer-agent/overview\">Gemma’s Upgraded Accelerators section</a>. The cause of ARC’s delays is a separate question.</p>"
+    }
+  ],
+  "additionalEdits": "Removed the remaining suggestion of hardware exclusivity in Arena Report and an unsupported causal assertion in Legends."
+}

@@ -1,3 +1,7 @@
+## 2026-11-01 — Editorial handover (Codex; local review)
+
+Consolidate Digest authoring in one checkout, preserve retired workspaces and unfinished edits, hold all automated sends, and correct the misleading L4 exclusivity inference in Legends and Arena Report with credit to CPMP. Tonight's articles and reply remain private drafts pending editor review. Collector source is retained here with an explicit release guard; no automatic Git pull.
+
 # New entries at the top, use proper SemVer!
 
 ### Version 9.161.0  Nov 1, 2026

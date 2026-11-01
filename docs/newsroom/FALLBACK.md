@@ -1,3 +1,5 @@
+> **Editor handover — November 1, 2026:** Mark authorized consolidation into `/Users/macmini/GitHub/arc-explainer`. The ten Digest Codex automations are deleted; all new sends require editorial review. This supersedes old permanent-checkout, automatic-repair, automatic-publish and distribution instructions below. Use [the consolidation record](CONSOLIDATION.md). Never recreate a retired checkout or resume a job without a new explicit editor instruction.
+
 # The ARC Daily Digest backup desk (Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire)
 
 Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a person or team or selecting their artwork; the Card Cabinet and saved dossiers are the shared reporting record.

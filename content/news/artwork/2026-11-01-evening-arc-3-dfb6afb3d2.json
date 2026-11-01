@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-11-01-evening-arc-3",
+  "briefSha256": "df28777f650db4dc9ebb139c5805a14f05842f6c57dd940adf03e61c619ff33b",
+  "dataAsOf": "2026-11-01T22:32:06Z",
+  "generationRecord": "2026-11-01-late-night-watch-v1-base",
+  "headline": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken",
+  "historyChart": null,
+  "id": "2026-11-01-evening-arc-3-dfb6afb3d2",
+  "image": {
+    "alt": "Illustration for The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
+    "artworkId": "2026-11-01-evening-arc-3-dfb6afb3d2",
+    "caption": "Score panel: Nov 1, 2026 · 5:32 PM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-evening-arc-3-dfb6afb3d2.webp"
+  },
+  "imageSha256": "85095c27738197bff72f6848ab69341eea19f7e5dc6fb55a5d1f70e8f06b687b",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 5.32,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "2c6e4fab1a5129f637420fe4d122cd2ab7f062b613be8b0bdd93cc2bf2d48fe8",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.24,
+      "scoreChange": null,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

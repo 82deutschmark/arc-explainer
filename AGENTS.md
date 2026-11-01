@@ -1,3 +1,5 @@
+> **Editor handover — November 1, 2026:** Mark authorized consolidation into `/Users/macmini/GitHub/arc-explainer`. The ten Digest Codex automations are deleted; all new sends require editorial review. This supersedes old permanent-checkout, automatic-repair, automatic-publish and distribution instructions below. Use [the consolidation record](docs/newsroom/CONSOLIDATION.md). Never recreate a retired checkout or resume a job without a new explicit editor instruction.
+
 # AGENTS.md
 
 **Author:** The User (aka YOUR BOSS!!)  
