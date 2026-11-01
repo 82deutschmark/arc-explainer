@@ -152,6 +152,25 @@ or no accurate scene fits, publish the verified text and report the concrete art
 with the edition X announcement blocked for missing artwork. Never use a paid API, a stale
 illustration, or a text-only X fallback.
 
+## Required attachment proof before reporting completion
+
+Boss correction, November 1, 2026: every newly commissioned, reviewed picture must be
+shown to the lead editor as an actual Discord image attachment, including clean-base
+prepress and art-only handoffs. Do this in the same run; a GitHub image link, text alert,
+saved file or promise to attach later is not delivery. Label previews honestly and include
+the intended story link when known. Do not invent a story URL for an art-only commission.
+Check the returned send result includes a media part and confirmed message ID, then save
+the exact image hash and receipt and record `discordShares`. An ambiguous result requires
+one destination-history check before retrying. Report success only for confirmed image
+delivery; otherwise report the concrete blocked or uncertain state. A preview receipt
+never approves a different finished image for X.
+
+For X, the actual composer must visibly contain the reviewed attachment before Post,
+and the success result must show that image with the copy. Run X_POSTING.md's required
+guarded handoff; never bypass it. Text-only success is an attachment failure, not a
+completed illustrated announcement. Preserve existing sends and seek specific correction
+authorization rather than automatically reposting.
+
 ## Discord image delivery before X
 
 This is the shared delivery procedure for illustrated editions and special features (Mark's

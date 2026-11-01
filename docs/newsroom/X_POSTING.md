@@ -49,6 +49,15 @@ permanent article link and 280-character limit; omit an optional mention if need
 These rules apply to future drafts. Preserve every `posting`/`posted` outbox and
 existing announcement; a copy preference does not authorize a replacement send.
 
+## Attachment completion means visible media
+
+Boss correction, November 1, 2026: do not report an illustrated announcement complete
+because its text was sent. Confirm the actual attachment in the composer before Post and
+in the single success result afterward. Preserve the reviewed image hash and delivery
+receipt. A generic link card, text-only Discord relay or local media path is not attachment
+proof. Missing or uncertain media must be reported explicitly; preserve the existing send
+and do not retry or replace it without the applicable authorization.
+
 ## Discord image delivery comes before X
 
 Before **any illustrated X announcement**, including a manually commissioned special feature,

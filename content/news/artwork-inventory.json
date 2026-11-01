@@ -1930,7 +1930,16 @@
       "targetEditionId": "2026-11-01-evening-arc-3",
       "articleUses": [],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1566578721429659698",
+          "postedAt": "2026-11-01T22:24:33.150Z",
+          "attachmentSha256": "2c6e4fab1a5129f637420fe4d122cd2ab7f062b613be8b0bdd93cc2bf2d48fe8",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1566578721429659698",
+          "purpose": "Boss-requested clean-base prepress delivery; final composition still requires its own delivery."
+        }
+      ],
       "artworkConditions": {
         "leaderTeamId": "15499660",
         "rivalTeamId": "15486995",
