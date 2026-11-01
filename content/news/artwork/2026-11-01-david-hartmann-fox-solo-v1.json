@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "2026-11-01-david-hartmann-fox-solo-v1",
+  "title": "David Hartmann — approved individual fox character",
+  "kind": "native-generation",
+  "mode": "native-edit-and-reframe",
+  "tool": "image_gen.imagegen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "generatedAt": "2026-11-01T22:56:48.652Z",
+  "rawSrc": "/news-images/cards/2026/david-hartmann-fox-solo-v1.png",
+  "rawSha256": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
+  "prompt": "Use case: identity-preserve / precise-object-edit. EDIT AND REFRAME INPUT IMAGE1, the already approved ARChitects workshop illustration, into ONE SOLO portrait of its EXISTING GOLDEN-ORANGE FOX character, DAVID. This is extraction and portrait recomposition of an established illustrated character, NOT inventing a new person or redesigning him. In image1 David is FAR LEFT, with large upright pointed ears, orange-gold fur, pale cream muzzle/chest, little black nose, black sunglasses and friendly confident smile. Preserve THAT EXACT DRAWN FACE, species, ears, cheek fur, glasses, smile and proportions. Preserve his existing blue/cyan, graphite and burnished-copper cyber-engineer armour, shoulder plate, jointed mechanical gloves and strapped GPU backpack. INPUT IMAGE2 is his own frozen individual fox avatar, identity-support ONLY. Image1 controls the sophisticated painterly cyberpunk finish; do NOT flatten the result into the simple avatar style. No human face, human hair or skin; no new human likeness.\nREMOVE the duck, cat and mouse completely. Remove all their hands/equipment. Reframe and naturally complete ONLY the existing fox's upper torso and arms as a handsome assured SOLO cyber-engineer hero portrait, head-to-waist at most. Keep the same inviting warm amber/cyan light, cinematic illustrated/cartoon realism, richly painted metal textures and 3D depth. He is precisely placing ONE small luminous geometric drafting component with his original-design mechanical gloves beside a fragment of the original transparent cyan/gold citadel model, chest-height gesture, relaxed knowledgeable smile. Background remains the SAME established blue-night architectural workshop overlooking luminous valley bridges/citadels, gently simplified/defocused. Keep existing character/costume/world; don't turn him into a pilot or new superhero. No teammate, extra animal, mascot, human or invented replacement face.\nOUTPUT CANVAS EXACTLY PORTRAIT5:7, requested1500x2100. Full bleed. Not landscape or narrow poster. Calm top200px; ears/face/sunglasses and both hands/model all inside central subject zone y200..1450 on1500x2100; eyes roughlyy650. Quieter DARK bottom650 for later code-drawn labels, no essential hands or model pieces down there. Entire ears inside frame and not covered by other objects. Absolutely NO text, names, letters, numbers, rank, score, badge, logo, card frame, border or watermark. Exactly ONE established fox only. Preserve approved group original unchanged; create separate edit preview.",
+  "references": [
+    {
+      "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+      "sha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
+      "role": "Approved ARChitects team illustration: native edit target preserving this established character and style.",
+      "generationRecord": "2026-10-26-architects-dream-team-base"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-david-hartmann-reference-1-v1.webp",
+      "sha256": "83c5fd8efec1d74bd3552761cb11b34d0fbc0e78a6b52b488ae72f51c2a5fece",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm",
+      "role": "Registered own avatar confirms golden-orange fox, pale muzzle/chest, upright ears, black nose and round black sunglasses; approved group target supplies finished costume/style."
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "reviewedAt": "2026-11-01T23:06:09.241899+00:00",
+  "review": "Visually inspected: exactly one golden-orange fox with pale muzzle/chest, both upright ears, black nose, sunglasses and friendly smile; established blue/cyan/copper armour, straps, backpack and mechanical gloves. Existing workshop/model world preserved. No invented human face, teammates, text, score, rank or card frame. Separate edit preview, not bound.",
+  "approvedBy": "mark-barney",
+  "approvalSource": "Editor approved the displayed solo pair in chat and instructed commit and push.",
+  "dimensions": {
+    "width": 1060,
+    "height": 1484
+  },
+  "requestedDimensions": {
+    "width": 1500,
+    "height": 2100
+  },
+  "limitations": [
+    "Native output is 1060×1484, exact 5:7, below the requested 1500×2100; preserved without upscaling."
+  ],
+  "identitySourceUrls": [
+    "https://www.kaggle.com/dvhrtm"
+  ],
+  "scope": "Individual established animal-avatar character. Not a human likeness. Historical team original remains unchanged."
+}

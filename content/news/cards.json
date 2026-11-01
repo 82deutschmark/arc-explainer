@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-11-01T22:29:26.005200Z",
+  "updatedAt": "2026-11-01T23:06:09.241899+00:00",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -146,11 +146,21 @@
       "name": "David Hartmann",
       "personId": "david-hartmann",
       "entries": [],
-      "artNotes": [],
+      "artNotes": [
+        "Editor-approved solo adaptation of the established fox avatar from the 2026 ARChitects scene; not a human likeness.",
+        "Keep the historical team card separate. Rejected generated human portraits must not be used as this person’s character reference."
+      ],
       "number": "P010",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
-      "artFallback": "none"
+      "artFallback": "none",
+      "art": {
+        "src": "/news-images/cards/2026/david-hartmann-fox-solo-v1.png",
+        "alt": "David Hartmann represented by his established sunglasses-wearing fox character in illustrated copper-and-cyan cyber-engineer gear.",
+        "credit": "ARC Daily Digest — editor-approved individual ARChitect character",
+        "artworkId": "2026-11-01-david-hartmann-fox-solo-v1",
+        "commissionedAt": "2026-11-01T22:56:48.652Z"
+      }
     },
     {
       "id": "person-daniel-franzen-2026",
@@ -158,11 +168,21 @@
       "name": "Daniel Franzen",
       "personId": "daniel-franzen",
       "entries": [],
-      "artNotes": [],
+      "artNotes": [
+        "Editor-approved solo adaptation of the established duck avatar from the 2026 ARChitects scene; not a human likeness.",
+        "Keep the historical team card separate. Rejected generated human portraits must not be used as this person’s character reference."
+      ],
       "number": "P011",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
-      "artFallback": "none"
+      "artFallback": "none",
+      "art": {
+        "src": "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png",
+        "alt": "Daniel Franzen represented by his established sunglasses-wearing duck character in illustrated copper-and-cyan cyber-engineer gear.",
+        "credit": "ARC Daily Digest — editor-approved individual ARChitect character",
+        "artworkId": "2026-11-01-daniel-franzen-duck-solo-v1",
+        "commissionedAt": "2026-11-01T22:56:48.652Z"
+      }
     },
     {
       "id": "person-francois-chollet-2026",
