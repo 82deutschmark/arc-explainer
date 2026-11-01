@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T05:55:04.162253+00:00",
+  "updatedAt": "2026-11-01T22:02:34.291976+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1920,6 +1920,23 @@
         }
       ],
       "selectionNote": "New native four-character scene from Boss-supplied academy image and actual individual references; Jack Cole archive sidebar commissioned separately in same mini-special."
+    },
+    {
+      "id": "2026-11-01-late-night-watch-v1",
+      "generationRecord": "2026-11-01-late-night-watch-v1-base",
+      "src": "/news-images/2026-11-01-late-night-watch-v1-base.webp",
+      "title": "The Night Watch",
+      "status": "reviewed-reserve",
+      "targetEditionId": "2026-11-01-evening-arc-3",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "artworkConditions": {
+        "leaderTeamId": "15499660",
+        "rivalTeamId": "15486995",
+        "requiredPersonIds": []
+      },
+      "selectionNote": "New November 1 Late prepress scene. Exactly two registered rabbits and three fictional Tufa spider mascots. No humans. Compose fresh fixed-cutoff scores at or after 6 pm; hold if leader premise changes. X held for Doctor Codex and weekend lineup."
     }
   ],
   "existingXPosts": [
