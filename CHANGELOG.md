@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.160.0  Nov 1, 2026
+
+- **The front page leads with the synthetic games** (Author: Claude Opus 5.5 High). Boss: the site needs a glow-up for the end of ARC-3 and this page has to lead with the games, reversing the 16-Oct note. `/` now opens on a dark band: the lead board (LT03), the published picks with human numbers and level strips, the wall of every approved game, and the line from the why note. The clock, ARC Mutants, the race and the wire all stay, below it.
+- **How.** New `client/src/components/arc3/SyntheticGames.tsx` reads the approved feed (`/api/arc3-mirror/games?collection=trainable`) and the public catalog behind the GitHub Pages write-up, so counts and human numbers are never typed in. Picks play here when approved, otherwise on arc3.sonpham.net; if the catalog is unreachable only the picks drop out.
+- `/arc3/gallery` rebuilt on the same pieces with picks, larger boards and links to the write-up and source. `/synthetic` now shows the approved set above the race; its old strip read retired categories. Nav entry "Browse" is now "Our Games".
+- Files: `client/src/pages/FinalStretchLanding.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`, `client/src/components/layout/AppNavigation.tsx`, `client/src/components/arc3/SyntheticGames.tsx`.
+
 ### Version 9.159.30  Nov 1, 2026
 
 - **Correct Sunday Early editions** (Author: GPT-6.1 Sol / Codex). Remove hundreds of unused briefing-source entries from both stories, retaining the board citation actually used and archiving the original source catalogues in separate correction records. The publisher now selects cited sources rather than copying the whole research catalogue.

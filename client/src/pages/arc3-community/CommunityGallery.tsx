@@ -1,49 +1,55 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-27
- * PURPOSE: Browse the lab's current Trainable games through the existing public player.
- * SRP/DRY check: Pass — existing mirror, recorded PNGs and Arc3PixelPage; no local approval rules.
+ * Author: Claude Opus 5.5 High; GPT-6 / Codex
+ * Date: 2026-11-01
+ * PURPOSE: Every approved synthetic game, through the existing public player: the published picks
+ *          first, then the searchable wall at a size where the boards can be read.
+ * SRP/DRY check: Pass — all game data and tiles come from components/arc3/SyntheticGames; no local approval rules.
  */
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { Link } from 'wouter';
 import { Arc3PixelPage } from '@/components/arc3-community/Arc3PixelUI';
+import { BoardWall, PickRow, REPO_URL, WHY_URL, WRITEUP_URL, labelOf, useApprovedGames, usePicks } from '@/components/arc3/SyntheticGames';
 
-interface Game { gameId: string; label?: string }
 export default function CommunityGallery() {
   const [search, setSearch] = useState('');
-  const { data, isLoading, isError } = useQuery<{ data: { games: Game[] } }>({
-    queryKey: ['/api/arc3-mirror/games?collection=trainable'], staleTime: 5 * 60 * 1000,
-  });
-  const games = data?.data.games ?? [];
-  const filtered = games.filter(g => `${g.label || ''} ${g.gameId}`.toLowerCase().includes(search.toLowerCase()));
+  const { games, isLoading, isError } = useApprovedGames();
+  const picks = usePicks(games);
+  const needle = search.trim().toLowerCase();
+  const filtered = games.filter(g => `${labelOf(g)} ${g.gameId}`.toLowerCase().includes(needle));
   return <Arc3PixelPage>
-    <main className="max-w-6xl mx-auto px-4 py-10 text-[#E3E1DF]">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-3">Play ARC-AGI-3 games</h1>
-        <p className="text-[#9A9694] max-w-2xl">Original reasoning games selected through human review. Pick a board and discover its rules as you play. No login required.</p>
-        <p className="mt-4"><a href="/play" className="text-[#E53AA3] underline">Play a game →</a>{' · '}
-          <a href="/arc3" className="underline">How ARC-AGI-3 works</a></p>
+    <main className="max-w-[1180px] mx-auto px-4 sm:px-5 py-10 text-[#E3E1DF]">
+      <header className="mb-10 max-w-[62ch]">
+        <p className="text-[11px] tracking-[3px] uppercase mb-4 text-[#E53AA3]">Team Turducken · Synthetic ARC-AGI-3 games</p>
+        <h1 className="text-[36px] sm:text-[48px] leading-[1.05] font-bold tracking-[-1px] mb-4">Pick a board. Work out the rules.</h1>
+        <p className="text-[#C9C6C3] leading-[1.7]">No instructions and no login. Coding agents built these; a person playing decided which were worth keeping.</p>
+        <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+          <Link href="/play" className="px-5 py-2.5 font-semibold bg-[#E53AA3] text-white">Play a game →</Link>
+          <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline">Why these exist ↗</a>
+          <a href={WRITEUP_URL} target="_blank" rel="noreferrer" className="underline">The write-up ↗</a>
+          <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
+        </p>
       </header>
-      <label className="block mb-6 text-sm">Find a game by ID
-        <input type="search" value={search} onChange={e => setSearch(e.target.value)}
-          className="block mt-2 px-3 py-2 bg-[#191919] border border-[#393736] text-white w-full max-w-sm"
-          placeholder="Game ID" />
-      </label>
-      {isLoading && <p>Loading games…</p>}
-      {isError && <p role="alert">The game catalog is unavailable. Please try again shortly.</p>}
-      {!isLoading && !isError && <p className="text-sm text-[#9A9694] mb-4">{filtered.length} of {games.length} games</p>}
-      <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 gap-3">
-        {filtered.map(g => <a key={g.gameId} href={`/arc3/play/${g.gameId}`} aria-label={`Play ${g.label || g.gameId}`}
-          className="block border border-[#262626] hover:border-[#E53AA3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#E53AA3]">
-          <img src={`/api/arc3-mirror/games/${g.gameId}/thumbnail?size=256`}
-            alt={`${g.label || g.gameId} opening board`} width={256} height={256} loading="lazy"
-            className="block w-full aspect-square object-contain bg-[#191919] [image-rendering:pixelated]" />
-          <span className="block px-2 py-1 text-xs bg-[#E53AA3] text-white">{g.label || g.gameId}</span>
-        </a>)}
-      </div>
-      {!isLoading && !isError && !filtered.length && <p className="mt-4">No games match this selection.</p>}
+      {picks.length > 0 && !needle && <section className="mb-12">
+        <h2 className="text-[11px] tracking-[2.5px] uppercase mb-3">The picks</h2>
+        <div className="grid gap-x-8 lg:grid-cols-2">{picks.map(pick => <PickRow key={pick.id} pick={pick} />)}</div>
+      </section>}
+      <section>
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
+          <h2 className="text-[11px] tracking-[2.5px] uppercase">
+            Every approved game{!isLoading && !isError && <span className="text-[#9A9694]"> · {filtered.length} of {games.length}</span>}
+          </h2>
+          <label className="block text-xs text-[#9A9694]"><span className="sr-only">Find a game by ID</span>
+            <input type="search" value={search} onChange={e => setSearch(e.target.value)}
+              className="block px-3 py-2 bg-[#191919] border border-[#393736] text-white w-56" placeholder="Find a game by ID" />
+          </label>
+        </div>
+        {isError
+          ? <p role="alert">The game catalog is unavailable. Please try again shortly.</p>
+          : <BoardWall games={filtered} loading={isLoading} columns="grid-cols-3 sm:grid-cols-5 lg:grid-cols-8" />}
+        {!isLoading && !isError && !filtered.length && <p className="mt-4">No games match this selection.</p>}
+      </section>
       <footer className="mt-10 text-sm text-[#9A9694]">
-        <a href="/arc3/games" className="underline">Official game guides (spoilers)</a>{' · '}
+        <Link href="/arc3/games" className="underline">Official game guides (spoilers)</Link>{' · '}
         <a href="https://arc3.sonpham.net" className="underline">Research lab</a>
       </footer>
     </main>

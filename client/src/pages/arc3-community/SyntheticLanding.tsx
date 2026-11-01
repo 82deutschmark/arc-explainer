@@ -1,8 +1,10 @@
 /*
-Author: GPT-6 / Codex; Claude Opus 5.5 and earlier contributors
-Date: 2026-10-07
+Author: Claude Opus 5.5 High; GPT-6 / Codex; Claude Opus 5.5 and earlier contributors
+Date: 2026-11-01
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who wants to know what we are doing and how the race is going.
+         2026-11-01: the games section now shows the approved set, above the race, and calls
+         them what they are; the old strip resolved retired categories. Boss wants the games leading.
          2026-10-07: distinguish visible notes from opaque reasoning state, credit ARC
          Prize's Astra analysis, and describe score gaps without claiming completion.
 
@@ -94,40 +96,16 @@ SRP/DRY check: Pass - leaderboard data, stories and the medal-race chart are the
          landingTheme.ts rather than copied a sixth time. Routing stays in App.tsx.
 */
 
-import { publicGameId } from '@shared/arc3PublicIds';
-import { useMemo, type CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import { Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { AUTHORED_CATEGORY, PIPELINE_CATEGORY, visitorFacing } from '@/lib/arc3TaskSets';
 import HarnessGapChart from '@/components/arc3/HarnessGapChart';
 import OurStandingCard from '@/components/arc3/OurStandingCard';
+import { BoardWall, WHY_URL, useApprovedGames } from '@/components/arc3/SyntheticGames';
 import { ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
 import { MedalRaceChart } from '@/components/kaggleLeaderboard/MedalRaceChart';
 import { HeadlineFacts, StoryGrid } from '@/components/kaggleLeaderboard/Storylines';
 import { ASTRA_SOURCE, ENVS_WITH_GAP, ENV_TOTAL, WORST_ENV } from '@/data/astraHarnessGap';
 import { ARC, SANS, MONO } from './landingTheme';
-
-/** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts.
- *  No title, description or tags by design -- see the gallery's no-spoiler note.
- *  `category` is an open string: upstream adds them and a closed union turns growth into breakage. */
-interface Game {
-  gameId: string;
-  category: string;
-}
-interface GamesResponse {
-  success: boolean;
-  data: { games: Game[]; total: number };
-}
-
-/**
- * Reviewed tasks first, the generator's output last -- the gallery's order. Only the
- * visitor-facing allowlist is shown (05-Sep-2026, Son Pham: the raw pipeline set stays off
- * the front page); see arc3TaskSets.
- */
-function practiceSet(games: Game[]): Game[] {
-  const rank = (g: Game) => (g.category === AUTHORED_CATEGORY ? 0 : g.category === PIPELINE_CATEGORY ? 2 : 1);
-  return [...visitorFacing(games)].sort((a, b) => rank(a) - rank(b));
-}
 
 /** The official ARC Prize server. Same invite the rest of this site already uses. */
 const DISCORD = 'https://discord.gg/9b77dPAmcA';
@@ -148,37 +126,6 @@ const RELATED = [
   // finding as the harness section, reached independently, and worth linking because it is not us.
   { href: 'https://blog.alexisfox.dev/arcagi3', label: 'Hill-climbing ARC-AGI-3', note: "Alexis Fox, Junlin Wang, Paul Rosu and Bhuwan Dhingra (DukeNLP), March 2026 — an agent with only READ, GREP and Python over a raw log finished the three preview games in 1,069 actions against a human baseline of ~900" },
 ];
-
-function thumb(gameId: string, size = 256) {
-  return `/api/arc3-mirror/games/${encodeURIComponent(publicGameId(gameId))}/thumbnail?size=${size}`;
-}
-
-function Scanlines() {
-  return (
-    <div className="absolute inset-0 pointer-events-none" style={{
-      backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.38) 2px 4px)',
-    }} />
-  );
-}
-
-function Tile({ game, alt }: { game: Game; alt: boolean }) {
-  /* Id only. The mirror strips names before they reach the browser. */
-  return (
-    <Link href={`/arc3/play/${publicGameId(game.gameId)}`} className="group block">
-      <div className="relative aspect-square overflow-hidden"
-           style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
-        <img src={thumb(game.gameId, 128)} alt="" loading="lazy" decoding="async"
-             className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"
-             style={{ imageRendering: 'pixelated', display: 'block' }} />
-        <Scanlines />
-      </div>
-      <div className="flex items-center justify-between gap-2 px-2 py-1"
-           style={{ background: alt ? ARC.pinkAlt : ARC.pink, fontFamily: MONO }}>
-        <span className="text-[11px] tracking-[.55px] text-white truncate">{publicGameId(game.gameId)}</span>
-      </div>
-    </Link>
-  );
-}
 
 function Section({ title, note, children }: {
   title: string; note?: string; children: React.ReactNode;
@@ -206,12 +153,7 @@ const BOARD_SCOPE = { '--primary': ARC.pink, '--foreground': ARC.text, '--muted-
 
 export default function SyntheticLanding() {
   const board = useKaggleBoard();
-  const { data } = useQuery<GamesResponse>({
-    queryKey: ['/api/arc3-mirror/games'],
-    staleTime: 5 * 60 * 1000,
-  });
-  const practice = useMemo(() => practiceSet(data?.data?.games ?? []), [data]);
-  const strip = practice.slice(0, 12);
+  const approved = useApprovedGames();
   const model = board.model;
 
   return (
@@ -257,13 +199,31 @@ export default function SyntheticLanding() {
                   Full leaderboard →
                 </Link>
                 <Link href="/play" className="text-[13px] underline" style={{ color: ARC.dim }}>
-                  or try a game yourself
+                  or play one of our games
                 </Link>
               </div>
             </div>
             <OurStandingCard model={model} loading={board.isLoading} />
           </div>
         </header>
+
+        {/* ── the games: above the race since 2026-11-01, see header ───────────── */}
+        {approved.games.length > 0 && (
+          <Section title="Our synthetic games" note={`${approved.games.length} approved`}>
+            <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
+              Coding agents built them, on the official engine. A person playing decided which
+              were worth keeping. <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline">Here's why</a>.
+              They're all playable here: no account, nothing to install.
+            </p>
+            <div className="p-3" style={{ background: ARC.tile }}>
+              <BoardWall games={approved.games} columns="grid-cols-4 sm:grid-cols-8 lg:grid-cols-12" phoneLimit={16} />
+            </div>
+            <p className="text-[13px] mt-5 flex flex-wrap gap-x-5">
+              <Link href="/play" className="underline" style={{ color: ARC.dim }}>Give me one →</Link>
+              <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>Browse them all →</Link>
+            </p>
+          </Section>
+        )}
 
         {/* ── the race ─────────────────────────────────────────────────────── */}
         {model && (
@@ -347,24 +307,6 @@ export default function SyntheticLanding() {
           </div>
           <HarnessGapChart />
         </Section>
-
-        {/* ── practice games: demoted 2026-10-05, see header ─────────────────── */}
-        {strip.length > 0 && (
-          <Section title="Practice games" note={`${practice.length} playable`}>
-            <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
-              Along the way we built our own games in the same format, on the official engine,
-              to practise on. They're all playable here: no account, nothing to install. If you
-              play one, the box at the end is for telling us what was wrong with it.
-            </p>
-            <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(96px,1fr))]">
-              {strip.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
-            </div>
-            <p className="text-[13px] mt-5 flex flex-wrap gap-x-5">
-              <Link href="/play" className="underline" style={{ color: ARC.dim }}>Give me one →</Link>
-              <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>Browse them all →</Link>
-            </p>
-          </Section>
-        )}
 
         {/* ── come and talk to us ──────────────────────────────────────────── */}
         {/* The placing is NOT repeated here. It appears once, live and dated, in the hero.

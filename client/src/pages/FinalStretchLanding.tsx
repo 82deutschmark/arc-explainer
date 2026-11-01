@@ -1,8 +1,10 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
- * Date: 2026-10-27
- * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
- * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ * Author: Claude Opus 5.5 High; GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-11-01
+ * PURPOSE: The front door. Boss, 1-Nov-2026: this page has to lead with the synthetic games, which
+ *          reverses the 16-Oct note below. The games come first (lead board, published picks,
+ *          the full approved wall, the why); the clock, ARC Mutants and the race follow, all kept.
+ * SRP/DRY check: Pass — games from components/arc3/SyntheticGames; race components unchanged.
  */
 /*
 Author: Claude Opus 5.5 Medium
@@ -51,6 +53,10 @@ import { Link } from 'wouter';
 import { KAGGLE_COMPETITIONS, closeMs } from '@shared/kaggleCompetitions';
 import { competitionName, wirePath, type NewsWireStory } from '@shared/news';
 import OurStandingCard from '@/components/arc3/OurStandingCard';
+import {
+  BoardWall, INK, LEAD_GAME_LABEL, PickRow, REPO_URL, WHY_URL, WRITEUP_URL,
+  boardImage, labelOf, playPath, useApprovedGames, usePicks,
+} from '@/components/arc3/SyntheticGames';
 import { ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
 import { MedalRaceChart } from '@/components/kaggleLeaderboard/MedalRaceChart';
 import { HeadlineFacts, StoryGrid } from '@/components/kaggleLeaderboard/Storylines';
@@ -189,55 +195,126 @@ function WireColumn() {
   );
 }
 
+/** The dark band the page opens on: what these are, one big board, the picks, every game, and why. */
+function GamesLead() {
+  const { games, isLoading, isError } = useApprovedGames();
+  const picks = usePicks(games);
+  const lead = games.find((g) => labelOf(g) === LEAD_GAME_LABEL) ?? games[0];
+
+  return (
+    <section style={{ background: INK, color: '#F4F2F0' }}>
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-5 pt-10 sm:pt-14 pb-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] items-start mb-12">
+          <div>
+            <p className="text-[11px] tracking-[3px] uppercase mb-5" style={{ color: '#E53AA3', fontFamily: MONO }}>
+              Team Turducken · Synthetic ARC-AGI-3 games
+            </p>
+            <h1 className="text-[40px] sm:text-[64px] leading-[1.02] font-bold mb-6 tracking-[-1.5px]">
+              Games made the slow way, with a person in the loop.
+            </h1>
+            <div className="text-[16px] leading-[1.7] space-y-3 max-w-[58ch]" style={{ color: '#C9C6C3' }}>
+              <p>No instructions, same as ARC-AGI-3: working out the rules is the game. Coding agents build them. A person playing decides what's worth keeping.</p>
+              <p>{games.length > 0 && <>{games.length} approved games, </>}playable here with no login. Python source on the ARC engine, MIT licensed.</p>
+            </div>
+            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-[13px]">
+              <Link href="/play" className="inline-block px-6 h-[44px] leading-[44px] font-semibold tracking-[.5px]" style={{ background: '#E53AA3', color: '#fff' }}>Play a game →</Link>
+              <Link href="/arc3/gallery" className="underline">Every game</Link>
+              <a href={WRITEUP_URL} target="_blank" rel="noreferrer" className="underline">The write-up ↗</a>
+              <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
+            </div>
+          </div>
+          {lead && (
+            <Link href={playPath(lead)} aria-label={`Play ${labelOf(lead)}`} className="group block">
+              <img src={boardImage(lead, 512)} alt={`${labelOf(lead)} opening board`} width={512} height={512} decoding="async"
+                   className="block w-full aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
+              <span className="flex items-baseline justify-between pt-2 text-[13px]" style={{ fontFamily: MONO }}>
+                <b className="text-[18px]">{labelOf(lead)}</b>
+                <span className="font-bold group-hover:underline" style={{ color: '#E53AA3' }}>PLAY →</span>
+              </span>
+            </Link>
+          )}
+        </div>
+
+        {picks.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-[11px] tracking-[2.5px] uppercase mb-3" style={{ fontFamily: MONO }}>The picks</h2>
+            <div className="grid gap-x-8 lg:grid-cols-2">
+              {picks.map((pick) => <PickRow key={pick.id} pick={pick} />)}
+            </div>
+            <p className="pt-3 text-[12px]" style={{ color: '#8E8B88', borderTop: '1px solid #2C2B2A' }}>
+              Pictures are real engine frames. Human numbers are one person's actions and levels cleared; a dash means none recorded yet.
+            </p>
+          </div>
+        )}
+
+        <h2 className="text-[11px] tracking-[2.5px] uppercase mb-3" style={{ fontFamily: MONO }}>
+          Every approved game
+        </h2>
+        {isError
+          ? <p role="alert" className="text-[13px]" style={{ color: '#C9C6C3' }}>The games didn't load just now. <a href={WRITEUP_URL} className="underline">See the write-up</a>.</p>
+          : <BoardWall games={games} loading={isLoading} columns="grid-cols-5 sm:grid-cols-8 lg:grid-cols-12" phoneLimit={20} />}
+        <p className="mt-4 text-[13px] sm:hidden"><Link href="/arc3/gallery" className="underline">Every game →</Link></p>
+
+        <figure className="mt-12 pt-6 max-w-[780px]" style={{ borderTop: '1px solid #2C2B2A' }}>
+          <blockquote className="text-[22px] sm:text-[28px] leading-[1.25] font-bold tracking-[-.3px]">
+            “In my shop the agent makes the thing and a person playing the game is the outside check.”
+          </blockquote>
+          <figcaption className="mt-3 text-[14px]">
+            <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline" style={{ color: '#C9C6C3' }}>Creativity can't be interpolated: why these games exist ↗</a>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
 export default function FinalStretchLanding() {
   const board = useKaggleBoard(ARC2);
   const model = board.model;
 
   return (
     <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh', fontFamily: SANS }}>
+      <GamesLead />
       <div className="max-w-[1180px] mx-auto px-4 sm:px-5 py-10 sm:py-12">
 
-        {/* ── hero: the team's artwork, then who we are and where we stand ────── */}
-        <figure className="mb-10 overflow-hidden" style={{ border: `1px solid ${ARC.border}` }}>
-          <img src="/images/arc-mutants-arc-agi-2.webp"
-               alt="ARC Mutants, our ARC-AGI-2 team: four cyborg puzzle solvers in a glowing hall of floating ARC grids"
-               className="block w-full h-auto" />
-        </figure>
-
+        {/* ── the last stretch: the clock, then ARC Mutants and where we stand ── */}
         <header className="mb-14 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] items-start">
           <div>
             <p className="text-[11px] tracking-[3px] uppercase mb-5" style={{ color: ARC.pink, fontFamily: MONO }}>
               ARC Prize 2026 · ARC-AGI-2
             </p>
             {/* No thesis about AI in the headline. See the header comment. */}
-            <h1 className="text-[34px] sm:text-[44px] leading-[1.1] font-bold mb-6 tracking-[-0.5px]">
-              ARC Explainer
-            </h1>
-            <div className="text-[15px] leading-[1.75] space-y-4 mb-7" style={{ color: ARC.dim }}>
+            <h2 className="text-[28px] sm:text-[34px] leading-[1.1] font-bold mb-5 tracking-[-0.5px]">
+              On the board as ARC Mutants
+            </h2>
+            <div className="text-[15px] leading-[1.75] mb-7" style={{ color: ARC.dim }}>
               <p>
                 We've joined forces with Jack Cole on ARC-AGI-2, the grid puzzles. Our standing
                 below is read straight from the Kaggle public leaderboard, which we save every
-                half hour.
-              </p>
-              <p>
-                Play our human-reviewed original ARC-AGI-3 games here, with no login required. The agent harness and research lab live on{' '}
+                half hour. The agent harness and research lab live on{' '}
                 <a href={ARC3_SITE} target="_blank" rel="noreferrer" className="underline" style={{ color: ARC.text }}>Son Pham's site</a>.
               </p>
             </div>
             <OurStandingCard model={model} loading={board.isLoading} />
             <div className="mt-7 flex flex-wrap items-center gap-4">
-              <Link href="/arc3/gallery" className="inline-block px-6 py-3 text-sm font-semibold bg-[#e0218a] text-white">Play our games →</Link>
-              <Link href="/arc3" className="text-sm underline">ARC-3 engine explained</Link>
               <Link href={ARC2.path}
                     className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
                     style={{ background: ARC.pink, color: '#fff' }}>
                 ARC-AGI-2 board →
               </Link>
-              <Link href="/news" className="text-[13px] underline" style={{ color: ARC.dim }}>The ARC Daily Digest</Link>
               <Link href="/kaggle-leaderboard" className="text-[13px] underline" style={{ color: ARC.dim }}>ARC-AGI-3 board</Link>
+              <Link href="/news" className="text-[13px] underline" style={{ color: ARC.dim }}>The ARC Daily Digest</Link>
+              <Link href="/arc3" className="text-[13px] underline" style={{ color: ARC.dim }}>ARC-3 engine explained</Link>
             </div>
           </div>
-          <Countdown />
+          <div className="space-y-4">
+            <Countdown />
+            <figure className="overflow-hidden" style={{ border: `1px solid ${ARC.border}` }}>
+              <img src="/images/arc-mutants-arc-agi-2.webp" loading="lazy"
+                   alt="ARC Mutants, our ARC-AGI-2 team: four cyborg puzzle solvers in a glowing hall of floating ARC grids"
+                   className="block w-full h-auto" />
+            </figure>
+          </div>
         </header>
 
         {/* ── the race, with the wire and our box beside it ──────────────────── */}
@@ -280,7 +357,7 @@ export default function FinalStretchLanding() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-[13px] leading-[1.7]">
             <Link href="/synthetic" className="block p-4" style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
               <span className="block mb-1" style={{ color: ARC.pink, fontFamily: MONO }}>How we got here</span>
-              Our ARC-AGI-3 harness and the practice games we made along the way.
+              Our ARC-AGI-3 harness, and what harness engineering turned out to be.
             </Link>
             <a href={DISCORD} target="_blank" rel="noreferrer" className="block p-4" style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
               <span className="block mb-1" style={{ color: ARC.pink, fontFamily: MONO }}>Discord ↗</span>

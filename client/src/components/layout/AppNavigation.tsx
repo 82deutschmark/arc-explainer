@@ -167,10 +167,10 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
   },
   {
     type: 'link',
-    title: 'Browse',
+    title: 'Our Games',
     href: '/arc3/gallery',
     icon: LayoutGrid,
-    description: 'Play current human-reviewed ARC-AGI-3 originals, no login required',
+    description: "Team Turducken's synthetic ARC-AGI-3 games, no login required",
   },
   {
     /*
