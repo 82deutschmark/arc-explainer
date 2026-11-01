@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.29  Nov 1, 2026
+
+- **The lab that wouldn’t sleep** (Author: GPT-6.1 Sol / Codex). Publish the editor-commissioned ARC Mutants overnight mini-special with a new four-character laboratory illustration, ARC grid experiments, queued submissions and error screens. Preserve the native picture, supplied reference and exact generation record; add the team title in code. Give Jack Cole a sourced sidebar on MindsAI’s 2024 top private score, 2025 third place and paper honorable mention, and his adviser/reviewer credit on the winning 2025 Preview agent. Show his current P004 card and two original 2024 deck cards. Link the mini-special from the Weekend Magazine cover.
+- Validation: dispatch content check, Weekend Magazine page/link gate and local visual review.
+
 ### Version 9.159.28  Oct 31, 2026
 
 - **The Weekend Magazine and the Saturday Special pages** (Author: Claude Sonnet 5.5 Medium). New hand-written pages under `client/public/specials/` (served as static files, so they cannot disturb the paper): the Saturday Special "Legends of the Kaggleverse", and a Weekend Magazine with a cover (countdown to the Monday 23:59 UTC bell, red breaking bar, latest-news ticker, live top-ten scoreboard, paper feed), an Arena Report, a Field Guide to both top tens, a searchable Who's Who (Kaggle handle, X handle, team and place per contest), and The Final Hours (bell times by city, how finals are decided, prizes, medal lines). `scripts/weekend_magazine.py` refreshes the volatile regions from the live boards (`refresh`), gates publication (`check`: no bare web addresses, no ruled-out disclaimers, every local link and image present, ten rows per table) and handles shakeups in one line each (`breaking`, `clear-breaking`, `ticker`). Art for the specials is served from light copies in `client/public/specials/img/` (about 200 to 300 KB each instead of 2 to 4 MB). Runbook and scenario playbooks: `docs/newsroom/WEEKEND_MAGAZINE.md`; nine ready-to-send drafts plus scenario drafts: `docs/newsroom/WEEKEND_POSTING_KIT.md` (nothing sent).

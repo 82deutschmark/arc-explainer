@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "id": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1",
+  "kind": "composed-commissioned-scene",
+  "tool": "image_gen.imagegen plus deterministic Pillow typography requested by editor",
+  "generatedAt": "2026-11-01T05:43:49.714165+00:00",
+  "sourceGenerationRecord": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1-base",
+  "rawSrc": "/news-images/2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1.png",
+  "rawSha256": "517ba58a5cbfb05037b6c12d006626b1df8c559b11fa58c4b982740438f93edb",
+  "nativeOriginalSrc": "/news-images/2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1-native.png",
+  "nativeOriginalSha256": "bb41caa002e4961e147271d1790c98dc804b4f7d695e0a37a6988378f3d08107",
+  "purpose": "commissioned ARC Mutants overnight mini-special",
+  "subjectId": "team-arc-mutants-2026",
+  "commissionAuthority": "Boss requested original grinding-lab scene from attached team picture, programmatic ARC Mutants tag, experiments, grids, submissions and Kaggle errors; then requested Jack Cole sidebar and old cards, published overnight.",
+  "reviewStatus": "reviewed",
+  "review": "All four registered ARC2 characters recognizable. Mark at rack, Jack directing grids, Son at controls, opaque violet-helmet Ronen. New lab action, grids, warnings and queues. Deterministic masthead and QUEUED/ERROR/RETRY labels clear without covering faces. No result or score claim.",
+  "overlay": {
+    "title": "ARC MUTANTS",
+    "subtitle": "ARC-AGI-2 · THE LAB THAT WOULDN’T SLEEP",
+    "screenFooter": "QUEUED / ERROR / RETRY",
+    "method": "Pillow masks and typography; original native scene preserved."
+  }
+}
