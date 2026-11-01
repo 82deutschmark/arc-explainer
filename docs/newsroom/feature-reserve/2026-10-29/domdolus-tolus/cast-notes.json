@@ -1,0 +1,65 @@
+{
+  "teamName": "Domdolus Tolus",
+  "arc2TeamId": "16559402",
+  "arc3TeamId": "16534961",
+  "checkedAt": "2026-10-29T23:50:07.085614Z",
+  "namesVerifiedBy": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+  "members": [
+    {
+      "name": "Darren Amadeus Martin",
+      "handle": "darrenamadeusmartin",
+      "selfDescription": "Student at Waseda University",
+      "artRole": "TWO owner-avatar dogs together at center; one account represented by two figures. No human Darren likeness established."
+    },
+    {
+      "name": "Alwin Theodoric",
+      "handle": "alwintheodoric",
+      "selfDescription": "Student at Tokyo University of Science",
+      "artRole": "Own portrait, round glasses and dark hair; beige/green ARC outfit left of dogs."
+    },
+    {
+      "name": "Muhammad Yassir Ramadhan",
+      "handle": "yassirramadhan",
+      "selfDescription": "Student, no university named in checked profile",
+      "artRole": "Own portrait, dark parted hair; navy/copper ARC outfit right of dogs."
+    },
+    {
+      "name": "Billy Anggara",
+      "handle": "billyanggara",
+      "selfDescription": "Student at Chuo University",
+      "artRole": "Fictional opaque blue/cyan helmet far left; generic Kaggle goose supplies no likeness."
+    },
+    {
+      "name": "Tri Ardian Rinalda",
+      "handle": "rinnnntt",
+      "selfDescription": "Student at Institute of Science Tokyo",
+      "artRole": "Fictional opaque amber/red helmet far right; generic Kaggle goose supplies no likeness."
+    }
+  ],
+  "honors": [
+    {
+      "result": "Fifth of4,185, gold, NVIDIA Nemotron Model Reasoning Challenge",
+      "scope": "All five current accounts are also credited on this historical team result."
+    },
+    {
+      "result": "First of992, community Fake or Real: The Impostor Hunt in Texts",
+      "scope": "Darren and Alwin shared this result; no medal claimed."
+    },
+    {
+      "result": "Eighteenth of1,142, NeurIPS2025 Google Code Golf",
+      "scope": "Darren’s own competition record."
+    }
+  ],
+  "currentFocus": {
+    "claim": "Darren publicly said the team prefers to continue ARC2 only, October28.",
+    "source": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546036"
+  },
+  "artCount": "Six figures represent five accounts: four humanoids plus Darren’s two dogs.",
+  "sourceProfiles": [
+    "https://www.kaggle.com/darrenamadeusmartin",
+    "https://www.kaggle.com/alwintheodoric",
+    "https://www.kaggle.com/yassirramadhan",
+    "https://www.kaggle.com/billyanggara",
+    "https://www.kaggle.com/rinnnntt"
+  ]
+}

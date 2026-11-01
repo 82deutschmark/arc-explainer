@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T02:17:01Z",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "redblackbst jumps from 1,553rd to 81st on ARC-2",
+  "id": "2026-10-27-2241-arc-2-redblackbst-reaches-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-28T02:41:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "redblackbst gained 9.03 to reach 38.75, climbing from 1,553rd to 81st on the ARC-AGI-2 public leaderboard in the past day. The gain carries the team into the top 100."
+    }
+  ],
+  "since": "2026-10-27T02:13:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T02:40:32Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17097585"
+  ]
+}

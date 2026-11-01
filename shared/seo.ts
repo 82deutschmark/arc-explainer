@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-11
  * PURPOSE: Shared URL, indexing, safe HTML and structured-data policy for server responses
@@ -21,7 +27,7 @@ export const INDEX_ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large
 export const REDIRECTS: Record<string, string> = {
   '/news/how-this-is-made': NEWS_STAFF_PATH,
   '/reports/arc-prize-audit-2026-10-08/audit.html': '/feedback',
-  '/synthetic': '/', '/human-cards': '/hall-of-fame', '/compare': '/elo',
+  '/synthetic': '/arc3/gallery', '/human-cards': '/hall-of-fame', '/compare': '/elo',
   '/arc3/review': '/play', '/arc3/archive': '/arc3', '/arc3/archive/games': '/arc3/games',
   '/snake-arena': '/worm-arena', '/re-arc/leaderboard': '/re-arc', '/index.html': '/',
 };
@@ -80,7 +86,7 @@ export function breadcrumbsHtml(tags: RouteMetaTags): string {
 export const DISCOVERY_LINKS = [
   ['/', 'Home'], ['/news', 'The ARC Daily'], ['/home', 'Resource hub'], ['/arc-leaderboards', 'ARC leaderboards'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
   ['/kaggle-leaderboard/arc-2', 'ARC-AGI-2 leaderboard'], ['/arc3/games', 'Game guides'],
-  ['/arc3/slippery-seven', 'Slippery Seven'], ['/arc3/gallery', 'Community tasks'],
+  ['/arc3/slippery-seven', 'Slippery Seven'], ['/arc3/gallery', 'Play ARC-AGI-3 games'], ['/arc3', 'ARC-AGI-3 engine explained'],
   ['/arc3/hypotheses', 'Research'], ['/browser', 'ARC puzzles'], ['/analytics', 'Model results archive'],
   ['/about', 'About'],
 ] as const;

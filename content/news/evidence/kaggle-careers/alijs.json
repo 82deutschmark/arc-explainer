@@ -1,0 +1,386 @@
+{
+  "personId": "alijs",
+  "handle": "alijs1",
+  "name": "alijs",
+  "checkedAt": "2026-10-30T11:54:05Z",
+  "method": "Rebuilt from scratch on 2026-10-30 in the app's built-in browser: the public Kaggle profile and competitions pages for alijs1 were each loaded once, read as page text, with the medal icons and displayed accounts read from the page's own labels and a screenshot of the Best Result list. The join date came from the profile's join tooltip. The full-size profile picture was downloaded with curl into a temp folder and compared by eye with the saved portrait. The ARC Prize 2024 results page was read once with curl. The earlier draft of this file was treated as unverified and none of its claims were carried over without being re-read.",
+  "sources": [
+    "https://www.kaggle.com/alijs1",
+    "https://www.kaggle.com/alijs1/competitions",
+    "https://arcprize.org/competitions/2024",
+    "https://storage.googleapis.com/kaggle-avatars/images/666918-kg.jpg"
+  ],
+  "profile": {
+    "displayName": "alijs",
+    "competitionTier": "Grandmaster",
+    "medals": {
+      "gold": 11,
+      "silver": 19,
+      "bronze": 13
+    },
+    "competitionRank": 241,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 9,
+    "joinedTooltip": "Wed Jul 20 2016 14:49:51 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2016-07",
+    "occupationShown": "Software Architect / Data Scientist at Gravity Team",
+    "locationShown": "Riga, Latvia",
+    "competitionActivity": {
+      "solo": 159,
+      "inTeam": 13,
+      "hosted": 0
+    },
+    "notebooksTier": "Expert",
+    "notebooksMedals": {
+      "gold": 1,
+      "silver": 5,
+      "bronze": 8
+    },
+    "bioPresent": true,
+    "bioSignedName": "Agnis Liukis",
+    "bioNote": "The self-written bio is signed with this name. The contact email in the bio is deliberately not copied. The card keeps the Kaggle display name alijs unless the Boss decides otherwise.",
+    "visibleCompetitionList": {
+      "activeCount": 4,
+      "activeNames": [
+        "ARC Prize 2026 - ARC-AGI-3",
+        "Enveda CASMI 2026 - Molecule ID From Mass Spectra",
+        "ARC Prize 2026 - ARC-AGI-2",
+        "Google - The Gemma 4 Developer Agent Competition"
+      ],
+      "completedCount": 168,
+      "listedSort": "Best Result",
+      "rowsRecordedHere": 20,
+      "scopeNote": "Only the first page of the Best Result sort (the best 20 of 168 completed entries) was read, so completedResults is the best 20 and not the whole career. These 20 include all 11 gold medals, matching the profile's gold count, plus 9 of the 19 silvers. The remaining completed entries were not opened and nothing was invented for them."
+    }
+  },
+  "completedResults": [
+    {
+      "competition": "Sberbank Russian Housing Market",
+      "competitionUrl": "https://www.kaggle.com/competitions/sberbank-russian-housing-market",
+      "rank": 1,
+      "teams": 3264,
+      "medal": "gold",
+      "displayedHandles": [
+        "johnpateha",
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "Home Credit Default Risk",
+      "competitionUrl": "https://www.kaggle.com/competitions/home-credit-default-risk",
+      "rank": 3,
+      "teams": 7176,
+      "medal": "gold",
+      "displayedHandles": [
+        "johnpateha",
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 3,
+      "teams": 1427,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "competitionType": "Featured, Code Competition"
+    },
+    {
+      "competition": "Santander Customer Transaction Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+      "rank": 4,
+      "teams": 8751,
+      "medal": "gold",
+      "displayedHandles": [
+        "zfturbo",
+        "johnpateha",
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 4,
+      "teams": 6125,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1",
+        "arunodhayan",
+        "jsday96",
+        "l1ghtsource"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "competitionType": "Featured, Code Competition"
+    },
+    {
+      "competition": "Text Normalization Challenge - English Language",
+      "competitionUrl": "https://www.kaggle.com/competitions/text-normalization-challenge-english-language",
+      "rank": 4,
+      "teams": 260,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Research"
+    },
+    {
+      "competition": "Abstraction and Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/abstraction-and-reasoning-challenge",
+      "rank": 5,
+      "teams": 913,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "competitionType": "Research, Code Competition"
+    },
+    {
+      "competition": "Statoil/C-CORE Iceberg Classifier Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/statoil-iceberg-classifier-challenge",
+      "rank": 8,
+      "teams": 3330,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "IEEE-CIS Fraud Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/ieee-fraud-detection",
+      "rank": 9,
+      "teams": 6351,
+      "medal": "gold",
+      "displayedHandles": [
+        "alijs1",
+        "kostoglot"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "competitionType": "Research"
+    },
+    {
+      "competition": "2019 Data Science Bowl",
+      "competitionUrl": "https://www.kaggle.com/competitions/data-science-bowl-2019",
+      "rank": 14,
+      "teams": 3493,
+      "medal": "gold",
+      "displayedHandles": [
+        "kazanova",
+        "johnpateha",
+        "alijs1",
+        "khahuras"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "competitionType": "Featured, Code Competition"
+    },
+    {
+      "competition": "Riiid Answer Correctness Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
+      "rank": 14,
+      "teams": 3406,
+      "medal": "gold",
+      "displayedHandles": [
+        "nazarov",
+        "alijs1",
+        "frankpanxj"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "competitionType": "Featured, Code Competition"
+    },
+    {
+      "competition": "Santander Product Recommendation",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-product-recommendation",
+      "rank": 14,
+      "teams": 1779,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "NFL Big Data Bowl",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2020",
+      "rank": 19,
+      "teams": 2038,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1",
+        "jmarfati",
+        "rayna3"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "competitionType": "Featured, Code Competition"
+    },
+    {
+      "competition": "Toxic Comment Classification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-toxic-comment-classification-challenge",
+      "rank": 20,
+      "teams": 4539,
+      "medal": "silver",
+      "displayedHandles": [
+        "outliar",
+        "samehif",
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "Corporación Favorita Grocery Sales Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "rank": 20,
+      "teams": 1671,
+      "medal": "silver",
+      "displayedHandles": [
+        "ceshine",
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "Google Analytics Customer Revenue Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/ga-customer-revenue-prediction",
+      "rank": 21,
+      "teams": 3611,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "Santa's Uncertain Bags",
+      "competitionUrl": "https://www.kaggle.com/competitions/santas-uncertain-bags",
+      "rank": 21,
+      "teams": 692,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 years ago",
+      "competitionType": "Playground"
+    },
+    {
+      "competition": "Elo Merchant Category Recommendation",
+      "competitionUrl": "https://www.kaggle.com/competitions/elo-merchant-category-recommendation",
+      "rank": 23,
+      "teams": 4110,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1",
+        "yryrgogo"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "competitionType": "Featured"
+    },
+    {
+      "competition": "Web Traffic Time Series Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting",
+      "rank": 26,
+      "teams": 1095,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "competitionType": "Research"
+    },
+    {
+      "competition": "March Machine Learning Mania 2023",
+      "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2023",
+      "rank": 34,
+      "teams": 1033,
+      "medal": "silver",
+      "displayedHandles": [
+        "alijs1"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "competitionType": "Featured"
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/alijs.webp",
+    "sourceUrl": "https://www.kaggle.com/alijs1",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/666918-kg.jpg",
+    "originalSha256": "27afad46d03a03b30f3384c7bfa701dd528c621b9e786bea76c641e01adec21d",
+    "note": "The saved 320 by 320 portrait is a single man in a blue shirt against a sky and coast. The live own-profile picture (400 by 400, downloaded now) is the same photo framed slightly wider, so the saved file is a tighter crop of his own picture. It is not a group image or a default avatar. The existing file was kept and not overwritten, and no replacement file was needed."
+  },
+  "facts": [
+    {
+      "text": "Kaggle ranks alijs1 a Competitions Grandmaster with 11 gold, 19 silver and 13 bronze competition medals, currently 241st of 225,021 and 9th at his best.",
+      "sourceUrl": "https://www.kaggle.com/alijs1",
+      "sourceTitle": "alijs — Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T11:54:05Z"
+    },
+    {
+      "text": "His Kaggle profile dates the account to July 2016 and describes him as a Software Architect and Data Scientist at Gravity Team in Riga, Latvia.",
+      "sourceUrl": "https://www.kaggle.com/alijs1",
+      "sourceTitle": "alijs — Kaggle profile",
+      "checkedAt": "2026-10-30T11:54:05Z"
+    },
+    {
+      "text": "Kaggle’s completed-competitions list shows alijs1 fifth of 913 teams in the original Abstraction and Reasoning Challenge and third of 1,427 teams in ARC Prize 2024, both with gold medals and both entries showing only the alijs1 account.",
+      "sourceUrl": "https://www.kaggle.com/alijs1/competitions",
+      "sourceTitle": "alijs — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:54:05Z"
+    },
+    {
+      "text": "ARC Prize’s 2024 results list alijs in third place among the high-score winners, with a 40 percent private score and a $5k prize.",
+      "sourceUrl": "https://arcprize.org/competitions/2024",
+      "sourceTitle": "ARC Prize — 2024 results",
+      "checkedAt": "2026-10-30T11:54:05Z"
+    },
+    {
+      "text": "Kaggle shows a Sberbank Russian Housing Market entry placed first of 3,264 teams with a gold medal; that entry is displayed with two accounts, johnpateha and alijs1, so it is a team result.",
+      "sourceUrl": "https://www.kaggle.com/alijs1/competitions",
+      "sourceTitle": "alijs — completed Sberbank Russian Housing Market result on Kaggle",
+      "checkedAt": "2026-10-30T11:54:05Z"
+    }
+  ],
+  "teamNotes": "Kaggle's list shows avatars and account names for each completed entry but no team names, so teamName is left empty everywhere. ARC Prize 2024 third place and the original Abstraction and Reasoning Challenge fifth place are both displayed with only the alijs1 account. Entries displayed with more than one account, such as Sberbank Russian Housing Market, Home Credit Default Risk and ROGII, are team results and are not credited to him as individual honours. The profile counts 159 competitions solo and 13 in a team. In 2026 the profile lists alijs1 in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each about four days from closing when read; the team named alijs and its 2026 standings come from the repo's earlier roster observations, and any public ARC standings are provisional until the 2 November close.",
+  "unverified": [
+    "The 148 completed competitions outside the best 20 (page two onward of the Best Result list) were not opened, including 10 of the 19 silvers, all 13 bronzes and any ARC-related entries not on the first page.",
+    "Team names: Kaggle's list does not show them.",
+    "Whether the entries displayed with several accounts had other members not displayed.",
+    "Current 2026 ARC-AGI-2 and ARC-AGI-3 standings, which were not re-read here and are provisional until the 2 November close.",
+    "Whether the card should print the bio-signed name Agnis Liukis; it comes from the self-written bio."
+  ],
+  "verified": true
+}

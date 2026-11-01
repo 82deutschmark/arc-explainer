@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "2026-10-31-chan-kha-vu-arc-climb-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-31T17:24:05Z",
+  "purpose": "character-reference",
+  "subjectId": "chan-kha-vu",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "rawSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1-native.png",
+  "prompt": "Use case: stylized-concept. Asset: clean portrait artwork for an ARC Prize 2026 competitor card, 5:7 portrait, 1500x2100 or larger. Create an original heroic cyberpunk illustration celebrating Chan Kha Vu's ARC-AGI-2 top-ten team run and his history of machine-learning competitions. IMAGE 1 is his own Kaggle profile photo: this is the sole identity reference. Preserve its distinguishing short dark hair, visible eyes, black outer jacket and especially the striking white face covering with its dense red-and-black embroidered floral motif and white Ukrainian embroidered shirt with red/black trim; his nose and mouth MUST stay fully covered, because the source image does not reveal them. Do not invent an unmasked face, age details or a borrowed likeness. Make him a dignified, friendly adult competitor, a confident illustrated maker in a tailored deep charcoal cyber jacket with elegant red-and-black Ukrainian embroidery and subtle luminous blue-and-gold accents, a few carefully integrated GPU circuitry pieces. Three-quarter head-to-waist view, one hand adjusting a vivid multicolored ARC puzzle tile and the other resting on a GPU-equipped workbench; a rising track of luminous puzzle tiles suggests an exciting competitive climb, without any numbers. Background is a distinctive nighttime competition workshop with warm lighting and a small sunflower motif, an original respectful tribute derived from his own public self-description, not official insignia. IMAGE 2 supplies the editorial card illustration style and lighting ONLY, not character identity, clothing, face or background. Smooth flattering painted graphic-novel realism, detailed but cohesive, NO literal pasted photo, no anime. Artwork full bleed no frame or text; space at top and bottom for later card typography. Place eyes high in the upper-middle with head and hands away from edges, darker simpler lower quarter for overlays. No name, words, numbers, scores, medals, logos, banners, flags or watermark; no other humans, no weapons, no national conflict imagery, no claim of actual competition method. The face covering is integral and remains closed.",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset: clean portrait artwork for an ARC Prize 2026 competitor card, 5:7 portrait, 1500x2100 or larger. Create an original heroic cyberpunk illustration celebrating Chan Kha Vu's ARC-AGI-2 top-ten team run and his history of machine-learning competitions. IMAGE 1 is his own Kaggle profile photo: this is the sole identity reference. Preserve its distinguishing short dark hair, visible eyes, black outer jacket and especially the striking white face covering with its dense red-and-black embroidered floral motif and white Ukrainian embroidered shirt with red/black trim; his nose and mouth MUST stay fully covered, because the source image does not reveal them. Do not invent an unmasked face, age details or a borrowed likeness. Make him a dignified, friendly adult competitor, a confident illustrated maker in a tailored deep charcoal cyber jacket with elegant red-and-black Ukrainian embroidery and subtle luminous blue-and-gold accents, a few carefully integrated GPU circuitry pieces. Three-quarter head-to-waist view, one hand adjusting a vivid multicolored ARC puzzle tile and the other resting on a GPU-equipped workbench; a rising track of luminous puzzle tiles suggests an exciting competitive climb, without any numbers. Background is a distinctive nighttime competition workshop with warm lighting and a small sunflower motif, an original respectful tribute derived from his own public self-description, not official insignia. IMAGE 2 supplies the editorial card illustration style and lighting ONLY, not character identity, clothing, face or background. Smooth flattering painted graphic-novel realism, detailed but cohesive, NO literal pasted photo, no anime. Artwork full bleed no frame or text; space at top and bottom for later card typography. Place eyes high in the upper-middle with head and hands away from edges, darker simpler lower quarter for overlays. No name, words, numbers, scores, medals, logos, banners, flags or watermark; no other humans, no weapons, no national conflict imagery, no claim of actual competition method. The face covering is integral and remains closed.",
+    "referenced_image_paths": [
+      "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg",
+      "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg",
+      "sourceUrl": "https://www.kaggle.com/chankhavu",
+      "role": "His own Kaggle profile portrait; eyes and clothing are visible while nose and mouth are covered. Preserve the covering.",
+      "sha256": "dcd6b3f55ef2a6a49372bf224ca4353f25fca5fd5999077b3d3dce0f16f24ff6"
+    },
+    {
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png",
+      "role": "Previously commissioned illustration, graphic style only; not the subject or face.",
+      "sha256": "ccaf233d839f8efd87b698e0527eb75e89487c2d8469ed1334564953e56e6295"
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "review": "One illustrated competitor, embroidered face covering preserved, GPU workshop and upward ARC-grid motif, no text or borders. The 5:7 native output is retained and the WebP is enlarged losslessly in format for the card compositor.",
+  "commissionAuthority": "Mark Barney requested an illustrated card recognizing Chan Kha Vu and his team’s top-ten achievement on 31 October 2026.",
+  "rawSha256": "c208508d1757ff7b885851301797d1590b3e556f363425576778cc120dc5cec1",
+  "nativeOriginalSha256": "92b1695025ae18eab82342357e6d60bc4b1eb6ab6baa918eb2b8c589d6fc7a96"
+}

@@ -1,0 +1,89 @@
+{
+  "personId": "yeyin-zhu",
+  "handle": "yeyinzhu",
+  "name": "Yeyin Zhu",
+  "checkedAt": "2026-10-30T12:31:00Z",
+  "method": "Rebuilt on 2026-10-30 from the live pages only, read in the app's built-in browser: the public Kaggle About page and Competitions page for yeyinzhu (each loaded once, about 6 seconds wait, text read plus a screenshot; the join and last-seen dates read from the page's own hover text). The avatar image was read from the page's rendered profile picture element and downloaded once with curl to compare. The team standing was read from the newsroom's own roster board (arc.markbarney.net) snapshot fetched 2026-10-30T12:24:11Z. The earlier draft of this file, written while Kaggle was rate limiting, was treated as unverified and replaced. No rate limit, captcha or block appeared this time.",
+  "sources": [
+    "https://www.kaggle.com/yeyinzhu",
+    "https://www.kaggle.com/yeyinzhu/competitions",
+    "https://www.kaggle.com/static/images/profile/default-avatar.png",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "displayName": "Yeyin Zhu",
+    "competitionTier": null,
+    "medals": null,
+    "tierAndMedalNote": "The About and Competitions pages show no tier badge and no medal count, and the account has no completed competition from which a medal could come. Left null rather than assumed.",
+    "joinedMonth": "2026-09",
+    "joinedTooltip": "Sat Sep 12 2026 13:23:32 GMT-0400 (Eastern Daylight Time)",
+    "joinedLabel": "Joined a month ago",
+    "lastSeenTooltip": "Sun Oct 11 2026 20:06:25 GMT-0400 (Eastern Daylight Time)",
+    "lastSeenLabel": "last seen 18 days ago",
+    "bioPresent": true,
+    "bioText": "No bio yet... Quietly working away",
+    "tabCounts": {
+      "competitions": 1,
+      "models": 1,
+      "followers": 2
+    },
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInATeam": 1,
+      "competitionsHosted": 0
+    },
+    "modelsNote": "The Models tab is counted as one but was not opened, to keep to the two permitted pages."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions page shows one Active Competitions entry (ARC Prize 2026 - ARC-AGI-3, 3 days to go) and no completed section. The page and its team-activity counter do not prove what the account did before September 2026, only that nothing else is listed."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/static/images/profile/default-avatar.png",
+    "note": "The profile's large avatar is Kaggle's stock default, a pencil-style drawing of a standing goose, not a photo or artwork of this person. The image served at the default-avatar address is the same drawing (476 by 476 PNG, sha256 3262a44077a83878aebb36f279d27f5178eb9d506d71f56ac07e89f2ba15757c). No individual picture of Yeyin Zhu was found on the profile, and no portrait file exists or was created under client/public/news-images/people/. The card must not use a group photo or a stand-in. The earlier draft called the placeholder a grey default thumbnail; the conclusion (no own picture) stands, the description was imprecise."
+  },
+  "facts": [
+    {
+      "text": "Yeyin Zhu's Kaggle account (yeyinzhu) joined in September 2026, according to the join date on the public profile.",
+      "sourceUrl": "https://www.kaggle.com/yeyinzhu",
+      "sourceTitle": "Yeyin Zhu | Kaggle",
+      "checkedAt": "2026-10-30T12:31:00Z"
+    },
+    {
+      "text": "Kaggle's competitions page for Yeyin Zhu lists one competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/yeyinzhu/competitions",
+      "sourceTitle": "Yeyin Zhu | Kaggle (Competitions)",
+      "checkedAt": "2026-10-30T12:31:00Z"
+    },
+    {
+      "text": "Yeyin Zhu is listed on team NVARC3, which was 8th of 4,984 teams on the public ARC-AGI-3 board at the latest check. These public standings are provisional until the competition closes, and the position is the team's, not an individual honour.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public leaderboard roster, snapshot of 2026-10-30",
+      "checkedAt": "2026-10-30T12:31:00Z"
+    },
+    {
+      "text": "The yeyinzhu profile says \"Quietly working away\" and has no other bio.",
+      "sourceUrl": "https://www.kaggle.com/yeyinzhu",
+      "sourceTitle": "Yeyin Zhu | Kaggle",
+      "checkedAt": "2026-10-30T12:31:00Z"
+    }
+  ],
+  "teamNotes": "ARC-AGI-3 (public leaderboard, provisional): team NVARC3, team id 15770880, ranked 8th of 4,984 teams with a score of 49.54 in the snapshot fetched 2026-10-30T12:24:11Z, last submission 2026-10-29 22:09:03. Members shown on the board: cpmpml, darraghdog, eladsarafian, galkaplun, sorokin, titericz and yeyinzhu. The repo's roster record for Yeyin Zhu agrees (first observed 2026-10-13, last observed 2026-10-29). Kaggle's competition card on the profile shows a row of team avatars but not their handles, so the team members are confirmed from the roster board, not from the Kaggle page. No past teams are visible.",
+  "unverified": [
+    "Competition tier (none displayed on the profile pages)",
+    "Medal counts (none displayed; no completed competitions listed)",
+    "Anything about the account before September 2026 or any prior Kaggle accounts",
+    "The one published model on the Models tab (not opened)",
+    "Any write-ups, prize results or other public work",
+    "Whether any individual public picture of this person exists anywhere"
+  ],
+  "verified": true
+}

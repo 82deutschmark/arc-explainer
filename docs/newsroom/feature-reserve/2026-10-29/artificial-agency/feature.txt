@@ -1,0 +1,107 @@
+HELD FOR A LATER EDITION — NO X POST
+Reporting file prepared 2026-10-29T23:31:25.134047Z
+Board observation: October29,6:52pm Eastern. Refresh before release.
+
+From brain waves to breakaways: meet Artificial Agency Lab’s double act
+
+This lab has already visited the top four
+
+Keep an eye on the laboratory coats. Artificial Agency Lab has already made an ARC3 entrance worthy of a contender’s highlight reel: our October 5 observation caught the same team, then called face-of-agi, vaulting from 315th to fourth. A new name followed, but the team ID stayed the same. This is an established challenger with a public research trail, not a stranger wandering into the arena.
+
+By the October 29 evening snapshot, artificialagencylab.com stood eleventh among 4,975 entries. The recorded score was 45.41. The roster listed two accounts, richardcsaky and cmechevalier. That placing comes after another observed surge to sixth on October 19. The surrounding field keeps moving; the lab has already shown it can move with it. These are dated public-board positions, with the private finish still ahead.
+
+Sources: arc3-board
+
+The brain decoder and the engineer
+
+Richard Csaky arrives with a career that makes the team name rather more than window dressing. His Oxford doctoral work studied how to decode and model brain activity. His January 2026 paper turns more than 500 hours of magnetic brain recordings into sequences a model can learn to continue. Long before this finish line, he was wrestling with signals, imperfect observations and the difficulty of predicting what happens next.
+
+Côme Chevalier is named alongside him by Foresight’s own programme credit. The pair’s April proposal assigns Csaky the research lead and Chevalier engineering. It describes Chevalier’s master’s degree and automotive work at Bosch and aiMotive, including autonomous-driving systems and safety constraints. That is an intriguing partnership: brain research on one side, experience making complicated systems operate in the world on the other.
+
+Sources: richard-thesis, brain-paper, foresight, proposal
+
+Two eighth-place checkpoints and a public notebook
+
+Their earlier ARC form deserves its own line in the programme. The lab reports eighth place at both the June 30 and September 30 milestones, with a September score of 20. Those are milestone results, not a claim to a final Kaggle medal. Their own report identifies the June team as Face of AGI, connecting the older billing to this season’s story.
+
+The report’s most revealing passage is its account of changing course. An elaborate system that tried to predict future game frames proved too expensive under the competition’s limits. The researchers simplified, retaining help with perception, memory and action choices. Their public repository explains the June submission, while the rostered cmechevalier account now carries a FACE-OF-AGI RTX6000 notebook. Neither artifact, by itself, establishes the recipe behind the latest private submission. What it does give readers is a real record of experiments, discarded ideas and a team willing to show its working.
+
+Sources: lab-site, report, repo, come-notebook
+
+The glamorous race has an unglamorous pit lane
+
+The public Kaggle conversation supplies another glimpse of the campaign. Csaky’s profile showed two discussion comments when checked: an October 24 request for a rerun under a model-mount error thread, and an October 26 report of a Kaggle error after fifteen hours. They are brief messages, but they bring a human scale to the standings. A place on the board can sit at the far end of a very long wait.
+
+Those comments establish what Csaky reported, rather than a diagnosis of every team’s problems. They also sit beside a second race. The October 29 ARC2 snapshot listed artificialagencylab.com sixteenth, with richardcsaky as its sole listed account. That is a separate entry and a separate score. The two-account ARC3 partnership should receive its own billing.
+
+Sources: richard-discussions, richard-oct26, arc2-board, arc3-board
+
+The next act is already taking shape in public
+
+So what comes after the next score? Here, at least, the lab has left some signposts. Its site says it wants agents to retrieve useful experience, change the interfaces through which they work, and learn from progressively harder ARC-like games and self-play. Csaky’s February research agenda frames the larger ambition around curiosity, limited resources and agents learning to divide effort between observing, thinking and acting. These are stated research directions, with no new release date attached.
+
+That gives this double act a storyline beyond a single afternoon’s placing. The laboratory has a past name, two milestone performances, an openly described change of tactics and another set of experiments in view. The next public score will tell us where the campaign stands. The next public release may tell us considerably more about the competitors themselves.
+
+Sources: lab-site, research-program, arc3-board
+
+SOURCE FILE
+arc3-board — ARC3 public leaderboard and dated observed history
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board
+Checked 2026-10-29T23:20:24.063600Z
+
+arc2-board — ARC2 public leaderboard
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board
+Checked 2026-10-29T23:20:24.063600Z
+
+lab-site — Artificial Agency Lab — own team biographies, milestone record and stated plans
+https://artificialagencylab.com/
+Checked 2026-10-29T23:20:24.063600Z
+
+foresight — Foresight Institute — Richard Csaky and Côme Chevalier project credit
+https://foresight.org/grantees/2026-richard-csaky/
+Checked 2026-10-29T23:20:24.063600Z
+
+proposal — Artificial Agency’s April 16 public project proposal
+https://manifund.org/projects/4-month-proof-of-concept-for-curiosity-driven-agents-on-arc-agi-3
+Checked 2026-10-29T23:20:24.063600Z
+
+richard-profile — Richard Csaky — own Kaggle profile and competition history
+https://www.kaggle.com/richardcsaky/competitions
+Checked 2026-10-29T23:20:24.063600Z
+
+come-profile — cmechevalier — own Kaggle profile
+https://www.kaggle.com/cmechevalier
+Checked 2026-10-29T23:20:24.063600Z
+
+brain-paper — Richard Csaky — Scaling Next-Brain-Token Prediction for MEG, January 2026
+https://arxiv.org/abs/2601.20138
+Checked 2026-10-29T23:20:24.063600Z
+
+richard-thesis — Richard Csaky — Oxford PhD thesis
+https://arxiv.org/abs/2510.24733
+Checked 2026-10-29T23:20:24.063600Z
+
+report — FACE-OF-AGI — team report on June 30 submission and experiments
+https://artificialagencylab.com/resources/arc-agi-3-report.pdf
+Checked 2026-10-29T23:20:24.063600Z
+
+repo — FACE-OF-AGI — public team code and June milestone context
+https://github.com/ricsinaruto/artificial-agency
+Checked 2026-10-29T23:20:24.063600Z
+
+come-notebook — cmechevalier — FACE-OF-AGI ARC-AGI-3 RTX6000 public notebook
+https://www.kaggle.com/code/cmechevalier/face-of-agi-arc-agi-3-rtx6000
+Checked 2026-10-29T23:20:24.063600Z
+
+richard-discussions — Richard Csaky — complete two-post public discussion listing
+https://www.kaggle.com/richardcsaky/discussion
+Checked 2026-10-29T23:20:24.063600Z
+
+richard-oct26 — Richard Csaky — October 26 error report
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544869
+Checked 2026-10-29T23:20:24.063600Z
+
+research-program — Richard Csaky — Artificial Agency Program research agenda, February 2026
+https://arxiv.org/abs/2602.24100
+Checked 2026-10-29T23:20:24.063600Z
+

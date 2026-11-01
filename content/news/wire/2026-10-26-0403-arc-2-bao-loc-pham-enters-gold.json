@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T07:41:35Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Bao Loc Pham moves into ARC-2 gold places",
+  "id": "2026-10-26-0403-arc-2-bao-loc-pham-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-26T08:03:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Bao Loc Pham's last submission lifted the team from 23rd to 16th, adding 5.00 points to reach 69.17 and enter the gold places."
+    }
+  ],
+  "since": "2026-10-25T07:34:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T08:03:04Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16535014"
+  ]
+}

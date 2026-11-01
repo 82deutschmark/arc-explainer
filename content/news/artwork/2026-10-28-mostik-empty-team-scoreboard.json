@@ -1,0 +1,19 @@
+{
+  "id": "2026-10-28-mostik-empty-team-scoreboard",
+  "kind": "editorial-composition",
+  "createdAt": "2026-10-28T18:19:46.592048+00:00",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "request": "Mostik group photo as empty silhouettes in the ARC competition world, with a current scoreboard."
+  },
+  "tool": "image_gen.imagegen",
+  "sourcePhoto": "https://x.com/aimalysheva/status/2095232794792255848/photo/1",
+  "referenceImages": [
+    "/news-images/2026-10-25-gpu-valley-chen-leads-v2-base.webp",
+    "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp"
+  ],
+  "base": "/news-images/2026-10-28-mostik-empty-team-base.webp",
+  "output": "/news-images/2026-10-28-mostik-empty-team-scoreboard.webp",
+  "scoreboardObservation": "2026-10-28T17:48:54Z",
+  "review": "Inspected generated scene and final panel. Scoreboard reports the first three teams and Mostik, including the observation time. Silhouettes and machinery are artistic metaphors."
+}

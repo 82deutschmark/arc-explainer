@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T19:22:13Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "No Name jumps from 594th to 49th on ARC-2",
+  "id": "2026-10-29-1541-arc-2-no-name-climbs-to-49th",
+  "personIds": [],
+  "publishedAt": "2026-10-29T19:41:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "No Name gained 22.78 to reach 54.17 on the ARC-2 public board, moving from 594th to 49th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line on that board stands at 69.72, so the team is still well below the medal places. The move lifts it into the top 50 and makes it a team to watch in the middle of the table."
+    }
+  ],
+  "since": "2026-10-28T19:19:07Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T19:40:39Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16617639"
+  ]
+}

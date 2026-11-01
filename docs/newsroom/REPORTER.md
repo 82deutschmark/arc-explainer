@@ -1,5 +1,7 @@
 # The ARC Daily Digest reporter (Early and Late editions)
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Authors: GPT-6.1 Sol / Codex and Claude Opus 5.5 (9–14 October 2026); reorganized by Claude Opus 5.5
@@ -12,6 +14,11 @@ For scheduled Early and Late runs, follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDIT
 bounded publishing route overrides discovery and new artwork below, and includes routine X and
 Discord distribution. This guide remains the reporting and evidence contract, and the route
 for explicitly commissioned manual work.
+
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a competitor or choosing art.
+Match the exact contest, team ID and verified handle, then use the saved achievements, public
+discussion history and character mapping alongside this issue’s fresh evidence. Preserve held
+feature conditions and commissioned art through the existing desk workflow.
 
 ## Who, when and what is authorized
 
@@ -52,8 +59,10 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
   invitations (for example to @mostik_ai or @JFPuget) are optional colour for a suitable or slow
   issue, never a required hook. `content/news/social-editorial.json` keeps background research out of
   the curated From X strip and edition sources while the full public archive keeps it.
-- **Faces.** Each story features one person: the person named in the headline, else the dek, else
-  the first person cited. Name the person a story is about in the headline or cite them first.
+- **Faces (Boss, 29 October).** Show every person actually covered in the story in compact
+  “In this story” player cards: portrait, name, contest team and verified honor. Cite their person
+  sources where you cover them; add verified new subjects and their own avatars before publishing.
+  Keep full team rosters separate. See [VISUALS.md](VISUALS.md) for selection and editorial portraits.
 - **Separate ARC2 and ARC3 teams.** Mark's ARC-AGI-2 entry is **ARC Mutants**, team
   `17023174`; Jack Cole joined Mark Barney, Son Pham and Ronen there, confirmed by Mark
   and the public roster on 19 October 2026. Mark's ARC-AGI-3 entry is **Team Turducken**,
@@ -69,12 +78,58 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
 - **Commissions.** Requested features and pictures arrive as editorial assignments in the brief.
   Report what happened to each one in the final report.
 
+### Writing for expert readers
+
+Mark's editorial correction, 28 October 2026, recorded by GPT-6.1 Sol / Codex. Applies to
+Early and Late editions, investigations, special reports and wire copy.
+
+The audience already follows Kaggle and ARC. Assume familiarity with submissions, public and
+private standings, medal bands and team rosters. Use clear language without reteaching the
+competition. Explain a finer detail only when the reader needs it to understand this story.
+
+- **Lead with the news and its stakes.** The opening should give the strongest verified
+  development and why it matters to these contenders. Follow the people, the chase and the
+  consequences. Keep the reporting process out of the opening unless it is itself the news.
+- **Give investigations a narrative.** Establish the finding, develop the strongest evidence
+  and relevant chronology, then identify the unanswered question. The Mostik story concerns an
+  early leader's stalled result, its subsequent public research activity and the unexplained
+  gap. Repeated lessons about what a leaderboard can establish bury that story.
+- **State each uncertainty once, where it matters.** Keep qualifications that materially
+  affect a claim. Avoid repeating that public medals are provisional, a roster does not prove
+  contribution, a demonstration may differ from the contest system, or a missing statement
+  does not establish withdrawal. If a distinction is central or disputed, explain it plainly
+  beside the claim; otherwise keep routine verification detail in reporting notes and evidence.
+- **Keep the checks rigorous and the prose selective.** Verify identities, dates, observation
+  windows, quotations and source visibility as before. Readers need the resulting facts and
+  relevant attribution. They do not need a paragraph describing each check. Preserve exact
+  timestamps and intake decisions in their existing metadata and evidence fields. Any required
+  narrative coverage disclosure should be one short line.
+- **Cut template filler.** Each section must add a development, evidence, useful context or a
+  consequence. Remove repeated standings, generic Kaggle explanations, strings of disclaimers
+  and sections whose only purpose is to describe the archive's limitations. A quiet edition can
+  be short; a long investigation must earn its length with reporting.
+- **Honor the commissioned story.** A requested investigation must receive the requested lead
+  or special-report treatment. A leaderboard recap or passing mention does not fulfill it.
+  If placement is genuinely blocked, identify that specific unfinished work and use the
+  editor's authorized special-report route when available. Never mark the assignment covered
+  merely because a draft or an inconspicuous feature exists.
+
+Before publication, read the copy as a regular reader: does the opening deliver the news,
+does each section advance it, and can any explanation or caveat be removed without changing
+the reader's understanding? Tighten the copy while retaining the evidence and attribution.
+
+For Late editions, prepare the required lead illustration before 6 pm in the 5 pm prepress
+pass. Consult the [Card Cabinet](https://arc.markbarney.net/news/cards) and use the registered
+reference characters for all commissions. The published edition link and its reviewed image
+travel together in the routine X post; missing art blocks X rather than permitting text-only copy.
+
 ## 1. Start
 
 1. Work only in `/Users/macmini/GitHub/arc-explainer-newsroom` on branch `codex/newsroom-publisher`
-   (origin `https://github.com/82deutschmark/arc-explainer.git`). If it has unexpected uncommitted
-   work, stop and report it. If the folder is missing, follow the narrow recovery in your job
-   instruction; never use another checkout.
+   (origin `https://github.com/82deutschmark/arc-explainer.git`). Follow SCHEDULED_EDITIONS.md’s
+   checkout preflight: preserve unrelated local work and continue safely; an untracked PDF does
+   not stop publication. Stop on an actual overlapping-file conflict or Git operation. If the
+   folder is missing, follow the narrow recovery in your job instruction; never use another checkout.
 2. `git pull --ff-only origin main`, then read this file, [ART_DESK.md](ART_DESK.md),
    [X_POSTING.md](X_POSTING.md), [VISUALS.md](VISUALS.md), [CHARACTERS.md](CHARACTERS.md) and
    `.agents/skills/competition-reporter/SKILL.md`.
@@ -135,12 +190,16 @@ gives it a distinct `-preview` ID; `--now` audits a historical cutoff). Read the
   source hash, observations, events, notebook facts, `people`, `socialPosts` and
   `discussionThreads` with their citable source IDs (`person-<id>-identity|fact|roster|archive-<n>`,
   `social-<postId>`, `discussion-arc-N-<id>`, `fact-<teamId>-<n>`).
-- **Intake.** Each contest's brief has `intake`: every wire story and dispatch since the previous
+- **Intake.** Special reports without an edition cutoff are not prior edition boundaries; their
+  evidence stays intact. A scheduled edition missing its required cutoff still fails validation.
+  Each contest's brief has `intake`: every wire story and dispatch since the previous
   edition's cutoff (the Early edition therefore includes the preceding evening and the overnight
   wire), items earlier marked `held` or `carried`, and the open `editorialAssignments`. An
   assignment ends at its `expiresAt`, or 72 hours after `createdAt` when none is set. A front-page
   feature assignment sets the protected `articleBase.frontPageFeatureId`; preserve it, develop and
-  cite the feature, and the front page prints it in full above the recap.
+  cite the feature, and both the front page and the permanent edition URL print it in full,
+  including its cover and sources, above the recap. Do not treat a front-page-only appearance as
+  completion of an illustrated edition: the link used in its announcement must carry the full feature.
 
 ## 4. Write the issue
 
@@ -231,9 +290,23 @@ once. Abort and report a conflict in unrelated files. Do not check the deploymen
 
 ## 8. Announce and report
 
-Send the routine edition post on X under [X_POSTING.md](X_POSTING.md) (the custom picture leads it).
-The desk relay owns the routine Discord edition notice and send-once ledger. Do not duplicate
-that notice manually; necessary desk status/failure notices are authorized through its sender.
+For an illustrated edition or commissioned feature, first deliver the finished image, summary
+and article link to Discord under [ART_DESK.md](ART_DESK.md#discord-image-delivery-before-x),
+then check for any person’s reaction before the authorized X post under
+[X_POSTING.md](X_POSTING.md). No reaction means hold the X draft. The text-only relay does not
+deliver artwork. The relay retains ownership of routine edition text notices and their send-once
+ledger; do not duplicate those manually.
+
+**Special features and investigations:** publishing a commissioned special includes its
+announcement in **#arc3-rollout-feed**. With artwork, use the image-delivery procedure above;
+without artwork, use the relay's `--alert` sender with the permanent article link. Preserve a
+story-specific receipt before any retry; do not assume the scheduled-edition relay delivered a
+separate feature's image. X still requires its existing authorization and follows Discord.
+A successful Git push confirms the release was submitted; do not describe a
+page as verified live unless it was actually checked. Scheduled jobs still stop after the push
+and their authorized distribution. When the editor reports a missing page, that is a separate
+troubleshooting assignment: check the exact URL, archive health and deployment receipt before
+changing content or blaming an archive limit.
 
 Finish with: each contest's article link, or the exact reason it was not published; the picture
 used and its link, or the concrete reason there is none; the X post URL or the outbox state; and
@@ -268,8 +341,9 @@ A short sourced dispatch can update the front page between editions, separate fr
 issue: JSON with `id`, `competition`, `publishedAt` (the real publication time), `headline`,
 `sections` and `sources`, plus `generatedBy` (`gpt-6.1-sol` for this desk), optional
 `interpretation` (shown as the desk's take) and optional `image` (`src`, `alt`, `caption`; the
-asset must already be in `client/public/news-images/`; captions identify AI artwork and date any
-standings). A commissioned dispatch records `commissionedBy: "mark-barney"` and may carry a short
+asset must already be in `client/public/news-images/`; captions describe the scene and date any
+standings; obvious fantasy illustrations do not need repetitive AI disclaimers, per the Boss
+on October 29). A commissioned dispatch records `commissionedBy: "mark-barney"` and may carry a short
 `editorNote`. Validate and publish with `python3.13 scripts/newsroom.py dispatch-validate --draft …`
 and `dispatch-publish --draft …`; dispatch IDs are immutable. A scheduled run publishes a dispatch
 only when its job or an editorial assignment calls for one.
@@ -280,3 +354,7 @@ The Boss is the paper's head human editor (Mark Barney on the masthead). `/news/
 unified About the Paper page; his editor portrait lives in the staff record and his Kaggle
 competitor portrait in the people ledger. Institutional copy does not single out an individual
 assignment.
+
+## Story sources versus the research catalogue
+
+The briefing source catalogue is reporting input, not a bibliography to print in full. Cite each story section’s actual sources. The publisher includes only those cited entries in the public article; retain unselected background in the private briefing/evidence archive. Never pad the source rail with unused people, posts or dossiers.

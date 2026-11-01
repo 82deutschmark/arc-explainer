@@ -1,0 +1,147 @@
+HELD FOR A LATER EDITION — NO X POST
+Reporting file prepared 2026-10-29T23:31:25.134047Z
+Board observation: October29,6:52pm Eastern. Refresh before release.
+
+Four Masters, eight avatars: meet 復活の混テキスト
+
+The ensemble with a championship bench
+
+Four Competition Masters. Four Competition Experts. Eight unmistakable avatars, from a green dinosaur to a blue whale. Meet 復活の混テキスト, the crowded stage of a team that occupied tenth place among 4,975 ARC3 entries in the October 29 board snapshot. Their histories contain a Nemotron championship, medical-imaging gold, a security-contest fourth place and a long catalogue of serious finishes.
+
+The cast is ISAKA Tsuyoshi, konbu17, pomcho555, re, Tanaka Ai24, TK256, t fuku and yuto083. Their Kaggle handles differ from some of those display names; this is the eight-account roster actually listed in ARC3, rather than a guess at who belongs to the band. And there is a familiar voice among them. Tanaka’s own Kaggle profile links directly to @cunkpyber—PunkCyber, who previously told the Digest this was their team. The name on the marquee has people behind it, and the people have form.
+
+Sources: board, profile-isakatsuyoshi, profile-konbu17, profile-pompom555, profile-refv00, profile-tanakaai24, profile-tk256ailab, profile-ttyn4519, profile-yuto0712
+
+The headliners have already filled trophy cabinets
+
+Isaka’s own profile introduces a Principal AI Engineer at Elith with a master’s degree from the University of Osaka. Three competition golds headline the card: fourth of 4,186 in AI Agent Security, seventh of 1,857 in MAP’s student-math challenge and ninth of 832 in LLM 20 Questions. The last of those is particularly apt for an ARC crowd: a game built around asking useful questions.
+
+re, racing as refv00, supplies a championship. Their competition history places them on the winning NVIDIA Nemotron Model Reasoning Challenge team, first of 4,185, with another gold from fourteenth in NeuroGolf. yuto083’s four golds range from ninth in Biohub cell tracking to nineteenth in RSNA Knee Abnormality Detection. They also shared Isaka’s fourth-place security entry. t fuku, whose own linked professional profile names Teppei Fukutomi and identifies a Honda software engineer, brings gold from twenty-sixth of 10,148 in Kaggriculture. These are individual records earned with their respective historical teams; together they explain why this ARC lineup deserves a closer look.
+
+Sources: profile-isakatsuyoshi, record-isakatsuyoshi, record-refv00, record-yuto0712, record-ttyn4519, fukutomi-linkedin
+
+A deep lineup of medal winners
+
+konbu17’s own profile displays nine competition silvers. The history stretches across RNA folding, birdsong, geology, reasoning and medical images. This is a competitor who put a silver finish on the board in nine months after joining Kaggle, with fifty-fifth in Stanford RNA 3D Folding Part 2 among the results. That account date is the beginning of a public Kaggle record, not a measure of someone’s entire experience.
+
+pomcho555, the display name attached to pompom555, describes interests in MLOps, reliable systems and high-performance computing. Their two silvers include Liverpool Ion Switching and a seventy-ninth-place AI Agent Security team shared with Tanaka and konbu17. Those three were already teammates before this ARC3 roster. Tanaka’s own four-silver record also includes twenty-third in Santa 2024’s perplexity puzzle. TK256 is Takeru Sato, named on the GitHub account directly linked from Kaggle: a Tohoku NLP student with three silvers, including sixty-second in Nemotron. This ensemble has both range and prior combinations; it was never eight blank player cards.
+
+Sources: record-konbu17, profile-pompom555, record-pompom555, record-tanakaai24, profile-tk256ailab, record-tk256ailab, tk-github
+
+Listen to the locker-room talk
+
+The public discussions add personality to the medal cards. In October, Tanaka announced a Kaggriculture silver solution developed mostly by AI coding agents, offering the experiments that worked and those that did not. Months earlier, a Drawing with LLMs post described a late start, attempts to train two SVG approaches and failure to finish a working checkpoint before the deadline. That is a useful pair of sporting snapshots: an unfinished experiment, then a later medal-winning campaign with an account of the work.
+
+re’s Nemotron comments offer another glimpse of a champion’s nerves. While final training was running, they had seen a rival discussion approaching a similar idea and worried that another implementation might catch them. They then explained the puzzle-generation and checking process in detail. Another reply described training on one personally owned RTX PRO 6000 workstation. These are accounts of that earlier contest, not disclosures of this team’s ARC machinery. What travels across the stories is the competitive tension: checking an idea, watching the field, and waiting to see whether the result holds.
+
+Sources: tanaka-jarpis, tanaka-drawing, re-nemotron, re-workstation
+
+A whale, a dinosaur—and a next act worth watching
+
+The ensemble’s own avatars already suggest a cast a sports cartoonist would envy. Isaka has a dark-haired illustrated character with a cup; konbu17 uses bright green seaweed; pomcho a blue orca graphic; re a green dinosaur. Tanaka’s bespectacled illustrated reader sits alongside TK256’s tower photograph, Fukutomi’s giant robot and yuto083’s blue whale. These are their chosen account images, rather than a claim about how their owners look.
+
+There are visible next acts beyond ARC too. Sato’s own portfolio says he is developing an AI partner, and his GitHub projects include a toolkit for desktop AI mascots and animation tools. Konbu’s active page lists the Enveda molecule-identification contest. Several members also appear in ARC2, where the roster is a separate entry. No dated release plan for the complete ARC3 team was established in the checked material. For now, the immediate sporting prospect is plenty: four Masters and four Experts taking an already distinguished back catalogue into the sharp end of this race. Save room on the marquee for all eight.
+
+Sources: profile-isakatsuyoshi, profile-konbu17, profile-pompom555, profile-refv00, profile-tanakaai24, profile-tk256ailab, profile-ttyn4519, profile-yuto0712, tk-github, tk-portfolio, record-konbu17, record-tanakaai24
+
+SOURCE FILE
+board — ARC3 public board — dated observation
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-isakatsuyoshi — isakatsuyoshi — own Kaggle profile and external account links
+https://www.kaggle.com/isakatsuyoshi
+Checked 2026-10-29T23:26:08.724960Z
+
+record-isakatsuyoshi — isakatsuyoshi — own competition history
+https://www.kaggle.com/isakatsuyoshi/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-konbu17 — konbu17 — own Kaggle profile and external account links
+https://www.kaggle.com/konbu17
+Checked 2026-10-29T23:26:08.724960Z
+
+record-konbu17 — konbu17 — own competition history
+https://www.kaggle.com/konbu17/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-pompom555 — pompom555 — own Kaggle profile and external account links
+https://www.kaggle.com/pompom555
+Checked 2026-10-29T23:26:08.724960Z
+
+record-pompom555 — pompom555 — own competition history
+https://www.kaggle.com/pompom555/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-refv00 — refv00 — own Kaggle profile and external account links
+https://www.kaggle.com/refv00
+Checked 2026-10-29T23:26:08.724960Z
+
+record-refv00 — refv00 — own competition history
+https://www.kaggle.com/refv00/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-tanakaai24 — tanakaai24 — own Kaggle profile and external account links
+https://www.kaggle.com/tanakaai24
+Checked 2026-10-29T23:26:08.724960Z
+
+record-tanakaai24 — tanakaai24 — own competition history
+https://www.kaggle.com/tanakaai24/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-tk256ailab — tk256ailab — own Kaggle profile and external account links
+https://www.kaggle.com/tk256ailab
+Checked 2026-10-29T23:26:08.724960Z
+
+record-tk256ailab — tk256ailab — own competition history
+https://www.kaggle.com/tk256ailab/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-ttyn4519 — ttyn4519 — own Kaggle profile and external account links
+https://www.kaggle.com/ttyn4519
+Checked 2026-10-29T23:26:08.724960Z
+
+record-ttyn4519 — ttyn4519 — own competition history
+https://www.kaggle.com/ttyn4519/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+profile-yuto0712 — yuto0712 — own Kaggle profile and external account links
+https://www.kaggle.com/yuto0712
+Checked 2026-10-29T23:26:08.724960Z
+
+record-yuto0712 — yuto0712 — own competition history
+https://www.kaggle.com/yuto0712/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+tanaka-jarpis — Tanaka Ai24 — October14 Kaggriculture silver solution announcement
+https://www.kaggle.com/competitions/kaggriculture/discussion/749203
+Checked 2026-10-29T23:26:08.724960Z
+
+tanaka-drawing — Tanaka Ai24 — May2025 account of unfinished SVG experiments
+https://www.kaggle.com/competitions/drawing-with-llms/discussion/581060
+Checked 2026-10-29T23:26:08.724960Z
+
+re-nemotron — re — June2026 explanation of first-place reasoning solution
+https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/1st-place-solution#3474396%233474756
+Checked 2026-10-29T23:26:08.724960Z
+
+re-workstation — re — June2026 description of personally owned training workstation
+https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/1st-place-solution#3474396%233474467
+Checked 2026-10-29T23:26:08.724960Z
+
+tk-github — Takeru Sato | TK256 — directly linked GitHub and current projects
+https://github.com/tk256ailab
+Checked 2026-10-29T23:26:08.724960Z
+
+tk-portfolio — TK256 — own AI-partner development portfolio
+https://tk256ailab.com/
+Checked 2026-10-29T23:26:08.724960Z
+
+fukutomi-linkedin — Teppei (t fuku) Fukutomi — directly linked professional profile
+https://www.linkedin.com/in/teppei-fukutomi-3344313b6/
+Checked 2026-10-29T23:26:08.724960Z
+
+yuto-linkedin — 小杉雄斗 / yuto-kosugi — directly linked professional profile
+https://www.linkedin.com/in/yuto-kosugi/
+Checked 2026-10-29T23:26:08.724960Z
+

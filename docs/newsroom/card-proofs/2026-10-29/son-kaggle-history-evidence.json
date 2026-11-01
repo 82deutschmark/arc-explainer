@@ -1,0 +1,114 @@
+{
+  "personId": "son-pham",
+  "handle": "sonphamorg",
+  "name": "Son Pham",
+  "checkedAt": "2026-10-30T03:44:27Z",
+  "method": "Read-only public Kaggle About and Competitions page in a dedicated Chrome tab; image source read from the visible own-profile background-image element.",
+  "sources": [
+    "https://www.kaggle.com/sonphamorg",
+    "https://www.kaggle.com/sonphamorg/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 1,
+      "bronze": 1
+    },
+    "competitionRank": 2405,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 2381,
+    "joinedTooltip": "Mon Jan 26 2026 19:29:02 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2026-01",
+    "bioPresent": false
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 2,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "Orbit Wars",
+      "RSNA Knee Abnormality Detection"
+    ],
+    "scopeNote": "Only these two completed records were publicly displayed. Do not invent additional finishes or treat the list as proof of the account’s entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 119,
+      "teams": 4729,
+      "medal": "silver",
+      "displayedHandles": [
+        "sonphamorg"
+      ],
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 412,
+      "teams": 6299,
+      "medal": "bronze",
+      "displayedHandles": [
+        "markbarney",
+        "sonphamorg"
+      ],
+      "relativeDateLabel": "7 days ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "proposedFacts": [
+    {
+      "text": "Son Pham is a Kaggle Competitions Expert with one silver and one bronze competition medal shown on his public profile.",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg",
+      "sourceTitle": "Son Pham — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T03:44:27Z"
+    },
+    {
+      "text": "Kaggle lists Son Pham’s completed Orbit Wars entry 119th of 4,729 teams, with a silver medal. The displayed entry shows the sonphamorg account.",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
+      "sourceTitle": "Son Pham — completed Orbit Wars result on Kaggle",
+      "checkedAt": "2026-10-30T03:44:27Z"
+    },
+    {
+      "text": "Son Pham and Mark Barney are both listed on the completed RSNA Knee Abnormality Detection entry, placed 412th of 6,299 teams with a bronze medal.",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg/competitions",
+      "sourceTitle": "Son Pham — completed RSNA Knee Abnormality Detection result and listed accounts",
+      "checkedAt": "2026-10-30T03:44:27Z"
+    },
+    {
+      "text": "Son Pham’s Kaggle profile dates his account joining to January 2026.",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg",
+      "sourceTitle": "Son Pham — public Kaggle account join tooltip",
+      "checkedAt": "2026-10-30T03:44:27Z"
+    }
+  ],
+  "artInventory": {
+    "existingIndividualAssets": [
+      {
+        "src": "/news-images/people/son-pham.webp",
+        "width": 320,
+        "height": 320
+      },
+      {
+        "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+        "width": 320,
+        "height": 320
+      }
+    ],
+    "existingAssetsIdentical": true,
+    "otherNamedIndividualImageFound": false,
+    "currentOwnProfileOriginal": {
+      "sourceUrl": "https://www.kaggle.com/sonphamorg",
+      "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/31999956-kg.jpeg?t=2026-09-30-17-20-14",
+      "width": 400,
+      "height": 400,
+      "sha256": "0e05b062c2481b4c378504850b7d826b27aea2e124e817ff9f60c34deb3f2b8b",
+      "visualReview": "Same individual cyber-engineer portrait as the verified 320px assets: wide screen visor, dense black GPU headgear, visible lower face and brass/blue hardware. Full own-profile original is a better existing source. No group crop, image generation or artwork changes."
+    }
+  }
+}

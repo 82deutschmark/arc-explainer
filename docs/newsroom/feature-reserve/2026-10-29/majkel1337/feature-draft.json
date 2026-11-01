@@ -1,0 +1,107 @@
+{
+  "headline": "From Pokémon’s card table to ARC’s front row: meet Michał Gromadzki",
+  "sections": [
+    {
+      "heading": "The card player at ARC’s top table",
+      "text": "Before Majkel1337 was pressing into the leading ARC places, he was training a Pokémon card player to survive thousands of different decks. Now the same Kaggle account is seventh on the ARC-AGI-2 public board and 12th on ARC-AGI-3. Both positions sit inside their boards' provisional gold bands at the 29 October evening snapshot. That is a formidable double booking.\n\nThe name behind the handle can be established. Majkel1337's own Kaggle page links directly to the GitHub account Michal1337, which identifies its owner as Michał Gromadzki. A Kaggle benchmark writeup independently credits that name. His GitHub biography describes him as an ML engineer at Samsung R&D Institute Poland. That is his stated professional affiliation, not evidence that Samsung sponsors either ARC entry.\n\nKaggle lists him as a Competitions Master, with two gold medals and one silver already on the account. Those are existing honors; the current ARC positions remain public-board standings.",
+      "sourceIds": [
+        "arc3-board",
+        "arc2-board",
+        "majkel-profile",
+        "majkel-github",
+        "lexigen-writeup"
+      ]
+    },
+    {
+      "heading": "A training camp with thousands of sparring partners",
+      "text": "The Pokémon contest supplies the highlight reel. His own September writeup calls it his first agent competition. He describes training a generalist player against a pool of 4,941 decks before specializing agents for Alakazam and Dragapult/Dusknoir. The idea was to prepare against a broad field before narrowing down to the decks he would actually send into competition.\n\nHe reports repeated spells at number one during the contest, changing decks as opponents changed. The final result on his Kaggle profile is 12th of 6,807 teams. That finish is impressive in its own right. His public solution repository also records it and preserves the two-deck final portfolio.\n\nThe account is candid about the finish. In his writeup, Gromadzki says the Alakazam agent lost ground in the final two days and that he regarded 12th as an understatement of its strength. That is his assessment, not a revised official placing. His retrospective discusses card choices, overly broad testing and model decisions he would revisit. There is a competitor's post-match analysis here, with the details left on the page for others to inspect.",
+      "sourceIds": [
+        "pokemon-writeup",
+        "pokemon-code",
+        "majkel-results"
+      ]
+    },
+    {
+      "heading": "Cards, crops and reasoning",
+      "text": "His completed competition record reaches beyond card games: 18th of 10,148 teams in Kaggriculture and 30th of 4,185 in the NVIDIA Nemotron Model Reasoning Challenge. Farming simulation and model reasoning make an unusually varied sporting résumé. It is the pattern across these results that makes the ARC double appearance interesting: the handle has repeatedly appeared close to the front in large fields.\n\nThere is also a research connection to ARC that predates this October chase. His LexiGen writeup, whose original page is dated 3 April, proposes an ARC-like test in an invented language. Instead of transforming colored grids, a model receives examples and must infer rules well enough to translate another sentence. The page names Gromadzki, lists Warsaw University of Technology as its affiliation and links a public project repository.\n\nThat is a documented interest in learning rules from examples. It does not establish that LexiGen, Pokémon reinforcement learning, or any particular training method powers his ARC submissions.",
+      "sourceIds": [
+        "majkel-results",
+        "lexigen-writeup",
+        "lexigen-code"
+      ]
+    },
+    {
+      "heading": "Two scoreboards, one contender to follow",
+      "text": "On ARC-2, Majkel1337's observed October score advanced through 68.19, 71.81 and 75.56 before reaching the current 76.81. The 20 October improvement briefly put the entry fifth. It now stands seventh. On ARC-3, the current 45.03 follows an earlier October surge that took the entry from 15th to third in the observed board history. The present 12th place is part of a shifting race, not evidence that the earlier result disappeared.\n\nEach current roster lists the majkel1337 account alone. That establishes the visible entry, not every person who might have offered help. His next ARC method, final submission choices and post-contest project plans are not established by the public sources inspected for this feature.\n\nWhat we do have is a proper introduction: a named competitor, a substantial medal record, a card-game contender with a published account of his campaign, and two ARC entries demanding attention. With submissions due on 2 November, Gromadzki is a name to keep on the sports desk's watchlist.",
+      "sourceIds": [
+        "arc2-board",
+        "arc3-board",
+        "majkel-results",
+        "majkel-profile",
+        "arc2026"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "arc3-board",
+      "title": "ARC-AGI-3 public leaderboard and dated observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-29T22:52:35Z"
+    },
+    {
+      "id": "arc2-board",
+      "title": "ARC-AGI-2 public leaderboard and dated observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-29T22:52:37Z"
+    },
+    {
+      "id": "majkel-profile",
+      "title": "Majkel1337 — own Kaggle profile, achievements and direct GitHub link",
+      "url": "https://www.kaggle.com/majkel1337",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "majkel-results",
+      "title": "Majkel1337 — own completed competition record",
+      "url": "https://www.kaggle.com/majkel1337/competitions",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "majkel-github",
+      "title": "Michał Gromadzki — GitHub profile directly linked by own Kaggle account",
+      "url": "https://github.com/Michal1337",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "pokemon-writeup",
+      "title": "Majkel1337 — Self-Play RL for the Pokémon TCG: ~12th Place Solution",
+      "url": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle-challenge-strategy/writeups/new-writeup-1788197347997#3518819",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "pokemon-code",
+      "title": "Michał Gromadzki — public Pokémon TCG solution repository",
+      "url": "https://github.com/Michal1337/pkmn-kaggle",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "lexigen-writeup",
+      "title": "Majkel1337 — LexiGen benchmark writeup credited to Michał Gromadzki",
+      "url": "https://www.kaggle.com/competitions/kaggle-measuring-agi/writeups/lexigen-a-synthetic-language-translation-benchmar#3430350",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "lexigen-code",
+      "title": "Michał Gromadzki — public LexiGen project",
+      "url": "https://github.com/Michal1337/LexiGen",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    },
+    {
+      "id": "arc2026",
+      "title": "ARC Prize 2026 — tracks and calendar",
+      "url": "https://arcprize.org/competitions/2026",
+      "accessedAt": "2026-10-29T23:24:17.895841Z"
+    }
+  ]
+}

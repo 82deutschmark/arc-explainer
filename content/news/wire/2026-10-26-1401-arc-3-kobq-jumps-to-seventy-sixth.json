@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T17:42:42Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "kobq jumps from 1,815th to 76th on ARC-3",
+  "id": "2026-10-26-1401-arc-3-kobq-jumps-to-seventy-sixth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T18:01:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "kobq gained 9.87 points to reach 34.06, leaping from 1,815th to 76th in the past day."
+    }
+  ],
+  "since": "2026-10-25T17:37:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T18:00:39Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17194058"
+  ]
+}

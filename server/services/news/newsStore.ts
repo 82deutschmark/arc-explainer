@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
- * Date: 15-October-2026
+ * Date: 30-October-2026 (portraits may also come from a public web page that names the person: Claude Sonnet 5.5)
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -48,7 +48,7 @@ export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   frontPageFeatureId: safeId.optional(),
   image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: text.max(700), caption: text.max(700), artworkId: safeId }).strict().optional(),
-  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1) })).min(1),
+  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700), layout: z.literal("inset").optional() }).strict().optional() })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(NEWS_EDITION_WRITERS),
   stats: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite(), rankChange: z.number().int().nullable(), scoreChange: z.number().finite().nullable() })),
@@ -72,7 +72,7 @@ const HALL_OF_FAME_ART = /^\/[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*\.(?:png|jpe?g)$/
 const PORTRAIT_FILE = /^\/news-images\/people\/[a-z0-9-]+\.(?:webp|png|jpe?g)$/;
 const HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net';
 export const newsPersonSchema = z.object({
-  id: safeId, name: text,
+  id: safeId, name: text, role: z.enum(['competitor', 'sponsor']).optional(),
   accounts: z.array(z.object({ platform: z.enum(['kaggle', 'x']), handle: z.string().regex(/^[A-Za-z0-9_]+$/), url: webUrl, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict()
     .refine(account => account.url.toLowerCase() === `https://${account.platform === 'kaggle' ? 'www.kaggle.com' : 'x.com'}/${account.handle}`.toLowerCase(), 'Account URL and handle must agree')).min(1),
   facts: z.array(factSchema),
@@ -81,19 +81,30 @@ export const newsPersonSchema = z.object({
     .refine(member => member.competitionId === `arc-prize-${member.season}-${member.competition.replace('arc-', 'arc-agi-')}`, 'Membership competition and season must agree')),
   hallOfFame: z.array(z.object({ path: z.string().regex(HALL_OF_FAME_PATH), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
     image: z.object({ src: z.string().regex(HALL_OF_FAME_ART), alt: text.max(700) }).strict().optional() }).strict()),
-  portrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), kind: z.enum(['hall-of-fame', 'kaggle']), sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
+  portrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), kind: z.enum(['hall-of-fame', 'kaggle', 'web']), sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
+  editorialPortrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), artworkId: safeId, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
 }).strict().superRefine((person, context) => {
   const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
   const memberships = person.memberships.map(member => `${member.competitionId}:${member.teamId}:${member.memberHandle}`);
   if (new Set(accounts).size !== accounts.length || new Set(memberships).size !== memberships.length || person.memberships.some(member => !person.accounts.some(account => account.platform === 'kaggle' && account.handle === member.memberHandle))) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate identity or membership without a verified account' });
   }
-  // A face must trace to the person's own verified Kaggle account or one of their own Hall of Fame cards.
+  // A face must trace to the person's own Kaggle account, one of their Hall of Fame cards, or (Boss,
+  // 30-Oct-2026) a public web page that names them: an official team page, a publisher's author page.
   const portrait = person.portrait;
-  if (portrait && !(portrait.kind === 'kaggle'
+  const plain = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const traced = !portrait || (portrait.kind === 'kaggle'
     ? person.accounts.some(account => account.platform === 'kaggle' && account.url.toLowerCase() === portrait.sourceUrl.toLowerCase())
-    : person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === portrait.sourceUrl))) {
-    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Portrait must come from the person’s verified Kaggle account or their own Hall of Fame card' });
+    : portrait.kind === 'web'
+      ? plain(`${portrait.sourceTitle} ${portrait.alt}`).includes(plain(person.name))
+      : person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === portrait.sourceUrl));
+  if (!traced) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Portrait must come from the person’s Kaggle account, their own Hall of Fame card, or a public page that names them' });
+  }
+  const editorial = person.editorialPortrait;
+  if (editorial && !person.accounts.some(account => account.platform === 'kaggle' && account.url.toLowerCase() === editorial.sourceUrl.toLowerCase())
+    && !person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === editorial.sourceUrl)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Editorial portrait reference must belong to this verified person' });
   }
 });
 export const newsSocialSchema = z.object({

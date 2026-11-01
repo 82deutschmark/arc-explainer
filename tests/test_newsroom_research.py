@@ -1,5 +1,5 @@
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; Claude Opus 5.5 Max
-# Date: 15-October-2026 (per-feed coverage markers and plans)
+# Date: 29-October-2026 (editorial avatar provenance and original-source preservation)
 # PURPOSE: Verify private/public separation, missed-scan recovery, briefing deduplication
 # and persistent cross-competition roster history through the production research helpers.
 # 09-Oct-2026 (Claude Opus 5.5): portraits trace to the person's own Kaggle account or Hall of
@@ -199,5 +199,22 @@ class ResearchTests(unittest.TestCase):
         ledger = people.read_people(root)
         people.portrait_files_exist(ledger, root)
         self.assertTrue(any(p.get('portrait', {}).get('kind') == 'hall-of-fame' for p in ledger))
+
+    def test_editorial_avatar_requires_own_identity_and_saved_provenance(self):
+        someone = person()
+        portrait = {'src': '/news-images/people/verified-person-editorial-v1.webp', 'alt': 'AI editorial portrait',
+                    'sourceUrl': 'https://www.kaggle.com/confirmed', 'sourceTitle': 'Own verified avatar',
+                    'checkedAt': '2026-10-08T12:00:00Z', 'artworkId': '2026-10-29-avatar-v1'}
+        item = {**someone, 'editorialPortrait': portrait}
+        people.validate_people([item])
+        with self.assertRaises(ValueError):
+            people.validate_people([{**item, 'editorialPortrait': {**portrait, 'sourceUrl': 'https://www.kaggle.com/another'}}])
+        with tempfile.TemporaryDirectory() as root:
+            target = Path(root) / 'client/public' / portrait['src'].lstrip('/')
+            target.parent.mkdir(parents=True); target.write_bytes(b'asset')
+            with self.assertRaisesRegex(ValueError, 'provenance missing'):
+                people.portrait_files_exist([item], root)
+            n.write(Path(root) / 'content/news/artwork/2026-10-29-avatar-v1.json', {'id': portrait['artworkId']})
+            people.portrait_files_exist([item], root)
 
 if __name__ == '__main__': unittest.main()

@@ -1,0 +1,90 @@
+{
+  "personId": "richard-csaky",
+  "handle": "richardcsaky",
+  "name": "Richard Csaky",
+  "checkedAt": "2026-10-30T12:46:20Z",
+  "method": "Rebuilt from scratch on 2026-10-30 (no earlier draft file existed). Kaggle profile and Competitions pages read in the app's built-in browser (page text, a screenshot, and read-only reads of the page's own elements for the join-date tooltip, the picture URL and the teammate handles on each competition card). The lab's own public site, artificialagencylab.com, was fetched as plain web pages (HTML and the portrait image file) to confirm the portrait and the biography wording. No Kaggle block, captcha or rate limit appeared.",
+  "sources": [
+    "https://www.kaggle.com/richardcsaky",
+    "https://www.kaggle.com/richardcsaky/competitions",
+    "https://artificialagencylab.com/"
+  ],
+  "profile": {
+    "displayedName": "Richard Csaky",
+    "competitionTier": null,
+    "medals": null,
+    "joinedTooltip": "Thu May 30 2019 12:16:44 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-05",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "tabs": {
+      "competitions": 2,
+      "discussion": 2,
+      "followers": 2
+    },
+    "activity": {
+      "competitionsSolo": 1,
+      "competitionsInTeam": 1,
+      "competitionsHosted": 0
+    },
+    "note": "The profile header and About page show no competition tier badge and no medal section, so no tier and no medal count is recorded. The absence of a tier badge is not read as a stated tier."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions page shows only the two active ARC Prize 2026 entries and no Completed Competitions section. This is what is publicly displayed, not proof of the account's whole history. Nothing is invented."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/richard-csaky.webp",
+    "sourceUrl": "https://artificialagencylab.com/",
+    "imageUrl": "https://artificialagencylab.com/_astro/richard.HXgm_htr_ZJMuaV.webp",
+    "width": 600,
+    "height": 750,
+    "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360",
+    "note": "The saved portrait is a single seated man in a dark suit, white shirt and blue patterned tie, outdoors, and is the same file the lab's own About section shows under the picture text 'Portrait of Richard Csaky' (re-downloaded today and found identical to the saved file). It is one individual, not a group image and not a default avatar. His Kaggle profile picture is only Kaggle's default goose drawing, so the lab's own portrait is the right source. No replacement file was made."
+  },
+  "facts": [
+    {
+      "text": "Richard Csaky's public Kaggle profile is under the handle richardcsaky and dates his account joining to May 2019. It shows no competition tier, no medals and no bio beyond the line 'Quietly working away'.",
+      "sourceUrl": "https://www.kaggle.com/richardcsaky",
+      "sourceTitle": "Richard Csaky, own public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T12:46:20Z"
+    },
+    {
+      "text": "Kaggle's Competitions page for Richard Csaky lists two active entries, ARC Prize 2026 - ARC-AGI-3 and ARC Prize 2026 - ARC-AGI-2, and no completed competitions.",
+      "sourceUrl": "https://www.kaggle.com/richardcsaky/competitions",
+      "sourceTitle": "Richard Csaky, Kaggle competitions page",
+      "checkedAt": "2026-10-30T12:46:20Z"
+    },
+    {
+      "text": "On that page his ARC-AGI-3 entry shows two accounts, richardcsaky and cmechevalier, while his ARC-AGI-2 entry shows richardcsaky alone; Kaggle counts one of his competitions as solo and one as in a team.",
+      "sourceUrl": "https://www.kaggle.com/richardcsaky/competitions",
+      "sourceTitle": "Richard Csaky, Kaggle competitions page and entry accounts",
+      "checkedAt": "2026-10-30T12:46:20Z"
+    },
+    {
+      "text": "Artificial Agency Lab's own site says Richard Csaky holds a PhD in Machine Learning and Neuroscience from the University of Oxford and worked on the ARC-AGI-3 agent that the lab reports placing 8th at both the June 30 and September 30, 2026 milestones; that is a lab statement about a team agent, not a Kaggle-confirmed individual honour.",
+      "sourceUrl": "https://artificialagencylab.com/",
+      "sourceTitle": "Artificial Agency Lab, own biography of Richard Csaky",
+      "checkedAt": "2026-10-30T12:46:20Z"
+    }
+  ],
+  "teamNotes": "The roster record in the repo (public Kaggle boards, first observed 2026-10-14, last observed 2026-10-29) lists him as richardcsaky on team 'artificialagencylab.com' in both ARC-AGI-3 and ARC-AGI-2. Kaggle's own Competitions page shows the entries with teammate pictures but no team name, so that name comes from the roster record, not from the profile page. The lab's site names Côme Chevalier as part of the ARC-AGI-3 effort and the ARC-AGI-3 entry lists the account cmechevalier; the two are consistent but no page states that they are the same person. Public ARC standings are provisional until the competition closes. No past teams or finishes are displayed on his public profile, and no team medal is credited to him.",
+  "unverified": [
+    "Competition tier (none displayed on the profile)",
+    "Any medals (none displayed)",
+    "Any completed competitions, ranks, team sizes and past team names (none displayed)",
+    "That cmechevalier is Côme Chevalier (no page states it)",
+    "The earlier roster-based claim that the lab's site calls him its research lead (that wording was not found on the lab page today; the page says he led a Foresight-funded research program and worked on the ARC-AGI-3 agent)",
+    "Independent Kaggle confirmation of the lab's reported 8th-place milestone placements (the Kaggle profile pages do not show them)",
+    "Discussion tab and the two followers beyond their counts (not opened)"
+  ],
+  "verified": true
+}

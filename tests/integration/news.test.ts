@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 2026-10-19; 2026-10-21 (Haiku backup wire writer)
- * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
+ * Date: 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
+ *          public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
  *          RSS checks cover the newest 40 editions; the sitemap checks the whole archive,
  *          so normal archive growth does not produce a false publication failure.
@@ -18,6 +19,7 @@
  *          15-Oct-2026 (Claude Opus 5.5 Max): the content check (every committed file loads, nothing
  *          left out) and the store leaving out one bad edition, dispatch or ledger record, with
  *          /api/news/health reporting it, instead of failing the whole paper.
+ *          30-Oct-2026 (Claude Sonnet 5.5 Low): the Card Cabinet face routes (front, back, thumbnail, share preview, cache headers).
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -27,6 +29,8 @@ import os from 'node:os';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
+import { getNewsCollection } from '../../server/services/news/newsCollection';
+import { collectionShareVersion } from '../../shared/newsCollection';
 import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
@@ -125,7 +129,7 @@ it('discovers every archived article and separate competitor identity through th
     expect(response.status).toBe(200);
     expect(await response.text()).toContain(escapeHtml(record.name));
   }
-});
+}, 60_000); // the archive keeps growing; each of these walks all of it
 it('serves the newest 40 editions in RSS order without including older archive entries', async () => {
   const articles = getNewsIndex().articles;
   const rss = await fetch(`${base}/news/feed.xml`);
@@ -169,7 +173,7 @@ it('serves a drawn 1200x630 card for every article and the front page', async ()
   expect(section.status).toBe(200);
   expect(section.headers.get('cache-control')).not.toContain('immutable');
   await expectDrawnCard(Buffer.from(await section.arrayBuffer()));
-});
+}, 60_000);
 it('gives the front page and notebook the newspaper card and list structured data', async () => {
   for (const [path, type] of [['/news', 'CollectionPage'], ['/news/competitors', 'CollectionPage']]) {
     const html = await (await fetch(`${base}${path}`)).text();
@@ -243,7 +247,8 @@ it('draws the front-page card with an ARC puzzle in the ARC colours, and says wh
 it('draws card text as paths, so the container needs no system fonts', async () => {
   const svg = await articleCardSvg(getNewsIndex().articles[0]);
   expect(svg).not.toMatch(/<text|font-family/);
-  expect((svg.match(/<path/g) ?? []).length).toBeGreaterThan(10);
+  // Specials without score rows legitimately have fewer text runs than the routine editions.
+  expect(svg).toMatch(/<path[^>]+d="[^"]+"/);
 });
 it('serves sourced dispatches and their artwork in front-page API and crawler text', async () => {
   const index = getNewsIndex();
@@ -251,7 +256,7 @@ it('serves sourced dispatches and their artwork in front-page API and crawler te
   expect(dispatch).toBeDefined();
   const html = await (await fetch(`${base}/news`)).text();
   expect(html).toContain(escapeHtml(dispatch.headline));
-  expect(html).toContain(escapeHtml(dispatch.sections[0].text));
+  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
   expect(html).toContain(dispatch.image!.src);
   for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
@@ -298,9 +303,17 @@ it('gives people faces from their own sources and puts cited people first in a s
     expect(fs.existsSync(path.join(process.cwd(), 'client/public', person.portrait!.src))).toBe(true);
   }
   const jack = people.find(person => person.id === 'jack-cole')!;
-  expect(jack.portrait?.kind).toBe('hall-of-fame');
+  expect(jack.portrait?.kind).toBe('kaggle');
   const profile = await (await fetch(`${base}/news/people/jack-cole`)).text();
-  expect(profile).toContain('/news-images/people/jack-cole.webp');
+  expect(profile).toContain(jack.portrait!.src);
+  // Each ARC Prize founder has an individual picture from a public page that names them, never the shared two-man image.
+  for (const id of ['francois-chollet', 'mike-knoop']) {
+    const founder = people.find(person => person.id === id)!;
+    expect(founder.portrait?.kind).toBe('web');
+    expect(founder.portrait?.src).not.toContain('arc-founders');
+  }
+  const stranger = people.find(person => person.id === 'mike-knoop')!;
+  expect(newsPersonSchema.safeParse({ ...stranger, name: 'Someone Else' }).success).toBe(false);
   expect(profile).toContain(escapeHtml('ARC Prize 2025 third place · MindsAI & Tufa Labs'));
   expect((await fetch(`${base}/news/people/ivan-sorokin`)).status).toBe(200);
   // A Kaggle picture may only come from the person's own verified account.
@@ -401,4 +414,46 @@ it('leaves out one bad edition, dispatch or ledger record and keeps the rest of 
     `people.json#${first.id}`, 'people.json#no-accounts', `people.json#${second.id}`, 'social.json',
   ].sort());
   fs.rmSync(directory, { recursive: true, force: true });
+});
+
+
+it('serves the reserved evening feature and cover in the permanent edition’s initial HTML', async () => {
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === article.frontPageFeatureId)!;
+  const response = await fetch(`${base}/news/${article.id}`);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain(`src="${feature.image!.src}"`);
+  expect(html).toContain(escapeHtml(feature.image!.caption));
+  for (const section of feature.sections) {
+    for (const paragraph of section.text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
+  }
+  for (const source of feature.sources) expect(html).toContain(`href="${escapeHtml(source.url)}"`);
+  expect(html).toContain(escapeHtml(article.sections[1].text));
+  expect(html.indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
+    .toBeLessThan(html.indexOf(escapeHtml(article.sections[1].text)));
+});
+
+it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and the share preview, with the right cache headers', { timeout: 60_000 }, async () => {
+  const card = getNewsCollection().cards.find(item => item.id === 'person-ivan-sorokin-2026')!;
+  const version = collectionShareVersion(card);
+  const png = (await fetch(`${base}/api/news/cards/${card.id}/image.png`));
+  expect(png.status).toBe(200);
+  expect(png.headers.get('content-type')).toBe('image/png');
+  expect(await sharp(Buffer.from(await png.arrayBuffer())).metadata()).toMatchObject({ width: 750, height: 1050 });
+  const back = await fetch(`${base}/api/news/cards/${card.id}/image.png?side=back`);
+  expect(back.headers.get('content-disposition')).toContain('-back.png');
+  expect((await fetch(`${base}/api/news/cards/${card.id}/image.png?side=sideways`)).status).toBe(400);
+  const thumb = await fetch(`${base}/api/news/cards/${card.id}/thumb.webp?w=300&v=${version}`);
+  expect(thumb.headers.get('content-type')).toBe('image/webp');
+  expect(thumb.headers.get('cache-control')).toContain('immutable');
+  expect(await sharp(Buffer.from(await thumb.arrayBuffer())).metadata()).toMatchObject({ format: 'webp', width: 300 });
+  expect((await fetch(`${base}/api/news/cards/${card.id}/thumb.webp?w=300&v=stale`)).headers.get('cache-control')).not.toContain('immutable');
+  const share = await fetch(`${base}/api/news/cards/${card.id}/share.png?v=${version}`);
+  expect(share.headers.get('cache-control')).toContain('immutable');
+  expect(await sharp(Buffer.from(await share.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
+  const stale = await fetch(`${base}/api/news/cards/${card.id}/share.png?v=stale`, { redirect: 'manual' });
+  expect(stale.status).toBe(302);
+  expect((await fetch(`${base}/api/news/cards/no-such-card/thumb.webp`)).status).toBe(404);
 });

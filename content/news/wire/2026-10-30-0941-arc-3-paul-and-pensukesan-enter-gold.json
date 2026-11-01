@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-30T13:24:18Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "paul and pensukesan move into the ARC-3 gold places",
+  "id": "2026-10-30-0941-arc-3-paul-and-pensukesan-enter-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-30T13:41:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "On the ARC-3 public board, paul rose from 64th to 16th with 40.75, a gain of 5.52 points. pensukesan climbed from 28th to 13th with 42.27, a gain of 5.05 points."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Both teams are now inside the gold places on the public board. Those placings remain provisional until the private board decides the medals."
+    }
+  ],
+  "since": "2026-10-29T13:21:14Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T13:40:37Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15525358",
+    "16047765"
+  ]
+}

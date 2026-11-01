@@ -1,0 +1,146 @@
+{
+  "articleId": "2026-10-25-morning-arc-3",
+  "briefSha256": "6f52164097b373bdd2824c85ee1b277c869b9b3ce198955c7b2e0456aa56fb6b",
+  "dataAsOf": "2026-10-25T09:34:11Z",
+  "generationRecord": "2026-10-13-digital-giant-bunnies-base",
+  "headline": "Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48",
+  "historyChart": {
+    "dataAsOf": "2026-10-25T09:34:11Z",
+    "leadObservedAt": "2026-10-09T03:51:41Z",
+    "series": [
+      {
+        "name": "Yi-Chia Chen @ Fields Model",
+        "points": [
+          [
+            "2026-10-04T18:30:56Z",
+            48.59,
+            2
+          ],
+          [
+            "2026-10-08T05:42:56Z",
+            55.77,
+            2
+          ],
+          [
+            "2026-10-09T03:51:41Z",
+            59.17,
+            1
+          ],
+          [
+            "2026-10-10T08:59:42Z",
+            62.96,
+            1
+          ],
+          [
+            "2026-10-12T05:33:50Z",
+            67.49,
+            1
+          ],
+          [
+            "2026-10-13T07:10:18Z",
+            67.49,
+            2
+          ],
+          [
+            "2026-10-22T04:34:54Z",
+            67.77,
+            2
+          ],
+          [
+            "2026-10-24T06:40:16Z",
+            68.21,
+            2
+          ],
+          [
+            "2026-10-25T07:03:54Z",
+            71.48,
+            1
+          ],
+          [
+            "2026-10-25T09:34:11Z",
+            71.48,
+            1
+          ]
+        ],
+        "teamId": "15499660"
+      },
+      {
+        "name": "Tufa Labs",
+        "points": [
+          [
+            "2026-10-04T18:30:56Z",
+            55.89,
+            1
+          ],
+          [
+            "2026-10-09T03:51:41Z",
+            55.89,
+            2
+          ],
+          [
+            "2026-10-09T04:21:45Z",
+            56.52,
+            2
+          ],
+          [
+            "2026-10-13T07:10:18Z",
+            68.91,
+            1
+          ],
+          [
+            "2026-10-25T07:03:54Z",
+            68.91,
+            2
+          ],
+          [
+            "2026-10-25T09:34:11Z",
+            68.91,
+            2
+          ]
+        ],
+        "teamId": "15486995"
+      }
+    ],
+    "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  },
+  "id": "2026-10-25-morning-arc-3-e8e15a1254",
+  "image": {
+    "alt": "Editorial illustration for Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48. Yi-Chia Chen @ Fields Model: rank 1, score 71.48; Tufa Labs: rank 2, score 68.91.",
+    "artworkId": "2026-10-25-morning-arc-3-e8e15a1254",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 25, 2026 · 5:34 AM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-25-morning-arc-3-e8e15a1254.webp"
+  },
+  "imageSha256": "f1c21ab5b1e739c9a79a4adb6a4e3de938e37b42bd1d15e5453aa3214575c346",
+  "kind": "edition-composition",
+  "layout": "corner-history-v2.1",
+  "leadGap": {
+    "current": 2.57,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "81282ca9bed3cb82d2f34a7810bbd0e9c105bd74c67c1428e7a85dbb76f610a1",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": null,
+      "score": 71.48,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": -1,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "editor-approved-reusable-scene",
+  "version": 1
+}

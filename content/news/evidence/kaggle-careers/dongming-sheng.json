@@ -1,0 +1,280 @@
+{
+  "personId": "dongming-sheng",
+  "handle": "deepdreamer",
+  "name": "Dongming Sheng",
+  "displayedName": "_hans",
+  "checkedAt": "2026-10-30T14:06:41Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the app's built-in browser on 30 October 2026, one existing tab, one load of each page with a pause between them. Profile text read from the page; medal icons confirmed by screenshot and by the medal labels on each competition row; the profile picture address read from the visible 200-pixel profile picture element; the join date read from the page's join tooltip text. No other site was opened in this pass.",
+  "sources": [
+    "https://www.kaggle.com/deepdreamer",
+    "https://www.kaggle.com/deepdreamer/competitions"
+  ],
+  "profile": {
+    "displayedName": "_hans",
+    "kaggleUsername": "deepdreamer",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 2,
+      "bronze": 1
+    },
+    "competitionRank": 8743,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 803,
+    "joinedLabel": "Joined 9 years ago",
+    "joinedMonth": "2017-01",
+    "joinedTooltip": "Thu Jan 05 2017 08:18:28 GMT-0500 (Eastern Standard Time)",
+    "joinedNote": "The tooltip text is present in the page; the hover bubble itself did not render on screen, so the month is read from the page text, not seen.",
+    "occupationLine": "student at Tsinghua University",
+    "location": "Beijing, Beijing, China",
+    "bioPresent": false,
+    "competitionsTab": {
+      "total": 17,
+      "active": 2,
+      "completed": 15,
+      "soloCount": 14,
+      "teamCount": 3,
+      "hostedCount": 0
+    },
+    "linkedOutAccounts": [
+      "https://www.linkedin.com/in/hanssheng/"
+    ],
+    "nameNote": "Kaggle shows the display name _hans and the username deepdreamer. The real name Dongming Sheng does not appear on either Kaggle page."
+  },
+  "activeCompetitions": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "displayedHandles": [
+        "deepdreamer",
+        "grigoriyzatravkin",
+        "aizealotwu",
+        "florenciasolange"
+      ],
+      "teamName": null,
+      "status": "3 days to go when checked"
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "displayedHandles": [
+        "deepdreamer"
+      ],
+      "teamName": null,
+      "status": "3 days to go when checked"
+    }
+  ],
+  "visibleCompetitionList": {
+    "completedCount": 15,
+    "scopeNote": "All fifteen completed entries on the page are listed below in the order Kaggle shows them (best result first). Kaggle shows relative dates only. Kaggle does not show a team name on the completed-competition rows, only the accounts on the entry, so teamName is null throughout. Medal is null where the row carries no medal icon; the three medals found match the two silver and one bronze on the profile."
+  },
+  "completedResults": [
+    {
+      "competition": "Corporación Favorita Grocery Sales Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "rank": 31,
+      "teams": 1671,
+      "medal": "silver",
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "Toxic Comment Classification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-toxic-comment-classification-challenge",
+      "rank": 53,
+      "teams": 4539,
+      "medal": "silver",
+      "displayedHandles": ["deepdreamer", "konohayui", "christofhenkel", "dzglalala"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "Statoil/C-CORE Iceberg Classifier Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/statoil-iceberg-classifier-challenge",
+      "rank": 223,
+      "teams": 3330,
+      "medal": "bronze",
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "iMet Collection 2019 - FGVC6",
+      "competitionUrl": "https://www.kaggle.com/competitions/imet-2019-fgvc6",
+      "rank": 369,
+      "teams": 521,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago"
+    },
+    {
+      "competition": "Recruit Restaurant Visitor Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+      "rank": 381,
+      "teams": 2148,
+      "medal": null,
+      "displayedHandles": ["eugeneng93", "xiejiajia2016", "deepdreamer", "wwwdata", "wwk18819475124", "nano10"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "TalkingData AdTracking Fraud Detection Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
+      "rank": 484,
+      "teams": 3943,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago"
+    },
+    {
+      "competition": "Porto Seguro’s Safe Driver Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
+      "rank": 583,
+      "teams": 5156,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "Indoor Location & Navigation",
+      "competitionUrl": "https://www.kaggle.com/competitions/indoor-location-navigation",
+      "rank": 627,
+      "teams": 1170,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago"
+    },
+    {
+      "competition": "Humpback Whale Identification",
+      "competitionUrl": "https://www.kaggle.com/competitions/humpback-whale-identification",
+      "rank": 678,
+      "teams": 2120,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago"
+    },
+    {
+      "competition": "Jigsaw Rate Severity of Toxic Comments",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-toxic-severity-rating",
+      "rank": 731,
+      "teams": 2301,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago"
+    },
+    {
+      "competition": "Zillow Prize: Zillow’s Home Value Prediction (Zestimate)",
+      "competitionUrl": "https://www.kaggle.com/competitions/zillow-prize-1",
+      "rank": 865,
+      "teams": 3770,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "Sberbank Russian Housing Market",
+      "competitionUrl": "https://www.kaggle.com/competitions/sberbank-russian-housing-market",
+      "rank": 1211,
+      "teams": 3264,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago"
+    },
+    {
+      "competition": "Santander Customer Transaction Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+      "rank": 2671,
+      "teams": 8751,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago"
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 2873,
+      "teams": 3947,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "a month ago"
+    },
+    {
+      "competition": "MSCapital – Real Financial Market Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/ms-capital-real-financial-market-forecasting",
+      "rank": 81,
+      "teams": 287,
+      "medal": null,
+      "displayedHandles": ["deepdreamer"],
+      "teamName": null,
+      "relativeDateLabel": "21 days ago"
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/dongming-sheng.webp",
+    "sourceUrl": "https://www.kaggle.com/deepdreamer",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/856891-kg.jpg",
+    "note": "The saved 320 by 320 picture shows the same figure as the large profile picture on the live page: an illustrated dark-haired character in a blue kimono against festival lights. It is the account's own chosen Kaggle profile picture, a single individual image and not a group photo or the default avatar. It is an illustration, not a photograph of the person. Kept as is; no new file saved."
+  },
+  "facts": [
+    {
+      "text": "The Kaggle account _hans (username deepdreamer) is a Competitions Expert with two silver medals and one bronze medal, ranked 8,743rd of 225,021 and 803rd at its best.",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer",
+      "sourceTitle": "_hans (deepdreamer) — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T14:06:41Z"
+    },
+    {
+      "text": "Kaggle lists the account 31st of 1,671 teams in Corporación Favorita Grocery Sales Forecasting, with a silver medal. The entry shows only the deepdreamer account.",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+      "sourceTitle": "_hans (deepdreamer) — completed Corporación Favorita result on Kaggle",
+      "checkedAt": "2026-10-30T14:06:41Z"
+    },
+    {
+      "text": "Kaggle lists the account 53rd of 4,539 teams in the Toxic Comment Classification Challenge, with a silver medal. It was a four-account team entry shared with konohayui, christofhenkel and dzglalala, so the medal is a team result.",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+      "sourceTitle": "_hans (deepdreamer) — completed Toxic Comment Classification result and listed accounts",
+      "checkedAt": "2026-10-30T14:06:41Z"
+    },
+    {
+      "text": "Kaggle lists the account 223rd of 3,330 teams in the Statoil/C-CORE Iceberg Classifier Challenge, with a bronze medal. The entry shows only the deepdreamer account.",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+      "sourceTitle": "_hans (deepdreamer) — completed Statoil/C-CORE Iceberg result on Kaggle",
+      "checkedAt": "2026-10-30T14:06:41Z"
+    },
+    {
+      "text": "The account is entered in both ARC Prize 2026 competitions, ARC-AGI-2 on its own and ARC-AGI-3 alongside grigoriyzatravkin, aizealotwu and florenciasolange; both were still running when checked.",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer/competitions",
+      "sourceTitle": "_hans (deepdreamer) — active ARC Prize 2026 entries and listed accounts",
+      "checkedAt": "2026-10-30T14:06:41Z"
+    }
+  ],
+  "teamNotes": [
+    "Toxic Comment Classification Challenge: the silver medal belongs to a four-account team (deepdreamer, konohayui, christofhenkel, dzglalala). It is a team medal and must never be written as a lone honour.",
+    "Recruit Restaurant Visitor Forecasting: six accounts are shown on the entry (eugeneng93, xiejiajia2016, deepdreamer, wwwdata, wwk18819475124, nano10); it carries no medal.",
+    "Favorita and Iceberg entries show only the deepdreamer account, so both medals are shown as solo entries on the page.",
+    "ARC-AGI-3 on Kaggle shows four accounts on the entry: deepdreamer, grigoriyzatravkin, aizealotwu and florenciasolange. The people record (from the ARC-3 public roster observation) names that team Grigoriy Zatravkin & co. That team name was not re-read in this pass because the ARC board site was not opened; treat it as provisional.",
+    "ARC-AGI-2 shows only deepdreamer on the entry. The people record (from the ARC-2 public roster observation) names that team _hans; likewise not re-read in this pass and provisional.",
+    "Kaggle's own sidebar counts fourteen solo and three team competitions; only two multi-account completed entries are visible in the list, which fits the third team entry being the ARC-AGI-3 one currently running (an inference, not a Kaggle statement)."
+  ],
+  "unverified": [
+    "That this account belongs to a person named Dongming Sheng. Neither Kaggle page shows a real name. The link comes from the earlier record, which cites the LinkedIn address Kaggle links on this profile (linkedin.com/in/hanssheng); the Kaggle page does confirm that LinkedIn link is on the profile, but the LinkedIn page itself was not opened in this pass.",
+    "The earlier claim that the LinkedIn profile describes an NLP researcher at Tencent in Greater London. It was not re-checked, and it differs from the live Kaggle profile line, which reads student at Tsinghua University, Beijing. Neither job should be written as current until a person confirms which is right.",
+    "The exact finish date of every competition. Kaggle shows relative labels only (for example 9 years ago).",
+    "The ARC team names (Grigoriy Zatravkin & co on ARC-AGI-3, _hans on ARC-AGI-2) and any ARC ranking, which come from the earlier roster record and are public standings that are provisional.",
+    "The displayed join month. The page text carries a January 2017 join stamp, but the hover bubble was not seen rendered on screen.",
+    "Whether the picture is a photograph of the person. It is an illustrated avatar the account chose."
+  ],
+  "rateLimited": false,
+  "verified": true
+}

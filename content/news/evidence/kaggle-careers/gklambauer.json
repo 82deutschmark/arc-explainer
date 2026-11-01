@@ -1,0 +1,75 @@
+{
+  "personId": "gklambauer",
+  "handle": "gklambauer",
+  "name": "gklambauer",
+  "checkedAt": "2026-10-30T13:20:02Z",
+  "method": "Read-only public Kaggle profile and Competitions pages in the Claude app's built-in browser on 2026-10-30; page text, a screenshot of the competition list, and the profile avatar element (its background image) were read. No other pages were visited. The earlier draft of this file did not exist, so nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/gklambauer",
+    "https://www.kaggle.com/gklambauer/competitions"
+  ],
+  "profile": {
+    "displayName": "gklambauer",
+    "competitionTier": null,
+    "tierNote": "No competition tier badge is displayed on the public profile.",
+    "medals": null,
+    "medalNote": "No medal counts are displayed on the profile or the Competitions page, and no completed competition is listed, so no medal is claimed.",
+    "joinedTooltip": "Sun Feb 05 2017 08:49:20 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2017-02",
+    "lastSeenTooltip": "Thu Jul 09 2026 07:42:39 GMT-0400 (Eastern Daylight Time)",
+    "lastSeenMonth": "2026-07",
+    "bioPresent": false,
+    "bioText": "No bio yet... / Quietly working away",
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInTeam": 1,
+      "competitionsHosted": 0
+    },
+    "followers": 4
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions page shows one active competition and no completed ones. Do not invent past finishes."
+  },
+  "completedResults": [],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/gklambauer",
+    "note": "The profile avatar is Kaggle's default goose illustration (the page's own default-avatar image), not a personal picture. No saved portrait file exists for this player and none was created. No group image or stand-in is to be used."
+  },
+  "facts": [
+    {
+      "text": "gklambauer's public Kaggle profile shows only the handle: no real name, no biography and no personal photo.",
+      "sourceUrl": "https://www.kaggle.com/gklambauer",
+      "sourceTitle": "gklambauer | Kaggle profile",
+      "checkedAt": "2026-10-30T13:20:02Z"
+    },
+    {
+      "text": "Kaggle dates the gklambauer account to February 2017 and shows it last active in July 2026.",
+      "sourceUrl": "https://www.kaggle.com/gklambauer",
+      "sourceTitle": "gklambauer | Kaggle profile (join and last-seen dates)",
+      "checkedAt": "2026-10-30T13:20:02Z"
+    },
+    {
+      "text": "The only competition on the gklambauer profile is the still-running ARC Prize 2026 - ARC-AGI-3, entered as part of a team; no completed competitions, finishes or medals are listed.",
+      "sourceUrl": "https://www.kaggle.com/gklambauer/competitions",
+      "sourceTitle": "gklambauer | Kaggle Competitions page",
+      "checkedAt": "2026-10-30T13:20:02Z"
+    }
+  ],
+  "teamNotes": "The project's public roster observation (provisional, first seen 2026-10-29) lists handle gklambauer on the ARC-AGI-3 team 'the last dance' (team id 16021367). The Kaggle profile page itself does not display the team name, so the name is credited to that roster only. Any standing for this team is provisional until the competition closes; no team result is credited to the player as an individual honour.",
+  "unverified": [
+    "Whether the account belongs to Professor Gunter Klambauer: no source linking the account to him was found, so the card must not name or describe him.",
+    "The player's real name, employer and any personal photograph: none is shown on the profile.",
+    "Competition tier: none displayed, so none is claimed.",
+    "Team name and teammates as shown by Kaggle: the profile page does not show them; the team name comes only from the project's public roster observation.",
+    "Any ARC-AGI-3 rank or score for this player: none displayed; public standings are provisional until the 2026 close."
+  ],
+  "verified": true
+}

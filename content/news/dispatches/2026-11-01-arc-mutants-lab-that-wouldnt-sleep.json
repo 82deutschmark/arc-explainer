@@ -1,0 +1,113 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Overnight team update and picture commissioned by Mark Barney. Jack Cole’s historical record was checked against ARC Prize’s official results, newsletters and credited paper. Card images preserve their own printed dates.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "The lab that wouldn’t sleep: ARC Mutants grind on, with an ARC legend in the chair",
+  "id": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep",
+  "image": {
+    "alt": "The four ARC Mutants work overnight in a vaulted academy laboratory: Mark repairs a GPU rack, Jack guides floating colored grids from his command chair, Son works the submission console and violet-helmeted Ronen contains a runaway grid experiment. Error icons and stalled submission queues fill the monitors.",
+    "caption": "ARC Mutants, still at the bench: Jack Cole, Mark Barney, Son Pham and Ronen.",
+    "src": "/news-images/2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1.png"
+  },
+  "publishedAt": "2026-11-01T05:46:12.591795Z",
+  "sections": [
+    {
+      "heading": "One more experiment",
+      "sourceIds": [
+        "arc-mutants-card",
+        "arc-mutants-2026-roster"
+      ],
+      "text": "The ARC Mutants have not left the bench. Mark Barney, this paper’s editor and a member of the team, reports that the four are still grinding through grid experiments, last-minute submissions and Kaggle errors. This overnight mini-special comes from our own laboratory: Jack Cole, Mark, Son Pham and Ronen, still trying to make the next experiment count."
+    },
+    {
+      "heading": "The experiment keeps escaping",
+      "sourceIds": [
+        "arc-mutants-card",
+        "jack-card"
+      ],
+      "text": "Our new scene catches the academy in full midnight disorder. Mark is elbow-deep in the GPU rack; Jack directs the colored grids from his command chair; Son works the submission console; Ronen catches the runaway puzzle in a violet grid shield. The monitors have their own contribution: queued, error, retry. The professor at the center of that tableau has earned more than a costume."
+    },
+    {
+      "heading": "Jack Cole: the legend at the bench",
+      "sourceIds": [
+        "jack-2024-forty-barrier",
+        "jack-2024-record-streak",
+        "jack-2024-final-results"
+      ],
+      "text": "Jack Cole is not a cameo in this laboratory. In July 2024, ARC Prize credited Cole, Michael Hodel and Mohamed Osman’s MindsAI with the first score above the forty-percent barrier. A month later the organizers were congratulating Cole and MindsAI on a third consecutive world record. MindsAI finished the 2024 competition with the highest private-evaluation score in the field. The distinction matters: it was the top-scoring entry, while the official high-score prize went to the ARChitects because MindsAI did not open-source its solution."
+    },
+    {
+      "heading": "The score and the paper",
+      "sourceIds": [
+        "jack-2025-results",
+        "jack-cole-osman-paper"
+      ],
+      "text": "The following year brought an official third-place finish for MindsAI and recognition on the paper track. ARC Prize awarded an honorable mention to Cole and Mohamed Osman’s “Don’t throw the baby out with the bathwater: How and why deep learning for ARC.” The paper makes their case for deep learning that keeps learning at test time. A podium, a published argument and a method to explain: that is a serious ARC back catalogue."
+    },
+    {
+      "heading": "Across the generations of ARC",
+      "sourceIds": [
+        "jack-2025-preview",
+        "arc-mutants-2026-roster"
+      ],
+      "text": "His record reaches into the interactive games, too. ARC Prize lists Cole as adviser and reviewer for StochasticGoose at Tufa Labs, winner of the 2025 ARC-AGI-3 Preview agent competition, with Dries Smit as lead developer. Now the archive’s circuit-board headset belongs beside Mark, Son and Ronen in the ARC Mutants laboratory. The Professor X character is an affectionate picture; the competitive history behind it is real."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-2024-forty-barrier",
+      "title": "ARC Prize — July 19, 2024 newsletter names Cole, Hodel and Osman and the first 41% score",
+      "url": "https://arcprize.org/blog/community-newsletter-3"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-2024-record-streak",
+      "title": "ARC Prize — August 30, 2024 newsletter credits Cole and MindsAI with a third consecutive world record",
+      "url": "https://arcprize.org/blog/community-newsletter-6"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-2024-final-results",
+      "title": "ARC Prize — 2024 official winners and technical report; MindsAI 55.5%, highest but not prize-eligible",
+      "url": "https://arcprize.org/blog/arc-prize-2024-winners-technical-report"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-2025-results",
+      "title": "ARC Prize — 2025 results: MindsAI third place, Cole and Osman paper honorable mention",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-cole-osman-paper",
+      "title": "Jack Cole and Mohamed Osman — Don't throw the baby out with the bathwater: How and why deep learning for ARC",
+      "url": "https://arxiv.org/abs/2506.14276"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "jack-2025-preview",
+      "title": "ARC Prize — 2025 Preview winner StochasticGoose, lead developer Dries Smit, adviser/reviewer Jack Cole",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-11-01T05:44:16.426859+00:00",
+      "id": "arc-mutants-2026-roster",
+      "title": "ARC Mutants and Team Turducken — separate dated public rosters, October 19, 2026",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
+    },
+    {
+      "accessedAt": "2026-11-01T05:46:12.591795Z",
+      "id": "arc-mutants-card",
+      "title": "ARC Prize cards — ARC Mutants, T016",
+      "url": "https://arc.markbarney.net/news/cards/team-arc-mutants-2026"
+    },
+    {
+      "accessedAt": "2026-11-01T05:46:12.591795Z",
+      "id": "jack-card",
+      "title": "Jack Cole — ARC Prize card P004",
+      "url": "https://arc.markbarney.net/news/cards/person-jack-cole-2026"
+    }
+  ]
+}

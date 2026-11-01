@@ -1,0 +1,157 @@
+{
+  "personId": "itsu",
+  "handle": "nisshokuitsuki",
+  "name": "イツ (Itsu)",
+  "checkedAt": "2026-10-30T12:42:16Z",
+  "method": "Built-in browser (Claude desktop app browser pane), 2026-10-30. Loaded the public Kaggle profile page and the public Competitions page once each, about 5 seconds apart, waited about 6 seconds per page for rendering, and read the page text, the DOM tooltips (join date, medal title, teammate names, profile-picture source) and screenshots of the profile header and the completed-competition list. No refresh loops, no rate-limit or block page appeared. An older draft of this file (written while Kaggle was blocking us) was treated as unverified and fully replaced.",
+  "sources": [
+    "https://www.kaggle.com/nisshokuitsuki",
+    "https://www.kaggle.com/nisshokuitsuki/competitions"
+  ],
+  "profile": {
+    "displayedName": "amn",
+    "competitionTier": null,
+    "medals": null,
+    "visibleListMedals": {
+      "silver": 1
+    },
+    "joinedTooltip": "Sun Mar 05 2023 03:29:46 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2023-03",
+    "bioPresent": false,
+    "bioText": "No bio yet...",
+    "occupationLine": "Villager at 荏原郡奥沢村",
+    "tabCounts": {
+      "competitions": 6,
+      "datasets": 24,
+      "models": 5,
+      "code": 1,
+      "discussion": 53,
+      "writeups": 1
+    },
+    "awardsShown": [
+      "Community Competition Host"
+    ],
+    "note": "The profile page text shows no competition tier label and no profile-level medal totals, so tier and medal totals are left null. The only medal visible anywhere on the two pages is one silver medal on the Bengali.AI Speech Recognition entry, which is also the pinned work on the profile."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 4,
+    "activeNames": [
+      "Name That LLM",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "Bengali.AI Speech Recognition",
+      "CommonLit - Evaluate Student Summaries",
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "ISIC 2024 - Skin Cancer Detection with 3D-TBP"
+    ],
+    "scopeNote": "Only these four completed records and two active entries were publicly displayed. Do not invent additional finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "Bengali.AI Speech Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/bengaliai-speech",
+      "format": "Research · Code Competition",
+      "rank": 22,
+      "teams": 744,
+      "medal": "silver",
+      "displayedHandles": [
+        "hongori",
+        "nisshokuitsuki"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CommonLit - Evaluate Student Summaries",
+      "competitionUrl": "https://www.kaggle.com/competitions/commonlit-evaluate-student-summaries",
+      "format": "Featured · Code Competition",
+      "rank": 491,
+      "teams": 2064,
+      "medal": null,
+      "displayedHandles": [
+        "hongori",
+        "nisshokuitsuki"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "format": "Featured",
+      "rank": 583,
+      "teams": 4185,
+      "medal": null,
+      "displayedHandles": [
+        "hongori",
+        "nisshokuitsuki"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+      "competitionUrl": "https://www.kaggle.com/competitions/isic-2024-challenge",
+      "format": "Research · Code Competition",
+      "rank": 911,
+      "teams": 2739,
+      "medal": null,
+      "displayedHandles": [
+        "hongori",
+        "nisshokuitsuki"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/itsu.webp",
+    "sourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "liveImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/14000652-kg.jpg",
+    "note": "Re-checked 2026-10-30 against the live profile header. The saved 320 by 320 file shows the same single anime-style character (grey-haired figure with horse ears, a yellow diamond headband and one hand raised to the head) as the account's own current profile picture. It is the account's own chosen avatar, an illustration rather than a photograph, not a group image and not the grey default avatar. No replacement made."
+  },
+  "facts": [
+    {
+      "text": "The Kaggle account nisshokuitsuki, which appears on Kaggle under the display name amn, dates its joining to March 2023.",
+      "sourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+      "sourceTitle": "nisshokuitsuki — public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T12:42:16Z"
+    },
+    {
+      "text": "Kaggle lists the account's Bengali.AI Speech Recognition entry 22nd of 744 teams, with a silver medal. The entry shows two members, hongori and nisshokuitsuki, so it is a team medal, not a solo honour.",
+      "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+      "sourceTitle": "nisshokuitsuki — completed Bengali.AI Speech Recognition result on Kaggle",
+      "checkedAt": "2026-10-30T12:42:16Z"
+    },
+    {
+      "text": "Three more completed entries are listed, each shared with hongori and none showing a medal: CommonLit - Evaluate Student Summaries 491st of 2,064 teams, NVIDIA Nemotron Model Reasoning Challenge 583rd of 4,185 teams, and ISIC 2024 - Skin Cancer Detection 911th of 2,739 teams.",
+      "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+      "sourceTitle": "nisshokuitsuki — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:42:16Z"
+    },
+    {
+      "text": "The account is currently listed in two active competitions, ARC Prize 2026 - ARC-AGI-2 and Name That LLM.",
+      "sourceUrl": "https://www.kaggle.com/nisshokuitsuki/competitions",
+      "sourceTitle": "nisshokuitsuki — active competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:42:16Z"
+    }
+  ],
+  "teamNotes": "The Kaggle competition list shows the same two displayed members, hongori and nisshokuitsuki, on every completed entry, but it does not show team names. Our own roster (not the Kaggle profile) saw nisshokuitsuki on the 2026 ARC-AGI-2 team ｶﾎｳｼｭｳｾｲ (team 16297545) from 2026-10-14 to 2026-10-28; any public ARC standing for that team is provisional until the 02-Nov close. No ARC-AGI-3 membership is in the record.",
+  "unverified": [
+    "Kaggle competition tier and profile-level medal totals: neither is shown in the page text, so both are left null.",
+    "Whether the Kaggle display name amn and the card name イツ (Itsu) are the same person's current naming: the record and the saved portrait caption use イツ (Itsu), but the live profile reads amn. The X account iiiiitsu_ne cited in the record is not visible on the current profile page, so the link between the account and the card name rests on the 2026-10-14 record only.",
+    "The profile's own activity panel reads 3 competitions solo and 5 in a team, which does not reconcile with the six competitions displayed (two active, four completed, each completed entry showing two members). The displayed list may therefore be partial, and every statement here is limited to what the list shows.",
+    "Team names for the completed entries (the list shows member avatars and names only).",
+    "Exact completion dates (the list shows relative labels only).",
+    "The profile's writeup, datasets and discussion posts were not opened; nothing is claimed about them beyond their counts.",
+    "Any ARC-AGI-2 finish: the competition is still active at the time of checking."
+  ],
+  "verified": true
+}

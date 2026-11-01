@@ -1,0 +1,221 @@
+{
+  "id": "2026-10-29-special-early-evening-xz",
+  "articleId": "2026-10-29-special-early-evening-xz",
+  "competition": "arc-3",
+  "publishedAt": "2026-10-29T20:02:30.033949+00:00",
+  "kind": "special-early-evening-feature",
+  "commissionedBy": "mark-barney",
+  "sourceFeatureSha256": "8f865a802ab27b953facc4c89577cd889ae008ea1dd620198df31ef2d446644b",
+  "sourceBriefId": "2026-10-29-evening-arc-3-preview",
+  "sourceBriefSha256": "be0bbaecb777aa6ddf09cf2fd6e684c4bd388cc388848e4a14c7c1b21a096871",
+  "sourceSha256": "83b3e9379c10a8ca6028155c930b01484b20b4a8468dae9b7dc82c88d6215e12",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+  "accessedAt": "2026-10-29T20:01:22.978725+00:00",
+  "latestAt": "2026-10-29T19:52:15Z",
+  "dataAsOf": "2026-10-29T19:52:15Z",
+  "baselineAt": "2026-10-28T21:49:27Z",
+  "comparisons": {
+    "15486995": {
+      "end": [
+        "2026-10-29T19:52:15Z",
+        70.02,
+        2
+      ],
+      "start": null
+    },
+    "15487093": {
+      "end": [
+        "2026-10-29T19:52:15Z",
+        52.95,
+        4
+      ],
+      "start": null
+    },
+    "15499660": {
+      "end": [
+        "2026-10-29T19:52:15Z",
+        75.56,
+        1
+      ],
+      "start": [
+        "2026-10-27T06:14:10Z",
+        75.56,
+        1
+      ]
+    },
+    "15605182": {
+      "end": [
+        "2026-10-29T19:52:15Z",
+        56.02,
+        3
+      ],
+      "start": [
+        "2026-10-24T06:10:13Z",
+        56.02,
+        3
+      ]
+    },
+    "16021367": {
+      "end": [
+        "2026-10-29T19:52:15Z",
+        51.51,
+        5
+      ],
+      "start": [
+        "2026-10-28T02:47:04Z",
+        51.51,
+        4
+      ]
+    }
+  },
+  "observations": {
+    "15486995": {
+      "members": [
+        "dlorah",
+        "driessmit1",
+        "infinitecreativity",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "name": "Tufa Labs",
+      "observedAt": "2026-10-29T19:52:15Z"
+    },
+    "15487093": {
+      "members": [
+        "xiaoz259"
+      ],
+      "name": "xz",
+      "observedAt": "2026-10-29T19:52:15Z"
+    },
+    "15499660": {
+      "members": [
+        "threerabbits"
+      ],
+      "name": "Yi-Chia Chen @ Fields Model",
+      "observedAt": "2026-10-29T19:52:15Z"
+    },
+    "15605182": {
+      "members": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ],
+      "name": "Team Turducken",
+      "observedAt": "2026-10-29T19:52:15Z"
+    },
+    "16021367": {
+      "members": [
+        "dwellement0baser",
+        "fses91",
+        "gklambauer",
+        "lukasaichberger"
+      ],
+      "name": "the last dance 🕺",
+      "observedAt": "2026-10-29T19:52:15Z"
+    }
+  },
+  "entries": {
+    "teamId": "15487093",
+    "count": 11,
+    "observedAt": "2026-10-29T19:52:15Z",
+    "field": "public board row[5]"
+  },
+  "sources": [
+    {
+      "id": "person-xz-identity-0",
+      "title": "xz — own Kaggle profile, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "history",
+      "title": "xz — Kaggle competition history, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259/competitions",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "winning-writeup",
+      "title": "Read xz’s first-place solution — September 2, 2026",
+      "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "github",
+      "title": "Explore xz’s public reference code",
+      "url": "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "xz-startup",
+      "title": "xz — October 25 startup report, current text and October 29 replies",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "current-discussion",
+      "title": "October 29 public discussion: xz, Jeroen Cottaar and Yi-Chia Chen on current run conditions",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "staff-incident",
+      "title": "María Cruz — October 27 broader investigation/capacity statement",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843",
+      "accessedAt": "2026-10-29T16:55:43.190811+00:00"
+    },
+    {
+      "id": "incident-report",
+      "title": "The ARC Daily Digest — October 27 investigation into Kaggle run failures",
+      "url": "https://arc.markbarney.net/news/2026-10-27-morning-arc-3",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "early",
+      "title": "The ARC Daily Digest — October 29 Early edition",
+      "url": "https://arc.markbarney.net/news/2026-10-29-morning-arc-3",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "board",
+      "title": "ARC-AGI-3 public leaderboard and observed history — October 29 early evening",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-29T20:01:22.978725+00:00"
+    },
+    {
+      "id": "person-jeroen-cottaar-identity-0",
+      "title": "Jeroen Cottaar — verified Kaggle account",
+      "url": "https://www.kaggle.com/jeroencottaar",
+      "accessedAt": "2026-10-09T19:23:29Z"
+    },
+    {
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Yi-Chia Chen — verified Kaggle account",
+      "url": "https://www.kaggle.com/threerabbits",
+      "accessedAt": "2026-10-09T17:16:30Z"
+    }
+  ],
+  "artwork": {
+    "artworkId": "2026-10-29-xz-enters-scoring-hall-v1",
+    "imageSrc": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
+    "imageSha256": "9193705d5b54012251acc542acf59a14c5ea76e2d928372ad4ab76ec1281aca4",
+    "nativePngSha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+    "generationRecord": "content/news/artwork/2026-10-29-xz-enters-scoring-hall-v1.json"
+  },
+  "editorApproval": {
+    "approvedBy": "mark-barney",
+    "approvedAt": "2026-10-29T19:25:15.684977+00:00",
+    "noReactionCheckRequired": true
+  },
+  "reportingNotes": [
+    "Full editor-approved sports column, with a brief direct-source teaser for the previous win.",
+    "Board source was unchanged on the one final freshness check.",
+    "Cat artwork depicts the observed arrival at fourth; current fresh board remains fourth.",
+    "Original public profile/discussion check times retained. No broader new source scan or official-remedy claim.",
+    "This manual special has no scheduled-edition cutoff and does not replace the 6 pm close."
+  ]
+}

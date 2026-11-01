@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-vineeth-sai-varikuntla-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "vineeth-sai-varikuntla",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-vineeth-sai-varikuntla-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-vineeth-sai-varikuntla-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "a66f339e9d1404352984ddb68939d71b8fb2ba2a44748260df197cfd7a02f460",
+  "rawSha256": "a66f339e9d1404352984ddb68939d71b8fb2ba2a44748260df197cfd7a02f460",
+  "toolOutput": "exec-3e5241d6-75ab-4540-9444-26dadf020ec1.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is only a distant anonymous silhouette under stars; it establishes NO face. Preserve anonymity by showing one adult stargazer cyber explorer in graphite and starlit teal gear with completely opaque mirrored helmet, no skin or invented facial likeness, tiny starfield reflections, golden ARC puzzle cube at chest height. Scoring hall window opens to a glorious Milky Way. Do not include vehicle or duplicate people.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Reference is only a distant anonymous silhouette under stars; it establishes NO face. Preserve anonymity by showing one adult stargazer cyber explorer in graphite and starlit teal gear with completely opaque mirrored helmet, no skin or invented facial likeness, tiny starfield reflections, golden ARC puzzle cube at chest height. Scoring hall window opens to a glorious Milky Way. Do not include vehicle or duplicate people.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/vineeth-sai-varikuntla.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/vineeth-sai-varikuntla.webp",
+      "sha256": "e191764e7d65b9f4f9f34115bdc63ae0fd96cb56bb9399bacdfcedc0f3980dbe",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/vineethsaivs"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

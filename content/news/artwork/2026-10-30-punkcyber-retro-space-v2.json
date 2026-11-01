@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "id": "2026-10-30-punkcyber-retro-space-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:51:25.726348+00:00",
+  "purpose": "card-hero",
+  "subjectId": "punkcyber",
+  "rawSrc": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2-native.png",
+  "toolOutput": "exec-fa1983bd-fb4a-49fa-b983-a6d81b804e6b.png",
+  "prompt": "Use case: precise-object-edit. This is the editor-accepted retro-futuristic space heroine illustration. Make ONLY the scarf correction: remove the ochre cloth scarf completely from around neck and across chest. Naturally reveal the existing heavy chrome pressure collar and the red/cream space-suit upper chest underneath; continue nearby copper cables and armor seams where formerly occluded, physically believable connections. Preserve the exact character face, hair, glasses, hinged ARC-grid eyepiece, cheek communicator, bubble helmet, pose, hands, enormous twin triple-fan graphics-card rigs, background, palette, print texture, lighting and composition. Same 1950s pulp hand-painted/inked medium across revealed area. Do not add fabric neckwear, a new face, extra props or characters. No text or border. Exact same portrait aspect ratio.",
+  "toolArguments": {
+    "prompt": "Use case: precise-object-edit. This is the editor-accepted retro-futuristic space heroine illustration. Make ONLY the scarf correction: remove the ochre cloth scarf completely from around neck and across chest. Naturally reveal the existing heavy chrome pressure collar and the red/cream space-suit upper chest underneath; continue nearby copper cables and armor seams where formerly occluded, physically believable connections. Preserve the exact character face, hair, glasses, hinged ARC-grid eyepiece, cheek communicator, bubble helmet, pose, hands, enormous twin triple-fan graphics-card rigs, background, palette, print texture, lighting and composition. Same 1950s pulp hand-painted/inked medium across revealed area. Do not add fabric neckwear, a new face, extra props or characters. No text or border. Exact same portrait aspect ratio.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/cards/2026/2026-10-30-punkcyber-retro-space-proof-v1-native.png"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-proof-v1-native.png",
+      "role": "Actual generation reference; first is the own avatar or edit target, subsequent images are style references only.",
+      "sha256": "f615bf808663e045adf632907e9e88baaec4ee49236a2bc3459b95638a5b1f1a"
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "review": "Scarf removed from editor-accepted retro heroine. Chrome collar, copper cabling and red/cream suit now exposed; face, optical attachment, oversized GPUs, pose and vintage print treatment retained. Accepted style direction; targeted scarf correction only.",
+  "nativeOriginalSha256": "52e7b370672c14c78b4894dd23e7c141ba85ad98bb78d180b1b3b56e0698c359",
+  "commissionAuthority": "Boss requested retro-futuristic replacements for anime avatars, integrated face hardware, no scarves and varied equipment on 30 October 2026.",
+  "archiveNote": "Exact native PNG and earlier originals retained. Fictional character adaptations are not verified human likenesses.",
+  "rawSha256": "72e1f19c4f2ecc247aa8565d4db8eb967c8261c1d22b546bcdc731c1a5fa2c5b",
+  "previousCardArt": null
+}

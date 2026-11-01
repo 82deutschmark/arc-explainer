@@ -1,0 +1,46 @@
+{
+  "id": "2026-10-26-flash-next-cleared-for-arc-prize",
+  "articleId": "2026-10-26-flash-next-cleared-for-arc-prize",
+  "checkedAt": "2026-10-27T01:47:22.647062+00:00",
+  "competition": "arc-2",
+  "editorConfirmed": true,
+  "sourceUrl": "https://discord.com/channels/1237180803335720961/1237180803780448339",
+  "confirmation": {
+    "date": "2026-10-26",
+    "speaker": "Permaximum",
+    "role": "ARC Prize community lead",
+    "initialReply": "You can use it. No problem.",
+    "licenseSpecificReply": "I said there’s no issue. It’s OK to use it.",
+    "followup": "The speaker reported that ARC Prize president Greg had also confirmed it.",
+    "provenance": "Editor supplied the screenshot and confirmed the organizer statement. Native Discord conversation supplied the follow-up context."
+  },
+  "publicQuestion": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/752709",
+  "standing": {
+    "observedAt": "2026-10-27T01:13:36Z",
+    "teamId": "16559402",
+    "name": "Domdolus Tolus",
+    "rank": 3,
+    "score": 82.08,
+    "memberHandles": [
+      "alwintheodoric",
+      "billyanggara",
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "yassirramadhan"
+    ]
+  },
+  "artwork": {
+    "id": "2026-10-26-flash-next-green-light",
+    "kind": "native-generation",
+    "tool": "image_gen.imagegen",
+    "generatedBy": "gpt-6.1-sol",
+    "createdAt": "2026-10-27T01:47:22.647062+00:00",
+    "prompt": "Create a brand-new wide landscape editorial illustration for The ARC Daily Digest announcing a verified ARC Prize team clarification that Qwen3.8-Flash-Next is allowed for competition use. A joyful fantasy-cyberpunk town crier RINGING AN ENORMOUS BRASS BELL over a bustling plaza of colorful geometric ARC grid tiles. The town crier is an original friendly little brass-and-ivory robot with a green lantern, not a real person's likeness. The ceremonial gate opens with green light; a celebratory crowd of distinct tiny friendly robot puzzle-solvers raises colored grid boards and cheers. Electric-blue and warm-gold night lighting, finely detailed cinematic painterly comic style, polished and humorous, excellent clarity. This is its own new editorial scene, completely separate from the Architects artwork. Bell-ringing is metaphor for spreading the news; do not depict judges, fake legal contracts, or a new license text. No identifiable real competitors or staff.\nInclude elegant newspaper-style graphic text with correct crisp typography. Upper-left masthead: 'THE ARC DAILY DIGEST'. Main bold title across a tasteful dark panel: 'FLASH NEXT GETS THE GREEN LIGHT'. Smaller subtitle: 'ARC Prize team confirms competition use is allowed'. Footer: 'Qwen3.8-Flash-Next • 26 October 2026 • Editorial illustration'. Beautiful image first, carefully placed readable short text, no clock time, no scores, no ranks, no PDF/page mockup, no watermark, no corporate logo or false official seal. Wide 16:9 image, artwork ready for the Digest article and social sharing. Preserve visual interest and clear scene beneath the typography.",
+    "references": [],
+    "rawSrc": "/news-images/2026-10-26-flash-next-green-light.webp",
+    "rawSha256": "945a7f8e0d83e1e09da87e8d6ad2020538d7cdc6c4312b9649fe83dae5a0b5a1",
+    "review": "Visually reviewed: original friendly robotic town crier rings huge brass bell as green gates open to puzzle-solving robot crowd. Correct model name, newspaper branding, short permission headline and October 26 date. No real person, score, legal seal or clock time. Format converted losslessly for the article renderer.",
+    "reviewedAt": "2026-10-27T01:47:22.647062+00:00",
+    "articleId": "2026-10-26-flash-next-cleared-for-arc-prize"
+  }
+}

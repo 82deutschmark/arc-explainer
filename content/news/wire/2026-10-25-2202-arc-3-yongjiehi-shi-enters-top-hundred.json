@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T01:40:54Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yongjiehi Shi jumps from 454th to 87th on ARC-3",
+  "id": "2026-10-25-2202-arc-3-yongjiehi-shi-enters-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-26T02:02:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Yongjiehi Shi gained 2.73 points to reach 33.78, moving from 454th to 87th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gain brings Yongjiehi Shi into the top 100 from outside the top 500 a day earlier."
+    }
+  ],
+  "since": "2026-10-25T01:16:41Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T02:01:57Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16871335"
+  ]
+}

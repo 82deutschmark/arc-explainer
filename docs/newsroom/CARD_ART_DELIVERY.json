@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-30T20:12:51.558304+00:00",
+  "branch": "claude/digest-card-glowup",
+  "scope": "Artwork assets, originals, source records and individual art bindings. Compositor developer owns page and baseball-card labels/stats/borders.",
+  "note": "Use src for 1500×2100 lossless delivery; originals retained. No card graphics baked into art, except Boss-requested CPMP helmet engraving. DZ is a community character, not a newly inferred Kaggle identity.",
+  "ready": [
+    {
+      "subjectId": "jean-francois-puget",
+      "artworkId": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3-native.png",
+      "provenance": "content/news/artwork/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "darragh-hanley",
+      "artworkId": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+      "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3-native.png",
+      "provenance": "content/news/artwork/2026-10-30-darragh-hanley-nvidia-tactician-v3.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "ivan-sorokin",
+      "artworkId": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+      "src": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1-native.png",
+      "provenance": "content/news/artwork/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "gal-kaplun",
+      "artworkId": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+      "src": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1-native.png",
+      "provenance": "content/news/artwork/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "jeroen-cottaar",
+      "artworkId": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4-native.png",
+      "provenance": "content/news/artwork/2026-10-30-jeroen-cottaar-tufa-citadel-v4.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "lukas-aichberger",
+      "artworkId": "2026-10-30-lukas-aichberger-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1-native.png",
+      "provenance": "content/news/artwork/2026-10-30-lukas-aichberger-retro-space-v1.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "dz",
+      "artworkId": "2026-10-30-dz-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1-native.png",
+      "provenance": "content/news/artwork/2026-10-30-dz-retro-space-v1.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "punkcyber",
+      "artworkId": "2026-10-30-punkcyber-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2-native.png",
+      "provenance": "content/news/artwork/2026-10-30-punkcyber-retro-space-v2.json",
+      "reviewStatus": "reviewed"
+    },
+    {
+      "subjectId": "isaka-tsuyoshi",
+      "artworkId": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp",
+      "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2-native.png",
+      "provenance": "content/news/artwork/2026-10-30-isaka-tsuyoshi-retro-space-v2.json",
+      "reviewStatus": "reviewed"
+    }
+  ],
+  "heldForEditorReview": [
+    {
+      "artworkId": "2026-10-30-mykyta-ielanskyi-rhythm-inventor-v3",
+      "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-rhythm-inventor-v3.webp"
+    }
+  ]
+}

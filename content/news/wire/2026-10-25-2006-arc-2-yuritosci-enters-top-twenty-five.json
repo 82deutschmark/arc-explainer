@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-25T23:40:41Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "yuritosci rises into ARC-2 top 25",
+  "id": "2026-10-25-2006-arc-2-yuritosci-enters-top-twenty-five",
+  "personIds": [],
+  "publishedAt": "2026-10-26T00:06:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "yuritosci gained 9.87 to reach 65.56, moving from 37th to 24th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move takes yuritosci into the top 25 after beginning the day in 37th. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-24T23:16:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T00:05:28Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16616584"
+  ]
+}

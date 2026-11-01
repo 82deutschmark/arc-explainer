@@ -1,0 +1,193 @@
+{
+  "baselineAt": "2026-10-31T23:59:25Z",
+  "competition": "arc-3",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-11-01T10:30:39Z",
+  "date": "2026-11-01",
+  "dek": "A five-point cushion separates the leader from Tufa Labs, while fourth and fifth are divided by only 0.13 at the Sunday morning cutoff.",
+  "discord": "Chen holds the ARC-3 lead; NVARC3 sits just ahead of Turducken — https://arc.markbarney.net/news/2026-11-01-morning-arc-3",
+  "edition": "morning",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Chen holds the ARC-3 lead; NVARC3 sits just ahead of Turducken",
+  "id": "2026-11-01-morning-arc-3",
+  "image": {
+    "alt": "NVARC3’s four established characters build a huge GPU juggernaut, with Chen’s two rabbits beside Tufa’s spider banner on a distant snowy peak. A separate footer preserves the morning leaders: Chen 75.56; Tufa 70.24.",
+    "artworkId": "2026-11-01-morning-arc-3-a5db53de5f-footer",
+    "caption": "Existing newspaper illustration; new edition score panel: Nov 1, 2026 · 5:30 AM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-morning-arc-3-a5db53de5f-footer.webp"
+  },
+  "publishedAt": "2026-11-01T16:22:47Z",
+  "sections": [
+    {
+      "heading": "Chen keeps room at the front",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Yi-Chia Chen @ Fields Model leads ARC-3 on 75.56 at Sunday’s morning cutoff, with Tufa Labs second on 70.24. The 5.32-point gap leaves a very different chase from ARC-2’s sub-point contest between the same two names. Chen’s score is unchanged against the midnight baseline.\n\nfaster machine is all you need remains third on 58.59. Behind that podium, NVARC3 stands fourth on 56.15, just 0.13 ahead of Team Turducken on 56.02. The morning evidence establishes that order; missing baseline comparisons for NVARC3 and Tufa do not establish the size or timing of an overnight gain."
+    },
+    {
+      "heading": "A crowded chase behind fourth",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "the last dance is sixth on 51.51, followed by yktori on 51.04, Grigoriy Zatravkin & co on 50.48 and mtg on 50.37. Only 0.11 separates eighth and ninth. Turducken, the last dance, yktori and mtg have unchanged scores against the midnight baseline even where their ranks have slipped.\n\nTeam Alicia supplies a measured overnight advance farther down the board: 0.35 points to 36.89, moving from 44th to 40th. The lead remains Chen’s; the narrow gaps in the chase show where a subsequent scored improvement could matter most."
+    },
+    {
+      "heading": "What to watch next",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The next result need not threaten Chen to change the shape of this race. NVARC3 and Turducken are separated by barely more than a tenth of a point, with another similarly narrow gap between Grigoriy Zatravkin & co and mtg. The podium is spread out; the pack behind it is not."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T16:22:47Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.24,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "faster machine is all you need",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 58.59,
+      "scoreChange": 0.0,
+      "teamId": "15487093"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.15,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 6,
+      "rankChange": -1,
+      "score": 51.51,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    },
+    {
+      "name": "yktori",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 51.04,
+      "scoreChange": 0.0,
+      "teamId": "16760837"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "rank": 8,
+      "rankChange": null,
+      "score": 50.48,
+      "scoreChange": null,
+      "teamId": "16490178"
+    },
+    {
+      "name": "mtg",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 50.37,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 10,
+      "rankChange": 0,
+      "score": 46.82,
+      "scoreChange": 0.0,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 11,
+      "rankChange": 0,
+      "score": 45.41,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 12,
+      "rankChange": 0,
+      "score": 45.03,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "The ARChitects",
+      "rank": 16,
+      "rankChange": 0,
+      "score": 41.03,
+      "scoreChange": 0.0,
+      "teamId": "16032816"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 21,
+      "rankChange": -1,
+      "score": 39.94,
+      "scoreChange": 0.0,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "rank": 22,
+      "rankChange": -1,
+      "score": 39.69,
+      "scoreChange": 0.0,
+      "teamId": "15488763"
+    },
+    {
+      "name": "Team Alicia",
+      "rank": 40,
+      "rankChange": 4,
+      "score": 36.89,
+      "scoreChange": 0.35,
+      "teamId": "16782490"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15487093",
+    "15770880",
+    "15605182",
+    "16021367",
+    "16760837",
+    "16490178",
+    "16153655",
+    "16569113"
+  ]
+}

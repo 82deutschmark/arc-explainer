@@ -1,5 +1,5 @@
-# Author: Claude Opus 5.5; GPT-6.1 Sol / Codex
-# Date: 2026-10-22 (head-editor completion and no-polling regressions)
+# Author: GPT-6 / Codex; Claude Opus 5.5; GPT-6.1 Sol / Codex
+# Date: 2026-10-29 (exact #Kaggle required within new-draft budgets)
 # PURPOSE: The wire desk helper (scripts/newsroom_wire.py) and the edition post (scripts/newsroom_x.py
 # --edition): a brief built from a small market digest offers leads, sources, people and pictures;
 # validation accepts a story whose figures all come from the brief and rejects invented or rounded
@@ -151,6 +151,15 @@ class WireDeskTests(unittest.TestCase):
 
 
 class EditionPostTests(unittest.TestCase):
+    def test_failed_recap_is_saved_and_returns_failure(self):
+        failed = {'version': 1, 'competitions': {'arc-3': {'status': 'error', 'error': 'network blocked'},
+                                               'arc-2': {'status': 'error', 'error': 'network blocked'}}}
+        with tempfile.TemporaryDirectory() as directory, patch.object(x, 'prepare', return_value=failed):
+            outbox = Path(directory) / 'outbox.json'
+            with patch.object(x, 'daily_post', return_value={'state': 'waiting', 'reason': 'No usable board evidence.'}):
+                self.assertEqual(x.main(['--output', str(outbox), '--brief-output', str(Path(directory) / 'brief.json')]), 2)
+            self.assertEqual(json.loads(outbox.read_text())['state'], 'waiting')
+
     def article(self, root, competition, headline, edition='evening'):
         path = Path(root) / 'content/news/articles' / f'2026-10-09-{edition}-{competition}.json'
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -162,21 +171,47 @@ class EditionPostTests(unittest.TestCase):
             self.article(root, 'arc-3', 'Yi-Chia Chen takes ARC-3 lead as mtg climbs to third')
             self.article(root, 'arc-2', 'Tufa Labs lifts ARC-2 public high to 88.06%')
             post = x.edition_post('evening', '2026-10-09', root)
-            self.assertEqual(post['state'], 'draft')
+            self.assertEqual(post['state'], 'blocked')
+            self.assertEqual(post['blocker'], 'missing-edition-artwork')
             self.assertEqual(post['message'].splitlines()[0], 'The ARC Daily Digest · Late edition')
             self.assertIn('ARC-AGI-2: Tufa Labs', post['message'])
+            self.assertIn('\n#Kaggle\n', post['message'])
             self.assertTrue(post['message'].endswith('https://arc.markbarney.net/news/2026-10-09-evening-arc-3'))
-            self.article(root, 'arc-3', 'A' * 200, edition='morning')
+            self.article(root, 'arc-3', 'A' * 199, edition='morning')
             self.article(root, 'arc-2', 'B' * 200, edition='morning')
             early = x.edition_post('morning', '2026-10-09', root)
             self.assertTrue(early['message'].startswith('The ARC Daily Digest · Early edition'))
             self.assertNotIn('ARC-AGI-2:', early['message'])
-            self.assertLessEqual(x.x_weight(early['message'], early['link']), 280)
+            self.assertEqual(x.x_weight(early['message'], early['link']), 280)
+            self.assertIn('\n#Kaggle\n', early['message'])
+
+    def test_afternoon_posts_preserve_hashtag_in_normal_and_shortened_copy(self):
+        for name in ('Yi-Chia Chen', 'A' * 400):
+            with self.subTest(name=name):
+                board = {'stats': [{'rank': 1, 'name': name, 'score': 75.56, 'scoreChange': 1}],
+                         'baselineAt': '2026-10-28T22:00:00Z', 'dataAsOf': '2026-10-29T18:20:00Z'}
+                brief = {'preparedAt': '2026-10-29T18:20:00Z', 'competitions': {
+                    'arc-3': {'status': 'ready', 'articleBase': board},
+                    'arc-2': {'status': 'error', 'error': 'No current board'}}}
+                post = x.daily_post(brief)
+                self.assertEqual(post['state'], 'draft')
+                self.assertIn('\n#Kaggle\n', post['message'])
+                self.assertTrue(post['message'].endswith(x.SITE + '/news'))
+                self.assertLessEqual(x.x_weight(post['message']), 280)
+                self.assertIn('arc-2', post['failures'])
+                if len(name) > 280:
+                    self.assertIn('ARC-3: leader 75.56.', post['message'])
+
+    def test_edition_budget_never_discards_required_hashtag_to_fit_a_headline(self):
+        with tempfile.TemporaryDirectory() as root:
+            self.article(root, 'arc-3', 'A' * 200, edition='morning')
+            with self.assertRaisesRegex(ValueError, 'too long'):
+                x.edition_post('morning', '2026-10-09', root)
 
     def test_all_edition_drafts_finish_without_network_or_sleep(self):
         with tempfile.TemporaryDirectory() as root:
             outbox = Path(root) / 'edition.json'
-            post = {'state': 'draft', 'link': 'https://example.com/news/edition'}
+            post = {'state': 'draft', 'link': 'https://example.com/news/edition', 'media': {'path': 'reviewed.png'}}
             for flags in ([], ['--draft-only']):
                 with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch('urllib.request.urlopen', side_effect=AssertionError('network forbidden')), patch('time.sleep', side_effect=AssertionError('sleep forbidden')):
                     self.assertEqual(x.main(['--edition', 'morning', '--output', str(outbox), *flags]), 0)
@@ -185,7 +220,7 @@ class EditionPostTests(unittest.TestCase):
     def test_human_confirmation_needs_no_browser_or_new_draft(self):
         with tempfile.TemporaryDirectory() as root:
             outbox = Path(root) / 'edition.json'
-            for state in ('draft', 'waiting', 'posting'):
+            for state in ('draft', 'waiting', 'blocked', 'posting'):
                 outbox.write_text(json.dumps({'state': state, 'account': '82deutschmark', 'message': 'reviewed copy', 'media': {'sha256': 'saved'}}))
                 with patch.object(x, 'prepare', side_effect=AssertionError('no preparation')), patch.object(x, 'edition_post', side_effect=AssertionError('no new draft')), patch('urllib.request.urlopen', side_effect=AssertionError('network forbidden')):
                     self.assertEqual(x.main(['--record-human-post', '--output', str(outbox)]), 0)

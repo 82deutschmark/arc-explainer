@@ -1,25 +1,28 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-29
  * PURPOSE: Reusable person pieces for competition reporting: faces (Hall of Fame crop or saved
  *          Kaggle picture, initials when a person has neither), roster chips, the "in this story"
- *          face strip, directory cards and honors that link to the person's Hall of Fame cards.
+ *          subject cards for every reported person, directory cards and honors that link to the person's Hall of Fame cards.
  *          Used by the people pages, team rosters, editions, dispatches and the community desk.
  * SRP/DRY check: Pass — exact verified account matches reuse the shared identity ledger; every
  *          view draws a person through PersonPortrait so a face looks the same everywhere.
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { useQuery } from '@tanstack/react-query';
+import { collectionRoleLabel, collectionShareVersion, type NewsCollection } from '@shared/newsCollection';
+import { displayPortrait, personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
 
 /** A person's face. Decorative when their name is printed right beside it. */
 export function PersonPortrait({ person, size, decorative = false }: { person: NewsPerson; size: PortraitSize; decorative?: boolean }) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<string[]>([]);
+  const portrait = [displayPortrait(person), person.portrait].find(item => item && !failed.includes(item.src));
   const className = `news-portrait news-portrait-${size}`;
-  if (!person.portrait || failed) return <span className={`${className} news-portrait-initials`} aria-hidden="true">{personInitials(person.name)}</span>;
-  return <img className={className} src={person.portrait.src} alt={decorative ? '' : person.portrait.alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+  if (!portrait) return <span className={`${className} news-portrait-initials`} aria-hidden="true">{personInitials(person.name)}</span>;
+  return <img className={className} src={portrait.src} alt={decorative ? '' : portrait.alt} loading="lazy" decoding="async" onError={() => setFailed(previous => [...previous, portrait.src])} />;
 }
 
 /** Name with face and the person's top honor, for rosters and source lines. */
@@ -28,17 +31,37 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
 }
 
 /**
- * The one person a story features (featuredPerson in shared/news.ts: named in the headline, then
- * the dek, then first cited); roster members who are not in the story never get pulled in. Face, name, their team
- * in this contest and their top honor, so it reads as the subject, never as a byline.
+ * "In this story": the real ARC Prize card of every person the story names or cites, side by side like a
+ * binder page, each linking to its card page. A person with no card yet falls back to the compact portrait
+ * tile. Selection is shared with the initial HTML, not inferred from team rosters.
  */
-export function StoryFeature({ person, competition }: { person?: NewsPerson; competition: NewsCompetition }) {
-  if (!person) return null;
-  const team = [...person.memberships].reverse().find(member => member.competition === competition);
-  return <Link href={personPath(person.id)} className="news-story-feature">
-    <PersonPortrait person={person} size="card" decorative />
-    <span><em>In this story</em><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-story-feature-honor">{person.hallOfFame[0].label}</span>}</span>
-  </Link>;
+export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]; competition: NewsCompetition }) {
+  const cabinet = useQuery<NewsCollection>({
+    queryKey: ['/api/news/cards'], staleTime: 60_000,
+    queryFn: async () => {
+      const response = await fetch('/api/news/cards');
+      if (!response.ok) throw new Error('The cards could not be loaded.');
+      return response.json() as Promise<NewsCollection>;
+    },
+  });
+  if (!people.length) return null;
+  const cardOf = (person: NewsPerson) => cabinet.data?.cards.find(card => card.kind === 'person' && card.personId === person.id);
+  const carded = people.map(person => ({ person, card: cardOf(person) }));
+  const withCard = carded.filter(item => item.card), without = carded.filter(item => !item.card);
+  return <section className="news-story-people" aria-label="In this story">
+    <h2 className="news-section-title">In this story</h2>
+    {!!withCard.length && <div className="news-story-cards">{withCard.map(({ person, card }) => <Link key={card!.id} href={card!.cardUrl} className="news-story-card">
+      <img src={`/api/news/cards/${encodeURIComponent(card!.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card!)}`} width={300} height={420} loading="lazy"
+        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} />
+    </Link>)}</div>}
+    {!!without.length && <div className="news-story-people-grid">{without.map(({ person }) => {
+      const team = [...person.memberships].reverse().find(member => member.competition === competition);
+      return <Link key={person.id} href={personPath(person.id)} className="news-subject-card">
+        <PersonPortrait person={person} size="card" decorative />
+        <span className="news-subject-details"><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-subject-honor">{person.hallOfFame[0].label}</span>}</span>
+      </Link>;
+    })}</div>}
+  </section>;
 }
 
 /** What a face is doing in a story: the person's team in this contest, else their top honor. */
@@ -95,6 +118,7 @@ export function PersonCard({ person }: { person: NewsPerson }) {
 
 /** Where a face came from, printed under the profile portrait. */
 export function PortraitCredit({ person }: { person: NewsPerson }) {
+  if (person.editorialPortrait) return <p className="news-muted">AI editorial portrait based on <a href={person.editorialPortrait.sourceUrl}>{person.editorialPortrait.sourceTitle} ↗</a>.</p>;
   const portrait = person.portrait;
   if (!portrait) return null;
   return <p className="news-muted">{portrait.kind === 'kaggle'

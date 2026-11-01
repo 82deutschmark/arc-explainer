@@ -1,0 +1,29 @@
+{
+  "id": "2026-10-26-sebastian-brodehl-hero-avatar",
+  "createdAt": "2026-10-27T01:16:37.092510+00:00",
+  "generator": "Codex built-in image_gen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "prompt": "Create one square individual hero avatar for Sebastian Brodehl for The ARC Daily Digest character library. Reference 1 is Sebastian's OWN verified Kaggle avatar, authoritative identity: tan-grey anthropomorphic MOUSE with enormous round pink ears, spiky brown hair, friendly smiling muzzle, brown stubble/beard, black sunglasses with blue lenses and ivory collared shirt. Reference 2 is the newly generated four-character Architects scene, STYLE/COSTUME reference only. Preserve the exact mouse character from right foreground but make a NEW carefully composed individual portrait. Head-and-upper-torso, both enormous round ears fully visible within frame, striking ivory/graphite/copper cyber-engineer armor over ivory collar, glowing cyan drafting-compass wrist module held near chest, friendly confident ingenious smile, rich cinematic cyan and warm amber light. Beautiful sharp handcrafted expensive painterly 3D-comic detailing, matching the group scene, clear silhouette at tiny icon size. Background: restrained deep blue abstract luminous grid / architectural blueprint shapes. No other characters, no text, no name, no letters, no logo, no numbers, no watermark. Respectful editorial animal mascot based on his actual avatar, not a human likeness.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-26-sebastian-brodehl-kaggle-v1.png",
+      "sha256": "0b0e18a19c571252ba5a69dfefffaca86fb3ba8116bd286c188fd5a492501b5e"
+    },
+    {
+      "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+      "sha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c"
+    }
+  ],
+  "src": "/news-images/2026-10-26-sebastian-brodehl-hero-avatar.png",
+  "sha256": "a3aeeeec12d269b0519c5319321b841c2118ec99f8b1da6c6ccd9fe4529d4dfa",
+  "reviewedAt": "2026-10-27T01:16:37.092510+00:00",
+  "review": "Visually inspected. Group has exactly four distinct verified avatar characters, left to right fox David, cat Jan, duck Daniel, mouse Sebastian. All faces and mouse ears visible. Labeled version has correct four names, dated historical credits, team title and 8:43 PM EDT 16th/38.85 score badge. Individual mouse hero preserves Kaggle avatar identity and has no text. All equipment is editorial fantasy.",
+  "status": "reviewed-editor-preview",
+  "articleId": null,
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-26-sebastian-brodehl-hero-avatar.png",
+  "rawSha256": "a3aeeeec12d269b0519c5319321b841c2118ec99f8b1da6c6ccd9fe4529d4dfa",
+  "subjectId": "sebastian-brodehl"
+}

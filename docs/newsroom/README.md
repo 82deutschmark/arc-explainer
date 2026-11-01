@@ -7,6 +7,15 @@ the configuration conversation.
 This is the map. Every desk reads it first. The rules each desk follows live in one guide per
 desk (below); the Codex job instructions only point at them, so a rule is written once.
 
+Before competitor reporting or artwork selection, read the [team playbook](TEAM_PLAYBOOK.md).
+Use its exact competition/team/handle lookup, Card Cabinet and saved dossiers for informed
+background; the run’s fresh board remains the source for current standings.
+
+This lookup applies **whenever anyone is mentioned**, including briefings, handoffs,
+captions and social drafts. Use the improved Cabinet's permanent individual/team pages,
+linked roster histories, complete sourced careers and approved art. All seven active
+Codex reporting jobs reference this rule; backup and check-in guides follow it too.
+
 Every desk must follow the [head editor's completion order](FINISHING.md): verify once,
 finish publishing at the successful push, accept human send confirmation, and stop. The
 rule applies to manual work as well as scheduled shifts and overrides older wait instructions.
@@ -18,7 +27,7 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Desk | Who | When | Folder | Follows | May publish or send |
 |---|---|---|---|---|---|
 | Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
-| Late edition | Codex, GPT-6.1 Sol | 6:00 pm | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
+| Late edition | Codex, GPT-6.1 Sol | 5:00 pm artwork prepress; 6:00 pm release | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
 | Wire | Codex, GPT-6 Luna | every two hours (running; the Claude wire checks below only fill a missed shift) | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
 | Research | Codex, GPT-6.1 Sol | running (resumed by Mark; check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
 | Personal briefing | Codex, GPT-6.1 Sol | running (check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
@@ -27,6 +36,11 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |
 | Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
 | Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 7:05 am, after the morning edition | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |
+
+The Late automation has two passes: 5 pm prepares reference-based artwork before 6, and
+6 pm publishes the fixed-cutoff edition and its image-led announcement. Missing or unreviewed
+art blocks X; there is no text-only edition-send fallback. All desks use the full
+[Card Cabinet link](https://arc.markbarney.net/news/cards) in their handoffs and commissions.
 
 The scheduled editions use the bounded [publishing route](SCHEDULED_EDITIONS.md), then send one
 routine X announcement. Browser access is only for that send; Discord uses the existing relay.
@@ -44,6 +58,7 @@ The two editions, the wire and the backup push to `main`; the site redeploys its
 | `~/GitHub/arc-explainer-fallback` (`claude/newsroom-fallback`) | the backup desk | locked worktree, same rule |
 | `~/GitHub/arc-daily-collector` | collector scripts (scripts-only clone of `sonpham-org/arc-3`), `board-history/` (the saved boards), `job.log` | the paper's data source; keep |
 | `content/news/` in the repository | the published paper: `articles/`, `evidence/`, `wire/`, `wire-evidence/`, `dispatches/`, `artwork/`, the ledgers (`people.json`, `competitors.json`, `social*.json`, `discussions.json`) and the desk's data files (`editorial-assignments.json`, `artwork-inventory.json`, `visual-identities.json`, `social-watch.json`, `social-editorial.json`) | immutable once published |
+| `client/public/specials/` | hand-written special pages: the Saturday Special and the Weekend Magazine (cover, Arena Report, Field Guide, Who's Who, Final Hours), with live scoreboard, ticker and breaking bar | run by `scripts/weekend_magazine.py` only; see [WEEKEND_MAGAZINE.md](WEEKEND_MAGAZINE.md) and the drafts in [WEEKEND_POSTING_KIT.md](WEEKEND_POSTING_KIT.md) |
 | `~/bubba-workspace/reports/arc-daily-social/` | the private research archive: `state.json`, `public.json`, `founder-coverage.json`, `collections/`, `discussion-collections/`, `briefings/`, `discussion-briefings/`, and dated handoffs in `identity-leads/`, `founder-handoffs/`, `overnight/<date>/`, `art-planning/`, `editorial/<date>-<topic>/` | private; never staged into the repository |
 | `~/bubba-workspace/reports/arc-daily-x/` | X outboxes (`<date>-early-edition.json`, `-late-edition.json`, `-afternoon.json`) and the afternoon research handoff | send-once state lives here |
 | `~/Library/Logs/arc-daily-fallback/` | backup desk logs, working files and any `rescue-…` folder | |
@@ -54,6 +69,16 @@ dated folder under `reports/arc-daily-social/` that already exists for its kind.
 text is the article's own `discord` field and the relay announces the edition, so desks do not
 save separate Discord draft files. One-run briefs and drafts may live in `/tmp` (the backup desk
 uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100 SSD/`.
+
+The permanent [Card Cabinet](https://arc.markbarney.net/news/cards) is maintained through three core files:
+`content/news/people.json` keeps verified source identities, `cards.json` keeps stable card
+numbers, commissioned artwork bindings and dated snapshots, and `card-results.json` keeps
+explicitly official final honors. Follow [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) for their links
+to competitor facts, character mappings and artwork usage. Authorized maintenance uses
+`node --import tsx scripts/newsroom_cards.ts` with `refresh`, `check`, or
+`import-results <official.json>`; research-only desks leave changes to the publishing desk.
+Preserve native art and its inputs/provenance, held manuscripts and existing send receipts.
+Only verified official results supply final medals or awards; a public band does not.
 
 ## How to change what a desk does
 
@@ -84,6 +109,15 @@ uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100
   open), replaced rather than appended, no more than about forty lines. Rules never go there.
 
 ## Checks and alarms
+
+- **Execution access is part of the job.** A networked desk needs permission to reach the two
+  exact board URLs and write its designated checkout/outbox. A local DNS or permission error
+  is an execution-access failure until checked; it does not prove the site is down. Check the
+  active execution permissions and use the already authorized network-enabled path, then make
+  one recovery attempt. Do not change DNS, disable protections, or refresh in a loop. The shared
+  fetcher retries temporary HTTP 429/502/503/504 and timeout failures once. A failed source stays
+  separate from the other contest; preserve real errors and never substitute stale evidence.
+  If an access failure remains, report the blocked command and execution restriction explicitly.
 
 - Every morning the check-in ([CHECKIN.md](CHECKIN.md)) looks over the editions, the Codex runs, the
   wire, the site, the boards and the plumbing, runs the backup desk or restarts a stopped service if needed, and writes its report

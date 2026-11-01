@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-alijs-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "alijs",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-alijs-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-alijs-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "0f353e2aa07f1b76003d7fc02158fcdb862dfc254028d8d766edf0727d5ed38d",
+  "rawSha256": "0f353e2aa07f1b76003d7fc02158fcdb862dfc254028d8d766edf0727d5ed38d",
+  "toolOutput": "exec-9856823a-10e1-47cd-9698-12da09484798.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the actual man in the source: short light-brown hair, long slim face, ears, light eyes and friendly smile. Brilliant royal blue and white cyber engineer armor with copper circuitry, poised hand moving a glowing orange ARC square over a small grid. Confident relaxed veteran in the scoring hall.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the actual man in the source: short light-brown hair, long slim face, ears, light eyes and friendly smile. Brilliant royal blue and white cyber engineer armor with copper circuitry, poised hand moving a glowing orange ARC square over a small grid. Confident relaxed veteran in the scoring hall.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/alijs.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/alijs.webp",
+      "sha256": "c782d20045ebd49229c23afb75272d20690889b28f14470b8480953b161dd057",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/alijs1"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

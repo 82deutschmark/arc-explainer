@@ -1,0 +1,315 @@
+{
+  "personId": "fses91",
+  "handle": "fses91",
+  "checkedAt": "2026-10-30T12:48:08Z",
+  "method": "Built-in Claude browser pane, 30 Oct 2026. Loaded https://www.kaggle.com/fses91 then, after a pause, https://www.kaggle.com/fses91/competitions, one load each, no refreshes, no rate-limit or block page. Tier, rank, medal counts, completed list, ranks, team counts and displayed handles were read from the rendered page text and its element titles; the silver and bronze medal icons on the first four rows were also checked in a screenshot. The join date was read from the hover title on the 'Joined' line. The avatar image address was read from the profile page and the image was downloaded from Kaggle's public avatar storage. The older draft of this file (written while Kaggle was blocking us) was discarded and rebuilt from these two pages only.",
+  "sources": [
+    "https://www.kaggle.com/fses91",
+    "https://www.kaggle.com/fses91/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 1,
+      "bronze": 3
+    },
+    "competitionRank": 6819,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 1226,
+    "joinedTooltip": "Mon Feb 06 2017 11:00:36 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2017-02",
+    "location": "Vienna, Vienna, Austria",
+    "bioPresent": true,
+    "bioText": "Hi I am Florian",
+    "displayName": "fses91",
+    "activitySummary": "15 competitions solo, 2 in a team, 0 hosted (Kaggle's own activity box on the competitions page)"
+  },
+  "visibleCompetitionList": {
+    "totalCount": 17,
+    "activeCount": 1,
+    "completedCount": 16,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "scopeNote": "All 16 completed entries Kaggle displays are recorded below in the order shown (sorted by Best Result). Kaggle does not show exact finish dates, only relative labels such as '8 years ago'. Kaggle's competition list does not display a team name for any entry, so teamName is null throughout."
+  },
+  "activeCompetitions": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "daysToGoLabel": "3 days to go",
+      "displayedHandles": [
+        "gklambauer",
+        "fses91",
+        "dwellement0baser",
+        "lukasaichberger"
+      ],
+      "teamName": null,
+      "note": "Four accounts are shown on the active-competition card. No standing is shown on the profile; any public ARC leaderboard position is provisional until the close."
+    }
+  ],
+  "medalNote": "Rows with a medal value show a silver or bronze icon on Kaggle. Rows with null show no medal icon. The profile totals (1 silver, 3 bronze) are fully accounted for by the first four rows, so no other row carries a medal.",
+  "completedResults": [
+    {
+      "competition": "Santander Value Prediction Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-value-prediction-challenge",
+      "rank": 38,
+      "teams": 4463,
+      "medal": "silver",
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NFL Health & Safety - Helmet Assignment",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
+      "rank": 90,
+      "teams": 825,
+      "medal": "bronze",
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw Unintended Bias in Toxicity Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-unintended-bias-in-toxicity-classification",
+      "rank": 163,
+      "teams": 3165,
+      "medal": "bronze",
+      "displayedHandles": [
+        "fses91",
+        "phseidl"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null,
+      "note": "Shared entry: two accounts are displayed, so this bronze is a team medal."
+    },
+    {
+      "competition": "Porto Seguro’s Safe Driver Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
+      "rank": 364,
+      "teams": 5156,
+      "medal": "bronze",
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 765,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding",
+      "rank": 768,
+      "teams": 1516,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Generative Dog Images",
+      "competitionUrl": "https://www.kaggle.com/competitions/generative-dog-images",
+      "rank": 817,
+      "teams": 927,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Elo Merchant Category Recommendation",
+      "competitionUrl": "https://www.kaggle.com/competitions/elo-merchant-category-recommendation",
+      "rank": 836,
+      "teams": 4110,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2024 - Predict New Medicines with BELKA",
+      "competitionUrl": "https://www.kaggle.com/competitions/leash-BELKA",
+      "rank": 894,
+      "teams": 1950,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Recruit Restaurant Visitor Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+      "rank": 1119,
+      "teams": 2148,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "TGS Salt Identification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/tgs-salt-identification-challenge",
+      "rank": 1246,
+      "teams": 3219,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Home Credit Default Risk",
+      "competitionUrl": "https://www.kaggle.com/competitions/home-credit-default-risk",
+      "rank": 1275,
+      "teams": 7176,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa's Workshop Tour 2019",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-workshop-tour-2019",
+      "rank": 1544,
+      "teams": 1618,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santander Customer Transaction Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+      "rank": 3815,
+      "teams": 8751,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "IEEE-CIS Fraud Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/ieee-fraud-detection",
+      "rank": 4973,
+      "teams": 6351,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Final project: predict future sales",
+      "competitionUrl": "https://www.kaggle.com/competitions/competitive-data-science-final-project",
+      "rank": 647,
+      "teams": 1135,
+      "medal": null,
+      "displayedHandles": [
+        "fses91"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null,
+      "note": "Community, invitation-only course project (Coursera data science course), listed last by Kaggle's Best Result sort."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/fses91.webp",
+    "sourceUrl": "https://www.kaggle.com/fses91",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/900265-kg.PNG?t=2026-09-22-21-55-30",
+    "width": 320,
+    "height": 320,
+    "note": "Checked 30 Oct 2026. The saved 320px file and the current full-size Kaggle profile picture (400px, read from the profile page's avatar element) are the same single-person photo: one man in a dark cap, sunglasses and black shirt sitting on desert rocks holding a shark-shaped object, hills and blue sky behind. It is his own picture, not a group image or default avatar. The saved file is only a smaller crop of the same photo, so it was kept and not overwritten."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists fses91 as a Competitions Expert ranked 6,819 of 225,021, with one silver and three bronze competition medals, and a highest-ever rank of 1,226.",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "sourceTitle": "fses91 | Kaggle",
+      "checkedAt": "2026-10-30T12:48:08Z"
+    },
+    {
+      "text": "His Kaggle bio reads “Hi I am Florian”, and the profile places him in Vienna, Austria, with links to GitHub, LinkedIn and X accounts under the handle fses91.",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "sourceTitle": "fses91 | Kaggle",
+      "checkedAt": "2026-10-30T12:48:08Z"
+    },
+    {
+      "text": "His silver medal is for 38th place out of 4,463 teams in the Santander Value Prediction Challenge, an entry that shows only his own account.",
+      "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+      "sourceTitle": "fses91 completed competitions | Kaggle",
+      "checkedAt": "2026-10-30T12:48:08Z"
+    },
+    {
+      "text": "His bronze medals are for NFL Helmet Assignment (90th of 825 teams), Jigsaw Unintended Bias in Toxicity Classification (163rd of 3,165, a shared entry with the account phseidl, so a team medal) and Porto Seguro’s Safe Driver Prediction (364th of 5,156).",
+      "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+      "sourceTitle": "fses91 completed competitions | Kaggle",
+      "checkedAt": "2026-10-30T12:48:08Z"
+    },
+    {
+      "text": "His profile lists the live ARC Prize 2026 - ARC-AGI-3 entry with three other accounts, gklambauer, dwellement0baser and lukasaichberger, and shows him 765th of 1,455 teams in last year’s ARC Prize 2025, with no medal.",
+      "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+      "sourceTitle": "fses91 competitions | Kaggle",
+      "checkedAt": "2026-10-30T12:48:08Z"
+    }
+  ],
+  "teamNotes": "Only two of the 17 competitions on the profile are team entries, per Kaggle's activity box (15 solo, 2 in a team): the shared Jigsaw bronze with phseidl, and the live ARC-AGI-3 entry with gklambauer, dwellement0baser and lukasaichberger. The other completed entries show only fses91. Kaggle's profile does not display team names. The repo's public ARC-AGI-3 roster record (not re-read from Kaggle this pass) names his current team 'the last dance 🕺'; treat that team name as the roster's, not Kaggle's profile's. The Jigsaw bronze is a team medal and must not be described as his individual honour.",
+  "unverified": [
+    "Team names for any entry: Kaggle's profile and competitions pages do not show them.",
+    "Exact finish dates of completed competitions (only relative labels such as '8 years ago' are shown).",
+    "Real full name and affiliation: the Kaggle bio reads only “Hi I am Florian”. The older repo record’s claims that the linked GitHub account (github.com/fses91) is Florian Sestak and that he is an AI PhD candidate at JKU Linz were not re-checked this pass and are left out of the facts. The profile’s own location is Vienna, so do not adopt the Linz line from the older record or the stale draft without a fresh check.",
+    "Whether the four accounts on the ARC-AGI-3 card are the whole team: that is the card's display, matched against the repo roster record but not independently confirmed on Kaggle's team page.",
+    "Any current ARC-AGI-3 leaderboard position: none is shown on the profile, and public standings are provisional until the competition closes."
+  ],
+  "verified": true
+}

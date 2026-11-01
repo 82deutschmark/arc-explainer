@@ -795,5 +795,447 @@
       "https://arc.markbarney.net/news#2026-10-22-railway-platform-outage"
     ],
     "instructions": "Include a short service note about Railway’s ongoing platform outage and the editor-reported build delays. The validated dispatch 2026-10-22-railway-platform-outage contains the dated official 21:08 UTC update and current publication context. Use that saved report with its timestamp; do not add browsing or claim full platform recovery. Do not delay the edition waiting for deployment. Research remains paused."
+  },
+  {
+    "id": "arc2-standout-entrants-methods-followup",
+    "competition": "arc-2",
+    "createdAt": "2026-10-26T00:20:23Z",
+    "expiresAt": "2026-10-29T00:20:23Z",
+    "title": "Follow the evidence behind ARC-2 standout entrants",
+    "priority": "Editor-requested research follow-up",
+    "status": "pending",
+    "teamIds": [
+      "17166527",
+      "16784541"
+    ],
+    "personIds": [],
+    "subjectNames": [
+      "Thanh Hau Nguyen",
+      "Arshjot Khehra"
+    ],
+    "instructions": "The editor asks for useful snippets and stronger wire-desk research. Refresh the saved ARC-2 board, then inspect these verified roster accounts for public ARC-2 notebooks, competition discussions, write-ups and repositories. Report concrete accessible findings with links, dates and attribution; do not infer a shared recipe, model size, fine-tuning or hidden collaboration from scores or low submission counts. The wire already covered Nguyen’s debut on October 23 and Khehra’s debut on October 25; avoid refiling either. Nguyen’s later rise to 63.89 is a separate follow-up. Counts are recorded Kaggle submissions, not proof of first-ever attempts. If sources are unavailable or no method is established, say what was checked and keep the method unknown. Cover, hold or carry with a specific reason through the normal edition intake. No extra messages or entrant contact authorized.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/kaggle-leaderboard/arc-2",
+      "https://www.kaggle.com/thanhhau097a",
+      "https://www.kaggle.com/arshjot",
+      "https://arc.markbarney.net/news/wire#2026-10-23-1241-arc-2-thanh-hau-nguyen-debuts-at-34th",
+      "https://arc.markbarney.net/news/wire#2026-10-25-1804-arc-2-arshjot-khehra-debuts-at-45th"
+    ],
+    "verificationNotes": "Live markets feed and public wire index inspected October 25, 2026 EDT. Roster usernames are saved-board observations; method claims are not verified. Huikang page returned HTTP 403 to this assistant; our board is independently current."
+  },
+  {
+    "id": "oct27-early-kaggle-run-failures-investigation",
+    "competition": "arc-3",
+    "createdAt": "2026-10-27T02:26:24.630421+00:00",
+    "expiresAt": "2026-10-28T12:00:00Z",
+    "title": "Kaggle admits run problems. Who gives teams their lost week back?",
+    "priority": "Head editor explicitly commissioned this as the October 27 morning lead",
+    "status": "pending",
+    "targetEditionId": "2026-10-27-morning-arc-3",
+    "placement": "edition-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [],
+    "personIds": [
+      "jean-francois-puget",
+      "son-pham"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/morning-lead-draft.json",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/investigation.json",
+    "sourceUrls": [
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545231",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3543749",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/751344#3543186",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543815",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543925",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543941",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3544023",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3542775",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544781",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545267",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544607",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753007",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751756#3543750",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline",
+      "https://arcprize.org/competitions/2026"
+    ],
+    "instructions": "Lead the October 27 ARC3 Early edition with the head editor’s commissioned investigation, “Kaggle admits run problems. Who gives teams their lost week back?” Keep this headline unless a material development changes the story. This is the lead, not a short service note below a race recap. Give ARC2 its normal separate full edition.\n\nPUBLICATION OWNER: the existing 6 am America/New_York morning edition desk. Mark changed the story watch to every three hours. There is no separate 5:35 release and no dependency on a watch run at that time. Read editor-handoff.json and morning-editor-note.txt in the same private editorial folder as manuscriptPath, plus the latest watch-state.json and any newer dated evidence report. The saved five-section feature at featureDraftPath has passed newsroom.py dispatch-validate and carries direct primary sources. Before the edition’s first prepare call, inspect whether content/news/dispatches/2026-10-27-kaggle-run-failures-investigation.json already exists. If absent, use the prepared feature, incorporate material updates already verified in the handoff, set publishedAt to actual release time and identify the actual source-check date; validate then dispatch-publish it. This is explicitly commissioned publication from prepared research, with no new browser investigation required in the scheduled shift. Preserve an existing published feature; do not rewrite it. Once the feature exists, change this assignment to placement front-page-feature and featureId equal to its published ID, then prepare the morning edition so it reserves the full feature above the fresh ARC3 recap. Never point to a missing file. If preparation already happened, re-prepare once after this source/intake change. Mark covered only when the investigation substantively leads the edition. If safe release is blocked, hold it with the concrete reason and use the strongest verified discussion evidence for the lead.\n\nThe central findings: Kaggle acknowledged regional cache failures October 22–23. On October 24, engineer Dustin said earlier rescores were running; additional affected cases were under consideration. On October 26, María Cruz said the broader investigation continued and individual troubleshooting was capacity-constrained. Do not call this the first acknowledgment, say Kaggle knows nothing, or claim no reruns have occurred. Distinguish mounting failure, slow reads, startup zeros and late system errors. Explain what is still unknown: rerun eligibility and timing, COMPLETE/zero and affected nonzero cases, restored attempts, basic diagnostics and ARC Prize’s deadline decision. The last verified deadline is November 2 at 23:59 UTC; rules allow organizers to change it. No extension decision or organizer remedy was found in the reviewed public sources. No request for comment or interview was sent; do not report a refusal.\n\nKeep a lively newspaper voice centered on lost chances and fairness. Include high-vote complaints and concrete community evidence: CPMP’s mount failures, AquaUrsa’s plain-read tests, Huynh’s demand to consider affected positive scores, and reported recoveries. Votes show attention, not a census of harmed teams. Mark competes with Team Turducken; that team receives the same scrutiny as every other entrant. Thread-header and listing comment counts differ; do not publish a firm total. Public thread citation IDs in the brief include discussion-arc-3-751598, -752147, -751631, -753007 and -751756. The published feature supplies the direct primary citations, including the rules and engineer replies.\n\nPreserve the current six-am edition schedule, one routine Early X announcement and existing send-once Discord relay. No extra prepublication post, new research schedule, deployment polling or optional artwork hunt. Publish verified text on time if approved reusable art is unavailable. Stage the feature, assignment, both edition articles/evidence and only their intended related news files. Follow normal validation, final board freshness check, safe fetch/rebase/push and bounded distribution. A successful push finishes publication. The three-hour watch continues later reporting without rewriting the feature.",
+    "subjectNames": [
+      "Kaggle",
+      "ARC Prize"
+    ],
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/feature-draft.json",
+    "plannedFeatureId": "2026-10-27-kaggle-run-failures-investigation",
+    "publicationOwner": "the-arc-daily-morning-edition",
+    "handoffUpdatedAt": "2026-10-27T03:02:13.701166+00:00"
+  },
+  {
+    "id": "oct28-early-mostik-investigation",
+    "competition": "arc-3",
+    "createdAt": "2026-10-28T04:17:51.861879Z",
+    "expiresAt": "2026-10-29T12:00:00Z",
+    "title": "What happened to Mostik? The early ARC leader still sitting at 7.51",
+    "priority": "Head editor commissioned investigation for October 28 morning edition",
+    "status": "covered",
+    "targetEditionId": "2026-10-28-morning-arc-3",
+    "placement": "edition-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16364346"
+    ],
+    "personIds": [],
+    "subjectNames": [
+      "Mostik",
+      "mostik.ai",
+      "CSTL",
+      "Sasha Malysheva"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/article.txt",
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/feature-draft.json",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/investigation.json",
+    "plannedFeatureId": "2026-10-28-mostik-investigation",
+    "publicationOwner": "the-arc-daily-morning-edition",
+    "sourceUrls": [
+      "https://x.com/arcprize/status/2094455012432957926",
+      "https://x.com/aimalysheva/status/2095276258888503494",
+      "https://x.com/aimalysheva/status/2095232794792255848",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+      "https://arcprize.org/competitions/2026/arc-agi-3",
+      "https://x.com/arcprize/status/2105737436450201734",
+      "https://mostik.ai/read-more",
+      "https://www.wired.com/story/russian-startup-mostik-ai-models-communication/",
+      "https://x.com/aimalysheva/status/2109661765722079371",
+      "https://x.com/aimalysheva/status/2114763738192760985",
+      "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+    ],
+    "instructions": "Mark explicitly commissions this new Mostik investigation for the October 28 Early edition; this supersedes the older instruction to keep Mostik only as background. Use the prepared, dispatch-validated feature and editor-handoff.json in the same private folder. Before the first prepare call, inspect whether content/news/dispatches/2026-10-28-mostik-investigation.json exists. If absent, set the draft publishedAt to actual release time, refresh its current board figure from the normal edition feed, keep historical observations dated, validate and dispatch-publish. Preserve any already published feature. Only once that feature exists, set featureId to its ID on this assignment, then prepare so the full feature appears with the morning ARC3 recap. Do not substitute a brief mention or a box-score row for the commissioned article; mark covered only when substantively included. Keep the ARC2 edition and normal balanced race reporting. This is prepared commissioned research; no browser investigation, new art hunt, outreach, extra send or automation changes are requested in the scheduled shift. Source findings: ARC Prize announced CSTL at 7.51 on August 31; Malysheva explicitly identified former CSTL as Mostik September 2. Milestone 1 ended June 30, Milestone 2 September 30. Current entry still exists at 7.51; October founder posts show activity. Do not claim withdrawal, disqualification, company closure, proven bridge failure or commercial pivot. The cause of the stalled public score remains unknown. No request for comment was sent; never write declined to comment. Exact contest recipe is undisclosed in reviewed sources; the GLM/Qwen demonstration is not established as the contest configuration. Eight-account roster and company headcount are different measures. Refresh current rank once; retain dated live/collector differences as observations. Text publication should not wait for artwork. Normal successful push completes release; no deployment polling.",
+    "featureId": "2026-10-28-mostik-investigation",
+    "verificationNotes": "Full investigation published as a separately dated special report at the head editor’s explicit request; its later publication time puts it ahead of the morning recap. Original feature and edition preserved.",
+    "specialArticleId": "2026-10-28-special-investigation-mostik"
+  },
+  {
+    "id": "oct28-evening-broader-arc-trends",
+    "competition": "arc-3",
+    "createdAt": "2026-10-28T21:35:11.129739+00:00",
+    "expiresAt": "2026-10-29T02:00:00Z",
+    "title": "Special evening lead: The gaps hiding under ARC-1’s ceiling",
+    "priority": "Head editor explicitly commissioned this evening feature",
+    "status": "pending",
+    "targetEditionId": "2026-10-28-evening-arc-3",
+    "placement": "front-page-feature",
+    "commissionedBy": "mark-barney",
+    "featureId": "2026-10-28-beyond-arc1-ceiling",
+    "plannedFeatureId": "2026-10-28-beyond-arc1-ceiling",
+    "publicationOwner": "arc-agi-3-evening-leaderboard-recap",
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/feature-draft.json",
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/article.txt",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/editor-notes.json",
+    "teamIds": [],
+    "personIds": [
+      "jack-cole"
+    ],
+    "subjectNames": [
+      "Greg Kamradt",
+      "ARC Prize",
+      "Matt Mazur",
+      "Jack Cole"
+    ],
+    "sourceUrls": [
+      "https://x.com/arcprize/status/2115475078175395986",
+      "https://x.com/GregKamradt/status/2115476334151655838",
+      "https://x.com/GregKamradt/status/2115502318401769866",
+      "https://arcprize.org/leaderboard"
+    ],
+    "instructions": "Mark commissioned the special October 28 evening edition and corrected the angle: broad ARC-1/2 trends, the differences concealed by tied older scores, the useful next step of studying individual puzzles, and ARC-3 as learning through action. Plain English for normal readers; no math lecture or software jargon. The immutable feature is already published with its selected Beyond the Ceiling conceptual cover. Preserve it and reserve it IN FULL above the ARC3 evening recap using the protected frontPageFeatureId. Do not reduce it to a passing mention. Headline/dek/first section should foreground the feature, citing dispatch-2026-10-28-beyond-arc1-ceiling; second section must provide substantial fresh ARC3 race reporting. Publish a separate full ARC2 closing report. Prepare at/after 6 pm normally and preserve the cutoff, with one final freshness check. Do not use the 5:19 preview as closing evidence. Keep this assignment pending until preparation/inclusion; mark covered only when full front-page reservation and substantive citation are present. The editor paused further art after rejecting the arbitrary three-person workshop casting. Use the selected reviewed conceptual cover, not the Measuring Room or unreviewed Turducken experiment. No additional generation. Read evening-editor-handoff.json in the private folder for exact feature-led routine X copy and attachment; the X helper does not follow dispatch art automatically. The normal single routine evening X announcement is the only public announcement requested; preserve send-once outbox state. Discord preview already sent once, message 1565116420172550365, so do not duplicate it. Let normal relay own routine edition notices. A successful push completes publication; no deployment checks. No automation or app-code changes."
+  },
+  {
+    "id": "oct29-afternoon-open-endedness",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T16:29:06.514790+00:00",
+    "expiresAt": "2026-10-30T02:00:00Z",
+    "title": "The open-endedness of open-endedness",
+    "priority": "Head editor commissioned special afternoon edition with new ARC-grid illustration and one X announcement",
+    "status": "covered",
+    "commissionedBy": "mark-barney",
+    "targetEditionId": "2026-10-29-special-afternoon-open-endedness",
+    "placement": "edition-lead",
+    "specialArticleId": "2026-10-29-special-afternoon-open-endedness",
+    "teamIds": [],
+    "personIds": [],
+    "subjectNames": [
+      "Kenneth Stanley",
+      "ARC Prize"
+    ],
+    "sourceUrls": [
+      "https://x.com/GregKamradt/status/2115823228090462626",
+      "https://x.com/kenneth0stanley/status/2098955766845833451",
+      "https://arcprize.org/events/research-summit-2026",
+      "https://x.com/arcprize/status/2098849962754978152",
+      "https://x.com/mhmazur/status/2114714032850473187",
+      "https://proceedings.mlr.press/v119/wang20l.html",
+      "https://proceedings.mlr.press/v119/wang20l/wang20l.pdf",
+      "https://arxiv.org/abs/2406.04268",
+      "https://arcprize.org/arc-agi/3",
+      "https://x.com/GregKamradt/status/2107480627989938482"
+    ],
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-open-endedness/feature-draft.json",
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-open-endedness/article.txt",
+    "instructions": "Publish as the separately dated special afternoon feature with its full cover and original sources. One image-led X announcement explicitly authorized. Completed manual commission; preserve normal Early/Late jobs and do not repeat this special announcement."
+  },
+  {
+    "id": "oct29-evening-xz-profile",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T18:35:07.050334+00:00",
+    "expiresAt": "2026-10-30T02:00:00Z",
+    "title": "Eleven entries, fourth place: the cat on Turducken’s tail",
+    "priority": "Head editor explicitly commissioned the deeper evening lead and new scoring-hall illustration",
+    "status": "covered",
+    "targetEditionId": "2026-10-29-special-early-evening-xz",
+    "placement": "manual-early-evening-special",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "15487093",
+      "15605182",
+      "15486995",
+      "15499660",
+      "15770880"
+    ],
+    "personIds": [
+      "xz"
+    ],
+    "subjectNames": [
+      "xz",
+      "xiaoz259",
+      "Team Turducken"
+    ],
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/feature-draft.json",
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/article.txt",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/research-notes.json",
+    "plannedFeatureId": "2026-10-29-xz-cat-on-turduckens-tail",
+    "publicationOwner": "current-chat-one-time-4pm-special",
+    "sourceUrls": [
+      "https://www.kaggle.com/xiaoz259",
+      "https://www.kaggle.com/xiaoz259/competitions",
+      "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
+      "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843",
+      "https://arc.markbarney.net/news/2026-10-27-morning-arc-3",
+      "https://arc.markbarney.net/news/2026-10-29-morning-arc-3",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "artworkGenerationRecord": "2026-10-29-xz-enters-scoring-hall-v1",
+    "discordPreviewReceiptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-x/2026-10-29-xz-evening-preview-discord.json",
+    "instructions": "APPROVED — Boss has released the article for October 29 at 4 pm Eastern as an EARLY EVENING SPECIAL. This supersedes the review hold, 6 pm target, reaction gate and old publication sequence below. A dedicated one-time current-chat release will handle it. Read /Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/early-evening-release.json for exact source-refresh, publication, Discord-first/X and send-once paths. Full article ID 2026-10-29-special-early-evening-xz; URL https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz. The ordinary 6 pm publisher must not publish this feature again or duplicate its special X announcement. After confirmed publication mark this assignment covered. If this 4 pm release fails, report the saved failure; do not quietly substitute stale 4 pm reporting for 6 pm closing evidence.\n\nFINAL EDITS: Brief teaser/link for xz’s prior winning write-up; no technical-method summary. Caption describes the cat scene without the obvious-fantasy AI disclaimer. Keep native provenance internal. Refresh all current scores at release. Explicit Boss approval means no reaction check before X, but actual Discord image+article delivery still comes first. Kaggle wording is being shown to Boss in this chat before release; send the already-authorized friendly thank-you after article/Discord/X publication unless he changes or withdraws it. Preserve its separate send-once outbox.\n\nHistorical research handoff (release instructions above control):\nEDITOR REVIEW HOLD — supersedes the release instruction below. On October 29 the Boss requested the full sports column and giant-cat illustration to read BEFORE it goes out. The revised feature and article.txt are saved at their existing paths; read editor-review.json and the handoff. Do not dispatch-publish or attach this feature to a public edition until the Boss approves the reviewed draft. Old reactions on an illustration do not establish review of this new text. Hold this feature explicitly if approval has not arrived; ordinary verified closing reports may continue. After approval, refresh closing figures and proceed with the full feature, authorized distribution and conditional Kaggle thank-you.\n\nThe editor commissioned a substantive xz profile for October 29 Late edition, with the giant cream-faced blue-eyed cat entering the troubled scoring hall. This must advance the morning story, not repeat the overnight rank jump. Read feature-draft.json, research-notes.json and evening-editor-handoff.json at the saved paths. The revised full sports-column draft is saved for editor review; exact native artwork and avatar references are committed. Refresh the 6 pm race in the normal edition brief and use the latest already-researched incident handoff. The 14:22 afternoon preview is not closing evidence. Keep profile/previous-win reporting dated. All selected current discussion bodies were publicly readable logged out on October 29; timestamps and checks in research-notes.json. No new browser research required in scheduled shift.\n\nBefore the first scheduled prepare, inspect whether the planned dispatch file exists. If absent, set actual publishedAt and update affected score/closing language in the prepared feature; retain source check times. Validate and dispatch-publish. Only after it exists, set placement front-page-feature and featureId to the published dispatch, then prepare/reprepare once so the FULL illustrated feature leads both front page and permanent evening edition URL. Mark covered only after substantive inclusion. Give ARC2 its normal full closing report. If safe release fails, hold with concrete reason, preserve all drafts.\n\nReporting: public board lists eleven entries, not zero. Saved score 28.41 existed early October; 52.95/4th first observed October 29 09:20:48 UTC. The exact submission time is unknown. Profile: competition Master, rank15 observed, 1 gold/3 silver/5 bronze; first of4186 AI Agent Security and earlier ARC2024 rank341/1427, ARC2025 rank602/1455. Own-profile link verifies GitHub xz259. No real name/gender or full current ARC recipe established. Do not equate the prior winning method with this ARC system. xz’s no-previous-submission comment concerns a comparison in an infrastructure discussion; do not treat it as no contest history. Cottaar describes an approximate40-minute pre-notebook loss using controlled probes; Chen cannot separate infra from ordinary variance. Attribute these observations; no diagnosis of score gains or assertion all problems fixed. Older rescores-running and investigation statements remain dated. Do not invent an extension or promise reruns.\n\nArtwork: selected finished /news-images/2026-10-29-xz-enters-scoring-hall-v1.webp. Exact cat-avatar face, natural plume tail, modest GPU vest, Dries tall, 5spiders, 2correct bunnies, Puget/Ivan, 7Turducken crew and2Yorkies all eyeing cat. Native screen says4/xz, observed at14:22EDT. This is editorial fantasy. If closing rank changes, explicitly date illustration to the arrival at fourth; do not pass it off as the latest board or silently edit published art. No additional generation in the scheduled run. Attach this cover to the FEATURE, not just an unrelated recap.\n\nDiscord preview with exact image was sent once; receipt path is in this assignment/handoff. Do not send another identical preview. The authorized routine Late X announcement must lead this feature and upload the saved finished PNG from the original native path in the receipt (not a generic preview card). Check reactions on the exact Discord message: ANY human emoji reaction greenlights the X send; not restricted to Boss. Without one, keep draft with awaiting-discord-approval and stop; no monitor or polling. Preserve any existing posted routine outbox. No extra X announcement. Routine Discord relay and no-deployment-polling rules remain. No changes to automations or application code.\n\nPOST-PUBLICATION KAGGLE THANK-YOU — explicit Boss authorization, 29 October 2026: after this article posts this evening, post to the discussion thanking xz for sharing and mentioning the front page of ARC Daily Digest. No interview request; the editor declined that. Only after the full illustrated feature is substantively included and the evening git push succeeds, read /Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/evening-kaggle-thanks.json. Send its saved friendly message once to the saved Kaggle thread through the signed-in account. Record the comment ID/permalink, account and actual send time in that outbox, with one visible success screenshot. A confirmed send must never be repeated; inspect thread before retrying ambiguity. No posting before evening publication, no deployment checks and no new automation. If unavailable, leave a concrete delivery failure. This one-off authorization adds a Kaggle thank-you to the otherwise bounded evening workflow.\n\nPEOPLE CARDS — follow the 29 October update in VISUALS.md: all reported subjects in compact cards, not a one-person selection. xz own avatar and Chen’s native two-bunny portrait are registered. Keep person citations for individual reporting; no invented identity or roster expansion.",
+    "editorReview": {
+      "state": "approved",
+      "approvedAt": "2026-10-29T19:25:15.684977+00:00",
+      "approvedBy": "mark-barney",
+      "authority": "Direct instruction in this chat: Looks good. Run it as an early evening edition at 4 with the giant cat illustration. Refresh the scores, Discord first, then X. No reaction needed because it is already approved.",
+      "requestedEdits": [
+        "Replace the previous technical-summary section with a short teaser and direct links to the original winning write-up and reference code.",
+        "Remove the obvious-fantasy illustration disclaimer from the public caption."
+      ],
+      "draftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/feature-draft.json",
+      "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/article.txt",
+      "releaseAt": "2026-10-29T16:00:00-04:00",
+      "articleId": "2026-10-29-special-early-evening-xz",
+      "noReactionCheckRequired": true
+    },
+    "coveredBy": "2026-10-29-special-early-evening-xz",
+    "coveredAt": "2026-10-29T20:02:30.033949+00:00",
+    "articleUrl": "https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz"
+  },
+  {
+    "id": "oct30-last-dance-team-feature",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T21:16:32.579264Z",
+    "expiresAt": "2026-10-31T02:00:00Z",
+    "title": "The Last Dance: reserved full illustrated feature for October 30 Early",
+    "priority": "Boss-requested next-day team feature",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "targetEditionId": "2026-10-30-morning-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-29-last-dance-takes-the-floor",
+    "teamIds": [
+      "16021367"
+    ],
+    "personIds": [
+      "fses91",
+      "lukas-aichberger",
+      "mykyta-ielanskyi"
+    ],
+    "subjectNames": [
+      "the last dance 🕺",
+      "Florian Sestak",
+      "Lukas Aichberger",
+      "Mykyta Ielanskyi"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/last-dance-feature.txt",
+    "handoffPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/last-dance-editor-handoff.json",
+    "instructions": "Reserve the complete existing illustrated Last Dance dispatch for October 30 ARC3 Early at 6 am Eastern. It was already pushed on October 29; tomorrow is its front-page feature placement, not first publication. Use featureId through the normal protected front-page-feature mechanism, foreground the story in the edition headline/dek, cite its dispatch source and include the full feature on the permanent edition link. Read the saved handoff and notes. Fresh October 30 standings belong in the surrounding race report; preserve the dispatch’s original reporting, source times and reviewed breakdance cover. Reuse of this existing feature and its cover is explicitly commissioned by the Boss; no new image generation. Keep gklambauer ownership unresolved, the fourth masked dancer fictional, and the generic Kaggle goose out of personal-avatar claims. October 29 Late must CARRY this reservation, even if the dispatch enters normal intake; do not close it as covered before its target edition. Do not send or schedule a standalone Last Dance X post today. Tomorrow’s ordinary edition announcement follows the standing distribution procedure; no additional post is commissioned. The exact Discord cover preview already has a receipt: do not repeat it. Mark covered only after substantive target-edition inclusion, or leave a concrete held/carried reason.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news/2026-10-29-last-dance-takes-the-floor",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://www.kaggle.com/lukasaichberger"
+    ],
+    "verificationNotes": "Direct Boss instruction on October 29 to keep the feature for another day, tomorrow or similar, retain notes and investigate other teams. Target selected as October 30 Early using the existing edition schedule; no automation created. Three verified identities and one unresolved handle are documented in the frozen research and character library."
+  },
+  {
+    "id": "oct29-next-team-feature-research",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T21:16:32.579264Z",
+    "expiresAt": "2026-11-03T12:00:00Z",
+    "title": "Next team profiles: yktori, mtg and the uncovered front runners",
+    "priority": "Boss-requested reporting slate",
+    "status": "completed",
+    "commissionedBy": "mark-barney",
+    "placement": "research-desk",
+    "teamIds": [
+      "16760837",
+      "16153655",
+      "16490178",
+      "16569113",
+      "16132261",
+      "16958599",
+      "15488763"
+    ],
+    "subjectNames": [
+      "yktori",
+      "mtg",
+      "Grigoriy Zatravkin & co",
+      "復活の混テキスト",
+      "artificialagencylab.com",
+      "Majkel1337",
+      "AquaUrsa Research"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/next-team-feature-slate.json",
+    "instructions": "The Boss requested an audit of other teams needing investigation after reserving Last Dance for October 30 Early. The saved dated slate audits substantive features, people records and portrait inventory against the top 25. Priority order: yktori (sixth in October 29 4:52 pm board), mtg (seventh), Grigoriy Zatravkin & co (ninth), 復活の混テキスト (tenth), artificialagencylab.com (eleventh), Majkel1337 (twelfth), AquaUrsa Research (sixteenth). Refresh current ranks before any new story. Initial primary profile reporting for yktori and mtg is in initial-profile-reporting.json beside the slate. yktori has one displayed silver and four bronzes; mtg and Majkel race on both ARC boards. Develop sourced sports/celebrity profiles: prior competitions, actual public discussions, collaborations, verified identities and stated next steps. These are reporting leads, not seven completed manuscripts or a demand to cram them into one issue. Carry/hold the research item explicitly when no substantive new reporting is ready. No outreach, standalone X send or new automation is authorized. Existing xz coverage belongs to team 15487093, now named faster machine is all you need; do not create a duplicate dossier for the rename. Do not use a generic Kaggle goose as a personal avatar.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://www.kaggle.com/yktori/competitions",
+      "https://www.kaggle.com/michaeltgao/competitions",
+      "https://artificialagencylab.com/"
+    ],
+    "verificationNotes": "Read-only inventory audit plus primary-profile research; detailed source links and remaining tasks are saved in the private handoff. Snapshot 2026-10-29T20:52:21Z, 4,972 teams. Portrait gap means none saved in inventory, not none available online.",
+    "completedAt": "2026-10-29T23:50:07.085614Z",
+    "completionNotes": "Seven complete sourced features and reviewed avatars saved; seven illustrated cheat sheets delivered to rollout feed on the Boss’s explicit instruction. New Darren/Domdolus feature is the corrected priority; separate feature reserve retains all manuscripts. No X sends.",
+    "deliverablesIndex": "/Users/macmini/GitHub/arc-explainer-newsroom/docs/newsroom/feature-reserve/2026-10-29/index.json"
+  },
+  {
+    "id": "oct29-held-team-profile-reserve",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T23:50:07.085614Z",
+    "expiresAt": "2026-11-04T12:00:00Z",
+    "status": "pending",
+    "title": "Held team-feature manuscripts and saved character artwork",
+    "priority": "Boss-requested later-edition feature reserve",
+    "commissionedBy": "mark-barney",
+    "placement": "feature-reserve",
+    "teamIds": [
+      "16760837",
+      "16153655",
+      "16490178",
+      "16569113",
+      "16132261",
+      "16958599",
+      "15488763"
+    ],
+    "manuscriptPath": "/Users/macmini/GitHub/arc-explainer-newsroom/docs/newsroom/feature-reserve/2026-10-29/index.json",
+    "instructions": "Seven completed ARC3 team features, led by yktori, are saved in the committed held-feature reserve with reviewed recurring avatars, exact source notes and public source links. Keep The Last Dance’s existing October30 Early reservation intact. Do not publish all reserve stories now. Select a later edition and refresh standings/rosters/current wording before release; preserve historical individual/team honors and unresolved identities. The Boss explicitly authorized the illustrated cheat sheets to ARC3 rollout feed, and those seven messages are already sent with receipts; do not duplicate them. X remains held. All selected art is archived and must be preserved, including the art-only nvbanana duo. Darren/Domdolus Tolus is separately commissioned as the current ARC2 people-feature priority.",
+    "sourceUrls": [
+      "https://www.kaggle.com/yktori",
+      "https://www.kaggle.com/michaeltgao",
+      "https://www.kaggle.com/majkel1337"
+    ],
+    "verificationNotes": "Eight completed manuscripts in the committed reserve including Darren; no publication timestamps assigned. Curated art library preserves raw native outputs, inputs, exact prompts and cast mappings."
+  },
+  {
+    "id": "oct29-darren-domdolus-team-feature",
+    "competition": "arc-2",
+    "createdAt": "2026-10-29T23:50:07.085614Z",
+    "expiresAt": "2026-11-04T12:00:00Z",
+    "status": "pending",
+    "title": "Darren Amadeus Martin and Domdolus Tolus: fifth-place gold and the ARC2 campaign",
+    "priority": "Boss-corrected highest-priority people feature",
+    "commissionedBy": "mark-barney",
+    "placement": "held-feature",
+    "teamIds": [
+      "16559402"
+    ],
+    "subjectNames": [
+      "Darren Amadeus Martin",
+      "Alwin Theodoric",
+      "Muhammad Yassir Ramadhan",
+      "Billy Anggara",
+      "Tri Ardian Rinalda"
+    ],
+    "manuscriptPath": "/Users/macmini/GitHub/arc-explainer-newsroom/docs/newsroom/feature-reserve/2026-10-29/domdolus-tolus/feature-draft.json",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/research.json",
+    "instructions": "The Boss explicitly identified Darren Amadeus Martin and his team as the intended subject, correcting an earlier placing-based selection of nvbanana. The full sports feature and completed scoring-hall cast artwork are saved. Use all five correct names and exact ARC2 team16559402; the five also earned fifth-of4,185 gold together in Nemotron. Darren’s public October28 statement identifies ARC2 as their closing focus. Refresh the race before a later edition. The artwork shows six figures for five accounts because Darren’s own avatar is TWOdogs; Alwin/Yassir use own portraits and Billy/Tri fictional opaque helmets. Preserve this exact mapping and every source input. Do not produce a NVIDIA-team writeup; retain that unrelated duo artwork as art only. The Boss requested cheat sheets to rollout feed; save/read the existing Darren delivery receipt before any send, and never duplicate a confirmed message. X is held. No immediate feature publication time is assigned.",
+    "sourceUrls": [
+      "https://www.kaggle.com/darrenamadeusmartin",
+      "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546036"
+    ],
+    "verificationNotes": "Fresh exact-account roster and past result cards verified. Completed manuscript819words, five sourced sections. Art was generated from three inspected owner images, with two explicit fictional stand-ins.",
+    "artworkGenerationRecord": "2026-10-29-domdolus-tolus-avatar-v1-base",
+    "discordCheatSheetUrl": "https://discord.com/channels/@me/1550165647911034940/1565512874628096143",
+    "discordCheatSheetMessageId": "1565512874628096143"
+  },
+  {
+    "id": "oct30-friday-night-jeroen-front-page",
+    "competition": "arc-2",
+    "createdAt": "2026-10-30T21:17:58.035796Z",
+    "expiresAt": "2026-10-31T03:00:00Z",
+    "status": "pending",
+    "title": "Jeroen Cottaar and Darren Amadeus Martin — Friday Night Special",
+    "priority": "Boss-commissioned special edition",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16756524",
+      "16559402"
+    ],
+    "subjectNames": [
+      "Jeroen Cottaar",
+      "Darren Amadeus Martin"
+    ],
+    "targetEditionId": "2026-10-30-evening-arc-2-preview",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+    "instructions": "The Boss has authorized the Friday Night Special for publication. Print the Jeroen feature in full with its approved Tufa Citadel cover, and develop Darren / Domdolus Tolus with all five names and their gold-medal history. Deliver both exact covers to rollout-feed for human reaction before X. This commission does not replace the scheduled 6 pm edition.",
+    "sourceUrls": [
+      "https://www.kaggle.com/jeroencottaar",
+      "https://www.kaggle.com/darrenamadeusmartin"
+    ]
+  },
+  {
+    "id": "oct31-saturday-chan-front-page",
+    "competition": "arc-2",
+    "createdAt": "2026-10-31T17:49:32Z",
+    "expiresAt": "2026-11-01T03:00:00Z",
+    "status": "pending",
+    "title": "Chan Kha Vu and V | A | M — Saturday afternoon special",
+    "priority": "Boss-commissioned special edition",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16600664"
+    ],
+    "subjectNames": [
+      "Chan Kha Vu"
+    ],
+    "targetEditionId": "2026-10-31-evening-arc-2-preview",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-31-saturday-chan-vam-top-ten",
+    "instructions": "Lead with Chan and V | A | M; include NV Banana and the NVARC3 companion. Hold X for editor review.",
+    "sourceUrls": [
+      "https://x.com/chankhavu/status/2116281051702280456",
+      "https://www.kaggle.com/chankhavu"
+    ]
   }
 ]

@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-11-01T16:01:17Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "UNK enters ARC-3 gold places",
+  "id": "2026-11-01-1104-arc-3-unk-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-11-01T16:04:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "UNK moved from 27th to 17th at 41.00, a gain of 2.16, entering the 17 gold places."
+    }
+  ],
+  "since": "2026-10-31T15:58:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T16:04:16Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16609552"
+  ]
+}

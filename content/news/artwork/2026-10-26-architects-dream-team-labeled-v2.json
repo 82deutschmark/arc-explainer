@@ -1,0 +1,20 @@
+{
+  "id": "2026-10-26-architects-dream-team-labeled-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedBy": "gpt-6.1-sol",
+  "createdAt": "2026-10-27T01:33:07.682696+00:00",
+  "prompt": "Use case: text-localization. Edit this image with ONE extremely small typography change only. In the top-right ARC-AGI-3 scoreboard, replace the lowest line 'Public board • 26 Oct, 8:43 PM EDT' with exactly 'Public board • 26 October 2026'. Remove the clock time completely. Preserve every other pixel and element as closely as possible: all four characters, all faces and ears and glasses and costumes, composition, city, every other label and its correct spelling, the #16 and 38.85, masthead, date, four names and historical credits, title and footer. No new artwork, no re-layout, no extra text. Retain the existing landscape dimensions and crisp legible typography. Target line only, matching its current ivory serif font and alignment.",
+  "rawSrc": "/news-images/2026-10-26-architects-dream-team-labeled-v2.png",
+  "rawSha256": "2ed36934b5ebc50389abe87131d54f8d0fd1d238b2f2156e403df1c6b1336e99",
+  "parentGenerationRecord": "2026-10-26-architects-dream-team-labeled",
+  "references": [
+    {
+      "src": "/news-images/2026-10-26-architects-dream-team-labeled.png",
+      "sha256": "81ea1901fb04d2c835fab75a9f7737d7a3501c645ccd4d687bd902d319b23269"
+    }
+  ],
+  "review": "Visually inspected final native edit: top-right score badge now reads Public board • 26 October 2026 without a clock. Four correct identities, all four names and historical credits, #16/38.85, the scene and the title remain intact.",
+  "reviewedAt": "2026-10-27T01:33:07.682696+00:00",
+  "articleId": "2026-10-26-architects-superteam-enters-gold"
+}

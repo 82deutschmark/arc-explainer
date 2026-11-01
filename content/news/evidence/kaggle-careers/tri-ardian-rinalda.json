@@ -1,0 +1,190 @@
+{
+  "personId": "tri-ardian-rinalda",
+  "handle": "rinnnntt",
+  "name": "Tri Ardian Rinalda",
+  "checkedAt": "2026-10-30T13:30:00Z",
+  "method": "Read-only visit on 2026-10-30 to the public Kaggle About page and Competitions page, using the app's built-in browser (one tab, one load per page, about six seconds of waiting each, nothing clicked or submitted). Page text, a screenshot of the competition list, and the page elements for the medal icon, the join tooltip and the avatar image were read. The ARC leaderboard rows were read from the project's own public board snapshot (curl, read-only). No older draft existed for this person, so nothing was carried over from one.",
+  "sources": [
+    "https://www.kaggle.com/rinnnntt",
+    "https://www.kaggle.com/rinnnntt/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "displayName": "Tri Ardian Rinalda",
+    "headline": "Student at Institute of Science Tokyo",
+    "location": "Meguro City, Tokyo, Japan",
+    "competitionTier": null,
+    "competitionTierNote": "No tier badge or tier name was displayed on the profile page at the time of checking. Not inferred from the medal list.",
+    "medals": null,
+    "medalsNote": "The profile shows no medal-totals panel. The only medal visible is the gold on the one completed competition below, which is a team result.",
+    "teamMedalsOnVisibleCompetitionList": {
+      "allFromTeamResults": true,
+      "individualMedalsConfirmed": false,
+      "gold": 1,
+      "silver": 0,
+      "bronze": 0
+    },
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "joinedTooltip": "Sat Mar 30 2024 10:51:07 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2024-03",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "linkedInLinkShown": true,
+    "counts": {
+      "competitions": 3,
+      "datasets": 2,
+      "code": 1,
+      "writeups": 1,
+      "followers": 2
+    },
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInATeam": 3,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 1,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge"
+    ],
+    "scopeNote": "Only this one completed record is publicly displayed. Do not invent other finishes or treat the list as the account's whole history."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "type": "Featured",
+      "rank": 5,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ],
+      "teamName": null,
+      "teamNameNote": "The Kaggle competition list does not show a team name. The earlier record names this team Domdolus Tolus from its public write-up, which was not opened in this check.",
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null,
+      "creditNote": "A five-account team result. The gold medal is the team's, shown on each member's profile; it is not an individual finish."
+    }
+  ],
+  "activeCompetitions": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-2",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "status": "3 days to go when checked",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ]
+    },
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "status": "3 days to go when checked",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ]
+    }
+  ],
+  "arcStandingsProvisional": [
+    {
+      "competition": "arc-2",
+      "teamId": "16559402",
+      "teamName": "Domdolus Tolus",
+      "rank": 4,
+      "teams": 3535,
+      "score": 83.47,
+      "entries": 48,
+      "members": [
+        "alwintheodoric",
+        "billyanggara",
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "yassirramadhan"
+      ],
+      "boardFetchedAt": "2026-10-30T13:24:19Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "status": "provisional public leaderboard; final standing and medals are set on the private leaderboard at the close"
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16534961",
+      "teamName": "Domdolus Tolus",
+      "rank": 2225,
+      "teams": 4984,
+      "score": 4.99,
+      "entries": 7,
+      "members": [
+        "alwintheodoric",
+        "billyanggara",
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "yassirramadhan"
+      ],
+      "boardFetchedAt": "2026-10-30T13:24:18Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "status": "provisional public leaderboard; final standing and medals are set on the private leaderboard at the close"
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/rinnnntt",
+    "note": "The Kaggle profile avatar is Kaggle's own default avatar (a drawn goose), served as the default image file, and the same default thumbnail appears beside rinnnntt in the team strip. No picture of Tri Ardian Rinalda is public on the checked pages, and no portrait file exists under news-images/people for this person. The only other art on file is a fictional helmeted figure inside a team illustration, which is a stand-in and not usable. The LinkedIn link on the profile was not opened. Do not use the default avatar, a group image or the fictional figure as this person's picture."
+  },
+  "facts": [
+    {
+      "text": "Tri Ardian Rinalda lists a student role at Institute of Science Tokyo, based in Meguro City, Tokyo, and has been on Kaggle since March 2024.",
+      "sourceUrl": "https://www.kaggle.com/rinnnntt",
+      "sourceTitle": "Tri Ardian Rinalda — public Kaggle profile",
+      "checkedAt": "2026-10-30T13:30:00Z"
+    },
+    {
+      "text": "Kaggle lists the NVIDIA Nemotron Model Reasoning Challenge entry as 5th of 4,185 teams with a gold medal, shown beside five team accounts including rinnnntt. It is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/rinnnntt/competitions",
+      "sourceTitle": "Tri Ardian Rinalda — completed Nemotron result on Kaggle",
+      "checkedAt": "2026-10-30T13:30:00Z"
+    },
+    {
+      "text": "On the public ARC-AGI-2 leaderboard snapshot of 30 October, the five-account Domdolus Tolus team that includes rinnnntt sits 4th of 3,535 teams. This standing is provisional until the private leaderboard decides it.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "sourceTitle": "ARC-AGI-2 public board snapshot — Domdolus Tolus",
+      "checkedAt": "2026-10-30T13:30:00Z"
+    },
+    {
+      "text": "On the public ARC-AGI-3 leaderboard snapshot of 30 October, the same five-account Domdolus Tolus team sits 2,225th of 4,984 teams. This standing is provisional until the private leaderboard decides it.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-AGI-3 public board snapshot — Domdolus Tolus",
+      "checkedAt": "2026-10-30T13:30:00Z"
+    }
+  ],
+  "teamNotes": "The Nemotron entry on the Kaggle list shows the same five accounts (darrenamadeusmartin, rinnnntt, alwintheodoric, yassirramadhan, billyanggara) that the ARC-AGI-2 and ARC-AGI-3 boards list under the team name Domdolus Tolus. That the Nemotron team used the same name is carried from the earlier record and is not confirmed on the pages read here. Medals and finishes belong to the team; none is credited to Tri Ardian Rinalda alone.",
+  "unverified": [
+    "The Nemotron team's name, Domdolus Tolus, and the claim that its public write-up credits all five members. The write-up page was not opened in this check, so these stay carried over from the earlier record.",
+    "Kaggle competitions tier and overall competition ranking. Neither was displayed on the profile pages.",
+    "Exact completion date of the Nemotron challenge; Kaggle shows only 4 months ago.",
+    "The LinkedIn account behind the profile link, and any public picture of Tri Ardian Rinalda there. Not opened.",
+    "Any other competitions or finishes, since the profile lists only one completed record."
+  ],
+  "rateLimited": false,
+  "verified": true
+}

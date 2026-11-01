@@ -1,0 +1,460 @@
+{
+ "version": 1,
+ "series": {
+  "id": "hall-of-fame-2025",
+  "name": "ARC Raiders",
+  "title": "ARC Hall of Fame",
+  "season": "2025",
+  "page": "https://arc.markbarney.net/hall-of-fame",
+  "fetchedAt": "2026-10-30T19:06:49Z"
+ },
+ "cards": [
+  {
+   "id": 1,
+   "path": "/hall-of-fame#contributor-1",
+   "name": "Alexia Jolicoeur-Martineau",
+   "handle": "jm_alexia",
+   "year": 2025,
+   "category": "top_paper_award",
+   "achievement": "2025 Top Paper Award: \"Less is More: Recursive Reasoning with Tiny Networks\" (TRM)",
+   "score": "~45% ARC-AGI-1, ~8% ARC-AGI-2",
+   "rank": 1,
+   "team": "Samsung SAIL Montréal",
+   "affiliation": "Samsung SAIT Montréal, Senior AI Researcher",
+   "images": [
+    "/alexiaJM4.png"
+   ]
+  },
+  {
+   "id": 25,
+   "path": "/hall-of-fame#contributor-25",
+   "name": "Dries Smit",
+   "handle": "DriesSmit",
+   "year": 2025,
+   "category": "arc3_preview",
+   "achievement": "1st Place ARC-AGI-3 Agent Preview 2025 (12.58%)",
+   "score": "12.58% (1st Place)",
+   "rank": 1,
+   "team": "Tufa AI",
+   "affiliation": "Independent Researcher / MindsAI & Tufa Labs",
+   "images": [
+    "/dries.png"
+   ]
+  },
+  {
+   "id": 7,
+   "path": "/hall-of-fame#contributor-7",
+   "name": "Team NVARC (Jean-François Puget & Ivan Sorokin)",
+   "handle": "JFPuget & lytic",
+   "year": 2025,
+   "category": "competition_winner",
+   "achievement": "1st Place ARC Prize 2025 (24.03%)",
+   "score": "24.03% (1st Place)",
+   "rank": 1,
+   "team": "NVARC",
+   "affiliation": "NVIDIA - Machine Learning & Kaggle Grandmasters",
+   "images": [
+    "/jfPuget3.png",
+    "/ivanARC2.png"
+   ]
+  },
+  {
+   "id": 5,
+   "path": "/hall-of-fame#contributor-5",
+   "name": "ARChitects (Franzen, Disselhoff, Hartmann)",
+   "handle": null,
+   "year": 2025,
+   "category": "competition_winner",
+   "achievement": "2nd Place ARC Prize 2025 (16.53%)",
+   "score": "16.53% (2nd Place)",
+   "rank": 2,
+   "team": "ARChitects",
+   "affiliation": "JGU Mainz / Lambda, Inc.",
+   "images": [
+    "/ARChitechts.png"
+   ]
+  },
+  {
+   "id": 2,
+   "path": "/hall-of-fame#contributor-2",
+   "name": "SOAR Team (Pourcel, Colas, Oudeyer)",
+   "handle": null,
+   "year": 2025,
+   "category": "paper_award",
+   "achievement": "2nd Place 2025 Paper Award: \"Self-Improving Language Models for Evolutionary Program Synthesis\" (SOAR)",
+   "score": "2nd Place 2025 Paper Award",
+   "rank": 2,
+   "team": "SOAR",
+   "affiliation": "LLM4Code / Inria & Sorbonne University",
+   "images": [
+    "/julienPourcel.png"
+   ]
+  },
+  {
+   "id": 3,
+   "path": "/hall-of-fame#contributor-3",
+   "name": "Isaac Liao",
+   "handle": null,
+   "year": 2025,
+   "category": "paper_award",
+   "achievement": "3rd Place 2025 Paper Award: \"ARC-AGI Without Pretraining\" (CompressARC)",
+   "score": "ARC-AGI-1: 34.75% (training), 20% (evaluation); AR",
+   "rank": 3,
+   "team": null,
+   "affiliation": "Carnegie Mellon University, Graduate Researcher",
+   "images": [
+    "/isaacliao.png"
+   ]
+  },
+  {
+   "id": 27,
+   "path": "/hall-of-fame#contributor-27",
+   "name": "IsaiahP",
+   "handle": "pressman1",
+   "year": 2025,
+   "category": "competition_winner",
+   "achievement": "3rd Place ARC Prize 2025 with MindsAI & Tufa Labs",
+   "score": "12.6% (3rd Place, team)",
+   "rank": 3,
+   "team": "MindsAI & Tufa Labs",
+   "affiliation": "MindsAI & Tufa Labs (2025); Tufa Labs (2026)",
+   "images": [
+    "/news-images/people/isaiahp.webp"
+   ]
+  },
+  {
+   "id": 9,
+   "path": "/hall-of-fame#contributor-9",
+   "name": "Team MindsAI (Jack Cole & Dries Smit)",
+   "handle": null,
+   "year": 2025,
+   "category": "competition_winner",
+   "achievement": "3rd Place ARC Prize 2025 (15.42% on public ARC-AGI-2)",
+   "score": "15.42% (3rd Place)",
+   "rank": 3,
+   "team": "MindsAI",
+   "affiliation": "MindsAI & Tufa Labs",
+   "images": [
+    "/jackCole2.png",
+    "/dries.png"
+   ]
+  },
+  {
+   "id": 26,
+   "path": "/hall-of-fame#contributor-26",
+   "name": "Lonnie",
+   "handle": "lonnieqin",
+   "year": 2025,
+   "category": "competition_winner",
+   "achievement": "4th Place ARC Prize 2025 (6.7%)",
+   "score": "6.7% (4th Place)",
+   "rank": 4,
+   "team": "Lonnie",
+   "affiliation": "Kaggle competitor",
+   "images": [
+    "/news-images/people/lonnie.webp"
+   ]
+  },
+  {
+   "id": 24,
+   "path": "/hall-of-fame#contributor-24",
+   "name": "Dr. Jeremy Budd",
+   "handle": "jez2718",
+   "year": 2025,
+   "category": "researcher",
+   "achievement": "ARC Research Presenter - Inverse Problem Formulation",
+   "score": "Theoretical Research Contribution",
+   "rank": null,
+   "team": "University of Birmingham",
+   "affiliation": "University of Birmingham, Assistant Professor",
+   "images": [
+    "/jbudd.png"
+   ]
+  },
+  {
+   "id": 22,
+   "path": "/hall-of-fame#contributor-22",
+   "name": "Eric Pang",
+   "handle": null,
+   "year": 2025,
+   "category": "researcher",
+   "achievement": "ARC-AGI-2 SoTA: Efficient Evolutionary Program Synthesis with Grok-4 and DreamCoder-inspired library learning",
+   "score": "Outperforms frontier models on ARC-AGI-1 & ARC-AGI",
+   "rank": null,
+   "team": null,
+   "affiliation": "Amazon (Machine Learning Engineer; previously Quora), University of Waterloo Math/CS",
+   "images": [
+    "/ericpang.jpeg"
+   ]
+  },
+  {
+   "id": 4,
+   "path": "/hall-of-fame#contributor-4",
+   "name": "Jeremy Berman",
+   "handle": "jerber888",
+   "year": 2025,
+   "category": "researcher",
+   "achievement": "New SOTA: 79.6% on ARC v1, 29.4% on ARC v2",
+   "score": "79.6% SOTA",
+   "rank": null,
+   "team": null,
+   "affiliation": "Independent Researcher",
+   "images": [
+    "/jberARC.png"
+   ]
+  },
+  {
+   "id": 6,
+   "path": "/hall-of-fame#contributor-6",
+   "name": "ARChitects 2024 (Franzen, Disselhoff, Hartmann)",
+   "handle": null,
+   "year": 2024,
+   "category": "competition_winner",
+   "achievement": "1st Place ARC Prize 2024 (53.5%)",
+   "score": "53.5% (1st Place)",
+   "rank": 1,
+   "team": "ARChitects",
+   "affiliation": "Johannes Gutenberg University Mainz, Germany",
+   "images": [
+    "/ARChitechts.png"
+   ]
+  },
+  {
+   "id": 10,
+   "path": "/hall-of-fame#contributor-10",
+   "name": "Jack Cole (2024)",
+   "handle": null,
+   "year": 2024,
+   "category": "competition_winner",
+   "achievement": "MindsAI: Highest score 55.5% on ARC Prize 2024 (ineligible)",
+   "score": "55.5% (Highest, ineligible)",
+   "rank": 2,
+   "team": "MindsAI",
+   "affiliation": "MindsAI Team",
+   "images": [
+    "/jackcole.jpeg"
+   ]
+  },
+  {
+   "id": 28,
+   "path": "/hall-of-fame#contributor-28",
+   "name": "alijs",
+   "handle": "alijs1",
+   "year": 2024,
+   "category": "competition_winner",
+   "achievement": "3rd Place ARC Prize 2024 (40%)",
+   "score": "40% (3rd Place)",
+   "rank": 3,
+   "team": "alijs",
+   "affiliation": "Kaggle competitor",
+   "images": [
+    "/news-images/people/alijs.webp"
+   ]
+  },
+  {
+   "id": 29,
+   "path": "/hall-of-fame#contributor-29",
+   "name": "gromml",
+   "handle": "gromml",
+   "year": 2024,
+   "category": "competition_winner",
+   "achievement": "5th Place ARC Prize 2024 with PoohAI (37%)",
+   "score": "37% (5th Place, team)",
+   "rank": 5,
+   "team": "PoohAI",
+   "affiliation": "PoohAI (2024)",
+   "images": []
+  },
+  {
+   "id": 8,
+   "path": "/hall-of-fame#contributor-8",
+   "name": "Guillermo Barbadillo",
+   "handle": "ironbar",
+   "year": 2024,
+   "category": "competition_winner",
+   "achievement": "5th Place ARC Prize 2025 - 6.53% accuracy (semi-private eval)",
+   "score": "6.53% (5th Place) / 11.94% (Public Kaggle)",
+   "rank": 5,
+   "team": "Veridas",
+   "affiliation": "Veridas AI",
+   "images": [
+    "/guillermo.png"
+   ]
+  },
+  {
+   "id": 14,
+   "path": "/hall-of-fame#contributor-14",
+   "name": "Clément Bonnet",
+   "handle": null,
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "3rd Place Paper Award - Latent Program Network",
+   "score": "Paper Award (3rd)",
+   "rank": null,
+   "team": null,
+   "affiliation": "Independent Researcher",
+   "images": []
+  },
+  {
+   "id": 13,
+   "path": "/hall-of-fame#contributor-13",
+   "name": "Ekin Akyürek",
+   "handle": "akyurekekin",
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "2nd Place Paper Award - 53.0% on public validation, 61.9% when ensembled",
+   "score": "53.0% (61.9% ensemble)",
+   "rank": null,
+   "team": "MIT CSAIL",
+   "affiliation": "MIT CSAIL (now OpenAI)",
+   "images": []
+  },
+  {
+   "id": 15,
+   "path": "/hall-of-fame#contributor-15",
+   "name": "Jean-François Puget (2024 Paper)",
+   "handle": "JFPuget",
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "Runner-Up ARC Prize 2024 Paper Award - A 2D nGPT Model For ARC Prize",
+   "score": "Runner-Up (Paper Award)",
+   "rank": null,
+   "team": "NVIDIA",
+   "affiliation": "Machine Learning at NVIDIA, 6x Kaggle Grandmaster",
+   "images": [
+    "/jfPuget2.png"
+   ]
+  },
+  {
+   "id": 12,
+   "path": "/hall-of-fame#contributor-12",
+   "name": "Kevin Ellis",
+   "handle": "ellisk_kellis",
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "1st Place Paper Award (co-author), creator of DreamCoder",
+   "score": "Paper Award (1st)",
+   "rank": null,
+   "team": "MIT & Cornell",
+   "affiliation": "Cornell University (Associate Professor)",
+   "images": []
+  },
+  {
+   "id": 23,
+   "path": "/hall-of-fame#contributor-23",
+   "name": "Paul Fletcher-Hill",
+   "handle": null,
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "Runner-Up Paper Award - Mini-ARC",
+   "score": "41% (subset)",
+   "rank": null,
+   "team": null,
+   "affiliation": "Independent Researcher",
+   "images": []
+  },
+  {
+   "id": 21,
+   "path": "/hall-of-fame#contributor-21",
+   "name": "Ryan Greenblatt",
+   "handle": null,
+   "year": 2024,
+   "category": "researcher",
+   "achievement": "42-43% on ARC-AGI-Pub leaderboard",
+   "score": "42-43%",
+   "rank": null,
+   "team": "Redwood Research",
+   "affiliation": "Redwood Research",
+   "images": []
+  },
+  {
+   "id": 11,
+   "path": "/hall-of-fame#contributor-11",
+   "name": "Wen-Ding Li",
+   "handle": null,
+   "year": 2024,
+   "category": "paper_award",
+   "achievement": "1st Place Paper Award - Combined team achieved 47.5% on public leaderboard",
+   "score": "47.5% (Paper Award)",
+   "rank": null,
+   "team": "MIT & Cornell",
+   "affiliation": "Cornell University (PhD student with Kevin Ellis)",
+   "images": []
+  },
+  {
+   "id": 16,
+   "path": "/hall-of-fame#contributor-16",
+   "name": "MindsAI Team",
+   "handle": null,
+   "year": 2023,
+   "category": "researcher",
+   "achievement": "Highest score of 55.5% on private evaluation set (ineligible for prize)",
+   "score": "55.5% (Highest)",
+   "rank": null,
+   "team": "MindsAI",
+   "affiliation": "MindsAI Research Lab",
+   "images": []
+  },
+  {
+   "id": 18,
+   "path": "/hall-of-fame#contributor-18",
+   "name": "Michael Hodel",
+   "handle": null,
+   "year": 2022,
+   "category": "pioneer",
+   "achievement": "Winner ARCathon 2022, set world record of 39% in 2024",
+   "score": "39% (Record 2024)",
+   "rank": null,
+   "team": null,
+   "affiliation": "ETH Zurich (Master's student in Computer Science)",
+   "images": []
+  },
+  {
+   "id": 17,
+   "path": "/hall-of-fame#contributor-17",
+   "name": "icecuber",
+   "handle": "icecuber",
+   "year": 2020,
+   "category": "pioneer",
+   "achievement": "1st Place Kaggle ARC 2020 - 20% (solved 20 of 100 tasks)",
+   "score": "20% (1st Place)",
+   "rank": null,
+   "team": null,
+   "affiliation": "Independent",
+   "images": []
+  },
+  {
+   "id": 19,
+   "path": "/hall-of-fame#contributor-19",
+   "name": "François Chollet & Mike Knoop",
+   "handle": "fchollet & mikeknoop",
+   "year": null,
+   "category": "founder",
+   "achievement": "Created ARC-AGI benchmark (2019) & Launched ARC Prize (2024)",
+   "score": "Founders",
+   "rank": 0,
+   "team": "ARC Prize Foundation",
+   "affiliation": "Creators of ARC-AGI & ARC Prize",
+   "images": [
+    "/arc founders.png"
+   ]
+  },
+  {
+   "id": 20,
+   "path": "/hall-of-fame#contributor-20",
+   "name": "Simon Strandgaard (neoneye)",
+   "handle": "neoneye",
+   "year": null,
+   "category": "researcher",
+   "achievement": "ARC community datasets and tools curator; long-time maintainer of ARC-related GitHub resources",
+   "score": "Community datasets & visual tooling widely used ac",
+   "rank": null,
+   "team": null,
+   "affiliation": "Independent developer & ARC community contributor",
+   "images": [
+    "/simonS.png",
+    "/simonS1.png"
+   ]
+  }
+ ]
+}

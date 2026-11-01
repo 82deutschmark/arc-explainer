@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-27T09:44:32Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "bil022 jumps from 3,486th to 55th on ARC-3",
+  "id": "2026-10-27-0600-arc-3-bil022-jumps-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-27T10:00:36Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "bil022 gained 35.05 to reach 35.26, leaping from 3,486th to 55th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts bil022 among the top 100 in a single reported rise; the public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-26T09:41:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T09:58:55Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17202209"
+  ]
+}

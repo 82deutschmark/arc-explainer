@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-27T15:45:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "insuperabilehart climbs into ARC-3 gold places",
+  "id": "2026-10-27-1203-arc-3-insuperabilehart-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-27T16:03:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "insuperabilehart gained 2.40 to reach 39.79, climbing from 25th to 13th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts the team inside the 19 gold places; the line stands at 38.22."
+    }
+  ],
+  "since": "2026-10-26T15:42:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T16:02:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15775532"
+  ]
+}

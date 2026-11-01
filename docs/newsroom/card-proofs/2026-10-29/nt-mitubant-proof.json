@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-30T02:42:01.106Z",
+  "card": {
+    "id": "person-mitubant-2026",
+    "number": "P066",
+    "kind": "person",
+    "name": "NT",
+    "season": "2026",
+    "personId": "mitubant",
+    "art": {
+      "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+      "alt": "NT’s orange kitten in a banana suit, with comic tears and ARC-grid engineering harness, aboard Turducken’s hangar deck.",
+      "credit": "Commissioned NT / mitubant individual Turducken artwork",
+      "artworkId": "2026-10-29-nt-mitubant-avatar-v1",
+      "commissionedAt": "2026-10-30T02:38:40.181Z"
+    },
+    "description": "NT · mitubant · Team Turducken, ARC-AGI-3. The orange kitten in the banana suit is his established recurring character.",
+    "profileUrl": "/news/people/mitubant",
+    "highlights": [
+      {
+        "text": "NT competes as mitubant with Team Turducken in ARC-AGI-3.",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Team Turducken — dated public ARC3 roster",
+        "checkedAt": "2026-10-30T00:22:47Z"
+      },
+      {
+        "text": "The mitubant Kaggle profile displays the name NT.",
+        "sourceUrl": "https://www.kaggle.com/mitubant",
+        "sourceTitle": "NT — own Kaggle profile",
+        "checkedAt": "2026-10-30T02:32:35Z"
+      }
+    ],
+    "accounts": [
+      {
+        "label": "mitubant",
+        "url": "https://www.kaggle.com/mitubant"
+      }
+    ],
+    "entries": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "teamId": "15605182",
+        "teamName": "Team Turducken",
+        "observedAt": "2026-10-30T00:22:47Z",
+        "rank": 4,
+        "score": 56.02,
+        "submissions": 213,
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "status": "public",
+        "members": [
+          {
+            "handle": "dzjiann",
+            "name": "dzjiann"
+          },
+          {
+            "handle": "keithtyser",
+            "name": "Keith Tyser",
+            "personId": "keith-tyser"
+          },
+          {
+            "handle": "markbarney",
+            "name": "Mark Barney",
+            "personId": "mark-barney"
+          },
+          {
+            "handle": "mitubant",
+            "name": "NT",
+            "personId": "mitubant"
+          },
+          {
+            "handle": "ngyzly",
+            "name": "ngyzly"
+          },
+          {
+            "handle": "scizical",
+            "name": "scizical"
+          },
+          {
+            "handle": "sonphamorg",
+            "name": "Son Pham",
+            "personId": "son-pham"
+          }
+        ]
+      },
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "teamId": "15526034",
+        "teamName": "この遥かなる旅路に祝福を",
+        "observedAt": "2026-10-30T00:22:48Z",
+        "rank": 19,
+        "score": 69.72,
+        "submissions": 88,
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "status": "public",
+        "members": [
+          {
+            "handle": "dzjiann",
+            "name": "dzjiann"
+          },
+          {
+            "handle": "keithtyser",
+            "name": "Keith Tyser",
+            "personId": "keith-tyser"
+          },
+          {
+            "handle": "mitubant",
+            "name": "NT",
+            "personId": "mitubant"
+          },
+          {
+            "handle": "ngyzly",
+            "name": "ngyzly"
+          }
+        ]
+      }
+    ],
+    "honors": [],
+    "artNotes": [
+      "Boss confirmed that Discord teammate NT is Kaggle mitubant on October29.",
+      "Preserve the orange kitten, banana hood/brown stem and blue comic tears. Dedicated individual illustration, not a crop of the crew.",
+      "ARC3 Team Turducken only; no ARC2 ARC Mutants membership or honors are implied."
+    ]
+  },
+  "png": "person-mitubant-2026.png",
+  "pngSha256": "8bc968d4698295ba39466e70470f06a111b68cea9e636b4c96b29c308ae0ceeb",
+  "sourceArtworkSha256": "990387f3afb33dc31353286db08a2157110c129d88d3ff8b2c998ec5b718e336"
+}

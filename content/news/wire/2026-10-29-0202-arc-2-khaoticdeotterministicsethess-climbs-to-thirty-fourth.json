@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T05:50:26Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "KhaoticDeotterministicSethesis climbs to 34th",
+  "id": "2026-10-29-0202-arc-2-khaoticdeotterministicsethess-climbs-to-thirty-fourth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T06:02:36Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "KhaoticDeotterministicSethesis gained 10.27 to reach 60.69, moving from 49th to 34th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The rise takes KhaoticDeotterministicSethesis into the upper tier of the ARC-2 chase."
+    }
+  ],
+  "since": "2026-10-28T05:47:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T06:01:55Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15648732"
+  ]
+}

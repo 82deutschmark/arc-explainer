@@ -1,0 +1,107 @@
+HELD FOR A LATER EDITION — NO X POST
+Reporting file prepared 2026-10-29T23:31:25.134047Z
+Board observation: October29,6:52pm Eastern. Refresh before release.
+
+Give “& co” a proper billing: meet Grigoriy’s top-ten quartet
+
+Four names, one place at the top table
+
+The name on the board is Grigoriy Zatravkin & co. Give the company a proper billing. This is a four-person act: Grigoriy, Florencia Solange, the competitor known as common-people, and Dongming Sheng, who races as _hans under the handle deepdreamer. On the October 29 ARC3 board, their entry stood ninth among 4,975 teams. That is a place in the sport’s front rank, earned in a field crowded with celebrated labs and decorated veterans.
+
+The attraction is the mix. Two members bring a visible back catalogue of Kaggle silver medals. Two have much slimmer public competition pages. Together they have a top-ten score and a name that invites the obvious question: who, exactly, is the company? The answer takes us from protein prediction and supermarket sales to language research—and a competitor who has been unusually candid about the rough edges of this race.
+
+Sources: board, grigoriy-profile, common-profile, dongming-profile, dongming-linkedin, florencia-profile
+
+common-people has a silver lining
+
+common-people is the display name of aizealotwu, whose own profile describes a Peking University student with interests in language models, information retrieval, recommendation and AI for science. The competition record supplies the sporting credentials: a silver with a team finishing nineteenth of 2,259 in CAFA 6 Protein Function Prediction, plus bronzes in the MAP student-math contest and the MABe mouse-behaviour challenge.
+
+There is a revealing glimpse of the competitor behind those results in the CAFA discussions. After the contest, aizealotwu asked the winners how they used scientific literature without drowning the model in noise, and how they built training data for a reranker. It is the sporting habit of studying the champions’ tape: celebrate a result, then ask where the next improvement might come from. The same history also records a much lower finish in ARC Prize 2025. This year’s ARC3 top-ten entry is a different contest and a different partnership, with considerably brighter billing.
+
+Sources: common-profile, common-record, common-questions
+
+The veteran behind _hans
+
+Dongming Sheng is the real name reached through deepdreamer’s own LinkedIn link. His professional profile identifies him with Tencent and lists Tsinghua University; the Kaggle page still carries a student description, so the professional profile supplies the clearer present-day introduction. His competition card reaches back to silver in Corporación Favorita Grocery Sales Forecasting, thirty-first of 1,671, and a shared silver in Toxic Comment Classification, fifty-third of 4,539. An Iceberg Classifier bronze adds another discipline to the résumé.
+
+His March 2018 teammate-seeking reply advertised three text models to prospective partners. Eight years later, he is back in another striking ensemble. The research record is substantial too. Sheng is first author of a NAACL 2025 paper on extracting opinions and sentiment across languages using test-time code-switching. That is published language research alongside the competition history, rather than a recipe we can automatically assign to this ARC team. Florencia’s own page gives us a quieter introduction: the display name Florencia Solange and one listed contest, this ARC3 campaign. Grigoriy’s page also lists one contest. A short public résumé leaves the spotlight available; their current team’s result already commands it.
+
+Sources: dongming-profile, dongming-linkedin, dongming-record, dongming-paper, florencia-profile, florencia-record, grigoriy-profile, dongming-recruitment
+
+Grigoriy watches the game—and the clock
+
+Grigoriy’s public comments bring the voice. In September he described seeing agents carry an understanding from an early level through later levels, turning a small conceptual breakthrough into a much bigger score. That was his account of his public runs, and it captures the drama ARC fans recognise: a long search, then the machine suddenly gets it.
+
+His October comments address the other side of that experiment. After reporting failed submissions, he argued that restoring an old result cannot restore the time a team lost to test, learn and adjust. The sporting issue, in his telling, was the missing feedback loop. There is also an instructive correction in his own archive. A September 30 report about system errors was updated that evening: the team found an input dataset had not been shared with the submitting account, shared it, and saw the resubmission progress beyond the earlier failure point. These are separate dated episodes. The correction deserves the same space as the initial complaint.
+
+Sources: grigoriy-learning, grigoriy-feedback, grigoriy-sharing
+
+Keep the whole quartet on the marquee
+
+The next public threads lead beyond this one entry. Dongming’s competition page also lists the current ARC2 contest. aizealotwu’s lists the Gemma 4 Developer Agent Competition with a separate team. Those are visible entries, not a promised schedule for Grigoriy & co or a disclosure of its final ARC3 submission.
+
+For the closing stretch, the reason to watch is already on the board: a four-person partnership holding a seat among the leaders. The research veteran, the silver-winning student, Florencia and Grigoriy all belong in the picture. “And company” is convenient leaderboard shorthand. For readers following the real esports, it is time to learn the cast.
+
+Sources: board, dongming-record, common-record, florencia-record
+
+SOURCE FILE
+board — ARC3 public board — dated observation
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board
+Checked 2026-10-29T23:26:08.724960Z
+
+grigoriy-profile — Grigoriy Zatravkin — own Kaggle profile
+https://www.kaggle.com/grigoriyzatravkin
+Checked 2026-10-29T23:26:08.724960Z
+
+common-profile — common-people / aizealotwu — own Kaggle profile
+https://www.kaggle.com/aizealotwu
+Checked 2026-10-29T23:26:08.724960Z
+
+common-record — aizealotwu — competition history
+https://www.kaggle.com/aizealotwu/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+common-questions — aizealotwu — public question on CAFA6 winning solution
+https://www.kaggle.com/competitions/cafa-6-protein-function-prediction/writeups/1st-place-solution-for-the-cafa-6-protein-function#3474662%233481851
+Checked 2026-10-29T23:26:08.724960Z
+
+dongming-profile — _hans / deepdreamer — own Kaggle profile and LinkedIn link
+https://www.kaggle.com/deepdreamer
+Checked 2026-10-29T23:26:08.724960Z
+
+dongming-linkedin — Dongming Sheng — directly linked public professional profile
+https://uk.linkedin.com/in/hanssheng
+Checked 2026-10-29T23:26:08.724960Z
+
+dongming-record — deepdreamer — competition history
+https://www.kaggle.com/deepdreamer/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+dongming-paper — Sheng et al., NAACL2025 — Test-Time Code-Switching
+https://aclanthology.org/2025.naacl-long.260/
+Checked 2026-10-29T23:26:08.724960Z
+
+florencia-profile — Florencia Solange — own Kaggle profile
+https://www.kaggle.com/florenciasolange
+Checked 2026-10-29T23:26:08.724960Z
+
+florencia-record — Florencia Solange — competition history and shared roster
+https://www.kaggle.com/florenciasolange/competitions
+Checked 2026-10-29T23:26:08.724960Z
+
+grigoriy-learning — Grigoriy’s September29 account of an agent carrying a rule across levels
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/744365#3530131
+Checked 2026-10-29T23:26:08.724960Z
+
+grigoriy-feedback — Grigoriy’s October27 argument about lost feedback and experimentation
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545780
+Checked 2026-10-29T23:26:08.724960Z
+
+grigoriy-sharing — Grigoriy’s September30 report and same-day dataset-sharing correction
+https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/744659
+Checked 2026-10-29T23:26:08.724960Z
+
+dongming-recruitment — deepdreamer — March 2018 teammate-seeking reply
+https://www.kaggle.com/competitions/jigsaw-toxic-comment-classification-challenge/discussion/51152#291499
+Checked 2026-10-29T23:27:17.475810Z
+

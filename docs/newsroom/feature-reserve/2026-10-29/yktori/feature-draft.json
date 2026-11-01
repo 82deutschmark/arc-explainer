@@ -1,0 +1,85 @@
+{
+  "headline": "Clear a lane for yktori: the five-medal challenger crashing ARC3’s front rank",
+  "sections": [
+    {
+      "heading": "Clear a lane for the challenger",
+      "text": "Clear a lane for yktori. The handle that spent part of October outside the leading forty has barged into ARC3’s front rank, carrying a five-medal back catalogue into a race packed with decorated rivals. At the October 29, 6:52 pm Eastern observation, yktori stood sixth among 4,975 teams, on 51.04. That is a place in the main event.\n\nThe climb has a proper highlight reel. Late on October 24 Eastern, our collector caught a rise from forty-second to eleventh. Late on October 27, another improvement took the entry from eleventh to fifth. Those are observed score events, rather than the exact moments a private submission finished. By the next day, a rival’s advance had moved yktori to sixth without lowering that score. The challenger had earned a seat near the front; keeping it would be another contest.",
+      "sourceIds": [
+        "board"
+      ]
+    },
+    {
+      "heading": "The name on the jersey",
+      "text": "So who is wearing the jersey? The account’s own profile describes a web engineer at LY Corporation, based in Tokyo. It joined Kaggle on October 4, 2019, and now carries the Competitions Expert title. The full real-world name is not established in the public material checked for this feature. For the moment, yktori is the name on the programme—and the record gives readers plenty to follow.\n\nSeven years of account history sit behind this season’s arrival. The profile lists twenty completed competitions and two active ones. Some were individual entries; some involved teammates. The present ARC3 roster lists just yktori. That tells us which account is entered, while leaving any help outside the official roster unknown. It is a substantial competitive history for a handle the ARC crowd is only now learning to recognize.",
+      "sourceIds": [
+        "profile",
+        "past-results",
+        "board"
+      ]
+    },
+    {
+      "heading": "A silver finish and four bronze campaigns",
+      "text": "Start the back catalogue with Drawing with LLMs: twenty-seventh out of 1,309, with a silver medal. That is a serious finish in a field working on generated drawings. The silver sits beside four bronze results spanning an unusually wide programme: seventy-fourth of 812 in IceCube’s neutrino challenge, eighty-second of 693 in LEAP’s atmospheric-physics contest, and 130th of 2,058 in Feedback Prize’s student-writing competition.\n\nThe fourth bronze is attached to 322nd of 4,373 in Mechanisms of Action Prediction. That historical entry also lists kuroironeko and yuishizaki, so its placing belongs to a shared campaign. The medals are real Kaggle honors earned in those earlier contests; the ARC3 public position is this season’s unfinished business. Put them together and the sporting appeal is obvious: a competitor with results in drawing, physics, language and drug research is now mixing it with the leading interactive-reasoning teams.",
+      "sourceIds": [
+        "past-results",
+        "drawing-board"
+      ]
+    },
+    {
+      "heading": "The long scorecard behind the breakthrough",
+      "text": "There are hard afternoons on the scorecard too. The same profile records 1,213th of 3,406 in Riiid’s answer-prediction contest and 3,705th of 5,558 in M5 forecasting. Those results belong alongside the medal finishes. Readers are seeing a varied body of competition work, rather than a carefully selected list of victories.\n\nOne small public artifact makes the Riiid connection concrete. The account’s visible code listing contains a notebook called riiid-data. Downloaded through the Kaggle CLI, its four cells read the training table with explicit data types, save a Feather-format copy, and inspect the table and its memory use. It is modest, practical data preparation. It does not reveal the system behind today’s ARC score, but it gives the public record something more tangible than a row in a standings table.",
+      "sourceIds": [
+        "past-results",
+        "public-code",
+        "riiid-code"
+      ]
+    },
+    {
+      "heading": "Another arena on the programme",
+      "text": "What comes next? The account’s active-competition list already offers a lead: alongside ARC3 it displays Google’s Gemma 4 Developer Agent Competition. That is a public entry to watch, with no announced result or promised release date in the material reviewed here. A current ARC3 technical write-up and an attributable account of the latest improvements have not been identified.\n\nFor now, the results carry the story. This is the Tokyo web engineer’s public handle, a silver-and-four-bronze record, and an October ascent from the chasing pack into the leading six. The private finish is still ahead. The next edition may bring a new place, another score, or a more revealing glimpse of the competitor behind it. The sporting reason to keep watching has already arrived: yktori has made the leading group, and the leading group has a new name to remember.",
+      "sourceIds": [
+        "past-results",
+        "profile",
+        "board"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "board",
+      "title": "ARC3 public board and dated observed score history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    },
+    {
+      "id": "profile",
+      "title": "yktori — own Kaggle biography and medal record",
+      "url": "https://www.kaggle.com/yktori",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    },
+    {
+      "id": "past-results",
+      "title": "yktori — own completed and active competition cards",
+      "url": "https://www.kaggle.com/yktori/competitions",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    },
+    {
+      "id": "drawing-board",
+      "title": "Drawing with LLMs — final leaderboard",
+      "url": "https://www.kaggle.com/competitions/drawing-with-llms/leaderboard",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    },
+    {
+      "id": "public-code",
+      "title": "yktori — public notebook listing",
+      "url": "https://www.kaggle.com/yktori/code",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    },
+    {
+      "id": "riiid-code",
+      "title": "yktori — public riiid-data notebook, code read via Kaggle CLI",
+      "url": "https://www.kaggle.com/code/yktori/riiid-data",
+      "accessedAt": "2026-10-29T23:24:34.248388Z"
+    }
+  ]
+}

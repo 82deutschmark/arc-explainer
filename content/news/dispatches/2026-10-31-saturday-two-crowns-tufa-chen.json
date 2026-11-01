@@ -1,0 +1,93 @@
+{
+  "competition": "arc-2",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Scores are the public boards as of Saturday afternoon; Kaggle’s private leaderboard decides the final order.",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "Two crowns, two contests: Tufa leads ARC-2 by less than a point, Chen leads ARC-3 by five",
+  "id": "2026-10-31-saturday-two-crowns-tufa-chen",
+  "image": {
+    "alt": "Two giant rabbits stand beside a towering fan-and-pipe citadel flying spider flags in a packed Colosseum, with a turkey-shaped war wagon, a cat, two terriers and four small figures on the sand below.",
+    "caption": "Tufa’s citadel and Chen’s two rabbits, with the rest of the field on the sand below.",
+    "src": "/news-images/2026-10-31-two-giants-colosseum.webp"
+  },
+  "publishedAt": "2026-10-31T20:29:36Z",
+  "sections": [
+    {
+      "heading": "The same two names at the top of both boards",
+      "sourceIds": [
+        "board2",
+        "board3"
+      ],
+      "text": "Two days from the bell, the public leaderboards for ARC-AGI-2 and ARC-AGI-3 have the same two teams in their top two places, in opposite order. In ARC-2, Tufa Labs leads at 88.06 and Yi-Chia Chen’s team, Fields Mode, is second at 87.22, less than a point behind. In ARC-3, Chen leads at 75.56 and Tufa is second at 70.02. ARC-2’s third place, nvbanana, is at 83.89, more than three points behind second. ARC-3’s third place, a team called faster machine is all you need, is at 58.59, more than eleven points behind Tufa."
+    },
+    {
+      "heading": "How each crown was won",
+      "sourceIds": [
+        "board2",
+        "board3"
+      ],
+      "text": "Tufa’s ARC-2 score of 88.06 landed on October 9 and has not moved since, by our tracker’s reading of the public board. Chen closed on it through October, and on October 29 at 2:52 pm Eastern climbed from 84.72 to 87.22. ARC-3 went the other way. Tufa took the lead on October 13 at 68.91, and Chen passed on October 25 at 71.48, then reached 75.56 on October 27 at 2:14 am Eastern. Tufa answered with 70.02 on October 29, but has not matched it. Chen’s climb on that board began from 67.49 on October 22."
+    },
+    {
+      "heading": "The 85 percent line",
+      "sourceIds": [
+        "arcprize-post",
+        "thread"
+      ],
+      "text": "On October 9, ARC Prize said a $150,000 bonus, on top of the guaranteed prizes, would be split among all teams scoring over 85 percent in ARC-2. Only two teams are above that line on the public board: Tufa and Chen. The next team, nvbanana at 83.89, is just over a point below it. Kaggle’s María Cruz said the 85 percent test is based on the private leaderboard, which becomes visible only after Kaggle finishes scoring the final submissions, so the public order is a guide, not a result."
+    },
+    {
+      "heading": "Who they are",
+      "sourceIds": [
+        "card-tufa",
+        "card-chen"
+      ],
+      "text": "ARC Prize named Tufa Labs and its Duck agent the first-place open-source solution for the June 2026 ARC-AGI-3 Milestone 1 prize. Tufa lists Dries Smit, Isaiah Pressman and Jeroen Cottaar among its AI researchers. Yi-Chia Chen is a Kaggle Competitions Master and a double-degree student at National Taiwan University and Waseda University. Chen’s public Kaggle account, threerabbits, shows an avatar of two rabbits. Chen also wrote a third-place solution write-up for Kaggle’s Eedi math-misconceptions contest."
+    },
+    {
+      "heading": "What to watch",
+      "sourceIds": [
+        "board2",
+        "board3"
+      ],
+      "text": "Both teams can still change their final picks until the bell at 11:59 pm UTC Monday, which is 6:59 pm Eastern. Kaggle lets each team choose up to two final submissions, and the private leaderboard decides. With ARC Prize telling competitors there will be no extension, the question is whether either team has a stronger run in the queue, in either contest, before Monday evening."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "board2",
+      "title": "ARC Prize 2026 ARC-AGI-2 public leaderboard, as tracked by the Digest",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "board3",
+      "title": "ARC Prize 2026 ARC-AGI-3 public leaderboard, as tracked by the Digest",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "arcprize-post",
+      "title": "ARC Prize on X, October 9, 2026: the $150,000 bonus",
+      "url": "https://x.com/arcprize"
+    },
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "thread",
+      "title": "Kaggle ARC-AGI-2 discussion thread on final submissions",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/751292"
+    },
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "card-tufa",
+      "title": "ARC Prize card T002: Tufa Labs",
+      "url": "https://arc.markbarney.net/news/cards/team-tufa-labs-2026"
+    },
+    {
+      "accessedAt": "2026-10-31T20:29:36Z",
+      "id": "card-chen",
+      "title": "ARC Prize card T001: Yi-Chia Chen",
+      "url": "https://arc.markbarney.net/news/cards/team-yi-chia-chen-2026"
+    }
+  ]
+}

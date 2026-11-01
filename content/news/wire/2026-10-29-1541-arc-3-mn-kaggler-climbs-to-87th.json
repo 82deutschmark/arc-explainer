@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T19:22:11Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "MN Kaggler climbs from 1,378th to 87th on ARC-3",
+  "id": "2026-10-29-1541-arc-3-mn-kaggler-climbs-to-87th",
+  "personIds": [],
+  "publishedAt": "2026-10-29T19:41:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "MN Kaggler gained 6.15 to reach 34.24 on the ARC-3 public board, moving from 1,378th to 87th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold line on that board stands at 38.98, so the team is still outside the gold places. The climb brings it within reach of the medal chase rather than into it."
+    }
+  ],
+  "since": "2026-10-28T19:19:05Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T19:40:39Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16842938"
+  ]
+}

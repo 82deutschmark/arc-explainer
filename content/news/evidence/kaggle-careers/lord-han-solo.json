@@ -1,0 +1,110 @@
+{
+  "personId": "lord-han-solo",
+  "handle": "lordhansolo",
+  "checkedAt": "2026-10-30T12:13:00Z",
+  "method": "Read-only visit on 2026-10-30 to the public Kaggle profile and Competitions pages in the Claude app's built-in browser (one tab, two page loads about 12 seconds apart, no block or rate limit shown). Text read from the page; the competition row and avatar were checked in screenshots and by inspecting the page's own avatar element. Nothing in the older draft was reused.",
+  "sources": [
+    "https://www.kaggle.com/lordhansolo",
+    "https://www.kaggle.com/lordhansolo/competitions"
+  ],
+  "profile": {
+    "displayName": "Lord Han Solo",
+    "occupation": "Software Engineer",
+    "competitionTier": null,
+    "medals": null,
+    "competitionRank": null,
+    "competitionRankOutOf": null,
+    "highestCompetitionRank": null,
+    "joinedTooltip": "Fri Aug 28 2020 15:55:44 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2020-08",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "activityPanel": {
+      "competitionsSolo": 2,
+      "competitionsInATeam": 0,
+      "competitionsHosted": 0
+    },
+    "followers": 27,
+    "tabCounts": {
+      "competitions": 2,
+      "datasets": 3,
+      "models": 1,
+      "code": 1,
+      "discussion": 5,
+      "writeups": 1
+    },
+    "tierNote": "Neither the About page nor the Competitions page shows a tier name, a medal count or a competition rank for this account, so none is recorded. Do not infer a tier."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 1,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "BYU - Locating Bacterial Flagellar Motors 2025"
+    ],
+    "scopeNote": "Only this one completed record is publicly displayed. Do not invent other finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "BYU - Locating Bacterial Flagellar Motors 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025",
+      "rank": 815,
+      "teams": 1136,
+      "medal": null,
+      "displayedHandles": [
+        "lordhansolo"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null,
+      "note": "Research, Code Competition. The row shows 815/1136 and a plain competition trophy icon with no gold, silver or bronze medal icon; medal left null. The list shows no separate team name, only the lordhansolo avatar."
+    }
+  ],
+  "activeCompetitions": [
+    {
+      "competition": "ARC Prize 2026 - ARC-AGI-3",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "displayedHandles": [
+        "lordhansolo"
+      ],
+      "status": "Listed as active, '3 days to go' at the time of the check. No final result exists."
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/lordhansolo",
+    "note": "The profile picture on both Kaggle pages is Kaggle's default avatar (an engraved goose). The page's own avatar element points at /static/images/profile/default-avatar.png, so he has not uploaded a picture. It is a stand-in, not his own picture, and must not be used on the card. No individual portrait of this person is saved under client/public/news-images/people/ and none was found on the two permitted pages."
+  },
+  "facts": [
+    {
+      "text": "Lord Han Solo's public Kaggle profile (handle lordhansolo) dates his account joining to August 2020.",
+      "sourceUrl": "https://www.kaggle.com/lordhansolo",
+      "sourceTitle": "Lord Han Solo - public Kaggle profile and join tooltip",
+      "checkedAt": "2026-10-30T12:13:00Z"
+    },
+    {
+      "text": "Kaggle's only listed completed competition for Lord Han Solo is BYU - Locating Bacterial Flagellar Motors 2025, where he placed 815th of 1,136 teams; no medal is shown.",
+      "sourceUrl": "https://www.kaggle.com/lordhansolo/competitions",
+      "sourceTitle": "Lord Han Solo - completed BYU Locating Bacterial Flagellar Motors 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T12:13:00Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2026 - ARC-AGI-3 as an active competition on Lord Han Solo's profile, and its activity panel counts both of his competitions as solo entries.",
+      "sourceUrl": "https://www.kaggle.com/lordhansolo/competitions",
+      "sourceTitle": "Lord Han Solo - active ARC Prize 2026 ARC-AGI-3 entry and competition activity on Kaggle",
+      "checkedAt": "2026-10-30T12:13:00Z"
+    }
+  ],
+  "teamNotes": "Kaggle's activity panel on lordhansolo's profile reads 2 competitions solo, 0 in a team, so no team medal or shared entry is credited to him. Our own dated ARC-3 roster observation (not re-checked in this pass) lists a team named Lord Han Solo, team id 16371045, with member handle lordhansolo, first seen 2026-10-13.",
+  "unverified": [
+    "Competition tier, medal counts and competition rank: not displayed on his public pages, so not recorded. The older draft's claims were discarded.",
+    "The existing record fact that ARC Prize announced Lord Han Solo as the second-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026 (cited to ARC Prize posts on X) was not re-opened in this pass because only the two Kaggle pages were allowed. Treat it as unconfirmed until the posts are re-read; if used, label it as ARC Prize's own announcement.",
+    "Current public ARC-AGI-3 standing for the Lord Han Solo team is not checked here; any standing is provisional until the private leaderboard settles at the 02-Nov close.",
+    "Exact completion date of the BYU competition: the page shows only 'a year ago'.",
+    "An individual portrait: the Kaggle page shows only the default avatar. A real picture would need to come from a source he or ARC Prize has published, which this pass did not search."
+  ],
+  "verified": true
+}

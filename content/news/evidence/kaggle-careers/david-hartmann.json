@@ -1,0 +1,105 @@
+{
+  "personId": "david-hartmann",
+  "handle": "dvhrtm",
+  "name": "David Hartmann",
+  "checkedAt": "2026-10-30T11:37:28Z",
+  "method": "Read in the app's built-in browser on 2026-10-30: the public Kaggle profile page and Competitions page for dvhrtm, one visit each, with a pause between. Page text, the medal icon markup (image alt text), the team member avatar alt text, the join-date tooltip and the profile picture element were read. No rate limit, captcha or block appeared. The earlier draft of this file was discarded and rebuilt from these pages only.",
+  "sources": [
+    "https://www.kaggle.com/dvhrtm",
+    "https://www.kaggle.com/dvhrtm/competitions",
+    "https://storage.googleapis.com/kaggle-avatars/images/27819645-kg.png",
+    "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+  ],
+  "profile": {
+    "displayName": "David Hartmann",
+    "joinedTooltip": "Sat Jul 12 2025 04:55:39 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2025-07",
+    "joinedDisplayed": "a year ago",
+    "lastSeen": "in the past day (as displayed)",
+    "competitionTier": null,
+    "competitionMedals": null,
+    "tierAndMedalNote": "The profile page shows no competition tier badge or medal totals for this account, so none are recorded. The only medal visible is the gold icon on the ARC Prize 2025 entry.",
+    "bioPresent": false,
+    "activity": "0 competitions solo, 3 in a team, 0 hosted (as displayed on the Competitions page)",
+    "followers": 16,
+    "following": 4,
+    "followingIncludes": ["CPMP", "ivan", "Jan Disselhoff", "Daniel Franzen"],
+    "writeups": 1
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 2,
+    "activeNames": ["ARC Prize 2026 - ARC-AGI-3"],
+    "activeDisplayedHandles": ["sbrodehl", "insanitycheck", "dfranzen", "dvhrtm"],
+    "activeTimeLeftWhenChecked": "4 days to go",
+    "completedNames": ["ARC Prize 2025", "AI Mathematical Olympiad - Progress Prize 3"],
+    "scopeNote": "Only these completed records are publicly displayed. Do not invent other finishes."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 2,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": ["insanitycheck", "dfranzen", "dvhrtm"],
+      "teamName": null,
+      "teamNameNote": "The Competitions list shows no team name. The team's own write-up, featured on his profile as 'The ARChitects' Solution' (2nd Place, ARC Prize 2025), signs as The ARChitects.",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1286,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": ["insanitycheck", "dfranzen", "dvhrtm"],
+      "teamName": null,
+      "teamNameNote": "No team name is displayed.",
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/david-hartmann.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/27819645-kg.png",
+    "note": "The profile picture on his own Kaggle page is an orange fox in sunglasses on a blue, green and orange grid, and the same picture is the avatar shown next to dvhrtm on his competition entries (alt text 'Profile picture for dvhrtm', image 27819645). The saved file is that picture, resized to 320 by 320, so it is kept. A cyberpunk helmet illustration that an earlier draft saved as david-hartmann-v2.webp was NOT his: it came from the signed-in browser account's own avatar in the top-right of every Kaggle page (image 28295733). That wrong file has been deleted and was never referenced by the people record."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists David Hartmann's ARC Prize 2025 entry as finished 2nd of 1,455 teams, with a gold medal icon, shown with the teammates insanitycheck and dfranzen.",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+      "sourceTitle": "David Hartmann | Kaggle - Competitions",
+      "checkedAt": "2026-10-30T11:37:28Z"
+    },
+    {
+      "text": "His profile also lists AI Mathematical Olympiad - Progress Prize 3, finished 1,286th of 4,138 teams with no medal, again shown with insanitycheck and dfranzen.",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+      "sourceTitle": "David Hartmann | Kaggle - Competitions",
+      "checkedAt": "2026-10-30T11:37:28Z"
+    },
+    {
+      "text": "His profile shows an active entry in ARC Prize 2026 - ARC-AGI-3, with 4 days to go when checked, alongside sbrodehl, insanitycheck and dfranzen. Public standings in that contest are provisional until it closes.",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm/competitions",
+      "sourceTitle": "David Hartmann | Kaggle - Competitions",
+      "checkedAt": "2026-10-30T11:37:28Z"
+    },
+    {
+      "text": "His Kaggle account dates from July 2025, and his featured write-up there is the ARChitects' ARC Prize 2025 solution, marked 2nd Place.",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm",
+      "sourceTitle": "David Hartmann | Kaggle",
+      "checkedAt": "2026-10-30T11:37:28Z"
+    }
+  ],
+  "teamNotes": "Every result above is a team result: both completed entries and the active ARC-AGI-3 entry show several accounts, and Kaggle's Activity box counts all 3 of his competitions as team entries. The ARC Prize 2025 gold medal belongs to the team (insanitycheck, dfranzen, dvhrtm) and must not be credited to him as an individual honour. The team name The ARChitects comes from the team's write-up, not from the Competitions list. His existing record already holds the ARC-3 roster membership on The ARChitects, which is not repeated here; the live list shows sbrodehl as a fourth account on the active entry.",
+  "unverified": [
+    "Competition tier and overall medal counts: not displayed on his profile",
+    "Exact completion dates of the two finished competitions: only 'a year ago' and '6 months ago' are shown",
+    "Team name for AI Mathematical Olympiad - Progress Prize 3: not displayed",
+    "Whether sbrodehl is formally on the ARC-3 team: the Kaggle list shows the account on the active entry, but the person record's roster was not re-checked here",
+    "Current ARC-AGI-3 rank: not shown on his profile pages; public standings are provisional in any case"
+  ],
+  "verified": true
+}

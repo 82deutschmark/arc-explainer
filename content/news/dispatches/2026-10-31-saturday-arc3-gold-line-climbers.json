@@ -1,0 +1,51 @@
+{
+  "competition": "arc-3",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Scores and places are the public board as of Saturday afternoon; the private leaderboard decides the medals.",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "The ARC-3 gold line fills with late climbers as Dipam and Om jump from 208th to 14th in two days",
+  "id": "2026-10-31-saturday-arc3-gold-line-climbers",
+  "image": {
+    "alt": "A snowy valley of competitor strongholds, each flying its team banner, with a mechanical turkey airship overhead and two giant rabbits on a ridge.",
+    "caption": "The valley below the leaders, where the gold line is being fought over.",
+    "src": "/news-images/2026-10-31-gold-line-scramble.webp"
+  },
+  "publishedAt": "2026-10-31T21:09:58Z",
+  "sections": [
+    {
+      "heading": "Three teams that were outside gold on Thursday are inside it now",
+      "sourceIds": [
+        "board3"
+      ],
+      "text": "The top of the ARC-AGI-3 board has held still since Thursday, but the places just below it have been moving. Dipam and Om have gone from 208th to 14th. rellik13, 29th on Thursday, has been as high as 16th and now sits 18th. pensukesan was 28th and is 13th. insuperabilehart, already inside the top twenty, moved up from 20th to 15th on Saturday afternoon. Kaggle’s gold line on this board is the top twenty places, so all four are currently on the gold side of it."
+    },
+    {
+      "heading": "Dipam and Om: two accounts, two big jumps",
+      "sourceIds": [
+        "board3"
+      ],
+      "text": "Dipam and Om is a two-account team, dipamc77 and omprakashpy, and it has moved twice. Its first jump came on Thursday at 2:53 am Eastern, from 32.88 to 37.80, which lifted it from 208th to 30th. The second came on Saturday at 3:57 am Eastern, to 41.81 and 14th, almost nine points above where it stood before Thursday. Only 19 submissions stand behind the score."
+    },
+    {
+      "heading": "A quarter of a point",
+      "sourceIds": [
+        "board3"
+      ],
+      "text": "Twentieth place, the last gold place, is Lord Han Solo at 39.94. Twenty-first, AquaUrsa Research, is at 39.69, a quarter of a point below. Md Boktiar Mahbub Murad is 22nd at 39.52 and zhangzibo54 is 23rd at 39.22. The climbers pushed others down. The ARChitects slid from 14th to 16th since Friday night without changing their 41.03. Vineeth Sai Varikuntla went from 15th to 17th, paul from 16th to 19th and Lord Han Solo from 17th to 20th."
+    },
+    {
+      "heading": "What to watch",
+      "sourceIds": [
+        "board3"
+      ],
+      "text": "A team on this board can still pick up a few points in a day, as Dipam and Om, rellik13 and insuperabilehart have shown, so the last twenty places will keep moving until the bell on Monday at 6:59 pm Eastern. Public places are provisional. Medals are settled on Kaggle’s private leaderboard once the final submissions have been scored."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T21:09:58Z",
+      "id": "board3",
+      "title": "ARC Prize 2026 ARC-AGI-3 public leaderboard, as tracked by the Digest",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ]
+}

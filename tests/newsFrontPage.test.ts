@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-12
- * PURPOSE: Render the rebuilt ARC Daily Digest front page and wire page with the committed news
+ * Date: 2026-10-30 (ARC2 special lead placement and simultaneous-edition ordering)
+ * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
+ *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
  *          past winners, What's News, notebook columns) runs against real-shaped data; and render
  *          it again with no digest to prove a board outage leaves the reporting standing.
@@ -16,16 +17,20 @@ import React, { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-import { Router } from 'wouter';
+import { Router, Route } from 'wouter';
 import { afterEach, expect, test, vi } from 'vitest';
 import News from '../client/src/pages/News';
+import NewsArticle from '../client/src/pages/NewsArticle';
 import NewsWire from '../client/src/pages/NewsWire';
 import NewsCommunity from '../client/src/pages/NewsCommunity';
+import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
+import { reportedPeople, featuredPerson, displayPortrait } from '../shared/news';
+import { newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
 
 const NOW = '2026-10-09T23:54:00Z';
@@ -54,10 +59,33 @@ function render(page: React.ComponentType, path: string, index: NewsIndex, paylo
   client.setQueryData(['/api/news'], index);
   if (payload) client.setQueryData(['/api/news/markets'], payload);
   return renderToStaticMarkup(createElement(QueryClientProvider, { client },
-    createElement(HelmetProvider, {}, createElement(Router, { ssrPath: path, children: createElement(page) }))));
+    createElement(HelmetProvider, {}, createElement(Router, { ssrPath: path, children: page === NewsArticle ? createElement(Route, { path: "/news/:articleId", component: page }) : createElement(page) }))));
 }
 
 afterEach(() => vi.unstubAllGlobals());
+
+test('a newer ARC2 special leads with its full reserved feature and illustration', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const special = JSON.parse(fs.readFileSync('content/news/articles/2026-10-30-evening-arc-2-preview.json', 'utf8'));
+  const feature = JSON.parse(fs.readFileSync(`content/news/dispatches/${special.frontPageFeatureId}.json`, 'utf8'));
+  const earlier = { ...special, id: 'earlier-arc3', competition: 'arc-3' as const, publishedAt: '2026-10-30T10:00:00Z', frontPageFeatureId: undefined, headline: 'Earlier ARC3 report' };
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles: [earlier, special], dispatches: [feature] } }) }));
+  const lead = html.split('aria-label="Lead stories"')[1];
+  expect(lead.indexOf(feature.headline)).toBeLessThan(lead.indexOf(earlier.headline));
+  expect(lead.slice(0, lead.indexOf(earlier.headline))).toContain(feature.image.src);
+  expect(lead).toContain(feature.sections.at(-1).text);
+});
+
+test('equally timed routine editions keep ARC3 first', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const base = index.articles[0];
+  const articles = (['arc-2', 'arc-3'] as const).map(competition => ({ ...base, competition, id: `same-time-${competition}`, headline: `Routine ${competition}`, frontPageFeatureId: undefined }));
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles, dispatches: [] } }) }));
+  const lead = html.split('aria-label="Lead stories"')[1];
+  expect(lead.indexOf('Routine arc-3')).toBeLessThan(lead.indexOf('Routine arc-2'));
+});
 
 test('the front page runs every live section against a populated digest', () => {
   vi.stubGlobal('React', React);
@@ -120,7 +148,7 @@ test('wire stories run in What’s News and in full on the wire page', () => {
   const index = { ...getNewsIndex(), wire: [story] };
   const front = render(News, '/news', index, markets(index));
   expect(front).toContain('href="/news/wire#2026-10-09-2020-arc-3-chen-takes-the-lead"');
-  expect(front).toContain('/news-images/people/yi-chia-chen.webp');
+  expect(front).toContain(displayPortrait(index.people!.find(person => person.id === 'yi-chia-chen')!)!.src);
   const page = render(NewsWire, '/news/wire', index);
   expect(page).toContain('id="2026-10-09-2020-arc-3-chen-takes-the-lead"');
   expect(page).toContain('Yi-Chia Chen gained 3.40 points to 59.17% and moved to 1st.');
@@ -141,4 +169,81 @@ test('an edition-bound illustration runs with its headline and dated caption', (
     expect(html).toContain(art.headline);
     expect(html).toContain(art.image.caption);
   }
+});
+
+
+test('the evening permalink includes its complete feature and cover before the closing recap', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === article.frontPageFeatureId)!;
+  expect(feature.image).toBeDefined();
+  const html = render(NewsArticle, `/news/${article.id}`, index);
+  expect(html).toContain(`src="${feature.image!.src}"`);
+  expect(html).toContain(feature.image!.caption);
+  // Every feature section and original source must survive the actual linked page, not just /news.
+  for (const section of feature.sections) expect(html).toContain(section.text.slice(0, 40).replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
+  for (const source of feature.sources) expect(html).toContain(`href="${source.url}"`);
+  expect(html).toContain(article.sections[1].text.slice(0, 40));
+  expect(html.indexOf(feature.sections.at(-1)!.text.slice(0, 40)))
+    .toBeLessThan(html.indexOf(article.sections[1].text.slice(0, 40)));
+  expect(html.match(new RegExp(`id="${feature.id}"`, 'g'))).toHaveLength(1);
+});
+
+test('missing or unrelated reserved features leave the ordinary edition readable', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const original = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === original.frontPageFeatureId)!;
+  for (const replacement of [undefined, { ...feature, competition: 'arc-2' as const }]) {
+    const input = { ...index, articles: [original], dispatches: replacement ? [replacement] : [] };
+    const html = render(NewsArticle, `/news/${original.id}`, input);
+    expect(html).toContain(original.sections[1].text.slice(0, 40));
+    expect(html).not.toContain(`id="${feature.id}"`);
+    expect(html).not.toContain('Dispatch not found');
+  }
+});
+
+test('the morning sidebar includes xz and Chen with the correct sourced portraits', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!;
+  expect(featuredPerson(article, index.people!)?.id).toBe('xz');
+  const subjects = reportedPeople([article], index.people!);
+  expect(subjects.map(person => person.id)).toEqual(['xz', 'yi-chia-chen']);
+  const html = render(NewsArticle, `/news/${article.id}`, index);
+  const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
+  expect(sidebar).toContain('/news-images/people/xz.webp');
+  expect(sidebar).toContain('/news-images/people/yi-chia-chen-editorial-v1.webp');
+  expect(sidebar).toContain('AI editorial portrait');
+  expect(sidebar).not.toContain('/news/people/dries-smit');
+  const initialHtml = newsArticleMeta(article, [], index.people).bodyHtml!;
+  for (const subject of subjects) expect(initialHtml).toContain(`/news/people/${subject.id}`);
+  const chen = subjects[1];
+  expect(newsPersonSchema.safeParse(chen).success).toBe(true);
+  expect(newsPersonSchema.safeParse({ ...chen, editorialPortrait: { ...chen.editorialPortrait!, sourceUrl: 'https://www.kaggle.com/xiaoz259' } }).success).toBe(false);
+});
+
+test('the commissioned four o’clock special is an early evening edition in browser and initial HTML', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = { ...index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!, id: '2026-10-29-special-early-evening-xz', edition: 'evening' as const };
+  const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article] });
+  expect(html).toContain('Early evening edition');
+  expect(newsArticleMeta(article).bodyHtml).toContain('Early evening edition');
+  expect(html).not.toContain('Launch preview');
+});
+
+test('all reported subjects survive deduplication across a feature and recap, without a face cap', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const people = index.people!.slice(0, 8);
+  const original = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const article = { ...original, headline: 'The field', dek: 'A closing report', sections: [{ text: 'The field is moving.', sourceIds: people.map(person => `person-${person.id}-identity-0`) }] };
+  const feature = { ...index.dispatches!.find(item => item.id === original.frontPageFeatureId)!, headline: 'The contenders', sections: [{ text: 'Their approaches.', sourceIds: [`person-${people[0].id}-identity-0`] }] };
+  expect(reportedPeople([feature, article], index.people!).map(person => person.id)).toEqual(people.map(person => person.id));
+  expect(reportedPeople([{ headline: 'axzonal results', sections: [] }], index.people!)).toEqual([]);
+  const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
+  const sidebar = html.match(/<aside class="news-sidebar"[\s\S]*?<\/aside>/)![0];
+  for (const person of people) expect(sidebar).toContain(`href="/news/people/${person.id}" class="news-subject-card"`);
 });

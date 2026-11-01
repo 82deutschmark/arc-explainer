@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T07:50:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "insuperabilehart jumps from 73rd to 38th on ARC-2",
+  "id": "2026-10-29-0356-arc-2-insuperabilehart-jumps-to-thirty-eighth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T07:56:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "insuperabilehart gained 18.75 points to reach 59.17, rising from 73rd to 38th on the public ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The rise moves insuperabilehart into the upper tier of the ARC-2 chase."
+    }
+  ],
+  "since": "2026-10-28T07:47:38Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T07:55:29Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16597340"
+  ]
+}

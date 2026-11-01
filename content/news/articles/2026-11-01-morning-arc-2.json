@@ -1,0 +1,233 @@
+{
+  "baselineAt": "2026-10-31T23:59:26Z",
+  "competition": "arc-2",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-11-01T10:30:41Z",
+  "date": "2026-11-01",
+  "dek": "The ARC-2 podium holds into Sunday, with just 0.84 separating first and second. Below the leading group, kibuna gains five places overnight.",
+  "discord": "Tufa keeps Chen within a point as kibuna climbs toward the leaders — https://arc.markbarney.net/news/2026-11-01-morning-arc-2",
+  "edition": "morning",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Tufa keeps Chen within a point as kibuna climbs toward the leaders",
+  "id": "2026-11-01-morning-arc-2",
+  "image": {
+    "alt": "Jeroen Cottaar seated inside Tufa’s towering GPU citadel, surrounded by the established friendly spider mascots. The separate footer shows Tufa first on 88.06 and Chen second on 87.22 at the preserved November 1 morning cutoff.",
+    "artworkId": "2026-11-01-morning-arc-2-8670a34b55-footer",
+    "caption": "Existing newspaper illustration; new edition score panel: Nov 1, 2026 · 5:30 AM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-morning-arc-2-8670a34b55-footer.webp"
+  },
+  "publishedAt": "2026-11-01T16:22:47Z",
+  "sections": [
+    {
+      "heading": "A narrow lead, no overnight escape",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Tufa Labs carries an 88.06 score into Sunday’s morning cutoff, still only 0.84 ahead of Yi-Chia Chen @ Fields Model on 87.22. Neither score changed against the midnight baseline. The contest at the top remains close; this morning’s board offers no new breakaway.\n\nnvbanana is third on 83.89, with Domdolus Tolus fourth on 83.47. That 0.42 gap keeps the nearest podium challenge tighter still. Their scores, too, are unchanged across the overnight comparison."
+    },
+    {
+      "heading": "Movement below the podium",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "kibuna advances from 29th to 24th after adding 2.36 points to reach 70.83. Leszek Góra rises fourteen places to 76th on 44.58, while StnDyq gains twelve places to 83rd on 42.36. These are observed net changes since the midnight baseline, not a count of every submission that scored.\n\nThe top ten is unchanged over that same window. V | A | M remains ninth on 76.25, just 0.14 ahead of Lashen Learning in tenth. The late-week climb has already put those entries into the leading group; this edition does not recast yesterday’s gains as fresh overnight advances."
+    },
+    {
+      "heading": "What to watch next",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "A quiet overnight podium leaves two close contests for the next scoring move: Chen is within a point of Tufa, and Domdolus Tolus is within half a point of third. Farther down, kibuna’s climb brings it nearer the top twenty. Those are the pressure points to follow as Sunday’s next results arrive."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T16:22:47Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 87.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 83.89,
+      "scoreChange": 0.0,
+      "teamId": "15486939"
+    },
+    {
+      "name": "Domdolus Tolus",
+      "rank": 4,
+      "rankChange": 0,
+      "score": 83.47,
+      "scoreChange": 0.0,
+      "teamId": "16559402"
+    },
+    {
+      "name": "Sakayori Lab",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 81.81,
+      "scoreChange": 0.0,
+      "teamId": "16442485"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 6,
+      "rankChange": 0,
+      "score": 80.83,
+      "scoreChange": 0.0,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 7,
+      "rankChange": 0,
+      "score": 78.89,
+      "scoreChange": 0.0,
+      "teamId": "16373916"
+    },
+    {
+      "name": "Ravi Teja Chilakala",
+      "rank": 8,
+      "rankChange": 0,
+      "score": 78.19,
+      "scoreChange": 0.0,
+      "teamId": "17021430"
+    },
+    {
+      "name": "V | A | M",
+      "rank": 9,
+      "rankChange": 0,
+      "score": 76.25,
+      "scoreChange": 0.0,
+      "teamId": "16600664"
+    },
+    {
+      "name": "Lashen Learning",
+      "rank": 10,
+      "rankChange": 0,
+      "score": 76.11,
+      "scoreChange": 0.0,
+      "teamId": "17054447"
+    },
+    {
+      "name": "kibuna",
+      "rank": 24,
+      "rankChange": 5,
+      "score": 70.83,
+      "scoreChange": 2.36,
+      "teamId": "17026534"
+    },
+    {
+      "name": "この遥かなる旅路に祝福を",
+      "rank": 27,
+      "rankChange": -1,
+      "score": 70.14,
+      "scoreChange": 0.42,
+      "teamId": "15526034"
+    },
+    {
+      "name": "ARC Mutants",
+      "rank": 67,
+      "rankChange": -1,
+      "score": 47.08,
+      "scoreChange": 0.0,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Leszek Góra",
+      "rank": 76,
+      "rankChange": 14,
+      "score": 44.58,
+      "scoreChange": 4.16,
+      "teamId": "16487050"
+    },
+    {
+      "name": "StnDyq",
+      "rank": 83,
+      "rankChange": 12,
+      "score": 42.36,
+      "scoreChange": 2.92,
+      "teamId": "16794074"
+    },
+    {
+      "name": "Igor V",
+      "rank": 116,
+      "rankChange": 18,
+      "score": 36.53,
+      "scoreChange": 1.25,
+      "teamId": "16162777"
+    },
+    {
+      "name": "sml0820",
+      "rank": 136,
+      "rankChange": 25,
+      "score": 35.28,
+      "scoreChange": 1.67,
+      "teamId": "16488216"
+    },
+    {
+      "name": "Jay Gautam",
+      "rank": 137,
+      "rankChange": 3,
+      "score": 35.28,
+      "scoreChange": 0.42,
+      "teamId": "17150543"
+    },
+    {
+      "name": "forever young",
+      "rank": 139,
+      "rankChange": 5,
+      "score": 35.14,
+      "scoreChange": 0.83,
+      "teamId": "17010415"
+    },
+    {
+      "name": "Mithil A Vakde",
+      "rank": 156,
+      "rankChange": -1,
+      "score": 33.89,
+      "scoreChange": 0.0,
+      "teamId": "15486728"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 2352,
+      "rankChange": null,
+      "score": 21.67,
+      "scoreChange": null,
+      "teamId": "15507730"
+    }
+  ],
+  "teamIds": [
+    "16756524",
+    "15501171",
+    "15486939",
+    "16559402",
+    "16442485",
+    "15789060",
+    "16373916",
+    "17021430",
+    "16600664",
+    "17054447"
+  ]
+}

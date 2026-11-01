@@ -1,0 +1,358 @@
+{
+  "personId": "jean-francois-puget",
+  "handle": "cpmpml",
+  "name": "Jean-François Puget (CPMP)",
+  "checkedAt": "2026-10-30T11:11:01Z",
+  "method": "Built-in browser (Claude app browser pane), 2026-10-30: read the live public Kaggle profile page and the first page of the Competitions tab (sorted by Best Result) as rendered; competition medals read from the medal icons shown on each row (icon on screen for the top four rows, icon image name in the page for all twenty); medal tile counts read the same way; avatar image URL read from the profile header and downloaded with curl. An earlier draft of this file was treated as unverified and rebuilt from scratch.",
+  "sources": [
+    "https://www.kaggle.com/cpmpml",
+    "https://www.kaggle.com/cpmpml/competitions"
+  ],
+  "profile": {
+    "displayName": "CPMP",
+    "competitionTier": "Grandmaster",
+    "medals": {
+      "gold": 29,
+      "silver": 37,
+      "bronze": 5
+    },
+    "competitionRank": 30,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 6,
+    "joinedTooltip": "Sun Dec 16 2012 07:03:05 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2012-12",
+    "location": "France",
+    "occupation": "Director competitive ML, KGMON team lead at NVIDIA",
+    "organization": "NVIDIA",
+    "bioPresent": true,
+    "bioNote": "Bio says he got a PhD in machine learning, worked on constraint programming and optimization, entered his first Kaggle competition in May 2016, and is now at NVIDIA.",
+    "otherTiers": {
+      "datasets": "Expert",
+      "notebooks": "Grandmaster"
+    },
+    "competitionsEntered": 116,
+    "completedCompetitions": 113,
+    "activity": "55 competitions solo, 60 in a team, 1 hosted",
+    "activeCompetitions": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "hostedCompetitions": [
+      "NVIDIA Nemotron Model Reasoning Challenge (Featured, 4185 teams, $106,388, 4 months ago)"
+    ]
+  },
+  "visibleCompetitionList": {
+    "scopeNote": "Only page 1 of the 6-page completed list was read (the 20 best results). The other 93 completed competitions were not opened, so this is not his full history; do not treat the list as complete or invent further finishes.",
+    "completedCount": 113,
+    "rowsRecorded": 20
+  },
+  "completedResults": [
+    {
+      "competition": "Predict Student Performance from Game Play",
+      "competitionUrl": "https://www.kaggle.com/competitions/predict-student-performance-from-game-play",
+      "rank": 1,
+      "teams": 2051,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "pdnartreb"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 1,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "sorokin"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "IEEE-CIS Fraud Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/ieee-fraud-detection",
+      "rank": 2,
+      "teams": 6351,
+      "medal": "gold",
+      "displayedHandles": [
+        "titericz",
+        "cpmpml",
+        "sggpls",
+        "tony321",
+        "krivoship"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Google QUEST Q&A Labeling",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-quest-challenge",
+      "rank": 2,
+      "teams": 1571,
+      "medal": "gold",
+      "displayedHandles": [
+        "philippsinger",
+        "cpmpml",
+        "dott1718",
+        "christofhenkel",
+        "maxjeblick"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "NBME - Score Clinical Patient Notes",
+      "competitionUrl": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
+      "rank": 2,
+      "teams": 1471,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Web Traffic Time Series Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting",
+      "rank": 2,
+      "teams": 1095,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Sartorius - Cell Instance Segmentation",
+      "competitionUrl": "https://www.kaggle.com/competitions/sartorius-cell-instance-segmentation",
+      "rank": 3,
+      "teams": 1505,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "alexandrecc",
+        "rytisva88",
+        "slawekbiel"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "TensorFlow 2.0 Question Answering",
+      "competitionUrl": "https://www.kaggle.com/competitions/tensorflow2-question-answering",
+      "rank": 3,
+      "teams": 1233,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "christofhenkel"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "BirdCLEF 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2024",
+      "rank": 3,
+      "teams": 974,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "christofhenkel",
+        "theoviel"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Jigsaw Multilingual Toxic Comment Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-multilingual-toxic-comment-classification",
+      "rank": 4,
+      "teams": 1621,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "aerdem4",
+        "christofhenkel"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "NFL Health & Safety - Helmet Assignment",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
+      "rank": 4,
+      "teams": 825,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "aerdem4",
+        "rytisva88"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+      "rank": 5,
+      "teams": 1514,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "horeahoreastefan"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "PLAsTiCC Astronomical Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/PLAsTiCC-2018",
+      "rank": 5,
+      "teams": 1089,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "khyeh0719",
+        "marcuslin"
+      ],
+      "teamName": null,
+      "deletedAccountsShown": 1
+    },
+    {
+      "competition": "TalkingData AdTracking Fraud Detection Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
+      "rank": 6,
+      "teams": 3943,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Microsoft Malware Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/microsoft-malware-prediction",
+      "rank": 6,
+      "teams": 2410,
+      "medal": "gold",
+      "displayedHandles": [
+        "titericz",
+        "cpmpml"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "LANL Earthquake Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/LANL-Earthquake-Prediction",
+      "rank": 7,
+      "teams": 4516,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "stecasasso",
+        "areveillon"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Mechanisms of Action (MoA) Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/lish-moa",
+      "rank": 7,
+      "teams": 4373,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "mmotoki",
+        "yamsam",
+        "cakeisgood"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Predicting Molecular Properties",
+      "competitionUrl": "https://www.kaggle.com/competitions/champs-scalar-coupling",
+      "rank": 7,
+      "teams": 2737,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "aerdem4",
+        "outrunner"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "Corporación Favorita Grocery Sales Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "rank": 8,
+      "teams": 1671,
+      "medal": "gold",
+      "displayedHandles": [
+        "titericz",
+        "cpmpml"
+      ],
+      "teamName": null
+    },
+    {
+      "competition": "G2Net Gravitational Wave Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
+      "rank": 8,
+      "teams": 1219,
+      "medal": "gold",
+      "displayedHandles": [
+        "titericz",
+        "cpmpml",
+        "onodera"
+      ],
+      "teamName": null
+    }
+  ],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/jean-francois-puget-v3.webp",
+    "sourceUrl": "https://www.kaggle.com/cpmpml",
+    "sourceTitle": "Jean-François Puget — own Kaggle profile picture",
+    "alt": "Jean-François Puget, his own Kaggle profile photo",
+    "checkedAt": "2026-10-30T11:11:01Z",
+    "note": "His own profile photo (a real photograph of him alone, glasses and beard), the image shown in the profile header, original at https://storage.googleapis.com/kaggle-avatars/images/75976-gr.jpg, 400x400, converted to webp at native size. The earlier jean-francois-puget-v2.webp is confirmed to be the 100x100 Kaggle thumbnail of this same photo; v3 is the sharper copy to use. jean-francois-puget.webp is an illustrated Hall of Fame card of him (individual, not a group image, but artwork rather than his own picture) and is left untouched."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists cpmpml (CPMP) as a Competitions Grandmaster, ranked 30th of 225,021, with a highest-ever rank of 6th and a medal tile showing 29 gold, 37 silver and 5 bronze; the tile does not separate solo from team medals.",
+      "sourceUrl": "https://www.kaggle.com/cpmpml",
+      "sourceTitle": "Jean-François Puget — public Kaggle profile, tier and medal tile",
+      "checkedAt": "2026-10-30T11:11:01Z"
+    },
+    {
+      "text": "His Kaggle profile calls him a director of competitive machine learning and KGMON team lead at NVIDIA, based in France, and says he entered his first Kaggle competition in May 2016.",
+      "sourceUrl": "https://www.kaggle.com/cpmpml",
+      "sourceTitle": "Jean-François Puget — public Kaggle profile and bio",
+      "checkedAt": "2026-10-30T11:11:01Z"
+    },
+    {
+      "text": "His completed list shows 1st place of 1,455 teams in ARC Prize 2025 with a gold medal, on a team entry that also shows the account sorokin.",
+      "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+      "sourceTitle": "Jean-François Puget — completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T11:11:01Z"
+    },
+    {
+      "text": "His completed list also shows 1st place of 2,051 teams in Predict Student Performance from Game Play with a gold medal, on a team entry that also shows the account pdnartreb.",
+      "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+      "sourceTitle": "Jean-François Puget — completed Predict Student Performance result on Kaggle",
+      "checkedAt": "2026-10-30T11:11:01Z"
+    },
+    {
+      "text": "Kaggle shows him in both active ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2; any public standing there is provisional until the private results.",
+      "sourceUrl": "https://www.kaggle.com/cpmpml/competitions",
+      "sourceTitle": "Jean-François Puget — active ARC Prize 2026 competitions on Kaggle",
+      "checkedAt": "2026-10-30T11:11:01Z"
+    }
+  ],
+  "teamNotes": "The Kaggle completed list shows teammate account pictures (handles on hover) but no team name for any entry, so teamName is null on every row; nothing is credited from memory. The ARC Prize 2025 entry shows cpmpml and sorokin. The existing record's Hall of Fame label calls the 2025 team NVARC, but that name is not displayed on the Kaggle pages read here. Current 2026 memberships (nvbanana in ARC-2, NVARC3 in ARC-3) are already in the record and are not duplicated. Team medals are team results, not individual honours. The Nemotron challenge he is shown hosting is an NVIDIA competition, not a team entry. One PLAsTiCC teammate shows as a deleted account and is not named.",
+  "unverified": [
+    "Team names for every completed entry (not displayed on the list).",
+    "The other 93 completed competitions beyond page 1 of the list.",
+    "Exact completion dates (only relative labels such as 3 years ago are shown).",
+    "Which of the 29 gold, 37 silver and 5 bronze medals were solo versus team (the tile does not split them; the profile shows 55 solo and 60 team competitions).",
+    "Medal colours for any row beyond the twenty read (all twenty show gold).",
+    "Hall of Fame claims in the existing record (ARC Prize 2025 champion, 2024 paper award runner-up) were not rechecked here; they cite arcprize.org.",
+    "Public ARC Prize 2026 standings, which are provisional until the private results."
+  ],
+  "verified": true
+}

@@ -1,5 +1,7 @@
 # The ARC Daily Digest wire desk
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Luna and any assistant running the wire.
@@ -17,6 +19,11 @@ Your stories appear as briefs in the front page's What's News column and in full
 the picture you choose. The front page already prints the standings, the
 ticker and the movers tables, so your job is the sentence a reader cannot get from a table:
 who moved, from where to where, why it matters for the medals, and who the people are.
+
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before choosing the contender angle or picture.
+Consult the exact team/handle’s card record and saved dossier for career context and
+character identity; use the current wire brief for today’s numbers. A held feature or saved
+illustration does not authorize a new publication or social send.
 
 ## How breaking stories reach the editions
 
@@ -51,7 +58,14 @@ python3.13 scripts/newsroom_wire.py prepare --output /tmp/arc-wire-brief.json
 ```
 
 Read the whole brief. Each board under `boards` is `ready` or has an `error` (report it and
-work with the other board). A ready board has:
+work with the other board).
+
+For DNS or permission failures, first follow README.md's execution-access check: a restricted
+local command does not establish unavailable boards. The shared fetcher already retries
+temporary server errors once. Preserve the error category and use only the single authorized
+access recovery; do not loop or file from stale evidence.
+
+A ready board has:
 
 - `leads`: plain-fact lines about the past day: `leader` or `lead-change`, `gold-line`,
   `field`, `gain-<team>`, `climb-<team>`, `new-<team>`, `into-gold-<team>`,
@@ -69,7 +83,24 @@ work with the other board). A ready board has:
 
 Pick the one to three most consequential uncovered leads across both boards. Follow the
 standing editorial direction in [REPORTER.md](REPORTER.md): a balanced paper led by the strongest
-verified development, in proportion to news value.
+verified development, in proportion to news value. Apply its
+[Writing for expert readers](REPORTER.md#writing-for-expert-readers) guidance: report the move
+and its consequence, assume Kaggle/ARC knowledge, and omit routine explanations of competition
+mechanics and repeated caveats. Keep the underlying source checks unchanged.
+
+Before choosing, review high-placing newcomers and improving teams with very few recorded
+submissions alongside the biggest rank jumps. The saved board’s submission count is context,
+not proof of a first-ever attempt, a particular model, private sharing or a known recipe.
+Check the existing wire archive: a covered debut does not cover a later consequential score
+gain, and a covered gain is not permission to repeat the debut. Do not let the same large
+rank-jump stories crowd out an uncovered strong entrant on either board.
+
+When a standout entrant warrants a methods follow-up, check the verified member’s linked
+public notebooks, discussions and repositories where reachable. Only publish what those
+sources establish. If no method is established, keep it unknown; an inaccessible page is not
+evidence that nothing public exists. Put an unresolved follow-up in the existing editorial
+assignment intake with source URLs and an expiry, so the research/edition desk can carry it
+forward. Do not change research schedules, contact entrants or send alerts from the wire.
 
 **Never refile the same move.** Before filing, compare exact team IDs and score-event observation
 times with the wire stories already published. A gain that stays in the rolling one-day window is

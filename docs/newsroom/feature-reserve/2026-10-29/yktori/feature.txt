@@ -1,0 +1,71 @@
+HELD FOR A LATER EDITION — NO X POST
+Reporting file prepared 2026-10-29T23:31:25.134047Z
+Board observation: October29,6:52pm Eastern. Refresh before release.
+
+Clear a lane for yktori: the five-medal challenger crashing ARC3’s front rank
+
+Clear a lane for the challenger
+
+Clear a lane for yktori. The handle that spent part of October outside the leading forty has barged into ARC3’s front rank, carrying a five-medal back catalogue into a race packed with decorated rivals. At the October 29, 6:52 pm Eastern observation, yktori stood sixth among 4,975 teams, on 51.04. That is a place in the main event.
+
+The climb has a proper highlight reel. Late on October 24 Eastern, our collector caught a rise from forty-second to eleventh. Late on October 27, another improvement took the entry from eleventh to fifth. Those are observed score events, rather than the exact moments a private submission finished. By the next day, a rival’s advance had moved yktori to sixth without lowering that score. The challenger had earned a seat near the front; keeping it would be another contest.
+
+Sources: board
+
+The name on the jersey
+
+So who is wearing the jersey? The account’s own profile describes a web engineer at LY Corporation, based in Tokyo. It joined Kaggle on October 4, 2019, and now carries the Competitions Expert title. The full real-world name is not established in the public material checked for this feature. For the moment, yktori is the name on the programme—and the record gives readers plenty to follow.
+
+Seven years of account history sit behind this season’s arrival. The profile lists twenty completed competitions and two active ones. Some were individual entries; some involved teammates. The present ARC3 roster lists just yktori. That tells us which account is entered, while leaving any help outside the official roster unknown. It is a substantial competitive history for a handle the ARC crowd is only now learning to recognize.
+
+Sources: profile, past-results, board
+
+A silver finish and four bronze campaigns
+
+Start the back catalogue with Drawing with LLMs: twenty-seventh out of 1,309, with a silver medal. That is a serious finish in a field working on generated drawings. The silver sits beside four bronze results spanning an unusually wide programme: seventy-fourth of 812 in IceCube’s neutrino challenge, eighty-second of 693 in LEAP’s atmospheric-physics contest, and 130th of 2,058 in Feedback Prize’s student-writing competition.
+
+The fourth bronze is attached to 322nd of 4,373 in Mechanisms of Action Prediction. That historical entry also lists kuroironeko and yuishizaki, so its placing belongs to a shared campaign. The medals are real Kaggle honors earned in those earlier contests; the ARC3 public position is this season’s unfinished business. Put them together and the sporting appeal is obvious: a competitor with results in drawing, physics, language and drug research is now mixing it with the leading interactive-reasoning teams.
+
+Sources: past-results, drawing-board
+
+The long scorecard behind the breakthrough
+
+There are hard afternoons on the scorecard too. The same profile records 1,213th of 3,406 in Riiid’s answer-prediction contest and 3,705th of 5,558 in M5 forecasting. Those results belong alongside the medal finishes. Readers are seeing a varied body of competition work, rather than a carefully selected list of victories.
+
+One small public artifact makes the Riiid connection concrete. The account’s visible code listing contains a notebook called riiid-data. Downloaded through the Kaggle CLI, its four cells read the training table with explicit data types, save a Feather-format copy, and inspect the table and its memory use. It is modest, practical data preparation. It does not reveal the system behind today’s ARC score, but it gives the public record something more tangible than a row in a standings table.
+
+Sources: past-results, public-code, riiid-code
+
+Another arena on the programme
+
+What comes next? The account’s active-competition list already offers a lead: alongside ARC3 it displays Google’s Gemma 4 Developer Agent Competition. That is a public entry to watch, with no announced result or promised release date in the material reviewed here. A current ARC3 technical write-up and an attributable account of the latest improvements have not been identified.
+
+For now, the results carry the story. This is the Tokyo web engineer’s public handle, a silver-and-four-bronze record, and an October ascent from the chasing pack into the leading six. The private finish is still ahead. The next edition may bring a new place, another score, or a more revealing glimpse of the competitor behind it. The sporting reason to keep watching has already arrived: yktori has made the leading group, and the leading group has a new name to remember.
+
+Sources: past-results, profile, board
+
+SOURCE FILE
+board — ARC3 public board and dated observed score history
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board
+Checked 2026-10-29T23:24:34.248388Z
+
+profile — yktori — own Kaggle biography and medal record
+https://www.kaggle.com/yktori
+Checked 2026-10-29T23:24:34.248388Z
+
+past-results — yktori — own completed and active competition cards
+https://www.kaggle.com/yktori/competitions
+Checked 2026-10-29T23:24:34.248388Z
+
+drawing-board — Drawing with LLMs — final leaderboard
+https://www.kaggle.com/competitions/drawing-with-llms/leaderboard
+Checked 2026-10-29T23:24:34.248388Z
+
+public-code — yktori — public notebook listing
+https://www.kaggle.com/yktori/code
+Checked 2026-10-29T23:24:34.248388Z
+
+riiid-code — yktori — public riiid-data notebook, code read via Kaggle CLI
+https://www.kaggle.com/code/yktori/riiid-data
+Checked 2026-10-29T23:24:34.248388Z
+

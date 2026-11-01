@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T21:43:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "The ARChitects climb from 798th to 16th on ARC-3",
+  "id": "2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T21:59:40Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The ARChitects gained 9.02 points to reach 38.85, leaping from 798th to 16th on the public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts the team inside the provisional gold places: the line stands at 19th with 38.20."
+    }
+  ],
+  "since": "2026-10-25T21:39:14Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T21:59:09Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16032816"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "2026-10-29-turducken-nt-corrected-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T03:52:09.683Z",
+  "rawSrc": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+  "nativeOriginalSrc": "/news-images/references/2026-10-29-turducken-nt-corrected-v2-native.png",
+  "toolOutput": "exec-e2c552c0-4796-4d89-aad0-38aebec0aafd.png",
+  "prompt": "Edit target: input1 is the approved Team Turducken whole-crew flight illustration. Make ONE precise character-identity correction and preserve the rest of this excellent image. The BANANA-SUITED CRYING KITTEN on the upper-right flight deck was wrongly assigned to NT. Replace ONLY that figure with NT's ACTUAL chosen avatar: the yellow bird in the circular avatar at upper-left of input2, the user-supplied Kaggle profile screenshot. Preserve its rounded elongated yellow head/body, heavy black eyebrows, small half-lidded eyes, short broad ochre beak and little black feather marks; subtle smug deadpan expression. Adapt it into the same beautifully detailed 3D-comic team style, wearing a compact dark navy/amber ARC-grid engineer harness and gripping the same deck controls. No banana costume, no cat ears, no tears, no cap, no goggles hiding the eyes. Keep its scale and exact place in the original crew composition. Preserve EVERY OTHER character and all original details: bearded Mark, visor Son, Keith's yellow mascot with BLACK CAP (that is a different character; do not change him), blonde chibi with pink bunny, grayscale MRI-head character, silver/cobalt blue-plumed knight, and exactly TWO Yorkies. Preserve the entire magnificent mechanical turkey/chicken/duck airship, detailed brass machinery, wings, pose, camera, snowy GPU Valley, castle skyline, moon, lighting, image proportions and visual quality. Do not change anyone's face or costume besides the incorrect NT figure. No extra people, animals, words, scores, captions, logos, border or watermark. Input2 is identity evidence only: ignore all UI text, frame and profile circle. This is the seven-account ARC3 Turducken crew; no ARC2 Mutants characters or style.",
+  "toolArguments": {
+    "prompt": "Edit target: input1 is the approved Team Turducken whole-crew flight illustration. Make ONE precise character-identity correction and preserve the rest of this excellent image. The BANANA-SUITED CRYING KITTEN on the upper-right flight deck was wrongly assigned to NT. Replace ONLY that figure with NT's ACTUAL chosen avatar: the yellow bird in the circular avatar at upper-left of input2, the user-supplied Kaggle profile screenshot. Preserve its rounded elongated yellow head/body, heavy black eyebrows, small half-lidded eyes, short broad ochre beak and little black feather marks; subtle smug deadpan expression. Adapt it into the same beautifully detailed 3D-comic team style, wearing a compact dark navy/amber ARC-grid engineer harness and gripping the same deck controls. No banana costume, no cat ears, no tears, no cap, no goggles hiding the eyes. Keep its scale and exact place in the original crew composition. Preserve EVERY OTHER character and all original details: bearded Mark, visor Son, Keith's yellow mascot with BLACK CAP (that is a different character; do not change him), blonde chibi with pink bunny, grayscale MRI-head character, silver/cobalt blue-plumed knight, and exactly TWO Yorkies. Preserve the entire magnificent mechanical turkey/chicken/duck airship, detailed brass machinery, wings, pose, camera, snowy GPU Valley, castle skyline, moon, lighting, image proportions and visual quality. Do not change anyone's face or costume besides the incorrect NT figure. No extra people, animals, words, scores, captions, logos, border or watermark. Input2 is identity evidence only: ignore all UI text, frame and profile circle. This is the seven-account ARC3 Turducken crew; no ARC2 Mutants characters or style.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "/var/folders/yt/gpbb89jn1_97dpj4gl0_g2x80000gn/T/codex-clipboard-c1570ed6-9e44-4f0b-a0ef-347354ce7b8c.png"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "turducken",
+  "references": [
+    {
+      "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "role": "Edit target: preserve whole crew, two Yorkies and airship; replace only wrongly assigned banana kitten.",
+      "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-nt-mitubant-own-profile-screenshot.png",
+      "role": "Authoritative NT yellow-bird identity, directly supplied by Boss.",
+      "sourceUrl": "https://www.kaggle.com/mitubant",
+      "sha256": "28ae6393d94cd77df8aaf618af71a1bda5508ab97a50cde58c40bbbc044db055"
+    }
+  ],
+  "review": "Reviewed the seven main Turducken characters and exactly two Yorkies retained. NT at upper right is now the own-profile yellow bird with black brows and ochre beak; the banana kitten and tears are gone. Keith's separate black-capped yellow mascot is retained, alongside Mark, Son, chibi, MRI-head character and blue-plumed knight. Mechanical airship, snowy valley, castle and moon remain. No statistics or lettering.",
+  "reviewStatus": "reviewed",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "sourceArtworkId": "2026-10-18-turducken-whole-crew-flight-v1-base",
+  "commissionAuthority": "Boss supplied NT's actual yellow-bird avatar and requested the correct ARC3 character; this corrects the same mistaken figure in the existing crew reference.",
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredRosterHandles": {
+      "15605182": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ]
+    }
+  },
+  "archiveNote": "The October18 original remains unchanged as a historical image. This corrected seven-account crew reference replaces it on T014; no article or social send.",
+  "rawSha256": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
+  "nativeOriginalSha256": "1a139d3d67d7292144a9748ece360567e0c22c1df6f8e688458abc196ff8c15d"
+}

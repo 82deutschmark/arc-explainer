@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T19:42:56Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Kirill Krasikov breaks into ARC-3 top 100",
+  "id": "2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-26T19:57:28Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Kirill Krasikov gained 2.76 points to reach 33.82, rising from 465th to 91st on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-25T19:38:02Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T19:57:07Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16836252"
+  ]
+}

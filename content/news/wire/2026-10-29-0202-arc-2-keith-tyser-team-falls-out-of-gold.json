@@ -1,0 +1,37 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T05:50:26Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Keith Tyser’s team slips out of ARC-2 gold",
+  "id": "2026-10-29-0202-arc-2-keith-tyser-team-falls-out-of-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-29T06:02:37Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "この遥かなる旅路に祝福を fell from 16th to 18th at 69.72, unchanged, and lost its place among the 16 gold teams."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The team had entered the gold places at 16th in a report earlier this week; the cutoff now stands at 70.14."
+    }
+  ],
+  "since": "2026-10-28T05:47:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T06:01:55Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15526034"
+  ]
+}

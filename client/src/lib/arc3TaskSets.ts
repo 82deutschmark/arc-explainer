@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Claude Opus 5
 Date: 2026-09-07
@@ -42,6 +48,7 @@ export const PIPELINE_CATEGORY = 'ai-generated';
 
 /** The reviewed tasks: agent-generated, then played and revised until they hold up.
  *  NOT hand-authored -- copy that said so was untrue. Matches CommunityGallery's labels. */
+export const TRAINABLE_CATEGORY = 'trainable';
 export const AUTHORED_CATEGORY = 'arena';
 
 /** Community tasks that have been through at least one revision pass. */
@@ -112,7 +119,7 @@ export function sectionOf(category: string | undefined): string {
  * gallery shipped. The next one gets no such welcome.
  */
 const VISITOR_CATEGORIES = new Set<string>([
-  AUTHORED_CATEGORY, GLOWUP_CATEGORY, CUSTOM_CATEGORY,
+  TRAINABLE_CATEGORY,
 ]);
 
 /** Anything with a category, which is every shape of task row the three surfaces pass in. */

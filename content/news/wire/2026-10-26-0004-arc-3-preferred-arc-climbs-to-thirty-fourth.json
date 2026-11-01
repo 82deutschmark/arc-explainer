@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T03:41:07Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Preferred ARC climbs from 140th to 34th on ARC-3",
+  "id": "2026-10-26-0004-arc-3-preferred-arc-climbs-to-thirty-fourth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T04:04:05Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Preferred ARC gained 3.69 points to reach 36.86, rising from 140th to 34th in the past day."
+    }
+  ],
+  "since": "2026-10-25T03:30:07Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T04:03:29Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16861524"
+  ]
+}

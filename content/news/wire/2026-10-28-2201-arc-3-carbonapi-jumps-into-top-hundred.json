@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T01:49:58Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "carbonapi jumps from 635th to 84th on ARC-3",
+  "id": "2026-10-28-2201-arc-3-carbonapi-jumps-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-29T02:01:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "carbonapi gained 3.63 to reach 34.14, moving from 635th to 84th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The rise puts the entry inside the top 100, though the 38.22 gold line remains ahead."
+    }
+  ],
+  "since": "2026-10-28T01:46:55Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T02:00:48Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17024432"
+  ]
+}

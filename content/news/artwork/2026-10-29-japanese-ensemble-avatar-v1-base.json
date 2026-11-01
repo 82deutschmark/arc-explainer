@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "id": "2026-10-29-japanese-ensemble-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:30:01.971907+00:00",
+  "toolOutput": "exec-20dab84d-2765-461b-928b-7e289df4d332.png",
+  "rawSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-base.webp",
+  "rawSha256": "44c5ca58d0e05764e8377d1736acb94dfd9960367433f962a0a7588787ba2037",
+  "prompt": "Use case: stylized-concept. Asset type: reusable EIGHT-member esports team character sheet/ensemble avatar for the ARC Daily Digest. Input is an inspected labelled contact sheet of the eight actual Kaggle own-avatar references, four on upper row and four lower, labels are SOURCE MAPPING ONLY and must not be rendered. Create ONE wide 2:1 beautifully polished cinematic 3D comic tableau showing EXACTLY EIGHT distinct characters, arranged TWO ROWS OF FOUR on two broad ARC-grid steps, each entire character separated and readable, friendly confident sports-star team entrance, no background people. Use the eight owner graphics to preserve each identity distinctly, adult proportions for humanoids. UPPER ROW left-to-right:1 isakatsuyoshi: black-haired big-eyed anime adult holding a small plain cup, black-and-cyan ARC jacket;2 konbu17: cheerful bright-green seaweed frond mascot in an orange ARC-grid vest;3 pompom555: deep navy/white ORCA mascot with bold white eye-patch, yellow/blue ARC racer harness, clearly separate from whale;4 refv00: cute pale-green round DINOSAUR mascot with tiny arms, cobalt ARC vest. LOWER ROW left-to-right:5 tanakaai24: the owner's brown-bobbed anime reader with round glasses, thick tan scarf, a plain closed book and red/cyan ARC jacket;6 tk256ailab: ORIGINAL fictional dark hooded opaque-face explorer, an abstract gold stairway motif on backpack nods to the owner's rear-view stairway photo, no invented human face, violet and gold ARC panels;7 ttyn4519: an ORIGINAL heroic white/navy/yellow/red articulated robot inspired by the owner's giant-robot photograph, respectful generic original mecha, no existing franchise logos or lettering, magenta/cyan ARC shoulder panels;8 yuto0712: the owner's adorable soft pale-blue WHALE mascot with pale belly and stubby fins, tiny navy-and-blue ARC scarf. Keep orca, whale, green dinosaur and seaweed shapes all separate, no extra creatures. Warm amber hall spotlights and cool azure fills, stylish detailed textures, bright square puzzle colors. No names, labels, real-world faces, team name text, rank, scores, medals, company marks or watermark. All eight motifs present once each; this is a reusable fantasy team-avatar ensemble, not a documentary team photograph.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+      "kind": "generation-input",
+      "label": "復活の混テキスト — eight-avatar ensemble — exact input 1",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "c68e1d65d8a288c40c4b6033dc30f8d83485bd18ae5a194f291da95facdc9e27"
+    }
+  ],
+  "inputImages": [
+    "own-avatar-contact-sheet.jpg"
+  ],
+  "review": "Inspected exactly eight subjects in two rows of four matching own-avatar motifs: Isaka cup-holder, konbu seaweed, pompom orca, re green dinosaur; Tanaka glasses/scarf/book, TK256 opaque stairway explorer, ttyn white/navy/red/yellow robot and yuto blue whale. Orca and whale distinct. TK256 is a faceless fictional stand-in inspired by the rear-view tower photo. No generic goose, labels or scores.",
+  "purpose": "character-reference",
+  "subjectId": "kontext-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable EIGHT-member esports team character sheet/ensemble avatar for the ARC Daily Digest. Input is an inspected labelled contact sheet of the eight actual Kaggle own-avatar references, four on upper row and four lower, labels are SOURCE MAPPING ONLY and must not be rendered. Create ONE wide 2:1 beautifully polished cinematic 3D comic tableau showing EXACTLY EIGHT distinct characters, arranged TWO ROWS OF FOUR on two broad ARC-grid steps, each entire character separated and readable, friendly confident sports-star team entrance, no background people. Use the eight owner graphics to preserve each identity distinctly, adult proportions for humanoids. UPPER ROW left-to-right:1 isakatsuyoshi: black-haired big-eyed anime adult holding a small plain cup, black-and-cyan ARC jacket;2 konbu17: cheerful bright-green seaweed frond mascot in an orange ARC-grid vest;3 pompom555: deep navy/white ORCA mascot with bold white eye-patch, yellow/blue ARC racer harness, clearly separate from whale;4 refv00: cute pale-green round DINOSAUR mascot with tiny arms, cobalt ARC vest. LOWER ROW left-to-right:5 tanakaai24: the owner's brown-bobbed anime reader with round glasses, thick tan scarf, a plain closed book and red/cyan ARC jacket;6 tk256ailab: ORIGINAL fictional dark hooded opaque-face explorer, an abstract gold stairway motif on backpack nods to the owner's rear-view stairway photo, no invented human face, violet and gold ARC panels;7 ttyn4519: an ORIGINAL heroic white/navy/yellow/red articulated robot inspired by the owner's giant-robot photograph, respectful generic original mecha, no existing franchise logos or lettering, magenta/cyan ARC shoulder panels;8 yuto0712: the owner's adorable soft pale-blue WHALE mascot with pale belly and stubby fins, tiny navy-and-blue ARC scarf. Keep orca, whale, green dinosaur and seaweed shapes all separate, no extra creatures. Warm amber hall spotlights and cool azure fills, stylish detailed textures, bright square puzzle colors. No names, labels, real-world faces, team name text, rank, scores, medals, company marks or watermark. All eight motifs present once each; this is a reusable fantasy team-avatar ensemble, not a documentary team photograph.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-native.png",
+    "sha256": "4d530ec92dcb3450fd4e6f07da793e1f259459c9b65e3a744975c6f5eac8298b",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-20dab84d-2765-461b-928b-7e289df4d332.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+      "sha256": "c68e1d65d8a288c40c4b6033dc30f8d83485bd18ae5a194f291da95facdc9e27"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/isakatsuyoshi-own-avatar.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-isakatsuyoshi-own-avatar.jpg",
+      "sha256": "e3c0b1965f28d49de01df60dd3499a5e7f7c247617ba1fe0c05db6f21c57c8a6"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/konbu17-own-avatar.png",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-konbu17-own-avatar.png",
+      "sha256": "565a1b846474fe1b6413d12dd62c6c537fe8663f569b427ca23d5f4eeae76b73"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/pompom555-own-avatar.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-pompom555-own-avatar.jpg",
+      "sha256": "500e877f040148648187cbafd4dc30dcd81b73b6da286c3551ca8d6d170007d9"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/refv00-own-avatar.jpeg",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-refv00-own-avatar.jpeg",
+      "sha256": "8becb1bc782bcd1988329a1e2115f0b31317c72dcba2482ecb7b4b31b28d0952"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/tanakaai24-own-avatar.png",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tanakaai24-own-avatar.png",
+      "sha256": "9e534e60644532893857cc9a1f493a8e50cb913c53cc7489cddfea5860325828"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/tk256ailab-own-avatar.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tk256ailab-own-avatar.jpg",
+      "sha256": "3c3e504866b1bb45316c85b3e7b9b051c330148c9f2d0bd1ece519c1b99c359b"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/ttyn4519-own-avatar.png",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-ttyn4519-own-avatar.png",
+      "sha256": "3e0f4edb52c815eb6dacc5ef9e82216a4623c977c2e54e48c36af914d1b66017"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/yuto0712-own-avatar.PNG",
+      "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-yuto0712-own-avatar.png",
+      "sha256": "e710d1850bc001c19a628642e7f8e56f098331b4c891aafd08a02c3062eaa1c6"
+    }
+  ],
+  "identityNotes": [
+    "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+    "Preserve all eight separate motifs. The orca and whale are different characters. TK256’s masked explorer is fictional and respects a rear-view source without inventing a human face.",
+    "Owner-selected cartoons and mascot graphics are account avatars, not verified human appearances. Refresh all eight exact roster handles before later team scenes."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-japanese-ensemble-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:30:01.971907+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable EIGHT-member esports team character sheet/ensemble avatar for the ARC Daily Digest. Input is an inspected labelled contact sheet of the eight actual Kaggle own-avatar references, four on upper row and four lower, labels are SOURCE MAPPING ONLY and must not be rendered. Create ONE wide 2:1 beautifully polished cinematic 3D comic tableau showing EXACTLY EIGHT distinct characters, arranged TWO ROWS OF FOUR on two broad ARC-grid steps, each entire character separated and readable, friendly confident sports-star team entrance, no background people. Use the eight owner graphics to preserve each identity distinctly, adult proportions for humanoids. UPPER ROW left-to-right:1 isakatsuyoshi: black-haired big-eyed anime adult holding a small plain cup, black-and-cyan ARC jacket;2 konbu17: cheerful bright-green seaweed frond mascot in an orange ARC-grid vest;3 pompom555: deep navy/white ORCA mascot with bold white eye-patch, yellow/blue ARC racer harness, clearly separate from whale;4 refv00: cute pale-green round DINOSAUR mascot with tiny arms, cobalt ARC vest. LOWER ROW left-to-right:5 tanakaai24: the owner's brown-bobbed anime reader with round glasses, thick tan scarf, a plain closed book and red/cyan ARC jacket;6 tk256ailab: ORIGINAL fictional dark hooded opaque-face explorer, an abstract gold stairway motif on backpack nods to the owner's rear-view stairway photo, no invented human face, violet and gold ARC panels;7 ttyn4519: an ORIGINAL heroic white/navy/yellow/red articulated robot inspired by the owner's giant-robot photograph, respectful generic original mecha, no existing franchise logos or lettering, magenta/cyan ARC shoulder panels;8 yuto0712: the owner's adorable soft pale-blue WHALE mascot with pale belly and stubby fins, tiny navy-and-blue ARC scarf. Keep orca, whale, green dinosaur and seaweed shapes all separate, no extra creatures. Warm amber hall spotlights and cool azure fills, stylish detailed textures, bright square puzzle colors. No names, labels, real-world faces, team name text, rank, scores, medals, company marks or watermark. All eight motifs present once each; this is a reusable fantasy team-avatar ensemble, not a documentary team photograph.",
+      "referenced_image_paths": [
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-20dab84d-2765-461b-928b-7e289df4d332.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/avatar-v1.png",
+    "sha256": "4d530ec92dcb3450fd4e6f07da793e1f259459c9b65e3a744975c6f5eac8298b",
+    "references": [
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg",
+        "sha256": "c68e1d65d8a288c40c4b6033dc30f8d83485bd18ae5a194f291da95facdc9e27"
+      }
+    ],
+    "review": "Inspected exactly eight subjects in two rows of four matching own-avatar motifs: Isaka cup-holder, konbu seaweed, pompom orca, re green dinosaur; Tanaka glasses/scarf/book, TK256 opaque stairway explorer, ttyn white/navy/red/yellow robot and yuto blue whale. Orca and whale distinct. TK256 is a faceless fictional stand-in inspired by the rear-view tower photo. No generic goose, labels or scores.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T19:42:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "megsub climbs from 1,733rd to 67th on ARC-2",
+  "id": "2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-26T19:57:28Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "megsub gained 12.22 points to reach 41.25, moving from 1,733rd to 67th on the ARC-AGI-2 public board."
+    }
+  ],
+  "since": "2026-10-25T19:38:04Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T19:57:07Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16487824"
+  ]
+}

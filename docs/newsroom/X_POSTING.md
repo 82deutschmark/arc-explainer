@@ -1,5 +1,7 @@
 # ARC Daily Digest posts on X
 
+> Cards: read [CARD_PLAYBOOK.md](CARD_PLAYBOOK.md) before featuring anyone. Every named competitor, sponsor and team gets a card lookup and a card link; the story page shows their real cards.
+
 Follow the [head editor's completion order](FINISHING.md) for every manual or scheduled post.
 One success result ends an authorized send. The editor saying they posted ends it immediately;
 record that confirmation locally without opening X, adding a reply or fetching the post URL.
@@ -11,6 +13,19 @@ access limited to account/duplicate checks, composition, sending and one success
 (Reorganized 15 October 2026 by Claude Opus 5.5 Max: the recap moved from 2 pm to 2:20 pm so it never
 shares the browser with the hourly organizer scan, and it now reads the research archive rather than
 repeating the research desk's searches.)
+
+## Required hashtag for every new X post
+
+Include the exact **#Kaggle** hashtag in every new newsroom Twitter/X announcement:
+Early and Late editions, the afternoon recap, specials and feature announcements.
+Reserve its space within the 280-character budget before saving or sending reviewed copy;
+shorten optional mentions or secondary copy when needed. Keep it when editing the helper's draft.
+This is an X hashtag instruction; it does not ask anyone to notify people on Discord.
+
+`scripts/newsroom_x.py` includes it in new edition and afternoon drafts. The required edition
+`--begin-posting` handoff rejects reviewed copy without the exact hashtag or over budget.
+Preserve historical `posting`/`posted` outboxes and explicit human send confirmations;
+this direction never authorizes editing or resending an existing announcement.
 
 ## Editorial review for every routine post
 
@@ -34,6 +49,17 @@ permanent article link and 280-character limit; omit an optional mention if need
 These rules apply to future drafts. Preserve every `posting`/`posted` outbox and
 existing announcement; a copy preference does not authorize a replacement send.
 
+## Discord image delivery comes before X
+
+Before **any illustrated X announcement**, including a manually commissioned special feature,
+complete [ART_DESK.md's Discord image delivery](ART_DESK.md#discord-image-delivery-before-x).
+The X outbox must reference a confirmed receipt for the finished attachment and story link in
+`#arc3-rollout-feed`, plus any person’s reaction or explicit written go-ahead under that
+procedure, before changing to `posting`. A text-only relay notice, an intended send or
+a clean-base preview is insufficient. Without approval, keep X in `draft` with
+`awaiting-discord-approval`; do not poll or schedule a retry. If delivery fails, report it.
+An existing X send is preserved; recover a missing Discord image without another X post.
+
 ## Scheduled edition handoffs
 
 Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): prepare the outbox with
@@ -56,14 +82,17 @@ lead the text with that article's headline, and retain its permanent link. Use t
 edition's composed image, including its current score/time overlays and branding. A
 generic link preview, raw scene without the score panel, or earlier edition's image is not
 a substitute. This image belongs in the existing routine announcement; it does not create
-an extra post. An edition without custom artwork keeps the normal text/link announcement.
+an extra post. Every routine edition announcement requires the reviewed image attachment.
+If neither contest has valid artwork, the helper saves `blocked` / `missing-edition-artwork`
+and exits nonzero. Do not compose or send a text-only edition announcement. Prepare Late
+artwork in the 5 pm pass and finalize its score graphics from the 6 pm evidence.
 
 1. Run, with today's Eastern date in the file name:
    `python3.13 scripts/newsroom_x.py --edition morning --output /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json`
    (the evening run uses `--edition evening` and `YYYY-MM-DD-late-edition.json`).
 2. The helper drafts the post from the published editions: `The ARC Daily Digest · Early
    edition` (or `Late edition`), the ARC-AGI-3 and ARC-AGI-2 headlines when both fit in 280
-   characters (otherwise the lead one), and the lead article's link. A published article
+   characters (otherwise the lead one), the required #Kaggle hashtag, and the lead article's link. A published article
    with reviewed, evidence-bound custom artwork leads; ARC-3 leads when both have art or
    neither does. The helper validates that artwork against the archived edition and saves
    a PNG attachment beside the outbox. Its `media` object records the exact local `path`,
@@ -71,11 +100,12 @@ an extra post. An edition without custom artwork keeps the normal text/link anno
    draft immediately, with no live-link check, deployment wait or polling. A site build after
    a successful push is expected; it does not reopen the publishing assignment.
 3. When the outbox state is `draft`: confirm the account is `82deutschmark` and look at its recent
-   posts for this edition's post (an existing one completes the job; save its URL). If `media`
-   is present, inspect its PNG, verify its saved hash, upload `media.path` through the browser's
+   posts for this edition's post (an existing one completes the job; save its URL). Require `media`;
+   if it is absent, stop with the artwork blocker. Inspect its PNG, verify its saved hash, upload `media.path` through the browser's
    file picker and add `media.alt` as image description. Confirm the compose preview shows
    the intended illustration with readable current overlays before sending. Save the exact
-   text and attachment metadata and set the state to `posting`, post it once, verify the text
+   text and attachment metadata, then use the guarded handoff below to set `posting`.
+   Never set an edition outbox to `posting` by directly editing JSON. Post it once, verify the text
    and attached illustration in one success result, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
    `posted` state is never overwritten; an uncertain send gets one profile check before any retry.
@@ -98,6 +128,34 @@ if the human already posted the corrected image, verify it, record the existing 
 do not send another copy. Deleting an old post is a separate irreversible action requiring
 the browser's action-time confirmation; it is not part of an unattended routine retry.
 
+## Required edition posting handoff
+
+After the account/duplicate check, upload `media.path`, add `media.alt`, and visually confirm
+that the X composer contains the correct image, readable overlays, reviewed headline and
+permanent edition link **together**. A saved file is not an uploaded attachment. If upload fails,
+the image is absent, or the preview shows the wrong cover, do not press Post.
+
+Save the confirmed Discord delivery in `discord.receiptPath`. The receipt records `state: sent`,
+`messageId`, `destination: channel:1550165647911034940`, `imageSha256`, and the `message` containing
+the edition link. Save `approval` with `approved: true`, `source: discord-reaction`, `messageId`,
+`imageSha256`, `checkedAt`, `userId`, `userIsBot: false` and `emoji`. An explicit release-specific
+editor waiver instead uses `source: editor-waiver` and the exact `instruction`; never invent one.
+Then run, with the saved attachment hash:
+
+```sh
+python3.13 scripts/newsroom_x.py --output <edition-outbox.json> --begin-posting \
+  --attached-image-sha256 <media.sha256> --attachment-reviewed
+```
+
+This command checks the actual PNG bytes, original published artwork, edition link, confirmed
+Discord image delivery and approval, and #Kaggle within 280 characters before allowing `draft` → `posting`. `--attachment-reviewed`
+attests to the visible X composer review; the helper cannot inspect the browser or click Post.
+A nonzero exit means stop: preserve the draft and concrete blocker. Never bypass it by changing
+state manually, removing `media`, using a generic link card, or sending the text first. The browser
+sender must keep the reviewed image attached through the final Post action. Verify one success
+result showing the text and image, then record the URL and `posted`. Already `posting`/`posted`
+outboxes and explicit human send confirmations remain protected, including historical text posts.
+
 # The afternoon recap (2:20 pm)
 
 ## Schedule and scope
@@ -111,7 +169,7 @@ Discord messages.
 
 Use lively, respectful sporting language for every contender, including Tufa Labs.
 Report verified moves and attribute public comments in context. Keep the recap
-under 280 characters and link to `https://arc.markbarney.net/news`. Do not invent
+under 280 characters including #Kaggle and link to `https://arc.markbarney.net/news`. Do not invent
 methods, motives, affiliations, quotes, hardware claims or final medals.
 
 ## Prepare board evidence and an afternoon draft
@@ -133,7 +191,11 @@ methods, motives, affiliations, quotes, hardware claims or final medals.
 5. Read the full brief. Personally check the proposed post's numbers and names.
    Comparisons use the previous calendar day's 6 pm Eastern observation. Missing
    comparisons stay unknown. One failed board must not stop the other. If both
-   fail, save the failure and stop without posting unverified standings.
+   fail, distinguish execution access from source failure as described in README.md before
+   saving the failure and stopping. A DNS error in a network-restricted execution does not
+   establish unavailable boards. One recovery after correcting authorized execution access is
+   allowed; do not repeat unchanged failing attempts. The helper exits nonzero when no usable
+   recap can be drafted. Preserve the failed attempt in the private archive before recovery.
 
 ## Keep the recap bounded
 
@@ -143,7 +205,8 @@ Do not open watched feeds, Replies, Reposts, search results, individual research
 people's profiles. Do not discover identities, ingest new research, generate artwork or follow
 links out of X. Previously saved source dates stay visible; stale coverage is not evidence of quiet.
 
-Prepare the board brief once. If both boards fail, save the failure and stop; do not substitute
+Prepare the board brief once. If execution access fails, apply the single authorized recovery
+described above; if both boards still fail, save the failure and stop. Do not substitute
 research browsing. Read and fact-check only the sections needed for the short recap. No optional
 mentions that require verification. Save the existing evening handoff format below from the brief
 and already verified public sources only. Empty `posts` arrays with honest limitations are valid.
@@ -168,7 +231,8 @@ was performed because research is paused. The evening edition prepares its own c
 
 Confirm the X account is `82deutschmark` and inspect recent profile posts for today's
 ARC Daily afternoon recap. An existing matching post completes the send without
-another copy. Before the final Post action, save the exact reviewed text and set
+another copy. Before the final Post action, confirm the exact #Kaggle hashtag remains
+in the reviewed text within 280 characters, save that text and set
 outbox `state` to `posting`. After sending, visibly verify the post on the profile,
 save its permanent X URL and actual completion time, then set `state` to `posted`.
 

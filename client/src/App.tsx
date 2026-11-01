@@ -1,7 +1,13 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-29
+ * PURPOSE: Register the Card Cabinet and permanent player/team card pages alongside newspaper routes.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
-Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-Date: 2026-10-22
-PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
+Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
+Date: 26-October-2026
+PURPOSE: Registers the focused /arc2/capped cohort gallery. Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 review tooling and supporting newspaper people, community and method routes.
          Loads secondary route modules on demand so the front page does not download
@@ -36,7 +42,6 @@ import RouteMetadata from "@/components/RouteMetadata";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import NotFound from "@/pages/not-found";
 import Redirect from "@/components/Redirect";
-import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 import FinalStretchLanding from "@/pages/FinalStretchLanding";
 
 // Keep the current front door eager. Secondary pages are separate chunks; importing
@@ -62,6 +67,7 @@ const NewsMethod = lazy(() => import("@/pages/NewsMethod"));
 const NewsStaff = lazy(() => import("@/pages/NewsStaff"));
 const NewsWire = lazy(() => import("@/pages/NewsWire"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
+const NewsCards = lazy(() => import("@/pages/NewsCards"));
 const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
 const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
 const PuzzleDiscussion = lazy(() => import("@/pages/PuzzleDiscussion"));
@@ -85,6 +91,7 @@ const ModelDebate = lazy(() => import("@/pages/ModelDebate"));
 const LLMCouncil = lazy(() => import("@/pages/LLMCouncil"));
 const ModelComparisonPage = lazy(() => import("@/pages/ModelComparisonPage"));
 const HuggingFaceUnionAccuracy = lazy(() => import("@/pages/HuggingFaceUnionAccuracy"));
+const Arc2Capped = lazy(() => import("@/pages/Arc2Capped"));
 const Arc2HardSet = lazy(() => import("@/pages/Arc2HardSet"));
 const Arc2HardSetFindings = lazy(() => import("@/pages/Arc2HardSetFindings"));
 const About = lazy(() => import("@/pages/About"));
@@ -173,7 +180,7 @@ function Router() {
             explanation, both hosts. /synthetic stays as an alias because it has been
             linked; the resource hub lives at /home. */}
         <Route path="/" component={FinalStretchLanding} />
-        <Route path="/synthetic" component={SyntheticLanding} />
+        <Route path="/synthetic"><Redirect to="/arc3/gallery" /></Route>
         <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
@@ -197,6 +204,8 @@ function Router() {
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
         <Route path="/news" component={News} />
+        <Route path="/news/cards" component={NewsCards} />
+        <Route path="/news/cards/:cardId" component={NewsCards} />
         <Route path="/news/competitors" component={NewsCompetitors} />
         <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
         <Route path="/news/people" component={NewsPeople} />
@@ -237,6 +246,7 @@ function Router() {
         <Route path="/council/:taskId" component={LLMCouncil} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
+        <Route path="/arc2/capped" component={Arc2Capped} />
         <Route path="/arc2/hard-set" component={Arc2HardSet} />
         <Route path="/arc2/hard-set/findings" component={Arc2HardSetFindings} />
         <Route path="/about" component={About} />

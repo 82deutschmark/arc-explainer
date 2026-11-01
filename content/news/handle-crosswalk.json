@@ -1,0 +1,2357 @@
+{
+ "rows": [
+  {
+   "name": "common-people",
+   "personId": "common-people",
+   "kaggle": "aizealotwu",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16450168",
+      "name": "win a real prize",
+      "members": [
+       "aizealotwu"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:37Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16490178",
+      "name": "Grigoriy Zatravkin & co",
+      "members": [
+       "aizealotwu",
+       "deepdreamer",
+       "florenciasolange",
+       "grigoriyzatravkin"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     },
+     {
+      "teamId": "16498846",
+      "name": "common-people-whereIsMyFuckingPrize",
+      "members": [
+       "aizealotwu",
+       "deepdreamer"
+      ],
+      "lastObservedAt": "2026-10-25T21:39:14Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "alijs",
+   "personId": "alijs",
+   "kaggle": "alijs1",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16724472",
+      "name": "alijs",
+      "members": [
+       "alijs1"
+      ],
+      "lastObservedAt": "2026-10-09T22:23:53Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "17022020",
+      "name": "alijs",
+      "members": [
+       "alijs1"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Alwin Theodoric",
+   "personId": "alwin-theodoric",
+   "kaggle": "alwintheodoric",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16534961",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:35Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "AquaUrsa Research",
+   "personId": "aquaursa-research",
+   "kaggle": "aquaursaresearch",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15488773",
+      "name": "AquaUrsa Research",
+      "members": [
+       "aquaursaresearch"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:37Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15488763",
+      "name": "AquaUrsa Research",
+      "members": [
+       "aquaursaresearch"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Anastasia Razdaibiedina",
+   "personId": null,
+   "kaggle": "arazzd",
+   "x": [
+    "razdaibi"
+   ],
+   "status": "candidate",
+   "confidence": "probable",
+   "evidence": "Chan Kha Vu's public post of 30 Oct 2026 tags @razdaibi and @nguyen_manh599 as teammates; V | A | M's roster is arazzd, chankhavu, nguyennguyen599. The Kaggle account shows the display name Anastasia (joined about seven years ago); @razdaibi is Anastasia Razdaibiedina, whose site is arazd.github.io (arazd ~ arazzd) and whom Chan Kha Vu follows. No direct link from either profile to the other was seen. Checked 31 Oct 2026.",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16600664",
+      "name": "V | A | M",
+      "members": [
+       "arazzd",
+       "chankhavu",
+       "nguyennguyen599"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "Billy Anggara",
+   "personId": "billy-anggara",
+   "kaggle": "billyanggara",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16534961",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:35Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Chan Kha Vu",
+   "personId": "chan-kha-vu",
+   "kaggle": "chankhavu",
+   "x": [
+    "chankhavu"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16600664",
+      "name": "V | A | M",
+      "members": [
+       "arazzd",
+       "chankhavu",
+       "nguyennguyen599"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "chev",
+   "personId": "cmechevalier",
+   "kaggle": "cmechevalier",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16132261",
+      "name": "artificialagencylab.com",
+      "members": [
+       "cmechevalier",
+       "richardcsaky"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Jean-François Puget (CPMP)",
+   "personId": "jean-francois-puget",
+   "kaggle": "cpmpml",
+   "x": [
+    "JFPuget"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15486939",
+      "name": "nvbanana",
+      "members": [
+       "cpmpml",
+       "darraghdog"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Darragh Hanley",
+   "personId": "darragh-hanley",
+   "kaggle": "darraghdog",
+   "x": [
+    "gonedarragh"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15486939",
+      "name": "nvbanana",
+      "members": [
+       "cpmpml",
+       "darraghdog"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Darren Amadeus Martin",
+   "personId": "darren-amadeus-martin",
+   "kaggle": "darrenamadeusmartin",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16534961",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:35Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Dawid Kopiczko",
+   "personId": "dawid-kopiczko",
+   "kaggle": "dawkopi",
+   "x": [
+    "dawkopi"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16461211",
+      "name": "Dawid Kopiczko",
+      "members": [
+       "dawkopi"
+      ],
+      "lastObservedAt": "2026-10-30T20:55:20Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "Dongming Sheng",
+   "personId": "dongming-sheng",
+   "kaggle": "deepdreamer",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16768245",
+      "name": "_hans",
+      "members": [
+       "deepdreamer"
+      ],
+      "lastObservedAt": "2026-10-25T10:34:19Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16490178",
+      "name": "Grigoriy Zatravkin & co",
+      "members": [
+       "aizealotwu",
+       "deepdreamer",
+       "florenciasolange",
+       "grigoriyzatravkin"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     },
+     {
+      "teamId": "16498846",
+      "name": "common-people-whereIsMyFuckingPrize",
+      "members": [
+       "aizealotwu",
+       "deepdreamer"
+      ],
+      "lastObservedAt": "2026-10-25T21:39:14Z"
+     },
+     {
+      "teamId": "16768259",
+      "name": "_hans",
+      "members": [
+       "deepdreamer"
+      ],
+      "lastObservedAt": "2026-10-08T21:50:49Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Daniel Franzen",
+   "personId": "daniel-franzen",
+   "kaggle": "dfranzen",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15607618",
+      "name": "Daniel Franzen",
+      "members": [
+       "dfranzen"
+      ],
+      "lastObservedAt": "2026-10-20T21:31:18Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16032816",
+      "name": "The ARChitects",
+      "members": [
+       "dfranzen",
+       "dvhrtm",
+       "insanitycheck",
+       "sbrodehl"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     },
+     {
+      "teamId": "16384837",
+      "name": "Daniel Franzen",
+      "members": [
+       "dfranzen"
+      ],
+      "lastObservedAt": "2026-10-18T09:54:36Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Dries Smit",
+   "personId": "dries-smit",
+   "kaggle": "driessmit1",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16756524",
+      "name": "Tufa Labs",
+      "members": [
+       "driessmit1",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15486995",
+      "name": "Tufa Labs",
+      "members": [
+       "dlorah",
+       "driessmit1",
+       "infinitecreativity",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "David Hartmann",
+   "personId": "david-hartmann",
+   "kaggle": "dvhrtm",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16032816",
+      "name": "The ARChitects",
+      "members": [
+       "dfranzen",
+       "dvhrtm",
+       "insanitycheck",
+       "sbrodehl"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Mykyta Ielanskyi",
+   "personId": "mykyta-ielanskyi",
+   "kaggle": "dwellement0baser",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16021367",
+      "name": "the last dance 🕺",
+      "members": [
+       "dwellement0baser",
+       "fses91",
+       "gklambauer",
+       "lukasaichberger"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Elad Sarafian",
+   "personId": "elad-sarafian",
+   "kaggle": "eladsarafian",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "fshindo",
+   "personId": "fshindo",
+   "kaggle": "ffsscf",
+   "x": [
+    "crysis44k"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "17019785",
+      "name": "fshindo",
+      "members": [
+       "ffsscf"
+      ],
+      "lastObservedAt": "2026-10-13T21:42:57Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16992721",
+      "name": "fshindo",
+      "members": [
+       "ffsscf"
+      ],
+      "lastObservedAt": "2026-10-13T00:37:09Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Florencia Solange",
+   "personId": "florencia-solange",
+   "kaggle": "florenciasolange",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16490178",
+      "name": "Grigoriy Zatravkin & co",
+      "members": [
+       "aizealotwu",
+       "deepdreamer",
+       "florenciasolange",
+       "grigoriyzatravkin"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Florian Sestak",
+   "personId": "fses91",
+   "kaggle": "fses91",
+   "x": [
+    "fses91"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16021367",
+      "name": "the last dance 🕺",
+      "members": [
+       "dwellement0baser",
+       "fses91",
+       "gklambauer",
+       "lukasaichberger"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Gal Kaplun",
+   "personId": "gal-kaplun",
+   "kaggle": "galkaplun",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "gklambauer",
+   "personId": "gklambauer",
+   "kaggle": "gklambauer",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16021367",
+      "name": "the last dance 🕺",
+      "members": [
+       "dwellement0baser",
+       "fses91",
+       "gklambauer",
+       "lukasaichberger"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Grigoriy Zatravkin",
+   "personId": "grigoriy-zatravkin",
+   "kaggle": "grigoriyzatravkin",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16490178",
+      "name": "Grigoriy Zatravkin & co",
+      "members": [
+       "aizealotwu",
+       "deepdreamer",
+       "florenciasolange",
+       "grigoriyzatravkin"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "gromml",
+   "personId": "gromml",
+   "kaggle": "gromml",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15509541",
+      "name": "gromml",
+      "members": [
+       "gromml"
+      ],
+      "lastObservedAt": "2026-10-09T22:23:53Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15509536",
+      "name": "gromml",
+      "members": [
+       "gromml"
+      ],
+      "lastObservedAt": "2026-10-09T22:23:52Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Jan Disselhoff",
+   "personId": "jan-disselhoff",
+   "kaggle": "insanitycheck",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15507730",
+      "name": "Jan Disselhoff",
+      "members": [
+       "insanitycheck"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15501006",
+      "name": "Jan Disselhoff",
+      "members": [
+       "insanitycheck"
+      ],
+      "lastObservedAt": "2026-10-26T09:41:46Z"
+     },
+     {
+      "teamId": "16032816",
+      "name": "The ARChitects",
+      "members": [
+       "dfranzen",
+       "dvhrtm",
+       "insanitycheck",
+       "sbrodehl"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "ISAKA Tsuyoshi",
+   "personId": "isaka-tsuyoshi",
+   "kaggle": "isakatsuyoshi",
+   "x": [
+    "AInebosuke"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16569125",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24"
+      ],
+      "lastObservedAt": "2026-10-25T21:40:04Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Jack Cole",
+   "personId": "jack-cole",
+   "kaggle": "jcole75",
+   "x": [
+    "MindsAI_Jack"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15487968",
+      "name": "Jack Cole",
+      "members": [
+       "jcole75"
+      ],
+      "lastObservedAt": "2026-10-19T09:57:28Z"
+     },
+     {
+      "teamId": "17023174",
+      "name": "ARC Mutants",
+      "members": [
+       "jcole75",
+       "markbarney",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15490570",
+      "name": "Abstraction Lab & MindsAI",
+      "members": [
+       "alisalmanrana",
+       "jcole75",
+       "kimura0415",
+       "sumirinn",
+       "ultsaza"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Jeroen Cottaar",
+   "personId": "jeroen-cottaar",
+   "kaggle": "jeroencottaar",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16756524",
+      "name": "Tufa Labs",
+      "members": [
+       "driessmit1",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15486995",
+      "name": "Tufa Labs",
+      "members": [
+       "dlorah",
+       "driessmit1",
+       "infinitecreativity",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Keith Tyser",
+   "personId": "keith-tyser",
+   "kaggle": "keithtyser",
+   "x": [
+    "chiefkeitht"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15526034",
+      "name": "この遥かなる旅路に祝福を",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "mitubant",
+       "ngyzly"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15508513",
+      "name": "keithtyser",
+      "members": [
+       "keithtyser"
+      ],
+      "lastObservedAt": "2026-10-12T10:04:19Z"
+     },
+     {
+      "teamId": "15605182",
+      "name": "Team Turducken",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "markbarney",
+       "mitubant",
+       "ngyzly",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     },
+     {
+      "teamId": "16447222",
+      "name": "ARC Slayers",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "mitubant",
+       "ngyzly"
+      ],
+      "lastObservedAt": "2026-10-16T21:50:59Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "konbu17",
+   "personId": "konbu17",
+   "kaggle": "konbu17",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16569125",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24"
+      ],
+      "lastObservedAt": "2026-10-25T21:40:04Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Lonnie",
+   "personId": "lonnie",
+   "kaggle": "lonnieqin",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15488658",
+      "name": "Lonnie",
+      "members": [
+       "lonnieqin"
+      ],
+      "lastObservedAt": "2026-10-09T22:23:53Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15488665",
+      "name": "Lonnie",
+      "members": [
+       "lonnieqin"
+      ],
+      "lastObservedAt": "2026-10-09T22:23:52Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Lord Han Solo",
+   "personId": "lord-han-solo",
+   "kaggle": "lordhansolo",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16371045",
+      "name": "Lord Han Solo",
+      "members": [
+       "lordhansolo"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Lukas Aichberger",
+   "personId": "lukas-aichberger",
+   "kaggle": "lukasaichberger",
+   "x": [
+    "aichberger"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16021367",
+      "name": "the last dance 🕺",
+      "members": [
+       "dwellement0baser",
+       "fses91",
+       "gklambauer",
+       "lukasaichberger"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Michał Gromadzki",
+   "personId": "michal-gromadzki",
+   "kaggle": "majkel1337",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16373916",
+      "name": "Majkel1337",
+      "members": [
+       "majkel1337"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16958599",
+      "name": "Majkel1337",
+      "members": [
+       "majkel1337"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Mark Barney",
+   "personId": "mark-barney",
+   "kaggle": "markbarney",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "17023174",
+      "name": "ARC Mutants",
+      "members": [
+       "jcole75",
+       "markbarney",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15605182",
+      "name": "Team Turducken",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "markbarney",
+       "mitubant",
+       "ngyzly",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Md Boktiar Mahbub Murad",
+   "personId": "md-boktiar-mahbub-murad",
+   "kaggle": "mbmmurad",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15487512",
+      "name": "Md Boktiar Mahbub Murad",
+      "members": [
+       "mbmmurad"
+      ],
+      "lastObservedAt": "2026-10-29T21:52:30Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15487522",
+      "name": "Md Boktiar Mahbub Murad",
+      "members": [
+       "mbmmurad"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Takuma Mori",
+   "personId": "takuma-mori",
+   "kaggle": "menphim",
+   "x": [
+    "menphim"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "17038082",
+      "name": "menphim",
+      "members": [
+       "menphim"
+      ],
+      "lastObservedAt": "2026-10-13T08:41:28Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "17038083",
+      "name": "menphim",
+      "members": [
+       "menphim"
+      ],
+      "lastObservedAt": "2026-10-25T21:39:14Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Michael",
+   "personId": "michaeltgao",
+   "kaggle": "michaeltgao",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16153654",
+      "name": "mtg",
+      "members": [
+       "michaeltgao"
+      ],
+      "lastObservedAt": "2026-10-27T21:46:25Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16153655",
+      "name": "mtg",
+      "members": [
+       "michaeltgao"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Mithil A Vakde",
+   "personId": "mithil-a-vakde",
+   "kaggle": "mithilavakde",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15486728",
+      "name": "Mithil A Vakde",
+      "members": [
+       "mithilavakde"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "NT",
+   "personId": "mitubant",
+   "kaggle": "mitubant",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15526034",
+      "name": "この遥かなる旅路に祝福を",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "mitubant",
+       "ngyzly"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15605182",
+      "name": "Team Turducken",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "markbarney",
+       "mitubant",
+       "ngyzly",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     },
+     {
+      "teamId": "16447222",
+      "name": "ARC Slayers",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "mitubant",
+       "ngyzly"
+      ],
+      "lastObservedAt": "2026-10-16T21:50:59Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Manh Nguyen",
+   "personId": null,
+   "kaggle": "nguyennguyen599",
+   "x": [
+    "nguyen_manh599"
+   ],
+   "status": "candidate",
+   "confidence": "probable",
+   "evidence": "Same Chan Kha Vu post. The Kaggle account is displayed as Nguyen (Competitions Expert; Yi-Chia Chen is a follower); @nguyen_manh599 is Manh Nguyen, followed by both Yi-Chia Chen and Chan Kha Vu, and the 599 matches. No direct link between the profiles was seen. Checked 31 Oct 2026.",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16600664",
+      "name": "V | A | M",
+      "members": [
+       "arazzd",
+       "chankhavu",
+       "nguyennguyen599"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "イツ (Itsu)",
+   "personId": "itsu",
+   "kaggle": "nisshokuitsuki",
+   "x": [
+    "iiiiitsu_ne"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16297545",
+      "name": "ｶﾎｳｼｭｳｾｲ",
+      "members": [
+       "nisshokuitsuki"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "pomcho555",
+   "personId": "pompom555",
+   "kaggle": "pompom555",
+   "x": [
+    "k8s_pomcho"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16569125",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24"
+      ],
+      "lastObservedAt": "2026-10-25T21:40:04Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Isaiah Pressman",
+   "personId": "isaiahp",
+   "kaggle": "pressman1",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16756524",
+      "name": "Tufa Labs",
+      "members": [
+       "driessmit1",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15486995",
+      "name": "Tufa Labs",
+      "members": [
+       "dlorah",
+       "driessmit1",
+       "infinitecreativity",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Peter Findley",
+   "personId": "peter-findley",
+   "kaggle": "raist321",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15495211",
+      "name": "Peter Findley",
+      "members": [
+       "raist321"
+      ],
+      "lastObservedAt": "2026-10-12T10:04:19Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "re",
+   "personId": "refv00",
+   "kaggle": "refv00",
+   "x": [
+    "refv00"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16569125",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24"
+      ],
+      "lastObservedAt": "2026-10-25T21:40:04Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Richard Csaky",
+   "personId": "richard-csaky",
+   "kaggle": "richardcsaky",
+   "x": [
+    "ricsinaruto"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "17077331",
+      "name": "artificialagencylab.com",
+      "members": [
+       "richardcsaky"
+      ],
+      "lastObservedAt": "2026-10-19T21:58:46Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16132261",
+      "name": "artificialagencylab.com",
+      "members": [
+       "cmechevalier",
+       "richardcsaky"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Tri Ardian Rinalda",
+   "personId": "tri-ardian-rinalda",
+   "kaggle": "rinnnntt",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16534961",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:35Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Reki",
+   "personId": "reki",
+   "kaggle": "ruichardliu",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16410256",
+      "name": "griddy for grids",
+      "members": [
+       "badboiriri",
+       "cody11null",
+       "mahdiseddigh",
+       "ruichardliu",
+       "russcore"
+      ],
+      "lastObservedAt": "2026-10-26T09:41:48Z"
+     }
+    ],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "Sebastian Brodehl",
+   "personId": "sebastian-brodehl",
+   "kaggle": "sbrodehl",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16032816",
+      "name": "The ARChitects",
+      "members": [
+       "dfranzen",
+       "dvhrtm",
+       "insanitycheck",
+       "sbrodehl"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Lohit Siriki",
+   "personId": "lohit-siriki",
+   "kaggle": "sirikilohit",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16706087",
+      "name": "rellik13",
+      "members": [
+       "sirikilohit"
+      ],
+      "lastObservedAt": "2026-10-20T21:31:16Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Son Pham",
+   "personId": "son-pham",
+   "kaggle": "sonphamorg",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15605185",
+      "name": "Son Pham",
+      "members": [
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-12T10:04:20Z"
+     },
+     {
+      "teamId": "17023174",
+      "name": "ARC Mutants",
+      "members": [
+       "jcole75",
+       "markbarney",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15605182",
+      "name": "Team Turducken",
+      "members": [
+       "dzjiann",
+       "keithtyser",
+       "markbarney",
+       "mitubant",
+       "ngyzly",
+       "scizical",
+       "sonphamorg"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Ivan Sorokin",
+   "personId": "ivan-sorokin",
+   "kaggle": "sorokin",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Stefano Viel",
+   "personId": "stefano-viel",
+   "kaggle": "stefano1283",
+   "x": [
+    "Stefan0Vl"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16756524",
+      "name": "Tufa Labs",
+      "members": [
+       "driessmit1",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15486995",
+      "name": "Tufa Labs",
+      "members": [
+       "dlorah",
+       "driessmit1",
+       "infinitecreativity",
+       "jeroencottaar",
+       "pressman1",
+       "stefano1283"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "PunkCyber",
+   "personId": "punkcyber",
+   "kaggle": "tanakaai24",
+   "x": [
+    "cunkpyber"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16569125",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24"
+      ],
+      "lastObservedAt": "2026-10-25T21:40:04Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Yi-Chia Chen",
+   "personId": "yi-chia-chen",
+   "kaggle": "threerabbits",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "15501171",
+      "name": "Yi-Chia Chen @ Fields Model",
+      "members": [
+       "threerabbits"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "15499660",
+      "name": "Yi-Chia Chen @ Fields Model",
+      "members": [
+       "threerabbits"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Takeru Sato",
+   "personId": "takeru-sato",
+   "kaggle": "tk256ailab",
+   "x": [
+    "tk256ailab"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16782676",
+      "name": "TK256",
+      "members": [
+       "tk256ailab"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:37Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Teppei Fukutomi",
+   "personId": "teppei-fukutomi",
+   "kaggle": "ttyn4519",
+   "x": [
+    "tfuku816150"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "17012110",
+      "name": "t fuku",
+      "members": [
+       "ttyn4519"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:37Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Vineeth Sai Varikuntla",
+   "personId": "vineeth-sai-varikuntla",
+   "kaggle": "vineethsaivs",
+   "x": [
+    "vineeth_sai_vs"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16537511",
+      "name": "Vineeth Sai Varikuntla",
+      "members": [
+       "vineethsaivs"
+      ],
+      "lastObservedAt": "2026-10-15T21:48:34Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "xz",
+   "personId": "xz",
+   "kaggle": "xiaoz259",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15487093",
+      "name": "faster machine is all you need",
+      "members": [
+       "xiaoz259"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Muhammad Yassir Ramadhan",
+   "personId": "muhammad-yassir-ramadhan",
+   "kaggle": "yassirramadhan",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [
+     {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-31T17:28:39Z"
+     }
+    ],
+    "arc-3": [
+     {
+      "teamId": "16534961",
+      "name": "Domdolus Tolus",
+      "members": [
+       "alwintheodoric",
+       "billyanggara",
+       "darrenamadeusmartin",
+       "rinnnntt",
+       "yassirramadhan"
+      ],
+      "lastObservedAt": "2026-10-29T22:52:35Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Geremie Yeo",
+   "personId": "geremie-yeo",
+   "kaggle": "yeoyunsianggeremie",
+   "x": [
+    "bogoconic1"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": []
+   }
+  },
+  {
+   "name": "Yeyin Zhu",
+   "personId": "yeyin-zhu",
+   "kaggle": "yeyinzhu",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "members": [
+       "cpmpml",
+       "darraghdog",
+       "eladsarafian",
+       "galkaplun",
+       "sorokin",
+       "titericz",
+       "yeyinzhu"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "yktori",
+   "personId": "yktori",
+   "kaggle": "yktori",
+   "x": [],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16760837",
+      "name": "yktori",
+      "members": [
+       "yktori"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  },
+  {
+   "name": "yuto083",
+   "personId": "yuto0712",
+   "kaggle": "yuto0712",
+   "x": [
+    "kujiranoonaka"
+   ],
+   "status": "verified",
+   "teams": {
+    "arc-2": [],
+    "arc-3": [
+     {
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "members": [
+       "isakatsuyoshi",
+       "konbu17",
+       "pompom555",
+       "refv00",
+       "tanakaai24",
+       "tk256ailab",
+       "ttyn4519",
+       "yuto0712"
+      ],
+      "lastObservedAt": "2026-10-30T09:53:54Z"
+     }
+    ]
+   }
+  }
+ ],
+ "unmapped": [
+  "aaioaneitib",
+  "aaronflouro",
+  "abukayyisahbasyid",
+  "adrian4tib",
+  "albertorkive",
+  "albertruehlman",
+  "alisalmanrana",
+  "alishirvani",
+  "alumek",
+  "amatlas",
+  "amiteshhhhhhhhh",
+  "amosokello451",
+  "andreicaioanei",
+  "androi",
+  "andy2709",
+  "ankitgautam1947",
+  "anlthms",
+  "antoniu",
+  "apienss",
+  "ark911",
+  "arshjot",
+  "arunodhayan",
+  "arutyunoff",
+  "aryabhattadey",
+  "avgaydashenko",
+  "avonik",
+  "badboiriri",
+  "benzousilvia",
+  "borismatsakov",
+  "burgeryummy",
+  "burtonlancaster",
+  "caoyupeng",
+  "carriem7",
+  "cassinicraft",
+  "cdeotte",
+  "chelseathng",
+  "chiakazirim",
+  "christophercameron",
+  "chw114",
+  "codjjj",
+  "cody11null",
+  "cookizesong",
+  "cranberry128",
+  "ctdthanh",
+  "ctfxiao",
+  "daisukesuda",
+  "danmolsh",
+  "dasmwjdasd",
+  "dasshovon",
+  "dastin0359",
+  "denialguo",
+  "dipamc77",
+  "dlorah",
+  "dncwon",
+  "dossantoss",
+  "drpatrickchan",
+  "dzjiann",
+  "eeshsaxena",
+  "eneskulak",
+  "erikfredrickson",
+  "esfersami50",
+  "eshaanmistry",
+  "evanyu800112",
+  "explcre",
+  "foysalemonshanto",
+  "gamingconceited",
+  "gatamaz",
+  "genti1206",
+  "gghhjjkk",
+  "giovannyrodrguez",
+  "godjan",
+  "goonew",
+  "gravity20",
+  "gruvlg",
+  "guoqingu",
+  "gyuyoungpark09",
+  "hannahhuang68",
+  "hazemlashenzz",
+  "heminator",
+  "hippolytepilchen",
+  "hiranorm",
+  "hitarthjain0",
+  "hongori",
+  "hosen42",
+  "hugothorvaldsen",
+  "huikang",
+  "i7p9h9",
+  "iamkw0n",
+  "ibyyue",
+  "ikaroskaggle",
+  "infinitecreativity",
+  "insuperabile",
+  "ivanj0",
+  "jakkma",
+  "jaydenszeto123",
+  "jaygautam007",
+  "jeanphilipfilling",
+  "jenslehmann",
+  "jerrlu",
+  "jiaxibi0220",
+  "jlshen025",
+  "jnjbhjguktutft",
+  "junhuay",
+  "kazuyago",
+  "keter333",
+  "khahuras",
+  "kibuna",
+  "kimchikingdom",
+  "kimdoong",
+  "kimura0415",
+  "kingkong153",
+  "komilparmar",
+  "korogodsky",
+  "krisdreemurr",
+  "kschweig",
+  "kusui26",
+  "kw0nsi",
+  "kwangsookoh",
+  "laomeichen",
+  "laureanoarcanio",
+  "lavinwins",
+  "leeheewon01",
+  "leeminseung",
+  "leimsh",
+  "len8487",
+  "levkayumov",
+  "li325040229",
+  "linusm020311",
+  "linyeping",
+  "locbaop",
+  "lowasitgoes",
+  "lucaluo925",
+  "lucifer19",
+  "lumine01",
+  "luoleiash",
+  "lvisdd",
+  "maciejsypetkowski",
+  "madarshbb",
+  "mahdiseddigh",
+  "mallajayanthvinay",
+  "malyshevasasha",
+  "masspeaks",
+  "mastu997",
+  "matinaghaei",
+  "mechi22",
+  "mellamoa",
+  "mianwang1024",
+  "michellyou",
+  "mikelou1",
+  "milkcoffeen",
+  "minhtu123",
+  "mkhlystun",
+  "monsaraida",
+  "mosamosa",
+  "muumaoo",
+  "muurur",
+  "nancyadhiambo",
+  "naoism",
+  "nataliajakowska",
+  "netramfaran",
+  "ngcferreira",
+  "nguynhphan",
+  "ngyusum",
+  "ngyzly",
+  "nicbarthelemy1",
+  "nick2187",
+  "nischaydnk",
+  "nistudy",
+  "nithinkumarrc",
+  "niyanng",
+  "nonempty",
+  "notnitsuj",
+  "nvnnghia",
+  "omprakashpy",
+  "paulvvv",
+  "penguin069",
+  "phanhuuannguyen",
+  "pierreterrier",
+  "pppycccc",
+  "pranav1100",
+  "quarkliu",
+  "rabari9999",
+  "rachidcaich",
+  "raihanrt",
+  "rainmaker29",
+  "rameshln",
+  "ravi20076",
+  "redblackbst",
+  "reinforceagi",
+  "richardfreinschlag",
+  "richardli873210",
+  "richray",
+  "rikitomo0526",
+  "rkdaltmd",
+  "robin2004031",
+  "rogersjohnson",
+  "rohanajwani",
+  "rolion",
+  "romainfabre",
+  "rostigor",
+  "ruijiethebest",
+  "rusg77",
+  "russcore",
+  "rustambazarbayev",
+  "rutilo",
+  "ryotakaki",
+  "saaienginner",
+  "sachith7",
+  "saharvahdati",
+  "sajadgoudarzi",
+  "samwiz",
+  "santanubanerjee9",
+  "sawada",
+  "scizical",
+  "seanjones444",
+  "sethmoudry",
+  "sggpls",
+  "shawnchadwick",
+  "shiiin9",
+  "shingo257",
+  "shipship",
+  "shookiyama",
+  "snoopydoo",
+  "snowiers",
+  "sophie555",
+  "spoutop",
+  "stefanoclss",
+  "sumangautam12345",
+  "sumirinn",
+  "t0m0t0m0w",
+  "taiiiiiichi",
+  "takumuhata",
+  "tarekrahman82",
+  "tatuhelander",
+  "tehnar",
+  "tfukuhara",
+  "thangnm1",
+  "thanhhau097a",
+  "thisray",
+  "thomasferraz",
+  "thomasgamet",
+  "thwaitsusa2",
+  "titericz",
+  "tjbhdata",
+  "tohog9325",
+  "tokitamago",
+  "trian2018",
+  "trinhphuong98",
+  "triplehs",
+  "ttagu99",
+  "ultsaza",
+  "uninhibitedscholar",
+  "uradkr",
+  "vaibhav486",
+  "vitalique",
+  "vumaniacom",
+  "williamlion1",
+  "xiaobinmo",
+  "xiezejian",
+  "xinhao642",
+  "yanmingowendong",
+  "yaroslavperventsev",
+  "yash9439",
+  "yasserothman",
+  "yassinealouini",
+  "ydi102143",
+  "yeashusemwal",
+  "yinsong",
+  "yitree",
+  "yjsh2003",
+  "yoshharu",
+  "yuanzhezhou",
+  "yuhuake240506",
+  "yuki0731",
+  "yukitake93",
+  "yukuo14",
+  "yuritosci",
+  "yuvraj",
+  "zabojeb",
+  "zhangsongxin",
+  "zyy7390"
+ ]
+}

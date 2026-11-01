@@ -1,0 +1,52 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T23:49:46Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Richard Csaky's team moves into ARC-2 gold",
+  "id": "2026-10-28-1959-arc-2-richard-csaky-enters-gold",
+  "personIds": [
+    "richard-csaky"
+  ],
+  "publishedAt": "2026-10-28T23:59:35Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "artificialagencylab.com moved from 24th to 15th on the ARC-AGI-2 public board, gaining 3.75 to reach 70.56 and enter the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2",
+        "person-richard-csaky-identity-0",
+        "person-richard-csaky-roster-0"
+      ],
+      "text": "The move pushed mikelou1 out: the team is 17th at 69.72, 0.42 short of the 70.14 gold line. Richard Csaky is on the artificialagencylab.com roster."
+    }
+  ],
+  "since": "2026-10-27T23:46:40Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T23:58:51Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-14T10:07:47.955742+00:00",
+      "id": "person-richard-csaky-identity-0",
+      "title": "Own profile and direct account links",
+      "url": "https://www.kaggle.com/richardcsaky"
+    },
+    {
+      "accessedAt": "2026-10-28T21:49:27Z",
+      "id": "person-richard-csaky-roster-0",
+      "title": "Public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "teamIds": [
+    "17077331",
+    "16513754"
+  ]
+}

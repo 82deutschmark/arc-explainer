@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-28T03:47:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "yktori moves into fifth on ARC-3",
+  "id": "2026-10-28-0001-arc-3-yktori-moves-to-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-28T04:01:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "yktori gained 6.50 to 51.04, moving from 11th to 5th."
+    }
+  ],
+  "since": "2026-10-27T03:43:53Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T04:01:30Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16760837"
+  ]
+}

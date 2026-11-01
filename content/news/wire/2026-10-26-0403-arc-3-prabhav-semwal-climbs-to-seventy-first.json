@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T07:41:34Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Prabhav Semwal climbs to 71st on ARC-3",
+  "id": "2026-10-26-0403-arc-3-prabhav-semwal-climbs-to-seventy-first",
+  "personIds": [],
+  "publishedAt": "2026-10-26T08:03:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Prabhav Semwal gained 2.34 points to reach 34.25, moving from 289th to 71st in the past day."
+    }
+  ],
+  "since": "2026-10-25T07:33:59Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T08:03:04Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17106105"
+  ]
+}

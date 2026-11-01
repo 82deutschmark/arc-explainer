@@ -1,0 +1,77 @@
+{
+  "competition": "arc-2",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). The magazine’s scoreboard re-reads the public boards as they move.",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "The final bell: our Weekend Magazine is open for the last days of ARC Prize 2026",
+  "id": "2026-10-31-saturday-weekend-magazine",
+  "image": {
+    "alt": "A giant clock near midnight and a barely moving progress bar above a long queue of competitors and their mechanical mascots.",
+    "caption": "The final bell: the cover of the Weekend Magazine.",
+    "src": "/news-images/2026-10-31-weekend-magazine-cover.webp"
+  },
+  "publishedAt": "2026-10-31T20:05:03Z",
+  "sections": [
+    {
+      "heading": "Open through the bell",
+      "sourceIds": [
+        "mag-cover"
+      ],
+      "text": "Two days from the deadline, the paper has a companion. The Weekend Magazine opens with a live countdown to Monday’s final bell (11:59 pm UTC, 6:59 pm Eastern), a breaking-news bar, a ticker of the latest from the arena, and both top tens with the time each score landed."
+    },
+    {
+      "heading": "Legends of the Kaggleverse",
+      "sourceIds": [
+        "mag-legends"
+      ],
+      "text": "The cover story meets the legends still in the arena: NVIDIA’s Grandmasters, Tufa’s detective Jeroen Cottaar, a squad of Tokyo students and the rest of the top ten, with the by-day and on-Kaggle lives of the people behind the handles."
+    },
+    {
+      "heading": "What’s inside",
+      "sourceIds": [
+        "mag-arena",
+        "mag-field",
+        "mag-who",
+        "mag-hours"
+      ],
+      "text": "The Arena Report sorts out what is going wrong in both contests and who is saying what. The Field Guide profiles every team in both top tens. Who’s Who is the master list of Kaggle handles, X handles and teams, contest by contest. The Final Hours explains the bell, the final picks, the prizes and what to watch on Monday night."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-cover",
+      "title": "The Final Bell: Weekend Magazine cover",
+      "url": "https://arc.markbarney.net/specials/weekend.html"
+    },
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-legends",
+      "title": "Legends of the Kaggleverse",
+      "url": "https://arc.markbarney.net/specials/2026-10-31-saturday-special.html"
+    },
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-arena",
+      "title": "The Arena Report",
+      "url": "https://arc.markbarney.net/specials/weekend/arena-report.html"
+    },
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-field",
+      "title": "The Field Guide",
+      "url": "https://arc.markbarney.net/specials/weekend/field-guide.html"
+    },
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-who",
+      "title": "Who’s Who",
+      "url": "https://arc.markbarney.net/specials/weekend/whos-who.html"
+    },
+    {
+      "accessedAt": "2026-10-31T20:05:03Z",
+      "id": "mag-hours",
+      "title": "The Final Hours",
+      "url": "https://arc.markbarney.net/specials/weekend/final-hours.html"
+    }
+  ]
+}

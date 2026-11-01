@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex; Codex
  * Date: 2026-10-08
  * PURPOSE: Keep the competition leaderboard directly visible in the primary navigation,
@@ -164,7 +170,7 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
     title: 'Browse',
     href: '/arc3/gallery',
     icon: LayoutGrid,
-    description: 'Every task on the site, as its opening frame and nothing else',
+    description: 'Play current human-reviewed ARC-AGI-3 originals, no login required',
   },
   {
     /*

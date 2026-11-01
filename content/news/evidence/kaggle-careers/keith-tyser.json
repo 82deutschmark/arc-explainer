@@ -1,0 +1,605 @@
+{
+  "personId": "keith-tyser",
+  "handle": "keithtyser",
+  "name": "Keith Tyser",
+  "checkedAt": "2026-10-30T11:23:25Z",
+  "method": "Read-only public Kaggle profile page and Competitions page (both pages of the completed list) in the app built-in browser, 30 October 2026. Medal icons read from each list entry's medal image label; accounts shown on an entry read from the profile-picture labels on that entry; join date read from the profile's Joined tooltip; portrait compared with the profile's own full-size picture.",
+  "sources": [
+    "https://www.kaggle.com/keithtyser",
+    "https://www.kaggle.com/keithtyser/competitions"
+  ],
+  "profile": {
+    "displayName": "chiefkeith",
+    "competitionTier": "Competitions Master",
+    "medals": {
+      "gold": 1,
+      "silver": 3,
+      "bronze": 6
+    },
+    "competitionRank": 329,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 291,
+    "joinedTooltip": "Fri Sep 27 2019 15:59:09 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-09",
+    "tagline": "more compute pls",
+    "occupation": "Data Scientist",
+    "bioPresent": true,
+    "bio": "just here to learn new things and have fun",
+    "activity": "39 competitions solo, 5 competitions in a team, 0 hosted",
+    "followers": 33,
+    "writeupsShown": 1
+  },
+  "visibleCompetitionList": {
+    "activeCount": 5,
+    "completedCount": 39,
+    "activeNames": [
+      "Google Quantum AI - Verifiable Quantum Circuit Compilation",
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Google - The Gemma 4 Developer Agent Competition",
+      "Enveda CASMI 2026 - Molecule ID From Mass Spectra"
+    ],
+    "scopeNote": "All 39 completed records were read across both pages of the list. Medals appear only on the first ten entries (1 gold, 3 silver, 6 bronze), matching the profile totals. Exact completion dates are not shown, only relative labels."
+  },
+  "completedResults": [
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 14,
+      "teams": 6125,
+      "medal": "gold",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 91,
+      "teams": 2963,
+      "medal": "silver",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 210,
+      "teams": 6807,
+      "medal": "silver",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 302,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": [
+        "ngyzly",
+        "mitubant",
+        "keithtyser",
+        "hdhsjdjd",
+        "dzjiann"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "15 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NFL Big Data Bowl 2026 - Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
+      "rank": 99,
+      "teams": 1899,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 122,
+      "teams": 1427,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AMP®-Parkinson's Disease Progression Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction",
+      "rank": 152,
+      "teams": 1805,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "March Machine Learning Mania 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2025",
+      "rank": 166,
+      "teams": 1727,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 348,
+      "teams": 4729,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 349,
+      "teams": 4094,
+      "medal": "bronze",
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google - Isolated Sign Language Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/asl-signs",
+      "rank": 353,
+      "teams": 1165,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF 2023",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2023",
+      "rank": 383,
+      "teams": 1189,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LMSYS - Chatbot Arena Human Preference Predictions",
+      "competitionUrl": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
+      "rank": 399,
+      "teams": 1849,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Parkinson's Freezing of Gait Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/tlvmc-parkinsons-freezing-gait-prediction",
+      "rank": 433,
+      "teams": 1379,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Benetech - Making Graphs Accessible",
+      "competitionUrl": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
+      "rank": 465,
+      "teams": 608,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 503,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 543,
+      "teams": 4186,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "March Machine Learning Mania 2023",
+      "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2023",
+      "rank": 557,
+      "teams": 1033,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 614,
+      "teams": 4185,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Vesuvius Challenge - Ink Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
+      "rank": 615,
+      "teams": 1249,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "March Machine Learning Mania 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+      "rank": 669,
+      "teams": 3462,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 685,
+      "teams": 2212,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Vesuvius Challenge - Surface Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
+      "rank": 721,
+      "teams": 1391,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 985,
+      "teams": 1867,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Hull Tactical - Market Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+      "rank": 1100,
+      "teams": 3677,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+      "rank": 1145,
+      "teams": 1514,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CIBMTR - Equity in post-HCT Survival Predictions",
+      "competitionUrl": "https://www.kaggle.com/competitions/equity-post-HCT-survival-predictions",
+      "rank": 1204,
+      "teams": 3325,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "rank": 1283,
+      "teams": 3357,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CMI - Detect Behavior with Sensor Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+      "rank": 1694,
+      "teams": 2657,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deep Past Challenge - Translate Akkadian to English",
+      "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "rank": 1743,
+      "teams": 2674,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 2047,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 2921,
+      "teams": 3947,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Regression with a Tabular Media Campaign Cost Dataset",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s3e11",
+      "rank": 21,
+      "teams": 952,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2023 - Machine Unlearning",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurips-2023-machine-unlearning",
+      "rank": 207,
+      "teams": 1188,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Autonomous Agent Prediction (Beta)",
+      "competitionUrl": "https://www.kaggle.com/competitions/autonomous-agent-prediction-beta",
+      "rank": 292,
+      "teams": 570,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Maze Crawler",
+      "competitionUrl": "https://www.kaggle.com/competitions/maze-crawler",
+      "rank": 377,
+      "teams": 459,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Binary Classification with a Tabular Kidney Stone Prediction Dataset",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s3e12",
+      "rank": 478,
+      "teams": 1088,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predicting Smartphone Addiction",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e8",
+      "rank": 584,
+      "teams": 3531,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CS 506 Midterm A1&B1",
+      "competitionUrl": "https://www.kaggle.com/competitions/cs-506-midterm-a1-b1",
+      "rank": 57,
+      "teams": 170,
+      "medal": null,
+      "displayedHandles": [
+        "keithtyser"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/keith-tyser.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/3775807-kg.png?t=2026-10-06-03-24-55",
+    "note": "The saved 320px file is his own current Kaggle profile picture (same image as the full-size 400px original on his profile, compared and matching). It is a stylised avatar illustration of a cartoon fish in a cap at a desk with a sleeping dog, not a photograph of him, and not a group image or Kaggle default avatar. No replacement was saved."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists Keith Tyser (account keithtyser, display name chiefkeith) as a Competitions Master, and his profile tallies 1 gold, 3 silver and 6 bronze competition medals, one of the silvers being a shared five-account team entry.",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "sourceTitle": "chiefkeith | Kaggle",
+      "checkedAt": "2026-10-30T11:23:25Z"
+    },
+    {
+      "text": "His Kaggle competitions rank is 329th of 225,021, with a highest ever of 291st, and the account dates from September 2019.",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "sourceTitle": "chiefkeith | Kaggle",
+      "checkedAt": "2026-10-30T11:23:25Z"
+    },
+    {
+      "text": "His best completed result is 14th of 6,125 teams in ROGII - Wellbore Geology Prediction, a gold medal; Kaggle shows that entry under his account alone.",
+      "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+      "sourceTitle": "chiefkeith | Kaggle",
+      "checkedAt": "2026-10-30T11:23:25Z"
+    },
+    {
+      "text": "His Kaggriculture silver medal (302nd of 10,148 teams) is a shared entry: Kaggle shows five accounts on it, so it is a team medal, not an individual one.",
+      "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+      "sourceTitle": "chiefkeith | Kaggle",
+      "checkedAt": "2026-10-30T11:23:25Z"
+    },
+    {
+      "text": "Kaggle lists his ARC Prize 2024 result as 122nd of 1,427 teams with a bronze medal, and shows him in the active ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3 competitions, whose public standings are provisional until the private leaderboard closes.",
+      "sourceUrl": "https://www.kaggle.com/keithtyser/competitions",
+      "sourceTitle": "chiefkeith | Kaggle",
+      "checkedAt": "2026-10-30T11:23:25Z"
+    }
+  ],
+  "teamNotes": "Kaggle's list names no teams, only the accounts shown on each entry, so teamName is null throughout. Kaggriculture (silver, 302nd of 10,148) shows five accounts: ngyzly, mitubant, keithtyser, hdhsjdjd and dzjiann, so it is a team medal and is not credited to Keith alone. Every other completed entry shows only keithtyser. His current ARC-AGI-2 and ARC-AGI-3 team memberships come from the repo's observed rosters and are not repeated here.",
+  "unverified": [
+    "Team names for any entry: the Kaggle list does not display them.",
+    "Exact completion dates: only relative labels such as \"3 months ago\" are shown.",
+    "Who the four other accounts on Kaggriculture are beyond their handles, and which of the profile's \"5 competitions in a team\" they correspond to: the profile does not map the five team entries to the list, and only Kaggriculture shows several accounts among completed entries.",
+    "Whether the profile's X link labelled @keithtyser points to the same account the repo records as chiefkeitht: the link was not opened.",
+    "The CS 506 Midterm A1&B1 entry is marked Invitation Only, so it is a class exercise rather than a public competition.",
+    "The ROGII write-up on his profile is self-reported (his own words, including that he competed solo): not independently confirmed."
+  ],
+  "verified": true
+}

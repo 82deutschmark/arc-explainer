@@ -1,0 +1,610 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-30T02:14:52.224Z",
+  "season": "2026",
+  "renderer": "server/services/news/newsCollectionImage.ts",
+  "description": "Dated print proofs requested by Boss. Source artwork is unchanged; public statistics and career highlights retain their own dates and primary citations.",
+  "records": [
+    {
+      "card": {
+        "id": "person-darren-amadeus-martin-2026",
+        "number": "P043",
+        "kind": "person",
+        "name": "Darren Amadeus Martin",
+        "season": "2026",
+        "personId": "darren-amadeus-martin",
+        "art": {
+          "src": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+          "alt": "Darren’s cream floppy-eared dog and dark/white husky together in ARC-grid racing harnesses.",
+          "credit": "Commissioned individual illustration based on Darren’s own two-dog avatar",
+          "artworkId": "2026-10-29-darren-individual-avatar-v1-base",
+          "commissionedAt": "2026-10-30T02:13:40.913Z"
+        },
+        "description": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result.",
+        "profileUrl": "/news/people/darren-amadeus-martin",
+        "highlights": [
+          {
+            "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result.",
+            "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+            "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+            "checkedAt": "2026-10-29T23:43:35.884923Z"
+          },
+          {
+            "text": "His own completed competition record lists 18th of 1,142 and a silver medal in Code Golf Championship 2025.",
+            "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+            "sourceTitle": "Darren Amadeus Martin — own completed competition record",
+            "checkedAt": "2026-10-29T23:43:35.884923Z"
+          },
+          {
+            "text": "Kaggle lists Darren Amadeus Martin among the authors of the Domdolus Tolus fifth-place NVIDIA Nemotron Model Reasoning Challenge write-up.",
+            "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+            "sourceTitle": "Domdolus Tolus — fifth-place solution write-up and author credits",
+            "checkedAt": "2026-10-27T01:44:45.672194+00:00"
+          },
+          {
+            "text": "His own Kaggle profile identifies him as a student at Waseda University.",
+            "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+            "sourceTitle": "Darren Amadeus Martin — own Kaggle biography",
+            "checkedAt": "2026-10-29T23:43:35.884923Z"
+          }
+        ],
+        "accounts": [
+          {
+            "label": "darrenamadeusmartin",
+            "url": "https://www.kaggle.com/darrenamadeusmartin"
+          }
+        ],
+        "entries": [
+          {
+            "competition": "arc-2",
+            "competitionId": "arc-prize-2026-arc-agi-2",
+            "teamId": "16559402",
+            "teamName": "Domdolus Tolus",
+            "observedAt": "2026-10-30T00:22:48Z",
+            "rank": 4,
+            "score": 83.47,
+            "submissions": 47,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "alwintheodoric",
+                "name": "Alwin Theodoric",
+                "personId": "alwin-theodoric"
+              },
+              {
+                "handle": "billyanggara",
+                "name": "Billy Anggara",
+                "personId": "billy-anggara"
+              },
+              {
+                "handle": "darrenamadeusmartin",
+                "name": "Darren Amadeus Martin",
+                "personId": "darren-amadeus-martin"
+              },
+              {
+                "handle": "rinnnntt",
+                "name": "Tri Ardian Rinalda",
+                "personId": "tri-ardian-rinalda"
+              },
+              {
+                "handle": "yassirramadhan",
+                "name": "Muhammad Yassir Ramadhan",
+                "personId": "muhammad-yassir-ramadhan"
+              }
+            ]
+          },
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16534961",
+            "teamName": "Domdolus Tolus",
+            "observedAt": "2026-10-30T00:22:47Z",
+            "rank": 2204,
+            "score": 4.99,
+            "submissions": 7,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "alwintheodoric",
+                "name": "Alwin Theodoric",
+                "personId": "alwin-theodoric"
+              },
+              {
+                "handle": "billyanggara",
+                "name": "Billy Anggara",
+                "personId": "billy-anggara"
+              },
+              {
+                "handle": "darrenamadeusmartin",
+                "name": "Darren Amadeus Martin",
+                "personId": "darren-amadeus-martin"
+              },
+              {
+                "handle": "rinnnntt",
+                "name": "Tri Ardian Rinalda",
+                "personId": "tri-ardian-rinalda"
+              },
+              {
+                "handle": "yassirramadhan",
+                "name": "Muhammad Yassir Ramadhan",
+                "personId": "muhammad-yassir-ramadhan"
+              }
+            ]
+          }
+        ],
+        "honors": [],
+        "artNotes": [
+          "Two dogs together represent Darren’s one account. Dedicated individual illustration; no human face invented and no crop from the team picture.",
+          "Both own-avatar dogs and their established Domdolus Tolus harness designs are preserved; original photograph and full team artwork remain saved."
+        ]
+      },
+      "png": "person-darren-amadeus-martin-2026.png",
+      "pngSha256": "36fca7d9620412886df0c65340fee47cb5987c473b2e8e61e2ea0c858301c0e3",
+      "sourceArtwork": "client/public/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+      "sourceArtworkSha256": "5885a483826cd18337f05d9c03f3560ca4afd7113e67c102a83b6657f7bb4746"
+    },
+    {
+      "card": {
+        "id": "team-domdolus-tolus-2026",
+        "number": "T013",
+        "kind": "team",
+        "name": "Domdolus Tolus",
+        "season": "2026",
+        "art": {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+          "alt": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+          "credit": "Commissioned ARC Daily character artwork",
+          "artworkId": "2026-10-29-domdolus-tolus-avatar-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z"
+        },
+        "description": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+        "profileUrl": "/news/competitors/arc-2-16559402",
+        "highlights": [
+          {
+            "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result.",
+            "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+            "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+            "checkedAt": "2026-10-29T23:43:35.884923Z"
+          },
+          {
+            "text": "Observed public Kaggle roster: alwintheodoric,billyanggara,darrenamadeusmartin,rinnnntt,yassirramadhan. This is the separately identified ARC-3 team entry.",
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "sourceTitle": "ARC-3 public board — dated roster observation",
+            "checkedAt": "2026-10-29T22:52:35Z"
+          }
+        ],
+        "accounts": [
+          {
+            "label": "alwintheodoric",
+            "url": "https://www.kaggle.com/alwintheodoric"
+          },
+          {
+            "label": "billyanggara",
+            "url": "https://www.kaggle.com/billyanggara"
+          },
+          {
+            "label": "darrenamadeusmartin",
+            "url": "https://www.kaggle.com/darrenamadeusmartin"
+          },
+          {
+            "label": "rinnnntt",
+            "url": "https://www.kaggle.com/rinnnntt"
+          },
+          {
+            "label": "yassirramadhan",
+            "url": "https://www.kaggle.com/yassirramadhan"
+          }
+        ],
+        "entries": [
+          {
+            "competition": "arc-2",
+            "competitionId": "arc-prize-2026-arc-agi-2",
+            "teamId": "16559402",
+            "teamName": "Domdolus Tolus",
+            "observedAt": "2026-10-30T00:22:48Z",
+            "rank": 4,
+            "score": 83.47,
+            "submissions": 47,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "alwintheodoric",
+                "name": "Alwin Theodoric",
+                "personId": "alwin-theodoric"
+              },
+              {
+                "handle": "billyanggara",
+                "name": "Billy Anggara",
+                "personId": "billy-anggara"
+              },
+              {
+                "handle": "darrenamadeusmartin",
+                "name": "Darren Amadeus Martin",
+                "personId": "darren-amadeus-martin"
+              },
+              {
+                "handle": "rinnnntt",
+                "name": "Tri Ardian Rinalda",
+                "personId": "tri-ardian-rinalda"
+              },
+              {
+                "handle": "yassirramadhan",
+                "name": "Muhammad Yassir Ramadhan",
+                "personId": "muhammad-yassir-ramadhan"
+              }
+            ]
+          },
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16534961",
+            "teamName": "Domdolus Tolus",
+            "observedAt": "2026-10-30T00:22:47Z",
+            "rank": 2204,
+            "score": 4.99,
+            "submissions": 7,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "alwintheodoric",
+                "name": "Alwin Theodoric",
+                "personId": "alwin-theodoric"
+              },
+              {
+                "handle": "billyanggara",
+                "name": "Billy Anggara",
+                "personId": "billy-anggara"
+              },
+              {
+                "handle": "darrenamadeusmartin",
+                "name": "Darren Amadeus Martin",
+                "personId": "darren-amadeus-martin"
+              },
+              {
+                "handle": "rinnnntt",
+                "name": "Tri Ardian Rinalda",
+                "personId": "tri-ardian-rinalda"
+              },
+              {
+                "handle": "yassirramadhan",
+                "name": "Muhammad Yassir Ramadhan",
+                "personId": "muhammad-yassir-ramadhan"
+              }
+            ]
+          }
+        ],
+        "honors": [],
+        "artNotes": [
+          "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+          "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+          "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+          "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+        ]
+      },
+      "png": "team-domdolus-tolus-2026.png",
+      "pngSha256": "6f5a59a47f8db6047e58751c9cb30a3e2a3dd7e3d86e9f39d73a7f3786fc134f",
+      "sourceArtwork": "client/public/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+      "sourceArtworkSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852"
+    },
+    {
+      "card": {
+        "id": "team-last-dance-2026",
+        "number": "T004",
+        "kind": "team",
+        "name": "The Last Dance",
+        "season": "2026",
+        "art": {
+          "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+          "alt": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+          "credit": "Commissioned ARC Daily character artwork",
+          "artworkId": "2026-10-29-last-dance-character-sheet-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z"
+        },
+        "description": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+        "profileUrl": "/news/competitors/arc-3-16021367",
+        "highlights": [
+          {
+            "text": "Florian Sestak: 38th of 4,463 with silver in the Santander Value Prediction Challenge.",
+            "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+            "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
+            "checkedAt": "2026-10-29T19:41:08.261436+00:00"
+          },
+          {
+            "text": "The rostered lukasaichberger Kaggle profile identifies its owner as Lukas Aichberger and links to his research website.",
+            "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+            "sourceTitle": "Lukas Aichberger — Kaggle profile",
+            "checkedAt": "2026-10-08T13:46:44Z"
+          },
+          {
+            "text": "Johannes Kepler University Linz lists Lukas Aichberger at its Institute for Machine Learning and credits him on research about reasoning models and uncertainty evaluation.",
+            "sourceUrl": "https://research.jku.at/en/persons/lukas-aichberger/",
+            "sourceTitle": "JKU — Lukas Aichberger research profile",
+            "checkedAt": "2026-10-08T13:46:44Z"
+          },
+          {
+            "text": "The rostered dwellement0baser Kaggle profile identifies its owner as Mykyta Ielanskyi.",
+            "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+            "sourceTitle": "Mykyta Ielanskyi — Kaggle profile",
+            "checkedAt": "2026-10-08T13:46:44Z"
+          }
+        ],
+        "accounts": [
+          {
+            "label": "dwellement0baser",
+            "url": "https://www.kaggle.com/dwellement0baser"
+          },
+          {
+            "label": "fses91",
+            "url": "https://www.kaggle.com/fses91"
+          },
+          {
+            "label": "gklambauer",
+            "url": "https://www.kaggle.com/gklambauer"
+          },
+          {
+            "label": "lukasaichberger",
+            "url": "https://www.kaggle.com/lukasaichberger"
+          }
+        ],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16021367",
+            "teamName": "the last dance 🕺",
+            "observedAt": "2026-10-30T00:22:47Z",
+            "rank": 5,
+            "score": 51.51,
+            "submissions": 94,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "dwellement0baser",
+                "name": "Mykyta Ielanskyi",
+                "personId": "mykyta-ielanskyi"
+              },
+              {
+                "handle": "fses91",
+                "name": "Florian Sestak",
+                "personId": "fses91"
+              },
+              {
+                "handle": "gklambauer",
+                "name": "gklambauer",
+                "personId": "gklambauer"
+              },
+              {
+                "handle": "lukasaichberger",
+                "name": "Lukas Aichberger",
+                "personId": "lukas-aichberger"
+              }
+            ]
+          }
+        ],
+        "honors": [],
+        "artNotes": [
+          "Reference-sheet order: Lukas (blue/navy), Florian (orange/red, black cap and sunglasses), Mykyta (cyan/green, reddish beard), fictional opaque helmet (purple/yellow).",
+          "The fourth figure is an anonymous fictional stand-in for the roster handle, NOT a verified likeness of Günter Klambauer.",
+          "Retain colorful square ARC-grid streetwear and compact adult scale; no claim about actual height or dance ability.",
+          "Recheck all four exact roster handles before using the complete team."
+        ]
+      },
+      "png": "team-last-dance-2026.png",
+      "pngSha256": "d47e0279663e59f214123e0bfcbd24eb598042fe01745a894c22a1e111cfefe7",
+      "sourceArtwork": "client/public/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+      "sourceArtworkSha256": "17dd264bfd3d616070f50c00c81a9c69fbfca73150670cedcd4b535778cde254"
+    },
+    {
+      "card": {
+        "id": "team-turducken-2026",
+        "number": "T014",
+        "kind": "team",
+        "name": "Team Turducken",
+        "season": "2026",
+        "art": {
+          "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+          "alt": "Team Turducken commissioned team illustration",
+          "credit": "Commissioned ARC Daily team artwork",
+          "artworkId": "2026-10-18-turducken-whole-crew-flight-v1-base",
+          "commissionedAt": "2026-10-19T03:07:38Z"
+        },
+        "description": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham.",
+        "profileUrl": "/news/competitors/arc-3-15605182",
+        "highlights": [
+          {
+            "text": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham.",
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "sourceTitle": "ARC-3 observed public roster",
+            "checkedAt": "2026-10-18T19:16:05.370354Z"
+          },
+          {
+            "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team.",
+            "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+            "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+            "checkedAt": "2026-10-19T18:01:43.005825Z"
+          }
+        ],
+        "accounts": [
+          {
+            "label": "dzjiann",
+            "url": "https://www.kaggle.com/dzjiann"
+          },
+          {
+            "label": "keithtyser",
+            "url": "https://www.kaggle.com/keithtyser"
+          },
+          {
+            "label": "markbarney",
+            "url": "https://www.kaggle.com/markbarney"
+          },
+          {
+            "label": "mitubant",
+            "url": "https://www.kaggle.com/mitubant"
+          },
+          {
+            "label": "ngyzly",
+            "url": "https://www.kaggle.com/ngyzly"
+          },
+          {
+            "label": "scizical",
+            "url": "https://www.kaggle.com/scizical"
+          },
+          {
+            "label": "sonphamorg",
+            "url": "https://www.kaggle.com/sonphamorg"
+          }
+        ],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182",
+            "teamName": "Team Turducken",
+            "observedAt": "2026-10-30T00:22:47Z",
+            "rank": 4,
+            "score": 56.02,
+            "submissions": 213,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "dzjiann",
+                "name": "dzjiann"
+              },
+              {
+                "handle": "keithtyser",
+                "name": "Keith Tyser",
+                "personId": "keith-tyser"
+              },
+              {
+                "handle": "markbarney",
+                "name": "Mark Barney",
+                "personId": "mark-barney"
+              },
+              {
+                "handle": "mitubant",
+                "name": "mitubant"
+              },
+              {
+                "handle": "ngyzly",
+                "name": "ngyzly"
+              },
+              {
+                "handle": "scizical",
+                "name": "scizical"
+              },
+              {
+                "handle": "sonphamorg",
+                "name": "Son Pham",
+                "personId": "son-pham"
+              }
+            ]
+          }
+        ],
+        "honors": [],
+        "artNotes": [
+          "Seven approved competitor characters and exactly two Yorkies; retain the established fictional bot/mascot roles.",
+          "The airborne turkey, chicken and sunglasses duck form the fantasy nested vehicle/mascot, not extra roster accounts. The clean native scene has no rank, score, date or headline overlay."
+        ]
+      },
+      "png": "team-turducken-2026.png",
+      "pngSha256": "418e7bb1b46aec8ce174ac5a368607b49285c514fa83adc3589385c1eb15b84a",
+      "sourceArtwork": "client/public/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "sourceArtworkSha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37"
+    },
+    {
+      "card": {
+        "id": "team-arc-mutants-2026",
+        "number": "T016",
+        "kind": "team",
+        "name": "ARC Mutants",
+        "season": "2026",
+        "art": {
+          "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+          "alt": "ARC Mutants commissioned team illustration",
+          "credit": "Commissioned ARC Daily team artwork",
+          "artworkId": "2026-10-19-arc-mutants-academy-v1",
+          "commissionedAt": "2026-10-19T17:49:52.613526Z"
+        },
+        "description": "ARC Mutants unites Jack Cole, Mark Barney, Son Pham and scizical in ARC-AGI-2.",
+        "profileUrl": "/news/competitors/arc-2-17023174",
+        "highlights": [
+          {
+            "text": "ARC Mutants unites Jack Cole, Mark Barney, Son Pham and scizical in ARC-AGI-2.",
+            "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+            "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+            "checkedAt": "2026-10-19T18:01:43.005825Z"
+          }
+        ],
+        "accounts": [
+          {
+            "label": "jcole75",
+            "url": "https://www.kaggle.com/jcole75"
+          },
+          {
+            "label": "markbarney",
+            "url": "https://www.kaggle.com/markbarney"
+          },
+          {
+            "label": "scizical",
+            "url": "https://www.kaggle.com/scizical"
+          },
+          {
+            "label": "sonphamorg",
+            "url": "https://www.kaggle.com/sonphamorg"
+          }
+        ],
+        "entries": [
+          {
+            "competition": "arc-2",
+            "competitionId": "arc-prize-2026-arc-agi-2",
+            "teamId": "17023174",
+            "teamName": "ARC Mutants",
+            "observedAt": "2026-10-30T00:22:48Z",
+            "rank": 62,
+            "score": 46.39,
+            "submissions": 218,
+            "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+            "status": "public",
+            "members": [
+              {
+                "handle": "jcole75",
+                "name": "Jack Cole",
+                "personId": "jack-cole"
+              },
+              {
+                "handle": "markbarney",
+                "name": "Mark Barney",
+                "personId": "mark-barney"
+              },
+              {
+                "handle": "scizical",
+                "name": "scizical"
+              },
+              {
+                "handle": "sonphamorg",
+                "name": "Son Pham",
+                "personId": "son-pham"
+              }
+            ]
+          }
+        ],
+        "honors": [],
+        "artNotes": [
+          "Jack Cole, Mark Barney, Son Pham and a fictional opaque-helmet Ronen character; keep separate from ARC3 Turducken.",
+          "The approved native academy illustration includes intrinsic ARC MUTANTS / ARC-AGI-2 title lettering. It contains no baked rank, score, observation date or honor; all card statistics are drawn separately. No existing title-free four-person source was found, and the original pixels remain unchanged.",
+          "Boss reaffirmed the academy image on 29 October 2026 as the retained base for future X-Men-inspired episodes: Jack in the Professor Charles Xavier mentor role, Mark the GPU brawler, Son the visor-equipped energy specialist and Ronen the opaque-helmet grid-shield architect. Preserve their established faces, roles and the original image when making new versions."
+        ]
+      },
+      "png": "team-arc-mutants-2026.png",
+      "pngSha256": "503dae27847eb527c77fa793b71b3ecbadee764a03e450197d674e13f925cf84",
+      "sourceArtwork": "client/public/news-images/2026-10-19-arc-mutants-academy-v1.png",
+      "sourceArtworkSha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3"
+    }
+  ]
+}

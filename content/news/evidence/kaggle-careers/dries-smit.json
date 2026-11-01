@@ -1,0 +1,163 @@
+{
+  "personId": "dries-smit",
+  "handle": "driessmit1",
+  "name": "Dries Smit",
+  "checkedAt": "2026-10-30T11:27:46Z",
+  "method": "Built-in Claude browser pane, 2026-10-30. Loaded only the public Kaggle profile and competitions pages (one visit each, five-second pause between), read the page text, read the medal icons from a screenshot and from the medal labels on each competition row, and read the join tooltip and profile picture address from the page. The earlier draft of this file was treated as unverified and rebuilt from these live pages only.",
+  "sources": [
+    "https://www.kaggle.com/driessmit1",
+    "https://www.kaggle.com/driessmit1/competitions"
+  ],
+  "profile": {
+    "displayName": "Dries Smit",
+    "headline": "AI Researcher",
+    "workplaceShown": "AI Researcher at Tufa Labs",
+    "competitionTier": "Competitions Expert",
+    "medals": {
+      "gold": 1,
+      "silver": 1,
+      "bronze": 0,
+      "note": "Profile shows one gold and one silver icon; no bronze count is displayed. The two row labels in the completed list read gold medal (ARC Prize 2025) and silver medal (PTCG AI Battle Challenge)."
+    },
+    "competitionRank": 977,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 917,
+    "joinedTooltip": "Wed May 09 2018 11:13:12 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2018-05",
+    "joinedLabel": "Joined 8 years ago",
+    "activity": "4 competitions solo, 3 in a team, 0 hosted",
+    "tabCounts": {
+      "competitions": 7,
+      "datasets": 10,
+      "code": 2,
+      "discussion": 14,
+      "writeups": 1,
+      "followers": 81,
+      "following": 3
+    },
+    "bioPresent": true,
+    "bioSummary": "AI researcher specialising in reinforcement learning, multi-agent systems and large language models; currently focused on fundamental research in reinforcement learning and reasoning models at Tufa Labs.",
+    "pinnedWork": "ARC Prize 2025, 3rd of 1,455"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 5,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "ARC Prize 2025",
+      "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "Biohub - Cell Tracking During Development",
+      "RSNA Knee Abnormality Detection",
+      "Kaggriculture"
+    ],
+    "scopeNote": "Five completed rows are displayed; the profile reports 4 solo and 3 team competitions overall (seven, matching the two active plus five completed). Which three were team entries is not shown for the four non-ARC rows."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 3,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": ["jcole75", "driessmit1", "pressman1", "moeosman", "michaelhodel"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 80,
+      "teams": 6807,
+      "medal": "silver",
+      "displayedHandles": ["driessmit1"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Biohub - Cell Tracking During Development",
+      "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "rank": 3662,
+      "teams": 3947,
+      "medal": null,
+      "displayedHandles": ["driessmit1"],
+      "teamName": null,
+      "relativeDateLabel": "a month ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 5980,
+      "teams": 6299,
+      "medal": null,
+      "displayedHandles": ["driessmit1"],
+      "teamName": null,
+      "relativeDateLabel": "7 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 9034,
+      "teams": 10148,
+      "medal": null,
+      "displayedHandles": ["driessmit1"],
+      "teamName": null,
+      "relativeDateLabel": "15 days ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/dries-smit.webp",
+    "sourceUrl": "https://www.kaggle.com/driessmit1",
+    "note": "The saved file is a 480x480 crop of Dries's own named ARC Raiders Hall of Fame card art (client/public/dries.png), an illustrated portrait of him alone: brown hair, visor over one eye, no other person, not a default avatar, not a group image. Checked by eye on 2026-10-30 against the card (labelled Dries Smit) and against his current Kaggle profile photo, a real photo of him alone with the same look. His Kaggle photo is public (https://storage.googleapis.com/kaggle-avatars/images/1897919-kg.jpg, the same picture the page uses for its share image); it is a plain photograph, so it was not used to replace the finished card-style portrait. Nothing overwritten and no v2 saved."
+  },
+  "facts": [
+    {
+      "text": "Dries Smit is a Kaggle Competitions Expert with one gold and one silver competition medal on his public profile.",
+      "sourceUrl": "https://www.kaggle.com/driessmit1",
+      "sourceTitle": "Dries Smit | Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T11:27:46Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2025 as his best completed result, 3rd of 1,455 teams with a gold medal. The row displays five accounts, jcole75, driessmit1, pressman1, moeosman and michaelhodel, so the medal is a team result.",
+      "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+      "sourceTitle": "Dries Smit | Kaggle completed competitions",
+      "checkedAt": "2026-10-30T11:27:46Z"
+    },
+    {
+      "text": "Kaggle lists his Pokémon Company PTCG AI Battle Challenge result as 80th of 6,807 teams with a silver medal, with only his own account displayed.",
+      "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+      "sourceTitle": "Dries Smit | Kaggle completed competitions",
+      "checkedAt": "2026-10-30T11:27:46Z"
+    },
+    {
+      "text": "His Kaggle profile lists him as an AI Researcher at Tufa Labs and shows him active in both ARC Prize 2026 competitions, whose public standings are provisional until the private leaderboard settles.",
+      "sourceUrl": "https://www.kaggle.com/driessmit1/competitions",
+      "sourceTitle": "Dries Smit | Kaggle active competitions",
+      "checkedAt": "2026-10-30T11:27:46Z"
+    },
+    {
+      "text": "Dries Smit's Kaggle profile dates his account joining to May 2018.",
+      "sourceUrl": "https://www.kaggle.com/driessmit1",
+      "sourceTitle": "Dries Smit | Kaggle account join tooltip",
+      "checkedAt": "2026-10-30T11:27:46Z"
+    }
+  ],
+  "teamNotes": "The ARC Prize 2025 gold and third place belong to the team shown on that row (jcole75, driessmit1, pressman1, moeosman, michaelhodel); no individual responsibility is inferred. Kaggle shows no team name on any completed row. The repo's own records (his Hall of Fame card and the person record's ARC Prize citations) describe the third-place entry as MindsAI and Tufa Labs; that team name was not re-read on a live page in this pass, so it is not stated as a Kaggle fact. The Pokémon, Biohub, RSNA and Kaggriculture rows show only his own handle, so no teammates are visible there. Current ARC-2 and ARC-3 memberships (team Tufa Labs) are already held in the person record's observed memberships and are not repeated here.",
+  "unverified": [
+    "Team names for any completed competition (Kaggle shows none on the list).",
+    "Which three competitions were team entries, and teammates for the four non-ARC rows.",
+    "Exact completion dates for every completed row (only relative labels are shown).",
+    "The MindsAI and Tufa Labs team name for the ARC Prize 2025 third place (repo records only, not re-read live here).",
+    "The one write-up on his profile was not opened, so its subject and any placing are not recorded.",
+    "No private-leaderboard or final medal result exists yet for ARC Prize 2026; current standings are provisional."
+  ],
+  "verified": true
+}

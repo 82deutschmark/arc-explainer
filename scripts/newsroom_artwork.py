@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 15-October-2026 (an approved scene that already ran in the contest or on X is no longer
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Sonnet 5.5 Medium
+# Date: 31-October-2026 (edition score-panel captions no longer carry the "AI-generated editorial illustration ... metaphors"
+# boilerplate, per the Boss and ART_DESK.md of 29 October); 15-October-2026 (an approved scene that already ran in the contest or on X is no longer
 # offered automatically; the comic-strip rule, found in the backup desk's rehearsal)
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
 # draw dated corner statistics and branding, and bind image bytes/provenance to the exact headline and manuscript.
@@ -585,8 +586,9 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     data = stream.getvalue()
     src = f"/news-images/{job['id']}.webp"
     asset = Path(root) / 'client/public' / src.lstrip('/')
-    alt = 'Editorial illustration for ' + job['headline'] + '. ' + '; '.join(f"{r['name']}: rank {r['rank']}, score {r['score']:.2f}" for r in job['rows']) + '.'
-    caption = f"AI-generated editorial illustration. Score panel: {date_label}; provisional public standings. Characters and props are metaphors."
+    alt = 'Illustration for ' + job['headline'] + '. ' + '; '.join(f"{r['name']}: rank {r['rank']}, score {r['score']:.2f}" for r in job['rows']) + '.'
+    # The picture is an obvious cartoon; the caption only dates the standings it shows (Boss, 29 and 31 October 2026).
+    caption = f"Score panel: {date_label}; provisional public standings."
     image = {'src': src, 'alt': alt, 'caption': caption, 'artworkId': job['id']}
     report = {'version': 1, 'id': job['id'], 'kind': 'edition-composition', 'articleId': job['articleId'],
               'headline': job['headline'], 'briefSha256': job['briefSha256'], 'dataAsOf': job['dataAsOf'],

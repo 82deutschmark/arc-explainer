@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-25T19:38:02Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "久保兼 vaults from 1,158th to 78th on ARC-3",
+  "id": "2026-10-25-1557-arc-3-kubo-kan-climbs-to-78th",
+  "personIds": [],
+  "publishedAt": "2026-10-25T19:57:04Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "久保兼 gained 5.71 points to reach 33.98, moving from 1,158th to 78th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb puts the team inside the top 100 after starting the day in the four-digit ranks. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-24T19:13:06Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-25T19:56:26Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17138237"
+  ]
+}

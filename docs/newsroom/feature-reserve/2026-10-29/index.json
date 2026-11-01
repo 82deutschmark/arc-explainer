@@ -1,0 +1,159 @@
+{
+  "updatedAt": "2026-10-29T23:50:07.085614Z",
+  "commissionedBy": "mark-barney",
+  "state": "held-for-later-editions",
+  "priority": "Darren Amadeus Martin / Domdolus Tolus; yktori follows in the existing ARC3 reserve.",
+  "features": [
+    {
+      "name": "Darren Amadeus Martin and Domdolus Tolus",
+      "competition": "arc-2",
+      "teamId": "16559402",
+      "headline": "From fifth-place gold to ARC2’s front rank: meet Domdolus Tolus",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/domdolus-tolus/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/domdolus-tolus/feature-draft.json",
+      "words": 819,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/research.json"
+    },
+    {
+      "name": "yktori",
+      "competition": "arc-3",
+      "teamId": "16760837",
+      "headline": "Clear a lane for yktori: the five-medal challenger crashing ARC3’s front rank",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/yktori/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/yktori/feature-draft.json",
+      "words": 681,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/yktori/research.json"
+    },
+    {
+      "name": "mtg / Michael",
+      "competition": "arc-3",
+      "teamId": "16153655",
+      "headline": "Michael’s double bill: mtg keeps crashing ARC’s front row",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/michaeltgao/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/michaeltgao/feature-draft.json",
+      "words": 541,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/michaeltgao/research.json"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "competition": "arc-3",
+      "teamId": "16490178",
+      "headline": "Give “& co” a proper billing: meet Grigoriy’s top-ten quartet",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/grigoriy/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/grigoriy/feature-draft.json",
+      "words": 751,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/research.json"
+    },
+    {
+      "name": "復活の混テキスト",
+      "competition": "arc-3",
+      "teamId": "16569113",
+      "headline": "Four Masters, eight avatars: meet 復活の混テキスト",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/japanese-ensemble/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/japanese-ensemble/feature-draft.json",
+      "words": 811,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/research.json"
+    },
+    {
+      "name": "Artificial Agency Lab",
+      "competition": "arc-3",
+      "teamId": "16132261",
+      "headline": "From brain waves to breakaways: meet Artificial Agency Lab’s double act",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/artificial-agency/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/artificial-agency/feature-draft.json",
+      "words": 671,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/research.json"
+    },
+    {
+      "name": "Majkel1337 / Michał Gromadzki",
+      "competition": "arc-3",
+      "teamId": "16958599",
+      "headline": "From Pokémon’s card table to ARC’s front row: meet Michał Gromadzki",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/majkel1337/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/majkel1337/feature-draft.json",
+      "words": 648,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/research.json"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "competition": "arc-3",
+      "teamId": "15488763",
+      "headline": "AquaUrsa breaks into the big league — and keeps a little mystery",
+      "manuscript": "docs/newsroom/feature-reserve/2026-10-29/aquaursa/feature.txt",
+      "draft": "docs/newsroom/feature-reserve/2026-10-29/aquaursa/feature-draft.json",
+      "words": 666,
+      "state": "held-for-later-edition",
+      "privateResearchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/aquaursa/research.json"
+    }
+  ],
+  "artNotes": "All selected artwork, original reference inputs, exact generation arguments and cast mappings are archived in the newsroom character library. NVIDIA nvbanana art is preserved as art only; no NVIDIA feature commissioned.",
+  "distribution": "Eight illustrated cheat sheets delivered to ARC3 rollout feed: seven ARC3 contenders plus the corrected Darren/Domdolus crew. Full features remain held for later editions; no X sends. NVIDIA duo is saved art only.",
+  "releaseInstructions": [
+    "Keep The Last Dance’s existing October30 Early reservation intact. This seven-feature reserve is separate; yktori is first in the new series.",
+    "Choose a later edition before publishing any held manuscript; the new reserve has no automatic release date.",
+    "Refresh current standings, field size, rosters, deadline wording and any forward-looking claims. Preserve dated historical observations and account-level honors.",
+    "Retain every unknown identity and explicit avatar/mascot distinction. Do not turn generic Kaggle geese, geometric identicons or rear-view photos into claimed human faces.",
+    "Copy the selected avatar into the normal versioned artwork location and record its exact native prompt, references, review and file hash using the existing art workflow. All seven selected originals and provenance are in this package.",
+    "Before release, integrate verified people/own portraits through the existing people ledger where appropriate, then validate the complete article. Keep Côme’s lab membership separate from the unresolved cmechevalier handle mapping.",
+    "Set the actual article ID and publishedAt only at release. No current draft publication time should be inferred from a research or generation check time.",
+    "The X hold remains until the editor releases it; any later permitted announcement follows the normal send-once and Discord-image procedure."
+  ],
+  "privateSourceArchive": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial",
+  "discordCheatSheets": [
+    {
+      "id": "2026-10-29-yktori-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509628177948742",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509628177948742"
+    },
+    {
+      "id": "2026-10-29-michaeltgao-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509693357559970",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509693357559970"
+    },
+    {
+      "id": "2026-10-29-grigoriy-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509757433815111",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509757433815111"
+    },
+    {
+      "id": "2026-10-29-japanese-ensemble-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509819459182693",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509819459182693"
+    },
+    {
+      "id": "2026-10-29-artificial-agency-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509882268885025",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509882268885025"
+    },
+    {
+      "id": "2026-10-29-majkel1337-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565509941836521523",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509941836521523"
+    },
+    {
+      "id": "2026-10-29-aquaursa-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565510014309892201",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565510014309892201"
+    },
+    {
+      "id": "2026-10-29-domdolus-tolus-contender-cheat-sheet",
+      "state": "sent",
+      "messageId": "1565512874628096143",
+      "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565512874628096143"
+    }
+  ]
+}

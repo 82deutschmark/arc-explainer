@@ -1,0 +1,319 @@
+{
+  "personId": "yktori",
+  "handle": "yktori",
+  "name": "yktori",
+  "checkedAt": "2026-10-30T14:16:00Z",
+  "method": "Read-only public Kaggle profile and Competitions pages loaded once each in the app's built-in browser on 2026-10-30 (profile, then a five-second pause, then competitions). Text read from the rendered pages; each medal read from the medal icon next to the rank (icon alt text and a screenshot of the first rows); displayed handles read from the entry avatar tooltips; join date from the profile's join tooltip. No refresh loops, no block or rate limit encountered. No other site was visited. An older unverified draft did not exist in the worktree, so nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/yktori",
+    "https://www.kaggle.com/yktori/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 1,
+      "bronze": 4
+    },
+    "competitionRank": 2501,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 980,
+    "joinedTooltip": "Fri Oct 04 2019 09:34:14 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-10",
+    "bioPresent": false,
+    "headerOccupation": "Web Engineer at LY Corporation",
+    "headerLocation": "Tokyo, Tokyo, Japan",
+    "activitySummary": "20 competitions solo, 2 competitions in a team, 0 hosted",
+    "followersShown": 2,
+    "tabCounts": {
+      "competitions": 22,
+      "code": 1
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 20,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "Google - The Gemma 4 Developer Agent Competition"
+    ],
+    "scopeNote": "All twenty completed rows displayed on the Competitions tab are recorded below. Completion dates are shown by Kaggle only as relative labels (for example 'a year ago'); exact dates were not shown. The list is the public display, not proof of anything not shown."
+  },
+  "completedResults": [
+    {
+      "competition": "Drawing with LLMs",
+      "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+      "rank": 27,
+      "teams": 1309,
+      "medal": "silver",
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "IceCube - Neutrinos in Deep Ice",
+      "competitionUrl": "https://www.kaggle.com/competitions/icecube-neutrinos-in-deep-ice",
+      "rank": 74,
+      "teams": 812,
+      "medal": "bronze",
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LEAP - Atmospheric Physics using AI (ClimSim)",
+      "competitionUrl": "https://www.kaggle.com/competitions/leap-atmospheric-physics-ai-climsim",
+      "rank": 82,
+      "teams": 693,
+      "medal": "bronze",
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Feedback Prize - Evaluating Student Writing",
+      "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-2021",
+      "rank": 130,
+      "teams": 2058,
+      "medal": "bronze",
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Mechanisms of Action (MoA) Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/lish-moa",
+      "rank": 322,
+      "teams": 4373,
+      "medal": "bronze",
+      "displayedHandles": ["kuroironeko", "yktori", "yuishizaki"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "G2Net Gravitational Wave Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
+      "rank": 267,
+      "teams": 1219,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Foursquare - Location Matching",
+      "competitionUrl": "https://www.kaggle.com/competitions/foursquare-location-matching",
+      "rank": 273,
+      "teams": 1079,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "G2Net Detecting Continuous Gravitational Waves",
+      "competitionUrl": "https://www.kaggle.com/competitions/g2net-detecting-continuous-gravitational-waves",
+      "rank": 336,
+      "teams": 936,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Linking Writing Processes to Writing Quality",
+      "competitionUrl": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
+      "rank": 366,
+      "teams": 1876,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NBME - Score Clinical Patient Notes",
+      "competitionUrl": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
+      "rank": 591,
+      "teams": 1471,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Optiver Realized Volatility Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/optiver-realized-volatility-prediction",
+      "rank": 723,
+      "teams": 3852,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Lux AI",
+      "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-2021",
+      "rank": 1144,
+      "teams": 1178,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Riiid Answer Correctness Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
+      "rank": 1213,
+      "teams": 3406,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+      "competitionUrl": "https://www.kaggle.com/competitions/isic-2024-challenge",
+      "rank": 1642,
+      "teams": 2739,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 1730,
+      "teams": 4185,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 1799,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 1892,
+      "teams": 2963,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predict Student Performance from Game Play",
+      "competitionUrl": "https://www.kaggle.com/competitions/predict-student-performance-from-game-play",
+      "rank": 1937,
+      "teams": 2051,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "rank": 2064,
+      "teams": 4729,
+      "medal": null,
+      "displayedHandles": ["yktori"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "M5 Forecasting - Accuracy",
+      "competitionUrl": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+      "rank": 3705,
+      "teams": 5558,
+      "medal": null,
+      "displayedHandles": ["kuroironeko", "kfkabdg", "wat516", "yktori", "yuishizaki"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/yktori",
+    "note": "The profile's picture is Kaggle's stock default goose sketch (the avatar element points at Kaggle's own default-avatar image, and every entry thumbnail for this account is the default thumbnail), not a picture the player chose. No other public picture of this player is cited by their record. No portrait file exists under news-images/people for this id and none was saved. The newspaper's Silver Comet helmeted mascot (references/2026-10-29-yktori-avatar-v1-base.webp) is a fictional stand-in made by the newsroom, explicitly not a likeness and not owner-selected, so it must not be shown or labelled as this player's own picture. As of this check, cards.json (read only, not edited) still uses that mascot as the art of the person card person-yktori-2026 (art note: not an owner-selected avatar or a human likeness) and of the team card team-yktori-team-2026, so the person card currently shows a stand-in and needs the Boss's decision on a replacement or a no-picture treatment."
+  },
+  "facts": [
+    {
+      "text": "yktori is a Kaggle Competitions Expert whose public profile shows one silver and four bronze competition medals, and dates the account to October 2019.",
+      "sourceUrl": "https://www.kaggle.com/yktori",
+      "sourceTitle": "yktori — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T14:16:00Z"
+    },
+    {
+      "text": "Kaggle lists yktori's best completed result as 27th of 1,309 teams in Drawing with LLMs, with a silver medal. The entry shows only the yktori account.",
+      "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+      "sourceTitle": "yktori — completed Drawing with LLMs result on Kaggle",
+      "checkedAt": "2026-10-30T14:16:00Z"
+    },
+    {
+      "text": "Three of the four bronze medals are on entries that show only yktori: 74th of 812 in IceCube, 82nd of 693 in LEAP, and 130th of 2,058 in Feedback Prize.",
+      "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+      "sourceTitle": "yktori — completed bronze-medal entries on Kaggle",
+      "checkedAt": "2026-10-30T14:16:00Z"
+    },
+    {
+      "text": "The fourth bronze, 322nd of 4,373 in Mechanisms of Action Prediction, is a shared team result: the entry lists kuroironeko, yktori and yuishizaki.",
+      "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+      "sourceTitle": "yktori — Mechanisms of Action team entry on Kaggle",
+      "checkedAt": "2026-10-30T14:16:00Z"
+    },
+    {
+      "text": "Kaggle shows ARC Prize 2026 - ARC-AGI-3 among yktori's two active competitions, and lists The 2026 NeuroGolf Championship, an ARC-AGI image-transformation contest, among the completed ones at 1,892nd of 2,963 with no medal.",
+      "sourceUrl": "https://www.kaggle.com/yktori/competitions",
+      "sourceTitle": "yktori — active and completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T14:16:00Z"
+    }
+  ],
+  "teamNotes": [
+    "Kaggle's profile list shows displayed handles, not team names, so no team name is recorded for any entry; every teamName is null rather than guessed.",
+    "Eighteen of the twenty completed entries show only yktori. Mechanisms of Action (kuroironeko, yktori, yuishizaki) and M5 Forecasting - Accuracy (kuroironeko, kfkabdg, wat516, yktori, yuishizaki) show several accounts, matching the profile's two competitions in a team.",
+    "The Mechanisms of Action bronze is a team medal and must not be credited to yktori alone; the other four medals are on entries displaying only yktori.",
+    "The ARC-AGI-3 team on the ARC-3 public roster is recorded in people.json as team yktori; that standing was not rechecked in this pass and any rank from it is provisional.",
+    "people.json calls the Web Engineer at LY Corporation line the player's biography. On Kaggle that line is the profile header occupation; the bio itself reads 'No bio yet'. The existing biography fact should be reworded when the record is next edited."
+  ],
+  "unverified": [
+    "Real name: none shown, no link to an outside identity was followed or established.",
+    "Whether the occupation line (Web Engineer at LY Corporation, Tokyo) is current: it is self-reported and was not checked anywhere else.",
+    "Exact completion dates: Kaggle showed only relative labels.",
+    "Team names, team sizes and who made which submissions: not visible on the profile list; competition leaderboard pages were not opened.",
+    "Current ARC-AGI-3 public standing and score: not checked in this pass; any public ARC standing is provisional until the private leaderboard settles.",
+    "Medal credit for M5 Forecasting - Accuracy: no medal icon was displayed and none is claimed.",
+    "Any picture of the player: none public that the record cites; the default Kaggle goose is not treated as one."
+  ],
+  "verified": true
+}

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-takeru-sato-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "takeru-sato",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-takeru-sato-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-takeru-sato-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "667c8e5a3e26fbfd6fe25ffef356df4f746642158ffbe1a7c9114c3a834444f4",
+  "rawSha256": "667c8e5a3e26fbfd6fe25ffef356df4f746642158ffbe1a7c9114c3a834444f4",
+  "toolOutput": "exec-db62aa4d-1696-43f1-8114-12f2bde097ca.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Own photo shows only the back of an anonymous short-dark-haired adult looking up at an orange-lit tower, no verified front face. Create a respectful anonymous cyber engineer from three-quarter rear, short black hair, silver/graphite armored shirt and fully opaque visor concealing any visible face. Looking toward an orange geometric spire through scoring-hall arch, holds glowing blue ARC matrix within upper frame. No invented facial likeness.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Own photo shows only the back of an anonymous short-dark-haired adult looking up at an orange-lit tower, no verified front face. Create a respectful anonymous cyber engineer from three-quarter rear, short black hair, silver/graphite armored shirt and fully opaque visor concealing any visible face. Looking toward an orange geometric spire through scoring-hall arch, holds glowing blue ARC matrix within upper frame. No invented facial likeness.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/takeru-sato.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/takeru-sato.webp",
+      "sha256": "acb9da666ac03fa8b739086b849b731486eacd83d9b234c5d9d4981097bf7259",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/tk256ailab"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

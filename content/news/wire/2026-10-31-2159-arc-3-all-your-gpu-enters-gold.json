@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-11-01T01:29:35Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "All your GPU are belong to us enters ARC-3 gold",
+  "id": "2026-10-31-2159-arc-3-all-your-gpu-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-11-01T01:59:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "All your GPU are belong to us moved into the gold places, from 31st to 14th, at 41.81 (+4.01)."
+    }
+  ],
+  "since": "2026-10-31T01:25:53Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T01:59:34Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16429297"
+  ]
+}

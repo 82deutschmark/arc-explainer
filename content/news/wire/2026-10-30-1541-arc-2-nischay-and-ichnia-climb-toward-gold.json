@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-30T19:25:08Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nischay Dhankhar and Ichnia climb toward ARC-2 gold",
+  "id": "2026-10-30-1541-arc-2-nischay-and-ichnia-climb-toward-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-30T19:41:41Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "On the ARC-2 public board, Nischay Dhankhar gained 13.33 to reach 67.22, moving from 50th to 28th in the past day. Ichnia gained 10.70 to 67.78, moving from 43rd to 26th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line, the score at 17th, rose 0.42 in the past day to 70.14, and both teams still sit below it. Public standings are provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-29T19:22:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T19:40:38Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15903566",
+    "16091670"
+  ]
+}

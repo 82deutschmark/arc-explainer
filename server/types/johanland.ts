@@ -1,9 +1,10 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-15
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-29
  * PURPOSE: TypeScript type definitions for Johan_Land_Solver_V6 submission format.
  *          Handles structured reasoning summaries with judge feedback and comprehensive
- *          metadata including detailed token usage and cost tracking.
+ *          metadata including detailed token usage and cost tracking. Unknown per-puzzle
+ *          timing remains null, matching the explanation persistence contract.
  * SRP/DRY check: Pass - Single responsibility (type definitions only), no duplication
  */
 
@@ -211,8 +212,8 @@ export interface JohanLandEnrichedAttempt {
   // Cost
   estimatedCost: number;
 
-  // Timing
-  apiProcessingTimeMs: number;
+  // Batch timestamps cannot establish per-puzzle timing; preserve that unknown as null.
+  apiProcessingTimeMs: number | null;
 
   // Prediction
   predictedOutputGrid: number[][] | null;

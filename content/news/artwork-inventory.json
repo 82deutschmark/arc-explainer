@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T03:50:52.806847+00:00",
+  "updatedAt": "2026-11-01T05:55:04.162253+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -110,13 +110,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -168,13 +168,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -226,13 +226,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -586,7 +586,11 @@
           "replacedArtworkId": "2026-10-20-morning-arc-3-d05a1f1a92",
           "revisionId": "2026-10-20-morning-arc-3-artwork-revision-1"
         }
-      ]
+      ],
+      "identityCorrection": {
+        "replacement": "2026-10-29-turducken-nt-corrected-v2",
+        "note": "Preserve historical image; banana kitten was wrongly assigned to NT. Use corrected crew reference for current identity."
+      }
     },
     {
       "id": "arc-mutants-academy-v1",
@@ -726,6 +730,1196 @@
         }
       ],
       "selectionNote": "Mark selected this exact badge-themed heroic cartoon for the MIT photo dispatch and its separate X announcement. Original photo and earlier variants preserved."
+    },
+    {
+      "id": "2026-10-24-gpu-valley-thaw-full-crew-v1-base",
+      "generationRecord": "2026-10-24-gpu-valley-thaw-full-crew-v1-base",
+      "src": "/news-images/2026-10-24-gpu-valley-thaw-full-crew-v1-base.webp",
+      "title": "The Valley Thaws (original near-equal citadels)",
+      "competition": "arc-3",
+      "status": "prepared-held-stale-leader-premise",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Preserved original commission. Chen overtook Tufa; use edited successor for October 25."
+    },
+    {
+      "id": "2026-10-25-gpu-valley-chen-leads-v2-base",
+      "generationRecord": "2026-10-25-gpu-valley-chen-leads-v2-base",
+      "src": "/news-images/2026-10-25-gpu-valley-chen-leads-v2-base.webp",
+      "title": "The Valley Thaws — Chen Takes the Lead",
+      "competition": "arc-3",
+      "status": "published-on-front-page-and-x",
+      "articleUses": [
+        "2026-10-25-morning-arc-3"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2114448237306224794",
+          "postedAt": "2026-10-25T20:06:20.542457+00:00",
+          "artworkId": "2026-10-25-morning-arc-3-690a889e24",
+          "attachmentSha256": "9b615e4b0117b520233a8cb9349ff8b13dc1e0cd08452227395bb20cf228012a"
+        }
+      ],
+      "discordShares": [],
+      "selectionNote": "Mark requested the new Valley scene. One native citadel edit reflects Chen first. All current ten camps and exact rosters verified."
+    },
+    {
+      "id": "2026-10-26-architects-dream-team-labeled",
+      "generationRecord": "2026-10-26-architects-dream-team-labeled",
+      "src": "/news-images/2026-10-26-architects-dream-team-labeled.png",
+      "title": "The 2026 ARChitects — the dream team comes together",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-feature",
+      "articleUses": [
+        "2026-10-26-architects-superteam-enters-gold"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Editor requested a new four-person scene, then approved scene and commissioned baseball-card name/credit panels and full-page evening feature. Fresh four-account roster and individual avatar sources verified; all faces, labels and dated scoreboard inspected."
+    },
+    {
+      "id": "2026-10-26-sebastian-brodehl-hero-avatar",
+      "generationRecord": "2026-10-26-sebastian-brodehl-hero-avatar",
+      "src": "/news-images/2026-10-26-sebastian-brodehl-hero-avatar.png",
+      "title": "Sebastian Brodehl — mouse cyber-engineer",
+      "competition": "arc-3",
+      "status": "reviewed-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Editor requested a new four-person scene, then approved scene and commissioned baseball-card name/credit panels and full-page evening feature. Fresh four-account roster and individual avatar sources verified; all faces, labels and dated scoreboard inspected."
+    },
+    {
+      "id": "2026-10-26-architects-dream-team-labeled-v2",
+      "generationRecord": "2026-10-26-architects-dream-team-labeled-v2",
+      "src": "/news-images/2026-10-26-architects-dream-team-labeled-v2.png",
+      "title": "The 2026 ARChitects — date-only team plate",
+      "competition": "arc-3",
+      "status": "published-with-corrected-feature",
+      "articleUses": [
+        "2026-10-26-architects-superteam-enters-gold"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2114894152898928782",
+          "postedAt": "2026-10-27T01:37:53.590924+00:00",
+          "artworkId": "2026-10-26-architects-dream-team-labeled-v2",
+          "attachmentSha256": "2ed36934b5ebc50389abe87131d54f8d0fd1d238b2f2156e403df1c6b1336e99"
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564455883293859910",
+          "postedAt": "2026-10-27T01:49:10.207596+00:00",
+          "attachmentFilename": "2026-10-26-architects-dream-team-labeled-v2.png",
+          "purpose": "Editor explicitly requested articles and images in the rollout feed; sent once with delivery receipt."
+        }
+      ],
+      "selectionNote": "Editor requested removal of discovery clock times. Native date-only text edit inspected; prior picture remains historical. Approved for the explicitly requested image-led X feature post."
+    },
+    {
+      "id": "2026-10-26-flash-next-green-light",
+      "generationRecord": "2026-10-26-flash-next-green-light",
+      "src": "/news-images/2026-10-26-flash-next-green-light.webp",
+      "title": "Flash Next gets the green light",
+      "status": "published-with-commissioned-news",
+      "articleUses": [
+        "2026-10-26-flash-next-cleared-for-arc-prize"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564455942878404628",
+          "postedAt": "2026-10-27T01:49:24.201886+00:00",
+          "attachmentFilename": "2026-10-26-flash-next-green-light.webp",
+          "purpose": "Editor explicitly requested articles and images in the rollout feed; sent once with delivery receipt."
+        }
+      ],
+      "selectionNote": "Editor explicitly commissioned separate article and image. Bell-ringing robot scene and correct text visually reviewed; no real person or official seal depicted."
+    },
+    {
+      "id": "2026-10-27-arc3-clock-keeps-running-v1",
+      "generationRecord": "2026-10-27-arc3-clock-keeps-running-v1",
+      "src": "/news-images/2026-10-27-arc3-clock-keeps-running-v1.png",
+      "title": "The Clock Keeps Running",
+      "competition": "arc-3",
+      "status": "published-on-x-and-discord",
+      "articleUses": [],
+      "relatedArticleIds": [
+        "2026-10-27-kaggle-run-failures-investigation",
+        "2026-10-27-morning-arc-3"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2115070373280800960",
+          "postedAt": "2026-10-27T13:17:56.079339+00:00",
+          "artworkId": "2026-10-27-arc3-clock-keeps-running-v1",
+          "attachmentSha256": "53985d27a3f96c056e617ff848f9e7db1b652eb7499145f2fcc6c748a1862346",
+          "purpose": "Direct editor-requested fresh-art correction; original announcement preserved."
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564628780239028285",
+          "replyToId": "1564594585248731321",
+          "attachmentSha256": "53985d27a3f96c056e617ff848f9e7db1b652eb7499145f2fcc6c748a1862346",
+          "purpose": "Mark-requested new incident illustration, all four ARChitects included; reply to original article announcement."
+        }
+      ],
+      "selectionNote": "New episode commissioned October 27 to replace stale Lights Out artwork. Fresh observed ARC3 roster checked; entire Turducken crew and four ARChitects visible. No score, rank or extension outcome depicted. Published article files remain immutable."
+    },
+    {
+      "id": "2026-10-27-arc2-just-short-of-gold-v1",
+      "generationRecord": "2026-10-27-arc2-just-short-of-gold-v1-base",
+      "src": "/news-images/2026-10-27-arc2-just-short-of-gold-v1-base.webp",
+      "title": "Just Short of Gold",
+      "competition": "arc-2",
+      "status": "published-with-discord-first-edition-revision",
+      "articleUses": [
+        "2026-10-27-evening-arc-2"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564766399510093875",
+          "postedAt": "2026-10-27T22:23:02.114000+00:00",
+          "attachmentFilename": "exec-ad088cb1-a1ce-46b6-846d-feac0d9be7e6.png",
+          "purpose": "Boss-directed Discord-first fresh artwork; parent confirmed delivery and no objections before authorized article publication."
+        }
+      ],
+      "selectionNote": "Visually inspected: cyan extending bridge stops short of golden platform, three fluffy spider mascots on distant high stronghold, no people, rabbits, text or scores. New floating-grid canyon scene; no prior artwork reused.",
+      "artworkId": "2026-10-27-evening-arc-2-short-fresh-v1"
+    },
+    {
+      "id": "2026-10-27-arc3-higher-still-v1",
+      "generationRecord": "2026-10-27-arc3-higher-still-v1-base",
+      "src": "/news-images/2026-10-27-arc3-higher-still-v1-base.webp",
+      "title": "Higher Still",
+      "competition": "arc-3",
+      "status": "historical-superseded-by-giant-rabbit-correction",
+      "articleUses": [
+        "2026-10-27-evening-arc-3"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564766404698316831",
+          "postedAt": "2026-10-27T22:23:03.393000+00:00",
+          "attachmentFilename": "exec-8fb6ce95-e874-4173-b967-35fc084d3444.png",
+          "purpose": "Boss-directed Discord-first fresh artwork; parent confirmed delivery and no objections before authorized article publication."
+        }
+      ],
+      "selectionNote": "Visually inspected final correction: exactly two correct rabbits, grey lop ears down and dark upright-eared broad white-blaze rabbit; exactly five black spider mascots on lower telescope terrace, riderless cyan rover through lower golden gateway. No people, text or scores. Entirely new observatory episode.",
+      "artworkId": "2026-10-27-evening-arc-3-arc3-fresh-v1",
+      "supersededBy": "2026-10-27-arc3-giants-above-valley-v1-base"
+    },
+    {
+      "id": "2026-10-27-arc3-giants-above-valley-v1-base",
+      "generationRecord": "2026-10-27-arc3-giants-above-valley-v1-base",
+      "src": "/news-images/2026-10-27-arc3-giants-above-valley-v1-base.webp",
+      "title": "Giants Above the Valley",
+      "competition": "arc-3",
+      "status": "historical-superseded-by-standing-giants",
+      "articleUses": [
+        "2026-10-27-evening-arc-3"
+      ],
+      "artworkId": "2026-10-27-evening-arc-3-1678c4c0f2",
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564768272417816668",
+          "postedAt": "2026-10-27T22:30:28.883Z",
+          "attachmentFilename": "2026-10-27-giants-above-valley-v1.png",
+          "purpose": "Son-requested original-reference Giant Rabbits, posted by parent before article replacement; no objections received."
+        }
+      ],
+      "selectionNote": "Visually inspected tool result: two city-block-sized rabbits dwarf multi-storey cableway towers. Grey-brown lop has both ears down; dark-and-white companion has upright ears and broad irregular white face blaze/chest. Five distinct black spiders (roof, ladder, left ground, front cable coil, right ground). No text, scores, humans or extra animals. New blue-hour snowy cableway/ravine scene and fan crawler, not reused prior composition. Owner photo and original giant-scale image supplied as actual inputs.",
+      "supersededBy": "2026-10-27-arc3-when-giants-stand-v1-base"
+    },
+    {
+      "id": "2026-10-27-arc3-when-giants-stand-v1-base",
+      "generationRecord": "2026-10-27-arc3-when-giants-stand-v1-base",
+      "src": "/news-images/2026-10-27-arc3-when-giants-stand-v1-base.webp",
+      "title": "When the Giants Stand",
+      "competition": "arc-3",
+      "status": "published-with-discord-first-edition-revision",
+      "articleUses": [
+        "2026-10-27-evening-arc-3"
+      ],
+      "artworkId": "2026-10-27-evening-arc-3-615ddd6e3e",
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564769752449155174",
+          "postedAt": "2026-10-27T22:36:22.341Z",
+          "attachmentFilename": "2026-10-27-when-giants-stand-v1.png",
+          "purpose": "Son-requested standing giant rabbits; parent posted clean scene first and received no objections during window."
+        }
+      ],
+      "selectionNote": "Inspected native output: two colossal rabbits stand on hind legs, grey-brown lop ears down and dark-and-white companion ears upright with white face blaze. Five distinct black spiders, full seven-character Turducken crew, two Yorkies and anonymous green engineers look upward. New sunrise plaza episode; no text or scores."
+    },
+    {
+      "id": "2026-10-28-beyond-the-ceiling-cover-v1-base",
+      "generationRecord": "2026-10-28-beyond-the-ceiling-cover-v1-base",
+      "src": "/news-images/2026-10-28-beyond-the-ceiling-cover-v1-base.webp",
+      "title": "Beyond the Ceiling",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-feature",
+      "articleUses": [
+        "2026-10-28-beyond-arc1-ceiling"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565116420172550365",
+          "postedAt": "2026-10-28T21:33:53.413Z",
+          "purpose": "Head editor commissioned special evening edition and desk coordination; selected native cover preview before feature publication."
+        }
+      ],
+      "selectionNote": "Conceptual cover selected after editor paused further art. Visually checked all labels, date, headline and AI illustration credit. No named people or contest scores. Other character experiments held and excluded."
+    },
+    {
+      "id": "2026-10-29-open-endedness-cover-v1",
+      "generationRecord": "2026-10-29-open-endedness-cover-v1",
+      "src": "/news-images/2026-10-29-open-endedness-cover-v1.webp",
+      "status": "published-on-x-and-discord",
+      "articleUses": [
+        "2026-10-29-special-afternoon-open-endedness"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2115844321522143520",
+          "postedAt": "2026-10-29T16:33:39.847851+00:00",
+          "artworkId": "2026-10-29-open-endedness-cover-v1",
+          "attachmentSha256": "3664107d58dca6f6914f65954c830dbe94e5f82a651714302fcd5a879c3eba57"
+        }
+      ],
+      "note": "Head editor explicitly commissioned new conceptual ARC-grid artwork; no suitable unused stock matched this subject.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565424159222272151",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565424159222272151",
+          "postedAt": "2026-10-29T17:56:47.263540+00:00",
+          "attachmentSha256": "3664107d58dca6f6914f65954c830dbe94e5f82a651714302fcd5a879c3eba57",
+          "purpose": "Head editor requested recovery of missing actual image attachment; article notice was text-only. Existing X post preserved."
+        }
+      ]
+    },
+    {
+      "id": "2026-10-29-xz-enters-scoring-hall-v1",
+      "generationRecord": "2026-10-29-xz-enters-scoring-hall-v1",
+      "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
+      "status": "published-and-distributed",
+      "articleUses": [
+        "2026-10-29-special-early-evening-xz"
+      ],
+      "xAttachments": [
+        {
+          "articleId": "2026-10-29-special-early-evening-xz",
+          "url": "https://x.com/82deutschmark/status/2115897936764887332",
+          "postedAt": "2026-10-29T20:06:17.234Z",
+          "sha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+          "alt": "A gigantic cream-faced blue-eyed fluffy cat wearing a restrained GPU vest enters the scoring hall. Tall Dries, five spiders, Chen’s two rabbits, Puget and Ivan, seven Turducken crew members and two Yorkies all look warily toward it. A damaged screen shows 4, the cat icon and xz.",
+          "visualReview": "Exact giant-cat image and article text reviewed in composer; posted image and alt confirmed in success result."
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565433016111603843",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565433016111603843",
+          "postedAt": "2026-10-29T18:31:58.294761+00:00",
+          "attachmentSha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+          "purpose": "Head-editor commissioned xz evening feature, exact finished art delivered before any X. Await any human reaction."
+        },
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565456236609020006",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565456236609020006",
+          "postedAt": "2026-10-29T20:04:13.023364+00:00",
+          "attachmentSha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+          "articleId": "2026-10-29-special-early-evening-xz",
+          "purpose": "4 pm early evening launch with actual special-article link; Boss explicitly approved X without reactions."
+        }
+      ],
+      "targetEditionId": "2026-10-29-special-early-evening-xz",
+      "selectionNote": "Inspected the finished wide native cover. One enormous cream-and-white cat has the avatar’s round flat face, blue eyes, pink nose, exposed fluffy ruff, modest GPU vest and huge plume tail. Five spiders, tall Dries, two correctly marked Chen rabbits, Puget and Ivan, seven distinct Turducken crew and two Yorkies are visible, all turned warily toward the cat. Broken display clearly shows 4, cat icon and xz; no other scores invented. Headline, date and AI credit legible. Editorial fantasy about a fourth-place arrival, not a factual outage scene, hardware account or breed identification."
+    },
+    {
+      "articleUses": [],
+      "discordShares": [],
+      "episode": "Four distinct compact adult dancers. Three own-avatar identities plus a fictional opaque-helmet stand-in for unverified gklambauer.",
+      "generationRecord": "2026-10-29-last-dance-character-sheet-v1-base",
+      "id": "2026-10-29-last-dance-character-sheet-v1",
+      "selectionNote": "Manual head-editor commission, native generation and one local visual review. Scene used once; character sheet may guide fresh future episodes. Costumes, dance and scale are fiction.",
+      "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+      "status": "character-reference",
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "note": "Three verified identities; fourth helmet is a fictional stand-in. Do not turn generic Kaggle goose into an avatar or assign Günter Klambauer ownership without a direct link. Refresh every other pictured team before future new scenes.",
+        "requiredRosterHandles": {
+          "16021367": [
+            "dwellement0baser",
+            "fses91",
+            "gklambauer",
+            "lukasaichberger"
+          ]
+        }
+      },
+      "title": "The Last Dance — recurring cast",
+      "xAttachments": []
+    },
+    {
+      "articleUses": [
+        "2026-10-29-last-dance-takes-the-floor"
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565451359678111784",
+          "postedAt": "2026-10-29T19:44:50.577859+00:00",
+          "attachmentSha256": "0031678bc48b34e29d1105bce13d97feead86a99cbccf3dc83aa315ea11ad289",
+          "purpose": "Head-editor commissioned team feature: finished scene and intended article link delivered once before publication push."
+        }
+      ],
+      "episode": "New scoring-hall ARC-grid breakdance cypher with the established contender audience.",
+      "generationRecord": "2026-10-29-last-dance-scoring-hall-v1-base",
+      "id": "2026-10-29-last-dance-scoring-hall-v1",
+      "selectionNote": "Manual head-editor commission, native generation and one local visual review. Scene used once; character sheet may guide fresh future episodes. Costumes, dance and scale are fiction.",
+      "src": "/news-images/2026-10-29-last-dance-scoring-hall-v1-base.webp",
+      "status": "published-feature",
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "note": "Three verified identities; fourth helmet is a fictional stand-in. Do not turn generic Kaggle goose into an avatar or assign Günter Klambauer ownership without a direct link. Refresh every other pictured team before future new scenes.",
+        "requiredRosterHandles": {
+          "16021367": [
+            "dwellement0baser",
+            "fses91",
+            "gklambauer",
+            "lukasaichberger"
+          ]
+        }
+      },
+      "title": "The Last Dance Takes the Floor",
+      "xAttachments": []
+    },
+    {
+      "id": "2026-10-29-yktori-avatar-v1",
+      "title": "yktori — Silver Comet",
+      "generationRecord": "2026-10-29-yktori-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-yktori-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509628177948742",
+          "postedAt": "2026-10-29T23:36:21.120000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "28a4cb017947242340e78b228aa19714a3fddb8ae8d8d039e04585200ed18534",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509628177948742"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16760837"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-mtg-avatar-v1",
+      "title": "mtg / Michael — Two-board Rook",
+      "generationRecord": "2026-10-29-mtg-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-mtg-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509693357559970",
+          "postedAt": "2026-10-29T23:36:36.660000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "a1acb864dc714f0055f39d3a35da623b45ce293adca984d4e11b6850d3c2c327",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509693357559970"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16153655"
+          ],
+          "arc-2": [
+            "16153654"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-grigoriy-avatar-v1",
+      "title": "Grigoriy Zatravkin & co — quartet",
+      "generationRecord": "2026-10-29-grigoriy-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509757433815111",
+          "postedAt": "2026-10-29T23:36:51.937000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "1b97b0c45689a29dabeb88b27a452285787022c4f4de106e714a989cc8f0e242",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509757433815111"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16490178"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-japanese-ensemble-avatar-v1",
+      "title": "復活の混テキスト — eight-avatar ensemble",
+      "generationRecord": "2026-10-29-japanese-ensemble-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509819459182693",
+          "postedAt": "2026-10-29T23:37:06.725000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "4d530ec92dcb3450fd4e6f07da793e1f259459c9b65e3a744975c6f5eac8298b",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509819459182693"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16569113"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-artificial-agency-avatar-v1",
+      "title": "Artificial Agency Lab — Richard and Côme",
+      "generationRecord": "2026-10-29-artificial-agency-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509882268885025",
+          "postedAt": "2026-10-29T23:37:21.700000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "731711ac5ea9622ea829430efa7dc1ecfb7cbda448480b7aa3a34d99202bd2c1",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509882268885025"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16132261"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-majkel1337-avatar-v1",
+      "title": "Majkel1337 — copper fox",
+      "generationRecord": "2026-10-29-majkel1337-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565509941836521523",
+          "postedAt": "2026-10-29T23:37:35.902000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "59a828c0e3d1d840698680779dc4e07ba9e7a874f7dd8325b806ce70fca1ac6d",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565509941836521523"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "16958599"
+          ],
+          "arc-2": [
+            "16373916"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-aquaursa-avatar-v1",
+      "title": "AquaUrsa Research — aqua polar bear",
+      "generationRecord": "2026-10-29-aquaursa-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-aquaursa-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565510014309892201",
+          "postedAt": "2026-10-29T23:37:53.181000+00:00",
+          "postedAtSource": "Discord snowflake message ID",
+          "attachmentSha256": "056bef0962c5bc0d39f3a73590b0214cc9a32fbb807eed40043c7ffb167ba57f",
+          "purpose": "Boss-authorized contender cheat sheet with exact selected avatar; feature held and X on hold. Sent by root; archive task did not send.",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1565510014309892201"
+        }
+      ],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-3": [
+            "15488763"
+          ],
+          "arc-2": [
+            "15488773"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-nvbanana-avatar-v1",
+      "title": "nvbanana — ARC2 duo artwork",
+      "generationRecord": "2026-10-29-nvbanana-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "episode": "Reusable curated team/avatar reference, saved for later editor-selected stories.",
+      "selectionNote": "Art archive only. No publication slot, article, automatic reusable scene or X distribution is created. Keep all original fiction/owner-avatar distinctions.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-2": [
+            "15486939"
+          ]
+        },
+        "note": "Match exact fresh competition roster to the saved cast; team membership and account ownership are not inferred from the artwork."
+      }
+    },
+    {
+      "id": "2026-10-29-domdolus-tolus-avatar-v1",
+      "title": "DomdolusTolus — Darren’s two-dog crew",
+      "generationRecord": "2026-10-29-domdolus-tolus-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-native.png",
+      "status": "character-reference",
+      "articleUses": [
+        "2026-10-30-friday-special-darren-domdolus-tolus"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565512874628096143",
+          "postedAt": "2026-10-29T23:49:16.811181+00:00",
+          "attachmentSha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
+          "purpose": "Boss-requested contender cheat sheet for Darren Amadeus Martin and all five Domdolus Tolus accounts; full feature held and X held."
+        },
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838137564078200",
+          "postedAt": "2026-10-30T21:21:45.208557Z",
+          "attachmentSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+          "articleId": "2026-10-30-friday-special-darren-domdolus-tolus",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "episode": "Five roster accounts represented by two central dogs plus four humanoids.",
+      "selectionNote": "Keep Darren’s two dogs together as one account; Alwin/Yassir own faces and Billy/Tri fictional opaque helmets. Art archive only; no article or post created by registration.",
+      "supportingCastConditions": {
+        "teamIds": {
+          "arc-2": [
+            "16559402"
+          ],
+          "arc-3": [
+            "16534961"
+          ]
+        },
+        "requiredRosterHandles": [
+          "darrenamadeusmartin",
+          "rinnnntt",
+          "alwintheodoric",
+          "yassirramadhan",
+          "billyanggara"
+        ],
+        "accountCount": 5,
+        "figureCount": 6,
+        "darrenDogCount": 2,
+        "note": "Verify the exact roster in the selected contest. Dogs together represent Darren, not two people; masked Billy/Tri are fiction."
+      }
+    },
+    {
+      "articleUses": [
+        "2026-10-29-breaking-cat-takes-third"
+      ],
+      "artworkId": "2026-10-29-cat-takes-third-v1",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565520175753863267",
+          "postedAt": "2026-10-30T00:18:17.741397+00:00",
+          "attachmentFilename": "2026-10-29-breaking-cat-takes-third.png",
+          "attachmentSha256": "63815037e6503fba6b89861348716c40a53af848a89c4fdf8029608d495b4790",
+          "purpose": "Finished score-bound breaking-news artwork and intended permanent story link; direct editor commission."
+        }
+      ],
+      "generationRecord": "2026-10-29-cat-takes-third-v1-base",
+      "id": "2026-10-29-cat-takes-third-v1",
+      "selectionNote": "Direct head-editor commission after the Late edition. A new outdoor episode: xz’s giant cat overtakes the full seven-character Turducken crew and exactly two Yorkies. Character inputs and final composition inspected; fresh 7:52 PM EDT public scores, cat third at 58.59, Turducken fourth at 56.02. Existing published editions and X posts remain preserved.",
+      "src": "/news-images/2026-10-29-cat-takes-third-v1-base.webp",
+      "status": "published-with-commissioned-breaking-dispatch",
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredRosterHandles": {
+          "15487093": [
+            "xiaoz259"
+          ],
+          "15605182": [
+            "dzjiann",
+            "keithtyser",
+            "markbarney",
+            "mitubant",
+            "ngyzly",
+            "scizical",
+            "sonphamorg"
+          ]
+        }
+      },
+      "title": "The cat takes third",
+      "xAttachments": []
+    },
+    {
+      "id": "darren-individual-avatar-v1",
+      "generationRecord": "2026-10-29-darren-individual-avatar-v1-base",
+      "src": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Dedicated two-dog illustration for Darren’s individual collectible, commissioned during the Boss’s card review. Preserve native PNG, own source photo and full team art. No article or social send."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-danger-room-v1",
+      "generationRecord": "2026-10-29-arc-mutants-danger-room-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-danger-room-v1.png",
+      "title": "The Danger Grid",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-observatory-v1",
+      "generationRecord": "2026-10-29-arc-mutants-observatory-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-observatory-v1.png",
+      "title": "The Pattern Observatory",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-arc-mutants-rooftop-v1",
+      "generationRecord": "2026-10-29-arc-mutants-rooftop-v1",
+      "src": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+      "title": "Above the Academy",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss-commissioned additional ARC2 Mutants episode. Exactly Jack, Mark, Son and Ronen’s fictional helmet. Preserve original; no publication/social send or automatic reusable-scene approval."
+    },
+    {
+      "id": "2026-10-29-nt-mitubant-avatar-v1",
+      "generationRecord": "2026-10-29-nt-mitubant-avatar-v1",
+      "src": "/news-images/people/nt-mitubant-avatar-v1.webp",
+      "title": "NT — Turducken's banana-suit kitten",
+      "status": "superseded-incorrect-identity",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Wrong NT identity: banana kitten retired. Preserve archive only; use 2026-10-29-nt-mitubant-avatar-v2."
+    },
+    {
+      "id": "2026-10-29-nt-mitubant-avatar-v2",
+      "generationRecord": "2026-10-29-nt-mitubant-avatar-v2",
+      "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Corrected yellow-bird NT avatar from own profile screenshot; supersedes mistaken banana kitten."
+    },
+    {
+      "id": "2026-10-29-turducken-nt-corrected-v2",
+      "generationRecord": "2026-10-29-turducken-nt-corrected-v2",
+      "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Corrected NT yellow bird in seven-account ARC3 crew, used on T014. Old native retained; no article or social send."
+    },
+    {
+      "id": "2026-10-30-mistyotter-avatar-v1",
+      "generationRecord": "2026-10-30-mistyotter-avatar-v1",
+      "src": "/news-images/people/mistyotter-avatar-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "messageId": "1565772739707535560",
+          "destination": "channel:1550165647911034940",
+          "sharedAt": "2026-10-30T17:03:40.655725+00:00",
+          "imageSha256": "0886e4d248af2aa0a49446eecaa000590a90041fa82e67606c506578d7dcac93",
+          "purpose": "Finished P067 card preview for commissioned X announcement"
+        }
+      ],
+      "selectionNote": "Boss-commissioned Yegor / mistyotter_ai individual card and one X announcement; preserve original and own-post styling references."
+    },
+    {
+      "id": "2026-10-30-lukas-aichberger-hero-v1",
+      "generationRecord": "2026-10-30-lukas-aichberger-hero-v1",
+      "src": "/news-images/cards/2026/lukas-aichberger-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-fses91-hero-v1",
+      "generationRecord": "2026-10-30-fses91-hero-v1",
+      "src": "/news-images/cards/2026/fses91-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-mykyta-ielanskyi-hero-v1",
+      "generationRecord": "2026-10-30-mykyta-ielanskyi-hero-v1",
+      "src": "/news-images/cards/2026/mykyta-ielanskyi-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-keith-tyser-hero-v1",
+      "generationRecord": "2026-10-30-keith-tyser-hero-v1",
+      "src": "/news-images/cards/2026/keith-tyser-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-hero-v1",
+      "generationRecord": "2026-10-30-jeroen-cottaar-hero-v1",
+      "src": "/news-images/cards/2026/jeroen-cottaar-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-darragh-hanley-hero-v1",
+      "generationRecord": "2026-10-30-darragh-hanley-hero-v1",
+      "src": "/news-images/cards/2026/darragh-hanley-hero-v1.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected this batch: insufficient integrated facial cybernetics; reuse established artwork first. Kept as a draft, not selected for any card."
+    },
+    {
+      "id": "2026-10-30-punkcyber-retro-space-v2",
+      "generationRecord": "2026-10-30-punkcyber-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp",
+      "status": "saved-card-hero",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Retro-futuristic replacement from actual registered avatar; exact native and earlier originals preserved."
+    },
+    {
+      "id": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
+      "generationRecord": "2026-10-30-isaka-tsuyoshi-retro-space-v2",
+      "src": "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp",
+      "status": "saved-card-hero",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Retro-futuristic replacement from actual registered avatar; exact native and earlier originals preserved."
+    },
+    {
+      "id": "2026-10-30-lukas-aichberger-retro-space-v1",
+      "generationRecord": "2026-10-30-lukas-aichberger-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Adult pulp-comic conversion of established Lukas avatar, chestnut quiff, navy ARC-grid costume, amber hinged lens and cheek/ear receiver. Distinct horizontal dual-fan GPU jukebox harness and expressive dancer pose. No scarf, anime treatment, copied teammate face or photographic collage."
+    },
+    {
+      "id": "2026-10-30-dz-retro-space-v1",
+      "generationRecord": "2026-10-30-dz-retro-space-v1",
+      "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Adult blonde retro space heroine, russet eyes, pink plush rabbit retained, shell-pink/ivory gear, crosswise GPU and articulated round CRT console. Crown-mounted tube sensors and cheek optic physically integrated. No scarf, chibi or anime face. Pink rabbit remains a toy motif; no Kaggle account mapping inferred."
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-cyber-face-v2",
+      "generationRecord": "2026-10-30-jeroen-cottaar-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-cyber-face-v2.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected literal photographic-face treatment. Preserve original; no longer selected."
+    },
+    {
+      "id": "2026-10-30-mykyta-ielanskyi-cyber-face-v2",
+      "generationRecord": "2026-10-30-mykyta-ielanskyi-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected literal photographic-face treatment. Preserve original; no longer selected."
+    },
+    {
+      "id": "2026-10-30-fses91-cyber-face-v2",
+      "generationRecord": "2026-10-30-fses91-cyber-face-v2",
+      "src": "/news-images/cards/2026/2026-10-30-fses91-cyber-face-v2.webp",
+      "status": "editor-rejected-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss rejected literal photographic-face treatment. Preserve original; no longer selected."
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-mastermind-v3",
+      "generationRecord": "2026-10-30-jeroen-cottaar-mastermind-v3",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-mastermind-v3.webp",
+      "status": "superseded-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Intermediate glamour redesign. Editor liked the wry face and mastermind pose, then required distinct crimson accents and the actual Tufa Citadel rather than the academy. Superseded by tufa-citadel-v4; preserve as an intermediate original."
+    },
+    {
+      "id": "2026-10-30-mykyta-ielanskyi-rhythm-inventor-v3",
+      "generationRecord": "2026-10-30-mykyta-ielanskyi-rhythm-inventor-v3",
+      "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-rhythm-inventor-v3.webp",
+      "status": "editor-review",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Glamour concept with idealized swept copper hair, sculpted ginger beard, brighter eyes and distinctive kinetic compute gauntlets. Inspired by own portrait and established Last Dance costume. Preserved for editor review; no new generation or card promotion authorized by this archive action."
+    },
+    {
+      "id": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+      "generationRecord": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+      "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+      "status": "saved-character-reference",
+      "articleUses": [
+        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+        "2026-11-01-morning-arc-2"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2116295269797052723",
+          "postedAt": "2026-10-30T22:25:36.786635Z",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "imageSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "outbox": "2026-10-30-friday-night-special.json"
+        }
+      ],
+      "selectionNote": "Retains the editor-liked wry glamorous face and seated mastermind pose. Now inside the established Tufa Citadel: monumental GPU racks, yellow gantries, copper/turquoise cooling pipes, black spiders with white eyes, white spider pictogram on black banner. Charcoal/ivory clothing has restrained crimson lapels and cuffs; navy/gold academy brocade and university setting removed. No villain coding, text or card border.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838072241725610",
+          "postedAt": "2026-10-30T21:21:30.034663Z",
+          "attachmentSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "editorialCorrections": [
+        {
+          "articleId": "2026-11-01-morning-arc-2",
+          "artworkId": "2026-11-01-morning-arc-2-8670a34b55-footer",
+          "reason": "Boss requested actual existing artwork in the Early edition; no claim of new native generation."
+        }
+      ]
+    },
+    {
+      "id": "2026-10-30-jean-francois-puget-nvidia-mastermind-v1",
+      "generationRecord": "2026-10-30-jean-francois-puget-nvidia-mastermind-v1",
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v1.webp",
+      "status": "superseded-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "First NVIDIA mastermind composition retained as superseded draft. Editor required a clearly older sixties mentor with gray beard; use v2 for the current portrait."
+    },
+    {
+      "id": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+      "generationRecord": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+      "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Illustrated mature NVIDIA tactician in emerald GPU citadel with crimson harness accents, distinctive field-rack and three floating compute carriages over a map table. Preserves warm broad smile as an idealized painted character rather than card typography. No stats or borders baked into art."
+    },
+    {
+      "id": "2026-10-30-jean-francois-puget-nvidia-mastermind-v2",
+      "generationRecord": "2026-10-30-jean-francois-puget-nvidia-mastermind-v2",
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2.webp",
+      "status": "superseded-draft",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Focused age correction: visibly senior mentor, fuller silver/gray beard, silver temples and mature facial lines, retaining illustrated glamour, wry expression, command pose, optics, crimson accents and emerald NVIDIA GPU Citadel. No baked-in card graphics or typography."
+    },
+    {
+      "id": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+      "generationRecord": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Corrected toward own verified face and original illustrated card: fuller broad face/build, wire spectacles, swept-back long hair in a clearly visible ponytail, mature salt-and-pepper beard, open cyber helmet with CPMP engraved on copper brow plate. Both eyes and most face remain visible. NVIDIA Citadel, mastermind pose, crimson accents and GPU model retained. The stable CPMP engraving is the editor's explicit exception to the otherwise text-free artwork rule."
+    },
+    {
+      "id": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+      "generationRecord": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+      "src": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Preserves Ivan's established clean-shaven adult character and signature cyan crystal. Distinct open optical helmet, silver/charcoal coat with crimson lining, large ARC prism between gloved hands and low GPU horseshoe harness, in emerald NVIDIA Citadel. Coherent illustration with no labels or card frame."
+    },
+    {
+      "id": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+      "generationRecord": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+      "src": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp",
+      "status": "saved-character-reference",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Preserves Gal's own illustrated swept hair, narrow moustache/stubble, long face and raised sunglasses motifs. Crimson flight jacket, open finned cyber headset and hands on GPU hover-skimmer controls distinguish him from other NVIDIA characters. Painted adult face, giant cooling-engine foreground, emerald citadel and no labels or card frame."
+    },
+    {
+      "id": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover",
+      "title": "Friday Night Special: Jeroen Cottaar, the Grandmaster in the Tufa Citadel — original illustration archive copy",
+      "generationRecord": "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover",
+      "src": "/news-images/2026-10-30-friday-special-jeroen-cottaar-tufa-citadel-cover.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2116295269797052723",
+          "postedAt": "2026-10-30T22:25:36.786635Z",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "imageSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "outbox": "2026-10-30-friday-night-special.json"
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838072241725610",
+          "postedAt": "2026-10-30T21:21:30.034663Z",
+          "attachmentSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
+          "articleId": "2026-10-30-evening-arc-2-preview",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "selectionNote": "Byte-identical archive copy of 2026-10-30-jeroen-cottaar-tufa-citadel-v4; both records track the same first-published scene."
+    },
+    {
+      "id": "2026-10-30-friday-special-darren-domdolus-tolus-cover",
+      "title": "Friday Night Special: Darren Amadeus Martin and Domdolus Tolus—fifth-place gold, now fourth and hunting — original illustration archive copy",
+      "generationRecord": "2026-10-30-friday-special-darren-domdolus-tolus-cover",
+      "src": "/news-images/2026-10-30-friday-special-darren-domdolus-tolus-cover.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-30-friday-special-darren-domdolus-tolus"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565838137564078200",
+          "postedAt": "2026-10-30T21:21:45.208557Z",
+          "attachmentSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+          "articleId": "2026-10-30-friday-special-darren-domdolus-tolus",
+          "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "selectionNote": "Byte-identical archive copy of 2026-10-29-domdolus-tolus-avatar-v1-base; both records track the same first-published scene."
+    },
+    {
+      "id": "2026-10-30-deadline-scoring-hall",
+      "generationRecord": "2026-10-30-deadline-scoring-hall",
+      "src": "/news-images/2026-10-30-deadline-scoring-hall.png",
+      "title": "Turducken at the Scoring Hall",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-dispatch",
+      "articleUses": [
+        "2026-10-30-special-arc-deadline-no-extension"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565924667863203961",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565924667863203961",
+          "postedAt": "2026-10-31T03:05:34.671000+00:00",
+          "attachmentSha256": "e769075eafc5cb0562106eda4cfd20195fd7f7693cd61878a34c7cee922a4898",
+          "purpose": "Special edition image and story link delivered to Discord."
+        }
+      ],
+      "selectionNote": "Head-editor commissioned illustration for the deadline announcement; corrected Turducken crew and two Yorkies reviewed."
+    },
+    {
+      "id": "2026-10-31-saturday-nvarc3-juggernaut",
+      "title": "NVARC3 juggernaut with Chen’s rabbits",
+      "generationRecord": "2026-10-31-saturday-nvarc3-juggernaut",
+      "src": "/news-images/2026-10-31-saturday-nvarc3-juggernaut.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-nvarc3-juggernaut",
+        "2026-11-01-morning-arc-3"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney.",
+      "editorialCorrections": [
+        {
+          "articleId": "2026-11-01-morning-arc-3",
+          "artworkId": "2026-11-01-morning-arc-3-a5db53de5f-footer",
+          "reason": "Boss requested actual existing artwork in the Early edition; no claim of new native generation."
+        }
+      ]
+    },
+    {
+      "id": "2026-10-31-saturday-chan-vam-top-ten",
+      "title": "Chan Kha Vu ARC Prize card",
+      "generationRecord": "2026-10-31-saturday-chan-vam-top-ten",
+      "src": "/news-images/2026-10-31-saturday-chan-vam-top-ten.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-chan-vam-top-ten"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
+    },
+    {
+      "id": "2026-10-31-saturday-nvbanana-grandmasters",
+      "title": "NV Banana medal hall",
+      "generationRecord": "2026-10-31-saturday-nvbanana-grandmasters",
+      "src": "/news-images/2026-10-31-saturday-nvbanana-grandmasters.webp",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-10-31-saturday-nvbanana-grandmasters"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
+    },
+    {
+      "id": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1",
+      "generationRecord": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1",
+      "src": "/news-images/2026-11-01-arc-mutants-lab-that-wouldnt-sleep-v1.png",
+      "title": "The lab that wouldn’t sleep",
+      "status": "published-feature-cover",
+      "articleUses": [
+        "2026-11-01-arc-mutants-lab-that-wouldnt-sleep"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2116770305729257482",
+          "postedAt": "2026-11-01T05:55:04.162253+00:00",
+          "articleId": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep",
+          "imageSha256": "517ba58a5cbfb05037b6c12d006626b1df8c559b11fa58c4b982740438f93edb",
+          "outbox": "2026-11-01-arc-mutants-lab-x.json"
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1566328190618701834",
+          "postedAt": "2026-11-01T05:49:04.447917+00:00",
+          "attachmentSha256": "517ba58a5cbfb05037b6c12d006626b1df8c559b11fa58c4b982740438f93edb",
+          "purpose": "Editor-commissioned overnight mini-special picture delivery."
+        }
+      ],
+      "selectionNote": "New native four-character scene from Boss-supplied academy image and actual individual references; Jack Cole archive sidebar commissioned separately in same mini-special."
     }
   ],
   "existingXPosts": [

@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T11:51:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Rvldfr climbs from 910th to 75th on ARC-3",
+  "id": "2026-10-29-0801-arc-3-rvldfr-climbs-to-seventy-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T12:01:51Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Rvldfr gained 4.72 points to reach 34.47, moving from 910th to 75th on the public board."
+    }
+  ],
+  "since": "2026-10-28T11:48:03Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T12:01:01Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15918224"
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "personId": "darren-amadeus-martin",
+  "handle": "darrenamadeusmartin",
+  "name": "Darren Amadeus Martin",
+  "checkedAt": "2026-10-30T13:12:41Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude desktop app's built-in browser on 2026-10-30, one visit each with a 5 second pause between them; no blocks, captchas or rate limits appeared. Medal counts and per-row medals were read from the page's own medal icons (gold/silver medal alt text), displayed accounts from the row avatar titles, the join date from the Joined tooltip, and the profile image from the visible profile-header background image. Checked by Claude Sonnet 5.5. The older claims in the earlier record (write-up authorship, the Domdolus Tolus team name) were not re-read here and are listed under unverified.",
+  "sources": [
+    "https://www.kaggle.com/darrenamadeusmartin",
+    "https://www.kaggle.com/darrenamadeusmartin/competitions"
+  ],
+  "profile": {
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 1,
+      "silver": 1
+    },
+    "competitionRank": 889,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 660,
+    "joinedTooltip": "Tue Apr 19 2022 10:20:58 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2022-04",
+    "bioPresent": true,
+    "bio": "Student at Waseda University; Nerima City, Tokyo, Japan; pronouns he/him",
+    "tabCounts": {
+      "competitions": 16,
+      "datasets": 2,
+      "code": 3,
+      "discussion": 102,
+      "writeups": 1,
+      "followers": 10
+    },
+    "featuredWriteup": "Solution Writeup: Jack of Trades, Loser of Cryptarithm"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 14,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "activeDisplayedHandles": [
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "alwintheodoric",
+      "yassirramadhan",
+      "billyanggara"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "NeurIPS 2025 - Google Code Golf Championship",
+      "CSIRO - Image2Biomass Prediction",
+      "Santa 2025 - Christmas Tree Packing Challenge",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "ROGII - Wellbore Geology Prediction",
+      "BirdCLEF+ 2026",
+      "Kaggriculture",
+      "Fake or Real: The Impostor Hunt in Texts",
+      "MALLORN Astronomical Classification Challenge",
+      "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+      "Data Analytics Competition FIND IT 2022",
+      "SPR 2026 Mammography Report Classification",
+      "Hedge fund - Time series forecasting"
+    ],
+    "scopeNote": "All fourteen completed rows are listed in completedResults. Kaggle's profile list shows no team names, only the avatars of the accounts on each entry, so teamName is null throughout. The two active ARC Prize rows show no standing on this page; no ARC rank is claimed."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 5,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": ["darrenamadeusmartin", "rinnnntt", "alwintheodoric", "yassirramadhan", "billyanggara"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null,
+      "teamResult": true
+    },
+    {
+      "competition": "NeurIPS 2025 - Google Code Golf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/google-code-golf-2025",
+      "rank": 18,
+      "teams": 1142,
+      "medal": "silver",
+      "displayedHandles": ["jiweiliu", "yiheng", "cdeotte", "darrenamadeusmartin", "tonylica"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null,
+      "teamResult": true
+    },
+    {
+      "competition": "CSIRO - Image2Biomass Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+      "rank": 875,
+      "teams": 3805,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin", "alwintheodoric"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null,
+      "teamResult": true
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "rank": 1715,
+      "teams": 3357,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1765,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 2490,
+      "teams": 6125,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 2505,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin", "alwintheodoric", "yassirramadhan"],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null,
+      "teamResult": true
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "rank": 4900,
+      "teams": 10148,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "exactCompletionDate": null,
+      "teamResult": false
+    },
+    {
+      "competition": "Fake or Real: The Impostor Hunt in Texts",
+      "competitionUrl": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
+      "rank": 1,
+      "teams": 992,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin", "alwintheodoric"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null,
+      "teamResult": true,
+      "note": "Listed as a Community competition; the row shows no medal icon."
+    },
+    {
+      "competition": "MALLORN Astronomical Classification Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
+      "rank": 23,
+      "teams": 893,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false,
+      "note": "Listed as a Community competition; the row shows no medal icon."
+    },
+    {
+      "competition": "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
+      "rank": 23,
+      "teams": 290,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin", "alwintheodoric"],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null,
+      "teamResult": true,
+      "note": "Listed as a Community competition; the row shows no medal icon."
+    },
+    {
+      "competition": "Data Analytics Competition FIND IT 2022",
+      "competitionUrl": "https://www.kaggle.com/competitions/findit2022",
+      "rank": 57,
+      "teams": 72,
+      "medal": null,
+      "displayedHandles": ["del=4e658e96b1b8a9ae", "steven168", "darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null,
+      "teamResult": true,
+      "note": "Listed as a Community, invitation-only competition; the row shows no medal icon."
+    },
+    {
+      "competition": "SPR 2026 Mammography Report Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/spr-2026-mammography-report-classification",
+      "rank": 274,
+      "teams": 371,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false,
+      "note": "Listed as a Community competition; the row shows no medal icon."
+    },
+    {
+      "competition": "Hedge fund - Time series forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/ts-forecasting",
+      "rank": 278,
+      "teams": 982,
+      "medal": null,
+      "displayedHandles": ["darrenamadeusmartin"],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null,
+      "teamResult": false,
+      "note": "Listed as a Community competition; the row shows no medal icon."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/darren-amadeus-martin.webp",
+    "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/10290345-kg.jpg?t=2026-03-17-04-10-40",
+    "width": 320,
+    "height": 320,
+    "originalWidth": 400,
+    "originalHeight": 400,
+    "note": "Same picture as the custom profile image currently shown in his own profile header (not Kaggle's default avatar, not a group image): a photo of two dogs, a cream retriever-type dog asleep and a husky-type dog lying beside it. It is the picture he chose for his profile, an animal photo rather than a face, so a card should present it as his Kaggle profile picture. The saved 320 pixel file matches the live 400 pixel original by visual comparison; the file was left unchanged and no v2 was written."
+  },
+  "facts": [
+    {
+      "text": "Darren Amadeus Martin is a Kaggle Competitions Expert, with one gold and one silver competition medal shown on his public profile.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+      "sourceTitle": "Darren Amadeus Martin — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T13:12:41Z"
+    },
+    {
+      "text": "Kaggle lists his completed NVIDIA Nemotron Model Reasoning Challenge entry fifth of 4,185 teams with a gold medal; the entry shows five accounts, so it is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+      "sourceTitle": "Darren Amadeus Martin — completed NVIDIA Nemotron result on Kaggle",
+      "checkedAt": "2026-10-30T13:12:41Z"
+    },
+    {
+      "text": "Kaggle lists his completed NeurIPS 2025 - Google Code Golf Championship entry 18th of 1,142 teams with a silver medal; the entry shows five accounts, so it is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+      "sourceTitle": "Darren Amadeus Martin — completed Google Code Golf Championship result on Kaggle",
+      "checkedAt": "2026-10-30T13:12:41Z"
+    },
+    {
+      "text": "His Kaggle competitions page lists him in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each alongside the same four other accounts; no standing is shown there.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+      "sourceTitle": "Darren Amadeus Martin — active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T13:12:41Z"
+    },
+    {
+      "text": "His own Kaggle profile says he is a student at Waseda University in Nerima City, Tokyo, and dates his account to April 2022.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+      "sourceTitle": "Darren Amadeus Martin — own Kaggle profile biography and join date",
+      "checkedAt": "2026-10-30T13:12:41Z"
+    }
+  ],
+  "teamNotes": [
+    "Both medals are team results: the gold medal is on a five-account Nemotron entry and the silver medal on a five-account Code Golf entry. Neither should be credited to him as an individual honour.",
+    "Kaggle's profile list does not show team names. The name Domdolus Tolus, carried in the people record for the Nemotron write-up and the ARC rosters, was not visible on either page read here and is not asserted in this file.",
+    "The four other accounts beside him on the Nemotron entry and on both active ARC Prize 2026 entries are rinnnntt, alwintheodoric, yassirramadhan and billyanggara. Code Golf shows jiweiliu, yiheng, cdeotte and tonylica beside him."
+  ],
+  "unverified": [
+    "That the Nemotron gold-medal entry is the team called Domdolus Tolus, and that he is listed as an author of its fifth-place write-up: carried over from the people record, not re-read on the two pages loaded now.",
+    "That the ARC-AGI-2 and ARC-AGI-3 entries are under the team name Domdolus Tolus, and the ARC-2 and ARC-3 roster observations in the people record: from the public leaderboard board feed, not visible on Kaggle's profile list.",
+    "Any current ARC Prize 2026 leaderboard position: not shown on his profile and not read here; any public ARC standing must be labelled provisional.",
+    "Exact completion dates for every completed competition: Kaggle shows only relative labels such as '4 months ago'.",
+    "Which of the displayed teammates are the same people as accounts elsewhere in the people record: handles only, no identity claims made."
+  ],
+  "verified": true
+}

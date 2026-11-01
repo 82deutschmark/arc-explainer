@@ -1,0 +1,183 @@
+{
+  "personId": "pompom555",
+  "handle": "pompom555",
+  "name": "pomcho555",
+  "checkedAt": "2026-10-30T13:41:53Z",
+  "method": "Built-in browser (Claude app browser pane), October 30, 2026. Loaded only https://www.kaggle.com/pompom555 and https://www.kaggle.com/pompom555/competitions, five seconds apart, no refreshes; no block, captcha or rate limit appeared. Medal icons read from a screenshot of the completed-competition list and cross-checked against the page's medal labels. Profile picture URL read from the visible profile-picture element. No earlier draft evidence file existed, so nothing was carried over.",
+  "sources": [
+    "https://www.kaggle.com/pompom555",
+    "https://www.kaggle.com/pompom555/competitions"
+  ],
+  "profile": {
+    "displayName": "pomcho555",
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 2,
+      "bronze": 2
+    },
+    "competitionRank": 3673,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 3581,
+    "joinedTooltip": "Sat Apr 11 2020 01:52:26 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2020-04",
+    "occupationLine": "SRE MLOps",
+    "bioPresent": true,
+    "bio": "Interest MLOps/SRE/HPC/Distributed System/eBPF",
+    "linkedAccounts": [
+      "github: pomcho555",
+      "x: @k8s_pomcho",
+      "website: https://pomcho555.github.io/"
+    ],
+    "activityNote": "Kaggle's activity panel reads 3 competitions solo, 6 competitions in a team, 0 hosted."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 7,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "AI Agent Security - Multi-Step Tool Attacks",
+      "University of Liverpool - Ion Switching",
+      "LLM Prompt Recovery",
+      "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "Rainforest Connection Species Audio Detection",
+      "Jigsaw - Agile Community Rules Classification",
+      "RSNA Knee Abnormality Detection"
+    ],
+    "scopeNote": "The profile shows nine competitions in all (two active, seven completed). The list is sorted by Best Result. Only what is displayed is recorded here."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 79,
+      "teams": 4186,
+      "medal": "silver",
+      "displayedHandles": ["pompom555", "argon1215", "tanakaai24", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "University of Liverpool - Ion Switching",
+      "competitionUrl": "https://www.kaggle.com/competitions/liverpool-ion-switching",
+      "rank": 110,
+      "teams": 2618,
+      "medal": "silver",
+      "displayedHandles": ["shinnyayoshida", "akihirokkkkk", "soji0804", "pompom555"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM Prompt Recovery",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "rank": 193,
+      "teams": 2175,
+      "medal": "bronze",
+      "displayedHandles": ["pompom555"],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Rainforest Connection Species Audio Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rfcx-species-audio-detection",
+      "rank": 183,
+      "teams": 1143,
+      "medal": null,
+      "displayedHandles": ["shinnyayoshida", "akihirokkkkk", "soji0804", "pompom555"],
+      "teamName": null,
+      "relativeDateLabel": "6 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "rank": 532,
+      "teams": 6807,
+      "medal": "bronze",
+      "displayedHandles": ["ysakuragi", "pompom555", "yutori3"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw - Agile Community Rules Classification",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+      "rank": 749,
+      "teams": 2445,
+      "medal": null,
+      "displayedHandles": ["pompom555"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 1500,
+      "teams": 6299,
+      "medal": null,
+      "displayedHandles": ["pompom555"],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/pompom555.webp",
+    "sourceUrl": "https://www.kaggle.com/pompom555",
+    "note": "The saved 320 by 320 picture was compared by eye with the live own-profile picture (https://storage.googleapis.com/kaggle-avatars/images/4855941-kg.jpg, 400 by 400): same dark-blue and mid-blue whale-like swirl logo, same framing, just smaller. It is this account's own chosen profile picture, an illustrated logo rather than a photo of the person, and it is neither a group image nor a default avatar. No replacement was needed, so no new file was saved."
+  },
+  "facts": [
+    {
+      "text": "pomcho555 is a Kaggle Competitions Expert with two silver and two bronze competition medals shown on the public profile.",
+      "sourceUrl": "https://www.kaggle.com/pompom555",
+      "sourceTitle": "pomcho555 — public Kaggle profile, tier and medals",
+      "checkedAt": "2026-10-30T13:41:53Z"
+    },
+    {
+      "text": "Kaggle lists the completed AI Agent Security - Multi-Step Tool Attacks entry 79th of 4,186 teams with a silver medal. The entry shows four accounts: pompom555, argon1215, tanakaai24 and konbu17.",
+      "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+      "sourceTitle": "pomcho555 — completed AI Agent Security result on Kaggle",
+      "checkedAt": "2026-10-30T13:41:53Z"
+    },
+    {
+      "text": "Kaggle lists the completed University of Liverpool - Ion Switching entry 110th of 2,618 teams with a silver medal, shown with the accounts shinnyayoshida, akihirokkkkk, soji0804 and pompom555.",
+      "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+      "sourceTitle": "pomcho555 — completed Ion Switching result on Kaggle",
+      "checkedAt": "2026-10-30T13:41:53Z"
+    },
+    {
+      "text": "Kaggle lists a bronze medal for LLM Prompt Recovery, 193rd of 2,175 teams, shown with only the pompom555 account, and a bronze for the Pokémon Company PTCG AI Battle Challenge Simulation, 532nd of 6,807 teams, shown with the accounts ysakuragi, pompom555 and yutori3.",
+      "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+      "sourceTitle": "pomcho555 — completed bronze-medal results on Kaggle",
+      "checkedAt": "2026-10-30T13:41:53Z"
+    },
+    {
+      "text": "pomcho555's Kaggle profile lists both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, as active, each showing three days to go when checked on October 30, 2026. No final result exists yet, and any public standing is provisional.",
+      "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+      "sourceTitle": "pomcho555 — active ARC Prize 2026 competitions on Kaggle",
+      "checkedAt": "2026-10-30T13:41:53Z"
+    }
+  ],
+  "teamNotes": [
+    "Kaggle's competition list never prints a team name, only the member account labels on each entry, so every teamName above is null rather than guessed.",
+    "The existing people record places pompom555 on the team named 復活の混テキスト in both ARC-2 and ARC-3, taken from the public roster observation at arc.markbarney.net. That name was not visible on the Kaggle pages read here, so it is not repeated as a Kaggle fact.",
+    "Kaggle's active-competition cards show these account labels. ARC-AGI-3: yuto0712, ttyn4519, pompom555, isakatsuyoshi, tanakaai24, refv00, tk256ailab, konbu17. ARC-AGI-2: pompom555, isakatsuyoshi, tanakaai24, refv00, konbu17. These are avatar labels on the page, not a verified roster.",
+    "Medals on shared entries (AI Agent Security, Ion Switching, Pokémon PTCG) belong to the listed accounts as a team and must not be written as pomcho555's individual honour. Only LLM Prompt Recovery shows a single account.",
+    "The AI Agent Security result matches the entry already recorded on konbu17's evidence file (79th of 4,186, silver, same four accounts)."
+  ],
+  "unverified": [
+    "The exact completion dates of each competition; Kaggle shows only relative labels such as 2 months ago.",
+    "Team names for any completed or active entry; Kaggle's list does not print them.",
+    "Whether the ARC-AGI-3 and ARC-AGI-2 account labels on the active cards match the arc.markbarney.net roster; that roster was not re-read here.",
+    "Any current ARC leaderboard standing; none was read, and public standings are provisional until the private result.",
+    "The meaning of the X link @k8s_pomcho and the GitHub link; they are shown on the profile but their pages were not opened."
+  ],
+  "verified": true
+}

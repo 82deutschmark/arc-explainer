@@ -1,0 +1,399 @@
+{
+  "personId": "ivan-sorokin",
+  "handle": "sorokin",
+  "name": "Ivan Sorokin",
+  "checkedAt": "2026-10-30T11:15:23Z",
+  "method": "Built-in browser (Claude desktop app), read-only, 2026-10-30. Loaded only the public profile page and the public Competitions page; read the page text, the medal icons in the page structure and in two screenshots of the completed list, the join-date tooltip, and the profile picture address. Every earlier draft claim was discarded and rebuilt from these live pages. No other sites were visited.",
+  "sources": [
+    "https://www.kaggle.com/sorokin",
+    "https://www.kaggle.com/sorokin/competitions"
+  ],
+  "profile": {
+    "displayName": "ivan",
+    "competitionTier": "Competitions Grandmaster",
+    "medals": {
+      "gold": 6,
+      "silver": 4,
+      "bronze": 1
+    },
+    "competitionRank": 104,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 25,
+    "joinedLabel": "Joined 10 years ago",
+    "joinedTooltip": "Mon Jan 11 2016 18:46:28 GMT-0500 (Eastern Standard Time)",
+    "joinedMonth": "2016-01",
+    "organization": "NVIDIA",
+    "bioPresent": false,
+    "activity": "13 competitions solo, 8 competitions in a team, 0 hosted",
+    "tabCounts": {
+      "competitions": 21,
+      "datasets": 25,
+      "models": 13,
+      "code": 45,
+      "discussion": 100,
+      "writeups": 6,
+      "followers": 287
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 20,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "activeNote": "Shown with 4 days to go; the entry displays seven accounts: titericz, cpmpml, darraghdog, sorokin, eladsarafian, galkaplun, yeyinzhu.",
+    "scopeNote": "Medal icons were read for all twenty completed rows and add up exactly to the profile totals (6 gold, 4 silver, 1 bronze). The page shows no team names and no exact finish dates; displayedHandles are the account pictures shown on each row and may not be the complete team."
+  },
+  "completedResults": [
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 1,
+      "teams": 2212,
+      "medal": "gold",
+      "displayedHandles": [
+        "darraghdog",
+        "shtoshni",
+        "sorokin",
+        "benediktschifferer",
+        "christofhenkel",
+        "igitman",
+        "ivainn"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 1,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": [
+        "cpmpml",
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Kaggle - LLM Science Exam",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
+      "rank": 2,
+      "teams": 2664,
+      "medal": "gold",
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Allen AI Science Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/the-allen-ai-science-challenge",
+      "rank": 8,
+      "teams": 170,
+      "medal": "gold",
+      "displayedHandles": [
+        "maksimkretov",
+        "mikhail123",
+        "seleznev",
+        "entodi",
+        "nasteyi",
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured",
+      "relativeDateLabel": "11 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Quick, Draw! Doodle Recognition Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/quickdraw-doodle-recognition",
+      "rank": 9,
+      "teams": 1309,
+      "medal": "gold",
+      "displayedHandles": [
+        "nasteyi",
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured",
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Humpback Whale Identification",
+      "competitionUrl": "https://www.kaggle.com/competitions/humpback-whale-identification",
+      "rank": 13,
+      "teams": 2120,
+      "medal": "gold",
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured",
+      "relativeDateLabel": "8 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Freesound Audio Tagging 2019",
+      "competitionUrl": "https://www.kaggle.com/competitions/freesound-audio-tagging-2019",
+      "rank": 24,
+      "teams": 880,
+      "medal": "silver",
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Research · Code Competition",
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "TensorFlow Speech Recognition Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge",
+      "rank": 33,
+      "teams": 1313,
+      "medal": "silver",
+      "displayedHandles": [
+        "sorokin",
+        "hohlov",
+        "nscience"
+      ],
+      "teamName": null,
+      "kind": "Featured",
+      "relativeDateLabel": "9 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 61,
+      "teams": 1427,
+      "medal": "silver",
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jigsaw Rate Severity of Toxic Comments",
+      "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-toxic-severity-rating",
+      "rank": 97,
+      "teams": 2301,
+      "medal": "silver",
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM Prompt Recovery",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "rank": 111,
+      "teams": 2175,
+      "medal": "bronze",
+      "displayedHandles": [
+        "sorokin",
+        "tikutiku"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM 20 Questions",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+      "rank": 134,
+      "teams": 832,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Simulation Competition",
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stable Diffusion - Image to Prompts",
+      "competitionUrl": "https://www.kaggle.com/competitions/stable-diffusion-image-to-prompts",
+      "rank": 158,
+      "teams": 1231,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Learning Agency Lab - PII Data Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+      "rank": 775,
+      "teams": 2048,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 1",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "rank": 1005,
+      "teams": 1161,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Deepfake Detection Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
+      "rank": 1260,
+      "teams": 2265,
+      "medal": null,
+      "displayedHandles": [
+        "nasteyi",
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Feedback Prize - Evaluating Student Writing",
+      "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-2021",
+      "rank": 1295,
+      "teams": 2058,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "5 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LANL Earthquake Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/LANL-Earthquake-Prediction",
+      "rank": 1481,
+      "teams": 4516,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Research",
+      "relativeDateLabel": "7 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1651,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM - Detect AI Generated Text",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+      "rank": 2522,
+      "teams": 4358,
+      "medal": null,
+      "displayedHandles": [
+        "sorokin"
+      ],
+      "teamName": null,
+      "kind": "Featured · Code Competition",
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "replaced",
+    "src": "/news-images/people/ivan-sorokin-v2.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/502311-kg.png",
+    "profileUrl": "https://www.kaggle.com/sorokin",
+    "width": 400,
+    "height": 400,
+    "sourceSha256": "a6b1a383158460334260003bfe99c03be05cce03b49b9727c176eff45e0feb9a",
+    "note": "The current card picture (ivan-sorokin.webp) is a stylised crop of his Hall of Fame illustration with a card-border fragment, not his own photo, so it is replaced. The saved v2 file was compared with the picture downloaded live today from his own Kaggle profile (the same picture shown large on both pages) and matches it, differing only by webp compression. It is one man alone on a beach, in glasses and a dark shirt, not a group image or default avatar. Nothing was overwritten."
+  },
+  "facts": [
+    {
+      "text": "Kaggle lists Ivan Sorokin (account sorokin, shown as ivan) as a Competitions Grandmaster with six gold, four silver and one bronze medal, ranked 104th of 225,021, with a best-ever rank of 25th; the profile names NVIDIA as his organization.",
+      "sourceUrl": "https://www.kaggle.com/sorokin",
+      "sourceTitle": "ivan | Kaggle",
+      "checkedAt": "2026-10-30T11:15:23Z"
+    },
+    {
+      "text": "His Kaggle profile dates the account to January 2016.",
+      "sourceUrl": "https://www.kaggle.com/sorokin",
+      "sourceTitle": "ivan | Kaggle",
+      "checkedAt": "2026-10-30T11:15:23Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2025 as a completed entry placed first of 1,455 teams with a gold medal; the entry displays two accounts, cpmpml and sorokin, so it is a team result and not his alone.",
+      "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+      "sourceTitle": "ivan | Kaggle",
+      "checkedAt": "2026-10-30T11:15:23Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2024 as placed 61st of 1,427 teams with a silver medal, and he is entered in the active ARC Prize 2026 - ARC-AGI-3; public ARC-AGI-3 standings are provisional until the private close.",
+      "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+      "sourceTitle": "ivan | Kaggle",
+      "checkedAt": "2026-10-30T11:15:23Z"
+    },
+    {
+      "text": "Kaggle also lists gold-medal finishes at first of 2,212 teams in AI Mathematical Olympiad - Progress Prize 2 (an entry displaying seven accounts) and second of 2,664 teams in Kaggle - LLM Science Exam (an entry displaying only his account).",
+      "sourceUrl": "https://www.kaggle.com/sorokin/competitions",
+      "sourceTitle": "ivan | Kaggle",
+      "checkedAt": "2026-10-30T11:15:23Z"
+    }
+  ],
+  "teamNotes": "Team names are not shown on the profile or the Competitions list, so none are recorded. Teammates are known only as the account pictures displayed on each row: cpmpml on ARC Prize 2025; darraghdog, shtoshni, benediktschifferer, christofhenkel, igitman and ivainn on AI Mathematical Olympiad - Progress Prize 2; and seven accounts on the active ARC-AGI-3 entry. The repo's own roster record already holds his NVARC3 membership for ARC-AGI-3; that was not re-read from these two pages. A team medal is a team result and is not credited as his individual honour.",
+  "unverified": [
+    "Team name for every competition, including whether the 2025 winning entry was named NVARC (the record cites other sources for that; they were not opened in this pass).",
+    "The 24.03 leaderboard score and Prize Winner label from the earlier draft; the leaderboard page was not opened.",
+    "Whether the displayed account pictures on each row are the complete team.",
+    "Which individual competitions were solo or team beyond the profile totals of 13 solo and 8 team.",
+    "Exact finish dates; the list shows only relative labels.",
+    "Prize money.",
+    "Kaggle does not state on the pages read that the photograph is of Ivan Sorokin himself; it is the picture on his own account, which is the standard the portrait rule uses."
+  ],
+  "verified": true
+}

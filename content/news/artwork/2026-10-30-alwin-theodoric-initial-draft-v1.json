@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-alwin-theodoric-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "alwin-theodoric",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-alwin-theodoric-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-alwin-theodoric-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "831b11c9e9b13628db6e487f811ec2f6e4ec277ece8aafdcd6ef6b2ec34439e4",
+  "rawSha256": "831b11c9e9b13628db6e487f811ec2f6e4ec277ece8aafdcd6ef6b2ec34439e4",
+  "toolOutput": "exec-b0c8dc0f-470f-49d0-94af-df7fd6be2964.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve actual man's East Asian face, parted dark hair, clear thin-rim round spectacles, gentle smile. Beige and emerald cyber engineer armor with brass hardware, translucent green ARC grid at chest level and tiny multicolored square sleeve modules. Confident relaxed head-to-waist glamour portrait with warm light.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve actual man's East Asian face, parted dark hair, clear thin-rim round spectacles, gentle smile. Beige and emerald cyber engineer armor with brass hardware, translucent green ARC grid at chest level and tiny multicolored square sleeve modules. Confident relaxed head-to-waist glamour portrait with warm light.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/alwin-theodoric.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/alwin-theodoric.webp",
+      "sha256": "0439ed1fa1d06297dca285a905d511fddf3fc6fd87ab7ccc35ee4ee7d7c91fb2",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "2026-10-29-yktori-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:28:46.600461+00:00",
+  "toolOutput": "exec-5e2b8576-7ebf-415e-95f5-68a71bd72c89.png",
+  "rawSrc": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp",
+  "rawSha256": "be0ffb53d096b9bbaf92bd769eff0ba238356cc1fd29a1aca9ac11b820eec17f",
+  "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports avatar for the ARC Daily Digest's yktori feature. Create one polished square cinematic 3D comic illustration, full-body central single adult-proportioned compact humanoid contender, energetic athletic landing pose on a small floating square ARC puzzle-grid podium. This is an ORIGINAL fictional account mascot named the Silver Comet, not a real likeness and not an adaptation of the generic Kaggle goose. Entire head is a sleek mirrored silver helmet with a single orange horizontal visor; no skin or human facial features visible. Streamlined midnight-cobalt racing suit, silver boots, beautiful sharply defined saturated red blue yellow cyan green magenta orange square ARC-grid panels on jacket sleeves and chest; short pixel-square scarf trails behind like a comet. A silver sketching stylus at the belt subtly nods to the competitor's documented Drawing with LLMs result without claiming their ARC method. Striking clean silhouette, confident superstar entrance, premium animated-film materials, warm amber rim light, deep cobalt and dark slate blurred scoring-hall arena background, floating abstract colored square confetti, low camera. Keep whole character and boots inside the image, plenty of clean border space. One subject, no other people, no animal, no goose, no duck, no words, letters, numerals, rank, score, medal logos, brand marks or watermark. The character must be reusable and unmistakable in later scenes.",
+  "references": [],
+  "inputImages": [],
+  "review": "Inspected one adult-proportioned fictional Silver Comet with completely opaque mirrored helmet, orange visor, cobalt ARC jacket, grid scarf and both boots visible. No human likeness, default goose, letters, scores or medals.",
+  "purpose": "character-reference",
+  "subjectId": "yktori-team",
+  "registeredAt": "2026-10-29T23:45:32Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports avatar for the ARC Daily Digest's yktori feature. Create one polished square cinematic 3D comic illustration, full-body central single adult-proportioned compact humanoid contender, energetic athletic landing pose on a small floating square ARC puzzle-grid podium. This is an ORIGINAL fictional account mascot named the Silver Comet, not a real likeness and not an adaptation of the generic Kaggle goose. Entire head is a sleek mirrored silver helmet with a single orange horizontal visor; no skin or human facial features visible. Streamlined midnight-cobalt racing suit, silver boots, beautiful sharply defined saturated red blue yellow cyan green magenta orange square ARC-grid panels on jacket sleeves and chest; short pixel-square scarf trails behind like a comet. A silver sketching stylus at the belt subtly nods to the competitor's documented Drawing with LLMs result without claiming their ARC method. Striking clean silhouette, confident superstar entrance, premium animated-film materials, warm amber rim light, deep cobalt and dark slate blurred scoring-hall arena background, floating abstract colored square confetti, low camera. Keep whole character and boots inside the image, plenty of clean border space. One subject, no other people, no animal, no goose, no duck, no words, letters, numerals, rank, score, medal logos, brand marks or watermark. The character must be reusable and unmistakable in later scenes.",
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-yktori-avatar-v1-native.png",
+    "sha256": "28a4cb017947242340e78b228aa19714a3fddb8ae8d8d039e04585200ed18534",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-5e2b8576-7ebf-415e-95f5-68a71bd72c89.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [],
+  "identityNotes": [
+    "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+    "The generic Kaggle goose is not a personal identity. Preserve this as the newspaper’s fictional Silver Comet, not an owner-selected avatar."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-yktori-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:28:46.600461+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports avatar for the ARC Daily Digest's yktori feature. Create one polished square cinematic 3D comic illustration, full-body central single adult-proportioned compact humanoid contender, energetic athletic landing pose on a small floating square ARC puzzle-grid podium. This is an ORIGINAL fictional account mascot named the Silver Comet, not a real likeness and not an adaptation of the generic Kaggle goose. Entire head is a sleek mirrored silver helmet with a single orange horizontal visor; no skin or human facial features visible. Streamlined midnight-cobalt racing suit, silver boots, beautiful sharply defined saturated red blue yellow cyan green magenta orange square ARC-grid panels on jacket sleeves and chest; short pixel-square scarf trails behind like a comet. A silver sketching stylus at the belt subtly nods to the competitor's documented Drawing with LLMs result without claiming their ARC method. Striking clean silhouette, confident superstar entrance, premium animated-film materials, warm amber rim light, deep cobalt and dark slate blurred scoring-hall arena background, floating abstract colored square confetti, low camera. Keep whole character and boots inside the image, plenty of clean border space. One subject, no other people, no animal, no goose, no duck, no words, letters, numerals, rank, score, medal logos, brand marks or watermark. The character must be reusable and unmistakable in later scenes.",
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-5e2b8576-7ebf-415e-95f5-68a71bd72c89.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/yktori/avatar-v1.png",
+    "sha256": "28a4cb017947242340e78b228aa19714a3fddb8ae8d8d039e04585200ed18534",
+    "references": [],
+    "review": "Inspected one adult-proportioned fictional Silver Comet with completely opaque mirrored helmet, orange visor, cobalt ARC jacket, grid scarf and both boots visible. No human likeness, default goose, letters, scores or medals.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

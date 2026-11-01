@@ -1,5 +1,5 @@
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 15-October-2026 (the backup writer is claude-sonnet-5-5, from shared/newsWriters.json)
+# Date: 01-November-2026 (unused briefing sources must not leak into published editions)
 # PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication, isolated from current research.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
@@ -9,6 +9,9 @@ from pathlib import Path
 import tempfile
 import sys
 import unittest
+from unittest.mock import patch, MagicMock
+import socket
+import urllib.error
 
 sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
 
@@ -43,6 +46,49 @@ def draft(brief):
 
 
 class NewsroomTests(unittest.TestCase):
+    def test_special_report_without_cutoff_does_not_replace_previous_edition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            news = root / 'content/news'
+            previous = '2026-10-06-evening-arc-2'
+            special = '2026-10-06-special-report'
+            for aid in (previous, special):
+                n.write(news / 'articles' / f'{aid}.json', {'id': aid, 'competition': 'arc-2'})
+            n.write(news / 'evidence' / f'{previous}.json', {'cutoffAt': '2026-10-06T22:00:00Z'})
+            n.write(news / 'evidence' / f'{special}.json', {'checkedAt': '2026-10-07T01:00:00Z', 'editorConfirmed': True})
+            n.write(news / 'wire/overnight.json', {'id': 'overnight', 'competition': 'arc-2',
+                    'headline': 'Overnight move', 'publishedAt': '2026-10-07T02:00:00Z'})
+            item = {'articleBase': {'id': '2026-10-07-morning-arc-2', 'edition': 'morning', 'sources': []},
+                    'evidence': {'cutoffAt': '2026-10-07T10:00:00Z'}}
+            n.add_edition_intake(item, 'arc-2', n.stamp('2026-10-07T11:00:00Z'), root)
+            self.assertEqual(item['intake']['previousEditionId'], previous)
+            self.assertEqual(item['intake']['since'], '2026-10-06T22:00:00Z')
+            self.assertEqual([s['id'] for s in item['intake']['wireStories']], ['overnight'])
+
+            # A broken scheduled edition must remain visible as a real evidence failure.
+            n.write(news / 'evidence' / f'{previous}.json', {})
+            with self.assertRaises(KeyError):
+                n.add_edition_intake(item, 'arc-2', n.stamp('2026-10-07T11:00:00Z'), root)
+
+    def test_transport_failure_is_not_reported_as_a_site_outage(self):
+        error = urllib.error.URLError(socket.gaierror(8, 'nodename nor servname provided'))
+        brief = n.prepare('evening', fetcher=lambda _: (_ for _ in ()).throw(error))
+        self.assertTrue(all(item['errorKind'] == 'name-resolution' for item in brief['competitions'].values()))
+        self.assertIn('does not establish a site outage', brief['competitions']['arc-3']['recovery'])
+
+    def test_board_fetch_recovers_one_gateway_failure_but_stays_bounded(self):
+        url = 'https://example.com/board'
+        error = urllib.error.HTTPError(url, 502, 'Bad Gateway', None, None)
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"latest":{}}'
+        with patch.object(n.urllib.request, 'urlopen', side_effect=[error, response]) as request:
+            self.assertEqual(n.fetch(url)[0], {'latest': {}})
+            self.assertEqual(request.call_count, 2)
+        with patch.object(n.urllib.request, 'urlopen', side_effect=error) as request:
+            with self.assertRaises(urllib.error.HTTPError):
+                n.fetch(url)
+            self.assertEqual(request.call_count, 2)
+
     @classmethod
     def setUpClass(cls):
         # Historical board fixtures must not consume today's independently checked social posts.
@@ -54,6 +100,18 @@ class NewsroomTests(unittest.TestCase):
     def tearDownClass(cls):
         n.ROOT = cls.original_root
         cls.content.cleanup()
+
+    def test_only_story_citations_are_published(self):
+        brief = bundle()
+        base = brief['competitions']['arc-3']['articleBase']
+        extra = {'id': 'unused-research', 'title': 'Unrelated background',
+                 'url': 'https://example.com/background', 'accessedAt': base['publishedAt']}
+        base['sources'].append(extra)
+        brief.pop('sha256')
+        brief['sha256'] = n.digest(brief)
+        article, _ = n.validate(draft(brief), brief)
+        self.assertEqual([source['id'] for source in article['sources']], ['board'])
+        self.assertIn(extra, base['sources'])  # Research evidence remains intact.
 
     def test_dst_previous_evening_uses_local_date(self):
         _, end, begin, _ = n.windows('evening', n.stamp('2026-03-08T23:00:00Z'))

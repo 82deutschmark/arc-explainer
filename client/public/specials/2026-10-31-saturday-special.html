@@ -1,0 +1,310 @@
+<!doctype html>
+<!--
+  Author: Claude Sonnet 5.5 Medium
+  Date: 31-October-2026
+  PURPOSE: The ARC Daily Digest Saturday Special, "Legends of the Kaggleverse": a standalone, art-led page
+  (half sports section, half comic book). Hand-written, mobile-first, no site chrome and no shared news
+  layout code, so it cannot disturb the regular editions. The top-ten tables are generated from the live
+  boards at build time. Served as a static file from client/public/specials/.
+  SRP/DRY check: Pass - one page, one stylesheet, reuses published art and the ARC Prize card thumbnails.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legends of the Kaggleverse | The ARC Daily Digest</title>
+<meta name="description" content="Saturday Special: two days to the bell, and the legends of the Kaggleverse (NVIDIA's Grandmasters, Tufa Labs, a Tokyo student squad and more) are still in the arena. Meet them, plus the latest news and both top tens.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Legends of the Kaggleverse">
+<meta property="og:description" content="Two days to the bell. Meet the legends of ARC Prize 2026, catch up on the latest news, and see both top tens.">
+<meta property="og:image" content="https://arc.markbarney.net/specials/img/juggernaut-1400.webp">
+<meta property="og:url" content="https://arc.markbarney.net/specials/2026-10-31-saturday-special.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://arc.markbarney.net/specials/2026-10-31-saturday-special.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f3ead3; --ink: #15120d; --muted: #5b5340;
+    --yellow: #ffd21f; --red: #e2342b; --green: #76b900; --blue: #1f56d6; --pink: #ff5fa2;
+    --shadow: 5px 5px 0 var(--ink);
+    --display: "Anton", "Impact", "Haettenschweiler", "Arial Narrow Bold", sans-serif;
+    --comic: "Bangers", "Impact", "Comic Sans MS", sans-serif;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 18px/1.55 var(--serif); }
+  a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  a:hover { background: var(--yellow); }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  .bar { background: var(--ink); color: var(--paper); font: 13px/1 var(--comic); letter-spacing: .12em; text-transform: uppercase; }
+  .bar .wrap { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; padding-bottom: 10px; }
+  .bar a { text-decoration: none; } .bar a:hover { background: none; color: var(--yellow); }
+
+  .hero { position: relative; background: var(--ink); }
+  .hero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .hero-text { padding: 20px 16px 26px; background: var(--ink); color: #fff; }
+  .kicker { display: inline-block; background: var(--yellow); color: var(--ink); font: 18px/1 var(--comic); letter-spacing: .08em; padding: 7px 12px 5px; transform: rotate(-1.5deg); box-shadow: 3px 3px 0 var(--red); }
+  h1 { margin: 14px 0 10px; font: 400 clamp(46px, 12vw, 108px)/.95 var(--display); text-transform: uppercase; letter-spacing: .005em; }
+  h1 em { font-style: normal; color: var(--yellow); display: block; }
+  .dek { margin: 0; max-width: 50ch; font: italic 400 clamp(18px, 2.4vw, 23px)/1.4 var(--serif); color: #f1e9d2; }
+  @media (min-width: 820px) {
+    .hero-text { position: absolute; inset: auto 0 0 0; padding: 80px 0 30px; background: linear-gradient(to top, rgba(10,8,5,.95) 0%, rgba(10,8,5,.8) 55%, rgba(10,8,5,0) 100%); }
+  }
+  .dateline { margin: 0; padding: 10px 0; border-bottom: 3px double var(--ink); font: 13px/1.3 var(--comic); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 18px; }
+
+  h2 { margin: 0 0 14px; font: 400 clamp(30px, 6vw, 46px)/1 var(--display); text-transform: uppercase; }
+  .tag { display: inline-block; margin-bottom: 8px; padding: 5px 10px 3px; background: var(--ink); color: var(--yellow); font: 15px/1 var(--comic); letter-spacing: .1em; text-transform: uppercase; }
+  section { padding: 34px 0 6px; }
+
+  /* lede + news */
+  .lede { display: grid; gap: 22px; }
+  .lede p { margin: 0 0 14px; }
+  .lede p:first-child::first-letter { float: left; font: 400 72px/.8 var(--display); padding: 6px 6px 0 0; color: var(--red); }
+  .art { margin: 0; border: 4px solid var(--ink); box-shadow: var(--shadow); background: var(--ink); color: #fff; }
+  .art figcaption { padding: 10px 12px; font: 400 14px/1.4 var(--serif); color: #eadfc2; }
+  .art figcaption b { display: block; font: 17px/1.1 var(--comic); letter-spacing: .06em; text-transform: uppercase; color: var(--yellow); margin-bottom: 3px; }
+  .art figcaption a { color: var(--yellow); }
+  @media (min-width: 820px) { .lede { grid-template-columns: 1fr 1.05fr; align-items: start; gap: 34px; } }
+
+  .news { list-style: none; margin: 26px 0 0; padding: 0; border-top: 4px solid var(--ink); }
+  .news li { padding: 12px 0 12px 0; border-bottom: 1px solid #b9ad8c; }
+  .news b { font: 400 21px/1.1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin-right: 6px; }
+  .news a { font-size: 15px; white-space: nowrap; }
+
+  .feature { margin-top: 30px; border: 4px solid var(--ink); background: #fffaf0; box-shadow: 5px 5px 0 var(--red); }
+  .feature .in { padding: 18px 16px 6px; }
+  .feature h2 { font-size: clamp(30px, 6vw, 44px); }
+  .feature p { margin: 0 0 14px; }
+  .feature .tag { background: var(--red); color: #fff; }
+
+  .bubbles { display: grid; gap: 24px; margin: 30px 0 4px; }
+  .bubble { position: relative; margin: 0; padding: 16px 18px 14px; background: #fff; border: 4px solid var(--ink); border-radius: 22px; box-shadow: var(--shadow); font: 400 21px/1.25 var(--comic); letter-spacing: .02em; }
+  .bubble::after { content: ""; position: absolute; left: 34px; bottom: -22px; width: 26px; height: 22px; background: #fff; border-right: 4px solid var(--ink); border-bottom: 4px solid var(--ink); transform: skewX(-38deg); }
+  .bubble cite { display: block; margin-top: 8px; font: normal 13px/1.2 var(--serif); letter-spacing: .02em; color: var(--muted); text-transform: uppercase; }
+  .bubble.y { background: var(--yellow); } .bubble.y::after { background: var(--yellow); }
+  @media (min-width: 820px) { .bubbles { grid-template-columns: repeat(3, 1fr); } }
+
+  /* panels */
+  .panel { margin: 26px 0 0; border: 4px solid var(--ink); background: #fffaf0; box-shadow: var(--shadow); }
+  .panel-art { background: var(--ink); } .panel-art img { width: 100%; }
+  .panel-body { padding: 18px 16px 8px; }
+  .panel h3 { margin: 4px 0 10px; font: 400 clamp(28px, 6vw, 40px)/1.02 var(--display); text-transform: uppercase; }
+  .panel p { margin: 0 0 14px; }
+  .panel.nv { box-shadow: 5px 5px 0 var(--green); } .panel.nv .tag { background: var(--green); color: var(--ink); }
+  .panel.tufa { box-shadow: 5px 5px 0 var(--blue); } .panel.tufa .tag { background: var(--blue); color: #fff; }
+  .panel.field { box-shadow: 5px 5px 0 var(--pink); } .panel.field .tag { background: var(--pink); color: var(--ink); }
+  @media (min-width: 820px) {
+    .panel.split { display: grid; grid-template-columns: 5fr 6fr; }
+    .panel.split .panel-art img { height: 100%; object-fit: cover; }
+    .panel-body { padding: 24px 24px 10px; }
+  }
+  .tufa-art img { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 22%; }
+  @media (min-width: 820px) { .tufa-art img { aspect-ratio: auto; } }
+
+  .roster { list-style: none; margin: 18px 0 8px; padding: 0; display: grid; gap: 10px; }
+  .roster li { padding: 10px 12px; background: var(--paper); border: 3px solid var(--ink); border-left-width: 12px; border-left-color: var(--green); }
+  .tufa .roster li { border-left-color: var(--blue); }
+  .roster b { font: 400 21px/1.1 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+  .roster span.h { font: 12px/1 var(--comic); letter-spacing: .1em; color: var(--muted); text-transform: uppercase; margin-left: 6px; }
+  .roster p { margin: 4px 0 0; font-size: 16px; line-height: 1.4; }
+  .roster p em { font: 12px/1 var(--comic); font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: var(--red); }
+  @media (min-width: 820px) { .roster { grid-template-columns: 1fr 1fr; } }
+
+  /* card rail */
+  .rail { display: flex; gap: 10px; overflow-x: auto; margin: 6px -16px 16px; padding: 4px 16px 10px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .rail a { flex: 0 0 auto; scroll-snap-align: start; padding: 0; background: none; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+  .rail a:hover { background: var(--yellow); }
+  .rail img { width: 112px; height: auto; }
+  @media (min-width: 820px) { .rail { margin: 6px 0 16px; padding: 4px 4px 10px; } .rail img { width: 128px; } }
+  .rail-note { margin: 0 0 4px; font: 13px/1 var(--comic); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+  /* field notes */
+  .notes { display: grid; gap: 10px; margin: 6px 0 18px; padding: 0; list-style: none; }
+  .notes li { display: grid; grid-template-columns: 2.4em 1fr; gap: 10px; padding: 10px 12px; background: var(--paper); border: 3px solid var(--ink); }
+  .notes .n { font: 400 28px/1 var(--display); color: var(--red); }
+  .notes b { font: 400 20px/1.1 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+  .notes p { margin: 3px 0 0; font-size: 16px; line-height: 1.4; }
+  .notes li.us { background: #ffe89a; }
+  .sub { margin: 20px 0 8px; font: 20px/1 var(--comic); letter-spacing: .1em; text-transform: uppercase; }
+  @media (min-width: 820px) { .notes { grid-template-columns: 1fr 1fr; } }
+
+  /* disclosure */
+  .disclose { margin-top: 34px; display: grid; border: 4px solid var(--ink); background: var(--yellow); box-shadow: var(--shadow); }
+  .disclose img { width: 100%; aspect-ratio: 16 / 8; object-fit: cover; border-bottom: 4px solid var(--ink); }
+  .disclose div { padding: 16px; } .disclose h2 { font-size: clamp(28px, 6vw, 40px); margin-bottom: 8px; } .disclose p { margin: 0 0 10px; }
+  @media (min-width: 820px) { .disclose { grid-template-columns: 1fr 1fr; } .disclose img { height: 100%; aspect-ratio: auto; border-bottom: 0; border-right: 4px solid var(--ink); } .disclose div { padding: 24px; } }
+
+  /* scoreboard */
+  .boards { display: grid; gap: 22px; }
+  table { width: 100%; border-collapse: collapse; background: #fffaf0; border: 4px solid var(--ink); font: 16px/1.25 var(--serif); }
+  caption { text-align: left; padding: 8px 12px; background: var(--ink); color: var(--yellow); font: 17px/1.2 var(--comic); letter-spacing: .08em; text-transform: uppercase; }
+  td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #cfc3a3; vertical-align: top; }
+  td:first-child { width: 2.4em; font: 400 24px/1 var(--display); }
+  td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+  td b { font-size: 18px; }
+  tr.nv td { background: #e6f3c4; } tr.us td { background: #ffe89a; }
+  .up { color: #1f8a3b; font: 13px/1 var(--comic); letter-spacing: .05em; } .down { color: var(--red); font: 13px/1 var(--comic); letter-spacing: .05em; } .gain { color: #1f8a3b; font-size: 13px; }
+  .note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  @media (min-width: 820px) { .boards { grid-template-columns: 1fr 1fr; } }
+
+  footer { margin-top: 46px; background: var(--ink); color: #e9e0c8; padding: 28px 0 40px; font-size: 16px; line-height: 1.55; }
+  footer h2 { color: var(--yellow); font-size: 34px; margin-bottom: 8px; }
+  footer .big { font: 400 clamp(26px, 5vw, 38px)/1.1 var(--display); text-transform: uppercase; color: #fff; margin: 0 0 14px; }
+  footer .big em { font-style: normal; color: var(--yellow); }
+  footer a { color: #fff; } footer a:hover { color: var(--ink); }
+  footer .src { font-size: 14px; color: #bfb597; }
+  .credit { margin-top: 16px; padding-top: 12px; border-top: 1px solid #5b5340; font-size: 13px; color: #b8ad8f; }
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="wrap"><span>The ARC Daily Digest · Saturday Special</span><span><a href="/specials/weekend.html">Weekend magazine →</a> &nbsp; <a href="/news">The paper</a></span></div></div>
+
+<header class="hero">
+  <img src="/specials/img/juggernaut-1400.webp" width="1400" height="788"
+       alt="A hero in a red coat points from the top of a towering GPU machine toward two rabbits and a spider flag on a distant mountain while teammates work below.">
+  <div class="hero-text"><div class="wrap">
+    <span class="kicker">Saturday Special · Two days to the bell</span>
+    <h1>Legends of the <em>Kaggleverse</em></h1>
+    <p class="dek">By day they’re data scientists, researchers and students. This weekend they’re the heroes of the arena, and with two days to the bell the lights are flickering. Meet the legends, and catch up on the news.</p>
+  </div></div>
+</header>
+
+<div class="wrap">
+<p class="dateline"><span>Saturday, October 31, 2026</span><span>Boards read 3:58 pm Eastern</span><span>The bell: Monday, 11:59 pm UTC (6:59 pm Eastern)</span></p>
+
+<section>
+  <div class="lede">
+    <div>
+      <p>Two days to go, and the arena is running hot. Thousands of teams are in the final scramble for ARC Prize 2026, the Kaggle contests where teams from around the world try to teach machines to reason. The legends never left. They’re all still here, still submitting, and the arena around them has started to flicker.</p>
+      <p>Kaggle is far bigger than ARC. It runs contests of every kind, and many of the names on this page made their reputations in other arenas entirely. But ARC-AGI-2 and ARC-AGI-3 are taking all the attention this weekend, so that is where we are looking.</p>
+      <p>That’s the news. Here’s the rest of it.</p>
+    </div>
+    <figure class="art">
+      <img src="/specials/img/lights-out-1200.webp" loading="lazy" width="1200" height="600"
+           alt="Rabbits, spiders and the Turducken crew gather with lanterns and flashlights beneath a huge dark scoreboard in the scoring hall.">
+      <figcaption><b>Lights Out at the Scoring Hall</b>Our illustration from October 22, the night Son Pham reported the scoring blackout. <a href="/news#2026-10-22-arc3-scoring-blackout-breaking">Read the report →</a></figcaption>
+    </figure>
+  </div>
+
+  <ul class="news">
+    <li><b>No extension.</b> The deadline stands: Monday, 11:59 pm UTC, which is 6:59 pm Eastern. ARC Prize says it is working with Kaggle on the slowdowns. <a href="/news#2026-10-30-special-arc-deadline-no-extension">Our Friday-night report →</a></li>
+    <li><b>ARC-2: the long wait.</b> Scores are taking more than a day to come back, so a last-day entry may not be scored before the bell. Kaggle staff first said a run sent before the bell would keep scoring afterwards, then corrected that guidance on October 29. The safe plan, and ARC Prize’s advice too, is to plan for delays and have final runs finished well before the bell.</li>
+    <li><b>ARC-3: the zeros.</b> Teams report runs that crash with a system error, or finish in half an hour with a flat 0.00. Kaggle cleared a bad cache a week ago and says it is working on the wider problems, though staff can’t look at individual submissions right now.</li>
+    <li><b>Kaggle’s side.</b> Walter Reade, who works on AI at Kaggle, says the platform is carrying two to three times its old load since the ARC contests launched, with AI agents making it easier than ever to enter.</li>
+    <li><b>Tufa’s stopwatch.</b> Jeroen Cottaar says a forty-minute wait comes before a team’s code even starts running. CPMP says startup delays are nothing new. <a href="/news#2026-10-30-friday-special-jeroen-cottaar-tufa-citadel">Friday’s feature on Cottaar →</a></li>
+  </ul>
+
+  <div class="feature">
+    <div class="in">
+      <span class="tag">The human story</span>
+      <h2>CPMP has every right to be upset</h2>
+      <p>Nobody knows the final-days scramble like CPMP. Even in a winning year his team was still experimenting at the end: the NVARC writeup says an ensemble with Tiny Recursive Models first worked “the day before last,” with no time left to tune it. They won ARC Prize 2025 anyway.</p>
+      <p>So when his ARC-2 submissions started failing this week, he knew exactly what was at stake. His forum thread was titled “3rd day without working sub,” and his follow-up was the saddest line of the week: “I’m not stressed, I’m sad and frustrated.”</p>
+      <p>He pointed at the L4s early. ARC-2 runs on Kaggle’s L4x4 machines, four NVIDIA L4 chips apiece, and Kaggle’s own page calls them limited, which makes NVIDIA’s own chips the scarce thing this weekend. A month ago CPMP warned Kaggle staff the L4 queue was jammed, and Kaggle’s Dustin answered that demand had increased considerably and added capacity. CPMP’s own theory for this week is that a new Gemma contest is drawing on the same L4 pool. Kaggle’s own contest page says the L4x4 machines are reserved for ARC-2 entries, so the mystery stays open.</p>
+      <p>Nobody here is a villain. The arena filled up, the machines can’t keep pace, and a few thousand people who love this game are stuck inside it together. The legends haven’t gone anywhere. They’re still submitting.</p>
+    </div>
+  </div>
+
+  <div class="bubbles">
+    <blockquote class="bubble">“Kaggle is a legal drug.”<cite>CPMP, on his own Kaggle profile</cite></blockquote>
+    <blockquote class="bubble y">“We can’t work that way.”<cite>CPMP, to Kaggle staff, after six saves and a mount error</cite></blockquote>
+    <blockquote class="bubble">“We’re quite convinced things are not back to normal.”<cite>Jeroen Cottaar, Tufa Labs</cite></blockquote>
+  </div>
+</section>
+
+<section>
+  <span class="tag">Meet the legends · NVIDIA</span>
+  <div class="panel nv">
+    <div class="panel-art"><img src="/specials/img/nvbanana-1200.webp" loading="lazy" width="1200" height="675"
+      alt="A blue-and-gold starry avatar stands in an NVIDIA-themed hall filled with medals."></div>
+    <div class="panel-body">
+      <h3>NVIDIA’s Grandmasters</h3>
+      <p>The green-jersey heavyweights never left. CPMP and Ivan Sorokin won ARC Prize 2025 as NVARC, first of 1,455 teams, and they’re back at the same table. This year NVIDIA’s Grandmasters play two contests with two squads, plus Giba’s solo entry in ARC-2. In ARC-2, CPMP and Darragh Hanley are <b>nvbanana</b>, third at 83.89. In ARC-3 they join Ivan Sorokin, Giba and three newer accounts as <b>NVARC3</b>, seven accounts strong, eighth at 49.89 and inside the gold line.</p>
+      <ul class="roster">
+        <li><b>CPMP</b><span class="h">cpmpml · both squads</span><p><em>By day</em> Director of competitive machine learning at NVIDIA, leader of its Kaggle Grandmaster team. <em>On Kaggle</em> 29 golds and a peak world rank of sixth. His profile motto: “Kaggle is a legal drug.”</p></li>
+        <li><b>Darragh Hanley</b><span class="h">darraghdog · both squads</span><p><em>By day</em> Senior LLM technologist at NVIDIA. <em>On Kaggle</em> 28 golds, a peak world rank of fourth, and team wins at the AI Mathematical Olympiad Progress Prize 2 and Google’s sign-language fingerspelling contest.</p></li>
+        <li><b>Giba</b><span class="h">titericz · NVARC3</span><p><em>By day</em> Senior data scientist on NVIDIA’s RAPIDS team. <em>On Kaggle</em> peaked at world No. 1, now 29th, with 66 golds, and Kaggle lists a first place at the 2026 NeuroGolf Championship. Plays ARC-3 with NVARC3 and runs a solo entry in ARC-2.</p></li>
+        <li><b>Ivan Sorokin</b><span class="h">sorokin · NVARC3</span><p><em>By day</em> NVIDIA researcher. <em>On Kaggle</em> Grandmaster with a best-ever world rank of 25th, CPMP’s partner in the ARC Prize 2025 win, and a member of the team that took the AI Mathematical Olympiad Progress Prize 2.</p></li>
+        <li><b>Elad Sarafian · Gal Kaplun · Yeyin Zhu</b><span class="h">NVARC3</span><p>The newcomers. Kaggle accounts dating from October 2025, November 2025 and September 2026, with ARC-3 the only contest on any of their profiles.</p></li>
+      </ul>
+      <p class="rail-note">Their ARC Prize cards · swipe</p>
+      <div class="rail"><a href="/news/cards/person-jean-francois-puget-2026" title="CPMP"><img src="https://arc.markbarney.net/api/news/cards/person-jean-francois-puget-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="CPMP ARC Prize card"></a><a href="/news/cards/person-darragh-hanley-2026" title="Darragh Hanley"><img src="https://arc.markbarney.net/api/news/cards/person-darragh-hanley-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Darragh Hanley ARC Prize card"></a><a href="/news/cards/person-ivan-sorokin-2026" title="Ivan Sorokin"><img src="https://arc.markbarney.net/api/news/cards/person-ivan-sorokin-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Ivan Sorokin ARC Prize card"></a><a href="/news/cards/person-elad-sarafian-2026" title="Elad Sarafian"><img src="https://arc.markbarney.net/api/news/cards/person-elad-sarafian-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Elad Sarafian ARC Prize card"></a><a href="/news/cards/person-gal-kaplun-2026" title="Gal Kaplun"><img src="https://arc.markbarney.net/api/news/cards/person-gal-kaplun-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Gal Kaplun ARC Prize card"></a><a href="/news/cards/person-yeyin-zhu-2026" title="Yeyin Zhu"><img src="https://arc.markbarney.net/api/news/cards/person-yeyin-zhu-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Yeyin Zhu ARC Prize card"></a><a href="/news/cards/team-nvarc3-2026" title="NVARC3"><img src="https://arc.markbarney.net/api/news/cards/team-nvarc3-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="NVARC3 ARC Prize card"></a><a href="/news/cards/team-nvbanana-arc2-team-2026" title="nvbanana"><img src="https://arc.markbarney.net/api/news/cards/team-nvbanana-arc2-team-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="nvbanana ARC Prize card"></a></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="tag">Meet the legends · The summit</span>
+  <div class="panel tufa split">
+    <div class="panel-art tufa-art"><img src="/specials/img/cottaar-800.webp" loading="lazy" width="800" height="1120"
+      alt="Jeroen Cottaar with glasses and a wry smile seated on a throne of GPU racks in the Tufa Citadel, surrounded by friendly black spiders."></div>
+    <div class="panel-body">
+      <h3>Twin peaks: Tufa Labs and Yi-Chia Chen</h3>
+      <p>Two names own the summit of both boards. Tufa Labs leads ARC-2 at 88.06 and is second in ARC-3 at 70.02. Yi-Chia Chen, a one-person team with two rabbits for an avatar, is second in ARC-2 at 87.22 and first in ARC-3 at 75.56. Mirror images at the top of the world.</p>
+      <ul class="roster">
+        <li><b>Jeroen Cottaar</b><p>Kaggle Grandmaster, sixth in the world, and our Friday-night cover star. Now Tufa’s resident detective.</p></li>
+        <li><b>Isaiah Pressman</b><p>Grandmaster, 14th in the world, winner of the Orbit Wars contest.</p></li>
+        <li><b>Dries Smit</b><p>Lead developer of the Tufa agent that won last year’s ARC-AGI-3 preview.</p></li>
+        <li><b>Stefano Viel</b><p>Research scientist. In ARC-3 the Tufa roster grows to six accounts.</p></li>
+      </ul>
+      <p>Chen’s Kaggle record includes a gold medal at Eedi, third of 1,446 teams.</p>
+      <p class="rail-note">Cards · swipe</p>
+      <div class="rail"><a href="/news/cards/person-jeroen-cottaar-2026" title="Jeroen Cottaar"><img src="https://arc.markbarney.net/api/news/cards/person-jeroen-cottaar-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Jeroen Cottaar ARC Prize card"></a><a href="/news/cards/team-tufa-labs-2026" title="Tufa Labs"><img src="https://arc.markbarney.net/api/news/cards/team-tufa-labs-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Tufa Labs ARC Prize card"></a><a href="/news/cards/person-yi-chia-chen-2026" title="Yi-Chia Chen"><img src="https://arc.markbarney.net/api/news/cards/person-yi-chia-chen-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Yi-Chia Chen ARC Prize card"></a><a href="/news/cards/team-yi-chia-chen-2026" title="Yi-Chia Chen @ Fields Model"><img src="https://arc.markbarney.net/api/news/cards/team-yi-chia-chen-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Yi-Chia Chen @ Fields Model ARC Prize card"></a></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="tag">Meet the legends · The rest of the field</span>
+  <div class="panel field">
+    <div class="panel-body">
+      <h3>Don’t sleep on the rest of the top ten</h3>
+      <p>Legends come in every size. Here is who else is sitting in the top ten of each board.</p>
+      <p class="sub">ARC-2</p>
+      <ul class="notes"><li><span class="n">4</span><div><b>Domdolus Tolus</b><p>Five students from Tokyo who won gold at NVIDIA’s Nemotron challenge (fifth of 4,185). <a href="/news#2026-10-30-friday-special-darren-domdolus-tolus">Friday’s cover story →</a></p></div></li><li><span class="n">5</span><div><b>Sakayori Lab</b><p>A two-account lab.</p></div></li><li><span class="n">6</span><div><b>rabbithole</b><p>A five-account squad.</p></div></li><li><span class="n">7</span><div><b>Majkel1337</b><p>A one-person team and a Kaggle Master, 290th in the world, with golds in the Pokémon TCG AI Battle Challenge and Kaggriculture.</p></div></li><li><span class="n">8</span><div><b>Ravi Teja Chilakala</b><p>A one-person entry.</p></div></li><li><span class="n">9</span><div><b>V | A | M</b><p>A quick hello to Chan Kha Vu’s team, which says it climbed from about 50 to 76 points in five days. <a href="/news/cards/team-v-a-m-arc2-2026">Team card →</a></p></div></li><li><span class="n">10</span><div><b>guoqin gu</b><p>A one-person team. Up 2 places since Friday night.</p></div></li></ul>
+      <p class="sub">ARC-3</p>
+      <ul class="notes"><li><span class="n">3</span><div><b>faster machine is all you need</b><p>The one-person team of xz: a Kaggle Master, 15th in the world and 10th at best, and winner of the AI Agent Security contest (first of 4,186).</p></div></li><li class="us"><span class="n">4</span><div><b>Team Turducken</b><p>That’s us. See the box below.</p></div></li><li><span class="n">5</span><div><b>the last dance 🕺</b><p>Four accounts, including a research scientist from Linz, Austria.</p></div></li><li><span class="n">6</span><div><b>yktori</b><p>A one-person team and a Kaggle Expert with a silver medal for Drawing with LLMs.</p></div></li><li><span class="n">7</span><div><b>mtg</b><p>The rookie: a one-person team whose Kaggle account dates only from March 2026.</p></div></li><li><span class="n">9</span><div><b>Grigoriy Zatravkin &amp; co</b><p>Four accounts, including a Peking University student.</p></div></li><li><span class="n">10</span><div><b>復活の混テキスト</b><p>An eight-player Japanese all-star squad with four Kaggle Masters, among them yuto083 (54th in the world), ISAKA Tsuyoshi (78th) and re (88th), who was on the team that won NVIDIA’s Nemotron challenge.</p></div></li></ul>
+      <p class="rail-note">More cards · swipe</p>
+      <div class="rail"><a href="/news/cards/person-xz-2026" title="xz"><img src="https://arc.markbarney.net/api/news/cards/person-xz-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="xz ARC Prize card"></a><a href="/news/cards/team-turducken-2026" title="Team Turducken"><img src="https://arc.markbarney.net/api/news/cards/team-turducken-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Team Turducken ARC Prize card"></a><a href="/news/cards/person-chan-kha-vu-2026" title="Chan Kha Vu"><img src="https://arc.markbarney.net/api/news/cards/person-chan-kha-vu-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Chan Kha Vu ARC Prize card"></a><a href="/news/cards/team-v-a-m-arc2-2026" title="V | A | M"><img src="https://arc.markbarney.net/api/news/cards/team-v-a-m-arc2-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="V | A | M ARC Prize card"></a><a href="/news/cards/person-jack-cole-2026" title="Jack Cole"><img src="https://arc.markbarney.net/api/news/cards/person-jack-cole-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Jack Cole ARC Prize card"></a><a href="/news/cards/person-son-pham-2026" title="Son Pham"><img src="https://arc.markbarney.net/api/news/cards/person-son-pham-2026/thumb.webp?side=front&w=300" width="300" height="420" loading="lazy" alt="Son Pham ARC Prize card"></a></div>
+    </div>
+  </div>
+
+  <div class="disclose">
+    <img src="/specials/img/turducken-1100.webp" loading="lazy" width="1100" height="550" alt="Team Turducken's mechanical turkey, chicken and duck crew riding through a snowy valley.">
+    <div>
+      <span class="tag">Full disclosure</span>
+      <h2>We’re in this too</h2>
+      <p>The head editor’s own Team Turducken is fourth on the ARC-3 board at 56.02, and we’ve taken the same zeros as everybody else. Son Pham, who reported the scoring blackout in our October 22 story, ate a flat 0.00 with a gold medal in reach.</p>
+      <p>In ARC-2 the head editor, Son Pham and scizical play as ARC Mutants, joined by Jack Cole, currently 66th. Same heroes, different team, different contest.</p>
+      <p><a href="/news/cards/team-turducken-2026">Team Turducken’s card</a></p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="tag">The scoreboard</span>
+  <h2>Top ten, both boards</h2>
+  <div class="boards"><table><caption>ARC-2 · top ten · as of Sat 3:58 pm ET</caption><tr><td>1</td><td>Tufa Labs <small>four-person team · reached Oct 9, 1:21 am ET   (spell the number out up to eight: two-person, three-person … eight-person; and change 'two-account lab', 'five-account squad', 'seven-account' in NOTES to the same)</small></td><td><b>88.06</b></td></tr><tr><td>2</td><td>Yi-Chia Chen @ Fields Model <small>one-person team · reached Thu 2:52 pm ET</small></td><td><b>87.22</b></td></tr><tr class="nv"><td>3</td><td>nvbanana <small>2 accounts · reached Thu 1:51 pm ET</small></td><td><b>83.89</b></td></tr><tr><td>4</td><td>Domdolus Tolus <small>5 accounts · reached Wed 8:49 pm ET</small></td><td><b>83.47</b></td></tr><tr><td>5</td><td>Sakayori Lab <small>2 accounts · reached Fri 5:55 pm ET</small></td><td><b>81.81</b></td></tr><tr><td>6</td><td>rabbithole <small>5 accounts · reached Oct 20, 4:29 am ET</small></td><td><b>80.83</b></td></tr><tr><td>7</td><td>Majkel1337 <small>one-person team · reached Fri 6:25 pm ET</small></td><td><b>78.89</b></td></tr><tr><td>8</td><td>Ravi Teja Chilakala <small>one-person team · reached Fri 6:55 pm ET</small></td><td><b>78.19</b></td></tr><tr><td>9</td><td>V | A | M <small>3 accounts · reached Fri 5:25 pm ET</small></td><td><b>76.25</b></td></tr><tr><td>10</td><td>guoqin gu <span class="up">▲2</span><small>one-person team · reached Sat 2:58 pm ET</small></td><td><b>75.69</b> <span class="gain">+0.97</span></td></tr></table><table><caption>ARC-3 · top ten · as of Sat 3:58 pm ET</caption><tr><td>1</td><td>Yi-Chia Chen @ Fields Model <small>one-person team · reached Tue 2:14 am ET</small></td><td><b>75.56</b></td></tr><tr><td>2</td><td>Tufa Labs <small>6 accounts · reached Thu 3:50 am ET</small></td><td><b>70.02</b></td></tr><tr><td>3</td><td>faster machine is all you need <small>one-person team · reached Thu 4:22 pm ET</small></td><td><b>58.59</b></td></tr><tr class="us"><td>4</td><td>Team Turducken <small>7 accounts · reached Oct 24, 2:10 am ET</small></td><td><b>56.02</b></td></tr><tr><td>5</td><td>the last dance 🕺 <small>4 accounts · reached Tue 10:47 pm ET</small></td><td><b>51.51</b></td></tr><tr><td>6</td><td>yktori <small>one-person team · reached Tue 11:17 pm ET</small></td><td><b>51.04</b></td></tr><tr><td>7</td><td>mtg <small>one-person team · reached Oct 16, 1:20 pm ET</small></td><td><b>50.37</b></td></tr><tr class="nv"><td>8</td><td>NVARC3 <small>7 accounts · reached Sat 4:27 am ET</small></td><td><b>49.89</b> <span class="gain">+0.35</span></td></tr><tr><td>9</td><td>Grigoriy Zatravkin &amp; co <small>4 accounts · reached Oct 19, 4:57 am ET</small></td><td><b>47.19</b></td></tr><tr><td>10</td><td>復活の混テキスト <small>8 accounts · reached Oct 23, 7:22 am ET</small></td><td><b>46.82</b></td></tr></table></div>
+  <p class="note">Boards read Saturday at 3:58 pm Eastern. “Reached” is when our board tracker first saw each team’s current score; Kaggle posts it a little earlier. Arrows and green plus-numbers compare with Friday night’s board. Green rows are entries with NVIDIA’s Grandmasters, the yellow row is ours. World rankings are Kaggle’s as read on Friday, October 30 (CPMP’s and Giba’s on Saturday). Public places are provisional until the private board closes.</p>
+</section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <h2>The clock</h2>
+    <p class="big">Monday, 11:59 pm UTC. <em>Submit early.</em></p>
+    <p class="big">Good luck to every competitor: <em>the legends, the rookies, the one-person teams and the five students in Tokyo.</em> From first place to five-thousandth, it’s all the same universe.</p>
+    <p class="src">Sources: <a href="https://x.com/JFPuget/status/2116495385858277754">CPMP on X</a> · Kaggle forums: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/753659">“3rd day without working sub”</a>, <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/689054">ARC-2 accelerators</a>, <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843">ARC-3 “back to normal”</a>, <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147">the mount error</a>, <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/753723">ARC-2 scoring</a> · <a href="https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc">NVARC’s 2025 writeup</a> · Kaggle profiles: <a href="https://www.kaggle.com/cpmpml">CPMP</a>, <a href="https://www.kaggle.com/titericz">Giba</a>, <a href="https://www.kaggle.com/sorokin">Ivan Sorokin</a> · <a href="https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board">ARC-2 board</a>, <a href="https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board">ARC-3 board</a> · <a href="/news/2026-10-31-evening-arc-2-preview">Archive edition</a>.</p>
+    <p class="credit">Written by Claude Sonnet 5.5 Medium on the reporting of the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Commissioned by head editor Mark Barney.</p>
+  </div>
+</footer>
+
+</body>
+</html>

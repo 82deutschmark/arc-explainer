@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "2026-10-31-chan-kha-vu-arc-climb-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-31T17:34:01Z",
+  "purpose": "character-reference",
+  "subjectId": "chan-kha-vu",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "rawSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v2.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v2-native.png",
+  "prompt": "Use case: identity-preserve, stylized-concept. Edit IMAGE 1, an existing ARC Prize portrait for Chan Kha Vu. IMAGE 2 is his actual Kaggle avatar and is the sole likeness, clothing and mask reference. The editor's correction is very specific: the previous portrait copied his traditional embroidered shirt and fabric mask too literally and gave him ordinary headphones. Transform HIS OWN recognizable red, black and white embroidered outfit AND patterned mask into an unmistakably elaborate, glamorous CYBERPUNK CHARACTER DESIGN. Do not merely put a regular shirt under a jacket. Reimagine the embroidery itself as fine illuminated red-black circuit embroidery, optical fibers and etched geometric motifs integrated into sculpted graphite, crimson and ivory segmented armor; keep the original vertical embroidered placket, high collar, sleeve patterns and black outerwear identifiable as the inspiration. Reimagine his embroidered red-black-white face covering as an elegant physically engineered protective cyber-mask with layered ivory/graphite metal, red-and-black circuitry inspired by the exact folk-floral pattern, subtle vent details and illuminated seams. Keep nose and mouth fully and continuously covered, no face invented underneath. ADD striking, physically integrated OPEN-FACED CYBERPUNK HEADGEAR: a distinctive sculpted dark metallic headpiece with a narrow armored brow band, asymmetrical mechanical side-mounted optical instrument and small lens beside one eye, ear-linked articulated communications hardware and cables that connect directly into the collar and suit. Show his eyes and short dark hair. It must be actual futuristic headgear, NOT ordinary headphones, sunglasses or a closed helmet. Retain the subject's visible eyes, hair and broad recognizable cues from his own image. Give him an appealing, idealized, hand-painted graphic-novel illustration treatment: redesign face, hands, clothing and gear cohesively rather than photoreal pasted portrait. Proud and friendly competitor, not threatening; pose and GPU puzzle-workbench and ascending colorful ARC tiles can stay, but integrate the costume fully into the setting. Retain a subtle sunflower and warm gold with restrained blue lighting. Card art 5:7, full bleed, portrait head-to-waist, essential head and hands inside frame, quieter lower quarter for card overlays. No lettering, typography, badge, score, borders, logos, no additional people, no weapons, no anime. Only visual creative costume and headgear changes; preserve identity and the mask.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve, stylized-concept. Edit IMAGE 1, an existing ARC Prize portrait for Chan Kha Vu. IMAGE 2 is his actual Kaggle avatar and is the sole likeness, clothing and mask reference. The editor's correction is very specific: the previous portrait copied his traditional embroidered shirt and fabric mask too literally and gave him ordinary headphones. Transform HIS OWN recognizable red, black and white embroidered outfit AND patterned mask into an unmistakably elaborate, glamorous CYBERPUNK CHARACTER DESIGN. Do not merely put a regular shirt under a jacket. Reimagine the embroidery itself as fine illuminated red-black circuit embroidery, optical fibers and etched geometric motifs integrated into sculpted graphite, crimson and ivory segmented armor; keep the original vertical embroidered placket, high collar, sleeve patterns and black outerwear identifiable as the inspiration. Reimagine his embroidered red-black-white face covering as an elegant physically engineered protective cyber-mask with layered ivory/graphite metal, red-and-black circuitry inspired by the exact folk-floral pattern, subtle vent details and illuminated seams. Keep nose and mouth fully and continuously covered, no face invented underneath. ADD striking, physically integrated OPEN-FACED CYBERPUNK HEADGEAR: a distinctive sculpted dark metallic headpiece with a narrow armored brow band, asymmetrical mechanical side-mounted optical instrument and small lens beside one eye, ear-linked articulated communications hardware and cables that connect directly into the collar and suit. Show his eyes and short dark hair. It must be actual futuristic headgear, NOT ordinary headphones, sunglasses or a closed helmet. Retain the subject's visible eyes, hair and broad recognizable cues from his own image. Give him an appealing, idealized, hand-painted graphic-novel illustration treatment: redesign face, hands, clothing and gear cohesively rather than photoreal pasted portrait. Proud and friendly competitor, not threatening; pose and GPU puzzle-workbench and ascending colorful ARC tiles can stay, but integrate the costume fully into the setting. Retain a subtle sunflower and warm gold with restrained blue lighting. Card art 5:7, full bleed, portrait head-to-waist, essential head and hands inside frame, quieter lower quarter for card overlays. No lettering, typography, badge, score, borders, logos, no additional people, no weapons, no anime. Only visual creative costume and headgear changes; preserve identity and the mask.",
+    "referenced_image_paths": [
+      "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1-native.png",
+      "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1-native.png",
+      "role": "Prior generated character; revise costume and headgear while preserving identity.",
+      "sha256": "92b1695025ae18eab82342357e6d60bc4b1eb6ab6baa918eb2b8c589d6fc7a96"
+    },
+    {
+      "src": "/news-images/references/2026-10-31-chan-kha-vu-kaggle-avatar.jpg",
+      "sourceUrl": "https://www.kaggle.com/chankhavu",
+      "role": "His own Kaggle avatar provides covered face, hair and embroidered clothing; do not invent the covered face.",
+      "sha256": "dcd6b3f55ef2a6a49372bf224ca4353f25fca5fd5999077b3d3dce0f16f24ff6"
+    }
+  ],
+  "reviewStatus": "superseded-draft",
+  "review": "Intermediate correction; superseded by version 3 with an armored placket.",
+  "commissionAuthority": "Mark Barney corrected the card art direction on 31 October 2026 and instructed that no X post be sent automatically.",
+  "rawSha256": "4fb2da394c5eaa01b56bb8e000adbb61d7e3c6958092a1c752f0178c2505e2fe",
+  "nativeOriginalSha256": "75b48d350ba3ad5b3a68155f8db4b36a330ef4789bb3a6b4b788641d640b2f51"
+}

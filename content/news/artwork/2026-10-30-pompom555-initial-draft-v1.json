@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-pompom555-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "pompom555",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-pompom555-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-pompom555-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "6277b4ded9de77fed5bd81023a53fcd7683b60ceed3bf3940d433bd43c3d10b2",
+  "rawSha256": "6277b4ded9de77fed5bd81023a53fcd7683b60ceed3bf3940d433bd43c3d10b2",
+  "toolOutput": "exec-be7a9c3e-3957-4557-b455-a0916a79c445.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Source is the owner's chosen dark blue stylized sleeping sea creature, long rounded snout and looping serpentine body. Create a gorgeous friendly sapphire-blue cyber sea-dragon mascot with that same long smooth snout, closed sleepy eyes, teal-blue belly and elegant curling silhouette, no ears or cat face. Tasteful silver cyber harness, floating multicolor ARC square-grid panel. One small expressive sea dragon with head and upper coil in portrait safe zone.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Source is the owner's chosen dark blue stylized sleeping sea creature, long rounded snout and looping serpentine body. Create a gorgeous friendly sapphire-blue cyber sea-dragon mascot with that same long smooth snout, closed sleepy eyes, teal-blue belly and elegant curling silhouette, no ears or cat face. Tasteful silver cyber harness, floating multicolor ARC square-grid panel. One small expressive sea dragon with head and upper coil in portrait safe zone.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/pompom555.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/pompom555.webp",
+      "sha256": "ee9a6f5418578075c0d3ccfa7c6516dc5b6916ef98f5f2176e2227f8eec88bfd",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/pompom555"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

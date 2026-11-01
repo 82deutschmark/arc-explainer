@@ -1,0 +1,193 @@
+{
+  "personId": "jan-disselhoff",
+  "handle": "insanitycheck",
+  "name": "Jan Disselhoff",
+  "checkedAt": "2026-10-30T11:34:45Z",
+  "method": "Built-in browser (Claude desktop app browser pane), 2026-10-30. Read the public Kaggle profile and the Competitions tab once each, with a pause between them; no rate limit or block appeared. Text read with the page-text tool; gold medal icons identified from the page's own labelled medal images on the competition rows; avatar image address read from the profile picture element.",
+  "sources": [
+    "https://www.kaggle.com/insanitycheck",
+    "https://www.kaggle.com/insanitycheck/competitions"
+  ],
+  "profile": {
+    "displayName": "Jan Disselhoff",
+    "competitionTier": "Expert",
+    "medals": {
+      "gold": 2
+    },
+    "competitionRank": 252,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 79,
+    "joinedTooltip": "Tue Mar 21 2017 19:19:06 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2017-03",
+    "country": "Germany",
+    "competitionActivity": {
+      "entered": 8,
+      "solo": 4,
+      "inTeam": 4,
+      "hosted": 0
+    },
+    "bioPresent": false,
+    "linkedProfileShown": true
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 6,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "activeDisplayedHandles": {
+      "ARC Prize 2026 - ARC-AGI-3": [
+        "sbrodehl",
+        "insanitycheck",
+        "dfranzen",
+        "dvhrtm"
+      ],
+      "ARC Prize 2026 - ARC-AGI-2": [
+        "insanitycheck"
+      ]
+    },
+    "completedNames": [
+      "ARC Prize 2024",
+      "ARC Prize 2025",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "AI Mathematical Olympiad - Progress Prize 2",
+      "Ubiquant Market Prediction",
+      "Jane Street Real-Time Market Data Forecasting"
+    ],
+    "scopeNote": "Kaggle shows eight competitions on the profile: two active and six completed. Ranks and medals below are exactly as the completed list displays them. The list does not display team names, so none is recorded."
+  },
+  "completedResults": [
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 1,
+      "teams": 1427,
+      "medal": "gold",
+      "displayedHandles": [
+        "insanitycheck",
+        "dfranzen"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 2,
+      "teams": 1455,
+      "medal": "gold",
+      "displayedHandles": [
+        "insanitycheck",
+        "dfranzen",
+        "dvhrtm"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "rank": 1286,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": [
+        "insanitycheck",
+        "dfranzen",
+        "dvhrtm"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 1444,
+      "teams": 2212,
+      "medal": null,
+      "displayedHandles": [
+        "insanitycheck"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Ubiquant Market Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
+      "rank": 2269,
+      "teams": 2893,
+      "medal": null,
+      "displayedHandles": [
+        "insanitycheck"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Jane Street Real-Time Market Data Forecasting",
+      "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+      "rank": 2579,
+      "teams": 3757,
+      "medal": null,
+      "displayedHandles": [
+        "insanitycheck"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/jan-disselhoff.webp",
+    "sourceUrl": "https://www.kaggle.com/insanitycheck",
+    "note": "The saved jan-disselhoff.webp (320 pixels square) shows the same orange cat with dark sunglasses, beard and maroon shirt on a dark blue field as his current Kaggle profile picture, which is Kaggle avatar image 980860 (400 pixels square, dated 2025-07-14; original sha256 e6c7fcdd5a9a3b384974811a831a751e8c0791127d87534c69bb686cc4e29462). Both are an individual illustration, not a group image or default avatar. WARNING: the earlier draft file jan-disselhoff-v2.webp (a cyborg with GPU headgear) is NOT Jan's picture. It is the avatar of the Kaggle account signed in to the browser (Kaggle image 28295733, labelled Mark Barney in the page header), misread as the profile picture. Do not use jan-disselhoff-v2.webp; keep people.json pointing at jan-disselhoff.webp."
+  },
+  "facts": [
+    {
+      "text": "Jan Disselhoff is a Kaggle Competitions Expert with two gold competition medals shown on his public profile, both from team entries.",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck",
+      "sourceTitle": "Jan Disselhoff — public Kaggle profile and competition medals",
+      "checkedAt": "2026-10-30T11:34:45Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2024 as a completed entry for Disselhoff, finished 1st of 1,427 teams with a gold medal; the entry shows the insanitycheck and dfranzen accounts.",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+      "sourceTitle": "Jan Disselhoff — completed ARC Prize 2024 result on Kaggle",
+      "checkedAt": "2026-10-30T11:34:45Z"
+    },
+    {
+      "text": "Kaggle lists ARC Prize 2025 as a completed entry for Disselhoff, finished 2nd of 1,455 teams with a gold medal; the entry shows the insanitycheck, dfranzen and dvhrtm accounts.",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+      "sourceTitle": "Jan Disselhoff — completed ARC Prize 2025 result on Kaggle",
+      "checkedAt": "2026-10-30T11:34:45Z"
+    },
+    {
+      "text": "Disselhoff's Kaggle account dates to March 2017, and his profile shows eight competitions entered, four solo and four in a team.",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+      "sourceTitle": "Jan Disselhoff — Kaggle account join date and competition activity",
+      "checkedAt": "2026-10-30T11:34:45Z"
+    },
+    {
+      "text": "Kaggle shows Disselhoff currently entered in both ARC Prize 2026 competitions: ARC-AGI-3 alongside the sbrodehl, dfranzen and dvhrtm accounts, and ARC-AGI-2 with only his own account displayed.",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck/competitions",
+      "sourceTitle": "Jan Disselhoff — active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T11:34:45Z"
+    }
+  ],
+  "teamNotes": "Both gold medals sit on team entries (ARC Prize 2024 with dfranzen displayed; ARC Prize 2025 with dfranzen and dvhrtm displayed) and are team medals, not individual honours. Kaggle's completed list does not display team names, so none is recorded. The repo's ARC-3 roster record (team The ARChitects since 2026-10-26, earlier a solo-named team) and ARC-2 solo-named team come from the earlier public roster observation, not this Kaggle visit. Any ARC-3 or ARC-2 standing for this player is provisional until the 02-Nov close and is not stated here.",
+  "unverified": [
+    "Kaggle team names for every completed entry (the Competitions tab displays none).",
+    "Exact completion dates (Kaggle shows only relative labels such as '2 years ago').",
+    "Medal absence on the four unmedalled completed rows is read from the absence of a medal icon on the list; the list shows no bronze or silver on any row.",
+    "The ARChitects 2025 write-up credit and the Johannes Gutenberg University Mainz affiliation already in the player record were not re-opened on this visit.",
+    "Rank 252 and highest-ever 79 are Kaggle's live profile numbers on this date and will move.",
+    "The ARC Prize Hall of Fame entries in the player record are team honours and were not re-verified here."
+  ],
+  "verified": true
+}

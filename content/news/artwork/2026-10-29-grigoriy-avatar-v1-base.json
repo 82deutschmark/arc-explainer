@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "id": "2026-10-29-grigoriy-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:30:01.968375+00:00",
+  "toolOutput": "exec-8c770221-8e20-4987-9cbe-738968ba81fe.png",
+  "rawSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-base.webp",
+  "rawSha256": "c597caa2e1fed49e7dad0e880e3ee59d111c71f6190feabe9adf27810a960fa8",
+  "prompt": "Use case: stylized-concept. Asset type: reusable FOUR-member team avatar for the ARC Daily Digest's Grigoriy Zatravkin & co feature. Input is an inspected contact sheet of TWO own-profile graphics, with source labels for reference ONLY: left is aizealotwu's golden scholarly-library graphic, right is deepdreamer's own dark-blue-haired anime figure. It is NOT a group photograph. Create ONE wide 2:1 cinematic polished 3D comic team portrait, EXACTLY FOUR separated compact adult-proportioned characters standing in a confident esports walk-on lineup on a colorful ARC-grid floor, full hands/shoes visible, dim grand scoring-hall background and amber spotlights. Character1 far left: entirely fictional anonymous dark-red opaque-helmet contender representing Grigoriy's account, no human face or animal traits, silver and red ARC-grid jacket, dignified stance. Character2 middle-left: ORIGINAL fictional scholarly mascot representing aizealotwu's owner graphic, a charming gold-and-black cuboid helmet shaped like a tiny abstract library with an open glowing book held at waist, long black-gold racer coat and vivid square ARC patches; no text from source graphic. Character3 middle-right: adapted from deepdreamer's own anime avatar, preserve dark navy short bobbed hair and recognizable youthful anime face, adult body proportions, elegant dark-blue ARC-grid sports jacket and confident thoughtful pose. This is an avatar illustration, no claim about the real person's gender or face. Character4 far right: entirely fictional anonymous violet opaque-helmet contender representing Florencia's account, smooth featureless opaque helmet, cyan and magenta grid jacket. The two masked figures are editorial stand-ins, never claimed real likenesses. All four equal adult scale, distinct silhouette, natural anatomy, readable vibrant square puzzle panels. No default Kaggle goose, no background crowd, no lettering, names, labels, symbols of academic awards, ranks, score or watermark.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+      "kind": "generation-input",
+      "label": "Grigoriy Zatravkin & co — quartet — exact input 1",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "9c3acfa030c87548ea65324f814c0df1e75b57cbe2e8a79b5bd6f778108f48f6"
+    }
+  ],
+  "inputImages": [
+    "own-avatar-contact-sheet.jpg"
+  ],
+  "review": "Inspected exactly four separated characters: red opaque-helmet Grigoriy stand-in, gold library-headed aizealotwu mascot, own-avatar dark-blue-haired anime figure for deepdreamer, and violet opaque-helmet Florencia stand-in. Two masked figures and library mascot are fictional; no claimed human likeness. Full outfits/shoes visible, no names or scores.",
+  "purpose": "character-reference",
+  "subjectId": "grigoriy-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable FOUR-member team avatar for the ARC Daily Digest's Grigoriy Zatravkin & co feature. Input is an inspected contact sheet of TWO own-profile graphics, with source labels for reference ONLY: left is aizealotwu's golden scholarly-library graphic, right is deepdreamer's own dark-blue-haired anime figure. It is NOT a group photograph. Create ONE wide 2:1 cinematic polished 3D comic team portrait, EXACTLY FOUR separated compact adult-proportioned characters standing in a confident esports walk-on lineup on a colorful ARC-grid floor, full hands/shoes visible, dim grand scoring-hall background and amber spotlights. Character1 far left: entirely fictional anonymous dark-red opaque-helmet contender representing Grigoriy's account, no human face or animal traits, silver and red ARC-grid jacket, dignified stance. Character2 middle-left: ORIGINAL fictional scholarly mascot representing aizealotwu's owner graphic, a charming gold-and-black cuboid helmet shaped like a tiny abstract library with an open glowing book held at waist, long black-gold racer coat and vivid square ARC patches; no text from source graphic. Character3 middle-right: adapted from deepdreamer's own anime avatar, preserve dark navy short bobbed hair and recognizable youthful anime face, adult body proportions, elegant dark-blue ARC-grid sports jacket and confident thoughtful pose. This is an avatar illustration, no claim about the real person's gender or face. Character4 far right: entirely fictional anonymous violet opaque-helmet contender representing Florencia's account, smooth featureless opaque helmet, cyan and magenta grid jacket. The two masked figures are editorial stand-ins, never claimed real likenesses. All four equal adult scale, distinct silhouette, natural anatomy, readable vibrant square puzzle panels. No default Kaggle goose, no background crowd, no lettering, names, labels, symbols of academic awards, ranks, score or watermark.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-native.png",
+    "sha256": "1b97b0c45689a29dabeb88b27a452285787022c4f4de106e714a989cc8f0e242",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-8c770221-8e20-4987-9cbe-738968ba81fe.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+      "sha256": "9c3acfa030c87548ea65324f814c0df1e75b57cbe2e8a79b5bd6f778108f48f6"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/aizealotwu-own-avatar.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-aizealotwu-own-avatar.jpg",
+      "sha256": "bed39e008a91548dd43a213f02dab914c7221a52be04e786cdde862eb8a2b368"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/deepdreamer-own-avatar.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-deepdreamer-own-avatar.jpg",
+      "sha256": "9369be1edbcd7e1a3704f99f7d158b2af8b3d4ca14d6d8c01f3e6564d79e26f6"
+    }
+  ],
+  "identityNotes": [
+    "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+    "The two helmets are fictional account stand-ins, and the scholarly mascot is an original adaptation of the owner graphic. The anime face is an avatar, not a claimed human likeness.",
+    "Dated four-account roster: grigoriyzatravkin, aizealotwu, deepdreamer, florenciasolange. Refresh exact current roster before a new team scene."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-grigoriy-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:30:01.968375+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable FOUR-member team avatar for the ARC Daily Digest's Grigoriy Zatravkin & co feature. Input is an inspected contact sheet of TWO own-profile graphics, with source labels for reference ONLY: left is aizealotwu's golden scholarly-library graphic, right is deepdreamer's own dark-blue-haired anime figure. It is NOT a group photograph. Create ONE wide 2:1 cinematic polished 3D comic team portrait, EXACTLY FOUR separated compact adult-proportioned characters standing in a confident esports walk-on lineup on a colorful ARC-grid floor, full hands/shoes visible, dim grand scoring-hall background and amber spotlights. Character1 far left: entirely fictional anonymous dark-red opaque-helmet contender representing Grigoriy's account, no human face or animal traits, silver and red ARC-grid jacket, dignified stance. Character2 middle-left: ORIGINAL fictional scholarly mascot representing aizealotwu's owner graphic, a charming gold-and-black cuboid helmet shaped like a tiny abstract library with an open glowing book held at waist, long black-gold racer coat and vivid square ARC patches; no text from source graphic. Character3 middle-right: adapted from deepdreamer's own anime avatar, preserve dark navy short bobbed hair and recognizable youthful anime face, adult body proportions, elegant dark-blue ARC-grid sports jacket and confident thoughtful pose. This is an avatar illustration, no claim about the real person's gender or face. Character4 far right: entirely fictional anonymous violet opaque-helmet contender representing Florencia's account, smooth featureless opaque helmet, cyan and magenta grid jacket. The two masked figures are editorial stand-ins, never claimed real likenesses. All four equal adult scale, distinct silhouette, natural anatomy, readable vibrant square puzzle panels. No default Kaggle goose, no background crowd, no lettering, names, labels, symbols of academic awards, ranks, score or watermark.",
+      "referenced_image_paths": [
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-8c770221-8e20-4987-9cbe-738968ba81fe.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/avatar-v1.png",
+    "sha256": "1b97b0c45689a29dabeb88b27a452285787022c4f4de106e714a989cc8f0e242",
+    "references": [
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg",
+        "sha256": "9c3acfa030c87548ea65324f814c0df1e75b57cbe2e8a79b5bd6f778108f48f6"
+      }
+    ],
+    "review": "Inspected exactly four separated characters: red opaque-helmet Grigoriy stand-in, gold library-headed aizealotwu mascot, own-avatar dark-blue-haired anime figure for deepdreamer, and violet opaque-helmet Florencia stand-in. Two masked figures and library mascot are fictional; no claimed human likeness. Full outfits/shoes visible, no names or scores.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

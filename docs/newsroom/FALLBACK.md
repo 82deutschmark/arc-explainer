@@ -1,5 +1,11 @@
 # The ARC Daily Digest backup desk (Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire)
 
+Read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) before reporting on a person or team or selecting their artwork; the Card Cabinet and saved dossiers are the shared reporting record.
+
+Apply its mandatory lookup to every person/team mention, including captions, handoffs
+and social copy. Use the exact individual/team card permalink and approved current avatar;
+record a missing card without inventing a match. This applies to edition and wire rescue runs.
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Author: Claude Opus 5.5 · 10 October 2026, at the Boss's request · rewritten by Claude Opus 5.5 Max,
@@ -63,7 +69,11 @@ these differences:
    cannot generate images. After writing the lead contest's draft, run the art planner as
    `docs/newsroom/ART_DESK.md` describes. If the plan returns a job with `reuseBase`, compose from
    that exact approved base with the fresh brief, look at the finished image, attach it and validate.
-   If it returns no job, or a job that needs new generation, publish without an image. Never pick a
+   If it returns no job, or a job that needs new generation, verified text may still publish,
+   but the edition X announcement must remain blocked for missing artwork. Never send text-only
+   edition copy or bypass the guarded handoff in X_POSTING.md. Use the Card Cabinet
+   (https://arc.markbarney.net/news/cards) and registered reference characters for all existing
+   artwork selection; backup cannot invent a substitute likeness. Never pick a
    scene the planner did not approve, and never reuse a finished image from an earlier issue.
    State the picture outcome in your final OUTCOME line so the Boss sees it.
 6. **No posting.** Do not post to X or Discord yourself: the desk relay announces the live edition

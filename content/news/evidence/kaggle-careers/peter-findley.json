@@ -1,0 +1,173 @@
+{
+  "personId": "peter-findley",
+  "handle": "raist321",
+  "name": "Peter Findley",
+  "checkedAt": "2026-10-30T12:01:43Z",
+  "method": "Built-in Claude desktop browser pane, 2026-10-30. Loaded the public Kaggle About page and the Competitions page once each (about 6 seconds of render wait, 5 seconds between pages), read with page text plus a read-only look at the page's own elements (join-date tooltip, medal icon alt text, avatar image address) and screenshots of the competition list to read the medal icons. No sign-in action, no refresh loop, no rate-limit or block page appeared. The browser pane was already signed in as the Boss; nothing was clicked except scrolling. An older draft of this file written while Kaggle was blocking the desk was discarded and rebuilt only from these live pages.",
+  "sources": [
+    "https://www.kaggle.com/raist321",
+    "https://www.kaggle.com/raist321/competitions"
+  ],
+  "profile": {
+    "displayedName": "Peter Findley",
+    "competitionTier": null,
+    "competitionTierNote": "Searched the visible text of both the About and Competitions pages, and the Competitions page's markup, for a tier label (Novice, Contributor, Expert, Master, Grandmaster), a competition rank and a medal summary, and found none. Nothing was inferred from the colour of the ring around the avatar, so no tier is recorded.",
+    "medals": {
+      "bronze": 1
+    },
+    "medalsBasis": "Counted from the medal icons beside each completed competition in the list (one bronze icon on NVIDIA Nemotron Model Reasoning Challenge, none on the other five). Kaggle's own profile medal total was not displayed.",
+    "joinedMonth": "2023-06",
+    "joinedTooltip": "Mon Jun 05 2023 03:05:47 GMT-0400 (Eastern Daylight Time)",
+    "joinedLabel": "Joined 3 years ago",
+    "lastSeenLabel": "last seen 8 days ago",
+    "bioPresent": false,
+    "bioText": "No bio yet",
+    "pinnedWork": "AI Mathematical Olympiad - Progress Prize 3 (1583rd of 4,138)",
+    "tabCounts": {
+      "competitions": 7,
+      "datasets": 17,
+      "models": 2,
+      "code": 1,
+      "discussion": 6,
+      "followers": 2,
+      "following": 4
+    },
+    "activityPanel": {
+      "competitionsSolo": 8,
+      "competitionsInTeam": 0,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 6,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "AI Mathematical Olympiad - Progress Prize 3",
+      "Orbit Wars",
+      "ROGII - Wellbore Geology Prediction",
+      "Predicting Irrigation Need",
+      "Predicting Stellar Class"
+    ],
+    "scopeNote": "Only these seven records (one active, six completed) were publicly listed. The activity panel on the same page says eight solo competitions, so one entry is counted but not listed. Do not invent additional finishes or treat the list as the full participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "kind": "Featured",
+      "rank": 384,
+      "teams": 4185,
+      "medal": "bronze",
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "kind": "Featured, code competition",
+      "rank": 1583,
+      "teams": 4138,
+      "medal": null,
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Orbit Wars",
+      "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+      "kind": "Featured, simulation competition",
+      "rank": 4046,
+      "teams": 4729,
+      "medal": null,
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "kind": "Featured, code competition",
+      "rank": 5653,
+      "teams": 6125,
+      "medal": null,
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predicting Irrigation Need (Playground Series - Season 6 Episode 4)",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e4",
+      "kind": "Playground",
+      "rank": 651,
+      "teams": 4315,
+      "medal": null,
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predicting Stellar Class (Playground Series - Season 6 Episode 6)",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e6",
+      "kind": "Playground",
+      "rank": 1889,
+      "teams": 2816,
+      "medal": null,
+      "displayedHandles": ["raist321"],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/peter-findley.webp",
+    "sourceUrl": "https://www.kaggle.com/raist321",
+    "note": "Confirmed on 2026-10-30. The saved 320 by 320 picture is the same image as the current profile picture on his Kaggle page (a grey British shorthair cat in a deerstalker hat with a pipe), compared by eye against the full 400 by 400 original at https://storage.googleapis.com/kaggle-avatars/images/15427939-kg.png?t=2026-02-18-16-16-06. It is his own individual profile picture: not a group image and not Kaggle's default grey avatar. It is the avatar he chose, not a photograph of his face, and no photograph of him was found in the sources checked (the two Kaggle pages). Status follows the desk's convention in the sibling evidence files, where a player's own chosen avatar (duck, fox, cat, rabbit, robot, anime character) is recorded as own-verified, and only Kaggle's default grey placeholder is recorded as none-available. No replacement was needed and the saved file was not touched."
+  },
+  "facts": [
+    {
+      "text": "Peter Findley's public Kaggle profile, under the handle raist321, dates his account to June 2023.",
+      "sourceUrl": "https://www.kaggle.com/raist321",
+      "sourceTitle": "Peter Findley - public Kaggle profile and join-date tooltip",
+      "checkedAt": "2026-10-30T12:01:43Z"
+    },
+    {
+      "text": "Kaggle lists Peter Findley's completed NVIDIA Nemotron Model Reasoning Challenge entry 384th of 4,185 teams, with a bronze medal; the entry shows the raist321 account alone.",
+      "sourceUrl": "https://www.kaggle.com/raist321/competitions",
+      "sourceTitle": "Peter Findley - completed NVIDIA Nemotron Model Reasoning Challenge result on Kaggle",
+      "checkedAt": "2026-10-30T12:01:43Z"
+    },
+    {
+      "text": "Peter Findley's profile pins the AI Mathematical Olympiad - Progress Prize 3, where Kaggle shows him 1583rd of 4,138 teams.",
+      "sourceUrl": "https://www.kaggle.com/raist321",
+      "sourceTitle": "Peter Findley - pinned AI Mathematical Olympiad - Progress Prize 3 result",
+      "checkedAt": "2026-10-30T12:01:43Z"
+    },
+    {
+      "text": "Kaggle lists the ARC Prize 2026 - ARC-AGI-3 competition among Peter Findley's active competitions, and its activity panel shows none of his competitions as team entries.",
+      "sourceUrl": "https://www.kaggle.com/raist321/competitions",
+      "sourceTitle": "Peter Findley - active ARC-AGI-3 entry and solo-versus-team activity on Kaggle",
+      "checkedAt": "2026-10-30T12:01:43Z"
+    }
+  ],
+  "teamNotes": "Every listed entry shows only the account raist321, and Kaggle's activity panel counts zero competitions in a team, so no teammates and no team names are displayed. The desk's own roster observations (public ARC board, 2026-10-11 to 2026-10-13) show a team named Peter Findley with raist321 as the only member in both ARC-AGI-3 and ARC-AGI-2; those are board observations, not a Kaggle profile claim. The ARC-AGI-2 entry does not appear in the profile's competition list.",
+  "unverified": [
+    "Competition tier, Kaggle's own medal total and competition rank: not displayed on either page in this view; the one bronze is counted from list icons.",
+    "Exact completion dates of any competition: Kaggle shows only relative labels such as 4 months ago.",
+    "Why the activity panel counts eight solo competitions while the list shows seven.",
+    "Whether he entered ARC-AGI-2: the profile list does not show it, though the desk's earlier board observation of 2026-10-13 does.",
+    "Whether the handle Peter_Findley on the official ARC-AGI-3 human leaderboard is the same person as raist321: not re-checked today (arcprize.org was outside this browsing scope) and never verified; any such standing is provisional public data.",
+    "Any prize, write-up or other honour beyond the bronze medal above: none was displayed."
+  ],
+  "verified": true
+}

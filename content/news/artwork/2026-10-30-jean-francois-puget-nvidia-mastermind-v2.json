@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "2026-10-30-jean-francois-puget-nvidia-mastermind-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T19:46:26.245Z",
+  "purpose": "character-reference",
+  "subjectId": "jean-francois-puget",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "rawSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v2-native.png",
+  "toolOutput": "exec-876cab74-8265-42d4-b711-beefbc5ffb2f.png",
+  "prompt": "Use case: precise-object-edit. Correct ONLY the AGE and facial/hair characterization of Jean-François Puget in this existing cyberpunk mastermind illustration. The editor says he is much older: he must clearly read as a distinguished man IN HIS SIXTIES, a seasoned mentor/patriarch leading a brilliant younger team. The current portrait is far too young. Preserve the exact command pose, hand near beard/chin, other hand over model, cyber optics, costume, crimson accents, GPU-chair apparatus, NVIDIA-green GPU Citadel setting and architecture, holographic fortress model, image composition and coherent illustrated medium.\n\nAge this SAME character into an unmistakably handsome, dignified senior mastermind. Give him a substantially FULLER, softly bushier beard with very prominent SILVER/GRAY and white streaks across cheeks, sideburns, chin and moustache, with some darker brown strands remaining underneath. Beard is mature, luxuriant and neatly kept, warm and patriarchal rather than the short sharp dark beard of a young space captain. Hair: groomed swept-back dark-and-gray waves with clearly SILVER TEMPLES and gray around the crown, reduced youthful high quiff. Face: mature forehead creases, subtle crow's feet and smile lines, slightly fuller wise face, experienced relaxed eyes with a warm intelligent twinkle, assured wry half-smile. He is charismatic and formidable, healthy and energetic in his sixties, not frail, grim or aged into a caricature. Subtle mature facial planes and aging lines are intentionally preserved in the glamorous illustration; glamour does NOT mean youth. Keep him attractive and polished, but visibly older. Do not introduce an actor likeness, a bald head or a different person.\n\nKeep facial skin fully painted/illustrated like the existing artwork, not photographic or a pasted-on face. No anime, no new background, no change to machinery, no additional people or props, no Santa clothing, no actual franchise character costume. Same portrait5:7 full bleed. No lettering, stats, badges, border, watermark or baseball-card graphics. This is one focused age correction, not a new composition.",
+  "toolArguments": {
+    "prompt": "Use case: precise-object-edit. Correct ONLY the AGE and facial/hair characterization of Jean-François Puget in this existing cyberpunk mastermind illustration. The editor says he is much older: he must clearly read as a distinguished man IN HIS SIXTIES, a seasoned mentor/patriarch leading a brilliant younger team. The current portrait is far too young. Preserve the exact command pose, hand near beard/chin, other hand over model, cyber optics, costume, crimson accents, GPU-chair apparatus, NVIDIA-green GPU Citadel setting and architecture, holographic fortress model, image composition and coherent illustrated medium.\n\nAge this SAME character into an unmistakably handsome, dignified senior mastermind. Give him a substantially FULLER, softly bushier beard with very prominent SILVER/GRAY and white streaks across cheeks, sideburns, chin and moustache, with some darker brown strands remaining underneath. Beard is mature, luxuriant and neatly kept, warm and patriarchal rather than the short sharp dark beard of a young space captain. Hair: groomed swept-back dark-and-gray waves with clearly SILVER TEMPLES and gray around the crown, reduced youthful high quiff. Face: mature forehead creases, subtle crow's feet and smile lines, slightly fuller wise face, experienced relaxed eyes with a warm intelligent twinkle, assured wry half-smile. He is charismatic and formidable, healthy and energetic in his sixties, not frail, grim or aged into a caricature. Subtle mature facial planes and aging lines are intentionally preserved in the glamorous illustration; glamour does NOT mean youth. Keep him attractive and polished, but visibly older. Do not introduce an actor likeness, a bald head or a different person.\n\nKeep facial skin fully painted/illustrated like the existing artwork, not photographic or a pasted-on face. No anime, no new background, no change to machinery, no additional people or props, no Santa clothing, no actual franchise character costume. Same portrait5:7 full bleed. No lettering, stats, badges, border, watermark or baseball-card graphics. This is one focused age correction, not a new composition.",
+    "referenced_image_paths": [
+      "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-a363ee2a-6579-4a2e-a5d8-7b3be6c31003.png"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-nvidia-mastermind-v1-native.png",
+      "role": "Edit target: original NVIDIA mastermind composition; correct age only, preserve all other design and narrative elements.",
+      "sha256": "19fe245df870b21bac1e3aaee4b7e57bed95b65c3e2e7ac4368f834cc6a164e8",
+      "actualToolInput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-a363ee2a-6579-4a2e-a5d8-7b3be6c31003.png"
+    }
+  ],
+  "reviewStatus": "superseded-draft",
+  "review": "Focused age correction: visibly senior mentor, fuller silver/gray beard, silver temples and mature facial lines, retaining illustrated glamour, wry expression, command pose, optics, crimson accents and emerald NVIDIA GPU Citadel. No baked-in card graphics or typography. Editor subsequently required a fuller face/build, ponytail, spectacles and CPMP helmet engraving; current version is cpmp-ponytail-v3.",
+  "commissionAuthority": "Boss prioritized Lukas and DZ retro conversions, then six integrated-face-hardware cyberpunk repairs on 30 October 2026.",
+  "archiveNote": "Exact native PNG, lossless 1500×2100 sRGB WebP derivative, full prompt and actual inputs retained. Earlier originals unchanged.",
+  "rawSha256": "b5a15df02162b567750f5bc32f73483aaa877e128e8825eda3ac842f03c7a84e",
+  "nativeOriginalSha256": "4434a170ebbb6b84500a591683c126c5230dc20adf342dfa7ada1353e3c601ab",
+  "previousCardArt": null
+}

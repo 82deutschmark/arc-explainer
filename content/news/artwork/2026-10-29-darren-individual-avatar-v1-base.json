@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "2026-10-29-darren-individual-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T02:13:40.913Z",
+  "toolOutput": "exec-aa6fa7ef-7d1a-4100-84a8-6ffc686618c0.png",
+  "rawSrc": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+  "prompt": "Use case: stylized-concept. Asset type: a dedicated reusable individual competitor avatar illustration for Darren Amadeus Martin's ARC Daily Digest collectible card. Generate a NEW illustration with the TWO DOGS ONLY, based on the supplied owner photograph and approved team scene; this must be a separate composition, not a crop of the group. Input1 is Darren's exact own Kaggle avatar: cream Labrador/retriever-type dog with floppy ears and a dark gray/black-and-white husky-type dog with white muzzle and face markings. Input2 is the approved Domdolus Tolus team artwork: preserve these same two illustrated dog characters, detailed fur, happy charismatic expressions, black racing harnesses with bright square ARC-grid chest panels, gold/amber trim for the cream dog and cyan trim for the husky. Exactly TWO dogs together represent ONE person's account, Darren. No human Darren, no humanoids and no other animals. Composition: beautifully polished cinematic 3D-comic sports-star duo portrait, both complete dogs sitting shoulder-to-shoulder on a luminous square ARC-grid stage, every ear, tail and paw comfortably inside the frame. Cream dog on left, husky on right. Both dogs look toward the camera, friendly and alert, a little superstar swagger. Medium-close view, the pair large in frame and their chests and distinctive markings easily read at trading-card size. Warm amber stage spotlights, midnight-blue scoring-hall architecture, softly glowing colorful geometric ARC square puzzles in the background; simpler background than the ensemble so the two dogs remain the stars. Landscape 4:3 composition. No borders or trading card frame, no words, names, letters, numbers, scores, ranks, medals, watermark, company logos or generic Kaggle goose. Keep the two distinct dog identities from the owner's image and the approved illustration. No extra limbs, paws or duplicated heads.",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: a dedicated reusable individual competitor avatar illustration for Darren Amadeus Martin's ARC Daily Digest collectible card. Generate a NEW illustration with the TWO DOGS ONLY, based on the supplied owner photograph and approved team scene; this must be a separate composition, not a crop of the group. Input1 is Darren's exact own Kaggle avatar: cream Labrador/retriever-type dog with floppy ears and a dark gray/black-and-white husky-type dog with white muzzle and face markings. Input2 is the approved Domdolus Tolus team artwork: preserve these same two illustrated dog characters, detailed fur, happy charismatic expressions, black racing harnesses with bright square ARC-grid chest panels, gold/amber trim for the cream dog and cyan trim for the husky. Exactly TWO dogs together represent ONE person's account, Darren. No human Darren, no humanoids and no other animals. Composition: beautifully polished cinematic 3D-comic sports-star duo portrait, both complete dogs sitting shoulder-to-shoulder on a luminous square ARC-grid stage, every ear, tail and paw comfortably inside the frame. Cream dog on left, husky on right. Both dogs look toward the camera, friendly and alert, a little superstar swagger. Medium-close view, the pair large in frame and their chests and distinctive markings easily read at trading-card size. Warm amber stage spotlights, midnight-blue scoring-hall architecture, softly glowing colorful geometric ARC square puzzles in the background; simpler background than the ensemble so the two dogs remain the stars. Landscape 4:3 composition. No borders or trading card frame, no words, names, letters, numbers, scores, ranks, medals, watermark, company logos or generic Kaggle goose. Keep the two distinct dog identities from the owner's image and the approved illustration. No extra limbs, paws or duplicated heads.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "darren-amadeus-martin-avatar",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+      "role": "Darren's own two-dog Kaggle avatar. Both dogs together are one competitor.",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+      "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+      "role": "Approved full Domdolus team illustration supplies the established two-dog character designs, harnesses and scoring-hall style. New separate illustration; no group crop.",
+      "sha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852"
+    }
+  ],
+  "review": "Inspected native output: exactly two complete dogs, cream floppy-eared retriever left and dark/white husky right, with distinct markings and amber/cyan ARC-grid racing harnesses. Both alert and friendly, all paws, ears and tails visible, no humans, extra animals, names, scores, ranks or medals. New dedicated duo composition matches the existing team scene. The two dogs together represent Darren's one account.",
+  "reviewStatus": "reviewed",
+  "commissionAuthority": "Boss requested Darren's individual card and the team card with artwork and stats together; standing commission requires saved reusable avatars and all artwork retained with notes.",
+  "archiveNote": "Original native PNG retained unchanged. Own Kaggle photo and original group scene retained. This individual illustration does not release held articles or authorize social sends.",
+  "rawSha256": "5885a483826cd18337f05d9c03f3560ca4afd7113e67c102a83b6657f7bb4746"
+}

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-deadline-scoring-hall",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-31T02:58:56.867548+00:00",
+  "toolArguments": {
+    "prompt": "Use case: illustration-story. A NEW wide, cinematic ARC Daily Digest editorial episode in the familiar Scoring Hall. Reference image 1 establishes the grand dark brass scoring hall, giant screen, snowy mountain arches, vivid amber and blue comic style; do not copy its old layout or outdated banana-kitten character. Reference image 2 is authoritative for Team Turducken's seven established characters, the two Yorkies and their mechanical turkey/chicken/duck vehicle. The breaking news: no deadline extension despite the agonizing queue. Tell that story through the characters: prominently gather the whole team together on and around their turkey machine at the front of a long queue inside the great scoring hall, looking up at a large, stern clock near midnight and a stalled scoring board with a simple progress bar stuck in place. Mark the muscular bearded engineer, Son with his broad blue visor, Keith's black-capped yellow mascot, blonde DZ holding pink bunny, NT the distinct deadpan yellow bird with heavy black eyebrows and ochre beak (never banana kitten), Choryu with grayscale screen for a head, and Herminator the silver-and-cobalt blue-plumed knight; exactly two Yorkies. Show their recognizable individual reactions: dismay, determination, impatience, one checking the clock, another waiting at a console. Their team is together and prominent; other competitors may appear as distant anonymous silhouettes. A glowing queue of machines extends into the hall. Express human stakes and frustration, still playful and dignified. Fantasy illustration, no claims about actual equipment. No words, lettering, numerals, logos, captions, timestamps, score numbers, or watermarks.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-22-arc3-lights-out-scoring-hall-v1.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-29-turducken-nt-corrected-v2.webp"
+    ],
+    "transparent_background": false
+  },
+  "rawSrc": "/news-images/2026-10-30-deadline-scoring-hall.png",
+  "rawSha256": "e769075eafc5cb0562106eda4cfd20195fd7f7693cd61878a34c7cee922a4898",
+  "references": [
+    {
+      "src": "/news-images/2026-10-22-arc3-lights-out-scoring-hall-v1.png",
+      "sha256": "1d384c37c0f43f4ea3a285b9c951ad0db1c6585ff075b0155125442f8a65e76d",
+      "role": "Scoring hall setting and visual style"
+    },
+    {
+      "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+      "sha256": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
+      "role": "Corrected Team Turducken crew and Yorkies"
+    }
+  ],
+  "purpose": "Head-editor commissioned deadline special",
+  "review": "Inspected: all seven established Turducken characters, including the corrected yellow-bird NT and separate black-capped Keith, and two Yorkies wait together at the scoring hall with a stalled progress bar and clock. No scores or lettering.",
+  "reviewStatus": "reviewed"
+}

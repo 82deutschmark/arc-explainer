@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-lonnie-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "lonnie",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-lonnie-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-lonnie-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "41ae0720d871579794573f198a7c1baa350fa14f04993ccc4177f815e1899481",
+  "rawSha256": "41ae0720d871579794573f198a7c1baa350fa14f04993ccc4177f815e1899481",
+  "toolOutput": "exec-08fc4738-513a-4d07-b01f-dfbe4c7b8fef.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. The reference is the owner's chosen drawn avatar, NOT a verified human photo. Preserve the adult character's medium-length dark hair, round spectacles, warm smile and teal shirt; represent as the same charming illustrated character. Teal and warm-bronze cyberpunk jacket with small mint ARC-square inlays, translucent mini grid cupped in one hand, scholarly superstar confidence.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. The reference is the owner's chosen drawn avatar, NOT a verified human photo. Preserve the adult character's medium-length dark hair, round spectacles, warm smile and teal shirt; represent as the same charming illustrated character. Teal and warm-bronze cyberpunk jacket with small mint ARC-square inlays, translucent mini grid cupped in one hand, scholarly superstar confidence.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/lonnie.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/lonnie.webp",
+      "sha256": "7f356916a1376617c5b9da9fa59d7bc5c6445bc997f7278446d97f95e8b05448",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/lonnieqin"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

@@ -1,0 +1,42 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-27T01:43:38Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "fshindo returns to ARC-3 gold places",
+  "id": "2026-10-26-2201-arc-3-fshindo-returns-to-gold-places",
+  "personIds": [
+    "fshindo"
+  ],
+  "publishedAt": "2026-10-27T02:01:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "fshindo moved from 20th to 19th on the ARC-AGI-3 public board, returning to the gold places at 38.20 with the score unchanged."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold line now reaches 19th at 38.20, after sitting at 20th a day earlier. Public standings are provisional."
+    }
+  ],
+  "since": "2026-10-26T01:40:54Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T02:00:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16992721"
+  ],
+  "visual": {
+    "alt": "fshindo’s Kaggle profile picture",
+    "href": "/news/people/fshindo",
+    "src": "/news-images/people/fshindo.webp"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T11:41:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "NVARC3 advances to sixth on ARC-3",
+  "id": "2026-10-26-0757-arc-3-nvarc3-advances-to-sixth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T11:57:57Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "NVARC3 gained 2.94 points to reach 48.84, moving from 8th to 6th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move places NVARC3 inside the provisional gold places, which currently extend through 19th."
+    }
+  ],
+  "since": "2026-10-25T11:34:24Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T11:57:05Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15770880"
+  ]
+}

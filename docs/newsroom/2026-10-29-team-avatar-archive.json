@@ -1,0 +1,552 @@
+{
+  "archivedAt": "2026-10-29T23:49:13.619906Z",
+  "authority": "Boss: preserve all completed artworks and notes in the newsroom repository, including the ARC2 duo; no NVIDIA article.",
+  "scope": "Nine curated team references; no people-ledger edits, automatic reusable scenes or article publication.",
+  "features": [
+    {
+      "folder": "yktori",
+      "subjectId": "yktori-team",
+      "teamIds": {
+        "arc-3": [
+          "16760837"
+        ]
+      },
+      "generationRecord": "2026-10-29-yktori-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-yktori-avatar-v1-native.png",
+      "nativeSha256": "28a4cb017947242340e78b228aa19714a3fddb8ae8d8d039e04585200ed18534",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports avatar for the ARC Daily Digest's yktori feature. Create one polished square cinematic 3D comic illustration, full-body central single adult-proportioned compact humanoid contender, energetic athletic landing pose on a small floating square ARC puzzle-grid podium. This is an ORIGINAL fictional account mascot named the Silver Comet, not a real likeness and not an adaptation of the generic Kaggle goose. Entire head is a sleek mirrored silver helmet with a single orange horizontal visor; no skin or human facial features visible. Streamlined midnight-cobalt racing suit, silver boots, beautiful sharply defined saturated red blue yellow cyan green magenta orange square ARC-grid panels on jacket sleeves and chest; short pixel-square scarf trails behind like a comet. A silver sketching stylus at the belt subtly nods to the competitor's documented Drawing with LLMs result without claiming their ARC method. Striking clean silhouette, confident superstar entrance, premium animated-film materials, warm amber rim light, deep cobalt and dark slate blurred scoring-hall arena background, floating abstract colored square confetti, low camera. Keep whole character and boots inside the image, plenty of clean border space. One subject, no other people, no animal, no goose, no duck, no words, letters, numerals, rank, score, medal logos, brand marks or watermark. The character must be reusable and unmistakable in later scenes.",
+        "transparent_background": false
+      },
+      "review": "Inspected one adult-proportioned fictional Silver Comet with completely opaque mirrored helmet, orange visor, cobalt ARC jacket, grid scarf and both boots visible. No human likeness, default goose, letters, scores or medals.",
+      "identityNotes": [
+        "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+        "The generic Kaggle goose is not a personal identity. Preserve this as the newspaper’s fictional Silver Comet, not an owner-selected avatar."
+      ],
+      "inputArchiveMap": [],
+      "ownerReferences": [],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "michaeltgao",
+      "subjectId": "mtg-team",
+      "teamIds": {
+        "arc-3": [
+          "16153655"
+        ],
+        "arc-2": [
+          "16153654"
+        ]
+      },
+      "generationRecord": "2026-10-29-mtg-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-mtg-avatar-v1-native.png",
+      "nativeSha256": "a1acb864dc714f0055f39d3a35da623b45ce293adca984d4e11b6850d3c2c327",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: an original friendly black-and-white chess ROOK-shaped robot athlete, body a compact smooth obsidian tower with silver battlements for a crown; a bright cyan horizontal eye slit, orange-and-cyan split varsity jacket covered in neat multicolor ARC grid patches, articulated silver hands and chunky sneakers. Exactly two small glowing square ARC-grid playing boards orbit beside the two hands at hip height, one orange and one cyan, to symbolize the account's entries in two distinct ARC contests. Dynamic celebratory sidestep on a dark polished scoring-hall floor, subtle blurred double arena portals in background. Confident and charismatic, sport-star arrival. Not a knight, not a person wearing a helmet, not a goose. Two boards are visual metaphor, no contest names.",
+        "transparent_background": false
+      },
+      "review": "Inspected one friendly black rook robot in orange/cyan ARC jacket, silver crown, exactly two separate floating ARC boards, articulated hands and both shoes. Fictional account mascot, no personal likeness.",
+      "identityNotes": [
+        "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
+      ],
+      "inputArchiveMap": [],
+      "ownerReferences": [],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "grigoriy",
+      "subjectId": "grigoriy-team",
+      "teamIds": {
+        "arc-3": [
+          "16490178"
+        ]
+      },
+      "generationRecord": "2026-10-29-grigoriy-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-native.png",
+      "nativeSha256": "1b97b0c45689a29dabeb88b27a452285787022c4f4de106e714a989cc8f0e242",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable FOUR-member team avatar for the ARC Daily Digest's Grigoriy Zatravkin & co feature. Input is an inspected contact sheet of TWO own-profile graphics, with source labels for reference ONLY: left is aizealotwu's golden scholarly-library graphic, right is deepdreamer's own dark-blue-haired anime figure. It is NOT a group photograph. Create ONE wide 2:1 cinematic polished 3D comic team portrait, EXACTLY FOUR separated compact adult-proportioned characters standing in a confident esports walk-on lineup on a colorful ARC-grid floor, full hands/shoes visible, dim grand scoring-hall background and amber spotlights. Character1 far left: entirely fictional anonymous dark-red opaque-helmet contender representing Grigoriy's account, no human face or animal traits, silver and red ARC-grid jacket, dignified stance. Character2 middle-left: ORIGINAL fictional scholarly mascot representing aizealotwu's owner graphic, a charming gold-and-black cuboid helmet shaped like a tiny abstract library with an open glowing book held at waist, long black-gold racer coat and vivid square ARC patches; no text from source graphic. Character3 middle-right: adapted from deepdreamer's own anime avatar, preserve dark navy short bobbed hair and recognizable youthful anime face, adult body proportions, elegant dark-blue ARC-grid sports jacket and confident thoughtful pose. This is an avatar illustration, no claim about the real person's gender or face. Character4 far right: entirely fictional anonymous violet opaque-helmet contender representing Florencia's account, smooth featureless opaque helmet, cyan and magenta grid jacket. The two masked figures are editorial stand-ins, never claimed real likenesses. All four equal adult scale, distinct silhouette, natural anatomy, readable vibrant square puzzle panels. No default Kaggle goose, no background crowd, no lettering, names, labels, symbols of academic awards, ranks, score or watermark.",
+        "referenced_image_paths": [
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected exactly four separated characters: red opaque-helmet Grigoriy stand-in, gold library-headed aizealotwu mascot, own-avatar dark-blue-haired anime figure for deepdreamer, and violet opaque-helmet Florencia stand-in. Two masked figures and library mascot are fictional; no claimed human likeness. Full outfits/shoes visible, no names or scores.",
+      "identityNotes": [
+        "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+        "The two helmets are fictional account stand-ins, and the scholarly mascot is an original adaptation of the owner graphic. The anime face is an avatar, not a claimed human likeness.",
+        "Dated four-account roster: grigoriyzatravkin, aizealotwu, deepdreamer, florenciasolange. Refresh exact current roster before a new team scene."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/own-avatar-contact-sheet.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+          "sha256": "9c3acfa030c87548ea65324f814c0df1e75b57cbe2e8a79b5bd6f778108f48f6"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/aizealotwu-own-avatar.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-aizealotwu-own-avatar.jpg",
+          "sha256": "bed39e008a91548dd43a213f02dab914c7221a52be04e786cdde862eb8a2b368"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/grigoriy/deepdreamer-own-avatar.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-deepdreamer-own-avatar.jpg",
+          "sha256": "9369be1edbcd7e1a3704f99f7d158b2af8b3d4ca14d6d8c01f3e6564d79e26f6"
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-aizealotwu-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "aizealotwu — unchanged individual source",
+          "role": "Frozen individually owned source for aizealotwu. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "bed39e008a91548dd43a213f02dab914c7221a52be04e786cdde862eb8a2b368",
+          "sourceUrl": "https://www.kaggle.com/aizealotwu",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/21593429-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-deepdreamer-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "deepdreamer — unchanged individual source",
+          "role": "Frozen individually owned source for deepdreamer. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "9369be1edbcd7e1a3704f99f7d158b2af8b3d4ca14d6d8c01f3e6564d79e26f6",
+          "sourceUrl": "https://www.kaggle.com/deepdreamer",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/856891-kg.jpg"
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "japanese-ensemble",
+      "subjectId": "kontext-team",
+      "teamIds": {
+        "arc-3": [
+          "16569113"
+        ]
+      },
+      "generationRecord": "2026-10-29-japanese-ensemble-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-native.png",
+      "nativeSha256": "4d530ec92dcb3450fd4e6f07da793e1f259459c9b65e3a744975c6f5eac8298b",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable EIGHT-member esports team character sheet/ensemble avatar for the ARC Daily Digest. Input is an inspected labelled contact sheet of the eight actual Kaggle own-avatar references, four on upper row and four lower, labels are SOURCE MAPPING ONLY and must not be rendered. Create ONE wide 2:1 beautifully polished cinematic 3D comic tableau showing EXACTLY EIGHT distinct characters, arranged TWO ROWS OF FOUR on two broad ARC-grid steps, each entire character separated and readable, friendly confident sports-star team entrance, no background people. Use the eight owner graphics to preserve each identity distinctly, adult proportions for humanoids. UPPER ROW left-to-right:1 isakatsuyoshi: black-haired big-eyed anime adult holding a small plain cup, black-and-cyan ARC jacket;2 konbu17: cheerful bright-green seaweed frond mascot in an orange ARC-grid vest;3 pompom555: deep navy/white ORCA mascot with bold white eye-patch, yellow/blue ARC racer harness, clearly separate from whale;4 refv00: cute pale-green round DINOSAUR mascot with tiny arms, cobalt ARC vest. LOWER ROW left-to-right:5 tanakaai24: the owner's brown-bobbed anime reader with round glasses, thick tan scarf, a plain closed book and red/cyan ARC jacket;6 tk256ailab: ORIGINAL fictional dark hooded opaque-face explorer, an abstract gold stairway motif on backpack nods to the owner's rear-view stairway photo, no invented human face, violet and gold ARC panels;7 ttyn4519: an ORIGINAL heroic white/navy/yellow/red articulated robot inspired by the owner's giant-robot photograph, respectful generic original mecha, no existing franchise logos or lettering, magenta/cyan ARC shoulder panels;8 yuto0712: the owner's adorable soft pale-blue WHALE mascot with pale belly and stubby fins, tiny navy-and-blue ARC scarf. Keep orca, whale, green dinosaur and seaweed shapes all separate, no extra creatures. Warm amber hall spotlights and cool azure fills, stylish detailed textures, bright square puzzle colors. No names, labels, real-world faces, team name text, rank, scores, medals, company marks or watermark. All eight motifs present once each; this is a reusable fantasy team-avatar ensemble, not a documentary team photograph.",
+        "referenced_image_paths": [
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected exactly eight subjects in two rows of four matching own-avatar motifs: Isaka cup-holder, konbu seaweed, pompom orca, re green dinosaur; Tanaka glasses/scarf/book, TK256 opaque stairway explorer, ttyn white/navy/red/yellow robot and yuto blue whale. Orca and whale distinct. TK256 is a faceless fictional stand-in inspired by the rear-view tower photo. No generic goose, labels or scores.",
+      "identityNotes": [
+        "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+        "Preserve all eight separate motifs. The orca and whale are different characters. TK256’s masked explorer is fictional and respects a rear-view source without inventing a human face.",
+        "Owner-selected cartoons and mascot graphics are account avatars, not verified human appearances. Refresh all eight exact roster handles before later team scenes."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/own-avatar-contact-sheet.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+          "sha256": "c68e1d65d8a288c40c4b6033dc30f8d83485bd18ae5a194f291da95facdc9e27"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/isakatsuyoshi-own-avatar.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-isakatsuyoshi-own-avatar.jpg",
+          "sha256": "e3c0b1965f28d49de01df60dd3499a5e7f7c247617ba1fe0c05db6f21c57c8a6"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/konbu17-own-avatar.png",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-konbu17-own-avatar.png",
+          "sha256": "565a1b846474fe1b6413d12dd62c6c537fe8663f569b427ca23d5f4eeae76b73"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/pompom555-own-avatar.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-pompom555-own-avatar.jpg",
+          "sha256": "500e877f040148648187cbafd4dc30dcd81b73b6da286c3551ca8d6d170007d9"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/refv00-own-avatar.jpeg",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-refv00-own-avatar.jpeg",
+          "sha256": "8becb1bc782bcd1988329a1e2115f0b31317c72dcba2482ecb7b4b31b28d0952"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/tanakaai24-own-avatar.png",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tanakaai24-own-avatar.png",
+          "sha256": "9e534e60644532893857cc9a1f493a8e50cb913c53cc7489cddfea5860325828"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/tk256ailab-own-avatar.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tk256ailab-own-avatar.jpg",
+          "sha256": "3c3e504866b1bb45316c85b3e7b9b051c330148c9f2d0bd1ece519c1b99c359b"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/ttyn4519-own-avatar.png",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-ttyn4519-own-avatar.png",
+          "sha256": "3e0f4edb52c815eb6dacc5ef9e82216a4623c977c2e54e48c36af914d1b66017"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/japanese-ensemble/yuto0712-own-avatar.PNG",
+          "archivedSrc": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-yuto0712-own-avatar.png",
+          "sha256": "e710d1850bc001c19a628642e7f8e56f098331b4c891aafd08a02c3062eaa1c6"
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-isakatsuyoshi-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "isakatsuyoshi — unchanged individual source",
+          "role": "Frozen individually owned source for isakatsuyoshi. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "e3c0b1965f28d49de01df60dd3499a5e7f7c247617ba1fe0c05db6f21c57c8a6",
+          "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/5927283-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-konbu17-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "konbu17 — unchanged individual source",
+          "role": "Frozen individually owned source for konbu17. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "565a1b846474fe1b6413d12dd62c6c537fe8663f569b427ca23d5f4eeae76b73",
+          "sourceUrl": "https://www.kaggle.com/konbu17",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/31990162-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-pompom555-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "pompom555 — unchanged individual source",
+          "role": "Frozen individually owned source for pompom555. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "500e877f040148648187cbafd4dc30dcd81b73b6da286c3551ca8d6d170007d9",
+          "sourceUrl": "https://www.kaggle.com/pompom555",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/4855941-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-refv00-own-avatar.jpeg",
+          "kind": "owner-reference",
+          "label": "refv00 — unchanged individual source",
+          "role": "Frozen individually owned source for refv00. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "8becb1bc782bcd1988329a1e2115f0b31317c72dcba2482ecb7b4b31b28d0952",
+          "sourceUrl": "https://www.kaggle.com/refv00",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/11115645-kg.jpeg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tanakaai24-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "tanakaai24 — unchanged individual source",
+          "role": "Frozen individually owned source for tanakaai24. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "9e534e60644532893857cc9a1f493a8e50cb913c53cc7489cddfea5860325828",
+          "sourceUrl": "https://www.kaggle.com/tanakaai24",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/7381676-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tk256ailab-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "tk256ailab — unchanged individual source",
+          "role": "Frozen individually owned source for tk256ailab. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "3c3e504866b1bb45316c85b3e7b9b051c330148c9f2d0bd1ece519c1b99c359b",
+          "sourceUrl": "https://www.kaggle.com/tk256ailab",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/27356663-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-ttyn4519-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "ttyn4519 — unchanged individual source",
+          "role": "Frozen individually owned source for ttyn4519. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "3e0f4edb52c815eb6dacc5ef9e82216a4623c977c2e54e48c36af914d1b66017",
+          "sourceUrl": "https://www.kaggle.com/ttyn4519",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/3790528-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-yuto0712-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "yuto0712 — unchanged individual source",
+          "role": "Frozen individually owned source for yuto0712. Owner meta verified. Uppercase PNG suffix is rejected by current shared helper; downloaded exact observed twitter:image URL.",
+          "sha256": "e710d1850bc001c19a628642e7f8e56f098331b4c891aafd08a02c3062eaa1c6",
+          "sourceUrl": "https://www.kaggle.com/yuto0712",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/thumbnails/3602324-kg.PNG?t=2026-05-26-00-06-29"
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "artificial-agency",
+      "subjectId": "artificial-agency-team",
+      "teamIds": {
+        "arc-3": [
+          "16132261"
+        ]
+      },
+      "generationRecord": "2026-10-29-artificial-agency-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-native.png",
+      "nativeSha256": "731711ac5ea9622ea829430efa7dc1ecfb7cbda448480b7aa3a34d99202bd2c1",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable team character portrait for the ARC Daily Digest. Input 1: Richard Csaky's own labelled lab-site portrait; preserve his short dark cropped textured hair, clean-shaven face, gray-green eyes and angular face. Input 2: Côme Chevalier's own labelled lab-site portrait; preserve his longer tousled brown hair, brown eyes, moustache and short facial stubble. They are two separately verified lab members, not interchangeable faces. Create ONE square highly polished cinematic 3D comic portrait of EXACTLY TWO compact adult men standing side by side in full-body friendly superstar entrance poses on a glowing square ARC-grid floor in a beautiful softly blurred scoring hall. Richard at left wears a navy researcher-racer jacket with electric violet and blue square ARC puzzle panels and holds a small luminous abstract square puzzle frame; Côme at right wears a charcoal engineering-racer jacket with warm orange and teal ARC-grid panels, one glove raised in a friendly salute. Contemporary original esports outfits, no suits from source photos, no realistic hardware claims. Individual recognizable faces, mature adult proportions, full hands and shoes inside frame, no touching or overlapping faces. Both smile with restrained confidence, warm amber rimlights, tasteful vivid saturated puzzle colors, intricate fabric materials. No other people, no lab mice or brain imagery, no invented company logos, words, letters, numerals, score, ranks or medals. These are respectful fictional costumes for a two-person lab avatar.",
+        "referenced_image_paths": [
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected exactly two full-body adult men. Richard left has short textured dark hair, clean-shaven source-defined face and blue/violet ARC suit; Côme right has longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove. Source-defined lab roles only; no inferred cmechevalier account mapping. Hands/boots clear, no text or scores.",
+      "identityNotes": [
+        "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+        "Their separately labelled own-lab portraits establish the two faces and documented lab roles. Costumes and grid staging are editorial fiction.",
+        "The exact cmechevalier-to-Côme account mapping remains unresolved. This team illustration credits the independently documented lab members, not an inferred account mapping."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+          "archivedSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-1-richard-csaky-own-site.webp",
+          "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp",
+          "archivedSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-2-come-chevalier-own-site.webp",
+          "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6"
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-1-richard-csaky-own-site.webp",
+          "kind": "owner-reference",
+          "label": "Richard Csaky — unchanged individual source",
+          "role": "Frozen individually owned source for Richard Csaky. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360",
+          "sourceUrl": "https://artificialagencylab.com/",
+          "originalImageUrl": "https://artificialagencylab.com/_astro/richard.HXgm_htr_ZJMuaV.webp"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-2-come-chevalier-own-site.webp",
+          "kind": "owner-reference",
+          "label": "Côme Chevalier — unchanged individual source",
+          "role": "Frozen individually owned source for Côme Chevalier. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6",
+          "sourceUrl": "https://artificialagencylab.com/",
+          "originalImageUrl": "https://artificialagencylab.com/_astro/chevalier.B6ItV34K_2waiWi.webp"
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "majkel1337",
+      "subjectId": "majkel1337-team",
+      "teamIds": {
+        "arc-3": [
+          "16958599"
+        ],
+        "arc-2": [
+          "16373916"
+        ]
+      },
+      "generationRecord": "2026-10-29-majkel1337-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-native.png",
+      "nativeSha256": "59a828c0e3d1d840698680779dc4e07ba9e7a874f7dd8325b806ce70fca1ac6d",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Input image is the account owner's publicly linked GitHub geometric peach identicon, a graphic reference only, not a human face. Subject: an original charismatic copper-and-cream FOX esports card-game champion with upright ears, confident bright eyes, peach geometric angular brow markings loosely echoing that identicon, and an elegant dark charcoal racing blazer with copper lapels and crisp red/yellow/cyan/blue square ARC panels. Compact adult anthropomorphic fox stands in a showman's three-quarter pose on a glowing ARC grid, fanning exactly three entirely abstract square-backed cards with colorful geometric shapes, no suits/letters/creatures/logos. One copper tail visible. Cozy amber spotlights and dark art-deco arena beyond. No Pokemon or other franchise character, no money, no gambling imagery, no trophy or claimed medal. This mascot is editorial fiction; source establishes only the owner's geometric avatar graphic.",
+        "referenced_image_paths": [
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected one copper fox in charcoal/copper ARC blazer, peach geometric brow marks, one tail and exactly three abstract square-backed cards. No franchise creatures, personal likeness, words, scores or medals.",
+      "identityNotes": [
+        "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png",
+          "archivedSrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-input-1-github-avatar-original.png",
+          "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc"
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-input-1-github-avatar-original.png",
+          "kind": "owner-reference",
+          "label": "majkel1337 — unchanged individual source",
+          "role": "Frozen individually owned source for majkel1337. Directly linked own GitHub geometric identicon; graphic, not a face.",
+          "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc",
+          "sourceUrl": "https://github.com/Michal1337",
+          "originalImageUrl": null
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "aquaursa",
+      "subjectId": "aquaursa-team",
+      "teamIds": {
+        "arc-3": [
+          "15488763"
+        ],
+        "arc-2": [
+          "15488773"
+        ]
+      },
+      "generationRecord": "2026-10-29-aquaursa-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-aquaursa-avatar-v1-native.png",
+      "nativeSha256": "056bef0962c5bc0d39f3a73590b0214cc9a32fbb807eed40043c7ffb167ba57f",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: one original charming powerful AQUAMARINE POLAR BEAR esports mascot with translucent frosty aqua fur tips, friendly intelligent dark eyes and a broad bear muzzle, standing proudly on a small dark ARC-grid plinth. The bear wears a fitted navy high-collar racing/lab jacket with luminous aqua seams and vivid square puzzle-grid panels, chunky black-and-cyan boots, and sleek round engineer goggles pushed up on forehead, no glasses over eyes. One paw holds a small transparent square puzzle tile, other paw on hip, calm independent champion's stance. Ocean-blue light and abstract underwater caustics blend with a softly blurred grand scoring-hall backdrop, warm amber sparks. Distinctly a bear with rounded ears, no bird features. Do not put a computer/server or a literal workaround in this image.",
+        "transparent_background": false
+      },
+      "review": "Inspected one friendly white/aqua polar bear with engineer goggles on forehead, navy ARC jacket, one held puzzle tile and both boots. Original fictional account mascot; no generic goose or invented human face.",
+      "identityNotes": [
+        "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
+      ],
+      "inputArchiveMap": [],
+      "ownerReferences": [],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "arc2-third",
+      "subjectId": "nvbanana-arc2-team",
+      "teamIds": {
+        "arc-2": [
+          "15486939"
+        ]
+      },
+      "generationRecord": "2026-10-29-nvbanana-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-native.png",
+      "nativeSha256": "ce58000172179eb30c312393d51120700dc27cb16fc6859571fa054d815187ad",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: reusable two-contender team avatar for the ARC Daily Digest's ARC2 nvbanana profile. Reference1 is Jean-François Puget's own single-person Hall-of-Fame cyber-engineer character. Preserve his swept dark-brown hair, strong brown beard, blue-green eyes, stern-friendly face, cyan-lit helmet and dense signature shoulder GPU armor. Discard ALL printed words, rank/score/team labels, logos and framing from reference1. Reference2 is Darragh Hanley's actual owner-selected Kaggle avatar: a painterly cobalt-and-gold swirling starry sky. It is NOT his human face. Depict Hanley's account as an ORIGINAL fictional adult-proportioned celestial contender, with a fully opaque midnight-blue helmet whose faceplate is a beautiful swirling golden-cobalt galaxy with no human facial features, blue-gold ARC racer armor and a short star-patterned scarf. Exactly TWO separate compact adult-proportioned full-body figures standing side by side as a formidable friendly esports duo on a luminous ARC puzzle-grid floor in a grand soft-focus scoring hall. Puget on left in his recognizable cyan cyber-engineer gear, one hand on waist and other open in confident greeting; cosmic Hanley avatar on right holds one small floating multicolor square ARC tile. Their gear has saturated red green cyan yellow blue magenta orange white and black square puzzle patches. NVIDIA-green accent lights as editorial fantasy, no company logos or literal spending/hardware claims. A subtle small curved golden banana-shaped ornament stands on the podium edge, playful nod to team name, no extra character. Warm amber arena rimlights, cool blue fill, very polished detailed cinematic 3D comic style. Preserve subject separation, all boots and hands inside frame. No third figure, no person hidden behind them, no words, letters, labels, numerals, medals, ranks, scores, logos or watermark. The right-hand celestial figure is explicitly an account-avatar adaptation and never a claimed likeness of Hanley.",
+        "referenced_image_paths": [
+          "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected exactly two full-body characters: Puget’s bearded cyan-lit cyber-engineer on left and a completely opaque blue/gold spiral celestial avatar for Hanley on right. Hanley’s source is his own painting avatar, not a human face. One tiny banana ornament, no score, rank, company logo, letter or third character. No NVIDIA feature publication commissioned; retain art for later use.",
+      "identityNotes": [
+        "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+        "Hanley’s painting is not his human face. Keep the celestial figure completely opaque, with no invented facial features; preserve Puget’s established individual character.",
+        "Exactly two characters and a tiny banana ornament. This is ARC2 team 15486939, not NVARC3 or the full NVIDIA staff. No NVIDIA article has been commissioned; preserve artwork only."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+          "archivedSrc": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+          "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg",
+          "archivedSrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+          "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+          "kind": "owner-reference",
+          "label": "darraghdog — unchanged individual source",
+          "role": "Frozen individually owned source for darraghdog. Own painting avatar, not a human likeness.",
+          "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d",
+          "sourceUrl": "https://www.kaggle.com/darraghdog",
+          "originalImageUrl": null
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; features remain held; no NVIDIA article"
+    },
+    {
+      "folder": "../2026-10-29-darren-martin",
+      "subjectId": "domdolus-tolus",
+      "teamIds": {
+        "arc-2": [
+          "16559402"
+        ],
+        "arc-3": [
+          "16534961"
+        ]
+      },
+      "generationRecord": "2026-10-29-domdolus-tolus-avatar-v1-base",
+      "gallerySrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-native.png",
+      "nativeSha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
+      "actualToolArguments": {
+        "prompt": "Use case: stylized-concept. Asset type: a finished team-feature illustration and reusable cast reference for the ARC Daily Digest, starring DARREN AMADEUS MARTIN'S DOMDOLUS TOLUS crew. Create ONE wide cinematic 2:1 polished 3D-comic superstar team entrance in a magnificent glowing ARC scoring hall, saturated square puzzle-grid floor, dramatic amber spotlights and midnight blue architecture. This is an ensemble for FIVE roster accounts shown by SIX figures because Darren's own chosen avatar contains TWO DOGS. Exactly FOUR adult-proportioned compact human/humanoid figures and exactly TWO dogs, all separated and fully visible, nothing cropped. No other people or animals. Input1 is Darren's own verified Kaggle avatar, TWO sleeping dogs; faithfully preserve the cream Labrador-type dog's floppy ears and warm cream coat and the second dark gray/black-and-white husky-type dog's white muzzle and face markings. Depict these two dogs alert, happy and charismatic side by side at the CENTER foreground on a slightly raised square ARC-grid plinth, wearing beautifully detailed dark racing harnesses with vividly colored square ARC puzzle panels, two distinct collars, no human Darren face anywhere. The two dogs TOGETHER represent Darren's one account. Input2 is Alwin Theodoric's own portrait: preserve his youthful adult face, round thin glasses, side-parted dark hair and friendly smile. Alwin stands just left behind the dogs in a beige-and-forest-green ARC-grid racer jacket, relaxed confident stance. Input3 is Muhammad Yassir Ramadhan's own portrait: preserve his dark parted hair, clean-shaven face and facial proportions. Yassir stands just right behind the dogs in a navy-and-copper ARC-grid racer jacket, friendly determined expression. FAR LEFT: one entirely ORIGINAL fictional opaque dark-blue helmet contender with electric cyan square visor, white/blue ARC outfit, representing Billy Anggara whose own profile has no personal portrait. FAR RIGHT: one entirely ORIGINAL fictional opaque amber-red helmet contender with dark faceless visor, red/violet ARC outfit, representing Tri Ardian Rinalda whose own profile has no personal portrait. These two masked figures are not claimed human likenesses. All four humanoids adult and roughly equal scale, full hands/shoes visible, charming compact approximately4.5-head-tall heroic proportions, respectful sports champions energy. In the background, five large softly glowing abstract square puzzle frames as decorative stage architecture, no scoreboards. A few plain books and colored square tiles beside the central plinth subtly evoke the team's documented historical human puzzle-solving work; no implied current technical recipe or literal hardware claim. Crisp vivid red blue yellow green cyan magenta orange white square ARC grids, rich fabric and fur texture, warm catchlights, striking readable six-figure composition. No generic Kaggle goose, no bananas, no cats, no birds, no sponsors, company logos, words, names, letters, numbers, ranks, scores, medals or watermark. Ignore all backgrounds from input photos. Preserve both dog identities, both supplied individual human identities and both clearly fictional masked stand-ins without blending them.",
+        "referenced_image_paths": [
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+          "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg"
+        ],
+        "transparent_background": false
+      },
+      "review": "Inspected exactly four compact adult humanoids and exactly two dogs: Billy’s opaque blue/cyan stand-in far left, Alwin’s own face/glasses in beige/green left-center, Darren’s own cream floppy-eared dog and dark/white husky together center, Yassir’s own face in navy/copper right-center, and Tri’s opaque amber/red stand-in far right. Two dogs represent Darren’s ONE account, so six figures represent five accounts. Both humans follow their own individual photographs; Billy/Tri remain fictional masked figures. Whole cast/hands/shoes/paws visible, no scoreboard or readable names. Fantasy ARC streetwear and scoring hall.",
+      "identityNotes": [
+        "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+        "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+        "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+        "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+      ],
+      "inputArchiveMap": [
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+          "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+          "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49",
+          "handle": "darrenamadeusmartin",
+          "name": "Darren Amadeus Martin",
+          "role": "Exact own-avatar photo of TWO dogs. The cream floppy-eared dog and dark/white husky together represent Darren’s ONE account. No human Darren face."
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+          "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-2-alwintheodoric-own-avatar.png",
+          "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a",
+          "handle": "alwintheodoric",
+          "name": "Alwin Theodoric",
+          "role": "Own individual portrait: preserve round glasses, side-parted dark hair and face. Alwin is the beige/green figure left-center."
+        },
+        {
+          "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg",
+          "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-3-yassirramadhan-own-avatar.jpeg",
+          "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa",
+          "handle": "yassirramadhan",
+          "name": "Muhammad Yassir Ramadhan",
+          "role": "Own individual portrait: preserve clean-shaven face and parted dark hair. Yassir is the navy/copper figure right-center."
+        }
+      ],
+      "ownerReferences": [
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+          "kind": "owner-reference",
+          "label": "Darren Amadeus Martin — unchanged own-avatar input",
+          "role": "Exact own-avatar photo of TWO dogs. The cream floppy-eared dog and dark/white husky together represent Darren’s ONE account. No human Darren face.",
+          "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49",
+          "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-2-alwintheodoric-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "Alwin Theodoric — unchanged own-avatar input",
+          "role": "Own individual portrait: preserve round glasses, side-parted dark hair and face. Alwin is the beige/green figure left-center.",
+          "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a",
+          "sourceUrl": "https://www.kaggle.com/alwintheodoric"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-3-yassirramadhan-own-avatar.jpeg",
+          "kind": "owner-reference",
+          "label": "Muhammad Yassir Ramadhan — unchanged own-avatar input",
+          "role": "Own individual portrait: preserve clean-shaven face and parted dark hair. Yassir is the navy/copper figure right-center.",
+          "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa",
+          "sourceUrl": "https://www.kaggle.com/yassirramadhan"
+        }
+      ],
+      "articleUses": [],
+      "state": "art-saved; feature publication handled separately"
+    }
+  ]
+}

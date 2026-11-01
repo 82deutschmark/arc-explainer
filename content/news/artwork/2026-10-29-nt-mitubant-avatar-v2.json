@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "2026-10-29-nt-mitubant-avatar-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T03:50:38.966Z",
+  "rawSrc": "/news-images/people/nt-mitubant-avatar-v2.webp",
+  "nativeOriginalSrc": "/news-images/references/2026-10-29-nt-mitubant-avatar-v2-native.png",
+  "toolOutput": "exec-f1f8dcf0-08de-41e2-b729-cb9c7236d3c2.png",
+  "prompt": "Use case: stylized-concept. Create a dedicated individual esports competitor avatar for NT, Kaggle mitubant, on ARC3 Team Turducken. INPUT1 IS THE AUTHORITATIVE IDENTITY REFERENCE: the user-supplied screenshot of NT's own Kaggle profile. Extract the EXACT YELLOW BIRD character from the circular avatar at its upper left. Preserve its rounded elongated yellow bird head/body, small half-lidded dark eyes, heavy expressive black eyebrows, short broad ochre beak with dark outline, small black feather marks and slightly smug deadpan expression. This is his chosen yellow bird cartoon mascot, NOT a cat, NOT a banana and NOT the generic white Kaggle goose. Ignore all screenshot UI, words, portrait circle and background. INPUT2 is only a STYLE AND WORLD reference for Team Turducken: elaborate warm brass/cobalt cyber-engineering, mechanical turkey airship, snowy GPU Valley through hangar windows. Do NOT copy any character identities from input2. In particular DO NOT include the banana-suit kitten or the black-capped duck. Exactly ONE main character: NT's own yellow bird, recognizable in an exquisite polished 3D-comic adaptation, full body centered and large, feathered yellow body and little wing-hands, simple ochre bird feet. Give him a dark navy and amber ARC-grid engineer utility vest with small multicolored square puzzle patches, a modest compact GPU/tool pack, and an ARC tile in one wing. Keep his distinctive yellow head uncovered, NO cap, NO goggles over the eyes, NO helmet, NO costume hood. His other wing rests on a brass control lever. Scene: a cozy magnificent Turducken airship workshop, warm golden light, cool blue reflections, a softly blurred mechanical turkey engine behind him and snowy mountains visible through an arched window. Full head and feet visible, strong friendly sports-star portrait, confident funny deadpan attitude matching the avatar rather than exaggerated laughter. Landscape 4:3. No other people or animals, no cats, no bananas, no tears, no human face, no lettering, words, names, logos, ranks, scores, medals, watermark or card frame. This new illustration corrects the previous wrongly assigned banana-cat identity: follow only the YELLOW BIRD in input1 for NT's appearance.",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Create a dedicated individual esports competitor avatar for NT, Kaggle mitubant, on ARC3 Team Turducken. INPUT1 IS THE AUTHORITATIVE IDENTITY REFERENCE: the user-supplied screenshot of NT's own Kaggle profile. Extract the EXACT YELLOW BIRD character from the circular avatar at its upper left. Preserve its rounded elongated yellow bird head/body, small half-lidded dark eyes, heavy expressive black eyebrows, short broad ochre beak with dark outline, small black feather marks and slightly smug deadpan expression. This is his chosen yellow bird cartoon mascot, NOT a cat, NOT a banana and NOT the generic white Kaggle goose. Ignore all screenshot UI, words, portrait circle and background. INPUT2 is only a STYLE AND WORLD reference for Team Turducken: elaborate warm brass/cobalt cyber-engineering, mechanical turkey airship, snowy GPU Valley through hangar windows. Do NOT copy any character identities from input2. In particular DO NOT include the banana-suit kitten or the black-capped duck. Exactly ONE main character: NT's own yellow bird, recognizable in an exquisite polished 3D-comic adaptation, full body centered and large, feathered yellow body and little wing-hands, simple ochre bird feet. Give him a dark navy and amber ARC-grid engineer utility vest with small multicolored square puzzle patches, a modest compact GPU/tool pack, and an ARC tile in one wing. Keep his distinctive yellow head uncovered, NO cap, NO goggles over the eyes, NO helmet, NO costume hood. His other wing rests on a brass control lever. Scene: a cozy magnificent Turducken airship workshop, warm golden light, cool blue reflections, a softly blurred mechanical turkey engine behind him and snowy mountains visible through an arched window. Full head and feet visible, strong friendly sports-star portrait, confident funny deadpan attitude matching the avatar rather than exaggerated laughter. Landscape 4:3. No other people or animals, no cats, no bananas, no tears, no human face, no lettering, words, names, logos, ranks, scores, medals, watermark or card frame. This new illustration corrects the previous wrongly assigned banana-cat identity: follow only the YELLOW BIRD in input1 for NT's appearance.",
+    "referenced_image_paths": [
+      "/var/folders/yt/gpbb89jn1_97dpj4gl0_g2x80000gn/T/codex-clipboard-c1570ed6-9e44-4f0b-a0ef-347354ce7b8c.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "character-reference",
+  "subjectId": "mitubant",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-nt-mitubant-own-profile-screenshot.png",
+      "role": "Authoritative user-supplied own Kaggle profile screenshot showing NT's yellow bird. Supersedes the incorrectly assigned banana kitten.",
+      "sourceUrl": "https://www.kaggle.com/mitubant",
+      "sha256": "28ae6393d94cd77df8aaf618af71a1bda5508ab97a50cde58c40bbbc044db055"
+    },
+    {
+      "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "role": "Turducken engineering/world style only. The old banana kitten is not NT and is excluded from this identity reference.",
+      "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37"
+    }
+  ],
+  "review": "Reviewed exactly one yellow bird with black eyebrows, half-lidded eyes, broad ochre beak and black feather marks matching the supplied own avatar. Full figure in navy/amber ARC engineering harness, snowy Turducken hangar, no cap, banana, kitten, tears or human face. Native PNG preserved unchanged.",
+  "reviewStatus": "reviewed",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "supersedesId": "2026-10-29-nt-mitubant-avatar-v1",
+  "commissionAuthority": "Boss explicitly supplied NT's own profile screenshot and corrected the mistaken character reference.",
+  "archiveNote": "The wrong banana-cat attempt remains preserved as a superseded mistake, not an NT identity reference. P066 retains its number and uses this corrected illustration.",
+  "rawSha256": "216ff895f8d6c5fa5ab99edec192da4f0558524408ad61a3910df6d9339fb2a7",
+  "nativeOriginalSha256": "983cef6526ddfc8603dc66a5778f7d844888a5cd3e3546a041438ccac1da617d"
+}

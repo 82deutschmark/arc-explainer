@@ -1,5 +1,9 @@
 # Native illustrations for the ARC Daily Digest
 
+> **Boss's hard image limit, 30 October 2026:** at most **two native image generations, including revisions**, between editor feedback. Show the results, say when finished, then stop; no silent next batch. Read the overriding corrections in [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md): glamorous idealized illustrated faces, story-specific roles and settings, existing art reused first, no literal photo heads. Jeroen's world is the Tufa Citadel with black spiders, enormous GPU racks and restrained crimson; the whole Tufa crew is assigned to another assistant.
+
+> **Card Cabinet art follows [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md) (30 October 2026, the Boss's direction).** Cards are renderings of the real competitor with no text in the picture and room for code-drawn tier borders and statistics. Where this file disagrees about card art, the brief wins. What each card needs: [CARD_ART_NEEDS.md](CARD_ART_NEEDS.md).
+
 Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
 
 Authors: GPT-6.1 Sol / Codex (12–14 October 2026); reorganized by Claude Opus 5.5 Max on
@@ -8,9 +12,19 @@ file are folded into the principles below. What pictures exist, where each has r
 held in reserve is tracked in data, not prose: `content/news/artwork-inventory.json` and the
 `reusableScenes` in `content/news/visual-identities.json`.
 
-Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): one plan, approved
-reusable stock only, no generation or new commission, and publish verified text if no suitable
-stock is returned. The illustration requirement below does not delay these scheduled issues.
+Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md). The Late automation
+prepares artwork at 5 pm, before the 6 pm release. Use a suitable unused approved scene first;
+when none fits the news, commission one native illustration using the actual registered
+reference characters. The [Card Cabinet](https://arc.markbarney.net/news/cards),
+[TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and [CHARACTERS.md](CHARACTERS.md) govern every existing
+artwork reuse and new commission. Save a reviewed clean base before 6; bind final score/time
+graphics to the closing brief. Artwork is required for the edition X announcement. A genuine
+art failure may leave verified articles published, but must leave X blocked, never text-only.
+
+Before casting a contender, read [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) and the corresponding
+Card Cabinet/character record. Preserve commissioned native originals, actual source inputs,
+exact role mappings and existing usage receipts; card labels and statistics are drawn
+separately. Curated team art never supplies an invented personal likeness or release permission.
 
 ## Principles (the Boss's standing art direction, 12–14 October 2026)
 
@@ -25,8 +39,24 @@ stock is returned. The illustration requirement below does not delay these sched
   both contests.
 - **Stock first.** Read `artwork-inventory.json` before any image work and use a suitable unused
   prepared scene before generating. Do not generate ahead while suitable stock is ready.
-- **Never reuse a finished picture.** Always compose from the clean native original with this
-  issue's scores and time; never paint over an earlier composed score panel.
+- **No repeated illustrations.** Every illustrated edition gets a fresh episode. Do not reuse
+  previously published artwork, including its clean base with new scores or a new crop. Check
+  previous article uses and Discord shares in the inventory before posting. Character reference
+  sheets may preserve identities; they are not permission to repeat an old scene.
+- **Discord first, then any person’s reaction greenlights X.** Every illustrated edition or commissioned feature,
+  including manual afternoon specials and finished stock compositions, delivers its reviewed image
+  and story link to `#arc3-rollout-feed` before its X post. A text-only relay notice does not deliver
+  the illustration. Follow [Discord image delivery](#discord-image-delivery-before-x) below.
+  Newly commissioned art can be shared before article publication as a labelled preview with its
+  intended link. Before the X announcement, check for any person’s reaction as described below.
+- **Captions describe the scene.** For the paper’s obvious fantasy illustrations, the editor
+  asked on October 29 to omit repetitive “AI editorial illustration” disclaimers from captions
+  and announcements. Date any pictured standings when needed; preserve native generation
+  provenance internally. The score-panel generator now prints only the dated score line (31 October),
+  and no caption, alt text or editor's note may say a picture is "editorial illustration", "fantasy",
+  "metaphor" or "not anyone's real equipment". Identity cautions (a stand-in, an unverified
+  likeness) stay. Never paste a bare web address into a caption or story text: cite the card or
+  story through the "In this story" shelf and source chips.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa
@@ -37,8 +67,9 @@ stock is returned. The illustration requirement below does not delay these sched
   in the fresh roster; the machines are metaphors, not claims about hardware or spending.
 - **Team Turducken pictures include the whole ARC3 crew.** For the team's current picture and
   future Turducken-focused illustrations, show Mark, Son, Keith, DZ, NT, Choryu and Herminator
-  standing in for Ronen together on the mechanical turkey, with both Yorkies. Use the approved
-  `2026-10-18-turducken-whole-crew-flight-v1-base` for the current team picture. The earlier
+  standing in for Ronen together on the mechanical turkey, with both Yorkies. Use the corrected
+  `2026-10-29-turducken-nt-corrected-v2` for the current team picture: NT is his own yellow bird,
+  not the previously misassigned banana kitten. Preserve the October18 original as historical art. The earlier
   three-character First Flight and hangar are historical episodes; do not select them as a
   current team picture. Check the full cast in [CHARACTERS.md](CHARACTERS.md) before publishing.
 - **The future scene.** When new art is needed after stock is used, the Boss's concept is two GPU
@@ -117,10 +148,60 @@ It returns at most one job, with the exact rows, reference roles and native tool
 
 If no job is returned and the front page still needs a picture, pick suitable unused stock from
 the inventory and commission it for this issue as above. If generation is unavailable or fails,
-or no accurate scene fits, publish the verified text and report the concrete art outcome; never
-use a paid API or a stale illustration.
+or no accurate scene fits, publish the verified text and report the concrete art outcome,
+with the edition X announcement blocked for missing artwork. Never use a paid API, a stale
+illustration, or a text-only X fallback.
+
+## Discord image delivery before X
+
+This is the shared delivery procedure for illustrated editions and special features (Mark's
+clarification, 29 October 2026). It is part of the commissioned publication, including when the
+editor only says to publish the feature and post it on X. Keep the reporting and copy standards
+in REPORTER.md; a good image does not replace a substantive, sourced story.
+
+1. Inspect the finished selected image, including any required current score/time overlays.
+   Send that image as an actual attachment, with a short useful summary, the permanent article
+   link (label it intended if not yet pushed), and `<@293569238386606080>`, to
+   `channel:1550165647911034940` (**#arc3-rollout-feed**). Use:
+   `openclaw message send --channel discord --target channel:1550165647911034940 --message "<reviewed summary and article link>" --media "<absolute finished image path>" --json`.
+   The relay's `--alert` sends text only; it cannot substitute for this image delivery.
+2. Preserve a story-specific receipt in
+   `/Users/macmini/bubba-workspace/reports/arc-daily-x/<story-id>-discord.json`: state,
+   article ID, image path and SHA-256, destination, message ID, Discord link and actual send time.
+   Link it from the X outbox's `discord` field and record the share in the artwork inventory's
+   `discordShares`. Check existing receipts before sending. A confirmed delivery of the same
+   image and story link is reused; an ambiguous send requires one destination-history check
+   before retrying. A different clean-base preview does not deliver the finished composition.
+3. Before X, check reactions on that exact Discord preview:
+   `openclaw message reactions --channel discord --target channel:1550165647911034940 --message-id "<saved message ID>" --json`.
+   Any emoji reaction by any person on that exact preview greenlights the X announcement;
+   it need not be from the Boss or use a particular emoji. Silence and the posting bot’s own
+   reaction do not count. Record the returned reaction evidence; if it cannot distinguish a
+   person from the posting bot, inspect the reaction user list before treating it as approval.
+4. Save `approval` in the X outbox with the preview message ID, image SHA-256, reacting user when exposed,
+   emoji/reaction evidence or written confirmation, and actual check time. Only confirmed delivery plus this
+   approval permits `draft` → `posting`. A changed image or materially changed story needs a new
+   preview and approval. An explicit instruction from the Boss can waive the wait for that release.
+   If no qualifying reaction is present, or Discord is unavailable, keep X in `draft` with
+   `awaiting-discord-approval` and report it. Do not wait in a polling loop, create a monitor,
+   repost the preview or interpret elapsed time as approval. Recheck on the next authorized
+   publishing pass or when the Boss asks. Article publication may proceed; this gate controls
+   its X announcement. No deployment polling is required.
+
+The existing relay still owns routine edition text notices; do not duplicate those manually.
+Its text-only success and the image-delivery receipt are separate. Preserve already posted X
+announcements: if the editor reports a missed Discord image, deliver that missing image once
+and record the recovery without reposting X or rewriting the article.
 
 ## Publish together
+
+Finish manual commissions with a clean handoff before a publishing shift: put experimental
+outputs and discarded variants in a dated private `reports/arc-daily-social/art-planning/`
+folder, and commit the approved public bases and provenance with their inventory entries.
+Do not leave untracked artwork or an `output/` directory in the publishing checkout. An
+unpublished commission is prepared stock, with its leader/cast conditions recorded; it does
+not require changing a published issue or sending a post. Preserve other people's unexpected
+work and stop on a real conflict.
 
 Stage the edition and evidence files with the new `content/news/artwork/` records, the new
 `client/public/news-images/` assets, any deliberately updated `visual-identities.json` and the

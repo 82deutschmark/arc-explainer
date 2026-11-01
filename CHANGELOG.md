@@ -1,5 +1,208 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.30  Nov 1, 2026
+
+- **Correct Sunday Early editions** (Author: GPT-6.1 Sol / Codex). Remove hundreds of unused briefing-source entries from both stories, retaining the board citation actually used and archiving the original source catalogues in separate correction records. The publisher now selects cited sources rather than copying the whole research catalogue.
+- Add approved existing Jeroen/Tufa and NVARC3/Chen illustrations, newly composed with each issue’s unchanged morning scores and exact observation time. Preserve native provenance, original reporting dates and raw evidence. Replace production-desk chatter with a sporting watch point; no X send or browser use.
+- Validation: all 98 newsroom Python tests and all 23 news integration tests pass. Front-page suite: 10 pass; three unrelated existing failures (two missing QueryClient providers and the October 29 portrait-disclosure expectation). Both final illustrations visually reviewed with all faces and rabbits unobscured.
+
+### Version 9.159.29  Nov 1, 2026
+
+- **The lab that wouldn’t sleep** (Author: GPT-6.1 Sol / Codex). Publish the editor-commissioned ARC Mutants overnight mini-special with a new four-character laboratory illustration, ARC grid experiments, queued submissions and error screens. Preserve the native picture, supplied reference and exact generation record; add the team title in code. Give Jack Cole a sourced sidebar on MindsAI’s 2024 top private score, 2025 third place and paper honorable mention, and his adviser/reviewer credit on the winning 2025 Preview agent. Show his current P004 card and two original 2024 deck cards. Link the mini-special from the Weekend Magazine cover.
+- Validation: dispatch content check, Weekend Magazine page/link gate and local visual review.
+
+### Version 9.159.28  Oct 31, 2026
+
+- **The Weekend Magazine and the Saturday Special pages** (Author: Claude Sonnet 5.5 Medium). New hand-written pages under `client/public/specials/` (served as static files, so they cannot disturb the paper): the Saturday Special "Legends of the Kaggleverse", and a Weekend Magazine with a cover (countdown to the Monday 23:59 UTC bell, red breaking bar, latest-news ticker, live top-ten scoreboard, paper feed), an Arena Report, a Field Guide to both top tens, a searchable Who's Who (Kaggle handle, X handle, team and place per contest), and The Final Hours (bell times by city, how finals are decided, prizes, medal lines). `scripts/weekend_magazine.py` refreshes the volatile regions from the live boards (`refresh`), gates publication (`check`: no bare web addresses, no ruled-out disclaimers, every local link and image present, ten rows per table) and handles shakeups in one line each (`breaking`, `clear-breaking`, `ticker`). Art for the specials is served from light copies in `client/public/specials/img/` (about 200 to 300 KB each instead of 2 to 4 MB). Runbook and scenario playbooks: `docs/newsroom/WEEKEND_MAGAZINE.md`; nine ready-to-send drafts plus scenario drafts: `docs/newsroom/WEEKEND_POSTING_KIT.md` (nothing sent).
+- Validation: `python3.13 -m unittest discover -s tests -p 'test_newsroom*.py'` (13 new tests for the magazine tooling) and `python3.13 scripts/weekend_magazine.py check`.
+
+### Version 9.159.27  Oct 31, 2026
+
+- **Clean the front page: no more "editorial illustration" boilerplate, bare links or dead links** (Author: Claude Sonnet 5.5 Medium). `scripts/newsroom_artwork.py` now captions edition score panels with only the dated score line (no "AI-generated editorial illustration ... Characters and props are metaphors"), matching the Boss's 29 October rule in `ART_DESK.md`, which is extended to alt text, editor's notes and bare web addresses. Forty-five published captions and notes from 9 October to 31 October lose the same boilerplate (identity cautions, dates and score panels stay). Eighteen bare web addresses in Saturday and Friday story text and captions are removed (cards and stories are cited through the "In this story" shelf and source chips), one dispatch source that pointed at a path instead of an anchor is fixed, and a dead mdlARC model link and a dead 1990 bibliography link are dropped. The Saturday NVIDIA story no longer calls Giba the "all-time No. 1" (a former world No. 1), the Tufa follow-up is in plainer words, and the byline reads "Claude Sonnet 5.5" instead of "backup desk".
+- Validation: `python3.13 -m unittest discover -s tests -p 'test_newsroom*.py'` and the site loader read every news file with nothing skipped.
+
+### Version 9.159.26  Oct 31, 2026
+
+- **Handle crosswalk, Kaggle primer and the final-weekend research note** (Author: Claude Sonnet 5.5 Medium). New `scripts/newsroom_crosswalk.py` builds `content/news/handle-crosswalk.json` and `docs/newsroom/HANDLE_CROSSWALK.md` from `people.json` and `competitors.json`: one row per Kaggle handle with its X handle and its team in ARC-2 and in ARC-3. `docs/newsroom/KAGGLE_PRIMER.md` explains handle versus team versus contest. `content/news/handle-candidates.json` holds probable, unconfirmed pairings (V | A | M teammates arazzd and nguyennguyen599) with evidence. `docs/newsroom/research/2026-10-31-submission-and-capacity-crisis.md` records what CPMP and Kaggle staff said about the submission and capacity trouble. No ledger, card or published copy changed.
+- Validation: crosswalk script runs clean on the current ledgers; Markdown table pipes escaped.
+
+### Version 9.159.25  Oct 30, 2026
+
+- **Let the Friday Night Special lead the paper** (Author: GPT-6.1 Sol / Codex). The newest contest edition or dispatch leads `/news`, so Jeroen Cottaar’s full Tufa Citadel feature and illustration appear above the older ARC3 issue. Simultaneous editions retain ARC3 first. Record the approved image-led X announcement in the artwork inventory.
+- Validation: 35 news/front-page tests and 86 Python newsroom tests pass.
+
+### Version 9.159.24  Oct 30, 2026
+
+- **Card Cabinet faces redesigned: the Topps-style 2026 set** (Author: Claude Sonnet 5.5 Low). Fronts and backs are drawn by the new `cardFace/` renderer (cream card-stock edge, tier-coloured border and medallion, LIVE/FINAL stamp with one as-of date, ribbon name bar, price-guide standings, medal coins; grey-cardboard two-ink backs with the career table). Master and Grandmaster borders and medallions are visibly bigger than the lower tiers. Wording is checked by a lint over every drawn tree: Kaggle's tier words for competitors, "competition sponsors", teams, SOLO ENTRY, and no internal bookkeeping text.
+- **One set row per season.** `content/news/series.json` names each season's series, publisher and look; `cardFace/looks.ts` maps the look key to its renderer, and an unknown look or season falls back to the newest one with a single warning. Next year's set is a data row.
+- **Share previews redesigned** (1200 x 630): the real front render at the left, a cardboard panel at the right with the name, tier line, lead contest rank and score, medal coins (or the sponsor's organisation and bio), the as-of date and the site address.
+- **Thumbnails, routes and caching.** The image, thumbnail and share routes use the new pipeline with unchanged cache headers; enrichment is cached on the collection's content, not per request. `RENDER_VERSION` (shared) is mixed into every image address so browsers and link-preview crawlers refetch after a design change. The old renderer and its wording are deleted.
+- Validation: whole-set front and back smoke with the wording lint, tier border pixel check, thumbnail widths, share size, unknown tier/look/season warnings, art-address guard, and the card routes in the integration test.
+
+### Version 9.159.23  Oct 30, 2026
+
+- **Look up every mentioned person and team** (Author: GPT-6 / Codex). Update all seven active Codex reporting jobs and the canonical prompt copies to consult the shared Card Cabinet before any mention. Preserve their schedules, models, status and permissions. Extend the permanent playbook, backup and morning check-in guides to use the improved linked player/team pages, complete careers, card backs and individual sharing previews.
+- **Give Yegor his player card.** Save P067 and the commissioned anonymous cyber avatar for mistyotter_ai, using his own rear-view header and hoodie post as styling references. Preserve native art, actual sources and prompt; leave the adult face concealed and unverified Kaggle/team identities unknown. Prepare the editor-authorized image-led X announcement with a protected outbox and Discord preview receipt.
+
+### Version 9.159.22  Oct 30, 2026
+
+- **Card Cabinet starts with the cards** (Author: Claude Sonnet 5.5). The tall title block, long intro and colophon above the first card are gone: the title, one-line dek and card counts share one slim line, the search and both filters share one row with the on-display count, and Front/Back sits beside each card's number instead of on its own row. The intro and commissioning line moved to a footnote under the grid; padding on the cards and the single-card page was cut the same way.
+- **Pictures from outside Kaggle are allowed** (Boss, 30-Oct-2026). A portrait may now come from any public page that names the person (portrait kind web); the loader and the Python validator check that the person's name appears in the source title or description. François Chollet and Mike Knoop each get their own single-person picture from the official ARC Prize team page instead of the shared two-man founders image, and Darragh Hanley uses his NVIDIA author-page photo.
+- **Three more team cards**: NVARC3 (T017), and the two multi-player ARC-AGI-2 teams that had none (T018, T019). They use the printed-initial plate until their art is commissioned.
+- `scripts/merge_kaggle_careers.py` no longer duplicates facts that came from non-Kaggle sources when it is run twice, and accepts web pictures. Two slow integration tests that walk the whole archive get a 60 second limit; Jack Cole's face test now expects his own Kaggle picture.
+- Validation: collection, image, share-image, route, view, integration and Python newsroom checks pass.
+
+### Version 9.159.21  Oct 30, 2026
+
+- **Every player card now has a verified Kaggle record** (Author: Claude Sonnet 5.5). All 64 remaining players were read one at a time on their public Kaggle profile and competitions pages in the app's built-in browser (never in a person's own browser), with the earlier unverified drafts discarded. Each card back carries tier, medals, ranks and completed contests exactly as displayed, team medals are never credited as individual honours, and ARC standings stay labelled provisional. Evidence per player: `content/news/evidence/kaggle-careers/`; merged into `people.json` by `scripts/merge_kaggle_careers.py` (only files marked verified).
+- **Right picture for each person.** Portraits were checked against each player's own Kaggle picture; Ivan Sorokin, Jack Cole and Jean-Francois Puget now use their own Kaggle photographs. Players with no individual picture get a seeded ARC-puzzle monogram labelled "Portrait not on file" rather than a stand-in. Chollet and Knoop still share the founders image until an individual picture can be traced to a permitted source.
+- **Fronts look finished.** A square portrait in the wide window now sits on a soft blurred copy of itself instead of blank paper bars; share previews keep their exact-art contract.
+- Validation: card collection, image, share-image, route and view checks pass against a fresh production build.
+
+### Version 9.159.20  Oct 29, 2026
+
+- **Correct NT to his own yellow-bird avatar** (Author: GPT-6 / Codex). Replace the mistaken banana-kitten identity on P066, the people portrait and active character references using the Boss-supplied Kaggle screenshot. Correct NT's figure in the full Turducken crew and T014 too. Keep Keith's separate black-capped mascot and the rest of the crew intact.
+- Preserve both new native originals, actual prompts, screenshot input and the earlier artwork as superseded history. Update the permanent playbook and art directions so future scenes use NT's yellow bird. No article or social send.
+- Validation: 42 collection, image and HTTP checks plus character-library validation pass; corrected P066 and T014 print proofs are saved and reviewed.
+
+### Version 9.159.19  Oct 29, 2026
+
+- **Show the whole player** (Author: GPT-6 / Codex). Player PNG fronts now name both ARC teams and show both dated team standings. Add a downloadable reverse with Kaggle career results, earlier teams, source notes and account links. Give Son's card his verified Expert credential, Orbit Wars silver and shared RSNA Knee bronze; add Mark's three completed results. Use Son's unchanged full-size own-profile portrait and retain earlier artwork.
+- **Make player and team links worth sharing.** Separate landscape previews use each player's own portrait or the complete team illustration. Unify browser/server Open Graph, Twitter, descriptions and image dimensions; refresh the preview URL when public card content changes. Preserve collectible PNGs, permanent links and real missing-card responses.
+- **Require #Kaggle in automated newsroom X posts.** Save the standing rule, reserve its space in edition/afternoon drafts and validate it before the guarded edition send. Apply canonical prompts to the existing Early, Late and afternoon X jobs without changing their cadence or permissions; preserve historical sends. No social post or Discord message is sent by this maintenance.
+- Validation: 95 card/news checks, two frontend sharing checks and all 84 newsroom Python checks pass; TypeScript reports zero errors and the production build passes. Son/Mark fronts and backs and distinct player/team share previews were visually inspected. Plan: `docs/2026-10-29-complete-player-card-plan.md`.
+
+### Version 9.159.18  Oct 29, 2026
+
+- **Clear the remaining TypeScript errors** (Author: GPT-6 / Codex). Reuse the shared matchup response type, preserve unknown imported timing as null, update stream test events, type repository spies and complete placement rating fixtures. Declare the missing frontend testing libraries and connect their typed Vitest matchers; keep strict compiler checks and existing assertions.
+- **Show Mark and Turducken side by side.** Save the current P018 player and T014 team PNG fronts together using the production renderer, preserving the artwork and dated standings.
+- Validation: TypeScript reports zero errors; all 29 focused matchup, placement, streaming, repository, card and frontend-sharing checks pass, including clipboard denial fallback. Production build passes. Plan: `docs/2026-10-29-typescript-cleanup-plan.md`.
+
+### Version 9.159.17  Oct 29, 2026
+
+- **Prepare the picture before the edition** (Author: GPT-6.1 Sol / Codex). Update the existing Late automation to run artwork prepress at 5 pm and publication at 6 pm Eastern. Authorize required native commissions from registered references when unused stock does not fit; retain the 6 pm standings cutoff, model, checkout, Discord approval and send-once protection.
+- **Block text-only edition announcements.** The X helper refuses missing or invalid artwork and provides a guarded `--begin-posting` handoff checking the exact PNG, published artwork, article link, Discord delivery and person approval. The sender must review the actual uploaded image with the headline/link before Post. Preserve historical posts and human confirmations; afternoon recaps are unchanged.
+- **Use the Card Cabinet everywhere.** Make https://arc.markbarney.net/news/cards and the registered character inputs mandatory in the shared playbook, AGENTS, newsroom map, art desk and commission handoffs. Preserve existing artwork and resolve missing mappings before reuse; do not invent replacement faces. Reserved feature covers may lead their full edition announcement with native provenance checked.
+- Validation: all 79 newsroom Python tests pass, including missing images, altered bytes, mismatched covers/links, missing or bot-only approval, protected retries and real reserved-feature provenance; no X send or deployment check is used to test the gate.
+
+### Version 9.159.16  Oct 29, 2026
+
+- **Give ARC Mutants three new episodes** (Author: GPT-6.1 Sol / Codex). Save The Danger Grid, The Pattern Observatory and Above the Academy with Jack, Mark, Son and Ronen's established characters. Preserve each exact native PNG, prompt, actual references, review and four-account ARC2 cast condition alongside the original academy illustration.
+- **NT gets his own Turducken avatar and card.** Record the Boss-confirmed NT / mitubant identity, dedicated orange banana-suit kitten illustration and P066 individual card. Preserve the original community avatar, new native PNG and web copy. Reaffirm the separate ARC3 Turducken and ARC2 Mutants rosters in the permanent playbook; no article or social send.
+- Individual card entry preferences can lead with the intended contest while retaining other verified memberships. NT's card leads with ARC3 Turducken and preserves his separate ARC2 team 15526034; no membership or honor is inferred from the artwork.
+- Validation: 80 combined collection, rendered-card, API/image and existing news checks, people and character-library validation, production build and visual review pass. All four new native originals and the original academy illustration are retained; NT's rendered P066 proof leads with ARC3.
+
+### Version 9.159.15  Oct 29, 2026
+
+- **Connect the players and their teams** (Author: GPT-6 / Codex). Player cards now show their current observed teams, earlier teams and complete sourced Kaggle career highlights. Team cards show a linked player roster. Match verified accounts and competition-specific team identities; preserve simultaneous ARC2/ARC3 memberships and label uncertain older observations honestly.
+- **Give every card a shareable page.** Add `/news/cards/:id`, Open card and Copy card link controls, a selectable-link fallback, the selected card's own social preview, and permanent player/team links throughout the Cabinet. Retain the existing artwork, card numbers, front/back views, filters and PNG downloads. Teams without a published notebook link to their public source.
+- Validation: 79 collection, rendered-card, HTTP, PNG and existing news checks pass, along with the production build. Archive-wide tests pass with a longer timeout after the build completes. The broad TypeScript check retains 12 existing diagnostics outside changed files. Plan: `docs/plans/2026-10-29-player-and-team-cards.md`.
+
+### Version 9.159.14  Oct 29, 2026
+
+- **Show the collectible proofs** (Author: GPT-6.1 Sol / Codex). Save Darren, Domdolus Tolus, The Last Dance, Turducken and ARC Mutants with their artwork and dated statistics. Bring the shared Nemotron fifth-place gold and Florian's earlier competition record forward, and retain exact card inputs and original-art references with the print proofs.
+- Give Darren's individual card a dedicated two-dog illustration matching the team scene. Preserve the exact native PNG, full generation arguments, original own-avatar photograph and team style reference; register it in the character library and artwork inventory.
+- **Keep the two home teams distinct.** Record the Boss's renewed X-Men / Professor Xavier direction for the preserved ARC Mutants academy image. Mark, Son and scizical overlap ARC3 Turducken and ARC2 Mutants; Jack belongs to the four-account ARC2 crew.
+- Validation: 32 collection/API/image checks, people and character-library validation, and visual review of all five print proofs pass. Original artwork bytes remain unchanged; the added individual image is separately archived.
+
+### Version 9.159.13  Oct 29, 2026
+
+- **Open the ARC Daily Card Cabinet** (Author: GPT-6.1 Sol / Codex). Add a permanent, searchable baseball-card collection at `/news/cards`, with 65 individual cards, 16 team cards, uncropped commissioned artwork, front/back records and printable PNGs. Names and dated statistics are drawn programmatically; Japanese names retain their lettering. Preserve stable card numbers, original art and source records.
+- **Prepare for official ARC Prize 2026 honors.** Keep current public snapshots separate from explicit final-result records, Kaggle medals and organizer awards. Repeatable imports credit the recorded recipients and preserve official corrections. Add 19 verified identities and 12 genuine account pictures without inventing faces or unresolved names.
+- **Give every scheduled desk the same playbook.** Commit `TEAM_PLAYBOOK.md`, link it from the newsroom guides and update all six existing job prompts to consult the Cabinet, verified dossiers, past results and character mappings. Preserve schedules, models, targets and send permissions. Held stories and X remain held.
+- Validation: 32 collection/API/image checks, 33 existing news checks, 70 newsroom Python checks and production build pass. Local desktop and narrow-layout card review completed. The broad TypeScript check retains 12 existing diagnostics outside the changed files.
+
+### Version 9.159.12  Oct 29, 2026
+
+- **Save every commissioned contender artwork** (Author: GPT-6.1 Sol / Codex). Preserve the complete set of nine selected character illustrations, exact native outputs and generation arguments, owner-reference originals, explicit cast mappings and gallery/inventory notes. Keep the NVIDIA duo as art only, as the editor requested.
+- **Meet Darren Amadeus Martin and Domdolus Tolus.** Save the completed sports feature on the five students’ shared fifth-place Nemotron gold, ARC2 climb and publicly stated closing focus. His two-dog avatar leads the finished team image; Alwin and Yassir follow their own portraits, with fictional masked stand-ins for Billy and Tri. Retain the seven earlier features in the committed later-edition reserve. The editor-authorized illustrated cheat sheets reach the rollout feed with send-once receipts; X remains held.
+
+### Version 9.159.11  Oct 29, 2026
+
+- **Book The Last Dance for tomorrow’s Early edition** (Author: GPT-6.1 Sol / Codex). Reserve the full existing illustrated team feature for October 30 at 6 am Eastern through the scheduled desk’s editorial intake. Preserve its October 29 reporting and permanent link, save the complete manuscript/research handoff, and hold a standalone X announcement.
+- File a dated coverage audit and reporting slate for seven underprofiled contenders, with new primary-profile notes on yktori’s five medals and mtg’s two-contest campaign. Keep unknown identities and missing portrait references explicit. Append a correction to the Last Dance evidence’s board-column labels without changing its recorded values or published story.
+
+### Version 9.159.10  Oct 29, 2026
+
+- **The Last Dance takes the floor** (Author: GPT-6.1 Sol / Codex). Publish the editor-commissioned sports feature on ARC3’s fifth-place team: Florian Sestak’s verified identity and Kaggle medals, Lukas Aichberger’s robotics and research history, Mykyta Ielanskyi’s reasoning-paper award, and their Linz research connections. Preserve the unresolved ownership of `gklambauer` rather than assigning a name or treating the default goose as a personal avatar.
+- Add three own-profile portraits, a reusable four-dancer reference sheet and a new scoring-hall breakdance cover. The fourth character is an explicitly fictional masked stand-in. Save dated roster/history evidence and source-backed notebook facts; validate the feature, people ledger and character library.
+
+### Version 9.159.9  Oct 29, 2026
+
+- **Approve xz’s 4 pm early evening special** (Author: GPT-6.1 Sol / Codex). Retarget the one-off commission to a distinct early-evening article, replace the prior-method summary with a short source teaser, and simplify the fantasy-art caption. Save the editor’s explicit approval, Discord-first/X sequence with the reaction wait waived, fresh-score instructions and protected delivery paths. Label early-evening specials correctly in browser and initial HTML; preserve routine 6 pm issues. Plan: `docs/plans/2026-10-29-xz-early-evening-release.md`.
+- Validation:33 focused news checks,70 newsroom Python checks and production build pass. One-time current-chat release is scheduled for October29,4 pm Eastern; the article and announcements remain unpublished until then.
+
+### Version 9.159.8  Oct 29, 2026
+
+- **Hold the xz feature for the editor’s read-through** (Author: GPT-6.1 Sol / Codex). Save the revised 901-word sports column and full giant-cat illustration in the private evening handoff, and carry an explicit review hold in the one-off assignment. The feature, its announcements and the conditional Kaggle thank-you await the editor’s review; normal verified closing reports can continue. Draft format and intake checked; no article publication or external send.
+
+### Version 9.159.7  Oct 29, 2026
+
+- **Every reported person gets a player card** (Author: GPT-6.1 Sol / Codex). Expand “In this story” into compact Hall of Fame-inspired cards for all named or person-cited subjects, including reserved feature and recap coverage. Keep rosters separate, deduplicate without a face cap, and resolve title-case Xz to the verified cat avatar on the existing morning story.
+- **Chen’s two-rabbit portrait, refreshed** (Author: GPT-6.1 Sol / Codex). Commission a clear native illustrated avatar from the owner reference. Preserve the original Kaggle picture, validate the separate editorial artwork’s identity and provenance, disclose AI art, and retain image-error fallbacks. Plan: `docs/plans/2026-10-29-story-player-cards.md`.
+- Validation: 32 focused news checks, 70 newsroom Python checks and production build pass; desktop and phone layouts reviewed. Broad TypeScript checking retains 12 unrelated existing diagnostics. The new portrait reached Discord first. Queue the editor-authorized Kaggle thank-you after the evening feature publishes, with a send-once outbox.
+
+### Version 9.159.6  Oct 29, 2026
+
+- **Prepare xz’s illustrated evening profile** (Author: GPT-6.1 Sol / Codex). Verify the competitor’s profile, previous results, eleven-entry record and public infrastructure discussion; add the own-avatar portrait and frozen character reference. Prepare the editor’s giant-cat scoring-hall cover with inspected native provenance, send it to Discord, and reserve the researched feature for the evening desk’s fresh closing evidence.
+- **Any person’s Discord reaction greenlights X** (Author: GPT-6.1 Sol / Codex). Apply the editor’s correction: any emoji reaction from any person on the exact preview suffices, rather than a prescribed emoji from the Boss. Preserve the delivery receipt, bot-self-reaction exclusion, no-reaction draft hold and existing sends.
+
+### Version 9.159.5  Oct 29, 2026
+
+- **Boss reaction approves illustrated X announcements** (Author: GPT-6.1 Sol / Codex). Require the Boss’s positive reaction on the exact Discord preview, or explicit written go-ahead, before X. Record the reacting user and image alongside the delivery receipt; silence, anonymous counts and other users do not authorize a send. Missing approval leaves a saved draft without polling or creating an automation. Existing posts stay intact.
+
+### Version 9.159.4  Oct 29, 2026
+
+- **Illustrated features reach Discord before X** (Author: GPT-6.1 Sol / Codex). Make the finished image attachment, useful story summary and article link in #arc3-rollout-feed a required step before illustrated X announcements, including manual specials and prepared edition art. One shared art-desk procedure records the image hash and send receipt; X, reporter and scheduled-edition guides point to it. Text-only relay notices do not satisfy image delivery. Preserve existing sends and recover a missed Discord attachment without reposting X. Documentation and delivery records only; no application or automation changes.
+
+### Version 9.159.3  Oct 28, 2026
+
+- **Full illustrated features on edition links** (Author: GPT-6.1 Sol / Codex). The October 28 announcement linked to a short closing recap because only the front page resolved its reserved feature. Render the complete commissioned story, cover, caption and sources on the existing permanent edition URL too, in both React and initial server HTML. Reuse one dispatch view and one feature selector; preserve immutable reporting and evidence. Plan: `docs/plans/2026-10-28-edition-feature-permalink.md`.
+- Validation: 30 news rendering/HTTP checks, 69 newsroom Python checks and production build pass. The full TypeScript check reports 12 existing diagnostics outside the changed files.
+
+### Version 9.159.2  Oct 27, 2026
+
+- **Focus SEO on Mark's work** (Author: GPT-6.1 Sol / Codex). Remove individual ARC puzzle, official-game guide and approved-play addresses from the generated sitemap. Retain research, explanations, original-game collections, human reasoning records and authored editorial pages. The homepage metadata now identifies Mark Barney's work. Remove the per-game sitemap feed/helper so future approvals cannot repopulate individual URLs. Existing galleries, direct links and playable sources continue to work. Plan: `docs/2026-10-27-research-seo-targeting-plan.md`.
+- Validation: production build and 21 focused HTTP/catalog/metadata tests pass; sitemap exclusions and retained research destinations are checked alongside continued direct game/puzzle access. No browser use.
+
+### Version 9.159.1  Oct 27, 2026
+
+- **Google and Bing ownership verification** (Author: GPT-6 / Codex). Publish the verification files supplied by the owner’s signed-in webmaster accounts so the updated sitemap and public ARC3 pages can be submitted. These are public ownership proofs, not account credentials. Existing static delivery serves the exact bytes.
+
+### Version 9.159.0  Oct 27, 2026
+
+- **Public approved ARC-3 games and searchable reference** (Author: GPT-6 / Codex). The existing gallery, Play entrance and Next navigation now select the lab's current Trainable originals. The lab's public projection reuses its exact-version approval and licensing rules without exposing team notes or identities. This commit includes 48 verified approved source files and their recorded PNGs as an availability snapshot; the live feed refreshes every five minutes. Exact source hashes are checked before serving, and version-specific addresses prevent older local games substituting for approved builds.
+- Approved game pages now permit indexing, use their actual screenshots for sharing, have real gallery links, and appear in the generated sitemap. Legacy play bookmarks remain usable and unindexed. The full existing ARC-3/ARCEngine article renders from one shared component in both initial HTML and the browser. The homepage links directly to public games and the engine reference, with Son's site identified as the research lab. `/synthetic` leads to the public gallery.
+- Known production aliases redirect to the canonical domain; staging carries `noindex`. The independently deployed `arc3` staging branch also received its own early response policy (`2923b610`). Register the existing private ARC-2 hard-set routes as noindex, closing gaps found by route coverage. Update the historical audit test to check its current evidence links instead of removed downloads.
+- Validation: production build; 16 focused HTTP/catalog/SEO tests; all 48 production game payloads load in Python 3.13 and all 226 offered actions produce valid 64×64 palette frames. The broad TypeScript check still reports 12 existing diagnostics outside changed code. No game verdicts, browser publication checks or Railway credentials. Plan and refresh instructions: `docs/2026-10-27-public-trainable-seo-plan.md`.
+
+### Version 9.158.13  Oct 27, 2026
+
+- **Standing Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the ARC3 evening image with the fresh sunrise-plaza scene: both owner-reference giants upright while the spiders, full Turducken crew and other participants look up. Archive native generation/correction provenance, Discord-first receipt and revision 3, preserving original reporting, scores and publication times.
+
+### Version 9.158.12  Oct 27, 2026
+
+- **Owner-faithful Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the October 27 evening ARC3 picture with a fresh colossal-rabbit cableway scene using the original owner photograph for ears and coat markings. Record the Discord-first receipt, immutable native provenance and image-only revision 2; retain all reporting, scores and publication times.
+
+### Version 9.158.11  Oct 27, 2026
+
+- **Fresh evening illustrations, Discord first** (Author: GPT-6.1 Sol / Codex). Add distinct new art to the October 27 ARC2 and ARC3 Late editions, preserving their original reporting, closing evidence and publication times in separate image-only revision records. Reuse the existing compositor for dated score graphics, archive native prompts/references and record inventory uses. Clarify no repeated illustrations and the Boss's Discord-first, objection-based publication direction without an explicit review hold. Plan: `docs/plans/2026-10-27-fresh-evening-art.md`.
+
+### Version 9.158.10  Oct 27, 2026
+
+- **Recover the Early edition without discarding other work** (Author: GPT-6.1 Sol / Codex). Replace the morning job’s blanket dirty-checkout stop with conflict-aware preflight, preserving unrelated PDFs. Keep special-report proof files without scheduled cutoffs out of prior-edition boundary selection, while still rejecting broken scheduled evidence. Publish the missing ARC2 issue from its fixed morning observation and prepare newly commissioned incident art. Validation: intake regression, newsroom Python and news content suites. Plan: `docs/plans/2026-10-27-morning-edition-recovery.md`.
+
+### Version 9.158.9  Oct 26, 2026
+
+- **ARC-2 capped-output research terminal** (Author: GPT-6.1 Sol / Codex). Replace the spacious gallery with a dense charcoal watchlist and focused grid inspector. Search task IDs/test indices, sort by output cells, step between outputs, and inspect training pairs without repeated card chrome. Preserve all 22 cohort outputs, dataset grids, provenance and highlighted task links; stack the panes on mobile. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/pages/Arc2Capped.css`. Plan: `docs/2026-10-26-arc2-terminal-plan.md`.
+
+### Version 9.158.8  Oct 26, 2026
+
+- **Focused ARC-2 capped-output gallery** (Author: GPT-6.1 Sol / Codex). Add `/arc2/capped` for the Boss to inspect Lattice's exact 22 always-capped test outputs across 20 tasks. Show selected test inputs, known solutions, dimensions and cell counts, expandable training examples and other tests, plus existing task/explanation links. Reuses the puzzle API and grid renderer; distinguishes the reported first-pass cohort from rerun statistics and preserves zero-based test indices. Registers matching server metadata so direct links return HTTP 200. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/App.tsx`, `shared/routes.ts`. Plan: `docs/2026-10-26-arc2-capped-gallery-plan.md`.
+
+### Version 9.158.7  Oct 25, 2026
+
+- **Review standout ARC-2 entrants, not just rank jumps** (Author: GPT-6.1 Sol / Codex). Verify the existing full ARC-2 board rather than duplicate it, file Nguyen’s uncovered score rise separately from already-published debut coverage, strengthen wire selection/source-check guidance, and queue a bounded evidence-led methods follow-up through the existing editorial intake. No automation, application code or schedule changes. Plan: `docs/plans/2026-10-25-arc2-board-and-wire-coverage.md`.
 ### Version 9.158.7  Oct 24, 2026
 
 - **ARC-2 runs record: blank Kaggle descriptions no longer starve Claude's note** (Author: Claude Opus 5.5 Medium). Son's last two ARC-2 submissions went in with an empty Kaggle description. The watcher guesses a run's baseline only from a score named in the description, so these got no baseline, no code diff, and a note that could only say it had nothing to judge. Now, when the description is blank, the run page and Claude's brief show the notebook's opening markdown note (labelled as such), and the baseline guess falls back to the same submitter's previous scored submission. Only Son's four blank-description runs change baseline. Both October runs were reprocessed and republished; the newer one's note now compares it against Son's previous submission and names the two changes it bundled. Files: `scripts/arc2_runs/evidence.py`, `scripts/arc2_runs/arc2_runs.py`. The watcher runs from this checkout, so it is live on the Mac Mini already.
@@ -29,6 +232,18 @@
 
 - **Summit notebook opens from a share-only link** (Author: GPT-6 / Codex). Add a stable, random reader URL that needs no Google sign-in. Keep publication authenticated and attendee content outside public source and assets. Shared pages remain out of navigation and sitemaps, with noindex, no-store and no-referrer policies; notes stay on each device. A stronger research pass improves selected unfamiliar guests' work summaries, verified MLST connections and conversation questions. Plan: `docs/2026-10-22-summit-share-plan.md`.
 
+
+
+
+## 30-Oct-2026 (Claude Sonnet 5.5 Medium): cards in stories, and a playbook for the writers
+- The story page's "In this story" shelf (browser and crawler HTML) now shows the real ARC Prize card of everyone the story names or cites, linking to each card page; people without a card keep the portrait tile.
+- New docs/newsroom/CARD_PLAYBOOK.md: how writers and Codex desks look up, feature, link and picture the cards; linked from the team playbook, reporter, wire, scheduled-edition, social and X guides.
+- Keith Tyser's fish-mascot art is bound to his card.
+
+## 30-Oct-2026 (Claude Sonnet 5.5 Medium): ARC Prize branding on the cards
+- The 2026 set is named "ARC Prize": the pennant draws the ARC Prize block mark (white name, magenta and yellow cells), backs and share previews read "ARC PRIZE 2026", and "Card Cabinet" (an internal development name) is gone from every visible page, title and crawler text.
+- Sponsor cards (Chollet, Knoop) no longer explain who they are or cite "ARC Prize lists him as"; one plain line each.
+- Chollet's card uses the "Master the AI before it masters you" art, cropped to the figure. FSES91 and Mykyta Ielanskyi get their reviewed artist pieces; rejected hero-v1 art stays unbound.
 
 ## 9.157.6 — 2026-10-22
 

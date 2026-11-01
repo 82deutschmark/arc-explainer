@@ -1,0 +1,93 @@
+{
+  "personId": "florencia-solange",
+  "handle": "florenciasolange",
+  "name": "Florencia Solange",
+  "checkedAt": "2026-10-30T14:09:03Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude app's built-in browser on 2026-10-30; one tab, one load of each page with a pause between; image source and join tooltip read from the page elements. Team roster cross-checked read-only against the ARC-3 public board feed. Any older draft was ignored; this file is rebuilt only from what the live pages showed.",
+  "sources": [
+    "https://www.kaggle.com/florenciasolange",
+    "https://www.kaggle.com/florenciasolange/competitions",
+    "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  ],
+  "profile": {
+    "competitionTier": null,
+    "tierNote": "No Competitions tier badge or medal count is displayed on the public profile.",
+    "medals": {},
+    "joinedTooltip": "Fri Aug 21 2026 15:32:10 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2026-08",
+    "joinedLabel": "Joined 2 months ago",
+    "bioPresent": true,
+    "bioText": "Quietly working away",
+    "followers": 1,
+    "activity": {
+      "competitionsSolo": 0,
+      "competitionsInATeam": 1,
+      "competitionsHosted": 0
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 1,
+    "completedCount": 0,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "completedNames": [],
+    "scopeNote": "The Competitions tab lists only the one active ARC-AGI-3 entry (3 days to go when checked). No completed competition and no medal is displayed. Do not infer an earlier history."
+  },
+  "completedResults": [],
+  "currentEntry": {
+    "competition": "ARC Prize 2026 - ARC-AGI-3",
+    "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "status": "active",
+    "provisional": true,
+    "teamName": "Grigoriy Zatravkin & co",
+    "teamId": "16490178",
+    "displayedHandles": [
+      "aizealotwu",
+      "deepdreamer",
+      "florenciasolange",
+      "grigoriyzatravkin"
+    ],
+    "publicBoardRank": 9,
+    "publicBoardTeams": 4984,
+    "publicBoardScore": 47.19,
+    "publicBoardFetched": "2026-10-30T13:54:21Z",
+    "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "note": "Public leaderboard standing, provisional until the private scoring at the competition close. A team result, not an individual honour."
+  },
+  "portrait": {
+    "status": "none-available",
+    "src": null,
+    "sourceUrl": "https://www.kaggle.com/florenciasolange",
+    "note": "The large profile picture is Kaggle's stock default avatar (the page element's background is the site's default-avatar image, shown as a pencil-style goose), not a picture this person uploaded. No individual picture of her is public in the sources the record cites, so no portrait file was saved and no stand-in or group image should be used."
+  },
+  "facts": [
+    {
+      "text": "Florencia Solange's public Kaggle profile shows an account that joined in August 2026, with the one-line bio \"Quietly working away\".",
+      "sourceUrl": "https://www.kaggle.com/florenciasolange",
+      "sourceTitle": "Florencia Solange — own Kaggle profile",
+      "checkedAt": "2026-10-30T14:09:03Z"
+    },
+    {
+      "text": "Her Kaggle Competitions tab lists a single competition, the active ARC Prize 2026 - ARC-AGI-3, entered as part of a team. It shows no completed competitions and no medals.",
+      "sourceUrl": "https://www.kaggle.com/florenciasolange/competitions",
+      "sourceTitle": "Florencia Solange — Kaggle competitions list",
+      "checkedAt": "2026-10-30T14:09:03Z"
+    },
+    {
+      "text": "On the ARC-3 public board she is listed with the team Grigoriy Zatravkin & co, which stood 9th of 4,984 teams when last read. That is a provisional team standing, not a medal and not an individual result.",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "sourceTitle": "ARC-3 public Kaggle board — team Grigoriy Zatravkin & co",
+      "checkedAt": "2026-10-30T14:09:03Z"
+    }
+  ],
+  "teamNotes": "Her only displayed competition is a team entry, Grigoriy Zatravkin & co, with members shown as aizealotwu, deepdreamer, florenciasolange and grigoriyzatravkin. The Kaggle entry card shows four member avatars, matching the four handles on the board. Any standing is provisional and belongs to the team; nothing here is credited to her individually.",
+  "unverified": [
+    "Her real-world background, employer or location: not shown on her profile.",
+    "Any Kaggle competition history before the ARC-AGI-3 entry: none is displayed, and the list is not proof of her full history.",
+    "Her competition tier: no tier badge is displayed.",
+    "Which team members did which work, and whether the public board standing holds at the private scoring at the 2 November close.",
+    "Any individual photograph of her: none found in the cited sources."
+  ],
+  "verified": true
+}

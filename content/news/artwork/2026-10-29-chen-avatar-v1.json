@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "2026-10-29-chen-avatar-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Asset type: square editorial portrait for The ARC Daily Digest's compact collectible player cards. Create a polished illustrated portrait of exactly the TWO rabbits in the first photograph, using the second illustration for clear character likeness and the third trading card ONLY as the style reference for fine inked edges and richly rendered fur. Preserve grey-brown lop rabbit BOTH ears down, soft pale chin and nose, in front left; darker upright-eared rabbit with broad white face blaze, white chest behind/right. Bring their faces close together into a beautiful readable square close-up, all four ears visible with margin inside the square. Both look alert, intelligent and slightly wary toward camera. Tasteful very modest graphite cyber vests with tiny teal ARC grid accents at the lower edge, no goggles or anything covering faces. Warm cream archival paper backdrop with a very faint teal ARC-grid pattern. Portrait only, no outer trading card frame, no words, no labels, no logo. Their faces and ears must remain completely recognizable and legible at small avatar size, not a generic pair of rabbits. Not humans. Native illustration commissioned by editor as Yi-Chia Chen's established two-bunny visual identity; no claim that this is an actual photograph of Chen.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/dries.png"
+    ],
+    "transparent_background": false
+  },
+  "generatedAt": "2026-10-29T18:46:24.689858+00:00",
+  "nativeOutput": "/Users/macmini/.codex/generated_images/01a18866-68b3-70f1-8a5a-ffd3c522b910/exec-40b9766f-5e87-4af8-8b9c-245389ddd131.png",
+  "nativeOutputSha256": "9cc8beb65cc3b3cf7c46c42534c06935ea433c5b57957131f95d40da8a2386c5",
+  "rawSrc": "/news-images/people/yi-chia-chen-editorial-v1.webp",
+  "rawSha256": "302db33124bb8dac3ea79d1585749b444290829f3a0b4dfe6099a73e88be9eb0",
+  "purpose": "Editor-commissioned glow-up of Yi-Chia Chen’s established two-rabbit avatar for compact player cards.",
+  "references": [
+    {
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png",
+      "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+      "sha256": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e"
+    },
+    {
+      "src": "/dries.png",
+      "sha256": "fb871404a38856b9826390c5ad2c41375ed688fd73e6c586ef7ad04826685596"
+    }
+  ],
+  "review": "Both rabbits match the owner photograph: grey-brown lop has both ears down; dark upright-eared rabbit has broad white blaze and chest. Faces and all ears visible, cream ARC-grid backdrop, modest cyber vests, no text. Clearly editorial art; original Kaggle portrait retained."
+}

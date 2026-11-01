@@ -1,0 +1,159 @@
+{
+  "personId": "muhammad-yassir-ramadhan",
+  "handle": "yassirramadhan",
+  "name": "Muhammad Yassir Ramadhan",
+  "checkedAt": "2026-10-30T13:33:13Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude desktop app's built-in browser on 2026-10-30 (profile page, then competitions page, one tab, no refreshes). Text read with page-text extraction; the medal icon was read from a screenshot and confirmed by the icon's own 'gold medal' label; displayed account names were read from the avatar labels on each completed row; the own-profile picture URL was read from the profile page's large avatar element. The join month comes from the profile's hover tooltip (the page itself shows only 'Joined a year ago'); the two tooltips on the page were told apart because the October 2026 one matches 'last seen 2 days ago'. Any earlier draft was discarded and this file rebuilt from the live pages only.",
+  "sources": [
+    "https://www.kaggle.com/yassirramadhan",
+    "https://www.kaggle.com/yassirramadhan/competitions"
+  ],
+  "profile": {
+    "displayName": "Muhammad Yassir Ramadhan",
+    "pronouns": "he/him",
+    "occupation": "Student",
+    "location": "Hino, Tokyo, Japan",
+    "competitionTier": null,
+    "competitionTierNote": "No competition tier, rank or medal tally is displayed on this profile, so none is recorded.",
+    "medals": null,
+    "medalsNote": "The profile displays no medal tally, so none is recorded at profile level. The only medal icon on the completed-competition list is one gold icon on the NVIDIA Nemotron entry, which is a five-account team result and is recorded on that row, not as an individual honour.",
+    "joinedMonth": "2025-11",
+    "joinedTooltip": "Tue Nov 25 2025 22:49:40 GMT-0500 (Eastern Standard Time)",
+    "joinedLabel": "Joined a year ago",
+    "bioPresent": false,
+    "bioPlaceholderText": "Kaggle placeholder lines only (No bio yet... / Quietly working away); not written by him.",
+    "activity": {
+      "competitionsSolo": 1,
+      "competitionsInATeam": 4,
+      "competitionsHosted": 0
+    },
+    "counts": {
+      "competitions": 5,
+      "datasets": 2,
+      "code": 1,
+      "writeups": 1,
+      "followers": 2,
+      "following": 3
+    }
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 3,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-2",
+      "ARC Prize 2026 - ARC-AGI-3"
+    ],
+    "activeDisplayedHandles": [
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "alwintheodoric",
+      "yassirramadhan",
+      "billyanggara"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "BirdCLEF+ 2026",
+      "ROGII - Wellbore Geology Prediction"
+    ],
+    "scopeNote": "Only these completed records are publicly displayed. Do not invent additional finishes or treat the list as proof of the account's entire participation history."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 5,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "alwintheodoric",
+        "yassirramadhan",
+        "billyanggara"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null,
+      "competitionKind": "Featured"
+    },
+    {
+      "competition": "BirdCLEF+ 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+      "rank": 2505,
+      "teams": 4094,
+      "medal": null,
+      "displayedHandles": [
+        "darrenamadeusmartin",
+        "alwintheodoric",
+        "yassirramadhan"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "5 months ago",
+      "exactCompletionDate": null,
+      "competitionKind": "Research · Code Competition"
+    },
+    {
+      "competition": "ROGII - Wellbore Geology Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "rank": 5184,
+      "teams": 6125,
+      "medal": null,
+      "displayedHandles": [
+        "yassirramadhan"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null,
+      "competitionKind": "Featured · Code Competition"
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/muhammad-yassir-ramadhan.webp",
+    "sourceUrl": "https://www.kaggle.com/yassirramadhan",
+    "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/30906663-kg.jpeg?t=2026-04-16-05-45-43",
+    "originalWidth": 400,
+    "originalHeight": 400,
+    "note": "The saved 320 by 320 file is a downscale of the live own-profile picture: a single young man in a dark coat and white shirt in front of a stone wall. Compared with the live 400 by 400 original resized to 320, the average pixel difference is about 2 of 255. It is an individual photo, not a group image and not a default avatar. No replacement was needed and the file was not overwritten."
+  },
+  "facts": [
+    {
+      "text": "Muhammad Yassir Ramadhan's own Kaggle profile lists him as a student in Hino, Tokyo, Japan, and shows him as having joined Kaggle in November 2025.",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan",
+      "sourceTitle": "Muhammad Yassir Ramadhan - own Kaggle profile",
+      "checkedAt": "2026-10-30T13:33:13Z"
+    },
+    {
+      "text": "Kaggle lists the completed NVIDIA Nemotron Model Reasoning Challenge entry as fifth of 4,185 teams, with a gold medal. The entry shows five accounts, his among them, so the medal is a shared team medal.",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+      "sourceTitle": "Muhammad Yassir Ramadhan - completed NVIDIA Nemotron result on Kaggle",
+      "checkedAt": "2026-10-30T13:33:13Z"
+    },
+    {
+      "text": "Kaggle also lists a BirdCLEF+ 2026 finish of 2,505th of 4,094 teams, shared with two other accounts, and a solo ROGII Wellbore Geology Prediction finish of 5,184th of 6,125 teams. Neither shows a medal.",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+      "sourceTitle": "Muhammad Yassir Ramadhan - completed BirdCLEF+ 2026 and ROGII results on Kaggle",
+      "checkedAt": "2026-10-30T13:33:13Z"
+    },
+    {
+      "text": "His Kaggle profile shows him in both active ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, with the same five accounts displayed on each entry as on the Nemotron entry.",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan/competitions",
+      "sourceTitle": "Muhammad Yassir Ramadhan - active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T13:33:13Z"
+    }
+  ],
+  "teamNotes": [
+    "The five accounts displayed on the Nemotron, ARC-AGI-2 and ARC-AGI-3 entries are darrenamadeusmartin, rinnnntt, alwintheodoric, yassirramadhan and billyanggara. The Kaggle profile list does not show a team name for any entry.",
+    "The Nemotron gold medal and fifth place are a five-account team result and are not credited to him as an individual honour.",
+    "The BirdCLEF+ 2026 entry shows three accounts (darrenamadeusmartin, alwintheodoric, yassirramadhan); the ROGII entry shows only his own account."
+  ],
+  "unverified": [
+    "The team name 'Domdolus Tolus' comes from the newsroom record's ARC roster observation and write-up link, not from the Kaggle profile pages read today, so it is not recorded as a displayed team name.",
+    "The claim that the public Nemotron write-up credits all five members was not re-read in this pass.",
+    "The ARC-AGI-2 and ARC-AGI-3 public leaderboard standings were not read from Kaggle in this pass; any standing is provisional until the private leaderboard settles at the competition close.",
+    "No Kaggle competition tier, rank or medal tally is displayed on this profile, so none is stated.",
+    "Exact completion dates of the three completed competitions are not displayed; only relative labels were shown.",
+    "His Student status is as listed on his own profile; no institution is named."
+  ],
+  "verified": true
+}

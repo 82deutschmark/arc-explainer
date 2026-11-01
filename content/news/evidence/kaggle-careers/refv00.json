@@ -1,0 +1,219 @@
+{
+  "personId": "refv00",
+  "handle": "refv00",
+  "name": "re",
+  "checkedAt": "2026-10-30T13:46:00Z",
+  "method": "Claude Sonnet 5.5 read the public Kaggle profile page and the public Competitions page with the Claude desktop app's built-in browser pane (the one existing tab, no other browser) on 2026-10-30, waiting about six seconds after each load and five seconds between the two pages. Page text was read, the medal icons were read from the page (alt text on each medal image, cross-checked against a screenshot of the list), the teammate accounts shown beside each entry were read from the hover titles on the small avatars, the join date was read from the 'Joined' tooltip, and the avatar image address was read from the profile picture element. No rate limit, captcha or block appeared. No earlier draft file existed for this person, so nothing was carried over; the repo record's own claims are listed under unverified where they were not re-read.",
+  "sources": [
+    "https://www.kaggle.com/refv00",
+    "https://www.kaggle.com/refv00/competitions"
+  ],
+  "profile": {
+    "displayName": "re",
+    "competitionTier": "Master",
+    "medals": {
+      "gold": 2,
+      "silver": 2,
+      "bronze": 1
+    },
+    "competitionRank": 88,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 58,
+    "joinedLabel": "Joined 4 years ago",
+    "joinedTooltip": "Fri Jul 22 2022 10:42:54 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2022-07",
+    "bioPresent": true,
+    "pronouns": "he/him",
+    "occupation": "Data Scientist",
+    "location": "Sapporo, Hokkaido, Japan",
+    "linksShown": {
+      "githubLabel": "xrwr",
+      "xLabel": "@refv00",
+      "note": "Only the visible labels were read; the link targets were not inspected."
+    },
+    "activityPanel": "Kaggle's activity panel on the Competitions page shows 5 competitions entered solo, 5 in a team, and 0 hosted.",
+    "otherTabCounts": "The profile tabs show Competitions (10), Datasets (2), Models (1), Code (2), Discussion (4), Writeups (2) and 36 followers; only the Competitions page was opened for detail."
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 8,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "completedNames": [
+      "NVIDIA Nemotron Model Reasoning Challenge",
+      "The 2026 NeuroGolf Championship",
+      "RSNA Knee Abnormality Detection",
+      "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "CMI - Detect Behavior with Sensor Data",
+      "RSNA Intracranial Aneurysm Detection",
+      "Predict Podcast Listening Time",
+      "Predict Calorie Expenditure"
+    ],
+    "scopeNote": "The page lists Completed Competitions (8) on one page, sorted by Best Result, and all eight were read. Together with the two active entries that matches the ten shown on the Competitions tab. All five medals the profile counts (gold in Nemotron and NeuroGolf, silver in RSNA Knee and Waveform Inversion, bronze in CMI) are among the eight rows, and the other three rows show no medal."
+  },
+  "completedResults": [
+    {
+      "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "rank": 1,
+      "teams": 4185,
+      "medal": "gold",
+      "displayedHandles": [
+        "goodmeatday",
+        "refv00",
+        "reopon"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "4 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The 2026 NeuroGolf Championship",
+      "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "rank": 14,
+      "teams": 2963,
+      "medal": "gold",
+      "displayedHandles": [
+        "stmx35",
+        "tomo1314",
+        "tknakamu",
+        "refv00",
+        "schrodinger0112"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Knee Abnormality Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "rank": 42,
+      "teams": 6299,
+      "medal": "silver",
+      "displayedHandles": [
+        "stmx35",
+        "tknakamu",
+        "ruikikobayashi",
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "8 days ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "competitionUrl": "https://www.kaggle.com/competitions/waveform-inversion",
+      "rank": 54,
+      "teams": 1365,
+      "medal": "silver",
+      "displayedHandles": [
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CMI - Detect Behavior with Sensor Data",
+      "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+      "rank": 143,
+      "teams": 2657,
+      "medal": "bronze",
+      "displayedHandles": [
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "RSNA Intracranial Aneurysm Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/rsna-intracranial-aneurysm-detection",
+      "rank": 150,
+      "teams": 1147,
+      "medal": null,
+      "displayedHandles": [
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predict Podcast Listening Time",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e4",
+      "rank": 28,
+      "teams": 3310,
+      "medal": null,
+      "displayedHandles": [
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Predict Calorie Expenditure",
+      "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e5",
+      "rank": 47,
+      "teams": 4316,
+      "medal": null,
+      "displayedHandles": [
+        "refv00"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/refv00.webp",
+    "sourceUrl": "https://storage.googleapis.com/kaggle-avatars/images/11115645-kg.jpeg?t=2026-09-24-08-51-10",
+    "note": "The stored 320px portrait is the same picture as the current Kaggle profile picture shown on https://www.kaggle.com/refv00 (the large round avatar in the profile header, 400px original, picture stamp 2026-09-24). It was compared side by side against the downloaded original resized to 320px, and the two match apart from compression noise. It is re's own chosen profile picture: an illustrated green animal character with two dark upright-slit eyes, cream cheek patches and a cream belly against a near-black background. It is a single character, not a group image and not Kaggle's default placeholder avatar. No new file was written."
+  },
+  "facts": [
+    {
+      "text": "re is a Kaggle Competitions Master, ranked 88th of 225,021 on Kaggle's competitions ranking (58th at best), with two gold, two silver and one bronze competition medal on the public profile. The profile lists a data scientist in Sapporo, Japan, who joined Kaggle in July 2022.",
+      "sourceUrl": "https://www.kaggle.com/refv00",
+      "sourceTitle": "re - public Kaggle profile, tier, rank and medals",
+      "checkedAt": "2026-10-30T13:46:00Z"
+    },
+    {
+      "text": "re is one of three accounts, with goodmeatday and reopon, on the Kaggle entry that finished 1st of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge and won a gold medal. It is a team result, not a solo one.",
+      "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+      "sourceTitle": "re - completed Nemotron Model Reasoning Challenge result and teammates",
+      "checkedAt": "2026-10-30T13:46:00Z"
+    },
+    {
+      "text": "re is one of five accounts on the Kaggle entry that finished 14th of 2,963 teams in The 2026 NeuroGolf Championship, a challenge about building the smallest neural networks to solve ARC-AGI image puzzles, and won a gold medal. The others shown are stmx35, tomo1314, tknakamu and schrodinger0112.",
+      "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+      "sourceTitle": "re - completed NeuroGolf Championship result and teammates",
+      "checkedAt": "2026-10-30T13:46:00Z"
+    },
+    {
+      "text": "re's other three medals are a silver in RSNA Knee Abnormality Detection (42nd of 6,299, on a four-account team entry), a silver in the Geophysical Waveform Inversion competition (54th of 1,365) and a bronze in CMI - Detect Behavior with Sensor Data (143rd of 2,657), the last two entered with only the refv00 account shown.",
+      "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+      "sourceTitle": "re - remaining competition medals on Kaggle",
+      "checkedAt": "2026-10-30T13:46:00Z"
+    },
+    {
+      "text": "As of October 30, 2026, Kaggle lists re as active in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each with three days to go. No standing is claimed here.",
+      "sourceUrl": "https://www.kaggle.com/refv00/competitions",
+      "sourceTitle": "re - active ARC Prize 2026 entries on Kaggle",
+      "checkedAt": "2026-10-30T13:46:00Z"
+    }
+  ],
+  "teamNotes": "The Kaggle Competitions page does not show team names, only the accounts beside each entry, so teamName is null on every row. Three of the five medals are team entries: Nemotron gold (goodmeatday, refv00, reopon), NeuroGolf gold (stmx35, tomo1314, tknakamu, refv00, schrodinger0112) and RSNA Knee silver (stmx35, tknakamu, ruikikobayashi, refv00); none of these is credited to re alone. The Waveform Inversion silver and the CMI bronze show only the refv00 account, and Kaggle's activity panel counts five solo and five team entries, which matches that reading: the five solo entries are those two plus the Aneurysm and the two Playground rows, and the five team entries are the three completed team rows above plus the two active ARC Prize entries, whose cards show several accounts. Two accounts, stmx35 and tknakamu, appear beside both the NeuroGolf and the RSNA Knee entries. The profile's Featured Writeups shows a 1st Place Solution writeup for the Nemotron challenge dated June 24, 2026, written as 'we' and labelled NullSira beside its date line; Kaggle does not say on that card whether NullSira is a team name, so it is not recorded as one. The repo record's separate ARC Prize 2026 roster observation, a team listed under a Japanese-language name in both ARC-AGI-2 and ARC-AGI-3, was not re-read today and is not repeated as a Kaggle-page fact.",
+  "unverified": [
+    "The team name for any entry: the Competitions page does not show one. 'NullSira' appears on the Nemotron writeup card, but nothing on the page ties it to the team name.",
+    "The repo record's ARC Prize 2026 roster observations (team listed in both ARC-AGI-2 and ARC-AGI-3 on the public ARC boards, 2026-10-29): not re-read today, and no ARC standing is claimed.",
+    "Where the X and GitHub links on the profile point: only their visible labels (@refv00 and xrwr) were read, so the X account is not confirmed as the person's own beyond the profile's own label, and the GitHub account is not connected to anything else.",
+    "A full real name: the profile shows only 're'. None is claimed.",
+    "Exact completion dates of any competition: Kaggle shows only relative labels such as '4 months ago'.",
+    "The other tabs (Datasets, Models, Code, Discussion, Writeups): only their counts were read, not their contents, beyond the featured Nemotron writeup card on the About tab."
+  ],
+  "verified": true
+}

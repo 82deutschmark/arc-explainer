@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-25T19:38:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "rxe climbs from 1,334th to 52nd on ARC-2",
+  "id": "2026-10-25-1557-arc-2-rxe-climbs-to-52nd",
+  "personIds": [],
+  "publishedAt": "2026-10-25T19:57:04Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "rxe gained 17.50 points to reach 47.36, moving from 1,334th to 52nd on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The jump carries rxe into the top 100 after starting the day in the four-digit ranks. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-24T19:13:08Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-25T19:56:26Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15487221"
+  ]
+}

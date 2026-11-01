@@ -12,7 +12,7 @@
     ],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15486728",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "mithilavakde"
     ],
@@ -44,7 +44,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15486939",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "cpmpml",
       "darraghdog"
@@ -64,6 +64,19 @@
     ],
     "name": "Giba",
     "teamId": "15487246"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:30Z",
+    "id": "arc-2-15487512",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "mbmmurad"
+    ],
+    "name": "Md Boktiar Mahbub Murad",
+    "teamId": "15487512"
   },
   {
     "aliases": [],
@@ -101,10 +114,46 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: aquaursaresearch. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-15488773",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "aquaursaresearch"
+    ],
+    "name": "AquaUrsa Research",
+    "teamId": "15488773"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:52Z",
+    "id": "arc-2-15494960",
+    "lastObservedAt": "2026-10-29T09:50:52Z",
+    "members": [
+      "hannahhuang68",
+      "mianwang1024",
+      "mkhlystun",
+      "ruijiethebest"
+    ],
+    "name": "Albert_Mikhail_Ruijie_Hannah",
+    "teamId": "15494960"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-22T21:37:08Z",
     "id": "arc-2-15495422",
-    "lastObservedAt": "2026-10-22T21:37:08Z",
+    "lastObservedAt": "2026-10-28T09:47:51Z",
     "members": [
       "tfukuhara"
     ],
@@ -128,13 +177,28 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-28T21:49:29Z",
+    "id": "arc-2-15500647",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
+    "members": [
+      "yasserothman"
+    ],
+    "name": "Yasser Othman",
+    "teamId": "15500647"
+  },
+  {
+    "aliases": [
+      "Yi-Chia Chen"
+    ],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15501171",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "threerabbits"
     ],
-    "name": "Yi-Chia Chen",
+    "name": "Yi-Chia Chen @ Fields Model",
     "teamId": "15501171"
   },
   {
@@ -156,7 +220,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15507730",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "insanitycheck"
     ],
@@ -187,6 +251,19 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-15522325",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
+    "members": [
+      "giovannyrodrguez"
+    ],
+    "name": "Giovanny Rodríguez",
+    "teamId": "15522325"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-23T21:39:11Z",
     "id": "arc-2-15522728",
     "lastObservedAt": "2026-10-23T21:39:11Z",
@@ -197,7 +274,9 @@
     "teamId": "15522728"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "ARC Raiders"
+    ],
     "competition": "arc-2",
     "facts": [
       {
@@ -209,14 +288,14 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "dzjiann",
       "keithtyser",
       "mitubant",
       "ngyzly"
     ],
-    "name": "ARC Raiders",
+    "name": "この遥かなる旅路に祝福を",
     "teamId": "15526034"
   },
   {
@@ -231,6 +310,19 @@
     ],
     "name": "Komil Parmar",
     "teamId": "15552544"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T20:55:20Z",
+    "id": "arc-2-15590185",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "rameshln"
+    ],
+    "name": "Ramesh Arvind",
+    "teamId": "15590185"
   },
   {
     "aliases": [],
@@ -260,7 +352,7 @@
     ],
     "firstObservedAt": "2026-10-18T09:54:37Z",
     "id": "arc-2-15601881",
-    "lastObservedAt": "2026-10-21T22:34:16Z",
+    "lastObservedAt": "2026-10-26T21:43:12Z",
     "members": [
       "amiteshhhhhhhhh",
       "gghhjjkk"
@@ -307,13 +399,39 @@
     "facts": [],
     "firstObservedAt": "2026-10-14T21:45:23Z",
     "id": "arc-2-15618366",
-    "lastObservedAt": "2026-10-14T21:45:23Z",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
     "members": [
       "thangnm1",
       "trinhphuong98"
     ],
     "name": "Hiểu Vy",
     "teamId": "15618366"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-24T21:46:03Z",
+    "id": "arc-2-15630222",
+    "lastObservedAt": "2026-10-26T09:41:48Z",
+    "members": [
+      "laureanoarcanio"
+    ],
+    "name": "Laureano Arcanio",
+    "teamId": "15630222"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:30Z",
+    "id": "arc-2-15643934",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "antoniu"
+    ],
+    "name": "Antoniu Gugu",
+    "teamId": "15643934"
   },
   {
     "aliases": [],
@@ -329,18 +447,60 @@
     "teamId": "15647123"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Khaotic Sethesis"
+    ],
     "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15648732",
-    "lastObservedAt": "2026-10-15T09:47:20Z",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
     "members": [
+      "cdeotte",
       "khahuras",
       "sethmoudry"
     ],
-    "name": "Khaotic Sethesis",
+    "name": "KhaoticDeotterministicSethesis",
     "teamId": "15648732"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-15659413",
+    "lastObservedAt": "2026-10-26T21:43:12Z",
+    "members": [
+      "yjsh2003"
+    ],
+    "name": "Jiasheng Yun",
+    "teamId": "15659413"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:55Z",
+    "id": "arc-2-15724950",
+    "lastObservedAt": "2026-10-30T09:53:55Z",
+    "members": [
+      "ngcferreira"
+    ],
+    "name": "Nuno Ferreira",
+    "teamId": "15724950"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-15762967",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "richardfreinschlag"
+    ],
+    "name": "Richard Freinschlag",
+    "teamId": "15762967"
   },
   {
     "aliases": [],
@@ -348,7 +508,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15789060",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "cookizesong",
       "jiaxibi0220",
@@ -365,13 +525,26 @@
     "facts": [],
     "firstObservedAt": "2026-10-13T09:41:34Z",
     "id": "arc-2-15796569",
-    "lastObservedAt": "2026-10-21T22:34:16Z",
+    "lastObservedAt": "2026-10-24T21:46:03Z",
     "members": [
       "cassinicraft",
       "yash9439"
     ],
     "name": "Aneesh & Yash",
     "teamId": "15796569"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-28T21:49:29Z",
+    "id": "arc-2-15903566",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "nischaydnk"
+    ],
+    "name": "Nischay Dhankhar",
+    "teamId": "15903566"
   },
   {
     "aliases": [],
@@ -419,6 +592,32 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-16153654",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
+    "members": [
+      "michaeltgao"
+    ],
+    "name": "mtg",
+    "teamId": "16153654"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-25T10:34:19Z",
+    "id": "arc-2-16162777",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "rostigor"
+    ],
+    "name": "Igor V",
+    "teamId": "16162777"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-17T09:52:13Z",
     "id": "arc-2-16260837",
     "lastObservedAt": "2026-10-17T21:53:28Z",
@@ -441,7 +640,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:52Z",
     "id": "arc-2-16297545",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
     "members": [
       "nisshokuitsuki"
     ],
@@ -454,7 +653,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16373916",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "majkel1337"
     ],
@@ -465,9 +664,22 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-24T21:46:03Z",
+    "id": "arc-2-16381399",
+    "lastObservedAt": "2026-10-24T21:46:03Z",
+    "members": [
+      "yuvraj"
+    ],
+    "name": "Yuvraj #2",
+    "teamId": "16381399"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-23T21:39:11Z",
     "id": "arc-2-16385075",
-    "lastObservedAt": "2026-10-23T21:39:11Z",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
     "members": [
       "yitree"
     ],
@@ -480,7 +692,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-24T09:40:36Z",
     "id": "arc-2-16396458",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-24T21:46:03Z",
     "members": [
       "dasmwjdasd"
     ],
@@ -504,6 +716,19 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:55Z",
+    "id": "arc-2-16400044",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "heminator"
+    ],
+    "name": "Heminator",
+    "teamId": "16400044"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-14T21:45:23Z",
     "id": "arc-2-16408694",
     "lastObservedAt": "2026-10-14T21:45:23Z",
@@ -519,7 +744,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16410256",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-26T09:41:48Z",
     "members": [
       "badboiriri",
       "cody11null",
@@ -551,7 +776,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-13T21:42:57Z",
     "id": "arc-2-16442485",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "hongori",
       "quarkliu"
@@ -562,10 +787,30 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: aizealotwu. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-16450168",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "aizealotwu"
+    ],
+    "name": "win a real prize",
+    "teamId": "16450168"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16461211",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
     "members": [
       "dawkopi"
     ],
@@ -576,9 +821,48 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-11-01T16:01:19Z",
+    "id": "arc-2-16487050",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "leonixis"
+    ],
+    "name": "Leszek Góra",
+    "teamId": "16487050"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-28T21:49:29Z",
+    "id": "arc-2-16487824",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
+    "members": [
+      "tjbhdata"
+    ],
+    "name": "megsub",
+    "teamId": "16487824"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-11-01T16:01:19Z",
+    "id": "arc-2-16488216",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "sml0820"
+    ],
+    "name": "sml0820",
+    "teamId": "16488216"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-21T09:32:34Z",
     "id": "arc-2-16505371",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
     "members": [
       "guoqingu"
     ],
@@ -604,7 +888,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-19T21:58:46Z",
     "id": "arc-2-16532134",
-    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
     "members": [
       "yanmingowendong"
     ],
@@ -628,9 +912,29 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-16558875",
+    "lastObservedAt": "2026-10-26T21:43:12Z",
+    "members": [
+      "trian2018"
+    ],
+    "name": "Trian",
+    "teamId": "16558875"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T23:43:35.884923Z",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "NVIDIA Nemotron Model Reasoning Challenge: fifth of 4,185, gold medal — a shared Domdolus Tolus team result."
+      }
+    ],
     "firstObservedAt": "2026-10-13T09:41:34Z",
     "id": "arc-2-16559402",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "alwintheodoric",
       "billyanggara",
@@ -654,7 +958,7 @@
     ],
     "firstObservedAt": "2026-10-12T10:04:20Z",
     "id": "arc-2-16569125",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
     "members": [
       "isakatsuyoshi",
       "konbu17",
@@ -682,6 +986,19 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:52Z",
+    "id": "arc-2-16597340",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "insuperabile"
+    ],
+    "name": "insuperabilehart",
+    "teamId": "16597340"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-09T21:53:50Z",
     "id": "arc-2-16598993",
     "lastObservedAt": "2026-10-09T21:53:50Z",
@@ -692,17 +1009,55 @@
     "teamId": "16598993"
   },
   {
+    "aliases": [
+      "Nguyen"
+    ],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-31T17:24:05Z",
+        "sourceTitle": "Chan Kha Vu — public post, 30 October 2026",
+        "sourceUrl": "https://x.com/chankhavu/status/2116281051702280456",
+        "text": "Chan Kha Vu’s public post celebrates the team’s rise from about 50 to 76 points in five days and names @nguyen_manh599 and @razdaibi; those mentions alone do not map either X account to a particular Kaggle handle."
+      }
+    ],
+    "firstObservedAt": "2026-10-15T09:47:20Z",
+    "id": "arc-2-16600664",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "arazzd",
+      "chankhavu",
+      "nguyennguyen599"
+    ],
+    "name": "V | A | M",
+    "teamId": "16600664"
+  },
+  {
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
-    "firstObservedAt": "2026-10-15T09:47:20Z",
-    "id": "arc-2-16600664",
-    "lastObservedAt": "2026-10-16T21:51:01Z",
+    "firstObservedAt": "2026-10-25T21:40:04Z",
+    "id": "arc-2-16616584",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
     "members": [
-      "nguyennguyen599"
+      "sggpls",
+      "yuritosci"
     ],
-    "name": "Nguyen",
-    "teamId": "16600664"
+    "name": "yuritosci",
+    "teamId": "16616584"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:30Z",
+    "id": "arc-2-16617639",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "ivanj0"
+    ],
+    "name": "No Name",
+    "teamId": "16617639"
   },
   {
     "aliases": [],
@@ -710,7 +1065,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-20T09:59:59Z",
     "id": "arc-2-16663711",
-    "lastObservedAt": "2026-10-20T09:59:59Z",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
     "members": [
       "thwaitsusa2"
     ],
@@ -723,7 +1078,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16671221",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
     "members": [
       "albertruehlman"
     ],
@@ -742,6 +1097,19 @@
     ],
     "name": "ibyyue",
     "teamId": "16684035"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-16690385",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
+    "members": [
+      "sophie555"
+    ],
+    "name": "Sophie555",
+    "teamId": "16690385"
   },
   {
     "aliases": [],
@@ -769,7 +1137,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16745035",
-    "lastObservedAt": "2026-10-11T21:33:05Z",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
     "members": [
       "jlshen025"
     ],
@@ -782,7 +1150,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16756524",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "driessmit1",
       "jeroencottaar",
@@ -809,9 +1177,22 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-24T21:46:03Z",
+    "id": "arc-2-16766086",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
+    "members": [
+      "nvnnghia"
+    ],
+    "name": "nvnn",
+    "teamId": "16766086"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-18T09:54:37Z",
     "id": "arc-2-16767874",
-    "lastObservedAt": "2026-10-22T21:37:08Z",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
     "members": [
       "t0m0t0m0w"
     ],
@@ -824,7 +1205,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16768245",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-25T10:34:19Z",
     "members": [
       "deepdreamer"
     ],
@@ -835,14 +1216,93 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-16781837",
+    "lastObservedAt": "2026-10-26T09:41:48Z",
+    "members": [
+      "samwiz"
+    ],
+    "name": "Sam-wiz",
+    "teamId": "16781837"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:55Z",
+    "id": "arc-2-16782493",
+    "lastObservedAt": "2026-10-30T09:53:55Z",
+    "members": [
+      "lowasitgoes",
+      "uradkr"
+    ],
+    "name": "Team Alicia",
+    "teamId": "16782493"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: tk256ailab. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-16782676",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "tk256ailab"
+    ],
+    "name": "TK256",
+    "teamId": "16782676"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-16784541",
+    "lastObservedAt": "2026-10-29T09:50:52Z",
+    "members": [
+      "arshjot"
+    ],
+    "name": "Arshjot Khehra",
+    "teamId": "16784541"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-11-01T16:01:19Z",
+    "id": "arc-2-16794074",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "stndyq"
+    ],
+    "name": "StnDyq",
+    "teamId": "16794074"
+  },
+  {
+    "aliases": [
+      "ARCward Intelligence",
+      "Shin & Maciej & Natalia"
+    ],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-15T21:48:35Z",
     "id": "arc-2-16797706",
-    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
     "members": [
       "maciejsypetkowski",
-      "nataliajakowska"
+      "nataliajakowska",
+      "sggpls",
+      "shiiin9",
+      "yuritosci"
     ],
-    "name": "ARCward Intelligence",
+    "name": "S & M & N & S & Y",
     "teamId": "16797706"
   },
   {
@@ -851,12 +1311,26 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16799366",
-    "lastObservedAt": "2026-10-11T21:33:05Z",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
     "members": [
+      "evanyu800112",
       "thisray"
     ],
     "name": "thisray",
     "teamId": "16799366"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-25T10:34:19Z",
+    "id": "arc-2-16806027",
+    "lastObservedAt": "2026-10-25T10:34:19Z",
+    "members": [
+      "eeshsaxena"
+    ],
+    "name": "Eesh saxena",
+    "teamId": "16806027"
   },
   {
     "aliases": [
@@ -866,7 +1340,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:52Z",
     "id": "arc-2-16809131",
-    "lastObservedAt": "2026-10-13T09:41:34Z",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
     "members": [
       "borismatsakov"
     ],
@@ -918,9 +1392,35 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-25T21:40:04Z",
+    "id": "arc-2-16853785",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
+    "members": [
+      "androi"
+    ],
+    "name": "maze",
+    "teamId": "16853785"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-24T21:46:03Z",
+    "id": "arc-2-16861695",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
+    "members": [
+      "rikitomo0526"
+    ],
+    "name": "Rick",
+    "teamId": "16861695"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-18T21:56:08Z",
     "id": "arc-2-16883591",
-    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "lastObservedAt": "2026-10-24T21:46:03Z",
     "members": [
       "sajadgoudarzi"
     ],
@@ -931,9 +1431,22 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-30T20:55:20Z",
+    "id": "arc-2-16893334",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "anlthms"
+    ],
+    "name": "Anil Thomas",
+    "teamId": "16893334"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-21T22:34:16Z",
     "id": "arc-2-16899260",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
     "members": [
       "alishirvani"
     ],
@@ -952,6 +1465,19 @@
     ],
     "name": "Amaan",
     "teamId": "16904634"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-25T21:40:04Z",
+    "id": "arc-2-16907614",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
+    "members": [
+      "rusg77"
+    ],
+    "name": "Ruslan Guseynov",
+    "teamId": "16907614"
   },
   {
     "aliases": [],
@@ -1009,6 +1535,97 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-30T20:55:20Z",
+    "id": "arc-2-16961234",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
+    "members": [
+      "arutyunoff"
+    ],
+    "name": "Artem Arutyunov",
+    "teamId": "16961234"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-16980933",
+    "lastObservedAt": "2026-10-26T09:41:48Z",
+    "members": [
+      "hitarthjain0",
+      "netramfaran",
+      "rabari9999",
+      "yeashusemwal"
+    ],
+    "name": "Netram Faran",
+    "teamId": "16980933"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:30Z",
+    "id": "arc-2-16987610",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
+    "members": [
+      "christophercameron",
+      "cranberry128",
+      "matinaghaei",
+      "rohanajwani"
+    ],
+    "name": "Charles Ran",
+    "teamId": "16987610"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-11-01T16:01:19Z",
+    "id": "arc-2-17010415",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "keisukeyokota0428"
+    ],
+    "name": "forever young",
+    "teamId": "17010415"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:37Z",
+        "sourceTitle": "ARC-2 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "Observed public Kaggle roster: ttyn4519. This is the separately identified ARC-2 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:37Z",
+    "id": "arc-2-17012110",
+    "lastObservedAt": "2026-10-29T22:52:37Z",
+    "members": [
+      "ttyn4519"
+    ],
+    "name": "t fuku",
+    "teamId": "17012110"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:55Z",
+    "id": "arc-2-17012502",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
+    "members": [
+      "shipship"
+    ],
+    "name": "ship ship",
+    "teamId": "17012502"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-17017585",
     "lastObservedAt": "2026-10-12T10:04:20Z",
@@ -1044,7 +1661,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T21:51:01Z",
     "id": "arc-2-17021430",
-    "lastObservedAt": "2026-10-20T21:31:18Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "carriem7"
     ],
@@ -1062,12 +1679,12 @@
         "checkedAt": "2026-10-19T18:01:43.005825Z",
         "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
         "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        "text": "ARC Mutants unites Jack Cole, Mark Barney, Son Pham and scizical in ARC-AGI-2."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-17023174",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "jcole75",
       "markbarney",
@@ -1083,7 +1700,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T21:51:01Z",
     "id": "arc-2-17023569",
-    "lastObservedAt": "2026-10-24T09:40:36Z",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
     "members": [
       "yukitake93"
     ],
@@ -1096,7 +1713,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-20T21:31:18Z",
     "id": "arc-2-17024434",
-    "lastObservedAt": "2026-10-20T21:31:18Z",
+    "lastObservedAt": "2026-10-24T21:46:03Z",
     "members": [
       "nonempty"
     ],
@@ -1109,7 +1726,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-14T09:44:10Z",
     "id": "arc-2-17026534",
-    "lastObservedAt": "2026-10-23T21:39:11Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "kibuna"
     ],
@@ -1135,7 +1752,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T10:02:00Z",
     "id": "arc-2-17030687",
-    "lastObservedAt": "2026-10-21T09:32:34Z",
+    "lastObservedAt": "2026-10-25T21:40:04Z",
     "members": [
       "masspeaks"
     ],
@@ -1148,7 +1765,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-15T21:48:35Z",
     "id": "arc-2-17034545",
-    "lastObservedAt": "2026-10-15T21:48:35Z",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
     "members": [
       "ryotakaki"
     ],
@@ -1174,7 +1791,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T09:49:46Z",
     "id": "arc-2-17037977",
-    "lastObservedAt": "2026-10-20T21:31:18Z",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
     "members": [
       "eneskulak"
     ],
@@ -1246,7 +1863,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-21T22:34:16Z",
     "id": "arc-2-17054447",
-    "lastObservedAt": "2026-10-21T22:34:16Z",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
     "members": [
       "hazemlashenzz"
     ],
@@ -1296,16 +1913,145 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-31T17:28:39Z",
+    "id": "arc-2-17086347",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
+    "members": [
+      "yukuo14"
+    ],
+    "name": "yu_kuo14",
+    "teamId": "17086347"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-17096234",
+    "lastObservedAt": "2026-10-28T21:49:29Z",
+    "members": [
+      "kazuyago"
+    ],
+    "name": "Kaz",
+    "teamId": "17096234"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-31T17:28:39Z",
+    "id": "arc-2-17097585",
+    "lastObservedAt": "2026-10-31T17:28:39Z",
+    "members": [
+      "redblackbst",
+      "yuanzhezhou"
+    ],
+    "name": "redblackbst",
+    "teamId": "17097585"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-20T21:31:18Z",
     "id": "arc-2-17101761",
-    "lastObservedAt": "2026-10-22T21:37:08Z",
+    "lastObservedAt": "2026-10-29T21:52:30Z",
     "members": [
       "codjjj",
       "gravity20",
-      "li325040229"
+      "jakkma",
+      "li325040229",
+      "muumaoo"
     ],
     "name": "codjjj",
     "teamId": "17101761"
+  },
+  {
+    "aliases": [
+      "Thi Vĩnh Huy"
+    ],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-27T21:46:25Z",
+    "id": "arc-2-17107267",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "chelseathng",
+      "ctdthanh",
+      "genti1206",
+      "phanhuuannguyen"
+    ],
+    "name": "Ascendant",
+    "teamId": "17107267"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-27T12:44:55Z",
+    "id": "arc-2-17125820",
+    "lastObservedAt": "2026-10-27T21:46:25Z",
+    "members": [
+      "tatuhelander"
+    ],
+    "name": "Tatu Helander",
+    "teamId": "17125820"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:52Z",
+    "id": "arc-2-17138312",
+    "lastObservedAt": "2026-10-29T09:50:52Z",
+    "members": [
+      "vumaniacom"
+    ],
+    "name": "VUMANIAcom",
+    "teamId": "17138312"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-11-01T16:01:19Z",
+    "id": "arc-2-17150543",
+    "lastObservedAt": "2026-11-01T16:01:19Z",
+    "members": [
+      "ankitgautam1947",
+      "jaygautam007"
+    ],
+    "name": "Jay Gautam",
+    "teamId": "17150543"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:12Z",
+    "id": "arc-2-17156825",
+    "lastObservedAt": "2026-10-26T21:43:12Z",
+    "members": [
+      "i7p9h9"
+    ],
+    "name": "Adapton",
+    "teamId": "17156825"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:48Z",
+    "id": "arc-2-17166527",
+    "lastObservedAt": "2026-10-30T20:55:20Z",
+    "members": [
+      "andy2709",
+      "locbaop",
+      "minhtu123",
+      "thanhhau097a"
+    ],
+    "name": "ảc",
+    "teamId": "17166527"
   },
   {
     "aliases": [],
@@ -1338,7 +2084,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15486995",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "dlorah",
       "driessmit1",
@@ -1351,12 +2097,40 @@
     "teamId": "15486995"
   },
   {
+    "aliases": [
+      "Xz"
+    ],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:51Z",
+    "id": "arc-3-15487093",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
+    "members": [
+      "xiaoz259"
+    ],
+    "name": "faster machine is all you need",
+    "teamId": "15487093"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:54Z",
+    "id": "arc-3-15487522",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
+    "members": [
+      "mbmmurad"
+    ],
+    "name": "Md Boktiar Mahbub Murad",
+    "teamId": "15487522"
+  },
+  {
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
     "firstObservedAt": "2026-10-17T09:52:12Z",
     "id": "arc-3-15487549",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
     "members": [
       "muurur"
     ],
@@ -1387,6 +2161,19 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:29Z",
+    "id": "arc-3-15488763",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
+    "members": [
+      "aquaursaresearch"
+    ],
+    "name": "AquaUrsa Research",
+    "teamId": "15488763"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-20T09:59:57Z",
     "id": "arc-3-15490475",
     "lastObservedAt": "2026-10-20T21:31:16Z",
@@ -1402,7 +2189,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-09T18:53:27Z",
     "id": "arc-3-15490570",
-    "lastObservedAt": "2026-10-19T17:58:18Z",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
     "members": [
       "alisalmanrana",
       "jcole75",
@@ -1472,7 +2259,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T09:43:15Z",
     "id": "arc-3-15497811",
-    "lastObservedAt": "2026-10-11T21:33:04Z",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
     "members": [
       "nick2187",
       "triplehs"
@@ -1481,7 +2268,9 @@
     "teamId": "15497811"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Yi-Chia Chen"
+    ],
     "competition": "arc-3",
     "facts": [
       {
@@ -1505,11 +2294,11 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15499660",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "threerabbits"
     ],
-    "name": "Yi-Chia Chen",
+    "name": "Yi-Chia Chen @ Fields Model",
     "teamId": "15499660"
   },
   {
@@ -1531,7 +2320,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15501006",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-10-26T09:41:46Z",
     "members": [
       "insanitycheck"
     ],
@@ -1660,6 +2449,19 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-24T21:45:42Z",
+    "id": "arc-3-15522512",
+    "lastObservedAt": "2026-10-24T21:45:42Z",
+    "members": [
+      "nicbarthelemy1"
+    ],
+    "name": "Nic Barthelemy",
+    "teamId": "15522512"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-11T10:01:59Z",
     "id": "arc-3-15522677",
     "lastObservedAt": "2026-10-11T21:33:04Z",
@@ -1675,7 +2477,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-24T09:40:35Z",
     "id": "arc-3-15524067",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-10-24T21:45:42Z",
     "members": [
       "drpatrickchan"
     ],
@@ -1688,7 +2490,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-24T09:40:35Z",
     "id": "arc-3-15525358",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-10-24T21:45:42Z",
     "members": [
       "paulvvv"
     ],
@@ -1731,7 +2533,7 @@
         "checkedAt": "2026-10-18T19:16:05.370354Z",
         "sourceTitle": "ARC-3 observed public roster",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "text": "The public roster now lists all seven accounts together under Team Turducken. This confirms the combined entry, not its exact merger time or any new score gain."
+        "text": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham."
       },
       {
         "checkedAt": "2026-10-19T18:01:43.005825Z",
@@ -1742,7 +2544,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -1761,7 +2563,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T10:01:59Z",
     "id": "arc-3-15609417",
-    "lastObservedAt": "2026-10-11T10:01:59Z",
+    "lastObservedAt": "2026-10-24T21:45:42Z",
     "members": [
       "jerrlu"
     ],
@@ -1831,13 +2633,14 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15770880",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "cpmpml",
       "darraghdog",
       "eladsarafian",
       "galkaplun",
       "sorokin",
+      "titericz",
       "yeyinzhu"
     ],
     "name": "NVARC3",
@@ -1849,7 +2652,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T21:50:59Z",
     "id": "arc-3-15775532",
-    "lastObservedAt": "2026-10-21T22:34:15Z",
+    "lastObservedAt": "2026-10-27T21:46:23Z",
     "members": [
       "insuperabile"
     ],
@@ -1887,6 +2690,12 @@
     "competition": "arc-3",
     "facts": [
       {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "Florian Sestak: 38th of 4,463 with silver in the Santander Value Prediction Challenge."
+      },
+      {
         "checkedAt": "2026-10-08T13:46:44Z",
         "sourceTitle": "Lukas Aichberger — Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/lukasaichberger",
@@ -1900,12 +2709,6 @@
       },
       {
         "checkedAt": "2026-10-08T13:46:44Z",
-        "sourceTitle": "fses91 — Kaggle profile",
-        "sourceUrl": "https://www.kaggle.com/fses91",
-        "text": "Another rostered account, fses91, describes itself on Kaggle only as Florian; the public profile does not establish a surname."
-      },
-      {
-        "checkedAt": "2026-10-08T13:46:44Z",
         "sourceTitle": "Mykyta Ielanskyi — Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/dwellement0baser",
         "text": "The rostered dwellement0baser Kaggle profile identifies its owner as Mykyta Ielanskyi."
@@ -1915,11 +2718,59 @@
         "sourceTitle": "JKU — Mykyta Ielanskyi research profile",
         "sourceUrl": "https://research.jku.at/en/persons/mykyta-ielanskyi/",
         "text": "Johannes Kepler University Linz lists Mykyta Ielanskyi at its Institute for Machine Learning. Its research record credits him and Lukas Aichberger together on a 2026 paper about reward redistribution for reasoning models."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Lukas Aichberger — own biography and research directions",
+        "sourceUrl": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+        "text": "His own research biography records an AI PhD co-supervised by Sepp Hochreiter and Yarin Gal, work with OATML at Oxford and reasoning/post-training work at Apple."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "EuroSkills 2016 — official results, Mobile Robotics page 15",
+        "sourceUrl": "https://spain-skills.es/images/competiciones/euroskills2016/06_Results_per_skill_competition-2.pdf",
+        "text": "EuroSkills 2016 official Mobile Robotics results list Lukas Aichberger and Florian Müller fifth for Austria; this is separate from Kaggle."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — directly linked GitHub identity",
+        "sourceUrl": "https://github.com/fses91",
+        "text": "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — own research biography",
+        "sourceUrl": "https://raw.githubusercontent.com/fses91/fses91.github.io/main/_pages/about.md",
+        "text": "His own research biography identifies him as an AI PhD candidate at JKU Linz supervised by Günter Klambauer."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Mykyta Ielanskyi — own Kaggle identity and research role",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+        "text": "His Kaggle profile names Mykyta Ielanskyi and identifies his role as Research Scientist at IML JKU."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "JKU — Ielanskyi and coauthors’ Outstanding Paper Award",
+        "sourceUrl": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+        "text": "JKU records him among the recipients of the April 23, 2026 Outstanding Paper Award at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models for From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT",
+        "sourceUrl": "https://arxiv.org/abs/2606.06475",
+        "text": "He is first author of RREDCoT, with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "gklambauer — own Kaggle profile; no real name or personal portrait supplied",
+        "sourceUrl": "https://www.kaggle.com/gklambauer",
+        "text": "The Kaggle account supplies no real name or personal portrait. Its default Kaggle goose is not a personal likeness. No direct account link confirming ownership by professor Günter Klambauer was found in this focused investigation."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "dwellement0baser",
       "fses91",
@@ -1930,7 +2781,9 @@
     "teamId": "16021367"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "David Hartmann"
+    ],
     "competition": "arc-3",
     "facts": [
       {
@@ -1948,13 +2801,28 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16032816",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
+      "dfranzen",
       "dvhrtm",
+      "insanitycheck",
       "sbrodehl"
     ],
-    "name": "David Hartmann",
+    "name": "The ARChitects",
     "teamId": "16032816"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-25T21:39:14Z",
+    "id": "arc-3-16092051",
+    "lastObservedAt": "2026-10-25T21:39:14Z",
+    "members": [
+      "levkayumov"
+    ],
+    "name": "LevKayumov",
+    "teamId": "16092051"
   },
   {
     "aliases": [],
@@ -1993,7 +2861,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16132261",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "cmechevalier",
       "richardcsaky"
@@ -2027,7 +2895,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16153655",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "michaeltgao"
     ],
@@ -2099,7 +2967,7 @@
     ],
     "firstObservedAt": "2026-10-13T03:07:24Z",
     "id": "arc-3-16364346",
-    "lastObservedAt": "2026-10-15T21:48:34Z",
+    "lastObservedAt": "2026-10-28T09:47:50Z",
     "members": [
       "avgaydashenko",
       "gatamaz",
@@ -2138,7 +3006,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16371045",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "lordhansolo"
     ],
@@ -2170,6 +3038,20 @@
     ],
     "name": "Daniel Franzen",
     "teamId": "16384837"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:54Z",
+    "id": "arc-3-16429297",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
+    "members": [
+      "dipamc77",
+      "omprakashpy"
+    ],
+    "name": "Dipam and Om",
+    "teamId": "16429297"
   },
   {
     "aliases": [],
@@ -2243,17 +3125,21 @@
     "teamId": "16473956"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Grigoriy Zatravkin"
+    ],
     "competition": "arc-3",
     "facts": [],
     "firstObservedAt": "2026-10-16T09:49:44Z",
     "id": "arc-3-16490178",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
+      "aizealotwu",
+      "deepdreamer",
       "florenciasolange",
       "grigoriyzatravkin"
     ],
-    "name": "Grigoriy Zatravkin",
+    "name": "Grigoriy Zatravkin & co",
     "teamId": "16490178"
   },
   {
@@ -2262,12 +3148,37 @@
     "facts": [],
     "firstObservedAt": "2026-10-19T09:57:26Z",
     "id": "arc-3-16498846",
-    "lastObservedAt": "2026-10-19T21:58:44Z",
+    "lastObservedAt": "2026-10-25T21:39:14Z",
     "members": [
-      "aizealotwu"
+      "aizealotwu",
+      "deepdreamer"
     ],
     "name": "common-people-whereIsMyFuckingPrize",
     "teamId": "16498846"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T22:52:35Z",
+        "sourceTitle": "ARC-3 public board — dated roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "Observed public Kaggle roster: alwintheodoric,billyanggara,darrenamadeusmartin,rinnnntt,yassirramadhan. This is the separately identified ARC-3 team entry."
+      }
+    ],
+    "firstObservedAt": "2026-10-29T22:52:35Z",
+    "id": "arc-3-16534961",
+    "lastObservedAt": "2026-10-29T22:52:35Z",
+    "members": [
+      "alwintheodoric",
+      "billyanggara",
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "yassirramadhan"
+    ],
+    "name": "Domdolus Tolus",
+    "teamId": "16534961"
   },
   {
     "aliases": [],
@@ -2333,7 +3244,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16569113",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "isakatsuyoshi",
       "konbu17",
@@ -2346,6 +3257,22 @@
     ],
     "name": "復活の混テキスト",
     "teamId": "16569113"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:51Z",
+    "id": "arc-3-16609552",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
+    "members": [
+      "hippolytepilchen",
+      "romainfabre",
+      "thomasferraz",
+      "xinhao642"
+    ],
+    "name": "UNK",
+    "teamId": "16609552"
   },
   {
     "aliases": [],
@@ -2364,6 +3291,45 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:51Z",
+    "id": "arc-3-16623996",
+    "lastObservedAt": "2026-10-29T21:52:29Z",
+    "members": [
+      "sawada"
+    ],
+    "name": "Fighting Gold",
+    "teamId": "16623996"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-28T21:49:27Z",
+    "id": "arc-3-16639523",
+    "lastObservedAt": "2026-10-28T21:49:27Z",
+    "members": [
+      "rogersjohnson"
+    ],
+    "name": "Rogers Johnson",
+    "teamId": "16639523"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-25T21:39:14Z",
+    "id": "arc-3-16679890",
+    "lastObservedAt": "2026-10-25T21:39:14Z",
+    "members": [
+      "explcre"
+    ],
+    "name": "Ryan #3",
+    "teamId": "16679890"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-12T10:04:19Z",
     "id": "arc-3-16688839",
     "lastObservedAt": "2026-10-15T21:48:34Z",
@@ -2372,6 +3338,20 @@
     ],
     "name": "Zakinosuke",
     "teamId": "16688839"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:46Z",
+    "id": "arc-3-16693078",
+    "lastObservedAt": "2026-10-26T21:43:10Z",
+    "members": [
+      "lavinwins",
+      "shookiyama"
+    ],
+    "name": "Koris Lab & Sho",
+    "teamId": "16693078"
   },
   {
     "aliases": [],
@@ -2418,6 +3398,32 @@
     ],
     "name": "Abu Kayyisah Basyid",
     "teamId": "16713070"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:54Z",
+    "id": "arc-3-16733300",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
+    "members": [
+      "saaienginner"
+    ],
+    "name": "s_a_ai_enginner",
+    "teamId": "16733300"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:29Z",
+    "id": "arc-3-16734276",
+    "lastObservedAt": "2026-10-29T21:52:29Z",
+    "members": [
+      "takumuhata"
+    ],
+    "name": "Takumu Hata",
+    "teamId": "16734276"
   },
   {
     "aliases": [],
@@ -2479,6 +3485,19 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-28T09:47:50Z",
+    "id": "arc-3-16760837",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
+    "members": [
+      "yktori"
+    ],
+    "name": "yktori",
+    "teamId": "16760837"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-16T09:49:44Z",
     "id": "arc-3-16765941",
     "lastObservedAt": "2026-10-16T21:50:59Z",
@@ -2530,6 +3549,23 @@
   {
     "aliases": [],
     "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T21:43:10Z",
+    "id": "arc-3-16782490",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
+    "members": [
+      "apienss",
+      "gyuyoungpark09",
+      "leeheewon01",
+      "lowasitgoes",
+      "uradkr"
+    ],
+    "name": "Team Alicia",
+    "teamId": "16782490"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
     "facts": [
       {
         "checkedAt": "2026-10-08T13:46:44Z",
@@ -2571,6 +3607,19 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-25T21:39:14Z",
+    "id": "arc-3-16839649",
+    "lastObservedAt": "2026-10-25T21:39:14Z",
+    "members": [
+      "keter333"
+    ],
+    "name": "galileo680",
+    "teamId": "16839649"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-13T21:42:56Z",
     "id": "arc-3-16844462",
     "lastObservedAt": "2026-10-13T21:42:56Z",
@@ -2580,6 +3629,19 @@
     ],
     "name": "Zhilei Qiu",
     "teamId": "16844462"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-30T09:53:54Z",
+    "id": "arc-3-16845550",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
+    "members": [
+      "yassinealouini"
+    ],
+    "name": "Yassine Alouini",
+    "teamId": "16845550"
   },
   {
     "aliases": [],
@@ -2601,8 +3663,9 @@
     "facts": [],
     "firstObservedAt": "2026-10-14T09:44:09Z",
     "id": "arc-3-16853937",
-    "lastObservedAt": "2026-10-14T21:45:21Z",
+    "lastObservedAt": "2026-10-28T21:49:27Z",
     "members": [
+      "aaioaneitib",
       "adrian4tib",
       "andreicaioanei",
       "jenslehmann",
@@ -2630,7 +3693,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-18T09:54:36Z",
     "id": "arc-3-16861524",
-    "lastObservedAt": "2026-10-18T21:56:07Z",
+    "lastObservedAt": "2026-10-26T21:43:10Z",
     "members": [
       "ikaroskaggle",
       "milkcoffeen",
@@ -2639,6 +3702,25 @@
     ],
     "name": "Preferred ARC",
     "teamId": "16861524"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T21:52:29Z",
+    "id": "arc-3-16878835",
+    "lastObservedAt": "2026-10-29T21:52:29Z",
+    "members": [
+      "danmolsh",
+      "jnjbhjguktutft",
+      "ngyusum",
+      "reinforceagi",
+      "richardli873210",
+      "richray",
+      "xiaobinmo"
+    ],
+    "name": "Break 35",
+    "teamId": "16878835"
   },
   {
     "aliases": [],
@@ -2672,9 +3754,12 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16916278",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
     "members": [
-      "cranberry128"
+      "christophercameron",
+      "cranberry128",
+      "matinaghaei",
+      "rohanajwani"
     ],
     "name": "Charles Ran",
     "teamId": "16916278"
@@ -2718,7 +3803,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16958599",
-    "lastObservedAt": "2026-10-24T09:40:35Z",
+    "lastObservedAt": "2026-11-01T16:01:17Z",
     "members": [
       "majkel1337"
     ],
@@ -2866,6 +3951,19 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-28T09:47:50Z",
+    "id": "arc-3-16993850",
+    "lastObservedAt": "2026-10-28T21:49:27Z",
+    "members": [
+      "rutilo"
+    ],
+    "name": "rutilo",
+    "teamId": "16993850"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-08T09:43:15Z",
     "id": "arc-3-17018987",
     "lastObservedAt": "2026-10-08T21:50:49Z",
@@ -2888,12 +3986,25 @@
     ],
     "firstObservedAt": "2026-10-09T22:23:52Z",
     "id": "arc-3-17022020",
-    "lastObservedAt": "2026-10-09T22:23:52Z",
+    "lastObservedAt": "2026-10-30T09:53:54Z",
     "members": [
       "alijs1"
     ],
     "name": "alijs",
     "teamId": "17022020"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-28T09:47:50Z",
+    "id": "arc-3-17027453",
+    "lastObservedAt": "2026-10-28T21:49:27Z",
+    "members": [
+      "kimchikingdom"
+    ],
+    "name": "kimchikingdom",
+    "teamId": "17027453"
   },
   {
     "aliases": [],
@@ -2921,7 +4032,7 @@
     ],
     "firstObservedAt": "2026-10-13T08:41:27Z",
     "id": "arc-3-17038083",
-    "lastObservedAt": "2026-10-13T08:41:27Z",
+    "lastObservedAt": "2026-10-25T21:39:14Z",
     "members": [
       "menphim"
     ],
@@ -2958,6 +4069,32 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:46Z",
+    "id": "arc-3-17043574",
+    "lastObservedAt": "2026-10-26T21:43:10Z",
+    "members": [
+      "yuki0731"
+    ],
+    "name": "yuki0731",
+    "teamId": "17043574"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-24T21:45:42Z",
+    "id": "arc-3-17044772",
+    "lastObservedAt": "2026-10-26T21:43:10Z",
+    "members": [
+      "ibyyue"
+    ],
+    "name": "by",
+    "teamId": "17044772"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-15T21:48:34Z",
     "id": "arc-3-17044861",
     "lastObservedAt": "2026-10-16T21:50:59Z",
@@ -2984,6 +4121,35 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-28T21:49:27Z",
+    "id": "arc-3-17062789",
+    "lastObservedAt": "2026-10-28T21:49:27Z",
+    "members": [
+      "kwangsookoh"
+    ],
+    "name": "ETHAN KOH",
+    "teamId": "17062789"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-27T21:46:23Z",
+    "id": "arc-3-17074270",
+    "lastObservedAt": "2026-10-27T21:46:23Z",
+    "members": [
+      "iamkw0n",
+      "kw0nsi",
+      "len8487",
+      "nguynhphan"
+    ],
+    "name": "어머니는 짜장면이 싫다고 하셨어",
+    "teamId": "17074270"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-20T21:31:16Z",
     "id": "arc-3-17088105",
     "lastObservedAt": "2026-10-20T21:31:16Z",
@@ -2992,5 +4158,37 @@
     ],
     "name": "rkdaltmd",
     "teamId": "17088105"
+  },
+  {
+    "aliases": [
+      "Prabhav Semwal"
+    ],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-26T09:41:46Z",
+    "id": "arc-3-17106105",
+    "lastObservedAt": "2026-10-26T21:43:10Z",
+    "members": [
+      "hitarthjain0",
+      "netramfaran",
+      "rabari9999",
+      "sachith7",
+      "yeashusemwal"
+    ],
+    "name": "Tigdi",
+    "teamId": "17106105"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-29T09:50:51Z",
+    "id": "arc-3-17157851",
+    "lastObservedAt": "2026-10-29T21:52:29Z",
+    "members": [
+      "dastin0359"
+    ],
+    "name": "dastin0359",
+    "teamId": "17157851"
   }
 ]

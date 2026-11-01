@@ -1,0 +1,387 @@
+{
+  "personId": "md-boktiar-mahbub-murad",
+  "handle": "mbmmurad",
+  "name": "Md Boktiar Mahbub Murad",
+  "checkedAt": "2026-10-30T12:39:22Z",
+  "method": "Rebuilt from scratch on 2026-10-30 using the app's built-in browser only, read-only on the two public Kaggle pages (profile and competitions). Medal icons were read from the completed-competition list and confirmed by screenshot; the join date came from the profile's joined tooltip; the profile picture address came from the profile header element. Only the first page of the completed list was loaded (five pages exist); no pagination, no refresh loops, no rate-limit or block seen. No earlier draft existed for this person.",
+  "sources": [
+    "https://www.kaggle.com/mbmmurad",
+    "https://www.kaggle.com/mbmmurad/competitions"
+  ],
+  "profile": {
+    "displayName": "Md Boktiar Mahbub Murad",
+    "pronouns": "he/him",
+    "occupation": "PhD Student at Iowa State University",
+    "location": "Ames, Iowa, United States",
+    "competitionTier": "Expert",
+    "medals": {
+      "silver": 3,
+      "bronze": 5
+    },
+    "competitionRank": 443,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 349,
+    "notebooksTier": "Master",
+    "notebookMedals": {
+      "gold": 8,
+      "silver": 7,
+      "bronze": 10
+    },
+    "notebooksRank": 142,
+    "notebooksRankOutOf": 58895,
+    "highestNotebooksRank": 38,
+    "datasetsTier": "Legacy Expert",
+    "datasetsRank": 1585,
+    "datasetsRankOutOf": 12282,
+    "datasetMedals": "none yet",
+    "awards": [
+      "Community Competition Host",
+      "Discussions Legacy Expert"
+    ],
+    "joinedTooltip": "Mon Apr 15 2019 09:58:28 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2019-04",
+    "bioPresent": false,
+    "competitionActivity": {
+      "solo": 78,
+      "inATeam": 14,
+      "hosted": 1
+    },
+    "competitionsTabCount": 93
+  },
+  "visibleCompetitionList": {
+    "activeCount": 3,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2",
+      "Squares in Squares"
+    ],
+    "hostedNames": [
+      "Apurba presents Bhashabhrom: EEE DAY 2023 Datathon (community, 53 teams, 4 years ago)"
+    ],
+    "completedCount": 89,
+    "completedRead": 20,
+    "completedNotRead": 69,
+    "sortOrder": "Best Result",
+    "scopeNote": "Only the first page of the completed list (20 entries, sorted by best result) was read. All eight profile medals (three silver, five bronze) appear on that page, so the 69 unread entries carry no medals. Do not invent finishes for the unread entries."
+  },
+  "completedResults": [
+    {
+      "competition": "Bengali.AI Speech Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/bengaliai-speech",
+      "rank": 31,
+      "teams": 744,
+      "medal": "silver",
+      "displayedHandles": [
+        "captain9396",
+        "mbmmurad",
+        "sakib971"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "The Learning Agency Lab - PII Data Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+      "rank": 76,
+      "teams": 2048,
+      "medal": "silver",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "rank": 205,
+      "teams": 4186,
+      "medal": "silver",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+      "rank": 142,
+      "teams": 1514,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "BirdCLEF+ 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2025",
+      "rank": 190,
+      "teams": 2031,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "rank": 203,
+      "teams": 2212,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Learning Agency Lab - Automated Essay Scoring 2.0",
+      "competitionUrl": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+      "rank": 208,
+      "teams": 2706,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "rank": 308,
+      "teams": 3357,
+      "medal": "bronze",
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Google - American Sign Language Fingerspelling Recognition",
+      "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+      "rank": 136,
+      "teams": 1314,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "AI Village Capture the Flag @ DEFCON31",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-village-capture-the-flag-defcon31",
+      "rank": 161,
+      "teams": 1344,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2024",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "rank": 216,
+      "teams": 1427,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "CZII - CryoET Object Identification",
+      "competitionUrl": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+      "rank": 220,
+      "teams": 931,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "LLM Prompt Recovery",
+      "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "rank": 238,
+      "teams": 2175,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "ARC Prize 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "rank": 266,
+      "teams": 1455,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "a year ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "NeurIPS 2024 - Lux AI Season 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-season-3",
+      "rank": 278,
+      "teams": 701,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Stanford RNA 3D Folding Part 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "rank": 282,
+      "teams": 1867,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "7 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Santa 2023 - The Polytope Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2023",
+      "rank": 296,
+      "teams": 1054,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "3 years ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "Recod.ai/LUC - Scientific Image Forgery Detection",
+      "competitionUrl": "https://www.kaggle.com/competitions/recodai-luc-scientific-image-forgery-detection",
+      "rank": 306,
+      "teams": 1564,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "MABe Challenge - Social Action Recognition in Mice",
+      "competitionUrl": "https://www.kaggle.com/competitions/MABe-mouse-behavior-detection",
+      "rank": 310,
+      "teams": 1412,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "10 months ago",
+      "exactCompletionDate": null
+    },
+    {
+      "competition": "PhysioNet - Digitization of ECG Images",
+      "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+      "rank": 329,
+      "teams": 1424,
+      "medal": null,
+      "displayedHandles": [
+        "mbmmurad"
+      ],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago",
+      "exactCompletionDate": null
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/md-boktiar-mahbub-murad.webp",
+    "sourceUrl": "https://www.kaggle.com/mbmmurad",
+    "note": "The saved 320 by 320 picture was compared by eye with the live Kaggle profile photo: the same single man with long dark hair tied back, a beard, a light blue collared shirt and a mosaic wall behind him. It is his own picture, not a group image or default avatar; no replacement needed.",
+    "currentOwnProfileOriginal": {
+      "sourceUrl": "https://www.kaggle.com/mbmmurad",
+      "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/3092129-kg.jpg"
+    }
+  },
+  "facts": [
+    {
+      "text": "Md Boktiar Mahbub Murad is a Kaggle Competitions Expert, ranked 443rd of 225,021, with three silver and five bronze competition medals shown on his public profile; one of the silvers is a shared team result.",
+      "sourceUrl": "https://www.kaggle.com/mbmmurad",
+      "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile, competition tier and medals",
+      "checkedAt": "2026-10-30T12:39:22Z"
+    },
+    {
+      "text": "His Kaggle profile lists him as a PhD student at Iowa State University in Ames, Iowa, and dates his account to April 2019.",
+      "sourceUrl": "https://www.kaggle.com/mbmmurad",
+      "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile and join date",
+      "checkedAt": "2026-10-30T12:39:22Z"
+    },
+    {
+      "text": "He is also a Kaggle Notebooks Master, ranked 142nd of 58,895, with eight gold, seven silver and ten bronze notebook medals.",
+      "sourceUrl": "https://www.kaggle.com/mbmmurad",
+      "sourceTitle": "Md Boktiar Mahbub Murad — public Kaggle profile, Notebooks tier and medals",
+      "checkedAt": "2026-10-30T12:39:22Z"
+    },
+    {
+      "text": "Kaggle lists his completed PII Data Detection entry 76th of 2,048 teams and his AI Agent Security entry 205th of 4,186 teams, each with a silver medal and each displayed under his account alone.",
+      "sourceUrl": "https://www.kaggle.com/mbmmurad/competitions",
+      "sourceTitle": "Md Boktiar Mahbub Murad — completed competitions on Kaggle",
+      "checkedAt": "2026-10-30T12:39:22Z"
+    },
+    {
+      "text": "His completed list also shows ARC Prize 2024 (216th of 1,427 teams) and ARC Prize 2025 (266th of 1,455 teams) with no medal, and ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3 as active competitions.",
+      "sourceUrl": "https://www.kaggle.com/mbmmurad/competitions",
+      "sourceTitle": "Md Boktiar Mahbub Murad — ARC Prize entries on Kaggle",
+      "checkedAt": "2026-10-30T12:39:22Z"
+    }
+  ],
+  "teamNotes": [
+    "The Bengali.AI Speech Recognition silver (31st of 744 teams) is a team result, displayed with the accounts captain9396, mbmmurad and sakib971. It is a shared team medal, not an individual honour, and is left out of the facts on purpose.",
+    "Every other medal row, and every other row read, shows only the mbmmurad account.",
+    "Kaggle's activity panel reports 78 solo competitions, 14 in a team and 1 hosted; which of the 69 unread entries were team entries was not read.",
+    "The ARC-3 and ARC-2 team name 'Md Boktiar Mahbub Murad' in the people record comes from the public roster observation, not from Kaggle's profile pages; the competitions list does not display team names."
+  ],
+  "unverified": [
+    "ARC Prize 2026 Milestone 1 third-place prize ($5,000, recorded score 0.864 percent): the people record cites an ARC Prize blog page and an ARC Prize post on X; neither was opened in this pass, so no fact on it was written.",
+    "Current ARC-AGI-2 and ARC-AGI-3 public standings: not read in this pass; any such standing is provisional until the private leaderboard settles.",
+    "Team name for any entry: the Kaggle list shows member pictures only.",
+    "Exact completion dates: Kaggle shows only relative labels such as '2 months ago'.",
+    "Results on pages two to five of the completed list (69 entries): not loaded."
+  ],
+  "verified": true
+}

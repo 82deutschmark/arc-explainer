@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-30T16:24:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Dipam and Om climb from 202nd to 31st on ARC-3",
+  "id": "2026-10-30-1241-arc-3-dipam-and-om-climb-to-31st",
+  "personIds": [],
+  "publishedAt": "2026-10-30T16:41:26Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Dipam and Om climbed 171 places, from 202nd to 31st, with a score of 37.80, up 4.92 in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The team sits just below the gold line, the score at 19th, which rose 0.71 in the past day to 39.69. Public standings are provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-29T16:21:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-30T16:40:42Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16429297"
+  ]
+}

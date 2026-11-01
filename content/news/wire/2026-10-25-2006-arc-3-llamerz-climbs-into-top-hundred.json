@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-25T23:40:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "LLaMeRz climbs from 475th to 86th on ARC-3",
+  "id": "2026-10-25-2006-arc-3-llamerz-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-26T00:06:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "LLaMeRz gained 2.89 to reach 33.83, rising from 475th to 86th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb moves LLaMeRz from outside the top 100 into it. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-24T23:16:24Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T00:05:28Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15512911"
+  ]
+}

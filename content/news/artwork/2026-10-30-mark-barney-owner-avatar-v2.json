@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "id": "2026-10-30-mark-barney-owner-avatar-v2",
+  "kind": "owner-supplied-reference",
+  "subjectId": "mark-barney",
+  "src": "/news-images/references/2026-10-30-mark-barney-owner-avatar-v2.png",
+  "sha256": "122b43e2bf2c8da5757bcfdddaa26b396fa4d8f46d1b9c0c0ebf95c9dd3552a1",
+  "authority": "Boss supplied this image in chat on 30 October 2026 and explicitly identified it as Mark Barney’s correct leaderboard avatar.",
+  "identityNotes": [
+    "Bearded muscular tattooed GPU brawler with dense cyber headgear and wide ARC-square visor.",
+    "Gold CPU pendant, two Yorkies held together, outsized GPU equipment.",
+    "This owner-supplied image supersedes the older side-profile illustration as likeness authority. Existing originals remain preserved."
+  ],
+  "note": "Artwork/reference delivery only; leaderboard/page developer owns UI integration."
+}

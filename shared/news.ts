@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
- * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5
+ * Date: 2026-10-31 (Claude Sonnet 5.5 Medium: the byline reads "Claude Sonnet 5.5", no longer "backup desk", because it also writes specials); 2026-10-30 (29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5; earlier)
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -34,7 +34,7 @@ export const NEWS_EDITION_WRITERS = NEWS_WRITER_IDS.edition as [string, ...strin
 export const NEWS_WIRE_WRITERS = NEWS_WRITER_IDS.wire as [string, ...string[]];
 export type NewsWriter = string;
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
-export interface NewsSection { heading?: string; text: string; sourceIds: string[] }
+export interface NewsSection { heading?: string; text: string; sourceIds: string[]; image?: { src: string; alt: string; caption: string; layout?: "inset" } }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
 /** Native editorial art with an immutable, edition-bound composition record. */
 export interface NewsIllustration { src: string; alt: string; caption: string; artworkId: string }
@@ -63,16 +63,26 @@ export interface NewsDispatch {
   editorNote?: string;
   image?: { src: string; alt: string; caption: string };
 }
+/** Resolve the same immutable feature for the front page, permalink and initial HTML. */
+export function editionFeature(article: NewsArticle, dispatches: NewsDispatch[] = []): NewsDispatch | undefined {
+  return article.frontPageFeatureId
+    ? dispatches.find(dispatch => dispatch.id === article.frontPageFeatureId && dispatch.competition === article.competition)
+    : undefined;
+}
 /**
  * A person's face on the newspaper. 'hall-of-fame' is a square crop of their own ARC Explainer
  * Hall of Fame card (sourceUrl is that card's anchor); 'kaggle' is a saved copy of the profile
  * picture on their verified Kaggle account (sourceUrl is that account). Files live in
  * client/public/news-images/people/. docs/newsroom/VISUALS.md maps every picture we have.
  */
-export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle'; sourceUrl: string; sourceTitle: string; checkedAt: string }
+export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle' | 'web'; sourceUrl: string; sourceTitle: string; checkedAt: string }
+/** Commissioned avatar art, kept separate from the original account picture and its provenance. */
+export interface NewsEditorialPortrait extends Omit<NewsPortrait, 'kind'> { artworkId: string }
 /** People persist across seasons; membership observations belong to a specific contest. */
 export interface NewsPerson {
   id: string; name: string;
+  /** Absent means a Kaggle competitor. A sponsor runs or funds the competition (the ARC Prize co-founders) and has no Kaggle tier. */
+  role?: 'competitor' | 'sponsor';
   accounts: ({ platform: 'kaggle' | 'x'; handle: string; url: string } & Omit<CompetitorFact, 'text'>)[];
   facts: CompetitorFact[];
   memberships: { competition: NewsCompetition; competitionId: string; season: string; teamId: string; teamName: string;
@@ -80,7 +90,9 @@ export interface NewsPerson {
   /** Past results and roles, each linked to its Hall of Fame card; labels read like honors ("ARC Prize 2025 champion · NVARC"). */
   hallOfFame: ({ path: string; label: string; image?: { src: string; alt: string } } & Omit<CompetitorFact, 'text'>)[];
   portrait?: NewsPortrait;
+  editorialPortrait?: NewsEditorialPortrait;
 }
+export const displayPortrait = (person: NewsPerson) => person.editorialPortrait ?? person.portrait;
 export interface NewsSocialPost {
   id: string; author: string; authorName: string; url: string; postedAt: string | null; checkedAt: string;
   visibility: 'public'; summary: string; whyItMatters: string; competitions: NewsCompetition[]; personIds: string[];
@@ -148,8 +160,25 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
  * first person its sections cite. Nobody named or cited, nobody featured.
  */
 export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
-  const named = (text?: string) => text ? people.find(person => text.includes(shortPersonName(person.name))) : undefined;
-  return named(story.headline) ?? named(story.dek) ?? citedPeople(story.sections, people)[0];
+  return namedPeople(story.headline, people)[0] ?? namedPeople(story.dek, people)[0] ?? citedPeople(story.sections, people)[0];
+}
+type ReportedStory = { headline: string; dek?: string; sections: NewsSection[] };
+/** Whole names only: handles such as xz also match title case, never a substring in another word. */
+function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson[] {
+  if (!text) return [];
+  return people.map(person => {
+    const name = shortPersonName(person.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = new RegExp(`(^|[^\\p{L}\\p{N}_])${name}(?=$|[^\\p{L}\\p{N}_])`, 'iu').exec(text);
+    return { person, position: match?.index ?? -1 };
+  }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person);
+}
+/** Everyone named in the reporting or explicitly cited; never add uncited teammates from a roster. */
+export function reportedPeople(stories: ReportedStory[], people: NewsPerson[]): NewsPerson[] {
+  const subjects = stories.flatMap(story => [
+    ...namedPeople(story.headline, people), ...namedPeople(story.dek, people),
+    ...story.sections.flatMap(section => [...namedPeople(section.text, people), ...citedPeople([section], people)]),
+  ]);
+  return [...new Map(subjects.map(person => [person.id, person])).values()];
 }
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
 export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {
@@ -176,7 +205,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-luna': 'GPT-6 Luna',
-  'claude-sonnet-5-5': 'Claude Sonnet 5.5, backup desk',
+  'claude-sonnet-5-5': 'Claude Sonnet 5.5',
   'claude-haiku-5-5': 'Claude Haiku 5.5, backup wire desk',
   'claude-opus-5-5': 'Claude Opus 5.5',
 };
@@ -188,8 +217,9 @@ export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
-/** Edition kicker as printed on the page and the card; launch previews say so. */
-export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview' : `${editionName(article.edition)} edition`;
+/** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
+export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview'
+  : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`;
 
 /** Newspaper dates are Eastern. Date-only edition labels must not roll back a day. */
 export function newsDate(value: string, withTime = false): string {

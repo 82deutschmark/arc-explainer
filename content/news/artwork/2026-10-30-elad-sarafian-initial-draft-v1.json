@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "2026-10-30-elad-sarafian-initial-draft-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "draft-archive",
+  "subjectId": "elad-sarafian",
+  "rawSrc": "/news-images/cards/2026/drafts/2026-10-30-elad-sarafian-initial-draft-v1-native.png",
+  "nativeOriginalSrc": "/news-images/cards/2026/drafts/2026-10-30-elad-sarafian-initial-draft-v1-native.png",
+  "nativeOriginalSha256": "26847b290a7a50fa8cff438e49acffe8faa4c357eb465fdad34e6959a113bb01",
+  "rawSha256": "26847b290a7a50fa8cff438e49acffe8faa4c357eb465fdad34e6959a113bb01",
+  "toolOutput": "exec-f34e3ca2-4877-475e-949e-bdca8a0380a4.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. The source is an abstract flame emblem and establishes NO human face. Create a clearly fictional anonymous flame-powered cyber engineer mascot: opaque glossy black full-face helmet with a small golden flame-shaped visor and spectacular orange-yellow plasma core within black and crimson armor, tiny star sparks, one small multicolored ARC puzzle. No human skin or invented facial features, no literal logo, one masked character only.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. The source is an abstract flame emblem and establishes NO human face. Create a clearly fictional anonymous flame-powered cyber engineer mascot: opaque glossy black full-face helmet with a small golden flame-shaped visor and spectacular orange-yellow plasma core within black and crimson armor, tiny star sparks, one small multicolored ARC puzzle. No human skin or invented facial features, no literal logo, one masked character only.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/elad-sarafian.webp"
+    ],
+    "transparent_background": false
+  },
+  "references": [
+    {
+      "src": "/news-images/people/elad-sarafian.webp",
+      "sha256": "010cd241d7e20f33579766d243f15e083e122680ed17dd032067bf0c7bfa9e19",
+      "role": "Actual initial generation input; retained for provenance only, not current approved direction.",
+      "sourceUrl": "https://www.kaggle.com/eladsarafian"
+    }
+  ],
+  "reviewStatus": "unselected-draft",
+  "review": "Preserved from earlier batch to satisfy the editor’s save-everything instruction. Not selected for a card or approved as a reusable character. Later art corrections supersede this direction.",
+  "archiveNote": "Exact native original kept. No newly generated image; this is archival copying only."
+}

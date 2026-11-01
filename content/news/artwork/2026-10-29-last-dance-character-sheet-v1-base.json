@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-10-29T19:31:44Z",
+  "id": "2026-10-29-last-dance-character-sheet-v1-base",
+  "inputImages": [
+    "2026-10-29-lukas-aichberger-kaggle-v1.jpg",
+    "2026-10-29-florian-sestak-kaggle-v1.png",
+    "2026-10-29-mykyta-ielanskyi-kaggle-v1.jpg"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: stylized-concept. Asset type: reusable competitor character reference sheet for The ARC Daily Digest. Generate ONE wide 2:1 illustration with four separated full-body small adult breakdancer characters on a plain warm off-white studio background. Each is rendered as a charming, highly polished detailed cinematic 3D-comic character with adult proportions slightly compact, about 4.5 heads tall, not children. All wear extravagantly colorful original ARC puzzle-grid streetwear: clearly square black grids with saturated blue, red, green, yellow, magenta, cyan, orange, white cells; bright sneakers, loose dance trousers, reflective trims. FOUR distinct figures, evenly spaced with generous blank gaps, no contact or overlap, every hand and shoe inside frame. These are fictional editorial costumes, not documentary clothing. Input 1 is Lukas Aichberger's OWN verified cartoon avatar: preserve swept voluminous brown hair, blue-gray eyes, thick brown eyebrows, youthful clean-shaven friendly face and dark navy hoodie foundation. First figure at left: Lukas, navy hoodie covered in vivid ARC puzzle-grid panels, blue dominant sneakers, smiling mid-toprock pose. Input 2 is Florian Sestak's OWN verified Kaggle photograph: preserve black baseball cap, dark sunglasses, short dark facial stubble and black t-shirt foundation; do NOT copy shark or mountains. Second: Florian, orange/red dominant grid bomber jacket open over black shirt, cap and sunglasses, confident low breakdance ready stance. Input 3 is Mykyta Ielanskyi's OWN verified Kaggle portrait: preserve tousled light-brown hair, prominent full reddish-brown beard, fair skin, hazel/greenish eyes and approachable face. Third: Mykyta, cyan-and-green dominant ARC-grid tracksuit with beard fully visible, one arm out dancing. Fourth far right: an ORIGINAL fictional anonymous humanoid dancer representing the roster handle gklambauer whose real identity/likeness is not confirmed. His entire head is a smooth featureless opaque dark helmet with a tiny geometric yellow square grid light; no face visible at all, no animal traits. He wears a purple-and-yellow dominant ARC-grid tracksuit, doing an upright popping pose. The fourth character is a clearly artificial masked stand-in, NOT a likeness of Günter Klambauer or anybody else. Never use a goose, duck or default Kaggle avatar. Consistent scale and lighting, coherent material detail, readable colorful puzzle patterns. No letters, words, names, labels, logos, scores, numbers, borders or watermark. Preserve the three supplied identities individually; do not blend them.",
+  "purpose": "character-reference",
+  "rawSha256": "17dd264bfd3d616070f50c00c81a9c69fbfca73150670cedcd4b535778cde254",
+  "rawSrc": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+  "references": [
+    {
+      "role": "Lukas Aichberger’s own Kaggle cartoon avatar",
+      "src": "/news-images/references/2026-10-29-lukas-aichberger-kaggle-v1.jpg"
+    },
+    {
+      "role": "Florian Sestak’s own Kaggle photograph; cap, sunglasses and stubble",
+      "src": "/news-images/references/2026-10-29-florian-sestak-kaggle-v1.png"
+    },
+    {
+      "role": "Mykyta Ielanskyi’s own Kaggle portrait; hair and beard",
+      "src": "/news-images/references/2026-10-29-mykyta-ielanskyi-kaggle-v1.jpg"
+    }
+  ],
+  "review": "Inspected four separated full-body adult dancers. Left to right: Lukas with swept brown hair and navy/blue grids; Florian with cap, sunglasses, stubble and orange/red grids; Mykyta with tousled hair, full reddish beard and cyan/green grids; an entirely fictional opaque-helmet purple/yellow stand-in for unconfirmed gklambauer. No goose, lettering, score or claim of a fourth verified likeness. Full hands and shoes visible.",
+  "subjectId": "last-dance",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-03453a58-85d7-49a0-80c8-cadd65a528b6.png",
+  "version": 1
+}

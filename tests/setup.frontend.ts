@@ -1,17 +1,14 @@
 /**
- * Author: Claude Sonnet 4.5
- * Date: 2026-01-04
+ * Author: GPT-6 / Codex; Claude Sonnet 4.5
+ * Date: 2026-10-29
  * PURPOSE: Setup file for frontend tests with React Testing Library
- *          Configures matchers and cleanup behavior
+ *          Configures Vitest's typed DOM matchers and cleanup behavior.
  * SRP/DRY check: Pass - Centralized test setup for all frontend tests
  */
 
-import { expect, afterEach } from 'vitest';
+import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
-import * as matchers from '@testing-library/jest-dom/matchers';
-
-// Extend Vitest's expect with jest-dom matchers
-expect.extend(matchers);
+import '@testing-library/jest-dom/vitest';
 
 // Cleanup after each test automatically
 afterEach(() => {

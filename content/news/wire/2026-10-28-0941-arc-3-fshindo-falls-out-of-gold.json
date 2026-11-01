@@ -1,0 +1,44 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-28T13:18:13Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "fshindo falls out of the ARC-3 gold places",
+  "id": "2026-10-28-0941-arc-3-fshindo-falls-out-of-gold",
+  "personIds": [
+    "fshindo"
+  ],
+  "publishedAt": "2026-10-28T13:41:49Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-fshindo-identity-0"
+      ],
+      "text": "fshindo dropped from 19th to 20th on the ARC-AGI-3 public board, with the score unchanged at 38.20, and is now the first team outside the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold line, the score of the last gold place, rose 0.02 in the past day to 38.22, so fshindo is 0.02 short of it. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-27T13:14:58Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T13:40:32Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-13T01:05:51.234925+00:00",
+      "id": "person-fshindo-identity-0",
+      "title": "fshindo — Kaggle profile and linked @crysis44k account",
+      "url": "https://www.kaggle.com/ffsscf"
+    }
+  ],
+  "teamIds": [
+    "16992721"
+  ]
+}

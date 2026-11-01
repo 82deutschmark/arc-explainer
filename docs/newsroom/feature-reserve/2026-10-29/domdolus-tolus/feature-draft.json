@@ -1,0 +1,169 @@
+{
+  "headline": "From fifth-place gold to ARC2’s front rank: meet Domdolus Tolus",
+  "sections": [
+    {
+      "heading": "Fifth-place gold, front-rank ambitions",
+      "text": "Fifth out of 4,185. Put that result on the marquee. Before Domdolus Tolus became a front-rank name in ARC2, the same five competitors earned gold in the NVIDIA Nemotron Model Reasoning Challenge. Darren Amadeus Martin, Alwin Theodoric, Muhammad Yassir Ramadhan, Billy Anggara and Tri Ardian Rinalda have already taken a demanding reasoning contest to its sharp end. Now they are giving ARC’s established names another reason to look over a shoulder.\n\nThe October 29 Kaggle download placed their ARC2 entry fourth among 3,522 teams. The Digest’s saved board records an extraordinary October climb: a jump from 549th to tenth observed on October 12, followed by a rise to third on October 25. Their best score rose again late on October 28; another team’s advance later put them fourth. These are public standings in a race still being run. The competitive pedigree behind them is already settled—and it deserves the full introduction.",
+      "sourceIds": [
+        "darren-results",
+        "alwin-results",
+        "yassir-results",
+        "arc2-cli",
+        "arc2-history"
+      ]
+    },
+    {
+      "heading": "The students behind the name",
+      "text": "Start with the people. Darren’s own Kaggle profile describes a student at Waseda University. Alwin’s lists Tokyo University of Science; Billy’s lists Chuo University; Tri’s lists Institute of Science Tokyo. Yassir describes himself simply as a student. Their five accounts are all on the current Domdolus Tolus roster, and all five appear together on the completed Nemotron result. This is a returning ensemble, with shared experience already in the locker.\n\nDarren is its most visible Kaggle discussion voice, but the roster does not tell us who captains the operation or who wrote a particular breakthrough. The group gets the billing. Alwin and Darren also share a first-place result in the community contest Fake or Real: The Impostor Hunt in Texts. Darren’s own history adds eighteenth of 1,142 in the NeurIPS 2025 Google Code Golf Championship. Reasoning, compact programs and detecting an impostor: the back catalogue has personality as well as placings. It is a group readers can follow across more than one scoreboard.",
+      "sourceIds": [
+        "darren-profile",
+        "profile-alwintheodoric",
+        "profile-billyanggara",
+        "profile-rinnnntt",
+        "profile-yassirramadhan",
+        "alwin-results",
+        "yassir-results",
+        "darren-results",
+        "arc2-cli"
+      ]
+    },
+    {
+      "heading": "Their gold began with humans solving puzzles",
+      "text": "The team’s June 16 Nemotron account carries a splendidly self-mocking title: Jack of Trades, Loser of Cryptarithm. The opening describes “near-zero machine learning experience”, particularly in fine-tuning language models. Their response was to spend much of the competition working through puzzles themselves, refining the reasoning they wanted a model to learn, then engineering and training in the final weeks.\n\nThey built synthetic puzzle generators, drew on Huikang’s public work and combined successive trained adapters. They credited community help and AI coding assistants alongside their own code. Their account puts training entirely on Kaggle, with roughly $100 spent on Colab Pro subscriptions. The finish was fourth on the public board and fifth on the private one. They published the experiments, failures, master notebook and final model afterward. It is a terrific origin story: a decorated result accompanied by enough candour for readers to see the work. Those are their descriptions of that earlier contest; their present ARC system has its own story.",
+      "sourceIds": [
+        "nemotron-writeup"
+      ]
+    },
+    {
+      "heading": "Watch the practice-ground footage",
+      "text": "Darren’s public discussion history gives that story a human voice. Near the end of Code Golf in October 2025, he wrote that he was beginning to feel his limits, praised the shortest solutions and asked whether the organisers would bring the championship back the next year. He was already asking for another season.\n\nThe earlier exchanges show a competitor learning in public. In a rectangle-cropping discussion he thanked another entrant for an insight that helped shrink his program, and shared the resulting code. In an April 2026 Nemotron post, he set out two ways to interpret bit-manipulation puzzles, explained where each approach ran into trouble, and offered the findings to other competitors. The questions are often practical and the thanks frequent. That is valuable practice-ground footage for anyone following this team: the same public account contains the unfinished ideas, the useful exchange with a rival and the later gold. A result card shows where the race ended. These posts let readers see some of the preparation.",
+      "sourceIds": [
+        "darren-code-golf-voice",
+        "darren-shared-grid-work",
+        "darren-puzzle-experiments"
+      ]
+    },
+    {
+      "heading": "The next move is ARC2",
+      "text": "So where is the squad aiming now? Darren supplied a direct answer on October 28. Asked whether the team’s optimisations could carry it into ARC3’s leading group, he said they had tried the other contest, earned a low score and, with time running out, “we prefer to continue arc agi 2 only”. That is the clearest dated statement of their closing-stretch focus in the checked public record.\n\nHe has also credited extensive Claude Code optimisation work, while declining to reveal more of the team’s method. His own follow-up says that extra speed had not translated into the hoped-for leaderboard result. There is the sporting tension: a team with serious pace, a place among ARC2’s leaders and a final playbook it is keeping close. Its separate ARC3 entry remains on that board; it should not be confused with the ARC2 campaign.\n\nFor the fans, the reason to watch is simple. Domdolus Tolus has already earned one distinguished reasoning-contest finish together. Five students, shared gold and a climb into ARC2’s front rank make quite a cast for the next act.",
+      "sourceIds": [
+        "darren-current-focus",
+        "darren-speed-work",
+        "darren-closed-playbook",
+        "arc2-cli",
+        "arc3-cli",
+        "alwin-results"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "darren-profile",
+      "title": "Darren Amadeus Martin — own Kaggle profile",
+      "url": "https://www.kaggle.com/darrenamadeusmartin",
+      "accessedAt": "2026-10-29T23:43:35.884923Z"
+    },
+    {
+      "id": "darren-results",
+      "title": "Darren Amadeus Martin — own completed competition record",
+      "url": "https://www.kaggle.com/darrenamadeusmartin/competitions",
+      "accessedAt": "2026-10-29T23:43:35.884923Z"
+    },
+    {
+      "id": "arc2-cli",
+      "title": "Kaggle ARC-AGI-2 public leaderboard — fresh CLI download",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+      "accessedAt": "2026-10-29T23:33:25Z"
+    },
+    {
+      "id": "arc3-cli",
+      "title": "Kaggle ARC-AGI-3 public leaderboard — fresh CLI download",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "accessedAt": "2026-10-29T23:38:34Z"
+    },
+    {
+      "id": "arc2-history",
+      "title": "ARC-AGI-2 exact-team observed score and rank history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-29T23:22:41Z"
+    },
+    {
+      "id": "nemotron-writeup",
+      "title": "Domdolus Tolus — Jack of Trades, Loser of Cryptarithm, fifth-place solution",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+      "accessedAt": "2026-10-29T23:43:35.884923Z"
+    },
+    {
+      "id": "profile-alwintheodoric",
+      "title": "Alwin Theodoric — own Kaggle profile",
+      "url": "https://www.kaggle.com/alwintheodoric",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "profile-billyanggara",
+      "title": "Billy Anggara — own Kaggle profile",
+      "url": "https://www.kaggle.com/billyanggara",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "profile-rinnnntt",
+      "title": "Tri Ardian Rinalda — own Kaggle profile",
+      "url": "https://www.kaggle.com/rinnnntt",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "profile-yassirramadhan",
+      "title": "Muhammad Yassir Ramadhan — own Kaggle profile",
+      "url": "https://www.kaggle.com/yassirramadhan",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "alwin-results",
+      "title": "Alwin Theodoric — own competition history and shared historical rosters",
+      "url": "https://www.kaggle.com/alwintheodoric/competitions",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "yassir-results",
+      "title": "Muhammad Yassir Ramadhan — own competition history and shared Nemotron roster",
+      "url": "https://www.kaggle.com/yassirramadhan/competitions",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-code-golf-voice",
+      "title": "Darren — October2025 reflections and invitation for another Code Golf season",
+      "url": "https://www.kaggle.com/competitions/google-code-golf-2025/discussion/613857",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-shared-grid-work",
+      "title": "Darren — shared grid solution and thanks to fellow golfers",
+      "url": "https://www.kaggle.com/competitions/google-code-golf-2025/discussion/612366#3304171",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-puzzle-experiments",
+      "title": "Darren — April2026 public comparison of two bit-puzzle interpretations",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/discussion/690756",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-current-focus",
+      "title": "Darren — October28 decision to focus on ARC2 after ARC3 trial",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546036",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-closed-playbook",
+      "title": "Darren — October28 comparison and decision to keep the full method private",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3546160",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    },
+    {
+      "id": "darren-speed-work",
+      "title": "Darren — October27 account of extensive ClaudeCode optimizations",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546#3545810",
+      "accessedAt": "2026-10-29T23:45:22.675981Z"
+    }
+  ]
+}

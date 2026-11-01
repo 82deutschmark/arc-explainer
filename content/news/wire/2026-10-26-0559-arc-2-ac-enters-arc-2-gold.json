@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T09:41:48Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ảc jumps into ARC-2 gold places",
+  "id": "2026-10-26-0559-arc-2-ac-enters-arc-2-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-26T09:59:30Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ảc gained 14.45 points to reach 69.17, moving from 39th to 16th and into the public gold places."
+    }
+  ],
+  "since": "2026-10-25T09:34:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T09:59:02Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17166527"
+  ]
+}

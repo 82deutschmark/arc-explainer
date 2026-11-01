@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T13:42:13Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "HongchenDai climbs 294 places to 77th on ARC-3",
+  "id": "2026-10-26-0956-arc-3-hongchendai-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-26T13:56:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "HongchenDai climbed 294 places, from 371st to 77th, reaching 34.05 on the ARC-3 board after a 2.52-point gain."
+    }
+  ],
+  "since": "2026-10-25T13:34:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T13:55:43Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16674808"
+  ]
+}

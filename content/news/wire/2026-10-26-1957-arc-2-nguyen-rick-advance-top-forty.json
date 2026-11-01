@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T23:43:25Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nguyen and Rick advance into ARC-2 top 40",
+  "id": "2026-10-26-1957-arc-2-nguyen-rick-advance-top-forty",
+  "personIds": [],
+  "publishedAt": "2026-10-26T23:57:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Nguyen gained 7.22 to reach 58.19, moving from 47th to 34th. Rick gained 7.36 to reach 54.86, moving from 51st to 40th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gains put both teams inside the top 40 on the public standings, with Nguyen 34th and Rick 40th."
+    }
+  ],
+  "since": "2026-10-25T23:40:41Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T23:57:10Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16600664",
+    "16861695"
+  ]
+}

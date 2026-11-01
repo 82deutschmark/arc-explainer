@@ -1,0 +1,2487 @@
+{
+  "board": {
+    "boardPath": "/kaggle-leaderboard",
+    "bubble": [
+      {
+        "isNew": false,
+        "members": [
+          "mbmmurad"
+        ],
+        "name": "Md Boktiar Mahbub Murad",
+        "rank": 20,
+        "rankThen": 30,
+        "score": 39.52,
+        "scoreThen": 37.12,
+        "submissions": 87,
+        "teamId": "15487522"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "zhangzibo54"
+        ],
+        "name": "zhangzibo54",
+        "rank": 21,
+        "rankThen": 17,
+        "score": 39.22,
+        "scoreThen": 39.22,
+        "submissions": 25,
+        "teamId": "16557905"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "denialguo",
+          "jaydenszeto123",
+          "snoopydoo"
+        ],
+        "name": "dreach.ai",
+        "rank": 22,
+        "rankThen": 18,
+        "score": 39.11,
+        "scoreThen": 39.11,
+        "submissions": 48,
+        "teamId": "16805955"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "k0mbat",
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "shiiin9",
+          "taiiiiiichi",
+          "ydi102143"
+        ],
+        "name": "大阪公立大学 & Maciej & Natalia",
+        "rank": 23,
+        "rankThen": 19,
+        "score": 38.98,
+        "scoreThen": 38.98,
+        "submissions": 83,
+        "teamId": "16754530"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "alisalmanrana",
+          "jcole75",
+          "kimura0415",
+          "sumirinn",
+          "ultsaza"
+        ],
+        "name": "Abstraction Lab & MindsAI",
+        "rank": 24,
+        "rankThen": 23,
+        "score": 38.95,
+        "scoreThen": 38.14,
+        "submissions": 175,
+        "teamId": "15490570"
+      }
+    ],
+    "climbers": [
+      {
+        "isNew": false,
+        "members": [
+          "sigmatango"
+        ],
+        "name": "S@i",
+        "rank": 67,
+        "rankThen": 1934,
+        "score": 35.2,
+        "scoreThen": 25.02,
+        "submissions": 5,
+        "teamId": "17076561"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "nadeembinshajahan"
+        ],
+        "name": "Nadeem",
+        "rank": 40,
+        "rankThen": 1606,
+        "score": 36.75,
+        "scoreThen": 27.27,
+        "submissions": 3,
+        "teamId": "16120761"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lvvvvhxh"
+        ],
+        "name": "LvvvvHxH",
+        "rank": 75,
+        "rankThen": 1226,
+        "score": 34.72,
+        "scoreThen": 28.69,
+        "submissions": 7,
+        "teamId": "17036552"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "hidsaito"
+        ],
+        "name": "hidsaito",
+        "rank": 81,
+        "rankThen": 1035,
+        "score": 34.58,
+        "scoreThen": 29.44,
+        "submissions": 5,
+        "teamId": "17096027"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aqafreal",
+          "munhimqazi"
+        ],
+        "name": "plzhecineedthis",
+        "rank": 82,
+        "rankThen": 335,
+        "score": 34.54,
+        "scoreThen": 31.96,
+        "submissions": 11,
+        "teamId": "17045290"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dipamc77",
+          "omprakashpy"
+        ],
+        "name": "Dipam and Om",
+        "rank": 31,
+        "rankThen": 202,
+        "score": 37.8,
+        "scoreThen": 32.88,
+        "submissions": 18,
+        "teamId": "16429297"
+      }
+    ],
+    "closeAt": "2026-11-02T23:59:00Z",
+    "competition": "arc-3",
+    "fetched": "2026-10-30T19:25:05Z",
+    "gainers": [
+      {
+        "isNew": false,
+        "members": [
+          "sigmatango"
+        ],
+        "name": "S@i",
+        "rank": 67,
+        "rankThen": 1934,
+        "score": 35.2,
+        "scoreThen": 25.02,
+        "submissions": 5,
+        "teamId": "17076561"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "nadeembinshajahan"
+        ],
+        "name": "Nadeem",
+        "rank": 40,
+        "rankThen": 1606,
+        "score": 36.75,
+        "scoreThen": 27.27,
+        "submissions": 3,
+        "teamId": "16120761"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lvvvvhxh"
+        ],
+        "name": "LvvvvHxH",
+        "rank": 75,
+        "rankThen": 1226,
+        "score": 34.72,
+        "scoreThen": 28.69,
+        "submissions": 7,
+        "teamId": "17036552"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "xiaoz259"
+        ],
+        "name": "faster machine is all you need",
+        "rank": 3,
+        "rankThen": 4,
+        "score": 58.59,
+        "scoreThen": 52.95,
+        "submissions": 12,
+        "teamId": "15487093"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "paulvvv"
+        ],
+        "name": "paul",
+        "rank": 16,
+        "rankThen": 64,
+        "score": 40.75,
+        "scoreThen": 35.23,
+        "submissions": 133,
+        "teamId": "15525358"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "hidsaito"
+        ],
+        "name": "hidsaito",
+        "rank": 81,
+        "rankThen": 1035,
+        "score": 34.58,
+        "scoreThen": 29.44,
+        "submissions": 5,
+        "teamId": "17096027"
+      }
+    ],
+    "improved": 49,
+    "intoGold": [
+      {
+        "isNew": false,
+        "members": [
+          "pensukesan"
+        ],
+        "name": "pensukesan",
+        "rank": 13,
+        "rankThen": 28,
+        "score": 42.27,
+        "scoreThen": 37.22,
+        "submissions": 39,
+        "teamId": "16047765"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "paulvvv"
+        ],
+        "name": "paul",
+        "rank": 16,
+        "rankThen": 64,
+        "score": 40.75,
+        "scoreThen": 35.23,
+        "submissions": 133,
+        "teamId": "15525358"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lordhansolo"
+        ],
+        "name": "Lord Han Solo",
+        "rank": 17,
+        "rankThen": 31,
+        "score": 39.94,
+        "scoreThen": 37.07,
+        "submissions": 107,
+        "teamId": "16371045"
+      }
+    ],
+    "label": "ARC-AGI-3",
+    "leader": {
+      "heldSince": "2026-10-25T07:03:54Z",
+      "leadBy": 5.540000000000006,
+      "previous": null,
+      "row": {
+        "isNew": false,
+        "members": [
+          "threerabbits"
+        ],
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 1,
+        "rankThen": 1,
+        "score": 75.56,
+        "scoreThen": 75.56,
+        "submissions": 46,
+        "teamId": "15499660"
+      }
+    },
+    "lines": {
+      "bronze": {
+        "now": 31.34,
+        "rank": 498,
+        "then": 31.24,
+        "weekAgo": 30.88
+      },
+      "gold": {
+        "now": 39.69,
+        "rank": 19,
+        "then": 38.98,
+        "weekAgo": 38.2
+      },
+      "silver": {
+        "now": 32.64,
+        "rank": 249,
+        "then": 32.54,
+        "weekAgo": 32.2
+      },
+      "top": {
+        "now": 75.56,
+        "rank": 1,
+        "then": 75.56,
+        "weekAgo": 68.91
+      }
+    },
+    "medalRanks": {
+      "bronze": 498,
+      "gold": 19,
+      "silver": 249
+    },
+    "newcomerCount": 0,
+    "newcomers": [],
+    "outOfGold": [
+      {
+        "isNew": false,
+        "members": [
+          "zhangzibo54"
+        ],
+        "name": "zhangzibo54",
+        "rank": 21,
+        "rankThen": 17,
+        "score": 39.22,
+        "scoreThen": 39.22,
+        "submissions": 25,
+        "teamId": "16557905"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "denialguo",
+          "jaydenszeto123",
+          "snoopydoo"
+        ],
+        "name": "dreach.ai",
+        "rank": 22,
+        "rankThen": 18,
+        "score": 39.11,
+        "scoreThen": 39.11,
+        "submissions": 48,
+        "teamId": "16805955"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "k0mbat",
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "shiiin9",
+          "taiiiiiichi",
+          "ydi102143"
+        ],
+        "name": "大阪公立大学 & Maciej & Natalia",
+        "rank": 23,
+        "rankThen": 19,
+        "score": 38.98,
+        "scoreThen": 38.98,
+        "submissions": 83,
+        "teamId": "16754530"
+      }
+    ],
+    "since": "2026-10-29T19:22:11Z",
+    "standings": [
+      {
+        "isNew": false,
+        "members": [
+          "threerabbits"
+        ],
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 1,
+        "rankThen": 1,
+        "score": 75.56,
+        "scoreThen": 75.56,
+        "submissions": 46,
+        "teamId": "15499660"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dlorah",
+          "driessmit1",
+          "infinitecreativity",
+          "jeroencottaar",
+          "pressman1",
+          "stefano1283"
+        ],
+        "name": "Tufa Labs",
+        "rank": 2,
+        "rankThen": 2,
+        "score": 70.02,
+        "scoreThen": 70.02,
+        "submissions": 176,
+        "teamId": "15486995"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "xiaoz259"
+        ],
+        "name": "faster machine is all you need",
+        "rank": 3,
+        "rankThen": 4,
+        "score": 58.59,
+        "scoreThen": 52.95,
+        "submissions": 12,
+        "teamId": "15487093"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dzjiann",
+          "keithtyser",
+          "markbarney",
+          "mitubant",
+          "ngyzly",
+          "scizical",
+          "sonphamorg"
+        ],
+        "name": "Team Turducken",
+        "rank": 4,
+        "rankThen": 3,
+        "score": 56.02,
+        "scoreThen": 56.02,
+        "submissions": 215,
+        "teamId": "15605182"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dwellement0baser",
+          "fses91",
+          "gklambauer",
+          "lukasaichberger"
+        ],
+        "name": "the last dance 🕺",
+        "rank": 5,
+        "rankThen": 5,
+        "score": 51.51,
+        "scoreThen": 51.51,
+        "submissions": 95,
+        "teamId": "16021367"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yktori"
+        ],
+        "name": "yktori",
+        "rank": 6,
+        "rankThen": 6,
+        "score": 51.04,
+        "scoreThen": 51.04,
+        "submissions": 32,
+        "teamId": "16760837"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "michaeltgao"
+        ],
+        "name": "mtg",
+        "rank": 7,
+        "rankThen": 7,
+        "score": 50.37,
+        "scoreThen": 50.37,
+        "submissions": 82,
+        "teamId": "16153655"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "cpmpml",
+          "darraghdog",
+          "eladsarafian",
+          "galkaplun",
+          "sorokin",
+          "titericz",
+          "yeyinzhu"
+        ],
+        "name": "NVARC3",
+        "rank": 8,
+        "rankThen": 8,
+        "score": 49.54,
+        "scoreThen": 49.54,
+        "submissions": 77,
+        "teamId": "15770880"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aizealotwu",
+          "deepdreamer",
+          "florenciasolange",
+          "grigoriyzatravkin"
+        ],
+        "name": "Grigoriy Zatravkin & co",
+        "rank": 9,
+        "rankThen": 9,
+        "score": 47.19,
+        "scoreThen": 47.19,
+        "submissions": 110,
+        "teamId": "16490178"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "isakatsuyoshi",
+          "konbu17",
+          "pompom555",
+          "refv00",
+          "tanakaai24",
+          "tk256ailab",
+          "ttyn4519",
+          "yuto0712"
+        ],
+        "name": "復活の混テキスト",
+        "rank": 10,
+        "rankThen": 10,
+        "score": 46.82,
+        "scoreThen": 46.82,
+        "submissions": 100,
+        "teamId": "16569113"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "cmechevalier",
+          "richardcsaky"
+        ],
+        "name": "artificialagencylab.com",
+        "rank": 11,
+        "rankThen": 11,
+        "score": 45.41,
+        "scoreThen": 45.41,
+        "submissions": 65,
+        "teamId": "16132261"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "majkel1337"
+        ],
+        "name": "Majkel1337",
+        "rank": 12,
+        "rankThen": 12,
+        "score": 45.03,
+        "scoreThen": 45.03,
+        "submissions": 32,
+        "teamId": "16958599"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "pensukesan"
+        ],
+        "name": "pensukesan",
+        "rank": 13,
+        "rankThen": 28,
+        "score": 42.27,
+        "scoreThen": 37.22,
+        "submissions": 39,
+        "teamId": "16047765"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dfranzen",
+          "dvhrtm",
+          "insanitycheck",
+          "sbrodehl"
+        ],
+        "name": "The ARChitects",
+        "rank": 14,
+        "rankThen": 13,
+        "score": 41.03,
+        "scoreThen": 41.03,
+        "submissions": 205,
+        "teamId": "16032816"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "vineethsaivs"
+        ],
+        "name": "Vineeth Sai Varikuntla",
+        "rank": 15,
+        "rankThen": 14,
+        "score": 40.98,
+        "scoreThen": 40.98,
+        "submissions": 78,
+        "teamId": "16537511"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "paulvvv"
+        ],
+        "name": "paul",
+        "rank": 16,
+        "rankThen": 64,
+        "score": 40.75,
+        "scoreThen": 35.23,
+        "submissions": 133,
+        "teamId": "15525358"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lordhansolo"
+        ],
+        "name": "Lord Han Solo",
+        "rank": 17,
+        "rankThen": 31,
+        "score": 39.94,
+        "scoreThen": 37.07,
+        "submissions": 107,
+        "teamId": "16371045"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "insuperabile"
+        ],
+        "name": "insuperabilehart",
+        "rank": 18,
+        "rankThen": 15,
+        "score": 39.79,
+        "scoreThen": 39.79,
+        "submissions": 26,
+        "teamId": "15775532"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aquaursaresearch"
+        ],
+        "name": "AquaUrsa Research",
+        "rank": 19,
+        "rankThen": 16,
+        "score": 39.69,
+        "scoreThen": 39.69,
+        "submissions": 18,
+        "teamId": "15488763"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "mbmmurad"
+        ],
+        "name": "Md Boktiar Mahbub Murad",
+        "rank": 20,
+        "rankThen": 30,
+        "score": 39.52,
+        "scoreThen": 37.12,
+        "submissions": 87,
+        "teamId": "15487522"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "zhangzibo54"
+        ],
+        "name": "zhangzibo54",
+        "rank": 21,
+        "rankThen": 17,
+        "score": 39.22,
+        "scoreThen": 39.22,
+        "submissions": 25,
+        "teamId": "16557905"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "denialguo",
+          "jaydenszeto123",
+          "snoopydoo"
+        ],
+        "name": "dreach.ai",
+        "rank": 22,
+        "rankThen": 18,
+        "score": 39.11,
+        "scoreThen": 39.11,
+        "submissions": 48,
+        "teamId": "16805955"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "k0mbat",
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "shiiin9",
+          "taiiiiiichi",
+          "ydi102143"
+        ],
+        "name": "大阪公立大学 & Maciej & Natalia",
+        "rank": 23,
+        "rankThen": 19,
+        "score": 38.98,
+        "scoreThen": 38.98,
+        "submissions": 83,
+        "teamId": "16754530"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "alisalmanrana",
+          "jcole75",
+          "kimura0415",
+          "sumirinn",
+          "ultsaza"
+        ],
+        "name": "Abstraction Lab & MindsAI",
+        "rank": 24,
+        "rankThen": 23,
+        "score": 38.95,
+        "scoreThen": 38.14,
+        "submissions": 175,
+        "teamId": "15490570"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "niyanng"
+        ],
+        "name": "Nhan Duc Nguyen",
+        "rank": 25,
+        "rankThen": 20,
+        "score": 38.84,
+        "scoreThen": 38.84,
+        "submissions": 29,
+        "teamId": "16958955"
+      }
+    ],
+    "teams": 4989,
+    "teamsThen": 4971,
+    "watch": [
+      {
+        "isNew": false,
+        "members": [
+          "threerabbits"
+        ],
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 1,
+        "rankThen": 1,
+        "score": 75.56,
+        "scoreThen": 75.56,
+        "submissions": 46,
+        "teamId": "15499660"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dlorah",
+          "driessmit1",
+          "infinitecreativity",
+          "jeroencottaar",
+          "pressman1",
+          "stefano1283"
+        ],
+        "name": "Tufa Labs",
+        "rank": 2,
+        "rankThen": 2,
+        "score": 70.02,
+        "scoreThen": 70.02,
+        "submissions": 176,
+        "teamId": "15486995"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "xiaoz259"
+        ],
+        "name": "faster machine is all you need",
+        "rank": 3,
+        "rankThen": 4,
+        "score": 58.59,
+        "scoreThen": 52.95,
+        "submissions": 12,
+        "teamId": "15487093"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dzjiann",
+          "keithtyser",
+          "markbarney",
+          "mitubant",
+          "ngyzly",
+          "scizical",
+          "sonphamorg"
+        ],
+        "name": "Team Turducken",
+        "rank": 4,
+        "rankThen": 3,
+        "score": 56.02,
+        "scoreThen": 56.02,
+        "submissions": 215,
+        "teamId": "15605182"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dwellement0baser",
+          "fses91",
+          "gklambauer",
+          "lukasaichberger"
+        ],
+        "name": "the last dance 🕺",
+        "rank": 5,
+        "rankThen": 5,
+        "score": 51.51,
+        "scoreThen": 51.51,
+        "submissions": 95,
+        "teamId": "16021367"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yktori"
+        ],
+        "name": "yktori",
+        "rank": 6,
+        "rankThen": 6,
+        "score": 51.04,
+        "scoreThen": 51.04,
+        "submissions": 32,
+        "teamId": "16760837"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "michaeltgao"
+        ],
+        "name": "mtg",
+        "rank": 7,
+        "rankThen": 7,
+        "score": 50.37,
+        "scoreThen": 50.37,
+        "submissions": 82,
+        "teamId": "16153655"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "cpmpml",
+          "darraghdog",
+          "eladsarafian",
+          "galkaplun",
+          "sorokin",
+          "titericz",
+          "yeyinzhu"
+        ],
+        "name": "NVARC3",
+        "rank": 8,
+        "rankThen": 8,
+        "score": 49.54,
+        "scoreThen": 49.54,
+        "submissions": 77,
+        "teamId": "15770880"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aizealotwu",
+          "deepdreamer",
+          "florenciasolange",
+          "grigoriyzatravkin"
+        ],
+        "name": "Grigoriy Zatravkin & co",
+        "rank": 9,
+        "rankThen": 9,
+        "score": 47.19,
+        "scoreThen": 47.19,
+        "submissions": 110,
+        "teamId": "16490178"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "isakatsuyoshi",
+          "konbu17",
+          "pompom555",
+          "refv00",
+          "tanakaai24",
+          "tk256ailab",
+          "ttyn4519",
+          "yuto0712"
+        ],
+        "name": "復活の混テキスト",
+        "rank": 10,
+        "rankThen": 10,
+        "score": 46.82,
+        "scoreThen": 46.82,
+        "submissions": 100,
+        "teamId": "16569113"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "cmechevalier",
+          "richardcsaky"
+        ],
+        "name": "artificialagencylab.com",
+        "rank": 11,
+        "rankThen": 11,
+        "score": 45.41,
+        "scoreThen": 45.41,
+        "submissions": 65,
+        "teamId": "16132261"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "majkel1337"
+        ],
+        "name": "Majkel1337",
+        "rank": 12,
+        "rankThen": 12,
+        "score": 45.03,
+        "scoreThen": 45.03,
+        "submissions": 32,
+        "teamId": "16958599"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dfranzen",
+          "dvhrtm",
+          "insanitycheck",
+          "sbrodehl"
+        ],
+        "name": "The ARChitects",
+        "rank": 14,
+        "rankThen": 13,
+        "score": 41.03,
+        "scoreThen": 41.03,
+        "submissions": 205,
+        "teamId": "16032816"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "vineethsaivs"
+        ],
+        "name": "Vineeth Sai Varikuntla",
+        "rank": 15,
+        "rankThen": 14,
+        "score": 40.98,
+        "scoreThen": 40.98,
+        "submissions": 78,
+        "teamId": "16537511"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "paulvvv"
+        ],
+        "name": "paul",
+        "rank": 16,
+        "rankThen": 64,
+        "score": 40.75,
+        "scoreThen": 35.23,
+        "submissions": 133,
+        "teamId": "15525358"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lordhansolo"
+        ],
+        "name": "Lord Han Solo",
+        "rank": 17,
+        "rankThen": 31,
+        "score": 39.94,
+        "scoreThen": 37.07,
+        "submissions": 107,
+        "teamId": "16371045"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "insuperabile"
+        ],
+        "name": "insuperabilehart",
+        "rank": 18,
+        "rankThen": 15,
+        "score": 39.79,
+        "scoreThen": 39.79,
+        "submissions": 26,
+        "teamId": "15775532"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aquaursaresearch"
+        ],
+        "name": "AquaUrsa Research",
+        "rank": 19,
+        "rankThen": 16,
+        "score": 39.69,
+        "scoreThen": 39.69,
+        "submissions": 18,
+        "teamId": "15488763"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "mbmmurad"
+        ],
+        "name": "Md Boktiar Mahbub Murad",
+        "rank": 20,
+        "rankThen": 30,
+        "score": 39.52,
+        "scoreThen": 37.12,
+        "submissions": 87,
+        "teamId": "15487522"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "denialguo",
+          "jaydenszeto123",
+          "snoopydoo"
+        ],
+        "name": "dreach.ai",
+        "rank": 22,
+        "rankThen": 18,
+        "score": 39.11,
+        "scoreThen": 39.11,
+        "submissions": 48,
+        "teamId": "16805955"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "k0mbat",
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "shiiin9",
+          "taiiiiiichi",
+          "ydi102143"
+        ],
+        "name": "大阪公立大学 & Maciej & Natalia",
+        "rank": 23,
+        "rankThen": 19,
+        "score": 38.98,
+        "scoreThen": 38.98,
+        "submissions": 83,
+        "teamId": "16754530"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "alisalmanrana",
+          "jcole75",
+          "kimura0415",
+          "sumirinn",
+          "ultsaza"
+        ],
+        "name": "Abstraction Lab & MindsAI",
+        "rank": 24,
+        "rankThen": 23,
+        "score": 38.95,
+        "scoreThen": 38.14,
+        "submissions": 175,
+        "teamId": "15490570"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "niyanng"
+        ],
+        "name": "Nhan Duc Nguyen",
+        "rank": 25,
+        "rankThen": 20,
+        "score": 38.84,
+        "scoreThen": 38.84,
+        "submissions": 29,
+        "teamId": "16958955"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "awelai",
+          "mellamoa"
+        ],
+        "name": "Advaith Vecham",
+        "rank": 26,
+        "rankThen": 21,
+        "score": 38.22,
+        "scoreThen": 38.22,
+        "submissions": 55,
+        "teamId": "16253766"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ffsscf"
+        ],
+        "name": "fshindo",
+        "rank": 27,
+        "rankThen": 22,
+        "score": 38.2,
+        "scoreThen": 38.2,
+        "submissions": 29,
+        "teamId": "16992721"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aaronflouro",
+          "erikfredrickson",
+          "shawnchadwick"
+        ],
+        "name": "SparseTech",
+        "rank": 28,
+        "rankThen": 24,
+        "score": 37.98,
+        "scoreThen": 37.98,
+        "submissions": 53,
+        "teamId": "16760493"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "sirikilohit"
+        ],
+        "name": "rellik13",
+        "rank": 29,
+        "rankThen": 25,
+        "score": 37.97,
+        "scoreThen": 37.97,
+        "submissions": 64,
+        "teamId": "16706087"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "huikang"
+        ],
+        "name": "Tong Hui Kang",
+        "rank": 30,
+        "rankThen": 26,
+        "score": 37.92,
+        "scoreThen": 37.92,
+        "submissions": 116,
+        "teamId": "15823039"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dipamc77",
+          "omprakashpy"
+        ],
+        "name": "Dipam and Om",
+        "rank": 31,
+        "rankThen": 202,
+        "score": 37.8,
+        "scoreThen": 32.88,
+        "submissions": 18,
+        "teamId": "16429297"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "mikelou1"
+        ],
+        "name": "mikelou1",
+        "rank": 32,
+        "rankThen": 27,
+        "score": 37.27,
+        "scoreThen": 37.27,
+        "submissions": 63,
+        "teamId": "16273949"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "nick2187",
+          "triplehs"
+        ],
+        "name": "Nick2187",
+        "rank": 34,
+        "rankThen": 46,
+        "score": 37.12,
+        "scoreThen": 36.11,
+        "submissions": 117,
+        "teamId": "15497811"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ibyyue"
+        ],
+        "name": "by",
+        "rank": 35,
+        "rankThen": 32,
+        "score": 36.92,
+        "scoreThen": 36.92,
+        "submissions": 23,
+        "teamId": "17044772"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ikaroskaggle",
+          "milkcoffeen",
+          "naoism",
+          "nistudy"
+        ],
+        "name": "Preferred ARC",
+        "rank": 38,
+        "rankThen": 35,
+        "score": 36.86,
+        "scoreThen": 36.86,
+        "submissions": 32,
+        "teamId": "16861524"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "apienss",
+          "gyuyoungpark09",
+          "leeheewon01",
+          "lowasitgoes",
+          "uradkr"
+        ],
+        "name": "Team Alicia",
+        "rank": 41,
+        "rankThen": 37,
+        "score": 36.54,
+        "scoreThen": 36.54,
+        "submissions": 112,
+        "teamId": "16782490"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "sawada"
+        ],
+        "name": "Fighting Gold",
+        "rank": 42,
+        "rankThen": 38,
+        "score": 36.46,
+        "scoreThen": 36.46,
+        "submissions": 91,
+        "teamId": "16623996"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "gruvlg",
+          "jeanphilipfilling"
+        ],
+        "name": "slop grenades",
+        "rank": 43,
+        "rankThen": 39,
+        "score": 36.46,
+        "scoreThen": 36.46,
+        "submissions": 24,
+        "teamId": "16473956"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "kwangsookoh"
+        ],
+        "name": "ETHAN KOH",
+        "rank": 44,
+        "rankThen": 40,
+        "score": 36.29,
+        "scoreThen": 36.29,
+        "submissions": 19,
+        "teamId": "17062789"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "iamkw0n",
+          "kw0nsi",
+          "len8487",
+          "nguynhphan"
+        ],
+        "name": "Name X",
+        "rank": 45,
+        "rankThen": 41,
+        "score": 36.25,
+        "scoreThen": 36.25,
+        "submissions": 27,
+        "teamId": "17074270"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "zyy7390"
+        ],
+        "name": "Zyy7390",
+        "rank": 46,
+        "rankThen": 42,
+        "score": 36.22,
+        "scoreThen": 36.22,
+        "submissions": 16,
+        "teamId": "17044861"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "hugothorvaldsen"
+        ],
+        "name": "Hugo Thorvaldsen",
+        "rank": 47,
+        "rankThen": 43,
+        "score": 36.16,
+        "scoreThen": 36.16,
+        "submissions": 106,
+        "teamId": "16559747"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "goonew"
+        ],
+        "name": "goonew",
+        "rank": 54,
+        "rankThen": 50,
+        "score": 35.91,
+        "scoreThen": 35.91,
+        "submissions": 49,
+        "teamId": "15490475"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "rutilo"
+        ],
+        "name": "rutilo",
+        "rank": 58,
+        "rankThen": 54,
+        "score": 35.67,
+        "scoreThen": 35.67,
+        "submissions": 22,
+        "teamId": "16993850"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "rogersjohnson"
+        ],
+        "name": "Rogers Johnson",
+        "rank": 59,
+        "rankThen": 55,
+        "score": 35.65,
+        "scoreThen": 35.65,
+        "submissions": 84,
+        "teamId": "16639523"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "kimdoong"
+        ],
+        "name": "Juyong",
+        "rank": 61,
+        "rankThen": 58,
+        "score": 35.55,
+        "scoreThen": 35.55,
+        "submissions": 78,
+        "teamId": "16295260"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "rkdaltmd"
+        ],
+        "name": "rkdaltmd",
+        "rank": 64,
+        "rankThen": 61,
+        "score": 35.34,
+        "scoreThen": 35.34,
+        "submissions": 13,
+        "teamId": "17088105"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "linyeping",
+          "wangying2026",
+          "ychsun"
+        ],
+        "name": "Jing Hua",
+        "rank": 65,
+        "rankThen": 62,
+        "score": 35.32,
+        "scoreThen": 35.32,
+        "submissions": 92,
+        "teamId": "15492032"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "christophercameron",
+          "cranberry128",
+          "matinaghaei",
+          "rohanajwani"
+        ],
+        "name": "Noah's ARC",
+        "rank": 68,
+        "rankThen": 111,
+        "score": 35.16,
+        "scoreThen": 33.85,
+        "submissions": 20,
+        "teamId": "16916278"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "avonik"
+        ],
+        "name": "Julian Hermes",
+        "rank": 71,
+        "rankThen": 67,
+        "score": 34.95,
+        "scoreThen": 34.95,
+        "submissions": 23,
+        "teamId": "16898323"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "muurur"
+        ],
+        "name": "Muurur",
+        "rank": 73,
+        "rankThen": 214,
+        "score": 34.87,
+        "scoreThen": 32.76,
+        "submissions": 41,
+        "teamId": "15487549"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yassinealouini"
+        ],
+        "name": "Yassine Alouini",
+        "rank": 76,
+        "rankThen": 173,
+        "score": 34.67,
+        "scoreThen": 33.16,
+        "submissions": 30,
+        "teamId": "16845550"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "kimchikingdom"
+        ],
+        "name": "kimchikingdom",
+        "rank": 77,
+        "rankThen": 70,
+        "score": 34.66,
+        "scoreThen": 34.66,
+        "submissions": 14,
+        "teamId": "17027453"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "mosamosa"
+        ],
+        "name": "Mosamosa",
+        "rank": 85,
+        "rankThen": 76,
+        "score": 34.47,
+        "scoreThen": 34.47,
+        "submissions": 26,
+        "teamId": "16753824"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "aaioaneitib",
+          "adrian4tib",
+          "andreicaioanei",
+          "jenslehmann",
+          "saharvahdati"
+        ],
+        "name": "NIMI",
+        "rank": 88,
+        "rankThen": 79,
+        "score": 34.38,
+        "scoreThen": 34.38,
+        "submissions": 76,
+        "teamId": "16853937"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "keter333"
+        ],
+        "name": "galileo680",
+        "rank": 90,
+        "rankThen": 81,
+        "score": 34.34,
+        "scoreThen": 34.34,
+        "submissions": 9,
+        "teamId": "16839649"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "hippolytepilchen",
+          "romainfabre",
+          "thomasferraz",
+          "xinhao642"
+        ],
+        "name": "UNK",
+        "rank": 91,
+        "rankThen": 98,
+        "score": 34.33,
+        "scoreThen": 34.01,
+        "submissions": 103,
+        "teamId": "16609552"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "menphim"
+        ],
+        "name": "menphim",
+        "rank": 92,
+        "rankThen": 82,
+        "score": 34.31,
+        "scoreThen": 34.31,
+        "submissions": 14,
+        "teamId": "17038083"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "hitarthjain0",
+          "netramfaran",
+          "rabari9999",
+          "sachith7",
+          "yeashusemwal"
+        ],
+        "name": "Tigdi",
+        "rank": 95,
+        "rankThen": 85,
+        "score": 34.25,
+        "scoreThen": 34.25,
+        "submissions": 40,
+        "teamId": "17106105"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "nicbarthelemy1"
+        ],
+        "name": "Nic Barthelemy",
+        "rank": 96,
+        "rankThen": 86,
+        "score": 34.24,
+        "scoreThen": 34.24,
+        "submissions": 68,
+        "teamId": "15522512"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "danmolsh",
+          "jnjbhjguktutft",
+          "ngyusum",
+          "reinforceagi",
+          "richardli873210",
+          "richray",
+          "xiaobinmo"
+        ],
+        "name": "Break 35",
+        "rank": 102,
+        "rankThen": 92,
+        "score": 34.09,
+        "scoreThen": 34.09,
+        "submissions": 94,
+        "teamId": "16878835"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "snowiers"
+        ],
+        "name": "Snowiers",
+        "rank": 107,
+        "rankThen": 97,
+        "score": 34.04,
+        "scoreThen": 34.04,
+        "submissions": 12,
+        "teamId": "17040498"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dastin0359"
+        ],
+        "name": "dastin0359",
+        "rank": 108,
+        "rankThen": 99,
+        "score": 34,
+        "scoreThen": 34,
+        "submissions": 3,
+        "teamId": "17157851"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "benzousilvia"
+        ],
+        "name": "Zakinosuke",
+        "rank": 110,
+        "rankThen": 101,
+        "score": 33.98,
+        "scoreThen": 33.98,
+        "submissions": 57,
+        "teamId": "16688839"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "saaienginner"
+        ],
+        "name": "s_a_ai_enginner",
+        "rank": 127,
+        "rankThen": 186,
+        "score": 33.72,
+        "scoreThen": 33.07,
+        "submissions": 43,
+        "teamId": "16733300"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "zabojeb"
+        ],
+        "name": "put me in harness @ NUP",
+        "rank": 132,
+        "rankThen": 121,
+        "score": 33.68,
+        "scoreThen": 33.68,
+        "submissions": 112,
+        "teamId": "15510458"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "raist321"
+        ],
+        "name": "Peter Findley",
+        "rank": 140,
+        "rankThen": 126,
+        "score": 33.6,
+        "scoreThen": 33.6,
+        "submissions": 52,
+        "teamId": "15495211"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "rustambazarbayev"
+        ],
+        "name": "Rustam Bazarbayev",
+        "rank": 154,
+        "rankThen": 139,
+        "score": 33.44,
+        "scoreThen": 33.44,
+        "submissions": 22,
+        "teamId": "16759600"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "mallajayanthvinay"
+        ],
+        "name": "MJVinay",
+        "rank": 156,
+        "rankThen": 141,
+        "score": 33.42,
+        "scoreThen": 33.42,
+        "submissions": 111,
+        "teamId": "15632509"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lavinwins",
+          "shookiyama"
+        ],
+        "name": "Koris Lab & Sho",
+        "rank": 158,
+        "rankThen": 142,
+        "score": 33.39,
+        "scoreThen": 33.39,
+        "submissions": 85,
+        "teamId": "16693078"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "pjh3316864904",
+          "pppycccc"
+        ],
+        "name": "Pandora",
+        "rank": 159,
+        "rankThen": 143,
+        "score": 33.39,
+        "scoreThen": 33.39,
+        "submissions": 13,
+        "teamId": "17059189"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "chiakazirim"
+        ],
+        "name": "Akagha Chimgozirim",
+        "rank": 167,
+        "rankThen": 151,
+        "score": 33.29,
+        "scoreThen": 33.29,
+        "submissions": 149,
+        "teamId": "15513178"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "drpatrickchan"
+        ],
+        "name": "Patrick Chan",
+        "rank": 175,
+        "rankThen": 159,
+        "score": 33.25,
+        "scoreThen": 33.25,
+        "submissions": 87,
+        "teamId": "15524067"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yinsong"
+        ],
+        "name": "yin",
+        "rank": 179,
+        "rankThen": 163,
+        "score": 33.23,
+        "scoreThen": 33.23,
+        "submissions": 65,
+        "teamId": "16765941"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "amosokello451",
+          "nancyadhiambo"
+        ],
+        "name": "amosokello451",
+        "rank": 181,
+        "rankThen": 361,
+        "score": 33.22,
+        "scoreThen": 31.87,
+        "submissions": 101,
+        "teamId": "15493226"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "rachidcaich"
+        ],
+        "name": "Rachid Caich",
+        "rank": 184,
+        "rankThen": 167,
+        "score": 33.21,
+        "scoreThen": 33.21,
+        "submissions": 20,
+        "teamId": "15641620"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "leimsh",
+          "reslearning",
+          "sftwork",
+          "vitkit",
+          "xrscore"
+        ],
+        "name": "lucky lucky pls",
+        "rank": 188,
+        "rankThen": 171,
+        "score": 33.18,
+        "scoreThen": 33.18,
+        "submissions": 43,
+        "teamId": "16967780"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "nithinkumarrc"
+        ],
+        "name": "Nithin Kumar R C ",
+        "rank": 194,
+        "rankThen": 178,
+        "score": 33.12,
+        "scoreThen": 33.12,
+        "submissions": 70,
+        "teamId": "16460810"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "santanubanerjee9"
+        ],
+        "name": "InSociEUP",
+        "rank": 199,
+        "rankThen": 183,
+        "score": 33.09,
+        "scoreThen": 33.09,
+        "submissions": 29,
+        "teamId": "15826130"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "shingo257"
+        ],
+        "name": "ERS",
+        "rank": 201,
+        "rankThen": 185,
+        "score": 33.08,
+        "scoreThen": 33.08,
+        "submissions": 27,
+        "teamId": "16766812"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "stefanoclss"
+        ],
+        "name": "stefanoclss",
+        "rank": 206,
+        "rankThen": 190,
+        "score": 33.03,
+        "scoreThen": 33.03,
+        "submissions": 26,
+        "teamId": "16991828"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "tfukuhara"
+        ],
+        "name": "tf",
+        "rank": 212,
+        "rankThen": 195,
+        "score": 32.97,
+        "scoreThen": 32.97,
+        "submissions": 106,
+        "teamId": "15495420"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "alijs1"
+        ],
+        "name": "alijs",
+        "rank": 216,
+        "rankThen": 217,
+        "score": 32.92,
+        "scoreThen": 32.74,
+        "submissions": 16,
+        "teamId": "17022020"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yuki0731"
+        ],
+        "name": "yuki0731",
+        "rank": 223,
+        "rankThen": 205,
+        "score": 32.82,
+        "scoreThen": 32.82,
+        "submissions": 23,
+        "teamId": "17043574"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "robin2004031"
+        ],
+        "name": "Robin",
+        "rank": 225,
+        "rankThen": 207,
+        "score": 32.81,
+        "scoreThen": 32.81,
+        "submissions": 21,
+        "teamId": "15562447"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "daisukesuda"
+        ],
+        "name": "ekusiadadus",
+        "rank": 227,
+        "rankThen": 209,
+        "score": 32.79,
+        "scoreThen": 32.79,
+        "submissions": 6,
+        "teamId": "17034786"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "luoleiash"
+        ],
+        "name": "luo lei",
+        "rank": 239,
+        "rankThen": 223,
+        "score": 32.7,
+        "scoreThen": 32.7,
+        "submissions": 26,
+        "teamId": "16968780"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "yoshharu"
+        ],
+        "name": "Haru Yo",
+        "rank": 241,
+        "rankThen": 225,
+        "score": 32.69,
+        "scoreThen": 32.69,
+        "submissions": 25,
+        "teamId": "16960672"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ravi20076"
+        ],
+        "name": "Ravi Ramakrishnan",
+        "rank": 246,
+        "rankThen": 230,
+        "score": 32.66,
+        "scoreThen": 32.66,
+        "submissions": 64,
+        "teamId": "15510923"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "levkayumov"
+        ],
+        "name": "LevKayumov",
+        "rank": 258,
+        "rankThen": 241,
+        "score": 32.6,
+        "scoreThen": 32.6,
+        "submissions": 9,
+        "teamId": "16092051"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "arnavmishra02",
+          "giovannyrodrguez"
+        ],
+        "name": "Giovanny Rodríguez",
+        "rank": 264,
+        "rankThen": 247,
+        "score": 32.54,
+        "scoreThen": 32.54,
+        "submissions": 30,
+        "teamId": "16459830"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "junhuay"
+        ],
+        "name": "Junhua Yang",
+        "rank": 265,
+        "rankThen": 248,
+        "score": 32.54,
+        "scoreThen": 32.54,
+        "submissions": 196,
+        "teamId": "15522677"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "explcre"
+        ],
+        "name": "Ryan #3",
+        "rank": 266,
+        "rankThen": 249,
+        "score": 32.53,
+        "scoreThen": 32.53,
+        "submissions": 66,
+        "teamId": "16679890"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "chw114"
+        ],
+        "name": "Chenhao Wu",
+        "rank": 267,
+        "rankThen": 250,
+        "score": 32.52,
+        "scoreThen": 32.52,
+        "submissions": 19,
+        "teamId": "17038965"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "takumuhata"
+        ],
+        "name": "Takumu Hata",
+        "rank": 277,
+        "rankThen": 257,
+        "score": 32.45,
+        "scoreThen": 32.45,
+        "submissions": 35,
+        "teamId": "16734276"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lvisdd"
+        ],
+        "name": "lvisdd",
+        "rank": 291,
+        "rankThen": 271,
+        "score": 32.34,
+        "scoreThen": 32.34,
+        "submissions": 29,
+        "teamId": "17018987"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lucaluo925"
+        ],
+        "name": "Haoyuan Luo",
+        "rank": 295,
+        "rankThen": 275,
+        "score": 32.31,
+        "scoreThen": 32.31,
+        "submissions": 13,
+        "teamId": "16950895"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "burgeryummy",
+          "lumine01"
+        ],
+        "name": "言和小天使🪽应援会！",
+        "rank": 311,
+        "rankThen": null,
+        "score": 32.23,
+        "scoreThen": 32.23,
+        "submissions": 20,
+        "teamId": "16847486"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "amatlas",
+          "vincent19543",
+          "williamlion1"
+        ],
+        "name": "Zhilei Qiu",
+        "rank": 331,
+        "rankThen": null,
+        "score": 32.12,
+        "scoreThen": 32.12,
+        "submissions": 40,
+        "teamId": "16844462"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "jerrlu"
+        ],
+        "name": "NoOneAhead",
+        "rank": 354,
+        "rankThen": null,
+        "score": 32,
+        "scoreThen": 32,
+        "submissions": 130,
+        "teamId": "15609417"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "tokitamago"
+        ],
+        "name": "tokitamago",
+        "rank": 370,
+        "rankThen": null,
+        "score": 31.93,
+        "scoreThen": 31.93,
+        "submissions": 20,
+        "teamId": "16567234"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "caoyupeng",
+          "hjx1024",
+          "lingyu07",
+          "tofearlessknight"
+        ],
+        "name": "Lucky",
+        "rank": 373,
+        "rankThen": null,
+        "score": 31.93,
+        "scoreThen": 31.93,
+        "submissions": 158,
+        "teamId": "16246219"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ankitgautam1947",
+          "devidasgautam",
+          "jaygautam007",
+          "sumangautam12345"
+        ],
+        "name": "Jay Gautam",
+        "rank": 396,
+        "rankThen": null,
+        "score": 31.8,
+        "scoreThen": 31.8,
+        "submissions": 59,
+        "teamId": "16455981"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "laomeichen"
+        ],
+        "name": "laomei chen",
+        "rank": 425,
+        "rankThen": null,
+        "score": 31.66,
+        "scoreThen": 31.66,
+        "submissions": 24,
+        "teamId": "16966323"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "thomasgamet"
+        ],
+        "name": "ThomasG",
+        "rank": 434,
+        "rankThen": null,
+        "score": 31.62,
+        "scoreThen": 31.62,
+        "submissions": 182,
+        "teamId": "15510098"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "tohog9325"
+        ],
+        "name": "MingYue",
+        "rank": 435,
+        "rankThen": null,
+        "score": 31.62,
+        "scoreThen": 31.62,
+        "submissions": 24,
+        "teamId": "16960245"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dncwon"
+        ],
+        "name": "DNCWON",
+        "rank": 442,
+        "rankThen": null,
+        "score": 31.6,
+        "scoreThen": 31.6,
+        "submissions": 45,
+        "teamId": "16897768"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ark911"
+        ],
+        "name": "galatea",
+        "rank": 454,
+        "rankThen": null,
+        "score": 31.55,
+        "scoreThen": 31.55,
+        "submissions": 34,
+        "teamId": "16698174"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "michellyou"
+        ],
+        "name": "Michell",
+        "rank": 493,
+        "rankThen": null,
+        "score": 31.36,
+        "scoreThen": 31.36,
+        "submissions": 25,
+        "teamId": "16970023"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "abukayyisahbasyid"
+        ],
+        "name": "Abu Kayyisah Basyid",
+        "rank": 499,
+        "rankThen": null,
+        "score": 31.34,
+        "scoreThen": 31.34,
+        "submissions": 35,
+        "teamId": "16713070"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "kingkong153"
+        ],
+        "name": "datnt114",
+        "rank": 523,
+        "rankThen": null,
+        "score": 31.24,
+        "scoreThen": null,
+        "submissions": 17,
+        "teamId": "16619609"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "gromml"
+        ],
+        "name": "gromml",
+        "rank": 539,
+        "rankThen": null,
+        "score": 31.19,
+        "scoreThen": null,
+        "submissions": 10,
+        "teamId": "15509536"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dossantoss"
+        ],
+        "name": "Jason-Oh",
+        "rank": 573,
+        "rankThen": null,
+        "score": 31.06,
+        "scoreThen": null,
+        "submissions": 14,
+        "teamId": "15585956"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "dawkopi"
+        ],
+        "name": "Dawid Kopiczko",
+        "rank": 591,
+        "rankThen": null,
+        "score": 31,
+        "scoreThen": null,
+        "submissions": 74,
+        "teamId": "16439788"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "seanjones444"
+        ],
+        "name": "Sean Jones",
+        "rank": 626,
+        "rankThen": null,
+        "score": 30.85,
+        "scoreThen": null,
+        "submissions": 95,
+        "teamId": "16148668"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "uninhibitedscholar"
+        ],
+        "name": "uninhibited-scholar",
+        "rank": 645,
+        "rankThen": null,
+        "score": 30.78,
+        "scoreThen": null,
+        "submissions": 28,
+        "teamId": "16860031"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "albertorkive"
+        ],
+        "name": "Alberto Luengo",
+        "rank": 678,
+        "rankThen": null,
+        "score": 30.68,
+        "scoreThen": null,
+        "submissions": 79,
+        "teamId": "15504445"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "ruichardliu",
+          "russcore"
+        ],
+        "name": "i want to go lab😭",
+        "rank": 897,
+        "rankThen": null,
+        "score": 29.97,
+        "scoreThen": null,
+        "submissions": 143,
+        "teamId": "15607034"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "lonnieqin"
+        ],
+        "name": "Lonnie",
+        "rank": 1519,
+        "rankThen": null,
+        "score": 27.66,
+        "scoreThen": null,
+        "submissions": 136,
+        "teamId": "15488665"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "avgaydashenko",
+          "gatamaz",
+          "godjan",
+          "korogodsky",
+          "malyshevasasha",
+          "rolion",
+          "tehnar",
+          "vitalique"
+        ],
+        "name": "mostik.ai",
+        "rank": 2218,
+        "rankThen": null,
+        "score": 7.51,
+        "scoreThen": null,
+        "submissions": 47,
+        "teamId": "16364346"
+      },
+      {
+        "isNew": false,
+        "members": [
+          "alwintheodoric",
+          "billyanggara",
+          "darrenamadeusmartin",
+          "rinnnntt",
+          "yassirramadhan"
+        ],
+        "name": "Domdolus Tolus",
+        "rank": 2228,
+        "rankThen": null,
+        "score": 4.99,
+        "scoreThen": null,
+        "submissions": 7,
+        "teamId": "16534961"
+      }
+    ],
+    "weekSince": "2026-10-23T19:05:37Z"
+  },
+  "briefSha256": "a60146d6f1c3495c4bf30353a1dcba64596e69ea252f83cead954e89d92273fb",
+  "competition": "arc-3",
+  "leads": [
+    {
+      "covered": true,
+      "id": "gold-line",
+      "kind": "gold-line",
+      "personIds": [
+        "md-boktiar-mahbub-murad"
+      ],
+      "sourceIds": [
+        "board-arc-3",
+        "person-md-boktiar-mahbub-murad-identity-0",
+        "person-md-boktiar-mahbub-murad-fact-0",
+        "person-md-boktiar-mahbub-murad-fact-1",
+        "person-md-boktiar-mahbub-murad-fact-2",
+        "person-md-boktiar-mahbub-murad-fact-3",
+        "person-md-boktiar-mahbub-murad-fact-4",
+        "person-md-boktiar-mahbub-murad-fact-5",
+        "person-md-boktiar-mahbub-murad-fact-6",
+        "person-md-boktiar-mahbub-murad-roster-0",
+        "person-md-boktiar-mahbub-murad-roster-1"
+      ],
+      "teamIds": [
+        "15487522"
+      ],
+      "text": "The gold line, the score at 19th (the last of 19 gold places), rose 0.71 in the past day to 39.69. First outside gold: Md Boktiar Mahbub Murad, 20th at 39.52, 0.17 short."
+    },
+    {
+      "covered": false,
+      "id": "gain-16120761",
+      "kind": "gain",
+      "personIds": [],
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "teamIds": [
+        "16120761"
+      ],
+      "text": "Nadeem gained 9.48 to 36.75, moving from 1606th to 40th."
+    },
+    {
+      "covered": false,
+      "id": "climb-17045290",
+      "kind": "climb",
+      "personIds": [],
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "teamIds": [
+        "17045290"
+      ],
+      "text": "plzhecineedthis climbed 253 places, from 335th to 82nd, at 34.54 (+2.58)."
+    }
+  ],
+  "preparedAt": "2026-10-30T19:40:38Z",
+  "publishedAt": "2026-10-30T19:41:41Z",
+  "sourceSha256": "a9719e7c4dd5e070d11a38a93ad9193f57a252974036d2d7c1315c94f498f846",
+  "sourceUrl": "https://arc.markbarney.net/api/news/markets",
+  "storyId": "2026-10-30-1541-arc-3-nadeem-leaps-and-plzhecineedthis-climbs"
+}

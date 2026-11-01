@@ -28,3 +28,9 @@
 Public demo game performance is not a proxy for the private competition set. Game guides contain spoilers; play first when contributing a blind human baseline. Game IDs are the stable identifiers. Community task answer keys are deliberately unlisted and excluded by robots.txt. This document is a discovery guide, not an access-control or crawler-policy file.
 
 [Generated sitemap](https://arc.markbarney.net/sitemap.xml) · [Crawler policy](https://arc.markbarney.net/robots.txt)
+
+## Public ARC-AGI-3 play and engine reference
+
+- [Play human-reviewed original games](https://arc.markbarney.net/arc3/gallery): the current Trainable selection from our research lab, playable here without a login. Each approved build has its own game page.
+- [ARC-AGI-3 and ARCEngine explained](https://arc.markbarney.net/arc3): the existing reference on frames, actions, engine design, game creation, validation and scoring.
+- [Research lab](https://arc3.sonpham.net): research tools and team workflows; public play lives on ARC Explainer.

@@ -1,0 +1,114 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Written by Claude Sonnet 5.5 with the writers’ desk (GPT 6.1 Terra, Extra High, and GPT 6.1 Sol). Boards read Saturday at 1:58 pm Eastern; places are provisional until the private board closes.",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "Chan Kha Vu’s V | A | M: 26 points in five days, and ninth on the ARC-2 board",
+  "id": "2026-10-31-saturday-chan-vam-top-ten",
+  "image": {
+    "alt": "Chan Kha Vu’s ARC Prize card, with his embroidered mask and clothing transformed into cyberpunk armor and headgear; the accompanying score panel records ninth place on October 31.",
+    "caption": "Chan Kha Vu’s new ARC Prize card. Rank and score reflect the October 31 public-board snapshot.",
+    "src": "/news-images/2026-10-31-saturday-chan-vam-top-ten.webp"
+  },
+  "publishedAt": "2026-10-31T18:29:05Z",
+  "sections": [
+    {
+      "heading": "Points, not places",
+      "sourceIds": [
+        "board",
+        "chan-post"
+      ],
+      "text": "Two different numbers are in play, so let us keep them apart. Points are the score. Chan’s Friday post counted points: V | A | M went from 50 to 76 in five days and wants 80 or more. Place is where that score sits on the board. Saturday the team’s 76.25 points put it ninth on the ARC-AGI-2 public board, inside the top ten and inside the gold line, which runs to seventeenth. In our observed history the team has been as high as eighth."
+    },
+    {
+      "heading": "Three names on the team sheet",
+      "sourceIds": [
+        "board",
+        "chan-post",
+        "nguyen",
+        "arazzd"
+      ],
+      "text": "The roster lists Kaggle accounts arazzd, chankhavu and nguyennguyen599, and Chan’s post tags @nguyen_manh599, @razdaibi and @kaggle. On Kaggle, nguyennguyen599 is a Competitions Expert whose list includes first of 1,075 teams at the WiDS Datathon 2025, a community contest, and second of six at the AI Mathematical Olympiad Proof Pilot. arazzd is a quiet seven-year-old account that has entered both ARC contests this year."
+    },
+    {
+      "heading": "Gold already in the case",
+      "sourceIds": [
+        "chan-kaggle",
+        "chan-results",
+        "giba"
+      ],
+      "text": "Chan is a Kaggle Competitions Master with two competition golds and five silvers, and a career-best rank of 271. Those are career medals, not a claim that this campaign has won one. The completed list includes second among 2,963 teams at the 2026 NeuroGolf Championship, with a five-person team; first place went to Giba, who is now on NVIDIA’s NVARC3. Add ninth of 642 in the Image Matching Challenge 2022."
+    },
+    {
+      "heading": "A voice in the circus",
+      "sourceIds": [
+        "chan-card",
+        "team-card",
+        "k2-selection"
+      ],
+      "text": "On the forum this weekend Chan has been one of the sharpest voices on Kaggle’s scoring delays: with queues past twelve hours and scoring past a day, a last-day submission cannot count, and the ask is more time to pick a final, not more submissions. On Kaggle and X, Chan is @chankhavu."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T17:58:42Z",
+      "id": "board",
+      "title": "ARC-2 public board and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-31T17:20:00Z",
+      "id": "chan-post",
+      "title": "Chan Kha Vu celebrates the climb on X",
+      "url": "https://x.com/chankhavu/status/2116281051702280456"
+    },
+    {
+      "accessedAt": "2026-10-31T17:20:00Z",
+      "id": "chan-kaggle",
+      "title": "Chan Kha Vu on Kaggle",
+      "url": "https://www.kaggle.com/chankhavu"
+    },
+    {
+      "accessedAt": "2026-10-31T17:20:00Z",
+      "id": "chan-results",
+      "title": "Chan Kha Vu competition results",
+      "url": "https://www.kaggle.com/chankhavu/competitions"
+    },
+    {
+      "accessedAt": "2026-10-31T17:28:39Z",
+      "id": "chan-card",
+      "title": "Chan Kha Vu’s ARC Prize card",
+      "url": "https://arc.markbarney.net/news/cards/person-chan-kha-vu-2026"
+    },
+    {
+      "accessedAt": "2026-10-31T17:28:39Z",
+      "id": "team-card",
+      "title": "V | A | M team card",
+      "url": "https://arc.markbarney.net/news/cards/team-v-a-m-arc2-2026"
+    },
+    {
+      "accessedAt": "2026-10-31T18:00:00Z",
+      "id": "k2-selection",
+      "title": "ARC-2 forum: “Scoring 24h+ — proposal if delays persist”",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/753723"
+    },
+    {
+      "accessedAt": "2026-10-31T18:00:00Z",
+      "id": "nguyen",
+      "title": "nguyennguyen599 — Kaggle profile and competitions",
+      "url": "https://www.kaggle.com/nguyennguyen599/competitions"
+    },
+    {
+      "accessedAt": "2026-10-31T18:00:00Z",
+      "id": "arazzd",
+      "title": "arazzd — Kaggle profile and competitions",
+      "url": "https://www.kaggle.com/arazzd/competitions"
+    },
+    {
+      "accessedAt": "2026-10-31T18:00:00Z",
+      "id": "giba",
+      "title": "Giba (titericz) — Kaggle profile and competitions",
+      "url": "https://www.kaggle.com/titericz/competitions"
+    }
+  ]
+}

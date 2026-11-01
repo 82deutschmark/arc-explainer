@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T16:18:45Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Kaz rises from 73rd to 51st on ARC-2",
+  "id": "2026-10-28-1241-arc-2-kaz-rises-to-fifty-first",
+  "personIds": [],
+  "publishedAt": "2026-10-28T16:41:44Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Kaz gained 11.53 to 51.67, moving from 73rd to 51st on the ARC-AGI-2 public board in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "This is a further climb for the entry after its earlier move into the top 100. Standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-27T16:15:31Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T16:40:49Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17096234"
+  ]
+}

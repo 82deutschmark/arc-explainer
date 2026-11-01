@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "2026-10-29-mtg-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:28:46.603097+00:00",
+  "toolOutput": "exec-8101c9f5-1f79-4ea4-848b-448aaecb0e58.png",
+  "rawSrc": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp",
+  "rawSha256": "613f9a14934faa1eabfaf6e7f8b6bb01e207ff13f2bd22e0888010f5d923f8e6",
+  "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: an original friendly black-and-white chess ROOK-shaped robot athlete, body a compact smooth obsidian tower with silver battlements for a crown; a bright cyan horizontal eye slit, orange-and-cyan split varsity jacket covered in neat multicolor ARC grid patches, articulated silver hands and chunky sneakers. Exactly two small glowing square ARC-grid playing boards orbit beside the two hands at hip height, one orange and one cyan, to symbolize the account's entries in two distinct ARC contests. Dynamic celebratory sidestep on a dark polished scoring-hall floor, subtle blurred double arena portals in background. Confident and charismatic, sport-star arrival. Not a knight, not a person wearing a helmet, not a goose. Two boards are visual metaphor, no contest names.",
+  "references": [],
+  "inputImages": [],
+  "review": "Inspected one friendly black rook robot in orange/cyan ARC jacket, silver crown, exactly two separate floating ARC boards, articulated hands and both shoes. Fictional account mascot, no personal likeness.",
+  "purpose": "character-reference",
+  "subjectId": "mtg-team",
+  "registeredAt": "2026-10-29T23:45:32Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: an original friendly black-and-white chess ROOK-shaped robot athlete, body a compact smooth obsidian tower with silver battlements for a crown; a bright cyan horizontal eye slit, orange-and-cyan split varsity jacket covered in neat multicolor ARC grid patches, articulated silver hands and chunky sneakers. Exactly two small glowing square ARC-grid playing boards orbit beside the two hands at hip height, one orange and one cyan, to symbolize the account's entries in two distinct ARC contests. Dynamic celebratory sidestep on a dark polished scoring-hall floor, subtle blurred double arena portals in background. Confident and charismatic, sport-star arrival. Not a knight, not a person wearing a helmet, not a goose. Two boards are visual metaphor, no contest names.",
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-mtg-avatar-v1-native.png",
+    "sha256": "a1acb864dc714f0055f39d3a35da623b45ce293adca984d4e11b6850d3c2c327",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-8101c9f5-1f79-4ea4-848b-448aaecb0e58.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [],
+  "identityNotes": [
+    "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+    "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-mtg-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:28:46.603097+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: an original friendly black-and-white chess ROOK-shaped robot athlete, body a compact smooth obsidian tower with silver battlements for a crown; a bright cyan horizontal eye slit, orange-and-cyan split varsity jacket covered in neat multicolor ARC grid patches, articulated silver hands and chunky sneakers. Exactly two small glowing square ARC-grid playing boards orbit beside the two hands at hip height, one orange and one cyan, to symbolize the account's entries in two distinct ARC contests. Dynamic celebratory sidestep on a dark polished scoring-hall floor, subtle blurred double arena portals in background. Confident and charismatic, sport-star arrival. Not a knight, not a person wearing a helmet, not a goose. Two boards are visual metaphor, no contest names.",
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-8101c9f5-1f79-4ea4-848b-448aaecb0e58.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/michaeltgao/avatar-v1.png",
+    "sha256": "a1acb864dc714f0055f39d3a35da623b45ce293adca984d4e11b6850d3c2c327",
+    "references": [],
+    "review": "Inspected one friendly black rook robot in orange/cyan ARC jacket, silver crown, exactly two separate floating ARC boards, articulated hands and both shoes. Fictional account mascot, no personal likeness.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

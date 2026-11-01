@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-10-30-mykyta-ielanskyi-hero-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-30T18:24:15.936Z",
+  "rawSrc": "/news-images/cards/2026/mykyta-ielanskyi-hero-v1.webp",
+  "nativeOriginalSrc": "/news-images/cards/2026/mykyta-ielanskyi-hero-v1-native.png",
+  "toolOutput": "exec-a0fb317c-a78f-4a79-af81-b249221e4427.png",
+  "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the man in the reference, especially tousled fair hair, full ginger beard, facial proportions and light eyes. Cyan-and-emerald precision-engineer exosuit, one hand balancing a glowing small ARC tile cube. Warm spirited expression, blue-green rimlight in immense scoring hall.",
+  "toolArguments": {
+    "prompt": "Use case: identity-preserve. Create a premium ARC Daily Hall of Fame cyberpunk sports-star illustration, entirely new portrait composition from the reference identity. Portrait canvas exactly 1500 by 2100 pixels, 5:7. Cinematic painterly realism with exquisite tactile metal, luminous ARC-puzzle colored square grids, cathedral scoring-hall arches, glamorous esports confidence. Head-to-waist subject occupies upper two thirds, face and eyes near 30% of canvas height. Keep whole head, shoulders, hands and hero prop inside x10%-90%, y10%-69%; top10% quiet dark architecture. Bottom31% dark simple atmospheric continuation, no essential detail, for later code overlays. Full bleed. Absolutely NO text, letters, numbers, logos, labels, frames, watermark or card border anywhere. Do not copy incidental reference lettering. Preserve identity and characteristic face/mascot; design unique cyber equipment. Preserve the man in the reference, especially tousled fair hair, full ginger beard, facial proportions and light eyes. Cyan-and-emerald precision-engineer exosuit, one hand balancing a glowing small ARC tile cube. Warm spirited expression, blue-green rimlight in immense scoring hall.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-cards/client/public/news-images/people/mykyta-ielanskyi.webp"
+    ],
+    "transparent_background": false
+  },
+  "purpose": "card-hero",
+  "subjectId": "mykyta-ielanskyi",
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "references": [
+    {
+      "src": "/news-images/people/mykyta-ielanskyi.webp",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+      "role": "Own identity source or registered character reference; preserve observable likeness and mascot. No invented face.",
+      "sha256": "730bf4c79cf5abfd7716e654d905d01b73304963f419dee56ac59d6b857741fb"
+    }
+  ],
+  "reviewStatus": "editor-rejected",
+  "review": "Boss rejected the batch on 30 October: insufficient integrated facial cybernetics, inconsistent style, and unnecessary recreation of existing characters. No longer bound to a card. Retained as an unselected draft.",
+  "commissionAuthority": "Boss commissioned every missing Card Cabinet illustration, image creation only, 30 October 2026.",
+  "archiveNote": "Exact native PNG preserved separately from 1500×2100 sRGB lossless WebP delivery derivative. Earlier art and references retained unchanged.",
+  "rawSha256": "b8bd4683da46d24fa3b2aead953ab49b2db08f2c96a6fb142d2ffe6f0f6c6a0d",
+  "nativeOriginalSha256": "7c1c29960072c49966395beb29057125f16ff7a3b3151a7f6aac2e521d6b545b",
+  "composition": {
+    "width": 1500,
+    "height": 2100,
+    "ratio": "5:7",
+    "text": false,
+    "border": false
+  },
+  "previousCardArt": null
+}

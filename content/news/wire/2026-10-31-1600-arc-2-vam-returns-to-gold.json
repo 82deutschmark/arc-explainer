@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-31T19:58:56Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "V | A | M and Lashen Learning move into ARC-2 gold",
+  "id": "2026-10-31-1600-arc-2-vam-returns-to-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-31T20:00:20Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "V | A | M rose from 25th to 9th at 76.25 (+7.36), crossing into the gold places. Lashen Learning also moved into gold, climbing from 21st to 17th at 72.92 (+3.48)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The two moves lift the cutoff for the 17 public gold places to 72.92. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-30T19:55:12Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-31T20:00:00Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16600664",
+    "17054447"
+  ]
+}

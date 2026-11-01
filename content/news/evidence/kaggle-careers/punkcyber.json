@@ -1,0 +1,279 @@
+{
+  "personId": "punkcyber",
+  "handle": "tanakaai24",
+  "xHandle": "cunkpyber",
+  "name": "PunkCyber",
+  "checkedAt": "2026-10-30T12:06:45Z",
+  "method": "Read-only public Kaggle About and Competitions pages in the Claude desktop app's built-in browser on 2026-10-30 (profile first, then the competitions page after a short wait). Page text read in full; medal icons read from the rendered competition list (screenshots of the first seven rows plus the page's own medal-image elements); the join date read from the page's join-date tooltip; the avatar file downloaded from the image address the profile page itself shows and compared with the stored portrait by eye and by file fingerprint. No refresh loops, no block or rate-limit page encountered. Every Kaggle claim below was re-read on this date; nothing was carried over from the earlier unverified draft.",
+  "sources": [
+    "https://www.kaggle.com/tanakaai24",
+    "https://www.kaggle.com/tanakaai24/competitions",
+    "https://storage.googleapis.com/kaggle-avatars/images/7381676-kg.png"
+  ],
+  "profile": {
+    "displayName": "Tanaka Ai24",
+    "competitionTier": "Competitions Expert",
+    "medals": {
+      "gold": 0,
+      "silver": 4,
+      "bronze": 0,
+      "note": "The Medals card on the profile shows a single silver tally of 4 and no gold or bronze tally; the completed list also shows exactly four medal icons, all silver."
+    },
+    "competitionRank": 1512,
+    "competitionRankOutOf": 225021,
+    "highestCompetitionRank": 1449,
+    "joinedTooltip": "Sun May 09 2021 19:29:10 GMT-0400 (Eastern Daylight Time)",
+    "joinedMonth": "2021-05",
+    "bioPresent": false,
+    "bioText": "No bio yet... Quietly working away",
+    "competitionActivity": "13 competitions solo, 5 competitions in a team, 0 competitions hosted",
+    "competitionsTabCount": 18,
+    "linkedAccounts": [
+      "https://twitter.com/cunkpyber"
+    ],
+    "readOn": "2026-10-30T12:06:45Z"
+  },
+  "visibleCompetitionList": {
+    "activeCount": 2,
+    "completedCount": 16,
+    "activeNames": [
+      "ARC Prize 2026 - ARC-AGI-3",
+      "ARC Prize 2026 - ARC-AGI-2"
+    ],
+    "activeNote": "Both showed '3 days to go' when read.",
+    "scopeNote": "All 16 completed entries shown by Kaggle are listed below, in Kaggle's 'Best Result' order. Relative dates are as Kaggle displays them; exact completion dates are not shown. medal 'none' means Kaggle showed no medal icon on that row."
+  },
+  "completedResults": [
+    {
+      "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+      "kind": "Featured",
+      "rank": 23,
+      "teams": 1514,
+      "medal": "silver",
+      "displayedHandles": ["ivanisaev", "asimandia", "felixmneumann", "tanakaai24", "veniaminnelin"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago",
+      "note": "Five accounts are displayed on this entry, so it is a shared team result. Kaggle's list does not show a team name."
+    },
+    {
+      "competition": "AI Agent Security - Multi-Step Tool Attacks",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "kind": "Featured, Code Competition",
+      "rank": 79,
+      "teams": 4186,
+      "medal": "silver",
+      "displayedHandles": ["pompom555", "argon1215", "tanakaai24", "konbu17"],
+      "teamName": null,
+      "relativeDateLabel": "2 months ago",
+      "note": "Four accounts are displayed on this entry, so it is a shared team result. Kaggle's list does not show a team name."
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 3",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "kind": "Featured, Code Competition",
+      "rank": 130,
+      "teams": 4138,
+      "medal": "silver",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "6 months ago"
+    },
+    {
+      "competition": "Kaggriculture",
+      "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+      "kind": "Featured, Simulation Competition",
+      "rank": 267,
+      "teams": 10148,
+      "medal": "silver",
+      "displayedHandles": ["gnux1408", "tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "16 days ago",
+      "note": "Two accounts are displayed on this entry, so it is a shared team result. Kaggle's list does not show a team name."
+    },
+    {
+      "competition": "WSDM Cup - Multilingual Chatbot Arena",
+      "competitionUrl": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
+      "kind": "Featured, Code Competition",
+      "rank": 229,
+      "teams": 950,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago"
+    },
+    {
+      "competition": "Drawing with LLMs",
+      "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+      "kind": "Featured, Code Competition",
+      "rank": 293,
+      "teams": 1309,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago"
+    },
+    {
+      "competition": "Google Brain - Ventilator Pressure Prediction",
+      "competitionUrl": "https://www.kaggle.com/competitions/ventilator-pressure-prediction",
+      "kind": "Research",
+      "rank": 298,
+      "teams": 2605,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "5 years ago"
+    },
+    {
+      "competition": "CZII - CryoET Object Identification",
+      "competitionUrl": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+      "kind": "Featured, Code Competition",
+      "rank": 361,
+      "teams": 931,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago"
+    },
+    {
+      "competition": "LLMs - You Can't Please Them All",
+      "competitionUrl": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+      "kind": "Featured, Code Competition",
+      "rank": 493,
+      "teams": 1692,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago"
+    },
+    {
+      "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+      "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+      "kind": "Featured",
+      "rank": 503,
+      "teams": 3357,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "9 months ago"
+    },
+    {
+      "competition": "BirdCLEF+ 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2025",
+      "kind": "Research, Code Competition",
+      "rank": 517,
+      "teams": 2031,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago"
+    },
+    {
+      "competition": "Image Matching Challenge 2025",
+      "competitionUrl": "https://www.kaggle.com/competitions/image-matching-challenge-2025",
+      "kind": "Research, Code Competition",
+      "rank": 563,
+      "teams": 943,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago"
+    },
+    {
+      "competition": "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "competitionUrl": "https://www.kaggle.com/competitions/waveform-inversion",
+      "kind": "Research",
+      "rank": 594,
+      "teams": 1365,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "a year ago"
+    },
+    {
+      "competition": "AI Mathematical Olympiad - Progress Prize 2",
+      "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "kind": "Featured, Code Competition",
+      "rank": 835,
+      "teams": 2212,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago"
+    },
+    {
+      "competition": "Child Mind Institute — Problematic Internet Use",
+      "competitionUrl": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
+      "kind": "Featured, Code Competition",
+      "rank": 1332,
+      "teams": 3559,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "2 years ago"
+    },
+    {
+      "competition": "Hyperspectral Object Detection Challenge 2026",
+      "competitionUrl": "https://www.kaggle.com/competitions/hyperspectral-object-detection-challenge-2026",
+      "kind": "Community",
+      "rank": 22,
+      "teams": 309,
+      "medal": "none",
+      "displayedHandles": ["tanakaai24"],
+      "teamName": null,
+      "relativeDateLabel": "a month ago",
+      "note": "Community competition; Kaggle showed no medal icon."
+    }
+  ],
+  "portrait": {
+    "status": "own-verified",
+    "src": "/news-images/people/punkcyber.webp",
+    "sourceUrl": "https://www.kaggle.com/tanakaai24",
+    "imageUrl": "https://storage.googleapis.com/kaggle-avatars/images/7381676-kg.png?t=2025-01-12-13-56-15",
+    "width": 400,
+    "height": 400,
+    "sha256": "9e534e60644532893857cc9a1f493a8e50cb913c53cc7489cddfea5860325828",
+    "note": "The picture on the tanakaai24 profile is an anime-style cartoon of a person with brown hair, round glasses, a scarf and a cable-knit sweater holding a red book, on a tan background. The file the profile page serves today (400 pixels, fingerprint above) is byte-identical to the frozen owner copy in client/public/news-images/references (2026-10-29-japanese-ensemble-avatar-v1-owner-tanakaai24-own-avatar.png), and the stored 320-pixel webp is the same picture at smaller size (viewed side by side). It is the player's own chosen avatar: not a group image, not a default avatar, not a stand-in. No replacement saved."
+  },
+  "facts": [
+    {
+      "text": "Kaggle shows Tanaka Ai24 (tanakaai24) as a Competitions Expert with four silver competition medals, no gold or bronze tally, and an account that joined in May 2021.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24",
+      "sourceTitle": "Tanaka Ai24 - public Kaggle profile, tier and medals",
+      "checkedAt": "2026-10-30T12:06:45Z"
+    },
+    {
+      "text": "The tanakaai24 profile links the X account @cunkpyber, which ties this Kaggle account to the PunkCyber identity.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24",
+      "sourceTitle": "Tanaka Ai24 - own direct link to @cunkpyber",
+      "checkedAt": "2026-10-30T12:06:45Z"
+    },
+    {
+      "text": "Kaggle lists Santa 2024 as the best completed result, 23rd of 1,514 teams with a silver medal, on a shared entry that displays five accounts including tanakaai24.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+      "sourceTitle": "Tanaka Ai24 - completed Santa 2024 result and listed accounts",
+      "checkedAt": "2026-10-30T12:06:45Z"
+    },
+    {
+      "text": "Kaggle lists a silver medal for AI Mathematical Olympiad - Progress Prize 3, 130th of 4,138 teams, on an entry that displays only the tanakaai24 account.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+      "sourceTitle": "Tanaka Ai24 - completed AI Mathematical Olympiad Progress Prize 3 result",
+      "checkedAt": "2026-10-30T12:06:45Z"
+    },
+    {
+      "text": "Two more silvers are shared team entries: AI Agent Security, 79th of 4,186 teams, shown with pompom555, argon1215 and konbu17, and Kaggriculture, 267th of 10,148 teams, shown with gnux1408.",
+      "sourceUrl": "https://www.kaggle.com/tanakaai24/competitions",
+      "sourceTitle": "Tanaka Ai24 - completed AI Agent Security and Kaggriculture results and listed accounts",
+      "checkedAt": "2026-10-30T12:06:45Z"
+    }
+  ],
+  "teamNotes": "Current ARC team: the people record lists 復活の混テキスト for tanakaai24 on the public ARC-2 and ARC-3 rosters, first observed 2026-10-29 from the site's own board feed; that roster feed was not re-read in this pass, and public ARC standings are provisional until the private leaderboard settles. The Kaggle competitions page confirms only that tanakaai24 appears under both active ARC Prize 2026 competitions (ARC-AGI-2 and ARC-AGI-3), each with three days to go. Past teams, as displayed by Kaggle without team names: Santa 2024 with ivanisaev, asimandia, felixmneumann and veniaminnelin; AI Agent Security with pompom555, argon1215 and konbu17; Kaggriculture with gnux1408. The profile's activity line counts five team entries, which fits those three past entries plus the two current ARC entries, and thirteen solo entries. The three team silvers are shared results and must not be credited to this player alone; only AI Mathematical Olympiad - Progress Prize 3 shows the account alone.",
+  "unverified": [
+    "Team names for the three past team entries: Kaggle's list shows account handles only.",
+    "Whether pompom555 and konbu17 are current ARC teammates: the existing people record says so, but the roster feed was not re-read here.",
+    "The public X reply in which @cunkpyber names 復活の混テキスト as their team (recorded 2026-10-12); the X page was not re-read in this pass.",
+    "Exact completion dates of each competition: Kaggle shows only relative labels.",
+    "Any prize money, write-ups or hosted competitions beyond what the profile shows (the profile shows no hosted competitions)."
+  ],
+  "verified": true
+}

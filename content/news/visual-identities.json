@@ -127,6 +127,7 @@
       "description": "Jean-François Puget (CPMP) — reusable individual character/portrait",
       "id": "jean-francois-puget",
       "identityNotes": [
+        "Mature fuller-faced/stockier CPMP with long swept-back ponytail, gray beard, wire spectacles and open cyber helmet engraved CPMP. Preserve NVIDIA emerald GPU Citadel, restrained crimson and calculating mentor role. Glamour must not de-age him.",
         "Puget: preserve the bearded cyber-engineer character, brown hair, cyan helmet lights and shoulder-mounted GPU costume from his individual card."
       ],
       "names": [
@@ -139,6 +140,14 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Established Hall of Fame character",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp",
+          "sha256": "1ee58454399676dabbaae4ca43c13205830045c5cfda7cde1af9091e52845737",
+          "generationRecord": "2026-10-30-jean-francois-puget-cpmp-ponytail-v3",
+          "kind": "native-character",
+          "label": "CPMP — senior NVIDIA mastermind",
+          "role": "Mature fuller-faced/stockier CPMP with long swept-back ponytail, gray beard, wire spectacles and open cyber helmet engraved CPMP. Preserve NVIDIA emerald GPU Citadel, restrained crimson and calculating mentor role. Glamour must not de-age him."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "kind": "hall-of-fame-character",
@@ -165,6 +174,14 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Established Hall of Fame character",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp",
+          "sha256": "13d7715e411beba175c9d68dc978a321c9c08514e39d639346d904db6dadfeb5",
+          "generationRecord": "2026-10-30-ivan-sorokin-nvidia-prism-architect-v1",
+          "kind": "native-character",
+          "label": "Ivan — NVIDIA prism architect",
+          "role": "Preserves Ivan's established clean-shaven adult character and signature cyan crystal. Distinct open optical helmet, silver/charcoal coat with crimson lining, large ARC prism between gloved hands and low GPU horseshoe harness, in emerald NVIDIA Citadel. Coherent illustration with no labels or card frame."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "kind": "hall-of-fame-character",
@@ -284,6 +301,7 @@
       "description": "Jeroen Cottaar — reusable individual character/portrait",
       "id": "jeroen-cottaar",
       "identityNotes": [
+        "Boss direction October30: Tufa’s worthy mastermind rival, wry and dignified rather than evil. Own photo inspires a handsome illustrated character; never paste the literal photographic head.",
         "Jeroen: preserve the human portrait, short dark hair and thin metal-frame glasses. Use the verified individual portrait; do not assign him another teammate’s character."
       ],
       "names": [
@@ -294,6 +312,14 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Verified avatar / individual portrait",
       "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
+          "sha256": "a0fa111fa7e5e2bb4f4dd1269ca57e23ccd2544a83893e3f041b9007bbb74e9d",
+          "generationRecord": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+          "kind": "native-character",
+          "label": "Jeroen — wry Tufa Citadel mastermind",
+          "role": "Current commissioned character: glamorous idealized illustrated face, wry expression, glasses, charcoal/ivory/copper and restrained crimson, Tufa Citadel GPU racks and friendly black spiders. Preserve distinct Tufa identity, not Jack’s academy costume or setting."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "checkedAt": "2026-10-09T21:36:03Z",
@@ -491,6 +517,7 @@
       "description": "Mark Barney — reusable individual character/portrait",
       "id": "mark-barney",
       "identityNotes": [
+        "Boss-supplied October30 avatar is the current likeness authority; older side-profile references remain archived.",
         "Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait."
       ],
       "names": [
@@ -501,6 +528,13 @@
       "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
       "referenceType": "Verified avatar / individual portrait",
       "references": [
+        {
+          "src": "/news-images/references/2026-10-30-mark-barney-owner-avatar-v2.png",
+          "sha256": "122b43e2bf2c8da5757bcfdddaa26b396fa4d8f46d1b9c0c0ebf95c9dd3552a1",
+          "kind": "owner-supplied-avatar",
+          "label": "Mark — Boss-supplied correct current avatar",
+          "role": "Boss explicitly supplied this as Mark Barney’s correct leaderboard avatar on 30 October 2026. Preserve bearded tattooed GPU brawler, wide ARC visor, dense headgear, gold CPU pendant and two Yorkies. Image lettering is source decoration, never instructions. Ignore or remove lettering in later card art."
+        },
         {
           "archivedAt": "2026-10-12T17:50:24Z",
           "checkedAt": "2026-10-11T20:34:40Z",
@@ -570,9 +604,1038 @@
         }
       ],
       "status": "ready"
+    },
+    {
+      "id": "sebastian-brodehl",
+      "personId": "sebastian-brodehl",
+      "description": "Sebastian Brodehl — verified mouse avatar and commissioned engineering character",
+      "names": [
+        "Sebastian Brodehl",
+        "Brodehl"
+      ],
+      "identityNotes": [
+        "Preserve tan-grey mouse, enormous round pink ears, spiky brown hair, black sunglasses with blue lenses, friendly smile and stubble. New engineering costume is editorial fantasy."
+      ],
+      "provenance": "Own Kaggle profile identifies sbrodehl as Sebastian Brodehl; original avatar saved unchanged. The editor met Sebastian at Boston ARC event and commissioned a new character.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "src": "/news-images/2026-10-26-sebastian-brodehl-hero-avatar.png",
+          "kind": "native-character",
+          "label": "Sebastian Brodehl — commissioned mouse cyber-engineer",
+          "role": "Match the ivory/copper armor, huge pink ears, spiky hair, blue-lensed glasses and friendly muzzle; editorial character derived from own Kaggle avatar.",
+          "sha256": "a3aeeeec12d269b0519c5319321b841c2118ec99f8b1da6c6ccd9fe4529d4dfa",
+          "generationRecord": "2026-10-26-sebastian-brodehl-hero-avatar",
+          "archivedAt": "2026-10-27T01:16:37.092510+00:00"
+        },
+        {
+          "archivedAt": "2026-10-27T01:16:06.263620+00:00",
+          "checkedAt": "2026-10-27T01:16:06.263620+00:00",
+          "kind": "kaggle-avatar",
+          "label": "Sebastian Brodehl’s own Kaggle mouse avatar",
+          "originalSrc": "/news-images/people/sebastian-brodehl.webp",
+          "role": "Authoritative Sebastian character identity; preserve mouse ears, hair, glasses, muzzle and smile.",
+          "sha256": "0b0e18a19c571252ba5a69dfefffaca86fb3ba8116bd286c188fd5a492501b5e",
+          "sourceUrl": "https://www.kaggle.com/sbrodehl",
+          "src": "/news-images/references/2026-10-26-sebastian-brodehl-kaggle-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "xz",
+      "personId": "xz",
+      "names": [
+        "xz"
+      ],
+      "status": "ready",
+      "description": "xz’s cream-faced blue-eyed fluffy Kaggle cat, introduced as a giant cyber-vest newcomer.",
+      "referenceType": "Verified Kaggle avatar; head-editor commissioned cyber character",
+      "identityNotes": [
+        "Preserve round flat cream/apricot face, blue eyes, pink nose, white ruff and solemn expression from exact avatar.",
+        "Face remains completely exposed. Modest dark GPU vest, natural fur, enormous fluffy tail. Giant scale is an editorial choice.",
+        "Himalayan-like appearance is an uncertain visual description, not a verified pedigree or owner fact."
+      ],
+      "provenance": "Public Kaggle profile xiaoz259 directly matches ARC3 roster. Mark supplied the same avatar and specified giant scale, GPU vest and recognisable face on October 29.",
+      "references": [
+        {
+          "kind": "kaggle-avatar",
+          "label": "Frozen xz Kaggle avatar",
+          "originalSrc": "/news-images/people/xz.webp",
+          "src": "/news-images/references/2026-10-29-xz-kaggle-cat-v1.webp",
+          "sourceUrl": "https://www.kaggle.com/xiaoz259",
+          "sha256": "75f131d82d2d3f21b54c0d22550c797974eb9cdbd08b29282299b2bac8321d68",
+          "archivedAt": "2026-10-29T18:31:05.562338+00:00",
+          "role": "Authoritative cat face and fur; no inferred real name or gender."
+        }
+      ],
+      "teamIds": {
+        "arc-3": [
+          "15487093"
+        ]
+      }
+    },
+    {
+      "description": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+      "id": "last-dance",
+      "identityNotes": [
+        "Reference-sheet order: Lukas (blue/navy), Florian (orange/red, black cap and sunglasses), Mykyta (cyan/green, reddish beard), fictional opaque helmet (purple/yellow).",
+        "The fourth figure is an anonymous fictional stand-in for the roster handle, NOT a verified likeness of Günter Klambauer.",
+        "Retain colorful square ARC-grid streetwear and compact adult scale; no claim about actual height or dance ability.",
+        "Recheck all four exact roster handles before using the complete team."
+      ],
+      "includePeople": [
+        "fses91",
+        "lukas-aichberger",
+        "mykyta-ielanskyi"
+      ],
+      "names": [
+        "the last dance 🕺",
+        "The Last Dance"
+      ],
+      "provenance": "Commissioned by Mark Barney October 29. Own Kaggle portraits read in Chrome and frozen individually. gklambauer has no verified real name or likeness; never use the default Kaggle goose as a character identity.",
+      "referenceType": "Native editorial team character sheet with verified individual inputs",
+      "references": [
+        {
+          "generationRecord": "2026-10-29-last-dance-character-sheet-v1-base",
+          "kind": "native-character",
+          "label": "The Last Dance — four-dancer character sheet",
+          "role": "Use all four distinct editorial figures. Preserve Lukas, Florian and Mykyta from their individual sources; fourth helmet is entirely fictional. Do not assign it a human name.",
+          "sha256": "17dd264bfd3d616070f50c00c81a9c69fbfca73150670cedcd4b535778cde254",
+          "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp"
+        }
+      ],
+      "status": "ready",
+      "teamIds": {
+        "arc-3": [
+          "16021367"
+        ]
+      }
+    },
+    {
+      "description": "Lukas Aichberger — own verified Kaggle reference for The Last Dance.",
+      "id": "lukas-aichberger",
+      "identityNotes": [
+        "Swept brown hair, clean-shaven youthful face, blue-gray eyes; navy hoodie and blue-dominant ARC-grid costume.",
+        "Preserve chestnut quiff, navy ARC-grid clothing, amber hinged optic and horizontal wearable GPU instrument. Hand-inked retro pulp avatar adaptation, not a claimed human photo."
+      ],
+      "names": [
+        "Lukas Aichberger"
+      ],
+      "personId": "lukas-aichberger",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp",
+          "sha256": "5a55166c0e3de4d5a873a2cc08d7d8e9640911074d653a081f93a8729d986005",
+          "generationRecord": "2026-10-30-lukas-aichberger-retro-space-v1",
+          "kind": "native-character",
+          "label": "Lukas — retro rocket courier / GPU jukebox",
+          "role": "Preserve chestnut quiff, navy ARC-grid clothing, amber hinged optic and horizontal wearable GPU instrument. Hand-inked retro pulp avatar adaptation, not a claimed human photo."
+        },
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Lukas Aichberger — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "d19b4a538177a431bd8d57205a51013f7ec66343a1568cb2d79ec62df517eeca",
+          "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+          "src": "/news-images/references/2026-10-29-lukas-aichberger-kaggle-v1.jpg"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Florian Sestak — own verified Kaggle reference for The Last Dance.",
+      "id": "fses91",
+      "identityNotes": [
+        "Black baseball cap, dark sunglasses, short dark facial stubble; orange/red ARC-grid costume. Ignore the novelty shark and mountain background."
+      ],
+      "names": [
+        "Florian Sestak"
+      ],
+      "personId": "fses91",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Florian Sestak — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "3e511e00cb067dc6840bfc236d1d3d98eb648fd8c6c05a2ea963c3fa54cf5c60",
+          "sourceUrl": "https://www.kaggle.com/fses91",
+          "src": "/news-images/references/2026-10-29-florian-sestak-kaggle-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Mykyta Ielanskyi — own verified Kaggle reference for The Last Dance.",
+      "id": "mykyta-ielanskyi",
+      "identityNotes": [
+        "Tousled light-brown hair and full reddish-brown beard; cyan/green ARC-grid costume."
+      ],
+      "names": [
+        "Mykyta Ielanskyi"
+      ],
+      "personId": "mykyta-ielanskyi",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Mykyta Ielanskyi — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "682588e5ee017bcea1dfcd0b4c28ecf0af2bf6c4982136497537cbc873a3ec6a",
+          "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+          "src": "/news-images/references/2026-10-29-mykyta-ielanskyi-kaggle-v1.jpg"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "A real name and individual likeness for the fourth Last Dance account remain unverified.",
+      "id": "last-dance-gklambauer-likeness",
+      "names": [
+        "gklambauer"
+      ],
+      "reason": "Default Kaggle goose is generic. Team scene uses an explicitly fictional masked stand-in; no verified real-person portrait.",
+      "status": "pending"
+    },
+    {
+      "id": "yktori-team",
+      "names": [
+        "yktori — Silver Comet"
+      ],
+      "description": "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16760837"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-yktori-avatar-v1-base",
+          "kind": "native-character",
+          "label": "yktori — Silver Comet — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "be0ffb53d096b9bbaf92bd769eff0ba238356cc1fd29a1aca9ac11b820eec17f",
+          "src": "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "28a4cb017947242340e78b228aa19714a3fddb8ae8d8d039e04585200ed18534",
+          "src": "/news-images/references/2026-10-29-yktori-avatar-v1-native.png"
+        }
+      ],
+      "identityNotes": [
+        "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
+        "The generic Kaggle goose is not a personal identity. Preserve this as the newspaper’s fictional Silver Comet, not an owner-selected avatar."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-yktori-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "mtg-team",
+      "names": [
+        "mtg / Michael — Two-board Rook"
+      ],
+      "description": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16153655"
+        ],
+        "arc-2": [
+          "16153654"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-mtg-avatar-v1-base",
+          "kind": "native-character",
+          "label": "mtg / Michael — Two-board Rook — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "613f9a14934faa1eabfaf6e7f8b6bb01e207ff13f2bd22e0888010f5d923f8e6",
+          "src": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "a1acb864dc714f0055f39d3a35da623b45ce293adca984d4e11b6850d3c2c327",
+          "src": "/news-images/references/2026-10-29-mtg-avatar-v1-native.png"
+        }
+      ],
+      "identityNotes": [
+        "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-mtg-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "grigoriy-team",
+      "names": [
+        "Grigoriy Zatravkin & co — quartet"
+      ],
+      "description": "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16490178"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-grigoriy-avatar-v1-base",
+          "kind": "native-character",
+          "label": "Grigoriy Zatravkin & co — quartet — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "c597caa2e1fed49e7dad0e880e3ee59d111c71f6190feabe9adf27810a960fa8",
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "1b97b0c45689a29dabeb88b27a452285787022c4f4de106e714a989cc8f0e242",
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+          "kind": "generation-input",
+          "label": "Grigoriy Zatravkin & co — quartet — exact input 1",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "9c3acfa030c87548ea65324f814c0df1e75b57cbe2e8a79b5bd6f778108f48f6"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-aizealotwu-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "aizealotwu — unchanged individual source",
+          "role": "Frozen individually owned source for aizealotwu. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "bed39e008a91548dd43a213f02dab914c7221a52be04e786cdde862eb8a2b368",
+          "sourceUrl": "https://www.kaggle.com/aizealotwu",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/21593429-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-grigoriy-avatar-v1-owner-deepdreamer-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "deepdreamer — unchanged individual source",
+          "role": "Frozen individually owned source for deepdreamer. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "9369be1edbcd7e1a3704f99f7d158b2af8b3d4ca14d6d8c01f3e6564d79e26f6",
+          "sourceUrl": "https://www.kaggle.com/deepdreamer",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/856891-kg.jpg"
+        }
+      ],
+      "identityNotes": [
+        "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
+        "The two helmets are fictional account stand-ins, and the scholarly mascot is an original adaptation of the owner graphic. The anime face is an avatar, not a claimed human likeness.",
+        "Dated four-account roster: grigoriyzatravkin, aizealotwu, deepdreamer, florenciasolange. Refresh exact current roster before a new team scene."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-grigoriy-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "kontext-team",
+      "names": [
+        "復活の混テキスト — eight-avatar ensemble"
+      ],
+      "description": "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16569113"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-japanese-ensemble-avatar-v1-base",
+          "kind": "native-character",
+          "label": "復活の混テキスト — eight-avatar ensemble — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "44c5ca58d0e05764e8377d1736acb94dfd9960367433f962a0a7588787ba2037",
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "4d530ec92dcb3450fd4e6f07da793e1f259459c9b65e3a744975c6f5eac8298b",
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-input-1-own-avatar-contact-sheet.jpg",
+          "kind": "generation-input",
+          "label": "復活の混テキスト — eight-avatar ensemble — exact input 1",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "c68e1d65d8a288c40c4b6033dc30f8d83485bd18ae5a194f291da95facdc9e27"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-isakatsuyoshi-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "isakatsuyoshi — unchanged individual source",
+          "role": "Frozen individually owned source for isakatsuyoshi. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "e3c0b1965f28d49de01df60dd3499a5e7f7c247617ba1fe0c05db6f21c57c8a6",
+          "sourceUrl": "https://www.kaggle.com/isakatsuyoshi",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/5927283-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-konbu17-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "konbu17 — unchanged individual source",
+          "role": "Frozen individually owned source for konbu17. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "565a1b846474fe1b6413d12dd62c6c537fe8663f569b427ca23d5f4eeae76b73",
+          "sourceUrl": "https://www.kaggle.com/konbu17",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/31990162-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-pompom555-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "pompom555 — unchanged individual source",
+          "role": "Frozen individually owned source for pompom555. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "500e877f040148648187cbafd4dc30dcd81b73b6da286c3551ca8d6d170007d9",
+          "sourceUrl": "https://www.kaggle.com/pompom555",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/4855941-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-refv00-own-avatar.jpeg",
+          "kind": "owner-reference",
+          "label": "refv00 — unchanged individual source",
+          "role": "Frozen individually owned source for refv00. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "8becb1bc782bcd1988329a1e2115f0b31317c72dcba2482ecb7b4b31b28d0952",
+          "sourceUrl": "https://www.kaggle.com/refv00",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/11115645-kg.jpeg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tanakaai24-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "tanakaai24 — unchanged individual source",
+          "role": "Frozen individually owned source for tanakaai24. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "9e534e60644532893857cc9a1f493a8e50cb913c53cc7489cddfea5860325828",
+          "sourceUrl": "https://www.kaggle.com/tanakaai24",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/7381676-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-tk256ailab-own-avatar.jpg",
+          "kind": "owner-reference",
+          "label": "tk256ailab — unchanged individual source",
+          "role": "Frozen individually owned source for tk256ailab. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "3c3e504866b1bb45316c85b3e7b9b051c330148c9f2d0bd1ece519c1b99c359b",
+          "sourceUrl": "https://www.kaggle.com/tk256ailab",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/27356663-kg.jpg"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-ttyn4519-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "ttyn4519 — unchanged individual source",
+          "role": "Frozen individually owned source for ttyn4519. Use only the corresponding motif or individually labelled portrait; never infer a human face from a cartoon or rear view.",
+          "sha256": "3e0f4edb52c815eb6dacc5ef9e82216a4623c977c2e54e48c36af914d1b66017",
+          "sourceUrl": "https://www.kaggle.com/ttyn4519",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/images/3790528-kg.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-japanese-ensemble-avatar-v1-owner-yuto0712-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "yuto0712 — unchanged individual source",
+          "role": "Frozen individually owned source for yuto0712. Owner meta verified. Uppercase PNG suffix is rejected by current shared helper; downloaded exact observed twitter:image URL.",
+          "sha256": "e710d1850bc001c19a628642e7f8e56f098331b4c891aafd08a02c3062eaa1c6",
+          "sourceUrl": "https://www.kaggle.com/yuto0712",
+          "originalImageUrl": "https://storage.googleapis.com/kaggle-avatars/thumbnails/3602324-kg.PNG?t=2026-05-26-00-06-29"
+        }
+      ],
+      "identityNotes": [
+        "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
+        "Preserve all eight separate motifs. The orca and whale are different characters. TK256’s masked explorer is fictional and respects a rear-view source without inventing a human face.",
+        "Owner-selected cartoons and mascot graphics are account avatars, not verified human appearances. Refresh all eight exact roster handles before later team scenes."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-japanese-ensemble-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "artificial-agency-team",
+      "names": [
+        "Artificial Agency Lab — Richard and Côme"
+      ],
+      "description": "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16132261"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-artificial-agency-avatar-v1-base",
+          "kind": "native-character",
+          "label": "Artificial Agency Lab — Richard and Côme — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "cbdd1a4b4c219fe1a5d9a1e987c1a2a9ac2466a5333e427ec997653526cde44c",
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "731711ac5ea9622ea829430efa7dc1ecfb7cbda448480b7aa3a34d99202bd2c1",
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-1-richard-csaky-own-site.webp",
+          "kind": "generation-input",
+          "label": "Artificial Agency Lab — Richard and Côme — exact input 1",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-2-come-chevalier-own-site.webp",
+          "kind": "generation-input",
+          "label": "Artificial Agency Lab — Richard and Côme — exact input 2",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6"
+        }
+      ],
+      "identityNotes": [
+        "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+        "Their separately labelled own-lab portraits establish the two faces and documented lab roles. Costumes and grid staging are editorial fiction.",
+        "The exact cmechevalier-to-Côme account mapping remains unresolved. This team illustration credits the independently documented lab members, not an inferred account mapping."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-artificial-agency-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "majkel1337-team",
+      "names": [
+        "Majkel1337 — copper fox"
+      ],
+      "description": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "16958599"
+        ],
+        "arc-2": [
+          "16373916"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-majkel1337-avatar-v1-base",
+          "kind": "native-character",
+          "label": "Majkel1337 — copper fox — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "5074c6a917931490eccd5541b6492bf38c053d5eabf8c8666c346ea7283bd1b0",
+          "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "59a828c0e3d1d840698680779dc4e07ba9e7a874f7dd8325b806ce70fca1ac6d",
+          "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-input-1-github-avatar-original.png",
+          "kind": "generation-input",
+          "label": "Majkel1337 — copper fox — exact input 1",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc"
+        }
+      ],
+      "identityNotes": [
+        "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-majkel1337-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "aquaursa-team",
+      "names": [
+        "AquaUrsa Research — aqua polar bear"
+      ],
+      "description": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-3": [
+          "15488763"
+        ],
+        "arc-2": [
+          "15488773"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-aquaursa-avatar-v1-base",
+          "kind": "native-character",
+          "label": "AquaUrsa Research — aqua polar bear — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "d96682c0423db96e8067b3fec8e839eb886e7ae27a914eba00f251e9a08a1f45",
+          "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "056bef0962c5bc0d39f3a73590b0214cc9a32fbb807eed40043c7ffb167ba57f",
+          "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-native.png"
+        }
+      ],
+      "identityNotes": [
+        "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-aquaursa-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "nvbanana-arc2-team",
+      "names": [
+        "nvbanana — ARC2 duo artwork"
+      ],
+      "description": "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; account motifs and explicit fiction",
+      "teamIds": {
+        "arc-2": [
+          "15486939"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-nvbanana-avatar-v1-base",
+          "kind": "native-character",
+          "label": "nvbanana — ARC2 duo artwork — reusable team character reference",
+          "role": "Preserve the exact curated team cast and every fiction/likeness distinction in the mapping notes. Recheck roster before a later scene.",
+          "sha256": "d59122a80960c65907dcb60cf0ffcc4c451048652bdaa05170fc8f9af51e52bf",
+          "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless selected native output preserved for editing and future reference; same cast and identity caveats as the gallery version.",
+          "sha256": "ce58000172179eb30c312393d51120700dc27cb16fc6859571fa054d815187ad",
+          "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+          "kind": "generation-input",
+          "label": "nvbanana — ARC2 duo artwork — exact input 1",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+          "kind": "generation-input",
+          "label": "nvbanana — ARC2 duo artwork — exact input 2",
+          "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+          "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+        }
+      ],
+      "identityNotes": [
+        "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+        "Hanley’s painting is not his human face. Keep the celestial figure completely opaque, with no invented facial features; preserve Puget’s established individual character.",
+        "Exactly two characters and a tiny banana ornament. This is ARC2 team 15486939, not NVARC3 or the full NVIDIA staff. No NVIDIA article has been commissioned; preserve artwork only."
+      ],
+      "provenance": "Boss-commissioned native ImageGen artwork, selected and visually reviewed October29. Exact arguments, unchanged input copies, lossless selected PNG and mapping notes are archived with 2026-10-29-nvbanana-avatar-v1-base. This is a team/account reference, not a new personal portrait entry."
+    },
+    {
+      "id": "domdolus-tolus",
+      "names": [
+        "DomdolusTolus",
+        "Domdolus Tolus"
+      ],
+      "description": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+      "status": "ready",
+      "referenceType": "Curated editorial TEAM reference; own dogs, two own faces and two fictional helmets",
+      "teamIds": {
+        "arc-2": [
+          "16559402"
+        ],
+        "arc-3": [
+          "16534961"
+        ]
+      },
+      "references": [
+        {
+          "generationRecord": "2026-10-29-domdolus-tolus-avatar-v1-base",
+          "kind": "native-character",
+          "label": "DomdolusTolus — five-account/six-figure team reference",
+          "role": "Keep exact dog, human and fictional-helmet mapping. Darren’s two dogs together are one account. Preserve all six figures.",
+          "sha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp"
+        },
+        {
+          "kind": "native-original",
+          "label": "Exact selected native PNG",
+          "role": "Lossless team illustration; same five-account/six-figure cast and fiction distinctions.",
+          "sha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-native.png"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+          "kind": "owner-reference",
+          "label": "Darren Amadeus Martin — unchanged own-avatar input",
+          "role": "Exact own-avatar photo of TWO dogs. The cream floppy-eared dog and dark/white husky together represent Darren’s ONE account. No human Darren face.",
+          "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49",
+          "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-2-alwintheodoric-own-avatar.png",
+          "kind": "owner-reference",
+          "label": "Alwin Theodoric — unchanged own-avatar input",
+          "role": "Own individual portrait: preserve round glasses, side-parted dark hair and face. Alwin is the beige/green figure left-center.",
+          "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a",
+          "sourceUrl": "https://www.kaggle.com/alwintheodoric"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-3-yassirramadhan-own-avatar.jpeg",
+          "kind": "owner-reference",
+          "label": "Muhammad Yassir Ramadhan — unchanged own-avatar input",
+          "role": "Own individual portrait: preserve clean-shaven face and parted dark hair. Yassir is the navy/copper figure right-center.",
+          "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa",
+          "sourceUrl": "https://www.kaggle.com/yassirramadhan"
+        }
+      ],
+      "identityNotes": [
+        "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+        "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+        "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+        "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+      ],
+      "provenance": "Boss commissioned Darren Amadeus Martin and DomdolusTolus, with all finished artwork saved. Two individually sourced human photos and Darren’s own two-dog avatar were inspected before native generation; Billy/Tri have no personal likeness. Exact native prompt, inputs, hashes and visual review are archived with 2026-10-29-domdolus-tolus-avatar-v1-base."
+    },
+    {
+      "id": "darren-amadeus-martin-avatar",
+      "personId": "darren-amadeus-martin",
+      "status": "ready",
+      "names": [
+        "Darren Amadeus Martin — two-dog avatar"
+      ],
+      "description": "Darren’s two own-avatar dogs together, illustrated separately as his one competitor character.",
+      "referenceType": "Dedicated native individual illustration from his own avatar and approved team character designs",
+      "references": [
+        {
+          "src": "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png",
+          "sha256": "5885a483826cd18337f05d9c03f3560ca4afd7113e67c102a83b6657f7bb4746",
+          "generationRecord": "2026-10-29-darren-individual-avatar-v1-base",
+          "kind": "native-character",
+          "label": "Darren — cream retriever and dark/white husky together",
+          "role": "Exactly two dogs together represent Darren’s one account. Keep cream floppy ears, husky markings, amber/cyan harness details and ARC-grid panels. Never add a human Darren face or count the dogs as two competitors."
+        }
+      ],
+      "identityNotes": [
+        "Both dogs together represent Darren Amadeus Martin. New individual composition, not a crop from the team scene.",
+        "Preserve the own-avatar source photograph and the original full team scene."
+      ],
+      "provenance": "Boss requested the individual collectible beside the team card. Native imagegen illustration preserves the existing two-dog identity; exact arguments, source references and original native bytes are archived."
+    },
+    {
+      "id": "arc-mutants",
+      "status": "ready",
+      "names": [
+        "ARC Mutants — ARC2 academy quartet"
+      ],
+      "description": "Jack Cole, Mark Barney, Son Pham and Ronen’s opaque-helmet grid-shield character: the four-person ARC2 academy team.",
+      "referenceType": "Curated team reference and additional academy episodes",
+      "teamIds": {
+        "arc-2": [
+          "17023174"
+        ]
+      },
+      "includePeople": [
+        "jack-cole",
+        "mark-barney",
+        "son-pham"
+      ],
+      "references": [
+        {
+          "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+          "sha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3",
+          "kind": "native-character",
+          "label": "Approved October19 academy original",
+          "role": "Original four-person ARC2 academy cast; preserve all established identities. Provenance: 2026-10-19-arc-mutants-academy-v1."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-danger-room-v1.png",
+          "sha256": "70c30337584eb70d0a0ed7dc1c3e13dc845883a4d7cd3d01cd57136ddac95a71",
+          "generationRecord": "2026-10-29-arc-mutants-danger-room-v1",
+          "kind": "native-character",
+          "label": "The Danger Grid",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-observatory-v1.png",
+          "sha256": "4f8448dd05a90cdc45060cf83ce3dbb0a74831dd6e9b1d1e850286beb6c9a9e4",
+          "generationRecord": "2026-10-29-arc-mutants-observatory-v1",
+          "kind": "native-character",
+          "label": "The Pattern Observatory",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-arc-mutants-rooftop-v1.png",
+          "sha256": "e3882a8c5a8dd923370a76dae262b0bf807589c5d45b5c9f5261a520b961a545",
+          "generationRecord": "2026-10-29-arc-mutants-rooftop-v1",
+          "kind": "native-character",
+          "label": "Above the Academy",
+          "role": "Additional four-person ARC2 episode. Preserve Jack mentor, Mark GPU brawler, Son visor specialist and Ronen opaque helmet/shield. No ARC3 cast or membership implied."
+        }
+      ],
+      "identityNotes": [
+        "ARC2 team17023174 only: jcole75, markbarney, sonphamorg and scizical. ARC3 Turducken is a separate seven-account entry.",
+        "Jack occupies the Professor Xavier mentor role with his own established face/headset. Mark is the bearded GPU brawler; Son the visor energy specialist; Ronen the opaque violet grid-shield architect.",
+        "Preserve the October19 original and all new native episodes. These images have no mutable statistics and no automatic article/social reuse approval."
+      ],
+      "provenance": "Boss explicitly commissioned additional X-Men-inspired ARC Mutants team scenes on October29. Native arguments, exact source references, original PNGs and visual reviews are saved per episode."
+    },
+    {
+      "id": "mitubant",
+      "personId": "mitubant",
+      "status": "ready",
+      "names": [
+        "NT",
+        "mitubant"
+      ],
+      "description": "NT · mitubant · Team Turducken, ARC-AGI-3. His own yellow-bird avatar in Turducken engineering gear.",
+      "referenceType": "Corrected own-avatar reference: NT’s yellow bird",
+      "references": [
+        {
+          "src": "/news-images/people/nt-mitubant-avatar-v2.webp",
+          "sha256": "216ff895f8d6c5fa5ab99edec192da4f0558524408ad61a3910df6d9339fb2a7",
+          "generationRecord": "2026-10-29-nt-mitubant-avatar-v2",
+          "kind": "native-character",
+          "label": "NT — corrected yellow-bird character",
+          "role": "Authoritative current NT identity. Preserve yellow bird, black eyebrows, half-lidded eyes, ochre beak and feather marks."
+        },
+        {
+          "src": "/news-images/references/2026-10-29-nt-mitubant-own-profile-screenshot.png",
+          "role": "Authoritative user-supplied own Kaggle profile screenshot showing NT's yellow bird. Supersedes the incorrectly assigned banana kitten.",
+          "sourceUrl": "https://www.kaggle.com/mitubant",
+          "sha256": "28ae6393d94cd77df8aaf618af71a1bda5508ab97a50cde58c40bbbc044db055",
+          "label": "Authoritative user-supplied own Kaggle profile screenshot showing NT's yellow bird. Supersedes the incorrectly assigned banana kitten.",
+          "kind": "source-reference"
+        },
+        {
+          "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+          "role": "Turducken engineering/world style only. The old banana kitten is not NT and is excluded from this identity reference.",
+          "sha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
+          "label": "Turducken engineering/world style only. The old banana kitten is not NT and is excluded from this identity reference.",
+          "kind": "source-reference"
+        },
+        {
+          "src": "/news-images/references/2026-10-29-nt-mitubant-avatar-v2-native.png",
+          "sha256": "983cef6526ddfc8603dc66a5778f7d844888a5cd3e3546a041438ccac1da617d",
+          "kind": "native-original",
+          "label": "Exact corrected native PNG",
+          "role": "Preserve unchanged."
+        }
+      ],
+      "identityNotes": [
+        "Boss supplied NT’s own Kaggle profile screenshot: a yellow bird with black eyebrows, half-lidded eyes, broad ochre beak and black feather marks.",
+        "The earlier banana-suit kitten was a mistaken identity assignment and is retired as an NT reference. Preserve it only as a superseded archive.",
+        "P066 remains NT / mitubant; the character and lead statistics belong to ARC3 Turducken."
+      ],
+      "provenance": "Boss corrected the earlier misassignment using NT’s own Kaggle profile screenshot. This yellow bird supersedes the banana kitten for all future NT appearances."
+    },
+    {
+      "id": "turducken",
+      "status": "ready",
+      "names": [
+        "Team Turducken — corrected ARC3 crew"
+      ],
+      "description": "The complete Turducken crew aboard the mechanical airship, with NT’s corrected yellow-bird character and exactly two Yorkies.",
+      "referenceType": "Corrected seven-account team character reference",
+      "teamIds": {
+        "arc-3": [
+          "15605182"
+        ]
+      },
+      "includePeople": [
+        "mark-barney",
+        "son-pham",
+        "keith-tyser",
+        "mitubant"
+      ],
+      "references": [
+        {
+          "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+          "sha256": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
+          "generationRecord": "2026-10-29-turducken-nt-corrected-v2",
+          "kind": "native-character",
+          "label": "Corrected Turducken crew — NT yellow bird",
+          "role": "Current crew reference. Exactly seven main characters and two Yorkies. NT is the uncapped yellow bird upper right; Keith is the separate black-capped mascot."
+        },
+        {
+          "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+          "sha256": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
+          "kind": "native-character",
+          "label": "DZ — adult retro space heroine",
+          "role": "DZ ONLY, replacing the chibi rendering in future ARC3 Turducken art. Keep other six characters, NT yellow bird and exactly two Yorkies unchanged.",
+          "characterGenerationRecord": "2026-10-30-dz-retro-space-v1"
+        }
+      ],
+      "identityNotes": [
+        "Seven ARC3 competitor characters and exactly two Yorkies. NT / mitubant is the yellow bird at upper right; Keith is the separate black-capped yellow mascot.",
+        "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
+      ],
+      "provenance": "Native edit preserves the old crew and corrects NT using the own-profile screenshot supplied by Boss. Original image and all inputs retained."
+    },
+    {
+      "id": "mistyotter-ai",
+      "personId": "mistyotter-ai",
+      "status": "ready",
+      "names": [
+        "Yegor",
+        "mistyotter_ai"
+      ],
+      "description": "Anonymous dark-haired cyber engineer based on Yegor’s own posted styling, with face concealed.",
+      "referenceType": "Own-post styling and explicitly anonymous editorial character",
+      "references": [
+        {
+          "src": "/news-images/people/mistyotter-avatar-v1.webp",
+          "sha256": "f86496130227dd7918a44ffd3e06c924cdd79120ccd2f867baa0f42888ede14f",
+          "generationRecord": "2026-10-30-mistyotter-avatar-v1",
+          "kind": "native-character",
+          "label": "Yegor — anonymous cyber avatar",
+          "role": "Preserve black hoodie, tousled dark hair, cyan visor and concealed face. Do not assign a team, surname or adult facial likeness."
+        },
+        {
+          "src": "/news-images/references/2026-10-30-mistyotter-own-header.jpg",
+          "sourceUrl": "https://x.com/mistyotter_ai",
+          "role": "Own public header: dark adult hair, rear view and snowy setting. Not a verified front-facing likeness.",
+          "sha256": "1eb68edbb01ef39b3db522bbcf5f6cd895320967b0db307378a3ab3f3dc316a9",
+          "kind": "source-reference",
+          "label": "Own public header: dark adult hair, rear view and snowy setting. Not a verified front-facing likeness."
+        },
+        {
+          "src": "/news-images/references/2026-10-30-mistyotter-own-hoodie.jpg",
+          "sourceUrl": "https://x.com/mistyotter_ai/status/2101658849073606697",
+          "role": "Own pinned Drip check clothing post, black zip hoodie. Styling only; remove all logos.",
+          "sha256": "9940d7ac131e32542c0c3c475ed348d0eac1fb8d3fd357101c58c4ec2d8fc14f",
+          "kind": "source-reference",
+          "label": "Own pinned Drip check clothing post, black zip hoodie. Styling only; remove all logos."
+        }
+      ],
+      "identityNotes": [
+        "Own X profile verifies the first name Yegor. Kaggle account and team remain unverified; no roster or rank is assigned.",
+        "Adult rear-view header and pinned hoodie post supply styling. Face is concealed; no adult facial likeness is invented from his childhood profile photo."
+      ],
+      "provenance": "Boss commissioned the individual card. Own X profile, header and pinned post inspected; no childhood photo used for generation."
+    },
+    {
+      "id": "dz",
+      "status": "ready",
+      "names": [
+        "DZ"
+      ],
+      "description": "Son-approved DZ community character, converted to an adult retro space heroine.",
+      "referenceType": "Established community avatar + commissioned retro character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp",
+          "sha256": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
+          "generationRecord": "2026-10-30-dz-retro-space-v1",
+          "kind": "native-character",
+          "label": "DZ — adult retro space heroine",
+          "role": "Preserve blonde hair, russet eyes, pink plush rabbit, shell-pink/ivory flight gear, radio crown, crosswise GPU and round CRT console. No chibi or anime face. Community character only; no new Kaggle account mapping inferred."
+        },
+        {
+          "src": "/news-images/references/2026-10-18-turducken-dzj-avatar-v1.png",
+          "sha256": "5c0ffc0ab9bef250744df9dd11104c9627a26123c26413952cd77a183d3e43a4",
+          "kind": "community-avatar",
+          "label": "Original Son-approved DZ source",
+          "role": "Blonde/red-eye/pink-toy motifs only; user now requires adult pulp anatomy and no anime/chibi treatment."
+        }
+      ],
+      "identityNotes": [
+        "Preserve blonde hair, russet eyes, pink plush rabbit, shell-pink/ivory flight gear, radio crown, crosswise GPU and round CRT console. No chibi or anime face. Community character only; no new Kaggle account mapping inferred."
+      ]
+    },
+    {
+      "id": "darragh-hanley",
+      "personId": "darragh-hanley",
+      "status": "ready",
+      "names": [
+        "Darragh Hanley"
+      ],
+      "description": "Illustrated competitor character from verified own portrait",
+      "referenceType": "Verified own portrait + commissioned character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp",
+          "sha256": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
+          "generationRecord": "2026-10-30-darragh-hanley-nvidia-tactician-v3",
+          "kind": "native-character",
+          "label": "Darragh — NVIDIA citadel tactician",
+          "role": "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
+        }
+      ],
+      "identityNotes": [
+        "Mature smiling idealized cyber tactician, offset green optics, crimson harness and green GPU citadel map table. Own author portrait supplies broad human inspiration; do not borrow Puget’s beard or invent actor likeness."
+      ]
+    },
+    {
+      "id": "gal-kaplun",
+      "personId": "gal-kaplun",
+      "status": "ready",
+      "names": [
+        "Gal Kaplun"
+      ],
+      "description": "Own illustrated avatar adapted into a cyberpunk competitor character.",
+      "referenceType": "Own illustrated avatar + commissioned cyber character",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp",
+          "sha256": "8693024ddcea429c7d286884af14fd58aea0364cf923f0fd2865022f9519c405",
+          "generationRecord": "2026-10-30-gal-kaplun-nvidia-grid-pilot-v1",
+          "kind": "native-character",
+          "label": "Gal — NVIDIA grid pilot",
+          "role": "Preserves Gal's own illustrated swept hair, narrow moustache/stubble, long face and raised sunglasses motifs. Crimson flight jacket, open finned cyber headset and hands on GPU hover-skimmer controls distinguish him from other NVIDIA characters. Painted adult face, giant cooling-engine foreground, emerald citadel and no labels or card frame."
+        }
+      ],
+      "identityNotes": []
+    },
+    {
+      "id": "chan-kha-vu",
+      "personId": "chan-kha-vu",
+      "status": "ready",
+      "names": [
+        "Chan Kha Vu",
+        "chankhavu"
+      ],
+      "description": "Chan Kha Vu’s illustrated character in an embroidered, red and black cyberpunk suit and patterned protective mask with mechanical headgear, building colorful ARC tiles.",
+      "referenceType": "Own Kaggle portrait and commissioned illustration",
+      "references": [
+        {
+          "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp",
+          "sha256": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
+          "generationRecord": "2026-10-31-chan-kha-vu-arc-climb-v3",
+          "kind": "native-character",
+          "label": "Chan Kha Vu — cyber-embroidered ARC engineer",
+          "role": "Preserve the cybernetic red-black embroidery, opaque patterned mask, distinct brow/temple headgear and the subject’s visible eyes and hair."
+        },
+        {
+          "src": "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v1.webp",
+          "sha256": "c208508d1757ff7b885851301797d1590b3e556f363425576778cc120dc5cec1",
+          "generationRecord": "2026-10-31-chan-kha-vu-arc-climb-v1",
+          "kind": "native-character",
+          "label": "Chan Kha Vu — ARC climb",
+          "role": "Preserve the competitor’s embroidered face covering; never invent the covered face."
+        }
+      ],
+      "identityNotes": [
+        "His own Kaggle avatar supplies the covered face and embroidered clothing; reinterpret the shirt, mask and jacket as integrated cyberpunk gear and preserve open-face mechanical headgear.",
+        "His mask stays in place and the face underneath is not invented."
+      ]
     }
   ],
-  "updatedAt": "2026-10-18T19:17:34.889371Z",
+  "updatedAt": "2026-10-31T17:33:36Z",
   "version": 1,
   "reusableScenes": [
     {
@@ -666,13 +1729,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -703,13 +1766,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -740,13 +1803,13 @@
           "15605182"
         ],
         "requiredRosterHandles": {
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "markbarney",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
@@ -784,10 +1847,6 @@
           "15486995": [
             "driessmit1"
           ],
-          "15770880": [
-            "cpmpml",
-            "sorokin"
-          ],
           "15605182": [
             "dzjiann",
             "keithtyser",
@@ -796,6 +1855,10 @@
             "ngyzly",
             "scizical",
             "sonphamorg"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
           ]
         },
         "note": "Full background cast needs manual current-roster review. Other camps use anonymous helmeted builders, not likenesses or roster headcounts."
