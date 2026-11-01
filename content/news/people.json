@@ -956,12 +956,12 @@
     ],
     "name": "Jan Disselhoff",
     "portrait": {
-      "alt": "Jan Disselhoff’s Kaggle profile picture",
-      "checkedAt": "2026-10-09T21:36:04Z",
-      "kind": "kaggle",
-      "sourceTitle": "Jan Disselhoff — Kaggle profile picture",
-      "sourceUrl": "https://www.kaggle.com/insanitycheck",
-      "src": "/news-images/people/jan-disselhoff.webp"
+      "src": "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg",
+      "alt": "Jan Disselhoff’s own illustrated personal-site portrait",
+      "kind": "web",
+      "sourceUrl": "https://grokkingai.dev/",
+      "sourceTitle": "Jan Disselhoff — own labeled personal-site portrait",
+      "checkedAt": "2026-11-01T22:28:46.953407Z"
     }
   },
   {
@@ -1043,12 +1043,12 @@
     ],
     "name": "David Hartmann",
     "portrait": {
-      "alt": "David Hartmann’s Kaggle profile picture",
-      "checkedAt": "2026-10-09T21:36:04Z",
-      "kind": "kaggle",
-      "sourceTitle": "David Hartmann — Kaggle profile picture",
-      "sourceUrl": "https://www.kaggle.com/dvhrtm",
-      "src": "/news-images/people/david-hartmann.webp"
+      "src": "/news-images/people/2026-11-01-david-hartmann-own-portrait-v1.jpg",
+      "alt": "David Hartmann’s own illustrated LinkedIn profile portrait",
+      "kind": "web",
+      "sourceUrl": "https://www.linkedin.com/posts/david~hartmann_arcprize-activity-7295723379200839681--soS",
+      "sourceTitle": "David Hartmann — own LinkedIn ARC Prize event post and linked profile portrait",
+      "checkedAt": "2026-11-01T22:28:46.953407Z"
     }
   },
   {
@@ -1171,12 +1171,12 @@
     ],
     "name": "Daniel Franzen",
     "portrait": {
-      "alt": "Daniel Franzen’s Kaggle profile picture",
-      "checkedAt": "2026-10-09T21:36:04Z",
-      "kind": "kaggle",
-      "sourceTitle": "Daniel Franzen — Kaggle profile picture",
-      "sourceUrl": "https://www.kaggle.com/dfranzen",
-      "src": "/news-images/people/daniel-franzen.webp"
+      "src": "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg",
+      "alt": "Daniel Franzen’s own personal-site photograph",
+      "kind": "web",
+      "sourceUrl": "https://da-fr.github.io/",
+      "sourceTitle": "Daniel Franzen — own labeled personal-site photograph",
+      "checkedAt": "2026-11-01T22:28:46.953407Z"
     }
   },
   {

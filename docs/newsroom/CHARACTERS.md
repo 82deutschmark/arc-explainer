@@ -6,7 +6,7 @@ Author: GPT-6.1 Sol / Codex · 12 October 2026; team-specific casting updated 19
 
 The Boss commissioned the expanded library on October 12. The registry is `content/news/visual-identities.json`; browse `/news-images/references/index.html`. It contains established individual characters, curated team casts and the Tufa team mascot. Mithil A Vakde and gromml remain pending because the saved ledger has no individual reference for them. The gallery is generated from the registry, so the desk and the review view use the same cast.
 
-Every existing avatar/card reference is an exact, dated copy under `client/public/news-images/references/`. Its hash, original source path and source kind are recorded. The separate people-page portraits can refresh without changing the established character. Use a new versioned filename when deliberately changing a character. Individual avatars govern Franzen’s duck, Disselhoff’s orange cat, Hartmann’s fox, Findley’s detective cat, Keith’s cap-wearing yellow character, IsaiahP’s goose and the other inspected avatars. Puget, Sorokin and Cole use their own individual Hall of Fame characters. The shared ARChitects card does not identify which drawn face is whose and is excluded as an individual reference. Historical card scores and team labels are ignored during generation.
+Every existing avatar/card reference is an exact, dated copy under `client/public/news-images/references/`. Its hash, original source path and source kind are recorded. The separate people-page portraits can refresh without changing the established character. Use a new versioned filename when deliberately changing a character. Individual avatars govern Franzen’s duck, Disselhoff’s orange cat, Hartmann’s fox, Findley’s detective cat, Keith’s cap-wearing yellow character, IsaiahP’s goose and the other inspected avatars. Puget, Sorokin and Cole use their own individual Hall of Fame characters. **1 November correction from Mark:** Jan is the bald, bearded, spectacled man in the middle of the historical ARChitects card. Daniel's own labeled photograph at [his site](https://da-fr.github.io/) corroborates the short dark-haired, spectacled left figure. Jan's [own labeled portrait](https://grokkingai.dev/) and the university's Jan/Daniel photographs corroborate Jan. David's own LinkedIn portrait and event photo show brown swept hair; do not infer his real appearance from the old blond right figure. The shared card remains a style reference and historical team card, not three individual fronts. The separate approved animal avatars remain available for established narrative scenes. Historical card scores and team labels are ignored during generation.
 
 Chen’s exact full-size owner-provided photo is saved as `client/public/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png`. Mark supplied it in this chat and identified it as her reference. Her grey lop has both ears down; the other bunny has upright dark ears and a broad white face blaze. The clean native reference and the Dries reference are:
 
@@ -201,3 +201,13 @@ owner avatars used in contact sheets. A generic Kaggle goose remains absence of 
 Silver Comet, Two-board Rook, the copper fox, aqua bear and all named opaque-helmet stand-ins
 are newspaper fiction; do not turn them into owner-selected avatars or human faces.
 Current competition rosters must be checked before casting any complete team again.
+
+## Individual ARChitects card repair, 1 November 2026
+
+P009, P010 and P011 remain separate stable identities. Jan's clean human card art is
+`/news-images/cards/2026/jan-disselhoff-hero-v1.png`; his middle-figure mapping comes from Mark.
+The first Daniel candidate is rejected and unbound because its face looks photographic and the canvas misses 5:7.
+David's individual commission awaits editor feedback under the two-generation limit. All three definitions suppress
+legacy art fallback so the historical three-person card cannot return as an individual front.
+Primary own portraits and exact source mappings are in `content/news/evidence/2026-11-01-architect-portrait-sources.json`.
+Never use the rejected Daniel candidate as a reference or finished card.

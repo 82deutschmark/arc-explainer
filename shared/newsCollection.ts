@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5
- * Date: 2026-10-30 (2026-10-29 earlier)
+ * Author: GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Date: 2026-11-01 (2026-10-30 earlier)
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -27,6 +27,8 @@ export const cardDefinitionSchema = z.object({
   id, number: z.string().regex(/^[PT]\d{3}$/), kind: z.enum(['person', 'team']), name: z.string().min(1),
   season: z.string().regex(/^\d{4}$/), issuedAt: stamp, personId: id.optional(),
   entries: z.array(entry), art: collectionArtSchema.optional(), artNotes: z.array(z.string()),
+  // A shared historical team picture can remain in the archive without becoming an individual front.
+  artFallback: z.literal('none').optional(),
   description: z.string().optional(),
 }).strict().refine(card => card.kind === 'person' ? !!card.personId : !card.personId && card.entries.length > 0, 'Card subject is incomplete');
 export const cardSnapshotSchema = z.object({
@@ -36,8 +38,10 @@ export const cardSnapshotSchema = z.object({
 }).strict().refine(value => value.competitionId === KAGGLE_COMPETITIONS[value.competition].slug, 'Snapshot competition identity mismatch');
 export const cardRegistrySchema = z.object({
   version: z.literal(1), season: z.string().regex(/^\d{4}$/), commissionedBy: z.literal('Mark Barney'),
-  commissionedAt: stamp, updatedAt: stamp, cards: z.array(cardDefinitionSchema), snapshots: z.array(cardSnapshotSchema),
+  commissionedAt: stamp, updatedAt: stamp, excludedPersonIds: z.array(id).optional(), cards: z.array(cardDefinitionSchema), snapshots: z.array(cardSnapshotSchema),
 }).strict().superRefine((registry, context) => {
+  if (registry.cards.some(card => card.personId && registry.excludedPersonIds?.includes(card.personId)))
+    context.addIssue({ code: 'custom', message: 'Excluded person cannot have a current card' });
   for (const field of ['id', 'number'] as const) if (new Set(registry.cards.map(card => card[field])).size !== registry.cards.length)
     context.addIssue({ code: 'custom', message: `Duplicate card ${field}` });
   if (registry.cards.some(card => card.season !== registry.season)) context.addIssue({ code: 'custom', message: 'Mixed card seasons' });

@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-29
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-11-01
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
  *          NT's ARC3 card preference preserves his separate verified ARC2 membership.
@@ -62,6 +62,27 @@ function result(overrides: Partial<FinalCardResult> = {}): FinalCardResult {
 }
 
 describe('Card Cabinet identity and statistics', () => {
+  it('keeps a reviewed seasonal omission out of the current set without deleting the person', () => {
+    const excluded = { ...registry([], []), excludedPersonIds: ['alpha'] };
+    expect(buildNewsCollection(excluded, index([person('alpha')])).cards).toEqual([]);
+    expect(() => cardRegistrySchema.parse({ ...excluded, cards: [personCard('alpha')] }))
+      .toThrow(/Excluded person/);
+  });
+
+  it('keeps shared archive art off an individual front while preserving the historical card', () => {
+    const owner = person('alpha');
+    owner.hallOfFame = [{ label: 'ARC Prize 2025 team card', path: '/hall-of-fame#team',
+      image: { src: '/ARChitechts.png', alt: 'Historical three-person team' },
+      sourceUrl: 'https://arcprize.org/competitions/2025', sourceTitle: 'Official results', checkedAt }];
+    const definition = { ...personCard('alpha'), artFallback: 'none' as const };
+    const card = buildNewsCollection(registry([definition], []), index([owner])).cards[0];
+    expect(card.art).toBeNull();
+    expect(card.pastCards[0].imageSrc).toBe('/ARChitechts.png');
+    const commission = { src: '/news-images/alpha.png', alt: 'Alpha individually illustrated', credit: 'ARC Daily' };
+    expect(buildNewsCollection(registry([{ ...definition, art: commission }], []), index([owner])).cards[0].art)
+      .toEqual(commission);
+  });
+
   it('keeps identical names and even identical numeric IDs separate across competitions', () => {
     const arc3 = { ...teamCard(), number: 'T001' };
     const arc2 = { ...teamCard('arc-2'), number: 'T002' };
@@ -306,6 +327,25 @@ function runImport(root: string, incoming: FinalCardResult[]) {
   { cwd: root, encoding: 'utf8', timeout: 20_000 });
 }
 
+describe('current card omissions during refresh', () => {
+  it('does not recreate an excluded person when their historical identity remains in the news ledger', () => {
+    const { root, news } = importFixture();
+    fs.writeFileSync(path.join(news, 'cards.json'), JSON.stringify({ ...registry([], []), excludedPersonIds: ['alpha'] }));
+    fs.writeFileSync(path.join(news, 'people.json'), JSON.stringify([person('alpha'), person('beta')]));
+    fs.writeFileSync(path.join(news, 'visual-identities.json'), JSON.stringify({ subjects: [] }));
+    // Both board calls are local fixtures: this tests the actual refresh command without fetching standings.
+    const preload = path.join(root, 'board-fixture.mjs');
+    fs.writeFileSync(preload, `globalThis.fetch = async () => ({ ok: true, json: async () => ({ latest: { fetched: '${checkedAt}', rows: [] } }) });`);
+    const refreshed = spawnSync(process.execPath, ['--import', require.resolve('tsx'), '--import', preload,
+      path.resolve('scripts/newsroom_cards.ts'), 'refresh'], { cwd: root, encoding: 'utf8', timeout: 20_000 });
+    expect(refreshed.status, refreshed.stderr).toBe(0);
+    const saved = cardRegistrySchema.parse(JSON.parse(fs.readFileSync(path.join(news, 'cards.json'), 'utf8')));
+    expect(saved.cards.map(card => card.personId)).toEqual(['beta']);
+    expect(saved.excludedPersonIds).toEqual(['alpha']);
+    expect(JSON.parse(fs.readFileSync(path.join(news, 'people.json'), 'utf8'))).toHaveLength(2);
+  });
+});
+
 describe('official-result importer in an isolated collection', () => {
   it('reimports identical results idempotently and preserves registry/art definitions', () => {
     const { root, news } = importFixture();
@@ -351,7 +391,10 @@ describe('the real permanent commissioned collection', () => {
     const people = getNewsIndex().people ?? [];
     const individuals = collection.cards.filter(card => card.kind === 'person');
     const teams = collection.cards.filter(card => card.kind === 'team');
-    expect(individuals).toHaveLength(people.length);
+    const savedRegistry = cardRegistrySchema.parse(JSON.parse(fs.readFileSync('content/news/cards.json', 'utf8')));
+    expect(individuals).toHaveLength(people.filter(person => !savedRegistry.excludedPersonIds?.includes(person.id)).length);
+    expect(people.some(person => person.id === 'mike-knoop')).toBe(true);
+    expect(individuals.some(card => card.personId === 'mike-knoop')).toBe(false);
     expect(individuals.length).toBeGreaterThanOrEqual(65);
     expect(teams.length).toBeGreaterThanOrEqual(16);
     expect(new Set(collection.cards.map(card => card.number)).size).toBe(collection.cards.length);
@@ -370,6 +413,20 @@ describe('the real permanent commissioned collection', () => {
       const bytes = fs.readFileSync(path.join('client/public', card!.art!.src));
       expect(createHash('sha256').update(bytes).digest('hex')).toBe(artwork.rawSha256);
     }
+  });
+
+  it('keeps all three ARChitect individual fronts separate from the historical team card', () => {
+    const collection = getNewsCollection();
+    for (const [personId, number] of [['jan-disselhoff', 'P009'], ['david-hartmann', 'P010'], ['daniel-franzen', 'P011']]) {
+      const card = collection.cards.find(card => card.personId === personId)!;
+      expect(card.number).toBe(number);
+      expect(card.art?.src).not.toBe('/ARChitechts.png');
+      expect(card.pastCards.some(past => past.imageSrc === '/ARChitechts.png')).toBe(true);
+    }
+    expect(collection.cards.find(card => card.personId === 'jan-disselhoff')!.art?.artworkId)
+      .toBe('2026-11-01-jan-disselhoff-hero-v1');
+    expect(collection.cards.find(card => card.id === 'team-architects-2026')!.art?.src)
+      .toBe('/news-images/2026-10-26-architects-dream-team-base.png');
   });
 
   it('keeps Darren’s two dogs as one account, and keeps his individual avatar out of the team group image', () => {

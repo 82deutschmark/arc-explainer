@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.160.1  Nov 1, 2026
+
+- **Separate the ARChitects' individual fronts and retire Mike Knoop's current card** (Author: GPT-6.1 Sol / Codex). Keep P009/P010/P011 and the historical team card; bind Jan's new individual human illustration and suppress shared-art fallback for all three. Daniel's first candidate failed visual review and remains unbound; David's verified references and next commission are held for Mark's feedback under the two-generation cap. Preserve historical people, results and artwork.
+- Mike Knoop's P013 is removed from the current set and recorded as a seasonal omission, so refresh cannot recreate it. Other numbers remain stable. Correct all three source portraits from their own labeled public pages; retain the approved narrative animal avatars separately.
+- Validation: current collection check, omission refresh regression, archive/fallback tests, and local card compositor proof. Native Jan output is exactly 5:7 but below the brief's requested minimum resolution; no upscale claims.
+
 ### Version 9.160.0  Nov 1, 2026
 
 - **The front page leads with the synthetic games** (Author: Claude Opus 5.5 High). Boss: the site needs a glow-up for the end of ARC-3 and this page has to lead with the games, reversing the 16-Oct note. `/` now opens on a dark band: the lead board (LT03), the published picks with human numbers and level strips, the wall of every approved game, and the line from the why note. The clock, ARC Mutants, the race and the wire all stay, below it.
