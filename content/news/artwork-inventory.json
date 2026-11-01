@@ -1685,7 +1685,8 @@
       "src": "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp",
       "status": "saved-character-reference",
       "articleUses": [
-        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel"
+        "2026-10-30-friday-special-jeroen-cottaar-tufa-citadel",
+        "2026-11-01-morning-arc-2"
       ],
       "xAttachments": [
         {
@@ -1705,6 +1706,13 @@
           "attachmentSha256": "a0b77ce73a1f298cfc6d0c83e8c99655495ab321d27026bae6058cc255944aa9",
           "articleId": "2026-10-30-evening-arc-2-preview",
           "purpose": "Friday Night Special artwork delivery for human approval before X."
+        }
+      ],
+      "editorialCorrections": [
+        {
+          "articleId": "2026-11-01-morning-arc-2",
+          "artworkId": "2026-11-01-morning-arc-2-8670a34b55-footer",
+          "reason": "Boss requested actual existing artwork in the Early edition; no claim of new native generation."
         }
       ]
     },
@@ -1844,11 +1852,19 @@
       "src": "/news-images/2026-10-31-saturday-nvarc3-juggernaut.webp",
       "status": "published-feature-cover",
       "articleUses": [
-        "2026-10-31-saturday-nvarc3-juggernaut"
+        "2026-10-31-saturday-nvarc3-juggernaut",
+        "2026-11-01-morning-arc-3"
       ],
       "xAttachments": [],
       "discordShares": [],
-      "selectionNote": "Saturday afternoon special commissioned by Mark Barney."
+      "selectionNote": "Saturday afternoon special commissioned by Mark Barney.",
+      "editorialCorrections": [
+        {
+          "articleId": "2026-11-01-morning-arc-3",
+          "artworkId": "2026-11-01-morning-arc-3-a5db53de5f-footer",
+          "reason": "Boss requested actual existing artwork in the Early edition; no claim of new native generation."
+        }
+      ]
     },
     {
       "id": "2026-10-31-saturday-chan-vam-top-ten",

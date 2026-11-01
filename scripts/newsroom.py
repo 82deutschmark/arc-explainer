@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 27-October-2026 (special reports without edition cutoffs cannot block scheduled intake)
+# Date: 01-November-2026 (publish story citations, not the complete research briefing catalogue)
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
@@ -525,7 +525,11 @@ def validate(draft, brief, root=ROOT):
         raise ValueError('invalid factual timestamp')
     if base['baselineAt'] and stamp(base['baselineAt']) > stamp(item['evidence']['baselineTargetAt']):
         raise ValueError('baseline is after comparison boundary')
-    article = {**base, **{k: draft[k] for k in NARRATIVE}, 'discord': discord}
+    # The brief is a research catalogue, not the story bibliography. Preserve it in the
+    # private briefing; only sources the writer actually cites belong in public editions.
+    cited = {ref for section in draft['sections'] for ref in section['sourceIds']}
+    article = {**base, **{k: draft[k] for k in NARRATIVE}, 'discord': discord,
+               'sources': [source for source in base['sources'] if source['id'] in cited]}
     artwork = None
     if 'image' in draft:
         from newsroom_artwork import validate_attachment

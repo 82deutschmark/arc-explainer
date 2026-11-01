@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-11-01-morning-arc-2",
+  "briefSha256": "299485c00e0b0f919d8ed6ae3f31c4de0b5392edde0b105c5ffdbaa83ce5f611",
+  "dataAsOf": "2026-11-01T10:30:41Z",
+  "generationRecord": "2026-10-30-jeroen-cottaar-tufa-citadel-v4",
+  "headline": "Tufa keeps Chen within a point as kibuna climbs toward the leaders",
+  "historyChart": null,
+  "id": "2026-11-01-morning-arc-2-8670a34b55-footer",
+  "image": {
+    "alt": "Jeroen Cottaar seated inside Tufa’s towering GPU citadel, surrounded by the established friendly spider mascots. The separate footer shows Tufa first on 88.06 and Chen second on 87.22 at the preserved November 1 morning cutoff.",
+    "artworkId": "2026-11-01-morning-arc-2-8670a34b55-footer",
+    "caption": "Existing newspaper illustration; new edition score panel: Nov 1, 2026 · 5:30 AM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-morning-arc-2-8670a34b55-footer.webp"
+  },
+  "imageSha256": "fd8a6af75d8863d5d56b19f314470512235a21e184c47387506d41877b4729da",
+  "kind": "edition-composition",
+  "layout": "separate-footer-v1",
+  "leadGap": {
+    "current": 0.84,
+    "extends": false,
+    "previous": 0.84
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "a0fa111fa7e5e2bb4f4dd1269ca57e23ccd2544a83893e3f041b9007bbb74e9d",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 87.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

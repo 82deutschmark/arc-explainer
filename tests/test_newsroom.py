@@ -1,5 +1,5 @@
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 27-October-2026 (special reports must not break scheduled intake boundaries)
+# Date: 01-November-2026 (unused briefing sources must not leak into published editions)
 # PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication, isolated from current research.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
@@ -100,6 +100,18 @@ class NewsroomTests(unittest.TestCase):
     def tearDownClass(cls):
         n.ROOT = cls.original_root
         cls.content.cleanup()
+
+    def test_only_story_citations_are_published(self):
+        brief = bundle()
+        base = brief['competitions']['arc-3']['articleBase']
+        extra = {'id': 'unused-research', 'title': 'Unrelated background',
+                 'url': 'https://example.com/background', 'accessedAt': base['publishedAt']}
+        base['sources'].append(extra)
+        brief.pop('sha256')
+        brief['sha256'] = n.digest(brief)
+        article, _ = n.validate(draft(brief), brief)
+        self.assertEqual([source['id'] for source in article['sources']], ['board'])
+        self.assertIn(extra, base['sources'])  # Research evidence remains intact.
 
     def test_dst_previous_evening_uses_local_date(self):
         _, end, begin, _ = n.windows('evening', n.stamp('2026-03-08T23:00:00Z'))

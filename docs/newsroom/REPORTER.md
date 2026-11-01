@@ -354,3 +354,7 @@ The Boss is the paper's head human editor (Mark Barney on the masthead). `/news/
 unified About the Paper page; his editor portrait lives in the staff record and his Kaggle
 competitor portrait in the people ledger. Institutional copy does not single out an individual
 assignment.
+
+## Story sources versus the research catalogue
+
+The briefing source catalogue is reporting input, not a bibliography to print in full. Cite each story section’s actual sources. The publisher includes only those cited entries in the public article; retain unselected background in the private briefing/evidence archive. Never pad the source rail with unused people, posts or dossiers.

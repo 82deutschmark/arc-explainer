@@ -1,5 +1,11 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.30  Nov 1, 2026
+
+- **Correct Sunday Early editions** (Author: GPT-6.1 Sol / Codex). Remove hundreds of unused briefing-source entries from both stories, retaining the board citation actually used and archiving the original source catalogues in separate correction records. The publisher now selects cited sources rather than copying the whole research catalogue.
+- Add approved existing Jeroen/Tufa and NVARC3/Chen illustrations, newly composed with each issue’s unchanged morning scores and exact observation time. Preserve native provenance, original reporting dates and raw evidence. Replace production-desk chatter with a sporting watch point; no X send or browser use.
+- Validation: all 98 newsroom Python tests and all 23 news integration tests pass. Front-page suite: 10 pass; three unrelated existing failures (two missing QueryClient providers and the October 29 portrait-disclosure expectation). Both final illustrations visually reviewed with all faces and rabbits unobscured.
+
 ### Version 9.159.29  Nov 1, 2026
 
 - **The lab that wouldn’t sleep** (Author: GPT-6.1 Sol / Codex). Publish the editor-commissioned ARC Mutants overnight mini-special with a new four-character laboratory illustration, ARC grid experiments, queued submissions and error screens. Preserve the native picture, supplied reference and exact generation record; add the team title in code. Give Jack Cole a sourced sidebar on MindsAI’s 2024 top private score, 2025 third place and paper honorable mention, and his adviser/reviewer credit on the winning 2025 Preview agent. Show his current P004 card and two original 2024 deck cards. Link the mini-special from the Weekend Magazine cover.
