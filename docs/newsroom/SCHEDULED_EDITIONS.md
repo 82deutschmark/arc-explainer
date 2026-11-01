@@ -56,7 +56,15 @@ passes of the same job, not a new desk or a reason to publish early. Before 6 pm
    `manifest.json` in the private art folder with `targetEditionId`, story, selected generation
    record, exact reference cast, reuse/hold conditions, `preparedAt`, visual review and ready/error
    status. Aim to finish by **5:45 pm**. Save the concrete blocker if preparation fails.
-5. Finish this pass. Do not send an edition announcement, publish a preview, sleep until 6, create
+5. **Deliver the reviewed clean base to Discord before finishing prepress.** Post the actual
+   image attachment to `channel:1550165647911034940`, tag `<@293569238386606080>`, and label it
+   prepress with the intended edition link. Use ART_DESK.md's `--media` command, not the
+   text-only alert relay. Save a receipt containing the image hash, message ID, destination
+   and returned media-delivery evidence; put its path in the manifest and the share in the
+   inventory. A clean-base preview does not replace delivery of the final closing composition.
+   If delivery fails, record `discord-image-delivery-blocked` and the concrete error; do not
+   report the editor notified of the picture merely because a text notice succeeded.
+6. Finish this pass. Do not send an edition announcement, publish a preview, sleep until 6, create
    another automation or start a monitoring loop. The existing 6 pm invocation reads the manifest.
 
 Early editions use their prepared reserves or commissioned feature cover under the same image

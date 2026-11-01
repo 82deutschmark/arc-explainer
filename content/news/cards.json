@@ -3,7 +3,7 @@
   "season": "2026",
   "commissionedBy": "Mark Barney",
   "commissionedAt": "2026-10-30T00:23:50.049Z",
-  "updatedAt": "2026-10-31T17:33:36Z",
+  "updatedAt": "2026-11-01T22:29:26.005200Z",
   "cards": [
     {
       "id": "person-yi-chia-chen-2026",
@@ -130,7 +130,15 @@
       "artNotes": [],
       "number": "P009",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "artFallback": "none",
+      "art": {
+        "src": "/news-images/cards/2026/jan-disselhoff-hero-v1.png",
+        "alt": "Jan Disselhoff, individually illustrated as a bald bearded cyberpunk architect with rectangular glasses, burgundy armour and a luminous geometric model.",
+        "credit": "Commissioned ARC Daily character illustration",
+        "artworkId": "2026-11-01-jan-disselhoff-hero-v1",
+        "commissionedAt": "2026-11-01T22:29:16.811382Z"
+      }
     },
     {
       "id": "person-david-hartmann-2026",
@@ -141,7 +149,8 @@
       "artNotes": [],
       "number": "P010",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "artFallback": "none"
     },
     {
       "id": "person-daniel-franzen-2026",
@@ -152,7 +161,8 @@
       "artNotes": [],
       "number": "P011",
       "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
+      "season": "2026",
+      "artFallback": "none"
     },
     {
       "id": "person-francois-chollet-2026",
@@ -167,17 +177,6 @@
       },
       "artNotes": [],
       "number": "P012",
-      "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
-    },
-    {
-      "id": "person-mike-knoop-2026",
-      "kind": "person",
-      "name": "Mike Knoop",
-      "personId": "mike-knoop",
-      "entries": [],
-      "artNotes": [],
-      "number": "P013",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -2351,5 +2350,8 @@
       ],
       "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
     }
+  ],
+  "excludedPersonIds": [
+    "mike-knoop"
   ]
 }

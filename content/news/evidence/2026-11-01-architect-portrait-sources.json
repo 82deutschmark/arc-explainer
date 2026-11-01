@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-01T22:28:46.953407Z",
+  "references": [
+    {
+      "personId": "jan-disselhoff",
+      "src": "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg",
+      "sourceUrl": "https://grokkingai.dev/",
+      "sourceTitle": "Jan Disselhoff — own labeled personal-site portrait",
+      "checkedAt": "2026-11-01T22:28:46.953407Z",
+      "sha256": "d65b611c472d7d2016ea8bed9aee7a72d7e2c9b04501e5103803a1b542891624",
+      "label": "Jan Disselhoff’s own illustrated personal-site portrait"
+    },
+    {
+      "personId": "daniel-franzen",
+      "src": "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg",
+      "sourceUrl": "https://da-fr.github.io/",
+      "sourceTitle": "Daniel Franzen — own labeled personal-site photograph",
+      "checkedAt": "2026-11-01T22:28:46.953407Z",
+      "sha256": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
+      "label": "Daniel Franzen’s own personal-site photograph"
+    },
+    {
+      "personId": "david-hartmann",
+      "src": "/news-images/people/2026-11-01-david-hartmann-own-portrait-v1.jpg",
+      "sourceUrl": "https://www.linkedin.com/posts/david~hartmann_arcprize-activity-7295723379200839681--soS",
+      "sourceTitle": "David Hartmann — own LinkedIn ARC Prize event post and linked profile portrait",
+      "checkedAt": "2026-11-01T22:28:46.953407Z",
+      "sha256": "3e626a5a0b45331e5ad19a6aeb14bf9af81af54f845930e50b7f3407d524856d",
+      "label": "David Hartmann’s own illustrated LinkedIn profile portrait"
+    }
+  ],
+  "mapping": {
+    "jan-disselhoff": "Middle bald bearded man in historical group card, explicitly confirmed by Mark and corroborated by own portrait and primary university photo.",
+    "daniel-franzen": "Left short dark-haired glasses character; own explicitly labeled photo confirms cues.",
+    "david-hartmann": "Self-published LinkedIn portrait and own event-post photo show brown swept hair. Do not use the old blond right-hand character as verified real appearance."
+  },
+  "identityEvidence": [
+    "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+    "https://github.com/LambdaLabsML/ARC2025_Solution_by_the_ARChitects/blob/main/index.html",
+    "https://www.visualcomputing.informatik.uni-mainz.de/people/"
+  ],
+  "limits": [
+    "GitHub/HuggingFace pictures were placeholders and rejected.",
+    "LinkedIn profile page returned HTTP 999; own public post HTML served its linked author portrait and event photograph.",
+    "University article names both researchers but does not individually label their sides; identity was verified against each own labeled portrait."
+  ]
+}

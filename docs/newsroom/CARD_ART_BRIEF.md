@@ -51,7 +51,7 @@ So the artwork needs **room**. A good glamour shot of the competitor, with calm 
 ## Teams and sponsors
 
 - **Team cards:** a portrait-format group glamour shot of the whole roster, same ratio and zones. Up to four people stay large and recognisable; for bigger rosters show the four best known and suggest the rest with silhouettes, mascots or machines. Keep the team's mascot or running gag if it has one (Turducken, the rabbits, the cat). Landscape scenes made for the front page stay as they are; the card needs its own portrait composition.
-- **The co-founders** (François Chollet and Mike Knoop) each get an individual rendering built from their official ARC Prize team photos. Today they share last year's two-person founders card.
+- **Sponsor correction, 1 November 2026:** François Chollet retains his individual card. Mark explicitly excludes Mike Knoop from the current collection; do not commission him a card or recreate P013 during refresh. Preserve the historical founders card and people records.
 
 ## Rules that do not bend
 

@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-11-01T22:33:15Z",
+  "id": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+  "inputImages": [
+    "boss-juggernaut-reference.png",
+    "2026-10-29-turducken-nt-corrected-v2.webp",
+    "2026-10-12-chen-bunnies-character-v1-base.webp",
+    "2026-10-12-tufa-labs-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Create ONE new wide landscape cinematic ARC Daily Digest episode titled internally 'The Juggernaut Takes the Road'. Follow shared character system https://arc.markbarney.net/news/cards . This is ARC-AGI-3, exact NVARC3 team 15770880 and Turducken 15605182; Chen 15499660 and Tufa 15486995. Current factual news November 1: NVARC3 fourth 56.15 narrowly ahead of Turducken fifth 56.02; Chen first, Tufa second, another competitor remains third. Do NOT put any of these words or numbers in the picture.\nREFERENCE ROLES: Image1 is the Boss's approved NVARC3 juggernaut workshop scene: authoritative machine shape and FOUR established NVIDIA characters, no composition copying. Image2 is corrected Team Turducken complete cast AND brass/cobalt mechanical turkey-chicken airship: preserve that specific crew, no extra riders. Image3 authoritative TWO Chen bunnies, fur and ear anatomy. Image4 ONLY the friendly fluffy black Tufa spider mascot; IGNORE ALL old text, branding, scores and rabbit anatomy.\nSTORY/COMPOSITION: The green GPU juggernaut is FINISHED, outside its workshop, huge caterpillar tracks churning snow as it climbs a broad snowy mountain road from left to RIGHT and uphill. Three-quarter cinematic side view, camera across the road from slightly below the machines. NVIDIA crawler dominates center-right with recognizable open decks and giant green-lit GPU fans. Its front has JUST edged ahead of Team Turducken's mechanical chicken airship, flying immediately beside the road at center-left and a little behind; SHOW BOTH SEPARATE ENTIRE MACHINES including crawler tracks and recognizable turkey head/wings. Close race, respectful determined crews, no humiliation, collision or violence. The two machines travel in the SAME rightward direction. Clear gap between silhouettes, no fused vehicles.\nNVIDIA CAST RIDING ON DECK: preserve older fuller bearded spectacle-wearing CPMP commander in green/brass cybergear pointing uphill; Gal's swept hair, slim moustache/stubble and red flight jacket at helm; Darragh's totally OPAQUE blue/gold starry spiral face and cloak (never invent human facial features); Ivan's clean-shaven established cyan-prism engineer beside the glowing prism. Their identities from image1. Add anonymous little fully helmeted green GPU-covered supporting crew on rear decks, no individual name or unverified face. This is the crew riding into the chase, NOT a new assembly scene.\nTURDUCKEN CAST: preserve the SEVEN established main characters from image2 and exactly TWO Yorkies on its open deck, readable at the smaller scale: bearded Mark, visor Son, Keith's separate yellow BLACK-CAPPED mascot, blonde DZ holding pink plush bunny, NT as the yellow bird with BLACK EYEBROWS and broad ochre beak (NO banana kitten), grayscale MRI-display-head Choryu, and silver/cobalt knight with blue plume Herminator. The small integrated pilot-duck motif on the machine may remain but is not an eighth main rider. Keep the same magnificent brass/cobalt bird vehicle.\nDISTANT GOAL: separate neighboring strongholds in upper-right distance. On highest snowy ridge sit exactly TWO recognizable Chen bunnies: grey-brown lop BOTH ears DOWN, and dark/white upright-eared rabbit with broad WHITE facial blaze. A little below that on a neighboring ridge is Tufa's giant GPU citadel with three friendly black spider mascots on its parapet, yellow spider-emblem pennant WITHOUT WORDS. The two leading camps remain far above and ahead of both vehicles. This is a focused race scene, not a complete ranking diagram; no podium imagery or claim these machines are already third. Strong diagonal depth through winding road and valley toward forts.\nSTYLE: richly detailed coherent painted sci-fi graphic-novel illustration matching image1, polished recognizable character faces, dramatic late sunset, snow-blue shadows, copper and amber machinery, vivid NVIDIA-green light, enormous alpine scale, clean silhouettes. No photographic head collages. Wide panoramic composition with enough room for BOTH crews. Corners quieter for later score graphics. No painted text, numerals, ranks, dates, newspaper logos, score panels, watermark or borders. Generate clean art only.",
+  "rawSha256": "cf325eb1fda0c858b103c9fc6abe237e619d10c848c3ab372dfa9149efa7a045",
+  "rawSrc": "/news-images/2026-11-01-nvarc3-overtakes-turducken-v1-base.webp",
+  "references": [
+    {
+      "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/art-planning/2026-11-01-nvarc3-overtake/boss-juggernaut-reference.png",
+      "role": "Boss-supplied juggernaut: machine and four established characters; source composition is not reused",
+      "sha256": "94c3346c36d7b6683113310641915c9e5dc2dde882998ad0e702d12525dc1b5f"
+    },
+    {
+      "path": "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+      "role": "Corrected seven-character Turducken crew and exactly two Yorkies; vehicle identity",
+      "sha256": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406"
+    },
+    {
+      "path": "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+      "role": "Authoritative Chen two-bunny identities and ear/coat anatomy",
+      "sha256": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e"
+    },
+    {
+      "path": "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp",
+      "role": "Tufa spider mascot only; disregard old scores, words and other characters",
+      "sha256": "43c0218e4224989ed749d1ef93e980f0df6d30690927784dd9986cee902b2757"
+    }
+  ],
+  "review": "Reviewed: juggernaut outside, advancing right on snowy tracks ahead of distinct trailing mechanical chicken. Four established NVIDIA foreground characters, opaque celestial Darragh and helmeted supporting engineers retained. Turducken seven main characters include corrected NT, capped Keith, MRI head, knight, Mark, Son, DZ and exactly two Yorkies. Exactly two correct rabbits above separate three-spider citadel. No scores or words. Clean final selected; no revision needed.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-c9d4638e-db76-4b91-8f18-24e1e1682fc9.png",
+  "version": 1,
+  "nativeOriginalSrc": "/news-images/2026-11-01-nvarc3-overtakes-turducken-v1-native.png",
+  "nativeOriginalSha256": "ca7835bc250e634348a9d41a0b98e9fb3024a41220b72d3cf1f87f719be4144b",
+  "toolArguments": {
+    "prompt": "Use case: illustration-story. Create ONE new wide landscape cinematic ARC Daily Digest episode titled internally 'The Juggernaut Takes the Road'. Follow shared character system https://arc.markbarney.net/news/cards . This is ARC-AGI-3, exact NVARC3 team 15770880 and Turducken 15605182; Chen 15499660 and Tufa 15486995. Current factual news November 1: NVARC3 fourth 56.15 narrowly ahead of Turducken fifth 56.02; Chen first, Tufa second, another competitor remains third. Do NOT put any of these words or numbers in the picture.\nREFERENCE ROLES: Image1 is the Boss's approved NVARC3 juggernaut workshop scene: authoritative machine shape and FOUR established NVIDIA characters, no composition copying. Image2 is corrected Team Turducken complete cast AND brass/cobalt mechanical turkey-chicken airship: preserve that specific crew, no extra riders. Image3 authoritative TWO Chen bunnies, fur and ear anatomy. Image4 ONLY the friendly fluffy black Tufa spider mascot; IGNORE ALL old text, branding, scores and rabbit anatomy.\nSTORY/COMPOSITION: The green GPU juggernaut is FINISHED, outside its workshop, huge caterpillar tracks churning snow as it climbs a broad snowy mountain road from left to RIGHT and uphill. Three-quarter cinematic side view, camera across the road from slightly below the machines. NVIDIA crawler dominates center-right with recognizable open decks and giant green-lit GPU fans. Its front has JUST edged ahead of Team Turducken's mechanical chicken airship, flying immediately beside the road at center-left and a little behind; SHOW BOTH SEPARATE ENTIRE MACHINES including crawler tracks and recognizable turkey head/wings. Close race, respectful determined crews, no humiliation, collision or violence. The two machines travel in the SAME rightward direction. Clear gap between silhouettes, no fused vehicles.\nNVIDIA CAST RIDING ON DECK: preserve older fuller bearded spectacle-wearing CPMP commander in green/brass cybergear pointing uphill; Gal's swept hair, slim moustache/stubble and red flight jacket at helm; Darragh's totally OPAQUE blue/gold starry spiral face and cloak (never invent human facial features); Ivan's clean-shaven established cyan-prism engineer beside the glowing prism. Their identities from image1. Add anonymous little fully helmeted green GPU-covered supporting crew on rear decks, no individual name or unverified face. This is the crew riding into the chase, NOT a new assembly scene.\nTURDUCKEN CAST: preserve the SEVEN established main characters from image2 and exactly TWO Yorkies on its open deck, readable at the smaller scale: bearded Mark, visor Son, Keith's separate yellow BLACK-CAPPED mascot, blonde DZ holding pink plush bunny, NT as the yellow bird with BLACK EYEBROWS and broad ochre beak (NO banana kitten), grayscale MRI-display-head Choryu, and silver/cobalt knight with blue plume Herminator. The small integrated pilot-duck motif on the machine may remain but is not an eighth main rider. Keep the same magnificent brass/cobalt bird vehicle.\nDISTANT GOAL: separate neighboring strongholds in upper-right distance. On highest snowy ridge sit exactly TWO recognizable Chen bunnies: grey-brown lop BOTH ears DOWN, and dark/white upright-eared rabbit with broad WHITE facial blaze. A little below that on a neighboring ridge is Tufa's giant GPU citadel with three friendly black spider mascots on its parapet, yellow spider-emblem pennant WITHOUT WORDS. The two leading camps remain far above and ahead of both vehicles. This is a focused race scene, not a complete ranking diagram; no podium imagery or claim these machines are already third. Strong diagonal depth through winding road and valley toward forts.\nSTYLE: richly detailed coherent painted sci-fi graphic-novel illustration matching image1, polished recognizable character faces, dramatic late sunset, snow-blue shadows, copper and amber machinery, vivid NVIDIA-green light, enormous alpine scale, clean silhouettes. No photographic head collages. Wide panoramic composition with enough room for BOTH crews. Corners quieter for later score graphics. No painted text, numerals, ranks, dates, newspaper logos, score panels, watermark or borders. Generate clean art only.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/art-planning/2026-11-01-nvarc3-overtake/boss-juggernaut-reference.png",
+      "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/2026-10-29-turducken-nt-corrected-v2.webp",
+      "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+      "/Volumes/Samsung 9100 SSD/data/arc-newsroom-recovery/client/public/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp"
+    ],
+    "transparent_background": false
+  },
+  "referenceSystem": "https://arc.markbarney.net/news/cards",
+  "purpose": "commissioned-feature-cover",
+  "reviewStatus": "reviewed",
+  "approvedCast": {
+    "competition": "arc-prize-2026-arc-agi-3",
+    "teams": {
+      "15770880": [
+        "cpmpml",
+        "darraghdog",
+        "eladsarafian",
+        "galkaplun",
+        "sorokin",
+        "titericz",
+        "yeyinzhu"
+      ],
+      "15605182": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ],
+      "15499660": [
+        "threerabbits"
+      ],
+      "15486995": [
+        "dlorah",
+        "driessmit1",
+        "infinitecreativity",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ]
+    }
+  },
+  "supportingIdentityNote": "Additional NVIDIA engineers use approved anonymous opaque helmets; no invented individual likeness or account assignment. Turducken uses corrected established seven-character cast."
+}

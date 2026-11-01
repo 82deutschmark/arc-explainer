@@ -6,6 +6,11 @@
 - **The directory** (`shared/arc3ResourceHub.ts`) came from a sweep of both repos, ARC Prize, Kaggle, GitHub, arXiv, Hugging Face and YouTube; each link was opened and dead links, sign-in walls and unsupported descriptions dropped. It is plain data, also rendered for crawlers.
 - **The write-up lives here now** at `/arc3/why` (`shared/Arc3WhyContent.tsx`, `client/src/pages/Arc3Why.tsx`), with the games playable under it. Links across the site point to it; GitHub Pages is a side link in the hub and on that page.
 - **New `/arc2`** (`client/src/pages/Arc2Resources.tsx`) holds the ARC-1 and ARC-2 entries and the list of public sections. New `client/src/components/arc3/WalkthroughTable.tsx`. Nav gets a top-level "Resources" link.
+### Version 9.160.1  Nov 1, 2026
+
+- **Separate the ARChitects' individual fronts and retire Mike Knoop's current card** (Author: GPT-6.1 Sol / Codex). Keep P009/P010/P011 and the historical team card; bind Jan's new individual human illustration and suppress shared-art fallback for all three. Daniel's first candidate failed visual review and remains unbound; David's verified references and next commission are held for Mark's feedback under the two-generation cap. Preserve historical people, results and artwork.
+- Mike Knoop's P013 is removed from the current set and recorded as a seasonal omission, so refresh cannot recreate it. Other numbers remain stable. Correct all three source portraits from their own labeled public pages; retain the approved narrative animal avatars separately.
+- Validation: current collection check, omission refresh regression, archive/fallback tests, and local card compositor proof. Native Jan output is exactly 5:7 but below the brief's requested minimum resolution; no upscale claims.
 
 ### Version 9.160.0  Nov 1, 2026
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: Claude Sonnet 5.5 (effort unknown)
-# Date: 30-October-2026
+# Author: GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+# Date: 1-November-2026
 # PURPOSE: Write docs/newsroom/CARD_ART_NEEDS.md, the working list for whoever generates Card Cabinet
 # artwork: for every card, what art it has now, whether last year's Hall of Fame card exists, and
 # which real photo (Kaggle avatar, ARC Prize page, author page) the artist should build the new
@@ -20,7 +20,7 @@ EVIDENCE = ROOT / "content/news/evidence/kaggle-careers"
 OUT = ROOT / "docs/newsroom/CARD_ART_NEEDS.md"
 
 # Art that is an actual rendering of a person or team (commissioned), as opposed to a photo or avatar.
-RENDERED_PREFIXES = ("/news-images/references/", "/news-images/2026-")
+RENDERED_PREFIXES = ("/news-images/references/", "/news-images/2026-", "/news-images/cards/")
 # People whose own Kaggle picture is already an ARC Raiders style cyberpunk rendering (small and square).
 RENDERED_PORTRAITS = {"mark-barney", "son-pham"}
 TIER_WORDS = r"(Novice|Contributor|Expert|Master|Grandmaster)"

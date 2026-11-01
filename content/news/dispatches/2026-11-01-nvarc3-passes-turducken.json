@@ -1,0 +1,95 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Commissioned for the November 1 Late edition alongside the original Night Watch rabbit-and-spiders illustration. Standings checked Sunday afternoon; historical profiles and honors use dated saved sources. Social and discussion research was not refreshed.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "NVARC3 noses past Turducken as the juggernaut joins the chase",
+  "id": "2026-11-01-nvarc3-passes-turducken",
+  "image": {
+    "alt": "The green GPU juggernaut carries its crew uphill ahead of Turducken’s brass mechanical chicken and complete crew, with two Yorkies; Chen’s two rabbits and Tufa’s three spider mascots watch from separate strongholds above.",
+    "caption": "The NVARC3 juggernaut pulls ahead of Turducken’s mechanical chicken on the climb toward the rabbits and spider citadel.",
+    "src": "/news-images/2026-11-01-nvarc3-overtakes-turducken-v1-base.webp"
+  },
+  "publishedAt": "2026-11-01T22:33:41.914219+00:00",
+  "sections": [
+    {
+      "heading": "A narrow pass for fourth",
+      "sourceIds": [
+        "kaggle-board",
+        "board-history"
+      ],
+      "text": "NVARC3 has taken fourth place on the ARC-AGI-3 public board, edging Team Turducken by just 0.13 points. The NVIDIA-associated entry stands at 56.15 against Turducken’s 56.02. The direct Kaggle check on Sunday afternoon confirms that order: the juggernaut is ahead, but the two teams remain almost level."
+    },
+    {
+      "heading": "Six points and four places",
+      "sourceIds": [
+        "board-history"
+      ],
+      "text": "The saved board history records NVARC3 advancing from 49.89 in eighth to 56.15 in fourth, a gain of 6.26 points. That change first appears in the collector’s 4 am Eastern observation on November 1. In the same observation, Turducken moves from fourth to fifth while retaining its 56.02 score. This was a challenger gaining ground, rather than a recorded score loss by Turducken. The observation time dates when the move was seen, not when a submission finished scoring."
+    },
+    {
+      "heading": "The podium is still up the mountain",
+      "sourceIds": [
+        "kaggle-board",
+        "board-history"
+      ],
+      "text": "The next place belongs to “faster machine is all you need,” third at 58.59. Above that, Tufa Labs holds second on 70.24 and Yi-Chia Chen @ Fields Model leads on 75.56. NVARC3 has passed Turducken; it has not yet passed the third-place entry or caught the leading pair. Those are the positions behind the new scene: a close overtake lower on the mountain, with the rabbits and spider citadel still well ahead."
+    },
+    {
+      "heading": "Champions in a larger crew",
+      "sourceIds": [
+        "board-history",
+        "person-jean-francois-puget-identity-0",
+        "person-ivan-sorokin-identity-0",
+        "person-darragh-hanley-identity-0",
+        "person-gal-kaplun-identity-0",
+        "arc-2025-results"
+      ],
+      "text": "NVARC3’s seven-account roster includes Jean-François Puget (CPMP), Ivan Sorokin, Darragh Hanley and Gal Kaplun. Puget and Sorokin were the two credited members of NVARC’s winning 2025 ARC Prize team; that title belongs to their earlier entry, not automatically to every member of today’s larger roster. Their current ARC-AGI-3 team has now gained four public places in one recorded advance. The board shows the result; it does not identify which change to the team’s system produced it."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T22:33:41.914219+00:00",
+      "id": "kaggle-board",
+      "title": "Kaggle — ARC Prize 2026 ARC-AGI-3 public leaderboard, checked November 1",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    },
+    {
+      "accessedAt": "2026-11-01T22:33:41.914219+00:00",
+      "id": "board-history",
+      "title": "ARC-AGI-3 public board, observed score history and team rosters",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-jean-francois-puget-identity-0",
+      "title": "Jean-François Puget — verified CPMP profile",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-ivan-sorokin-identity-0",
+      "title": "NVARC — credited 2025 team write-up",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc"
+    },
+    {
+      "accessedAt": "2026-10-15T02:22:14Z",
+      "id": "person-darragh-hanley-identity-0",
+      "title": "Darragh — own Kaggle profile",
+      "url": "https://www.kaggle.com/darraghdog"
+    },
+    {
+      "accessedAt": "2026-10-13T17:33:14Z",
+      "id": "person-gal-kaplun-identity-0",
+      "title": "Gal Kaplun — own Kaggle profile",
+      "url": "https://www.kaggle.com/galkaplun"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "arc-2025-results",
+      "title": "ARC Prize — official 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-11-01T22:02:02Z",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "K.nosaka, tomo11111 and Luxshan Thavarasa surge on ARC-3",
+  "id": "2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge",
+  "personIds": [],
+  "publishedAt": "2026-11-01T22:30:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "K.nosaka climbed from 665th to 62nd on the ARC-3 public board, gaining 4.90 to reach 35.75."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "tomo11111 rose from 1,952nd to 76th, adding 9.43 to reach 35.12."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Luxshan Thavarasa advanced from 1,433rd to 81st, gaining 6.55 to reach 34.82. All three remain below the gold score line of 40.75."
+    }
+  ],
+  "since": "2026-10-31T21:59:10Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T22:27:47Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17206928",
+    "16841552",
+    "16730913"
+  ]
+}

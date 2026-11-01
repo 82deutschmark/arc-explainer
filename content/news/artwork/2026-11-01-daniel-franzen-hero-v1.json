@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "2026-11-01-daniel-franzen-hero-v1",
+  "title": "Daniel Franzen — rejected first individual portrait",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "generatedAt": "2026-11-01T22:30:39.541Z",
+  "rawSrc": "/news-images/cards/2026/daniel-franzen-hero-v1.png",
+  "prompt": "Use case: stylized-concept. ONE individual HUMAN competitor hero illustration for the ARC Prize 2026 card collection, clean full-bleed 5:7 portrait. Render at 1500x2100 pixels or larger. DANIEL FRANZEN ONLY. Input1 is Daniel's own explicitly labeled photo from da-fr.github.io: short dark brown hair with gray temples, rectangular thin glasses, clean shaven, friendly grown man with broad natural face. Input2 is old Hall-of-Fame three-person card for established cyberpunk painting style: Daniel is the SHORT DARK HAIRED CLEAN SHAVEN MAN AT THE LEFT, NOT the bald middle man (Jan). This mapping is corroborated by Daniel's own photograph. Input3 is Daniel's established duck avatar for warm yellow accents only. Render a handsome HUMAN, NO duck, NO other people. Create a different individual composition, not a crop of old team image: Daniel standing slightly turned right in a futuristic architectural computation studio, warmly looking toward viewer; charcoal and ivory open engineer coat with rich amber/copper jointed cybernetic sleeves. One mechanical gauntlet rests on the edge of a console, the other lightly holds an unlettered transparent square of colored grid tiles at chest height. An open curved geometric reasoning engine arcs behind his shoulders, restrained cyan and golden light, layered softly focused workshop depth. Premium graphic-novel/Hall-of-Fame painted glamour, polished flattering mature face with distinctive glasses and dark-gray swept-up hair, all facial features redrawn coherently with machinery, not photo pasted into armour. NO anime, no wig, no bald head, no beard. Composition must reserve space for card overlays: calm top 200px, eyes at y650 on 1500x2100 canvas, head/face/hands/prop all between y250 and y1450, subject centered x150..1350. Bottom650 is subdued dark continuation of torso and workshop, no important objects there. No frame, card border, labels, words, names, numbers, badges, ranks, scores, logos, captions, watermark or text. Exactly ONE recognizable adult human.",
+  "references": [
+    {
+      "src": "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg",
+      "role": "Daniel's actual own labeled personal-site photograph; identity/appearance reference.",
+      "sourceUrl": "https://da-fr.github.io/",
+      "sha256": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7"
+    },
+    {
+      "src": "/ARChitechts.png",
+      "role": "Historical Hall-of-Fame illustration style; Daniel's own portrait corroborates left short dark-haired glasses figure.",
+      "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-daniel-franzen-reference-1-v1.webp",
+      "role": "Approved duck avatar, warm accent color only; human portrait required.",
+      "sha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49"
+    }
+  ],
+  "reviewStatus": "rejected",
+  "reviewedAt": "2026-11-01T22:30:39.541Z",
+  "review": "Rejected and NOT bound to the public card. The face reads as a literal photographic head over illustrated armour instead of a coherently redrawn glamour character. Native output is 876×1796, contrary to requested 5:7/1500×2100. Preserve the failed output and prompt for a targeted redraw after required Mark feedback. Two-generation cap reached after Jan and this attempt.",
+  "dimensions": {
+    "width": 876,
+    "height": 1796
+  },
+  "identitySourceUrls": [
+    "https://da-fr.github.io/",
+    "https://www.kaggle.com/dfranzen",
+    "https://github.com/LambdaLabsML/ARC2025_Solution_by_the_ARChitects/blob/main/index.html"
+  ],
+  "rawSha256": "2d29ce01591b2c4e3d87c2bb04332fb9be7ecb404d6ff545ba57b6e6470a0297"
+}

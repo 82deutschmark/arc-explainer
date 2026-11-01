@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T22:02:34.291976+00:00",
+  "updatedAt": "2026-11-01T22:34:43.245290+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1930,13 +1930,47 @@
       "targetEditionId": "2026-11-01-evening-arc-3",
       "articleUses": [],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1566578721429659698",
+          "postedAt": "2026-11-01T22:24:33.150Z",
+          "attachmentSha256": "2c6e4fab1a5129f637420fe4d122cd2ab7f062b613be8b0bdd93cc2bf2d48fe8",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1566578721429659698",
+          "purpose": "Boss-requested clean-base prepress delivery; final composition still requires its own delivery."
+        }
+      ],
       "artworkConditions": {
         "leaderTeamId": "15499660",
         "rivalTeamId": "15486995",
         "requiredPersonIds": []
       },
       "selectionNote": "New November 1 Late prepress scene. Exactly two registered rabbits and three fictional Tufa spider mascots. No humans. Compose fresh fixed-cutoff scores at or after 6 pm; hold if leader premise changes. X held for Doctor Codex and weekend lineup."
+    },
+    {
+      "id": "2026-11-01-nvarc3-overtakes-turducken-v1",
+      "generationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+      "src": "/news-images/2026-11-01-nvarc3-overtakes-turducken-v1-base.webp",
+      "nativeOriginalSrc": "/news-images/2026-11-01-nvarc3-overtakes-turducken-v1-native.png",
+      "title": "The Juggernaut Takes the Road",
+      "competition": "arc-3",
+      "status": "published-on-commissioned-feature",
+      "targetEditionId": "2026-11-01-evening-arc-3",
+      "articleUses": [
+        "2026-11-01-nvarc3-passes-turducken"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1566581175311532032",
+          "postedAt": "2026-11-01T22:34:19.578000+00:00",
+          "attachmentSha256": "cf325eb1fda0c858b103c9fc6abe237e619d10c848c3ab372dfa9149efa7a045",
+          "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1566581175311532032",
+          "purpose": "Finished Boss-commissioned overtake picture with intended report link; evening original Night Watch remains separate."
+        }
+      ],
+      "selectionNote": "New native episode explicitly commissioned by Boss November 1: NVARC3 crawler ahead of Turducken chicken, leaders on separate ridges. Used for this report and explicitly reserved for the SAME report included in the evening edition, alongside separate original Night Watch cover. Not a replacement for the approved rabbit-and-spiders picture. No routine X authorization."
     }
   ],
   "existingXPosts": [

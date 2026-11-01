@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5
- * Date: 2026-10-30 (2026-10-29 earlier)
+ * Author: GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Date: 2026-11-01 (2026-10-30 earlier)
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots, linked player/team histories and explicitly official final
  * results. Never exposes desk drafts or infers a player's departure from roster absence.
@@ -178,10 +178,11 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       };
     });
     // Order of art: a registered commission, then last year's Hall of Fame card, then the person's editorial
-    // rendering. A reference photo (Kaggle picture, web photo) is an input for the artists, never the card.
+    // rendering, unless the editor has disabled fallback for that card. A reference photo is an
+    // artist input, never a finished individual card.
     const editorial = person?.editorialPortrait;
-    const art = definition.art ?? lastYearArt(person)
-      ?? (editorial ? { src: editorial.src, alt: editorial.alt, credit: editorial.sourceTitle, artworkId: editorial.artworkId } : null);
+    const art = definition.art ?? (definition.artFallback === 'none' ? null : lastYearArt(person)
+      ?? (editorial ? { src: editorial.src, alt: editorial.alt, credit: editorial.sourceTitle, artworkId: editorial.artworkId } : null));
     const facts = person?.facts ?? index.competitors.filter(team => definition.entries.some(ref => ref.teamId === team.teamId && ref.competition === team.competition)).flatMap(team => team.facts);
     const careerHonors = person?.hallOfFame.map(honor => ({ text: honor.label, sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle, checkedAt: honor.checkedAt })) ?? [];
     return { id: definition.id, number: definition.number, kind: definition.kind, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,

@@ -1,8 +1,9 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-29
+ * Date: 2026-11-01
  * PURPOSE: Maintain stable collectible numbers and dated board snapshots; import explicitly
  * official results idempotently without changing clean art, identities or earlier result revisions.
+ * Explicit seasonal omissions survive refresh; historical people and results stay in their ledgers.
  * SRP/DRY check: Pass — uses the existing news ledgers, curated art registry and shared schemas.
  */
 import fs from 'node:fs';
@@ -45,7 +46,7 @@ if (command === 'import-results') {
   const add = (card: Omit<CardDefinition, 'number' | 'issuedAt' | 'season'>) => {
     if (!registry.cards.some(old => old.id === card.id)) registry.cards.push({ ...card, number: nextNumber(card.kind), issuedAt: now, season: registry.season });
   };
-  for (const person of index.people ?? []) add({ id: `person-${person.id}-2026`, kind: 'person', name: person.name, personId: person.id, entries: [], artNotes: [] });
+  for (const person of (index.people ?? []).filter(person => !registry.excludedPersonIds?.includes(person.id))) add({ id: `person-${person.id}-2026`, kind: 'person', name: person.name, personId: person.id, entries: [], artNotes: [] });
   for (const subject of visuals.subjects.filter((item: any) => item.status === 'ready' && item.teamIds)) {
     const entries = Object.entries(subject.teamIds as Record<NewsCompetition, string[]>).flatMap(([competition, ids]) => ids.map(teamId => ({ competition: competition as NewsCompetition, competitionId: KAGGLE_COMPETITIONS[competition as NewsCompetition].slug, teamId })));
     if (!entries.length) continue;

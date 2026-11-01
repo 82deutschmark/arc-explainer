@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * Date: 2026-11-01 (own-site ARChitect portraits: GPT-6.1 Sol / Codex); 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
@@ -318,7 +318,7 @@ it('gives people faces from their own sources and puts cited people first in a s
   expect((await fetch(`${base}/news/people/ivan-sorokin`)).status).toBe(200);
   // A Kaggle picture may only come from the person's own verified account.
   const jan = people.find(person => person.id === 'jan-disselhoff')!;
-  expect(newsPersonSchema.safeParse({ ...jan, portrait: { ...jan.portrait!, sourceUrl: 'https://www.kaggle.com/dvhrtm' } }).success).toBe(false);
+  expect(newsPersonSchema.safeParse({ ...jan, portrait: { ...jan.portrait!, kind: 'kaggle', sourceUrl: 'https://www.kaggle.com/dvhrtm' } }).success).toBe(false);
   // Cited people lead; team members follow; uncited brief sources add nobody.
   const article = { ...index.articles.find(item => item.competition === 'arc-3')!, teamIds: ['15770880'], sections: [{ text: 'NVARC3 moved.', sourceIds: ['person-ivan-sorokin-fact-0', 'person-ivan-sorokin-archive-0'] }] };
   expect(citedPeople(article.sections, people).map(person => person.id)).toEqual(['ivan-sorokin']);

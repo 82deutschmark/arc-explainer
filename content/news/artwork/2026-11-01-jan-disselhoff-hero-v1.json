@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "2026-11-01-jan-disselhoff-hero-v1",
+  "title": "Jan Disselhoff — individual architect portrait",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "generatedAt": "2026-11-01T22:29:16.841Z",
+  "rawSrc": "/news-images/cards/2026/jan-disselhoff-hero-v1.png",
+  "prompt": "Use case: stylized-concept. Create ONE individual human competitor hero portrait for the ARC Daily Digest Card Cabinet, full-bleed portrait 5:7, at least 1500x2100. This is JAN DISSELHOFF ONLY. Image1 is the established Hall-of-Fame group card, STYLE REFERENCE and design continuity: Jan is specifically THE BALD BEARDED MAN IN THE MIDDLE (the user confirms). Do NOT include the two other men. Image2 is Jan's own labeled portrait, real identity/appearance reference: bald head, dark full beard, distinctive swept handlebar moustache, broad black rectangular glasses. Image3 is Jan's approved cat avatar for burgundy/cyan color continuity only; render a HUMAN, not an animal. Reimagine the middle character as a handsome, mature, confident individually illustrated cyberpunk architect. Coherent premium hand-painted graphic-novel/Hall-of-Fame glamour, clearly illustrated face and machinery, flattering proportions, realistic adult face, no photo pasted onto body, no anime. Three-quarter head-to-waist view; a thoughtful relaxed confident pose, one hand gently turning a small luminous geometric grid model. Charcoal fitted engineer armour with restrained burgundy panels, copper joints, cyan-lit cuff and layered structural blueprint motifs in a beautiful deep teal futuristic design workshop. Face, bald scalp, glasses and well groomed beard clearly visible, not hidden by helmet. Subject between x150..1350 and y200..1450 in 1500x2100 canvas; eyes y560..780. Top200 quiet, bottom650 darker simple continuation of torso and workshop, no important face/hands/prop below1450. Fresh individual composition, not a crop of the group card. No text, lettering, numbers, names, badge, score, rank, logos, watermark, framing, card border or rounded edge. Exactly one person.",
+  "references": [
+    {
+      "src": "/ARChitechts.png",
+      "role": "Established Hall-of-Fame illustration style; Mark explicitly identifies Jan as the middle bald bearded figure. Historical original retained.",
+      "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe"
+    },
+    {
+      "src": "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg",
+      "role": "Jan's explicitly labeled own-site portrait; individual identity and appearance reference.",
+      "sourceUrl": "https://grokkingai.dev/",
+      "sha256": "d65b611c472d7d2016ea8bed9aee7a72d7e2c9b04501e5103803a1b542891624"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-jan-disselhoff-reference-1-v1.webp",
+      "role": "Established cat avatar, burgundy/cyan color continuity only; human portrait commissioned.",
+      "sha256": "0ad92e5d45f85823a3af0fcbfe1430501b967f5e1fec3ebfadfbb84bf9bb52f2"
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "reviewedAt": "2026-11-01T22:29:16.842Z",
+  "review": "One separately drawn bald, bearded, rectangular-spectacled human; middle-figure mapping confirmed by Mark and own labeled portrait. Coherent illustrated cyberpunk face and armour. No teammates, card labels or frame. Native file is 1060×1484, exact 5:7; below the brief's required 1500×2100 minimum, retained without misleading upscale. Production card compositor proof inspected: native art is contained within the picture window over a blurred backdrop because it is below the contract minimum. Face, glasses, beard, both hands and geometric prop remain visible; name and statistics do not overlap them.",
+  "dimensions": {
+    "width": 1060,
+    "height": 1484
+  },
+  "identitySourceUrls": [
+    "https://grokkingai.dev/",
+    "https://www.informatik.uni-mainz.de/2025/02/13/exzellenz-in-der-ki-forschung-the-architects-gewinnen-den-1-platz-beim-arc-prize-2024-high-score/"
+  ],
+  "limitations": [
+    "Primary own-site reference is illustrated; university's real Jan/Daniel photograph corroborates appearance.",
+    "Native output is below the requested 1500×2100; no additional generation or fabricated detail."
+  ],
+  "rawSha256": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
+  "compositorReviewedAt": "2026-11-01T22:33:50.160957Z",
+  "reviewedBy": "GPT-6.1 Sol / Codex"
+}

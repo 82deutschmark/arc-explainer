@@ -1237,5 +1237,66 @@
       "https://x.com/chankhavu/status/2116281051702280456",
       "https://www.kaggle.com/chankhavu"
     ]
+  },
+  {
+    "id": "nov1-evening-nvarc3-overtake-report",
+    "competition": "arc-3",
+    "createdAt": "2026-11-01T22:34:43.245290+00:00",
+    "expiresAt": "2026-11-02T04:00:00Z",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "title": "NVARC3 overtake report and new juggernaut illustration in the Late edition",
+    "priority": "Boss-requested two-picture evening package",
+    "teamIds": [
+      "15770880",
+      "15605182",
+      "15499660",
+      "15486995",
+      "15487093"
+    ],
+    "subjectNames": [
+      "NVARC3",
+      "Team Turducken"
+    ],
+    "targetEditionId": "2026-11-01-evening-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-11-01-nvarc3-passes-turducken",
+    "instructions": "Boss explicitly commissioned the factual overtake story and BOTH pictures for November 1 Late. Include the complete newly published NVARC3 overtake dispatch, with its new juggernaut artwork, as the reserved front-page feature so it appears on the permanent evening edition URL too. Preserve the separate Night Watch rabbit-and-spiders picture as the edition-bound main artwork. Do not replace either image with the other or report the two-image request covered with only one. The dispatch is a dated Sunday-afternoon report; prepare the scheduled 6 pm evidence afresh and explain any changed positions in the closing recap rather than rewriting the dispatch. Cite the dispatch source in the recap. This updates the earlier art-only handoff: this desk has now written the report at Boss request. No routine X send: November 1-2 special lineup hold remains. Deliver final closing composition to Discord and preserve existing clean-base/feature receipts.",
+    "sourceUrls": [
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "https://arc.markbarney.net/news#2026-11-01-nvarc3-passes-turducken"
+    ]
+  },
+  {
+    "id": "nov1-evening-preserve-night-watch-cover",
+    "competition": "arc-3",
+    "createdAt": "2026-11-01T22:34:43.245290+00:00",
+    "expiresAt": "2026-11-02T04:00:00Z",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "title": "Keep the original Night Watch rabbit-and-spiders illustration in the evening edition",
+    "priority": "Boss-approved evening cover, alongside new overtake feature",
+    "teamIds": [
+      "15499660",
+      "15486995"
+    ],
+    "subjectNames": [
+      "Yi-Chia Chen",
+      "Tufa"
+    ],
+    "targetEditionId": "2026-11-01-evening-arc-3",
+    "placement": "illustrated-lead",
+    "artworkGenerationRecord": "2026-11-01-late-night-watch-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15499660",
+      "rivalTeamId": "15486995",
+      "requiredPersonIds": []
+    },
+    "artworkHistoryChart": false,
+    "instructions": "Boss approved the original Night Watch bunny-and-spiders scene and explicitly requires it in the November 1 Late edition IN ADDITION TO the new NVARC3 overtake feature picture. Compose this exact clean base with the fresh 6 pm closing scores and attach it as the main edition image. The reserved overtake dispatch supplies the second illustration on the same permanent edition page. Recheck current leader/rival conditions; if they change, report the mismatch rather than inventing a result. Preserve actual Discord delivery of the clean base; it does not replace final composition delivery.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news/cards/team-yi-chia-chen-2026",
+      "https://arc.markbarney.net/news/cards/team-tufa-labs-2026"
+    ]
   }
 ]

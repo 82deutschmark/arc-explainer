@@ -10,9 +10,10 @@ look, the way baseball sets do; the 2025 set is the painted ARC Hall of Fame and
 
 ## What a card is
 
-One numbered card for every Kaggle **competitor** (P-numbers), **competition sponsor** (François Chollet, Mike Knoop;
-also P-numbers) and **team** (T-numbers). People get a card because they are achieving something in the competition,
-so having one is already a distinction. Words to use: competitor, sponsor, team. Never "player".
+One numbered card for every Kaggle **competitor** (P-numbers), **competition sponsor** (François Chollet; also P-numbers) and **team** (T-numbers). People get a card because they are achieving something in the competition,
+so having one is already a distinction. Mark's 1 November correction excludes Mike Knoop from the current set;
+keep his historical people record and earlier Hall of Fame card. `cards.json.excludedPersonIds` makes this survive refresh.
+Retired numbers stay unassigned; never renumber the rest of the set. Words to use: competitor, sponsor, team. Never "player".
 
 - **Front:** our own ARC Hall of Fame cyberpunk rendering of the real person, a tier border and medallion in Kaggle's
   own ladder (Novice, Contributor, Expert, Master, Grandmaster; each tier looks richer than the last), the ARC Prize mark,
@@ -56,6 +57,8 @@ is built from the text, so you control it:
   card page; for a collection note, show the card front.
 - Do not commission or generate card art during a news run unless ordered. Art is bound in `content/news/cards.json`
   only after review; the provenance record in `content/news/artwork/` must exist, and rejected pieces stay unbound.
+  For a shared historical team picture that must not become an individual front, set `artFallback: "none"` on that
+  individual definition. This preserves the past card in its archive while waiting for a reviewed individual commission.
   New art follows [CARD_ART_BRIEF.md](CARD_ART_BRIEF.md): 5:7, clean (no text, no frame), room for the code-drawn border,
   badges and stats.
 - No card art yet shows a designed "rendering on the way" card. That is intentional; say nothing about it in copy.
