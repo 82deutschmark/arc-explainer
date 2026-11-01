@@ -19,6 +19,8 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import Arc3ReferenceContent from '../../../shared/Arc3ReferenceContent';
+import Arc3WhyContent from '../../../shared/Arc3WhyContent';
+import { ARC3_HUB_SECTIONS } from '../../../shared/arc3ResourceHub';
 import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
 import { SITE_ORIGIN, clientRouteMeta, completeMeta, escapeHtml as esc, isDynamicAppRoute } from '../../../shared/seo';
 import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
@@ -58,10 +60,11 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
       return { tags: completeMeta(tags), status: 410 };
     }
     if (route === '/arc3') tags.bodyHtml = renderToStaticMarkup(React.createElement(Arc3ReferenceContent));
+    if (route === '/arc3/why') tags.bodyHtml = `<main>${renderToStaticMarkup(React.createElement(Arc3WhyContent))}<p><a href="/arc3/gallery">Play the games</a> · <a href="/home">ARC-3 resource hub</a></p></main>`;
     if (route === '/arc3/games') {
       tags.bodyHtml = `<main><h1>ARC-AGI-3 Game Mechanics</h1><p>Guides to the 25 public demonstration games, plus separately labeled preview history. These are spoilers; the private competition games have different mechanics.</p><p><a href="/arc3/slippery-seven">The Slippery Seven</a> · <a href="/human-records.html">Human and AI results</a> · <a href="/arc3/games.md">Markdown reference</a></p><ul>${getAllGames().map((game: Arc3GameMetadata) => `<li>${gameLink(game.gameId)}${game.gameId === 'as66' ? ' (withdrawn preview)' : ''} — ${esc(game.simpleExplanation)}</li>`).join('')}</ul></main>`;
     }
-    if (route === '/home') tags.bodyHtml = `${tags.bodyHtml}<section><h2>Explore all public sections</h2>${publicPageLinks()}</section>`;
+    if (route === '/home') tags.bodyHtml = `<main><h1>ARC-AGI-3 Resource Hub</h1>${paragraphs(tags.description)}<h2>Human walkthroughs</h2><ul>${getAllGames().map(g => `<li><a href="/arc3/games/${esc(g.gameId)}">${esc(g.gameId)} walkthrough</a></li>`).join('')}</ul>${ARC3_HUB_SECTIONS.map(s => `<h2>${esc(s.title)}</h2>${paragraphs(s.blurb)}<ul>${s.items.map(r => `<li><a href="${esc(r.url)}">${esc(r.title)}</a>: ${esc(r.desc)}</li>`).join('')}</ul>`).join('')}<p><a href="/arc2">ARC-1 and ARC-2 resources</a></p></main><section><h2>Explore all public sections</h2>${publicPageLinks()}</section>`;
     if (route === '/browser') tags.bodyHtml = `<main><h1>ARC puzzle browser</h1>${paragraphs(tags.description)}<ul>${puzzleLoader.getPuzzleList().map(p => `<li><a href="/puzzle/${encodeURIComponent(p.id)}">${esc(p.id)}</a> — ${esc(p.source)}</li>`).join('')}</ul></main>`;
     return { tags: completeMeta(tags), status: 200 };
   }

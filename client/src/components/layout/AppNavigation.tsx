@@ -167,6 +167,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
   },
   {
     type: 'link',
+    title: 'Resources',
+    href: '/home',
+    icon: Grid3X3,
+    description: 'Every ARC-AGI-3 resource in one place: walkthroughs, games, harnesses, papers, data',
+  },
+  {
+    type: 'link',
     title: 'Our Games',
     href: '/arc3/gallery',
     icon: LayoutGrid,
@@ -190,7 +197,7 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
         items: [
           {
             type: 'link', title: 'Resource Hub', href: '/home', icon: Grid3X3,
-            description: 'Games, guides, human puzzles and results archives',
+            description: 'Every ARC-AGI-3 resource in one place: walkthroughs, games, harnesses, papers, data',
           },
           {
             type: 'link', title: 'Human & AI Results', href: '/human-records.html', fullPage: true,
@@ -299,6 +306,10 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
       {
         label: 'Play',
         items: [
+          {
+            type: 'link', title: 'All ARC-1 & 2 Resources', href: '/arc2', icon: Grid3X3,
+            description: 'Puzzle browsers, scoring, results archives and research tools',
+          },
           {
             type: 'link', title: 'Human ARC', href: '/human-arc/', fullPage: true,
             icon: Users, description: 'Try ARC puzzles and compare your reasoning with AI',

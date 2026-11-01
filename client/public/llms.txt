@@ -8,7 +8,8 @@
 - [Competitor notebook](https://arc.markbarney.net/news/competitors): dated public backgrounds and distinct competition identities.
 - [ARC Daily RSS](https://arc.markbarney.net/news/feed.xml): permanent article links and summaries.
 
-- [Resource hub](https://arc.markbarney.net/home): public sections and related projects.
+- [ARC-AGI-3 resource hub](https://arc.markbarney.net/home): human walkthroughs of every public game, games to play, and the harnesses, write-ups, papers, datasets and tools.
+- [ARC-1 and ARC-2 resources](https://arc.markbarney.net/arc2): puzzle browsers, scoring and results archives.
 - [ARC leaderboards](https://arc.markbarney.net/arc-leaderboards): the live ARC-AGI-3 and ARC-AGI-2 Kaggle boards in one place, with the official ARC Prize leaderboard and the archived model results.
 - [ARC-AGI-3 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard): public standings, team history and changes. Public medal bands are not final private results.
 - [ARC-AGI-2 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard/arc-2): separate competition data and history.

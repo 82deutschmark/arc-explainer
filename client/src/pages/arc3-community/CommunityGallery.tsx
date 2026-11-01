@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
 import { Arc3PixelPage } from '@/components/arc3-community/Arc3PixelUI';
-import { BoardWall, PickRow, REPO_URL, WHY_URL, WRITEUP_URL, labelOf, useApprovedGames, usePicks } from '@/components/arc3/SyntheticGames';
+import { BoardWall, PickRow, REPO_URL, WHY_PATH, labelOf, useApprovedGames, usePicks } from '@/components/arc3/SyntheticGames';
 
 export default function CommunityGallery() {
   const [search, setSearch] = useState('');
@@ -24,8 +24,8 @@ export default function CommunityGallery() {
         <p className="text-[#C9C6C3] leading-[1.7]">No instructions and no login. Coding agents built these; a person playing decided which were worth keeping.</p>
         <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
           <Link href="/play" className="px-5 py-2.5 font-semibold bg-[#E53AA3] text-white">Play a game →</Link>
-          <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline">Why these exist ↗</a>
-          <a href={WRITEUP_URL} target="_blank" rel="noreferrer" className="underline">The write-up ↗</a>
+          <Link href={WHY_PATH} className="underline">Why these exist</Link>
+          <Link href="/home" className="underline">ARC-3 resource hub</Link>
           <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
         </p>
       </header>

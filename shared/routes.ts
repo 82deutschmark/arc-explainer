@@ -108,11 +108,11 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
-    title: 'ARC Explainer Resource Hub — games, guides and results',
-    description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',
+    title: 'ARC-AGI-3 Resource Hub — walkthroughs, games, harnesses, papers',
+    description: 'Human walkthroughs of every public ARC-AGI-3 game, games to play with no login, and the harnesses, winning write-ups, papers, datasets and tools, all in one place.',
     url: `${SITE}/home`,
     type: 'website',
-    bodyHtml: '<h1>ARC Explainer Resource Hub</h1><p>Independent community games, guides and results by Mark Barney.</p><ul><li><a href="/human-arc/">Human ARC puzzles and assessments</a></li><li><a href="https://sfmc.markbarney.net/">Space Force Mission Control</a></li><li><a href="/arc3/games">ARC-AGI-3 game guides</a></li><li><a href="/human-records.html">Human and AI results</a></li><li><a href="/analytics">Hugging Face results archive</a></li></ul>',
+    bodyHtml: '<h1>ARC-AGI-3 Resource Hub</h1>',
   },
   // ==================== ARC-AGI-3 ====================
   // Both public hosts share the same landing page and preferred canonical origin.
@@ -398,6 +398,8 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/llm-reasoning', 'Language-model reasoning on ARC puzzles', 'Explore how language models approach ARC puzzles and the tools used to examine their reasoning.'],
   ['/llm-reasoning/advanced', 'Advanced ARC reasoning tools', 'Explore advanced workflows for investigating language-model reasoning on ARC puzzles.'],
   ['/arc3', 'ARC-AGI-3 and ARCEngine Explained | ARC Explainer', 'Explore the ARC-AGI-3 game engine, actions, frames, game creation, validation and scoring in our existing reference guide. Play games and read detailed analyses.'],
+  ['/arc2', 'ARC-1 and ARC-2 resources', 'Puzzle browsers, assessments, scoring, results archives and research tools for ARC-AGI-1 and ARC-AGI-2.'],
+  ['/arc3/why', "Creativity can't be interpolated", 'Why our synthetic ARC-AGI-3 games were made the slow way, with a person in the loop, and the games to play.'],
   ['/arc3/hypotheses', 'What a model guesses from one game frame', 'Research on local-model hypotheses about unseen ARC-AGI-3 frames and the effects of LM Studio thinking controls.'],
   ['/re-arc/submissions', 'RE-ARC benchmark submissions', 'Explore submitted RE-ARC benchmark results and their verifiable evaluation records.'],
   ['/snakebench', 'SnakeBench on ARC Explainer', 'Explore the upstream SnakeBench project, where language models compete in Snake.'],

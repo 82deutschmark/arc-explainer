@@ -100,7 +100,7 @@ import { type CSSProperties } from 'react';
 import { Link } from 'wouter';
 import HarnessGapChart from '@/components/arc3/HarnessGapChart';
 import OurStandingCard from '@/components/arc3/OurStandingCard';
-import { BoardWall, WHY_URL, useApprovedGames } from '@/components/arc3/SyntheticGames';
+import { BoardWall, WHY_PATH, useApprovedGames } from '@/components/arc3/SyntheticGames';
 import { ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
 import { MedalRaceChart } from '@/components/kaggleLeaderboard/MedalRaceChart';
 import { HeadlineFacts, StoryGrid } from '@/components/kaggleLeaderboard/Storylines';
@@ -212,7 +212,7 @@ export default function SyntheticLanding() {
           <Section title="Our synthetic games" note={`${approved.games.length} approved`}>
             <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
               Coding agents built them, on the official engine. A person playing decided which
-              were worth keeping. <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline">Here's why</a>.
+              were worth keeping. <Link href={WHY_PATH} className="underline">Here's why</Link>.
               They're all playable here: no account, nothing to install.
             </p>
             <div className="p-3" style={{ background: ARC.tile }}>

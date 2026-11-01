@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.161.0  Nov 1, 2026
+
+- **/home is now the ARC-AGI-3 resource hub, ARC-3 only** (Author: Claude Opus 5.5 High). Boss: this was the page he meant; his collection is being displayed badly, the human walkthroughs are not advertised, and ARC-2 must not lead. The page opens on a table of every public game with its walkthrough, a human winning replay, AI replays, the original build and one-click Play. Below it: the reasoning traces, the wall of our games, then a searchable directory of every outside resource.
+- **The directory** (`shared/arc3ResourceHub.ts`) came from a sweep of both repos, ARC Prize, Kaggle, GitHub, arXiv, Hugging Face and YouTube; each link was opened and dead links, sign-in walls and unsupported descriptions dropped. It is plain data, also rendered for crawlers.
+- **The write-up lives here now** at `/arc3/why` (`shared/Arc3WhyContent.tsx`, `client/src/pages/Arc3Why.tsx`), with the games playable under it. Links across the site point to it; GitHub Pages is a side link in the hub and on that page.
+- **New `/arc2`** (`client/src/pages/Arc2Resources.tsx`) holds the ARC-1 and ARC-2 entries and the list of public sections. New `client/src/components/arc3/WalkthroughTable.tsx`. Nav gets a top-level "Resources" link.
+
 ### Version 9.160.0  Nov 1, 2026
 
 - **The front page leads with the synthetic games** (Author: Claude Opus 5.5 High). Boss: the site needs a glow-up for the end of ARC-3 and this page has to lead with the games, reversing the 16-Oct note. `/` now opens on a dark band: the lead board (LT03), the published picks with human numbers and level strips, the wall of every approved game, and the line from the why note. The clock, ARC Mutants, the race and the wire all stay, below it.

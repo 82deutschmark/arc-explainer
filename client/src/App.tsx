@@ -128,6 +128,8 @@ const Arc3HypothesisResearch = lazy(() => import("@/pages/arc3-community/Arc3Hyp
 const Arc3MechanicGuide = lazy(() => import("@/pages/arc3-community/Arc3MechanicGuide"));
 // The official game index shares its registry with the server-rendered /arc3/games.md.
 const Arc3GamesIndex = lazy(() => import("@/pages/Arc3GamesIndex"));
+const Arc2Resources = lazy(() => import("@/pages/Arc2Resources"));
+const Arc3Why = lazy(() => import("@/pages/Arc3Why"));
 const Arc3SlipperySeven = lazy(() => import("@/pages/Arc3SlipperySeven"));
 const Arc3ArchivePlayground = lazy(() => import("@/pages/arc3-archive/Arc3ArchivePlayground"));
 const CommunityGallery = lazy(() => import("@/pages/arc3-community/CommunityGallery"));
@@ -256,6 +258,8 @@ function Router() {
         {/* ARC3 - Story & explainer page (primary landing) */}
         <Route path="/arc3" component={Arc3Story} />
         <Route path="/arc3/games" component={Arc3GamesIndex} />
+        <Route path="/arc3/why" component={Arc3Why} />
+        <Route path="/arc2" component={Arc2Resources} />
         <Route path="/arc3/slippery-seven" component={Arc3SlipperySeven} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
         {/* ARC3 Community - game play, gallery, uploads (secondary) */}

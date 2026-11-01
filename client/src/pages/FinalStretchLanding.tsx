@@ -54,7 +54,7 @@ import { KAGGLE_COMPETITIONS, closeMs } from '@shared/kaggleCompetitions';
 import { competitionName, wirePath, type NewsWireStory } from '@shared/news';
 import OurStandingCard from '@/components/arc3/OurStandingCard';
 import {
-  BoardWall, INK, LEAD_GAME_LABEL, PickRow, REPO_URL, WHY_URL, WRITEUP_URL,
+  BoardWall, INK, LEAD_GAME_LABEL, PickRow, REPO_URL, WHY_PATH,
   boardImage, labelOf, playPath, useApprovedGames, usePicks,
 } from '@/components/arc3/SyntheticGames';
 import { ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
@@ -219,7 +219,8 @@ function GamesLead() {
             <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-[13px]">
               <Link href="/play" className="inline-block px-6 h-[44px] leading-[44px] font-semibold tracking-[.5px]" style={{ background: '#E53AA3', color: '#fff' }}>Play a game →</Link>
               <Link href="/arc3/gallery" className="underline">Every game</Link>
-              <a href={WRITEUP_URL} target="_blank" rel="noreferrer" className="underline">The write-up ↗</a>
+              <Link href={WHY_PATH} className="underline">Why we made them</Link>
+              <Link href="/home" className="underline">ARC-3 resource hub</Link>
               <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
             </div>
           </div>
@@ -251,7 +252,7 @@ function GamesLead() {
           Every approved game
         </h2>
         {isError
-          ? <p role="alert" className="text-[13px]" style={{ color: '#C9C6C3' }}>The games didn't load just now. <a href={WRITEUP_URL} className="underline">See the write-up</a>.</p>
+          ? <p role="alert" className="text-[13px]" style={{ color: '#C9C6C3' }}>The games didn't load just now. <Link href={WHY_PATH} className="underline">Read why we made them</Link>.</p>
           : <BoardWall games={games} loading={isLoading} columns="grid-cols-5 sm:grid-cols-8 lg:grid-cols-12" phoneLimit={20} />}
         <p className="mt-4 text-[13px] sm:hidden"><Link href="/arc3/gallery" className="underline">Every game →</Link></p>
 
@@ -260,7 +261,7 @@ function GamesLead() {
             “In my shop the agent makes the thing and a person playing the game is the outside check.”
           </blockquote>
           <figcaption className="mt-3 text-[14px]">
-            <a href={WHY_URL} target="_blank" rel="noreferrer" className="underline" style={{ color: '#C9C6C3' }}>Creativity can't be interpolated: why these games exist ↗</a>
+            <Link href={WHY_PATH} className="underline" style={{ color: '#C9C6C3' }}>Creativity can't be interpolated: why these games exist →</Link>
           </figcaption>
         </figure>
       </div>

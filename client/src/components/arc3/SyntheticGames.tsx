@@ -9,8 +9,8 @@ PURPOSE: The pieces every page uses to show Team Turducken's synthetic ARC-AGI-3
          TWO SOURCES ON PURPOSE. The Trainable feed says what is approved and playable on this
          site, but carries no human numbers. The published catalog carries those, and is hand
          curated by its "featured" list, but can lag behind approvals (LT03 is approved and is
-         not in it yet). A pick plays here when the feed has it, and on arc3.sonpham.net when
-         it does not. If the catalog can't be reached, the picks vanish and the wall still works.
+         not in it yet). A pick plays here when the site has that exact id, and on
+         arc3.sonpham.net when it does not. If the catalog can't be reached, the picks vanish and the wall still works.
 
          No game names, descriptions or rules appear here. Working out the rules is the game.
          Every figure is read from a source at runtime; none is typed in.
@@ -24,7 +24,8 @@ import { Link } from 'wouter';
 import { MONO } from '@/pages/arc3-community/landingTheme';
 
 export const WRITEUP_URL = 'https://82deutschmark.github.io/arc3-synthetic-games/';
-export const WHY_URL = `${WRITEUP_URL}why.html`;
+/** The write-up's home is this site. GitHub Pages is the side door, not the lead. */
+export const WHY_PATH = '/arc3/why';
 export const REPO_URL = 'https://github.com/82deutschmark/arc3-synthetic-games';
 
 /** The game the front page leads with. Falls back to the first approved game if it leaves the feed. */
@@ -77,6 +78,15 @@ export function useApprovedGames() {
   return { ...query, games: query.data?.data.games ?? [] };
 }
 
+/** Every game the player can open, unfiltered. Callers choose their set by category. */
+export function useMirrorGames(): (ApprovedGame & { category?: string })[] {
+  const { data } = useQuery<{ data: { games: (ApprovedGame & { category?: string })[] } }>({
+    queryKey: ['/api/arc3-mirror/games'],
+    staleTime: 5 * 60 * 1000,
+  });
+  return data?.data.games ?? [];
+}
+
 /** Published picks in the write-up's own order, resolved against what plays here. */
 export function usePicks(approved: ApprovedGame[]): Pick[] {
   const { data } = useQuery<Catalog>({
@@ -89,9 +99,13 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
       return response.json();
     },
   });
+  // Picks not yet in the approved feed (LT02 today) can still be in the wider mirror under their
+  // bare id. Exact id only: a look-alike such as wb01-v1 in another collection is a different game.
+  const mirror = useMirrorGames();
   return useMemo(() => {
     if (!data) return [];
     const here = new Map(approved.map((g) => [labelOf(g).toLowerCase(), g]));
+    for (const g of mirror) if (!here.has(g.gameId)) here.set(g.gameId, g);
     return data.featured.flatMap((id) => {
       const game = data.games.find((g) => g.id === id);
       if (!game) return [];
@@ -107,7 +121,7 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
         href: local ? playPath(local) : game.play,
       }];
     });
-  }, [data, approved]);
+  }, [data, approved, mirror]);
 }
 
 /** One link either way: inside this site by router, out to the lab in a new tab. */
