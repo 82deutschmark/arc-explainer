@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-11-01T22:02:03Z",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "S & M & N & S & Y climbs into ARC-2 gold with an 8.06-point gain",
+  "id": "2026-11-01-1730-arc-2-smnsy-climbs-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-11-01T22:30:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "S & M & N & S & Y climbed from 33rd to 15th on the ARC-2 public board, gaining 8.06 to reach 75.14 and move into the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The advance clears a rising cutoff: the last of the 17 gold places now requires 73.89, up 0.97 in the past day."
+    }
+  ],
+  "since": "2026-10-31T21:59:12Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T22:27:47Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16797706"
+  ]
+}
