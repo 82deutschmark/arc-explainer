@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T05:43:49.719191+00:00",
+  "updatedAt": "2026-11-01T05:55:04.162253+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1885,7 +1885,15 @@
       "articleUses": [
         "2026-11-01-arc-mutants-lab-that-wouldnt-sleep"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2116770305729257482",
+          "postedAt": "2026-11-01T05:55:04.162253+00:00",
+          "articleId": "2026-11-01-arc-mutants-lab-that-wouldnt-sleep",
+          "imageSha256": "517ba58a5cbfb05037b6c12d006626b1df8c559b11fa58c4b982740438f93edb",
+          "outbox": "2026-11-01-arc-mutants-lab-x.json"
+        }
+      ],
       "discordShares": [
         {
           "channelId": "1550165647911034940",
