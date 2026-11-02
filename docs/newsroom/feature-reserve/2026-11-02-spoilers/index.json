@@ -1,0 +1,90 @@
+{
+  "updatedAt": "2026-11-02",
+  "preparedBy": "Claude Opus 5.5 High",
+  "commissionedBy": "mark-barney",
+  "state": "held-awaiting-editor-approval",
+  "approval": "The Boss gives the okay before any edition, X post or Discord send.",
+  "headline": "Spoilers: the twelve best games Team Turducken made",
+  "links": {
+    "page": "https://82deutschmark.github.io/arc3-synthetic-games/",
+    "why": "https://82deutschmark.github.io/arc3-synthetic-games/why.html",
+    "source": "https://github.com/82deutschmark/arc3-synthetic-games"
+  },
+  "games": [
+    {
+      "id": "PT01",
+      "hook": "A sea battle where only a ship’s stern can be hurt, and enemy guns fire down lanes drawn one press before the shot.",
+      "play": "https://arc3.sonpham.net/games/pt01"
+    },
+    {
+      "id": "TE01",
+      "hook": "A rover on a fixed length of cable that pulls tight round posts, so the side you pass each post decides how far you can reach.",
+      "play": "https://arc3.sonpham.net/games/te01"
+    },
+    {
+      "id": "DZ01",
+      "hook": "Dig down a shaft where the ground’s colour tells you its price in clicks, and sand pours into every hole you open.",
+      "play": "https://arc3.sonpham.net/games/dz01"
+    },
+    {
+      "id": "LT03",
+      "hook": "You never move anyone: you aim at a city that keeps walking, every shot lands late, and from the fourth mission the city answers back.",
+      "play": "https://arc3.sonpham.net/games/lt03"
+    },
+    {
+      "id": "ES01",
+      "hook": "Aim an outbreak: one sneeze down a line of people chains across the room, and every person you infect is another body you can jump into.",
+      "play": "https://arc3.sonpham.net/games/es01"
+    },
+    {
+      "id": "EH01",
+      "hook": "The only way to see what a square holds is to step back off it, and every step back wears down the floor you land on.",
+      "play": "https://arc3.sonpham.net/games/eh01"
+    },
+    {
+      "id": "FF01",
+      "hook": "A sea several screens wide where every current and every fish turns together on one tide you can count.",
+      "play": "https://arc3.sonpham.net/games/ff01"
+    },
+    {
+      "id": "XB02",
+      "hook": "A countryside several screens wide where lighting a shrine opens gates somewhere you can’t see.",
+      "play": "https://arc3.sonpham.net/games/xb02"
+    },
+    {
+      "id": "WB02",
+      "hook": "Every move of your boat is a gust for the others, and a boat only stays home if you let go of it in its berth.",
+      "play": "https://arc3.sonpham.net/games/wb02"
+    },
+    {
+      "id": "BS01",
+      "hook": "The guards who catch you are the only ones who can open the door, and you steer them with bells.",
+      "play": "https://arc3.sonpham.net/games/bs01"
+    },
+    {
+      "id": "WF02",
+      "hook": "One lever turns a whole circuit of pipes around at once, so each pour is a choice of which way the water runs.",
+      "play": "https://arc3.sonpham.net/games/wf02"
+    },
+    {
+      "id": "HC01",
+      "hook": "You never push a block: you turn the light, and each block falls along its own shadow.",
+      "play": "https://arc3.sonpham.net/games/hc01"
+    }
+  ],
+  "files": {
+    "manuscript": "docs/newsroom/feature-reserve/2026-11-02-spoilers/feature.txt",
+    "image": "docs/newsroom/feature-reserve/2026-11-02-spoilers/announce-image.png"
+  },
+  "draftXPost": {
+    "text": "Spoilers. The twelve best synthetic ARC-AGI-3 games from Team Turducken, with the rules written out and how each one differs from ARC’s public 25. Free to play. https://82deutschmark.github.io/arc3-synthetic-games/",
+    "image": "docs/newsroom/feature-reserve/2026-11-02-spoilers/announce-image.png",
+    "state": "draft"
+  },
+  "draftDiscord": "Spoilers: our twelve best ARC-AGI-3 games, rules and all. https://82deutschmark.github.io/arc3-synthetic-games/",
+  "doNot": [
+    "show human action numbers",
+    "give games readable titles",
+    "post or send without the Boss’s okay"
+  ]
+}
