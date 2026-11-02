@@ -21,6 +21,8 @@
  *          comes from and how to reach Boss with corrections, retractions or complaints.
  *          NewsWelcome, a one-time pop-up for first-time visitors, renders in the shared shell.
  *          16-Oct-2026 (Claude Opus 5.5 Medium): the masthead countdown reads the shared close helpers.
+ *          02-Nov-2026 (Claude Opus 5.5 High): story previews lead with art and the opening section;
+ *          the compact cast cards follow it instead of sitting under the byline.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import { useMemo, type ReactNode } from 'react';
@@ -170,14 +172,20 @@ export function StoryPreview({ article, lead = false, people = [], sections = 0,
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">By the ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />
     {article.image ? <EditionArtwork article={article} lead={lead} /> : art}
-    {!!shown.length && <div className="news-story-body">{shown.map((section, index) => <section key={index}>
-      {section.heading && <h3>{section.heading}</h3>}
-      <p>{section.text}</p>
-    </section>)}</div>}
+    {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} /></div>}
+    {/* Reporting leads: the cast cards wait until the opening section has been read. */}
+    <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />
+    {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} />)}</div>}
     <Link href={newsArticlePath(article.id)} className="news-read">{more ? 'Continue reading, with sources and the box score →' : 'Sources and the box score →'}</Link>
   </article>;
+}
+
+function StoryBodySection({ section }: { section: NewsArticle['sections'][number] }) {
+  return <section>
+    {section.heading && <h3>{section.heading}</h3>}
+    <p>{section.text}</p>
+  </section>;
 }
 
 export function NotebookEntry({ competitor, people = [] }: { competitor: CompetitorRecord; people?: NewsPerson[] }) {

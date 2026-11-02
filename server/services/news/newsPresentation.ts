@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 2026-11-01
+ * Date: 2026-11-01; 02-Nov-2026 (Claude Opus 5.5 High: story cast follows the opening section)
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
@@ -70,8 +70,7 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
     <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p>${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}<p>ARC Daily sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
     ${feature ? dispatchHtml(feature) : ''}
-    ${storyPeopleHtml(reportedPeople(feature ? [feature, article] : [article], people), article.competition)}
-    ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
+    ${article.sections.map((section, index) => `${index === 1 ? storyPeopleHtml(reportedPeople(feature ? [feature, article] : [article], people), article.competition) : ''}${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}${article.sections.length < 2 ? storyPeopleHtml(reportedPeople(feature ? [feature, article] : [article], people), article.competition) : ''}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">The ARC Daily Digest front page</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;

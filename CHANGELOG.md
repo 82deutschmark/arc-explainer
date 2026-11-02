@@ -1,3 +1,7 @@
+### Version 9.161.21 · November 2, 2026
+
+- Stories lead with the reporting again. On the front page the lead story now runs headline, standfirst, byline, artwork and its opening section before the "In this story" cards; the cards are thumbnail-sized under a small label (it had been inheriting the giant headline style), and on phones they are one swipeable row instead of a stack of full-size cards. The plain page sent before the browser finishes loading puts the cards after the opening section too. (Claude Opus 5.5 High)
+
 ### Version 9.161.20 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships, rewritten from the ground up to answer Cristiano Calcagno's question. New charts: eight named teams' seasons by score or by place against the model and code releases; the share of teams that doubled their score each day; and where every team sits now. New prose built on Team Turducken's fall from 18th to 491st with an unchanged score, with the Boss's dated farm photos. The medal-line charts, ARC-2 sidebar and Qwen 4 ending are gone. (Claude Opus 5.5 Medium)
