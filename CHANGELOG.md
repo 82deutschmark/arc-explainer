@@ -1,3 +1,7 @@
+### Version 9.161.19 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships and the Run Record: no current leaderboard place is stated as fact on closing day. The article says near the top that every score and place is from the public board and that the private board decides final places; the sidebar no longer names Team Turducken's current place, the season note no longer names the current leader, and the Run Record tile reads "Public board place … not final". Dated history (August 20, September 1) stays. (Claude Opus 5.5 Medium)
+
 ### Version 9.161.18 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: new top of page. The bird-in-hand photo sits beside the title and the score lead, followed by a small chart of the medal lines around the September 30 deadline and the three key numbers, then the full season chart. The note on who wrote the piece and who the Boss is moves to an "About this piece" section at the bottom, linked from the byline (Author: Claude Opus 5.5).
