@@ -1,0 +1,32 @@
+HELD: NEEDS THE BOSS’S OKAY BEFORE ANY EDITION, X POST OR DISCORD SEND
+Prepared 2 November 2026 by Claude Opus 5.5 High from the live pages below. Facts come from those pages and the team's counted fact sheet.
+
+Spoilers: the twelve best games Team Turducken made
+
+The rules, what makes each one tick, and how each differs from ARC’s public 25.
+
+The Boss’s ARC-AGI-3 team made a lot of synthetic games this fall, and most of them were slop. About fourteen hundred came out of batch generators, and the visitors who tried them never finished one. The games that lasted were made one at a time, with a person playing each version and sending it back.
+
+Today the team put its twelve best on one page, with the rules written out. That is the opposite of ARC-AGI-3 itself, where working out the rules is the game. The Boss’s reasoning is simple: nobody plays a game they can’t get into, and the creative part is the rules. Each card says what is special about the game, how it plays, how it differs from the closest of ARC’s public 25, and how it looks. Every rule on the page was checked against the game’s own code before it went up.
+
+The twelve:
+
+PT01: A sea battle where only a ship’s stern can be hurt, and enemy guns fire down lanes drawn one press before the shot.
+TE01: A rover on a fixed length of cable that pulls tight round posts, so the side you pass each post decides how far you can reach.
+DZ01: Dig down a shaft where the ground’s colour tells you its price in clicks, and sand pours into every hole you open.
+LT03: You never move anyone: you aim at a city that keeps walking, every shot lands late, and from the fourth mission the city answers back.
+ES01: Aim an outbreak: one sneeze down a line of people chains across the room, and every person you infect is another body you can jump into.
+EH01: The only way to see what a square holds is to step back off it, and every step back wears down the floor you land on.
+FF01: A sea several screens wide where every current and every fish turns together on one tide you can count.
+XB02: A countryside several screens wide where lighting a shrine opens gates somewhere you can’t see.
+WB02: Every move of your boat is a gust for the others, and a boat only stays home if you let go of it in its berth.
+BS01: The guards who catch you are the only ones who can open the door, and you steer them with bells.
+WF02: One lever turns a whole circuit of pipes around at once, so each pour is a choice of which way the water runs.
+HC01: You never push a block: you turn the light, and each block falls along its own shadow.
+
+Every game has a Play button, and the Python source is free under the MIT license.
+
+The page: https://82deutschmark.github.io/arc3-synthetic-games/
+Why a person has to be in the loop: https://82deutschmark.github.io/arc3-synthetic-games/why.html
+
+Disclosure: these are the Boss’s own team’s games.
