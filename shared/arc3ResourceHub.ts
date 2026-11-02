@@ -1665,11 +1665,11 @@ export const ARC3_HUB_SECTIONS: HubSection[] = [
     "desc": "An analysis of how much one public notebook's score varied across many participants' one-time submissions, and what that implies for judging improvements."
    },
    {
-    "title": "Competitor notebook",
+    "title": "Competitor profiles",
     "url": "/news/competitors",
     "by": "The ARC Daily Digest",
     "date": "",
-    "desc": "A sourced notebook of public team identities and backgrounds, with separate records for each competition."
+    "desc": "Team backgrounds, members and ARC Daily coverage for each competition."
    },
    {
     "title": "People behind the teams",

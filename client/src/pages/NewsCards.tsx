@@ -1,11 +1,11 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild)
- * Date: 2026-10-30
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: The ARC Daily Digest's Card Cabinet, rebuilt as a collector's binder and a price-guide checklist.
  *          The rendered cards ARE the page: a grid of real card faces (front and back) and a dense checklist
  *          of the same cards, filtered by Kaggle tier, role and contest. Each card page puts the card beside
  *          its data (Kaggle profile, standings, completed competitions) and links everything we already hold
- *          for the subject: their earlier Hall of Fame cards, team cards, notebook, person page and the Digest
+ *          for the subject: their earlier Hall of Fame cards, team cards, profile, person page and the Digest
  *          stories that name them. Competitors, sponsors and teams; never "players".
  * SRP/DRY check: Pass — the collection API owns identity, art, standings and career; this page only filters,
  *          lays out and links. Wording helpers live in shared/newsCollection.ts so the server HTML, the share
@@ -304,7 +304,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
         </Panel>}
         <Panel title="Everything else">
           <ul className="cb-list">
-            <li><Go href={card.profileUrl}>{card.kind === 'person' ? 'Their page in the Digest →' : 'The team notebook →'}</Go></li>
+            <li><Go href={card.profileUrl}>{card.kind === 'person' ? 'Their page in the Digest →' : 'The team profile →'}</Go></li>
             {card.accounts.slice(0, 6).map(account => <li key={account.url}><a href={account.url}>{account.label} ↗</a></li>)}
             <li><a href="/hall-of-fame">The ARC Hall of Fame ↗</a></li>
           </ul>

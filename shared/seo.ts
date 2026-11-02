@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
- * Date: 2026-10-27
+ * Author: GPT-6 / Codex; existing contributors credited below; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -62,7 +62,7 @@ export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: strin
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
   if (route.startsWith('/news/')) items.push({ name: 'The ARC Daily', url: `${SITE_ORIGIN}/news` });
-  if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor notebook', url: `${SITE_ORIGIN}/news/competitors` });
+  if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor profiles', url: `${SITE_ORIGIN}/news/competitors` });
   const name = route === '/news' ? NEWS_NAME : LEADERBOARD_CRUMBS[route] ?? tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
   items.push({ name: game ? game[1] : name, url: tags.url });
   return items;
@@ -125,7 +125,7 @@ export const SOCIAL_META_NAMES = ['og:image:width', 'og:image:height', 'article:
 export function clientRouteMeta(value: string): RouteMetaTags {
   const route = redirectPath(value) || normalizePath(value);
   if (Object.hasOwn(ROUTE_META_TAGS, route)) return completeMeta(ROUTE_META_TAGS[route]);
-  if (/^\/summit\/[A-Za-z0-9_-]{43}$/.test(route)) return completeMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notebook.', url: `${SITE_ORIGIN}${route}`, noindex: true });
+  if (/^\/summit\/[A-Za-z0-9_-]{43}$/.test(route)) return completeMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notes.', url: `${SITE_ORIGIN}${route}`, noindex: true });
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   const puzzle = route.match(/^\/puzzle\/([A-Za-z0-9_-]{1,128})$/);
   const play = route.match(/^\/arc3\/play\/([A-Za-z0-9_.-]{1,64})$/);

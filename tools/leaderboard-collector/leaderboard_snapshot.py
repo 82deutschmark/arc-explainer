@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol
-# Date: 07-October-2026
+# Date: 01-November-2026 (current Kaggle CLI positional competition argument)
 # PURPOSE: Preserve Kaggle snapshots, score events, and continuous history for the
 # public leaderboard's leaders, pinned team, and featured competitors at any rank.
 # SRP/DRY check: Pass — extends the existing snapshot collector and publishing pipeline.
@@ -40,7 +40,7 @@ def medal(rank, cuts):
 
 def fetch_rows():
     with tempfile.TemporaryDirectory() as d:
-        subprocess.run(["kaggle", "competitions", "leaderboard", "-c", COMP, "--download", "-p", d],
+        subprocess.run(["kaggle", "competitions", "leaderboard", COMP, "--download", "-p", d],
                        check=True, capture_output=True)
         z = next(Path(d).glob("*.zip"))
         with zipfile.ZipFile(z) as zf:

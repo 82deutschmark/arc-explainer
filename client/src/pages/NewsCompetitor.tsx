@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 Sol / Codex
- * Date: 2026-10-09
- * PURPOSE: Competition-scoped competitor notebook showing sourced facts, observed
+ * Author: GPT-6 Sol / Codex; GPT-6 Astra Extra high
+ * Date: 2026-11-01
+ * PURPOSE: Competition-scoped competitor profile showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
  *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
  *          observed identity dates show without routine clock times.
@@ -20,13 +20,13 @@ export default function NewsCompetitor() {
   const competitor = query.data?.competitors.find(record => record.id === competitorId);
   const missing = !!query.data && !competitor;
   const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => article.competition === competitor.competition && article.teamIds.includes(competitor.teamId)) : [];
-  usePageMeta({ title: competitor ? competitorTitle(competitor) : 'Competitor notebook | The ARC Daily Digest', description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
+  usePageMeta({ title: competitor ? competitorTitle(competitor) : 'Competitor profiles | The ARC Daily Digest', description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
   return <NewsPaper>
-    <Link href="/news/competitors" className="news-back">← All competitor notebooks</Link>
+    <Link href="/news/competitors" className="news-back">← All competitor profiles</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
-    {missing && <section className="news-status"><h1 className="news-article-title">No notebook published yet</h1><p>The desk has not published a record for this competition team.</p><Link href="/news/competitors" className="news-read">Browse the competitor notebook →</Link></section>}
+    {missing && <section className="news-status"><h1 className="news-article-title">No profile published yet</h1><p>The desk has not published a record for this competition team.</p><Link href="/news/competitors" className="news-read">Browse competitor profiles →</Link></section>}
     {competitor && <>
-      <header className="news-directory-header"><div className="news-kicker">{competitionName(competitor.competition)} · Competitor notebook</div><h1>{competitor.name}</h1><p>A record of sourced facts and observed identities, with dispatches from the competition desk.</p></header>
+      <header className="news-directory-header"><div className="news-kicker">{competitionName(competitor.competition)} · Competitor profile</div><h1>{competitor.name}</h1><p>Team background, members and stories from the race.</p></header>
       <div className="news-identity"><span><strong>Competition</strong><br /><code>{KAGGLE_COMPETITIONS[competitor.competition].slug}</code></span><span><strong>Kaggle team ID</strong><br />{competitor.teamId}</span><span><strong>First observed</strong><br />{newsDate(competitor.firstObservedAt)}</span><span><strong>Last observed</strong><br />{newsDate(competitor.lastObservedAt)}</span></div>
       <div className="news-article-grid">
         <section><h2 className="news-section-title">On the record</h2>

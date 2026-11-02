@@ -1,3 +1,9 @@
+### Version 9.161.2 · November 1, 2026
+
+- **Competitor profiles** — Replace the misleading “competitor notebook” label across navigation, team pages, cards, wire links, search previews and the resource directory. Reserve notebook for actual Kaggle/Jupyter code notebooks; record the rule in the newsroom guidance. Author: GPT-6 Astra Extra high.
+
+- **Down to the Wire** — Fresh final-day ARC-2 and ARC-3 reporting, recent movers and two-week gains, one complete reading page, refreshed cover scores, and the requested GPT-6 Astra Extra high byline. Replaces the unpublished Night Watch draft; the 11 p.m. job was removed. The manual collector now accepts the installed Kaggle CLI’s positional competition argument. Author: GPT-6 Astra Extra high.
+
 ## 2026-11-01 — Editorial handover (Codex; local review)
 
 Consolidate Digest authoring in one checkout, preserve retired workspaces and unfinished edits, hold all automated sends, and correct the misleading L4 exclusivity inference in Legends and Arena Report with credit to CPMP. Tonight's articles and reply remain private drafts pending editor review. Collector source is retained here with an explicit release guard; no automatic Git pull.

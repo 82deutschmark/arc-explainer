@@ -1,79 +1,94 @@
 {
   "baselineAt": "2026-10-31T21:59:10Z",
   "competition": "arc-3",
-  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
-  "dataAsOf": "2026-11-01T22:32:06Z",
+  "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
+  "dataAsOf": "2026-11-02T00:56:31Z",
   "date": "2026-11-01",
-  "dek": "The leading pair remain separated from the chase as the competition enters its final full night. Fourth and fifth are almost level.",
-  "discord": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
+  "dek": "Less than 24 hours remain. Chen has the lead, Tufa is giving chase, and fourth place hangs on thirteen hundredths of a point.",
+  "discord": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
   "edition": "evening",
   "frontPageFeatureId": "2026-11-01-nvarc3-passes-turducken",
-  "generatedBy": "gpt-6.1-sol",
-  "headline": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken",
+  "generatedBy": "gpt-6-astra-extra-high",
+  "headline": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken",
   "id": "2026-11-01-evening-arc-3",
   "image": {
-    "alt": "Illustration for The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
-    "artworkId": "2026-11-01-evening-arc-3-dfb6afb3d2",
-    "caption": "Score panel: Nov 1, 2026 · 5:32 PM EST; provisional public standings.",
-    "src": "/news-images/2026-11-01-evening-arc-3-dfb6afb3d2.webp"
+    "alt": "Illustration for Down to the Wire: Chen leads as NVARC3 squeezes past Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
+    "artworkId": "2026-11-01-evening-arc-3-6628af5a33",
+    "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-evening-arc-3-6628af5a33.webp"
   },
-  "publishedAt": "2026-11-01T23:09:56Z",
+  "publishedAt": "2026-11-02T00:57:44Z",
   "sections": [
     {
-      "heading": "The leaders hold their ground",
-      "sourceIds": [
-        "board"
-      ],
-      "text": "Yi-Chia Chen @ Fields Model leads the ARC-AGI-3 public board on 75.56, with Tufa Labs second on 70.24. The latest observation available for this edition was recorded at 5:32 pm Eastern on Sunday. Chen’s advantage is 5.32 points. Below them, faster machine is all you need holds third on 58.59. These are public standings, not the final private results."
-    },
-    {
-      "heading": "The pass that changed the chase",
+      "heading": "A sliver of daylight",
       "sourceIds": [
         "board",
         "dispatch-2026-11-01-nvarc3-passes-turducken"
       ],
-      "text": "NVARC3 finishes this edition’s observation in fourth on 56.15, just 0.13 ahead of Team Turducken on 56.02. This is today’s established overtake, not a new move this evening. The saved history first recorded NVARC3’s advance from eighth to fourth at 4 am Eastern, after a gain of 6.26 points. Turducken’s score stayed the same. The narrow gap leaves fourth place very much in play."
+      "text": "NVARC3 has fourth place by a whisker. Its Sunday surge from eighth carried it past Team Turducken, 56.15 to 56.02, leaving just 0.13 between them. Six points gained, four places climbed, and suddenly the chase behind the leaders looks very different. Third-placed xz is next on 58.59."
     },
     {
-      "heading": "Movement beyond the leading pack",
-      "sourceIds": [
-        "wire-2026-11-01-1104-arc-3-unk-enters-gold",
-        "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
-      ],
-      "text": "The morning wire recorded UNK climbing from 27th to 17th on 41.00, entering the provisional gold places at that observation. By the 5:02 pm wire check, K.nosaka had climbed to 62nd on 35.75, tomo11111 to 76th on 35.12, and Luxshan Thavarasa to 81st on 34.82. Those are dated wire observations; they should not be read as promised finishing positions."
-    },
-    {
-      "heading": "One more night",
+      "heading": "Chen sets the pace",
       "sourceIds": [
         "board"
       ],
-      "text": "The picture at the top is clear enough: Chen leads, Tufa is the nearest challenger, and the contest for fourth is exceptionally close. The public board can still change, and the private evaluation will decide the final result. Tonight’s Night Watch cover keeps the leading pair in view; the accompanying overtake illustration shows the separate fight below them."
+      "text": "Yi-Chia Chen @ Fields Model enters the final day on 75.56, with Tufa Labs on 70.24. Chen’s advantage is a little over five points. The pair have opened a wide gap over the chasing pack, but there is still a full day’s worth of pressure to absorb. Across on ARC-2, their positions are reversed: the two leading contenders have a contest apiece to defend."
+    },
+    {
+      "heading": "The field keeps moving",
+      "sourceIds": [
+        "board",
+        "wire-2026-11-01-1104-arc-3-unk-enters-gold",
+        "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
+      ],
+      "text": "Yukai Liu supplied the newest jolt, jumping from 671st to 39th as six more points lifted the score to 36.96. Earlier, UNK climbed into the gold places and now stands 17th on 41.00. K.nosaka, tomo11111 and Luxshan Thavarasa also charged into the top hundred on Sunday."
+    },
+    {
+      "heading": "The long climb",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "yktori has risen from 34th to seventh over the past two weeks, adding 15.01 points. UNK has climbed from 111th to 17th with a gain of 7.81. Near the public gold line, the margins are brutally small: The ARChitects is 16th on 41.03, UNK has 41.00, and Vineeth Sai Varikuntla follows on 40.98. The gold places run through 20th in a field of 5,035 teams."
+    },
+    {
+      "heading": "One day to answer",
+      "sourceIds": [
+        "board",
+        "deadline"
+      ],
+      "text": "The deadline is Monday at 23:59 UTC, or 6:59 p.m. Eastern. Chen has the lead to protect, Tufa has the gap to close, and NVARC3 and Turducken are almost shoulder to shoulder. The final day begins with plenty still within reach."
     }
   ],
   "sources": [
     {
-      "accessedAt": "2026-11-01T23:09:56Z",
+      "accessedAt": "2026-11-02T00:57:44Z",
       "id": "board",
       "title": "ARC-3 public leaderboard and observed history",
       "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     },
     {
-      "accessedAt": "2026-11-01T23:09:56Z",
+      "accessedAt": "2026-11-02T00:57:44Z",
       "id": "wire-2026-11-01-1104-arc-3-unk-enters-gold",
       "title": "UNK enters ARC-3 gold places",
       "url": "https://arc.markbarney.net/news/wire#2026-11-01-1104-arc-3-unk-enters-gold"
     },
     {
-      "accessedAt": "2026-11-01T23:09:56Z",
+      "accessedAt": "2026-11-02T00:57:44Z",
       "id": "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge",
       "title": "K.nosaka, tomo11111 and Luxshan Thavarasa surge on ARC-3",
       "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
     },
     {
-      "accessedAt": "2026-11-01T23:09:56Z",
+      "accessedAt": "2026-11-02T00:57:44Z",
       "id": "dispatch-2026-11-01-nvarc3-passes-turducken",
       "title": "NVARC3 noses past Turducken as the juggernaut joins the chase",
       "url": "https://arc.markbarney.net/news#2026-11-01-nvarc3-passes-turducken"
+    },
+    {
+      "accessedAt": "2026-11-02T00:57:44Z",
+      "id": "deadline",
+      "title": "Kaggle competition deadline: November 2, 23:59 UTC",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview"
     }
   ],
   "stats": [
@@ -94,7 +109,7 @@
       "teamId": "15486995"
     },
     {
-      "name": "faster machine is all you need",
+      "name": "xz",
       "rank": 3,
       "rankChange": 0,
       "score": 58.59,
@@ -207,16 +222,16 @@
     },
     {
       "name": "Team Alicia",
-      "rank": 40,
-      "rankChange": 4,
+      "rank": 41,
+      "rankChange": 3,
       "score": 36.89,
       "scoreChange": 0.35,
       "teamId": "16782490"
     },
     {
       "name": "Giovanny Rodríguez",
-      "rank": 117,
-      "rankChange": 161,
+      "rank": 118,
+      "rankChange": 160,
       "score": 34.06,
       "scoreChange": 1.52,
       "teamId": "16459830"

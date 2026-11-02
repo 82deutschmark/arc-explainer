@@ -1,8 +1,8 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "arc-3",
-  "editorNote": "Commissioned for the November 1 Late edition alongside the original Night Watch rabbit-and-spiders illustration. Standings checked Sunday afternoon; historical profiles and honors use dated saved sources. Social and discussion research was not refreshed.",
-  "generatedBy": "gpt-6.1-sol",
+  "editorNote": "Commissioned for the final-day edition with the original Chen–Tufa scene and the NVARC3–Turducken overtake illustration. Updated November 1 by GPT-6 Astra Extra high.",
+  "generatedBy": "gpt-6-astra-extra-high",
   "headline": "NVARC3 noses past Turducken as the juggernaut joins the chase",
   "id": "2026-11-01-nvarc3-passes-turducken",
   "image": {
@@ -18,14 +18,14 @@
         "kaggle-board",
         "board-history"
       ],
-      "text": "NVARC3 has taken fourth place on the ARC-AGI-3 public board, edging Team Turducken by just 0.13 points. The NVIDIA-associated entry stands at 56.15 against Turducken’s 56.02. The direct Kaggle check on Sunday afternoon confirms that order: the juggernaut is ahead, but the two teams remain almost level."
+      "text": "NVARC3 has edged past Team Turducken into fourth on the ARC-AGI-3 public board. At 56.15 against 56.02, the margin is thirteen hundredths of a point. The juggernaut has its nose in front; Turducken is still right there."
     },
     {
       "heading": "Six points and four places",
       "sourceIds": [
         "board-history"
       ],
-      "text": "The saved board history records NVARC3 advancing from 49.89 in eighth to 56.15 in fourth, a gain of 6.26 points. That change first appears in the collector’s 4 am Eastern observation on November 1. In the same observation, Turducken moves from fourth to fifth while retaining its 56.02 score. This was a challenger gaining ground, rather than a recorded score loss by Turducken. The observation time dates when the move was seen, not when a submission finished scoring."
+      "text": "The move landed overnight Sunday: NVARC3 rose from 49.89 to 56.15, vaulting from eighth to fourth. Four places in one surge. Turducken’s 56.02 had been enough for fourth; the challenger raised the price."
     },
     {
       "heading": "The podium is still up the mountain",
@@ -33,7 +33,7 @@
         "kaggle-board",
         "board-history"
       ],
-      "text": "The next place belongs to “faster machine is all you need,” third at 58.59. Above that, Tufa Labs holds second on 70.24 and Yi-Chia Chen @ Fields Model leads on 75.56. NVARC3 has passed Turducken; it has not yet passed the third-place entry or caught the leading pair. Those are the positions behind the new scene: a close overtake lower on the mountain, with the rabbits and spider citadel still well ahead."
+      "text": "Next up is xz, third on 58.59, less than two and a half points beyond NVARC3. Higher up the mountain, Tufa Labs has 70.24 and Yi-Chia Chen @ Fields Model leads on 75.56. The first pass is made. The next target is already in view."
     },
     {
       "heading": "Champions in a larger crew",
@@ -45,7 +45,7 @@
         "person-gal-kaplun-identity-0",
         "arc-2025-results"
       ],
-      "text": "NVARC3’s seven-account roster includes Jean-François Puget (CPMP), Ivan Sorokin, Darragh Hanley and Gal Kaplun. Puget and Sorokin were the two credited members of NVARC’s winning 2025 ARC Prize team; that title belongs to their earlier entry, not automatically to every member of today’s larger roster. Their current ARC-AGI-3 team has now gained four public places in one recorded advance. The board shows the result; it does not identify which change to the team’s system produced it."
+      "text": "Jean-François Puget (CPMP) and Ivan Sorokin won the 2025 ARC Prize together as NVARC. This year they are part of NVARC3’s seven-account crew, alongside Darragh Hanley, Gal Kaplun and their teammates. The former champions arrive at the final day with fresh momentum and a close fight on their hands."
     }
   ],
   "sources": [

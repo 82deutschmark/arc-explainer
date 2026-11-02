@@ -5,7 +5,7 @@
 ## Start here
 
 - [The ARC Daily](https://arc.markbarney.net/news): sourced morning and evening competition reporting, separate from the live box scores.
-- [Competitor notebook](https://arc.markbarney.net/news/competitors): dated public backgrounds and distinct competition identities.
+- [Competitor profiles](https://arc.markbarney.net/news/competitors): dated public backgrounds and distinct competition identities.
 - [ARC Daily RSS](https://arc.markbarney.net/news/feed.xml): permanent article links and summaries.
 
 - [ARC-AGI-3 resource hub](https://arc.markbarney.net/home): a guide to the human reasoning behind every public game with the replay to watch, games to play, and the harnesses, write-ups, papers, datasets and tools.

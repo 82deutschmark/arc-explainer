@@ -1,21 +1,21 @@
 {
-  "accessedAt": "2026-11-01T23:09:56Z",
+  "accessedAt": "2026-11-02T00:57:44Z",
   "articleId": "2026-11-01-evening-arc-3",
   "artwork": {
     "articleId": "2026-11-01-evening-arc-3",
-    "briefSha256": "df28777f650db4dc9ebb139c5805a14f05842f6c57dd940adf03e61c619ff33b",
-    "dataAsOf": "2026-11-01T22:32:06Z",
+    "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
+    "dataAsOf": "2026-11-02T00:56:31Z",
     "generationRecord": "2026-11-01-late-night-watch-v1-base",
-    "headline": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken",
+    "headline": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken",
     "historyChart": null,
-    "id": "2026-11-01-evening-arc-3-dfb6afb3d2",
+    "id": "2026-11-01-evening-arc-3-6628af5a33",
     "image": {
-      "alt": "Illustration for The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
-      "artworkId": "2026-11-01-evening-arc-3-dfb6afb3d2",
-      "caption": "Score panel: Nov 1, 2026 · 5:32 PM EST; provisional public standings.",
-      "src": "/news-images/2026-11-01-evening-arc-3-dfb6afb3d2.webp"
+      "alt": "Illustration for Down to the Wire: Chen leads as NVARC3 squeezes past Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
+      "artworkId": "2026-11-01-evening-arc-3-6628af5a33",
+      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+      "src": "/news-images/2026-11-01-evening-arc-3-6628af5a33.webp"
     },
-    "imageSha256": "85095c27738197bff72f6848ab69341eea19f7e5dc6fb55a5d1f70e8f06b687b",
+    "imageSha256": "6b9ade59aa611dc4a80dfe2bceaebcc55e42bdf4f7ddbaeb7cc06ca1f5558ecd",
     "kind": "edition-composition",
     "layout": "corner-overlays-v1",
     "leadGap": {
@@ -58,19 +58,19 @@
     "top": 75.56
   },
   "baselineTargetAt": "2026-10-31T22:00:00Z",
-  "briefSha256": "df28777f650db4dc9ebb139c5805a14f05842f6c57dd940adf03e61c619ff33b",
+  "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
   "closingSnapshot": {
-    "bronze": 31.55,
+    "bronze": 31.57,
     "gold": 40.75,
-    "silver": 32.79,
-    "t": "2026-11-01T22:32:06Z",
-    "teams": 5033,
+    "silver": 32.8,
+    "t": "2026-11-02T00:56:31Z",
+    "teams": 5035,
     "top": 75.56
   },
   "comparisons": {
     "15486995": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         70.24,
         2
       ],
@@ -78,7 +78,7 @@
     },
     "15487093": {
       "end": [
-        "2026-10-29T20:22:18Z",
+        "2026-11-02T00:56:31Z",
         58.59,
         3
       ],
@@ -90,7 +90,7 @@
     },
     "15488763": {
       "end": [
-        "2026-11-01T14:31:07Z",
+        "2026-11-02T00:56:31Z",
         39.69,
         23
       ],
@@ -102,7 +102,7 @@
     },
     "15499660": {
       "end": [
-        "2026-10-27T06:14:10Z",
+        "2026-11-02T00:56:31Z",
         75.56,
         1
       ],
@@ -114,7 +114,7 @@
     },
     "15605182": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         56.02,
         5
       ],
@@ -126,7 +126,7 @@
     },
     "15707928": {
       "end": [
-        "2026-11-01T14:31:07Z",
+        "2026-11-02T00:56:31Z",
         40.49,
         21
       ],
@@ -138,7 +138,7 @@
     },
     "15770880": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         56.15,
         4
       ],
@@ -146,7 +146,7 @@
     },
     "16021367": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         51.51,
         6
       ],
@@ -158,7 +158,7 @@
     },
     "16032816": {
       "end": [
-        "2026-10-31T17:28:37Z",
+        "2026-11-02T00:56:31Z",
         41.03,
         16
       ],
@@ -170,7 +170,7 @@
     },
     "16132261": {
       "end": [
-        "2026-10-29T09:20:48Z",
+        "2026-11-02T00:56:31Z",
         45.41,
         11
       ],
@@ -182,7 +182,7 @@
     },
     "16153655": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         50.37,
         9
       ],
@@ -194,7 +194,7 @@
     },
     "16371045": {
       "end": [
-        "2026-11-01T14:31:07Z",
+        "2026-11-02T00:56:31Z",
         39.94,
         22
       ],
@@ -206,9 +206,9 @@
     },
     "16459830": {
       "end": [
-        "2026-11-01T19:01:41Z",
+        "2026-11-02T00:56:31Z",
         34.06,
-        117
+        118
       ],
       "start": [
         "2026-10-31T21:29:07Z",
@@ -218,7 +218,7 @@
     },
     "16490178": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         50.48,
         8
       ],
@@ -226,7 +226,7 @@
     },
     "16569113": {
       "end": [
-        "2026-10-29T09:20:48Z",
+        "2026-11-02T00:56:31Z",
         46.82,
         10
       ],
@@ -238,7 +238,7 @@
     },
     "16760837": {
       "end": [
-        "2026-11-01T09:00:28Z",
+        "2026-11-02T00:56:31Z",
         51.04,
         7
       ],
@@ -250,9 +250,9 @@
     },
     "16782490": {
       "end": [
-        "2026-11-01T10:00:35Z",
+        "2026-11-02T00:56:31Z",
         36.89,
-        40
+        41
       ],
       "start": [
         "2026-10-31T21:29:07Z",
@@ -262,7 +262,7 @@
     },
     "16958599": {
       "end": [
-        "2026-10-29T09:20:48Z",
+        "2026-11-02T00:56:31Z",
         45.03,
         12
       ],
@@ -611,7 +611,7 @@
       "text": "The Majkel1337 team’s sole rostered Kaggle account also displays Majkel1337 as its public profile name."
     }
   ],
-  "cutoffAt": "2026-11-01T23:00:00Z",
+  "cutoffAt": "2026-11-02T00:57:44Z",
   "discussionThreads": [
     {
       "author": "ravi20076",
@@ -1065,6 +1065,42 @@
       "rankTo": 467,
       "t": "2026-11-01T21:31:58Z",
       "to": 31.68
+    },
+    {
+      "from": 30.96,
+      "id": "17014284",
+      "name": "Yukai Liu",
+      "rankFrom": 671,
+      "rankTo": 39,
+      "t": "2026-11-02T00:56:31Z",
+      "to": 36.96
+    },
+    {
+      "from": 28.81,
+      "id": "17143064",
+      "name": "Bart Woz",
+      "rankFrom": 1327,
+      "rankTo": 322,
+      "t": "2026-11-02T00:56:31Z",
+      "to": 32.35
+    },
+    {
+      "from": 31.77,
+      "id": "16255647",
+      "name": "Shoto",
+      "rankFrom": 451,
+      "rankTo": 372,
+      "t": "2026-11-02T00:56:31Z",
+      "to": 32.11
+    },
+    {
+      "from": 28.02,
+      "id": "16983958",
+      "name": "Minghao Xia",
+      "rankFrom": 1532,
+      "rankTo": 491,
+      "t": "2026-11-02T00:56:31Z",
+      "to": 31.61
     }
   ],
   "frontPageFeatureId": "2026-11-01-nvarc3-passes-turducken",
@@ -1095,12 +1131,12 @@
       "reason": "Included in this evening review package with the commissioned artwork."
     },
     {
-      "disposition": "carried",
+      "disposition": "covered",
       "id": "editorial-nov1-evening-preserve-night-watch-cover",
-      "reason": "Profiles remain held pending fresh reporting."
+      "reason": "The approved Chen–Tufa scene carries refreshed score and time overlays."
     }
   ],
-  "latestAt": "2026-11-01T23:02:09Z",
+  "latestAt": "2026-11-02T00:56:31Z",
   "observations": {
     "15486995": {
       "members": [
@@ -1112,28 +1148,28 @@
         "stefano1283"
       ],
       "name": "Tufa Labs",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15487093": {
       "members": [
         "xiaoz259"
       ],
-      "name": "faster machine is all you need",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "name": "xz",
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15488763": {
       "members": [
         "aquaursaresearch"
       ],
       "name": "AquaUrsa Research",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15499660": {
       "members": [
         "threerabbits"
       ],
       "name": "Yi-Chia Chen @ Fields Model",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15605182": {
       "members": [
@@ -1146,14 +1182,14 @@
         "sonphamorg"
       ],
       "name": "Team Turducken",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15707928": {
       "members": [
         "michaelpoluektov"
       ],
       "name": "Michael Poluektov",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "15770880": {
       "members": [
@@ -1166,7 +1202,7 @@
         "yeyinzhu"
       ],
       "name": "NVARC3",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16021367": {
       "members": [
@@ -1176,7 +1212,7 @@
         "lukasaichberger"
       ],
       "name": "the last dance 🕺",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16032816": {
       "members": [
@@ -1186,7 +1222,7 @@
         "sbrodehl"
       ],
       "name": "The ARChitects",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16132261": {
       "members": [
@@ -1194,21 +1230,21 @@
         "richardcsaky"
       ],
       "name": "artificialagencylab.com",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16153655": {
       "members": [
         "michaeltgao"
       ],
       "name": "mtg",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16371045": {
       "members": [
         "lordhansolo"
       ],
       "name": "Lord Han Solo",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16459830": {
       "members": [
@@ -1216,7 +1252,7 @@
         "giovannyrodrguez"
       ],
       "name": "Giovanny Rodríguez",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16490178": {
       "members": [
@@ -1226,7 +1262,7 @@
         "grigoriyzatravkin"
       ],
       "name": "Grigoriy Zatravkin & co",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16569113": {
       "members": [
@@ -1240,14 +1276,14 @@
         "yuto0712"
       ],
       "name": "復活の混テキスト",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16760837": {
       "members": [
         "yktori"
       ],
       "name": "yktori",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16782490": {
       "members": [
@@ -1258,14 +1294,14 @@
         "uradkr"
       ],
       "name": "Team Alicia",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     },
     "16958599": {
       "members": [
         "majkel1337"
       ],
       "name": "Majkel1337",
-      "observedAt": "2026-11-01T23:02:09Z"
+      "observedAt": "2026-11-02T00:56:31Z"
     }
   },
   "people": [
@@ -1276,7 +1312,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T18:53:30Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "threerabbits",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -1288,7 +1324,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "threerabbits",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1329,11 +1365,11 @@
         },
         {
           "sourceId": "person-yi-chia-chen-roster-0",
-          "text": "threerabbits observed in Yi-Chia Chen @ Fields Model (arc-prize-2026-arc-agi-2, team 15501171) between 2026-10-09T18:53:30Z and 2026-11-01T16:01:19Z."
+          "text": "threerabbits observed in Yi-Chia Chen @ Fields Model (arc-prize-2026-arc-agi-2, team 15501171) between 2026-10-09T18:53:30Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-yi-chia-chen-roster-1",
-          "text": "threerabbits observed in Yi-Chia Chen @ Fields Model (arc-prize-2026-arc-agi-3, team 15499660) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "threerabbits observed in Yi-Chia Chen @ Fields Model (arc-prize-2026-arc-agi-3, team 15499660) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1347,7 +1383,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T18:53:30Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "cpmpml",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -1359,7 +1395,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "cpmpml",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1416,11 +1452,11 @@
         },
         {
           "sourceId": "person-jean-francois-puget-roster-0",
-          "text": "cpmpml observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-09T18:53:30Z and 2026-11-01T16:01:19Z."
+          "text": "cpmpml observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-09T18:53:30Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-jean-francois-puget-roster-1",
-          "text": "cpmpml observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "cpmpml observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1434,7 +1470,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "sorokin",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1483,7 +1519,7 @@
         },
         {
           "sourceId": "person-ivan-sorokin-roster-0",
-          "text": "sorokin observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "sorokin observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1497,7 +1533,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T18:53:30Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "keithtyser",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -1533,7 +1569,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-18T18:55:34Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "keithtyser",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1578,7 +1614,7 @@
         },
         {
           "sourceId": "person-keith-tyser-roster-0",
-          "text": "keithtyser observed in この遥かなる旅路に祝福を (arc-prize-2026-arc-agi-2, team 15526034) between 2026-10-09T18:53:30Z and 2026-11-01T16:01:19Z."
+          "text": "keithtyser observed in この遥かなる旅路に祝福を (arc-prize-2026-arc-agi-2, team 15526034) between 2026-10-09T18:53:30Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-keith-tyser-roster-1",
@@ -1590,7 +1626,7 @@
         },
         {
           "sourceId": "person-keith-tyser-roster-3",
-          "text": "keithtyser observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-18T18:55:34Z and 2026-11-01T16:01:17Z."
+          "text": "keithtyser observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-18T18:55:34Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1604,7 +1640,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T18:53:30Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "driessmit1",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -1616,7 +1652,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "driessmit1",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1669,11 +1705,11 @@
         },
         {
           "sourceId": "person-dries-smit-roster-0",
-          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-11-01T16:01:19Z."
+          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-dries-smit-roster-1",
-          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1687,7 +1723,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T18:53:30Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "jeroencottaar",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -1699,7 +1735,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "jeroencottaar",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1740,11 +1776,11 @@
         },
         {
           "sourceId": "person-jeroen-cottaar-roster-0",
-          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-11-01T16:01:19Z."
+          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-jeroen-cottaar-roster-1",
-          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1782,7 +1818,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-26T21:43:10Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "insanitycheck",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1843,7 +1879,7 @@
         },
         {
           "sourceId": "person-jan-disselhoff-roster-2",
-          "text": "insanitycheck observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T21:43:10Z and 2026-11-01T16:01:17Z."
+          "text": "insanitycheck observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T21:43:10Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1857,7 +1893,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T18:53:27Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "dvhrtm",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -1902,7 +1938,7 @@
         },
         {
           "sourceId": "person-david-hartmann-roster-0",
-          "text": "dvhrtm observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-09T18:53:27Z and 2026-11-01T16:01:17Z."
+          "text": "dvhrtm observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-09T18:53:27Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -1940,7 +1976,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-26T21:43:10Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "dfranzen",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2001,7 +2037,7 @@
         },
         {
           "sourceId": "person-daniel-franzen-roster-2",
-          "text": "dfranzen observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T21:43:10Z and 2026-11-01T16:01:17Z."
+          "text": "dfranzen observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T21:43:10Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2015,7 +2051,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-09T22:23:52Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "pressman1",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2027,7 +2063,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-09T22:23:53Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "pressman1",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -2080,11 +2116,11 @@
         },
         {
           "sourceId": "person-isaiahp-roster-0",
-          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T22:23:52Z and 2026-11-01T16:01:17Z."
+          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T22:23:52Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-isaiahp-roster-1",
-          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T22:23:53Z and 2026-11-01T16:01:19Z."
+          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T22:23:53Z and 2026-11-01T23:02:11Z."
         }
       ],
       "teamIds": [
@@ -2098,7 +2134,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-11T20:02:55Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "markbarney",
           "season": "2026",
           "sourceTitle": "Mark Barney — public Kaggle active competition rosters",
@@ -2110,7 +2146,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-11T20:02:53Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "markbarney",
           "season": "2026",
           "sourceTitle": "Mark Barney — public Kaggle active competition rosters",
@@ -2143,11 +2179,11 @@
         },
         {
           "sourceId": "person-mark-barney-roster-0",
-          "text": "markbarney observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-11T20:02:55Z and 2026-11-01T16:01:19Z."
+          "text": "markbarney observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-11T20:02:55Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-mark-barney-roster-1",
-          "text": "markbarney observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-11-01T16:01:17Z."
+          "text": "markbarney observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2173,7 +2209,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-11T20:02:53Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "sonphamorg",
           "season": "2026",
           "sourceTitle": "Son Pham — public Kaggle active competition rosters",
@@ -2185,7 +2221,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-12T21:36:52Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "sonphamorg",
           "season": "2026",
           "sourceTitle": "Son Pham — public Kaggle active competition rosters",
@@ -2222,11 +2258,11 @@
         },
         {
           "sourceId": "person-son-pham-roster-1",
-          "text": "sonphamorg observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-11-01T16:01:17Z."
+          "text": "sonphamorg observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-son-pham-roster-2",
-          "text": "sonphamorg observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-12T21:36:52Z and 2026-11-01T16:01:19Z."
+          "text": "sonphamorg observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-12T21:36:52Z and 2026-11-01T23:02:11Z."
         }
       ],
       "teamIds": [
@@ -2252,7 +2288,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "tanakaai24",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2301,7 +2337,7 @@
         },
         {
           "sourceId": "person-punkcyber-roster-1",
-          "text": "tanakaai24 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "tanakaai24 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2315,7 +2351,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T03:07:24Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "lordhansolo",
           "season": "2026",
           "sourceTitle": "Dated ARC-3 public roster observation",
@@ -2348,7 +2384,7 @@
         },
         {
           "sourceId": "person-lord-han-solo-roster-0",
-          "text": "lordhansolo observed in Lord Han Solo (arc-prize-2026-arc-agi-3, team 16371045) between 2026-10-13T03:07:24Z and 2026-11-01T16:01:17Z."
+          "text": "lordhansolo observed in Lord Han Solo (arc-prize-2026-arc-agi-3, team 16371045) between 2026-10-13T03:07:24Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2362,7 +2398,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T17:12:19Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "darraghdog",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2374,7 +2410,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-13T17:12:23Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "darraghdog",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -2419,11 +2455,11 @@
         },
         {
           "sourceId": "person-darragh-hanley-roster-0",
-          "text": "darraghdog observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T16:01:17Z."
+          "text": "darraghdog observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-darragh-hanley-roster-1",
-          "text": "darraghdog observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-13T17:12:23Z and 2026-11-01T16:01:19Z."
+          "text": "darraghdog observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-13T17:12:23Z and 2026-11-01T23:02:11Z."
         }
       ],
       "teamIds": [
@@ -2437,7 +2473,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T17:12:19Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "eladsarafian",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2470,7 +2506,7 @@
         },
         {
           "sourceId": "person-elad-sarafian-roster-0",
-          "text": "eladsarafian observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T16:01:17Z."
+          "text": "eladsarafian observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2484,7 +2520,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T17:12:19Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "galkaplun",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2513,7 +2549,7 @@
         },
         {
           "sourceId": "person-gal-kaplun-roster-0",
-          "text": "galkaplun observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T16:01:17Z."
+          "text": "galkaplun observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2527,7 +2563,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T17:12:19Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "yeyinzhu",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2560,7 +2596,7 @@
         },
         {
           "sourceId": "person-yeyin-zhu-roster-0",
-          "text": "yeyinzhu observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T16:01:17Z."
+          "text": "yeyinzhu observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2574,7 +2610,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-13T17:12:19Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "stefano1283",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -2586,7 +2622,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-13T17:12:23Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "stefano1283",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -2627,11 +2663,11 @@
         },
         {
           "sourceId": "person-stefano-viel-roster-0",
-          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-13T17:12:19Z and 2026-11-01T16:01:17Z."
+          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-13T17:12:19Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-stefano-viel-roster-1",
-          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-13T17:12:23Z and 2026-11-01T16:01:19Z."
+          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-13T17:12:23Z and 2026-11-01T23:02:11Z."
         }
       ],
       "teamIds": [
@@ -2645,7 +2681,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-14T09:44:09Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "richardcsaky",
           "season": "2026",
           "sourceTitle": "Public roster observation",
@@ -2702,7 +2738,7 @@
         },
         {
           "sourceId": "person-richard-csaky-roster-0",
-          "text": "richardcsaky observed in artificialagencylab.com (arc-prize-2026-arc-agi-3, team 16132261) between 2026-10-14T09:44:09Z and 2026-11-01T16:01:17Z."
+          "text": "richardcsaky observed in artificialagencylab.com (arc-prize-2026-arc-agi-3, team 16132261) between 2026-10-14T09:44:09Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-richard-csaky-roster-1",
@@ -2720,7 +2756,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-14T09:44:09Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "fses91",
           "season": "2026",
           "sourceTitle": "Public roster observation",
@@ -2769,7 +2805,7 @@
         },
         {
           "sourceId": "person-fses91-roster-0",
-          "text": "fses91 observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-14T09:44:09Z and 2026-11-01T16:01:17Z."
+          "text": "fses91 observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-14T09:44:09Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2783,7 +2819,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-14T09:44:09Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "lukasaichberger",
           "season": "2026",
           "sourceTitle": "Public roster observation",
@@ -2832,7 +2868,7 @@
         },
         {
           "sourceId": "person-lukas-aichberger-roster-0",
-          "text": "lukasaichberger observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-14T09:44:09Z and 2026-11-01T16:01:17Z."
+          "text": "lukasaichberger observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-14T09:44:09Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2846,7 +2882,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-17T09:52:12Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "grigoriyzatravkin",
           "season": "2026",
           "sourceTitle": "Dated ARC-3 public roster observation",
@@ -2879,7 +2915,7 @@
         },
         {
           "sourceId": "person-grigoriy-zatravkin-roster-0",
-          "text": "grigoriyzatravkin observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-17T09:52:12Z and 2026-11-01T16:01:17Z."
+          "text": "grigoriyzatravkin observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-17T09:52:12Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2893,7 +2929,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-26T19:42:56Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "sbrodehl",
           "season": "2026",
           "sourceTitle": "Dated ARChitects roster evidence; before name David Hartmann, after The ARChitects",
@@ -2934,7 +2970,7 @@
         },
         {
           "sourceId": "person-sebastian-brodehl-roster-0",
-          "text": "sbrodehl observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T19:42:56Z and 2026-11-01T16:01:17Z."
+          "text": "sbrodehl observed in The ARChitects (arc-prize-2026-arc-agi-3, team 16032816) between 2026-10-26T19:42:56Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -2948,7 +2984,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T18:22:02Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "xiaoz259",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observed October 29, 2026",
@@ -2989,7 +3025,7 @@
         },
         {
           "sourceId": "person-xz-roster-0",
-          "text": "xiaoz259 observed in faster machine is all you need (arc-prize-2026-arc-agi-3, team 15487093) between 2026-10-29T18:22:02Z and 2026-11-01T16:01:17Z."
+          "text": "xiaoz259 observed in faster machine is all you need (arc-prize-2026-arc-agi-3, team 15487093) between 2026-10-29T18:22:02Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3003,7 +3039,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T19:22:11Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "dwellement0baser",
           "season": "2026",
           "sourceTitle": "Public roster observation",
@@ -3048,7 +3084,7 @@
         },
         {
           "sourceId": "person-mykyta-ielanskyi-roster-0",
-          "text": "dwellement0baser observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-29T19:22:11Z and 2026-11-01T16:01:17Z."
+          "text": "dwellement0baser observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-29T19:22:11Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3062,7 +3098,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T19:22:11Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "gklambauer",
           "season": "2026",
           "sourceTitle": "Public roster observation",
@@ -3091,7 +3127,7 @@
         },
         {
           "sourceId": "person-gklambauer-roster-0",
-          "text": "gklambauer observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-29T19:22:11Z and 2026-11-01T16:01:17Z."
+          "text": "gklambauer observed in the last dance 🕺 (arc-prize-2026-arc-agi-3, team 16021367) between 2026-10-29T19:22:11Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3117,7 +3153,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "isakatsuyoshi",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3162,7 +3198,7 @@
         },
         {
           "sourceId": "person-isaka-tsuyoshi-roster-1",
-          "text": "isakatsuyoshi observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "isakatsuyoshi observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3188,7 +3224,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "konbu17",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3229,7 +3265,7 @@
         },
         {
           "sourceId": "person-konbu17-roster-1",
-          "text": "konbu17 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "konbu17 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3255,7 +3291,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "pompom555",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3300,7 +3336,7 @@
         },
         {
           "sourceId": "person-pompom555-roster-1",
-          "text": "pompom555 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "pompom555 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3326,7 +3362,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "refv00",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3371,7 +3407,7 @@
         },
         {
           "sourceId": "person-refv00-roster-1",
-          "text": "refv00 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "refv00 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3397,7 +3433,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "tk256ailab",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3446,7 +3482,7 @@
         },
         {
           "sourceId": "person-takeru-sato-roster-1",
-          "text": "tk256ailab observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "tk256ailab observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3472,7 +3508,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "ttyn4519",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3521,7 +3557,7 @@
         },
         {
           "sourceId": "person-teppei-fukutomi-roster-1",
-          "text": "ttyn4519 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "ttyn4519 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3535,7 +3571,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "yuto0712",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3580,7 +3616,7 @@
         },
         {
           "sourceId": "person-yuto0712-roster-0",
-          "text": "yuto0712 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "yuto0712 observed in 復活の混テキスト (arc-prize-2026-arc-agi-3, team 16569113) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3606,7 +3642,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "aizealotwu",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3647,7 +3683,7 @@
         },
         {
           "sourceId": "person-common-people-roster-1",
-          "text": "aizealotwu observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "aizealotwu observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3673,7 +3709,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "deepdreamer",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3718,7 +3754,7 @@
         },
         {
           "sourceId": "person-dongming-sheng-roster-1",
-          "text": "deepdreamer observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "deepdreamer observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3732,7 +3768,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "florenciasolange",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3761,7 +3797,7 @@
         },
         {
           "sourceId": "person-florencia-solange-roster-0",
-          "text": "florenciasolange observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "florenciasolange observed in Grigoriy Zatravkin & co (arc-prize-2026-arc-agi-3, team 16490178) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3775,7 +3811,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-29T22:52:37Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "majkel1337",
           "season": "2026",
           "sourceTitle": "ARC-2 public roster observation",
@@ -3787,7 +3823,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "majkel1337",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3832,11 +3868,11 @@
         },
         {
           "sourceId": "person-michal-gromadzki-roster-0",
-          "text": "majkel1337 observed in Majkel1337 (arc-prize-2026-arc-agi-2, team 16373916) between 2026-10-29T22:52:37Z and 2026-11-01T16:01:19Z."
+          "text": "majkel1337 observed in Majkel1337 (arc-prize-2026-arc-agi-2, team 16373916) between 2026-10-29T22:52:37Z and 2026-11-01T23:02:11Z."
         },
         {
           "sourceId": "person-michal-gromadzki-roster-1",
-          "text": "majkel1337 observed in Majkel1337 (arc-prize-2026-arc-agi-3, team 16958599) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "majkel1337 observed in Majkel1337 (arc-prize-2026-arc-agi-3, team 16958599) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3850,7 +3886,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "yktori",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3887,7 +3923,7 @@
         },
         {
           "sourceId": "person-yktori-roster-0",
-          "text": "yktori observed in yktori (arc-prize-2026-arc-agi-3, team 16760837) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "yktori observed in yktori (arc-prize-2026-arc-agi-3, team 16760837) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3913,7 +3949,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "michaeltgao",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -3950,7 +3986,7 @@
         },
         {
           "sourceId": "person-michaeltgao-roster-1",
-          "text": "michaeltgao observed in mtg (arc-prize-2026-arc-agi-3, team 16153655) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "michaeltgao observed in mtg (arc-prize-2026-arc-agi-3, team 16153655) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -3976,7 +4012,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "aquaursaresearch",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -4009,7 +4045,7 @@
         },
         {
           "sourceId": "person-aquaursa-research-roster-1",
-          "text": "aquaursaresearch observed in AquaUrsa Research (arc-prize-2026-arc-agi-3, team 15488763) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "aquaursaresearch observed in AquaUrsa Research (arc-prize-2026-arc-agi-3, team 15488763) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -4023,7 +4059,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-29T22:52:35Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "cmechevalier",
           "season": "2026",
           "sourceTitle": "ARC-3 public roster observation",
@@ -4064,7 +4100,7 @@
         },
         {
           "sourceId": "person-cmechevalier-roster-0",
-          "text": "cmechevalier observed in artificialagencylab.com (arc-prize-2026-arc-agi-3, team 16132261) between 2026-10-29T22:52:35Z and 2026-11-01T16:01:17Z."
+          "text": "cmechevalier observed in artificialagencylab.com (arc-prize-2026-arc-agi-3, team 16132261) between 2026-10-29T22:52:35Z and 2026-11-01T23:02:09Z."
         }
       ],
       "teamIds": [
@@ -4078,7 +4114,7 @@
           "competition": "arc-3",
           "competitionId": "arc-prize-2026-arc-agi-3",
           "firstObservedAt": "2026-10-30T00:22:47Z",
-          "lastObservedAt": "2026-11-01T16:01:17Z",
+          "lastObservedAt": "2026-11-01T23:02:09Z",
           "memberHandle": "mitubant",
           "season": "2026",
           "sourceTitle": "Team Turducken — dated ARC-AGI-3 public roster observation",
@@ -4090,7 +4126,7 @@
           "competition": "arc-2",
           "competitionId": "arc-prize-2026-arc-agi-2",
           "firstObservedAt": "2026-10-30T00:22:48Z",
-          "lastObservedAt": "2026-11-01T16:01:19Z",
+          "lastObservedAt": "2026-11-01T23:02:11Z",
           "memberHandle": "mitubant",
           "season": "2026",
           "sourceTitle": "NT — separate ARC2 team, dated public roster",
@@ -4131,11 +4167,11 @@
         },
         {
           "sourceId": "person-mitubant-roster-0",
-          "text": "mitubant observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-30T00:22:47Z and 2026-11-01T16:01:17Z."
+          "text": "mitubant observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-30T00:22:47Z and 2026-11-01T23:02:09Z."
         },
         {
           "sourceId": "person-mitubant-roster-1",
-          "text": "mitubant observed in この遥かなる旅路に祝福を (arc-prize-2026-arc-agi-2, team 15526034) between 2026-10-30T00:22:48Z and 2026-11-01T16:01:19Z."
+          "text": "mitubant observed in この遥かなる旅路に祝福を (arc-prize-2026-arc-agi-2, team 15526034) between 2026-10-30T00:22:48Z and 2026-11-01T23:02:11Z."
         }
       ],
       "teamIds": [
@@ -8853,6 +8889,11 @@
         "2026-11-01T19:01:41Z",
         34.06,
         117
+      ],
+      [
+        "2026-11-02T00:56:31Z",
+        34.06,
+        118
       ]
     ],
     "16490178": [
@@ -9861,6 +9902,11 @@
         "2026-11-01T10:00:35Z",
         36.89,
         40
+      ],
+      [
+        "2026-11-02T00:56:31Z",
+        36.89,
+        41
       ]
     ],
     "16958599": [
@@ -10012,7 +10058,7 @@
     ]
   },
   "socialPosts": [],
-  "sourceSha256": "9a969fcec39aa83bf2bb3dde0df0c7243fc835c7ee48460ba99de1007963e832",
+  "sourceSha256": "51a43bca95f6ada908936fdaf734deaec84b5a0082651de4b47535fc249df4df",
   "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
   "wireIntake": {
     "dispatches": [
@@ -10116,7 +10162,7 @@
     "limitations": [],
     "previousEditionId": "2026-11-01-morning-arc-3",
     "since": "2026-11-01T11:00:00Z",
-    "through": "2026-11-01T23:00:00Z",
+    "through": "2026-11-02T00:57:44Z",
     "wireStories": [
       {
         "competition": "arc-3",

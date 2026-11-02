@@ -157,10 +157,10 @@ archive to `content/news/social-archive.json` (`/news/community#tweet-archive`).
 The Sunday meeting digest (Bubba's `arc-weekly-announcement` skill) reads the same seven-day public
 archive; it does not authorize recurring sends.
 
-## People research notebook
+## People research notes
 
 `content/news/people.json` stores verified identities, narrow cited facts, exact handles, dated
 competition/season/team memberships, Hall of Fame honors and portraits ([VISUALS.md](VISUALS.md));
-`competitors.json` is the team notebook. Internal unknowns and questions stay in
+`competitors.json` is the team profiles. Internal unknowns and questions stay in
 `reports/arc-daily-social/people-notes.md`. Update the reusable competition-reporter skill only when
 a real lesson changes reporting decisions.

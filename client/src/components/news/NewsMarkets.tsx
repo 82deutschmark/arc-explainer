@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
@@ -8,7 +8,7 @@
  *          unknown comparison prints as a blank, never as zero. When the digest is unavailable
  *          these pieces render nothing and the reporting still leads the page.
  * SRP/DRY check: Pass — figures come only from the digest; names link through the existing
- *          notebook, people and Kaggle helpers; faces use PersonPortrait.
+ *          profile, people and Kaggle helpers; faces use PersonPortrait.
  */
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -193,7 +193,7 @@ const INSIDE: { href: string; title: string; text: string; external?: boolean }[
   { href: '/human-records.html', title: 'Human and AI records', text: 'action counts against AI scores', external: true },
   { href: '/arc3/games', title: 'Game guides', text: 'the 25 public ARC-AGI-3 games' },
   { href: '/news/people', title: 'People', text: 'verified contenders and past winners' },
-  { href: '/news/competitors', title: 'Competitor notebook', text: 'sourced team dossiers' },
+  { href: '/news/competitors', title: 'Competitor profiles', text: 'team profiles and reporting' },
   { href: '/news/community', title: 'Around the contests', text: 'public posts and research' },
   { href: '/hall-of-fame', title: 'Hall of Fame', text: 'illustrated cards of past winners' },
   { href: ARC_DISCORD_URL, title: 'ARC Discord', text: 'the official community', external: true },

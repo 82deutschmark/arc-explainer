@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-11-01-evening-arc-3",
+  "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
+  "dataAsOf": "2026-11-02T00:56:31Z",
+  "generationRecord": "2026-11-01-late-night-watch-v1-base",
+  "headline": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken",
+  "historyChart": null,
+  "id": "2026-11-01-evening-arc-3-6628af5a33",
+  "image": {
+    "alt": "Illustration for Down to the Wire: Chen leads as NVARC3 squeezes past Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
+    "artworkId": "2026-11-01-evening-arc-3-6628af5a33",
+    "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-evening-arc-3-6628af5a33.webp"
+  },
+  "imageSha256": "6b9ade59aa611dc4a80dfe2bceaebcc55e42bdf4f7ddbaeb7cc06ca1f5558ecd",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 5.32,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "2c6e4fab1a5129f637420fe4d122cd2ab7f062b613be8b0bdd93cc2bf2d48fe8",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.24,
+      "scoreChange": null,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

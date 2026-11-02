@@ -28,7 +28,7 @@ model API, no model switching, no subagents. It publishes the **Early edition** 
 IDs and files). The helpers in `scripts/` make no model calls and never commit, push or post.
 
 A scheduled edition run is authorized to: publish both contests' editions (commit and push to
-`main`), add the intended news content (ledgers, notebook, public social and discussion exports),
+`main`), add the intended news content (ledgers, competitor profiles, public social and discussion exports),
 produce and attach edition pictures under [ART_DESK.md](ART_DESK.md), save a newly verified
 person's own Kaggle picture (the one image fetch, approved 9 October), and send the one routine
 edition post on X under [X_POSTING.md](X_POSTING.md). It must not edit application code, other
@@ -160,14 +160,14 @@ Then, using the signed-in Chrome account `82deutschmark` ([SOCIAL_DESK.md](SOCIA
    verified X accounts in `social-watch.json`. Unresolved matches stay private leads. Give a newly
    verified person a portrait in the same run: `python3.13 scripts/newsroom_people.py portrait
    --person <id>`, then `python3.13 scripts/newsroom_people.py check` ([VISUALS.md](VISUALS.md)).
-3. Add narrow, dated, sourced facts to the notebook when useful (see "Competitor notebook").
+3. Add narrow, dated, sourced facts to the competitor profiles when useful (see "Competitor profiles").
 4. Export the public sources:
    `python3.13 scripts/newsroom_social.py export-public --directory /Users/macmini/bubba-workspace/reports/arc-daily-social`
    and `python3.13 scripts/newsroom_social.py discussion-export --directory /Users/macmini/bubba-workspace/reports/arc-daily-social`.
    Every collected public post reaches the searchable archive; the paper stays selective.
    Subscriber and unknown-visibility material never enters public content, not even paraphrased.
 
-Re-prepare after any source, identity or notebook change, so the brief carries the citations.
+Re-prepare after any source, identity or profile change, so the brief carries the citations.
 
 ## 3. Prepare the evidence
 
@@ -187,7 +187,7 @@ gives it a distinct `-preview` ID; `--now` audits a historical cutoff). Read the
   Null comparisons are unknown, not zero. Score events are not net daily gains. A new name in a
   history window is not proof of a new entrant. Never claim every overnight submission has scored.
 - `articleBase` is the fixed metadata, sources and verified stats; `evidence` holds the boundaries,
-  source hash, observations, events, notebook facts, `people`, `socialPosts` and
+  source hash, observations, events, competitor profile facts, `people`, `socialPosts` and
   `discussionThreads` with their citable source IDs (`person-<id>-identity|fact|roster|archive-<n>`,
   `social-<postId>`, `discussion-arc-N-<id>`, `fact-<teamId>-<n>`).
 - **Intake.** Special reports without an edition cutoff are not prior edition boundaries; their
@@ -275,13 +275,13 @@ python3.13 scripts/newsroom.py publish --article /tmp/arc-daily-morning-arc3-dra
 ```
 
 Repeat for the other ready contest. Publishing writes `content/news/articles/<id>.json`, its
-immutable evidence in `content/news/evidence/<id>.json`, and updates the notebook and people
+immutable evidence in `content/news/evidence/<id>.json`, and updates the competitor profiles and people
 ledger. An identical retry is safe; different content for an existing ID fails. If the scheduled ID
 already exists, confirm it is published and stop that contest. Corrections are separately
 identified, never a rewrite of the original issue.
 
 Review the files and run `git diff --check`. Stage only the exact intended paths: the article and
-evidence files, notebook, people ledger, `social.json`, `social-archive.json`, `discussions.json`,
+evidence files, competitor profiles, people ledger, `social.json`, `social-archive.json`, `discussions.json`,
 `social-watch.json` when changed, and the picture files ART_DESK.md lists. Never stage private
 research state. Commit with a short issue description. Just before pushing, fetch `origin/main`
 (the wire may have filed meanwhile), rebase only your commits, resolve any intake or evidence
@@ -314,9 +314,11 @@ each editorial assignment's outcome (covered, held or carried, with the reason).
 
 ## Reference
 
-### Competitor notebook
+### Competitor profiles
 
-`content/news/competitors.json` is a dated, public, source-backed notebook (`CompetitorRecord` in
+**Terminology (Boss, 1-Nov-2026):** Call the Digest’s team pages **competitor profiles**, including navigation, cards, headlines, search previews and social copy. Reserve **notebook** for actual Kaggle/Jupyter code notebooks.
+
+`content/news/competitors.json` holds dated, public, source-backed competitor profiles (`CompetitorRecord` in
 `shared/news.ts`). Publication updates observed names, members and dates and keeps aliases and
 facts. Observed dates are when the feed was checked, not when a team formed or someone joined.
 Research through primary professional sources (Kaggle profiles, write-ups, papers, project pages,

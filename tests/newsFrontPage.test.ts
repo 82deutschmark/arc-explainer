@@ -1,10 +1,10 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-30 (ARC2 special lead placement and simultaneous-edition ordering)
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
- *          past winners, What's News, notebook columns) runs against real-shaped data; and render
+ *          past winners, What's News, profile columns) runs against real-shaped data; and render
  *          it again with no digest to prove a board outage leaves the reporting standing.
  *          Public source-column hierarchy and full archive rendering use committed source data.
  *          15-Oct-2026 (Claude Opus 5.5 Max): the illustration test's article is dated now, so it
@@ -91,7 +91,7 @@ test('the front page runs every live section against a populated digest', () => 
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const html = render(News, '/news', index, markets(index));
-  for (const text of ['What’s news', 'The board', 'Market movers', 'Where the past winners stand', 'Inside', 'The competitor notebook', 'Every edition',
+  for (const text of ['What’s news', 'The board', 'Market movers', 'Where the past winners stand', 'Inside', 'Competitor profiles', 'Every edition',
     'Gold line · 5 places', 'Into gold:', 'Leader · <span class="news-ticker-name">Yi-Chia Chen</span>', 'NEW', 'ARC Prize 2025 champion · NVARC'])
     expect(html).toContain(text);
   // A newer afternoon dispatch can lead; a reserved feature gets the full treatment for its edition.

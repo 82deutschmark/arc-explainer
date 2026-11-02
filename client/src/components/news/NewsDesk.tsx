@@ -1,17 +1,17 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5
- * Date: 2026-10-30 (2026-10-29; 2026-10-12 earlier)
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
- *          and sourced notebook previews align with the ARC Explainer landing page.
+ *          and sourced profile previews align with the ARC Explainer landing page.
  *          The masthead names both contests; compact links branch into people, community
  *          and the unified About the Paper page. Reader contacts reuse the shared masthead.
  *          The permanent Card Cabinet is linked in every newspaper masthead.
  *          Each story credits its recorded writer. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  *          09-Oct-2026 (Claude Opus 5.5): story previews show the faces of the people each
- *          edition cites or covers; notebook cards show the verified people on the team.
+ *          edition cites or covers; profile cards show the verified people on the team.
  *          Later the same day, per the Boss ("think like a newspaper editor"): a broadsheet
  *          masthead with ears (edition, date and countdown; the sponsor), an Early/Late edition
  *          line, a section nav that includes the wire, and lead stories printed in full.
@@ -79,7 +79,7 @@ export function NewsNav({ className = 'news-nav' }: { className?: string }) {
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
     <Link href="/news/cards">ARC Prize Cards</Link>
-    <Link href="/news/competitors">Notebook</Link>
+    <Link href="/news/competitors">Competitors</Link>
     <Link href="/news/people">People</Link>
     <Link href="/news/community">Around the contests</Link>
     <Link href={NEWS_STAFF_PATH}>About the paper</Link>
@@ -187,7 +187,7 @@ export function NotebookEntry({ competitor, people = [] }: { competitor: Competi
     {!!competitor.members.length && <p className="news-card-members">Observed members: {competitor.members.slice(0, 3).join(', ')}{competitor.members.length > 3 ? ` +${competitor.members.length - 3} more` : ''}</p>}
     <TeamFaces team={competitor} people={people} />
     {competitor.facts.length ? <ul className="news-card-facts">{competitor.facts.slice(0, 2).map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><a className="news-card-source" href={fact.sourceUrl}>Source: {fact.sourceTitle} ↗</a></li>)}</ul> : <p>Observed team identity and competition coverage.</p>}
-    <Link href={competitorPath(competitor.id)} className="news-read">Open the full dossier →</Link>
+    <Link href={competitorPath(competitor.id)} className="news-read">Read the profile →</Link>
   </article>;
 }
 

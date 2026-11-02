@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5
- * Date: 2026-10-30 (2026-10-29 earlier)
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: Describe the permanent Card Cabinet and Mark Barney's research and original-game collection.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -102,7 +102,7 @@ const ARC3_GAME_CARD = { image: `${SITE}/api/arc3/og-image/r11l`, imageAlt: 'Ope
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news': { title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
   '/news/wire': { title: 'The wire | The ARC Daily Digest', description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', url: `${SITE}/news/wire`, ...NEWS_CARD },
-  '/news/competitors': { title: 'Competitor notebook | The ARC Daily Digest', description: 'The ARC Daily Digest’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
+  '/news/competitors': { title: 'Competitor profiles | The ARC Daily Digest', description: 'Meet the ARC-AGI competitors: team backgrounds, members and coverage from The ARC Daily Digest.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/cards': { title: 'ARC Prize Cards | The ARC Daily Digest', description: 'The ARC Daily Digest’s ARC Prize cards: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with illustrations, Kaggle tiers, standings and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
@@ -432,7 +432,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/arc2/hard-set', 'ARC-2 hard set research', 'Team research on ARC-2 hard-set puzzles.', true],
   ['/arc2/hard-set/findings', 'ARC-2 hard set findings', 'Team findings from ARC-2 hard-set research.', true],
   ['/arc2/capped', 'ARC-2: the always-capped test outputs', 'Inspect Lattice’s reported 22 always-capped test outputs across 20 ARC-2 tasks, with inputs, known solutions and task links.', true],
-  ['/notes1023', 'Boston field notes', 'Summit conversation notebook.', true],
+  ['/notes1023', 'Boston field notes', 'Summit conversation notes.', true],
   ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],
   ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],
   ['/team/arc2-runs', 'ARC-AGI-2 runs (team)', 'Team-only record of ARC Mutants submissions.', true],

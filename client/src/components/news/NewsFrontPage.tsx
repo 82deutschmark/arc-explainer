@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-30 (newer ARC2 specials can lead the front page)
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the newest contest report printed in full, the other contest under it)
@@ -107,8 +107,8 @@ export function NotebookColumns({ index, markets }: { index: NewsIndex; markets?
     .sort((a, b) => (a.row?.rank ?? Infinity) - (b.row?.rank ?? Infinity) || b.record.facts.length - a.record.facts.length || a.record.name.localeCompare(b.record.name))
     .slice(0, 12);
   if (!placed.length) return null;
-  return <section className="news-notebook" aria-label="The competitor notebook">
-    <h2 className="news-flag"><span>The competitor notebook</span><em>Sourced dossiers, in today’s board order</em></h2>
+  return <section className="news-notebook" aria-label="Competitor profiles">
+    <h2 className="news-flag"><span>Competitor profiles</span><em>Meet the teams, in today’s board order</em></h2>
     <div className="news-notebook-list">{placed.map(({ record, board, row }) => <article key={record.id} className="news-notebook-line">
       <h3><Link href={competitorPath(record.id)}>{record.name}</Link>{row && board && <span className="num">{board.label} · {row.rank} · {row.score.toFixed(2)}</span>}</h3>
       {record.facts[0]

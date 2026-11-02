@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 2026-11-01
  * PURPOSE: The wire desk on the page. GPT-6 Luna files short sourced stories several times a day
  *          (scripts/newsroom_wire.py, docs/newsroom/WIRE_DESK.md); the front page's What's News
  *          column runs the newest ones as briefs, topped up with the editions' summaries while
@@ -82,7 +82,7 @@ export function WireStory({ story, index }: { story: NewsWireStory; index: NewsI
     </section>)}
     {(!!people.length || !!teams.length) && <div className="news-section-sources">
       {people.map(person => <PersonLinks key={person.id} person={person} honors={0} />)}
-      {teams.map(team => <Link key={team.id} href={competitorPath(team.id)}>{team.name} notebook →</Link>)}
+      {teams.map(team => <Link key={team.id} href={competitorPath(team.id)}>{team.name} profile →</Link>)}
     </div>}
     <p className="news-byline">The wire desk · {writerCredit(story.generatedBy)} · board saved {newsDate(story.dataAsOf, true)}{story.since ? <> · compared with {newsDate(story.since, true)}</> : null} · <a href={`/api/news/wire/${story.id}/evidence`}>evidence</a></p>
   </article>;

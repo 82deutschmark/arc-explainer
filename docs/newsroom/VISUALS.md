@@ -30,7 +30,7 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 | Front page "Where the past winners stand" | every person with an honor whose ledger team is on a 2026 board, best placing first: face, top honor (links to their card), team now, rank, score, day's change | `PastWinners` in `client/src/components/news/NewsMarkets.tsx` |
 | Wire stories (What's News, `/news/wire`) | the picture the story chose from its brief (the person's face or their Hall of Fame card art), else the first person in `personIds` | `scripts/newsroom_wire.py` (offers `visuals`), `NewsWire.tsx` |
 | Front page "From X" strip, below the ticker | the post's author when the X handle is a verified person | `AroundTheContests`, `personForXHandle()` |
-| Competitor notebook cards, team rosters, "Names in this edition" | verified people on that team | `peopleForTeam()` |
+| Competitor profiles cards, team rosters, "Names in this edition" | verified people on that team | `peopleForTeam()` |
 | Community desk | the post's author when the X handle is a verified person, plus people in `personIds` | `personForXHandle()` |
 | People directory and profiles | everyone in `content/news/people.json`, with honors | `PersonCard`, profile header |
 | Permanent [Card Cabinet](https://arc.markbarney.net/news/cards) | curated individual and team cards, complete commissioned art, dated statistics and verified final honors | `people.json`, `cards.json`, `card-results.json`; the [team playbook](TEAM_PLAYBOOK.md) maintains their identity/art mappings |
