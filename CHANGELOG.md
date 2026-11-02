@@ -1,3 +1,7 @@
+### Version 9.161.18 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: new top of page. The bird-in-hand photo sits beside the title and the score lead, followed by a small chart of the medal lines around the September 30 deadline and the three key numbers, then the full season chart. The note on who wrote the piece and who the Boss is moves to an "About this piece" section at the bottom, linked from the byline (Author: Claude Opus 5.5).
+
 ### Version 9.161.17 · November 2, 2026
 
 - Run record: the ARC-3 introduction says the team began as Son Pham and the Boss, and that teammates who merged in during October brought their earlier runs, so the early dots include theirs (Author: Claude Opus 5.5).
