@@ -39,3 +39,11 @@ it('keeps the same competitor’s editions in different competition sets', () =>
   expect(catalogSet(second, sets)?.id).toBe('set-b-2028');
   expect(catalogSet(fixture({}), sets)).toBeUndefined();
 });
+it('keeps imported cards in their original season collection after new sets are added', () => {
+  const sets = [
+    { id: '2028', name: 'Legacy 2028', season: '2028', competitionIds: ['contest-a', 'contest-b'] },
+    { id: 'set-a-2028', name: 'Competition A 2028', season: '2028', competitionIds: ['contest-a'] },
+  ];
+  expect(catalogSet(fixture({}), sets)?.id).toBe('2028');
+  expect(catalogSet(fixture({ setId: 'set-a-2028' }), sets)?.id).toBe('set-a-2028');
+});

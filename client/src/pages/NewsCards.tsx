@@ -28,7 +28,6 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { NewsStatus, newsDate, useNewsCardImage } from '@/components/news/NewsDesk';
 import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair } from '@/components/news/CardPair';
-import { cardFrameRepair } from '@shared/cardFrameRepair';
 import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
 
@@ -262,7 +261,7 @@ function Shelf({ items, stage, setStage }: { items: ShelfItem[]; stage: string; 
   </section>;
 }
 
-export function Detail({ card, all }: { card: CollectionCard; all: CollectionCard[] }) {
+export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: CollectionCard[]; sets?: NewsCollection['sets'] }) {
   const [stage, setStage] = useState('current');
   const version = useMemo(() => collectionShareVersion(card), [card]);
   const career = card.career;
@@ -275,23 +274,22 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
-    { key: 'current', kind: 'current', label: `${card.season}`, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'} · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
+    { key: 'current', kind: 'current', label: catalogSet(card, sets)?.name ?? card.season, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'} · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
     ...all.filter(other => card.kind === 'person' && other.kind === 'person' && other.personId === card.personId && other.id !== card.id)
-      .map(other => ({ key: other.id, kind: 'edition' as const, label: other.season, sub: `Edition · No. ${other.number}`, src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card ${other.number}`, href: other.cardUrl })),
+      .map(other => ({ key: other.id, kind: 'edition' as const, label: catalogSet(other, sets)?.name ?? other.season, sub: `Edition · No. ${other.number}`, src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card ${other.number}`, href: other.cardUrl })),
     ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);
       return teamCard ? [{ key: teamCard.id, kind: 'team' as const, label: teamCard.name, sub: `Team · No. ${teamCard.number}`, src: faceSrc(teamCard, 'front', 260, collectionShareVersion(teamCard)), alt: `${teamCard.name}, team card ${teamCard.number}`, href: teamCard.cardUrl }] : [];
     }) : []),
   ];
-  const paired = !!cardFrameRepair(card);
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link><span>{card.number}</span></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
-    <div className={`cb-dgrid${paired ? ' is-paired' : ''}`}>
+    <div className="cb-dgrid is-paired">
       <div className="cb-dcard">
-        {stage === 'current' || !staged ? paired ? <CardPair card={card} /> : <FlipFace card={card} width={560} priority /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
+        {stage === 'current' || !staged ? <CardPair card={card} /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
         <div className="cb-actions"><CopyCardLink card={card} /><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png`} download>Front PNG ↓</a><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png?side=back`} download>Back PNG ↓</a></div>
       </div>
       <div className="cb-data">
@@ -362,10 +360,10 @@ export default function NewsCards() {
     noindex: !!cardId && !!query.data && !selected,
     image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
   });
-  return <CabinetShell cardProof={!!selected && !!cardFrameRepair(selected)}>
+  return <CabinetShell cardProof={!!selected}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
-      ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the card catalog →</Link></div></main>
+      ? selected ? <Detail card={selected} all={query.data.cards} sets={query.data.sets} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the card catalog →</Link></div></main>
       : <Cabinet collection={query.data} />)}
   </CabinetShell>;
 }

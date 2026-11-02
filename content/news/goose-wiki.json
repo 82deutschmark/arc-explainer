@@ -31,6 +31,9 @@
     "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
     "/news-images/people/2026-11-01-david-hartmann-own-portrait-v1.jpg": "3e626a5a0b45331e5ad19a6aeb14bf9af81af54f845930e50b7f3407d524856d",
     "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg": "d65b611c472d7d2016ea8bed9aee7a72d7e2c9b04501e5103803a1b542891624",
+    "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg": "e5860c4a8c998039bf75d65d2e59e1d40f0fc89fa75b2b5b5dbf2d5c9c76213d",
+    "/news-images/people/2026-11-02-jerome-sieber-tufa-portrait.jpg": "888a2e2341df4e767cd934794fe37fb9c3a534257d717d5d382f1a825df52760",
+    "/news-images/people/2026-11-02-mohamed-osman-tufa-portrait.webp": "5e08180135a81c31fd3ed22d5fbe6706c6298b0ec936d34f60996dda9038d03e",
     "/news-images/people/alijs.webp": "c782d20045ebd49229c23afb75272d20690889b28f14470b8480953b161dd057",
     "/news-images/people/alwin-theodoric.webp": "0439ed1fa1d06297dca285a905d511fddf3fc6fd87ab7ccc35ee4ee7d7c91fb2",
     "/news-images/people/chan-kha-vu.webp": "11a4e0b8d9eb596fde4a4dd9d766e352654def4a264d86e3f4b9dbd8f4d23aba",
@@ -8825,7 +8828,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "0a6bd39e6114e2380b1be3c391b7a54fdacb9c3551cd4859bb29e2ed40370a1a",
+  "fingerprint": "5ed089ce5860d91929c822df7c4491b097963b31c643cf12782ad67526ae0746",
   "people": [
     {
       "accounts": [
@@ -9904,16 +9907,23 @@
     {
       "accounts": [
         {
-          "checkedAt": "2026-11-02T22:10:36Z",
+          "checkedAt": "2026-11-02T22:27:18+00:00",
           "handle": "dlorah",
           "platform": "kaggle",
-          "sourceTitle": "Kaggle account",
+          "sourceTitle": "Kaggle profile identifies the account holder",
           "sourceUrl": "https://www.kaggle.com/dlorah",
           "url": "https://www.kaggle.com/dlorah"
         }
       ],
-      "briefing": "The dlorah Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
-      "facts": [],
+      "briefing": "Harold Bessis coauthored Tufa Labs’ Duck Harness write-up and appeared as dlorah on the ARC-AGI-3 Tufa Labs competition roster.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-02T22:27:18+00:00",
+          "sourceTitle": "Tufa Labs — Duck Harness",
+          "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
+          "text": "Tufa Labs credits Harold Bessis as a coauthor of its Duck Harness write-up."
+        }
+      ],
       "hallOfFame": [],
       "id": "dlorah",
       "memberships": [
@@ -9930,7 +9940,7 @@
           "teamName": "Tufa Labs"
         }
       ],
-      "name": "dlorah"
+      "name": "Harold Bessis"
     },
     {
       "accounts": [
@@ -10914,7 +10924,15 @@
           "teamName": "Tufa Labs"
         }
       ],
-      "name": "InfiniteCreativity"
+      "name": "InfiniteCreativity",
+      "portrait": {
+        "alt": "InfiniteCreativity’s own pink flamingo Kaggle avatar",
+        "checkedAt": "2026-11-02T22:20:00Z",
+        "kind": "kaggle",
+        "sourceTitle": "InfiniteCreativity — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/infinitecreativity",
+        "src": "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg"
+      }
     },
     {
       "accounts": [
@@ -11769,6 +11787,39 @@
         "sourceTitle": "Jeroen Cottaar — Kaggle profile picture",
         "sourceUrl": "https://www.kaggle.com/jeroencottaar",
         "src": "/news-images/people/jeroen-cottaar.webp"
+      }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:27:18+00:00",
+          "handle": "jeromesieber",
+          "platform": "kaggle",
+          "sourceTitle": "Jerome Sieber — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/jeromesieber",
+          "url": "https://www.kaggle.com/jeromesieber"
+        }
+      ],
+      "briefing": "Jerome Sieber is an AI researcher at Tufa Labs; his Kaggle profile uses the same name and lists the lab.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-02T22:27:18+00:00",
+          "sourceTitle": "Tufa Labs — team directory",
+          "sourceUrl": "https://tufalabs.ai/team/",
+          "text": "Jerome Sieber is an AI researcher at Tufa Labs; his Kaggle profile uses the same name and lists the lab."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "jerome-sieber",
+      "memberships": [],
+      "name": "Jerome Sieber",
+      "portrait": {
+        "alt": "Jerome Sieber in Tufa Labs’ team directory",
+        "checkedAt": "2026-11-02T22:27:18+00:00",
+        "kind": "web",
+        "sourceTitle": "Tufa Labs — team directory",
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "src": "/news-images/people/2026-11-02-jerome-sieber-tufa-portrait.jpg"
       }
     },
     {
@@ -12889,6 +12940,39 @@
         "sourceTitle": "NT — own Kaggle profile picture",
         "sourceUrl": "https://www.kaggle.com/mitubant",
         "src": "/news-images/people/mitubant-v2.webp"
+      }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:27:18+00:00",
+          "handle": "moeosman",
+          "platform": "kaggle",
+          "sourceTitle": "Mohamed Osman — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/moeosman",
+          "url": "https://www.kaggle.com/moeosman"
+        }
+      ],
+      "briefing": "Tufa Labs lists Mohamed Osman as an AI researcher. He coauthored research on ARC with Jack Cole.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-02T22:27:18+00:00",
+          "sourceTitle": "Tufa Labs — team directory",
+          "sourceUrl": "https://tufalabs.ai/team/",
+          "text": "Tufa Labs lists Mohamed Osman as an AI researcher. He coauthored research on ARC with Jack Cole."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "mohamed-osman",
+      "memberships": [],
+      "name": "Mohamed Osman",
+      "portrait": {
+        "alt": "Mohamed Osman in Tufa Labs’ team directory",
+        "checkedAt": "2026-11-02T22:27:18+00:00",
+        "kind": "web",
+        "sourceTitle": "Tufa Labs — team directory",
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "src": "/news-images/people/2026-11-02-mohamed-osman-tufa-portrait.webp"
       }
     },
     {
@@ -16388,20 +16472,29 @@
       {
         "artFallback": "none",
         "artNotes": [],
-        "description": "The dlorah Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+        "description": "Harold Bessis coauthored Tufa Labs’ Duck Harness write-up and appeared as dlorah on the ARC-AGI-3 Tufa Labs competition roster.",
         "entries": [],
         "id": "person-dlorah-kaggleverse-2026",
         "issuedAt": "2026-11-02T22:10:44+00:00",
         "kind": "person",
-        "name": "dlorah",
+        "name": "Harold Bessis",
         "number": "P070",
         "personId": "dlorah",
         "season": "2026",
         "setId": "kaggleverse-2026"
       },
       {
+        "art": {
+          "alt": "InfiniteCreativity’s pink flamingo avatar, from the account’s Kaggle profile",
+          "artworkId": "asset-e5860c4a8c998039bf75",
+          "commissionedAt": "2026-11-02T22:27:18+00:00",
+          "credit": "InfiniteCreativity’s Kaggle avatar",
+          "src": "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg"
+        },
         "artFallback": "none",
-        "artNotes": [],
+        "artNotes": [
+          "Own Kaggle account avatar; the account holder’s real name is unverified."
+        ],
         "description": "The InfiniteCreativity Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
         "entries": [],
         "id": "person-infinitecreativity-kaggleverse-2026",
@@ -16636,6 +16729,34 @@
         "personId": "youhan-lee",
         "season": "2026",
         "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Tufa Labs lists Mohamed Osman as an AI researcher. He coauthored research on ARC with Jack Cole.",
+        "entries": [],
+        "id": "person-mohamed-osman-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:27:18+00:00",
+        "kind": "person",
+        "name": "Mohamed Osman",
+        "number": "P091",
+        "personId": "mohamed-osman",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Jerome Sieber is an AI researcher at Tufa Labs; his Kaggle profile uses the same name and lists the lab.",
+        "entries": [],
+        "id": "person-jerome-sieber-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:27:20+00:00",
+        "kind": "person",
+        "name": "Jerome Sieber",
+        "number": "P092",
+        "personId": "jerome-sieber",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -16645,7 +16766,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-02T22:11:33+00:00",
+    "updatedAt": "2026-11-02T22:27:18+00:00",
     "version": 1
   },
   "results": [],

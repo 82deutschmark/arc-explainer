@@ -30,6 +30,35 @@ function renderPage(path: string, route: string) {
   return renderToStaticMarkup(createElement(QueryClientProvider, { client }, createElement(Router, { ssrPath: path, children: createElement(Route, { path: route, component: NewsCards }) })));
 }
 
+it('shows both actual faces together for individual and team cards', () => {
+  for (const id of ['person-jean-francois-puget-2026', 'team-turducken-2026']) {
+    const { card, html } = renderDetail(id);
+    expect(html).toContain(`aria-label="${card.name} card front and back"`);
+    expect(html).toContain(`/api/news/cards/${card.id}/thumb.webp?side=front`);
+    expect(html).toContain(`/api/news/cards/${card.id}/thumb.webp?side=back`);
+    expect(html).toContain(`href="/api/news/cards/${card.id}/image.png?side=back"`);
+  }
+});
+
+it('keeps Tufa identities and the verified account avatar on their own cards', () => {
+  const cards = prepare().cards;
+  expect(cards.find(card => card.personId === 'dlorah')?.name).toBe('Harold Bessis');
+  for (const id of ['mohamed-osman', 'jerome-sieber']) expect(cards.some(card => card.personId === id)).toBe(true);
+  const flamingo = cards.find(card => card.personId === 'infinitecreativity')!;
+  expect(flamingo.name).toBe('InfiniteCreativity');
+  expect(flamingo.art?.src).toBe('/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg');
+});
+
+it('names each of a person’s competition editions in the card shelf', () => {
+  const collection = prepare();
+  const person = collection.cards.find(card => card.id === 'person-jean-francois-puget-2026')!;
+  const other = { ...person, id: 'fixture-second-edition', cardUrl: '/news/cards/fixture-second-edition', setId: 'fixture-set', number: 'P999' };
+  const sets = [...(collection.sets ?? []), { id: 'fixture-set', name: 'Fixture Competition 2026', season: '2026', competitionIds: [] }];
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: person.cardUrl, children: createElement(Detail, { card: person, all: [person, other], sets }) }));
+  expect(html).toContain('Fixture Competition 2026');
+  expect(html).toContain('href="/news/cards/fixture-second-edition"');
+});
+
 it('Puget\'s page shows and links every card we already hold for him, plus his teams', () => {
   const { card, html } = renderDetail('person-jean-francois-puget-2026');
   expect(card.pastCards.length).toBeGreaterThanOrEqual(2);

@@ -14,12 +14,13 @@ export function CardPair({ card }: { card: CollectionCard }) {
   const [side, setSide] = useState<'front' | 'back' | null>(null);
   const [fullSize, setFullSize] = useState(false);
   const source = (face: 'front' | 'back') => `/api/news/cards/${encodeURIComponent(card.id)}/image.png?side=${face}&v=${collectionShareVersion(card)}`;
+  const preview = (face: 'front' | 'back') => `/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=${face}&w=560&v=${collectionShareVersion(card)}`;
   return <>
     <section className="card-pair" aria-label={`${card.name} card front and back`}>
       {(['front', 'back'] as const).map(face => <figure key={face}>
         <figcaption>{face === 'front' ? 'Front' : 'Back'} <span>Enlarge ↗</span></figcaption>
         <button type="button" aria-label={`Enlarge ${face} of ${card.name}’s card`} onClick={() => { setFullSize(false); setSide(face); }}>
-          <img src={source(face)} alt={`${card.name}, card ${card.number}, ${face}`} width="750" height="1050" decoding="async" />
+          <img src={preview(face)} alt={`${card.name}, card ${card.number}, ${face}`} width="560" height="784" decoding="async" />
         </button>
       </figure>)}
     </section>

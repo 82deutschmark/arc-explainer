@@ -12,7 +12,10 @@ import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
 export const CATALOG_PAGE_SIZE = 24;
 export function catalogSet(card: CollectionCard, sets: NewsCollection['sets'] = []) {
   if (card.setId) return sets.find(set => set.id === card.setId);
-  // Legacy cards predate set IDs. Only infer when there is exactly one set for that season.
+  // Imported cards predate set IDs; their original collection uses the season as its ID.
+  const legacy = sets.find(set => set.id === card.season && set.season === card.season);
+  if (legacy) return legacy;
+  // Other collections can infer a set only when there is one unambiguous candidate.
   const sameSeason = sets.filter(set => set.season === card.season);
   return sameSeason.length === 1 ? sameSeason[0] : undefined;
 }
