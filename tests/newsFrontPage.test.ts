@@ -192,9 +192,9 @@ test('the evening permalink includes its complete feature and cover before the c
   // Every feature section and original source must survive the actual linked page, not just /news.
   for (const section of feature.sections) expect(html).toContain(section.text.slice(0, 40).replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
   for (const source of feature.sources) expect(html).toContain(`href="${source.url}"`);
-  expect(html).toContain(article.sections[1].text.slice(0, 40));
-  expect(html.indexOf(feature.sections.at(-1)!.text.slice(0, 40)))
-    .toBeLessThan(html.indexOf(article.sections[1].text.slice(0, 40)));
+  expect(readable(html)).toContain(readable(article.sections[1].text.slice(0, 40)));
+  expect(readable(html).indexOf(readable(feature.sections.at(-1)!.text.slice(0, 40))))
+    .toBeLessThan(readable(html).indexOf(readable(article.sections[1].text.slice(0, 40))));
   expect(html.match(new RegExp(`id="${feature.id}"`, 'g'))).toHaveLength(1);
 });
 
@@ -206,7 +206,7 @@ test('missing or unrelated reserved features leave the ordinary edition readable
   for (const replacement of [undefined, { ...feature, competition: 'arc-2' as const }]) {
     const input = { ...index, articles: [original], dispatches: replacement ? [replacement] : [] };
     const html = render(NewsArticle, `/news/${original.id}`, input);
-    expect(html).toContain(original.sections[1].text.slice(0, 40));
+    expect(readable(html)).toContain(readable(original.sections[1].text.slice(0, 40)));
     expect(html).not.toContain(`id="${feature.id}"`);
     expect(html).not.toContain('Dispatch not found');
   }

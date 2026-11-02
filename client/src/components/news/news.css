@@ -1,7 +1,8 @@
 /* Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
  * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
- * articles, notebook, people, community and unified masthead, and disclosed VoynichLabs units.
+ * articles, notebook, people, community and unified masthead, semantic team-name emphasis,
+ * and disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
  * financial terminal, like a sports page ... take this back to a different era"). Newsprint and
  * ink, ruled columns instead of cards, Georgia for reporting, agate tables with monospace figures,
@@ -578,6 +579,9 @@
   .news-sponsor-rail .news-masthead-ad-cta { display: none; }
 }
 
+/* Team names retain normal wrapping and the surrounding face; burgundy separates
+   source-bound identities from ordinary prose, blue places and green score values. */
+.arc-daily .news-team-name { color: #8d1c12; font-weight: 700; }
 /* Semantic sporting values retain their own faces even in numeric table cells. */
 .arc-daily .pl, .arc-daily .news-place, .arc-daily .news-agate .num.pl, .arc-daily .news-boxscore td.pl { color: #2453a6; font-family: system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
 .arc-daily .sc, .arc-daily .news-score, .arc-daily .news-agate .num.sc, .arc-daily .news-boxscore td.sc { color: #17703f; font-family: 'News Mono', ui-monospace, monospace; font-weight: 600; font-variant-numeric: tabular-nums; }

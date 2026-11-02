@@ -6,6 +6,7 @@
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
  *          illustrated article and profile HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
+ *          Unpublished article addresses and publication-read failures receive distinct initial HTML and HTTP statuses.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
  *          page and profile are CollectionPages listing their entries; readable Eastern
  *          dates and competition names in the crawler body; sitemap lastmod from real
@@ -25,7 +26,7 @@
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
 import { NEWS_CONTACT, NEWS_TIPS_PATH } from '../../../shared/newsContact';
-import { figuresHtml, statScores } from '../../../shared/newsFigures';
+import { figuresHtml, statScores, statTeamNames } from '../../../shared/newsFigures';
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData, dispatchStructuredData, newsPublisher,
@@ -39,7 +40,7 @@ import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/se
 import { collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionRoleLabel, collectionShareAlt, collectionSharePath,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
-import { getNewsIndex } from './newsStore';
+import { getNewsIndex, loadNewsArchive } from './newsStore';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
 import { NEWS_BRAND } from '../../../shared/newsBrand';
 export const boardPath = (competition: string) => KAGGLE_COMPETITIONS[competition]?.path ?? '/news';
@@ -72,10 +73,10 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const feature = editionFeature(article, dispatches);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
-    <h1>${figuresHtml(article.headline, esc, statScores(article.stats))}</h1><p>${figuresHtml(article.dek, esc, statScores(article.stats))}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>
+    <h1>${figuresHtml(article.headline, esc, statScores(article.stats), [], statTeamNames(article.stats))}</h1><p>${figuresHtml(article.dek, esc, statScores(article.stats), [], statTeamNames(article.stats))}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, true)}. Exact source observations remain in the archived reporting data.</p>
     ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people)) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
-    ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(article.stats)).replace(/\n/g, '<br/>')}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
+    ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(article.stats), [], statTeamNames(article.stats)).replace(/\n/g, '<br/>')}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChange(stat)}</td><td class="sd">${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;
@@ -197,9 +198,28 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
       mainEntity: { '@type': card.kind === 'person' ? 'Person' : 'Organization', name: card.name, url } }] },
     bodyHtml: `<main><p><a href="/news/cards">${NEWS_BRAND.goose ? "All Kaggleverse cards" : "All ARC Prize cards"}</a></p>${collectionCardHtml(card, true)}<p><a href="/news">${esc(NEWS_NAME)}</a></p></main>` });
 }
+/** A missing publication and a failed read need different status, copy and retry links. */
+function unavailableStoryMeta(route: string, failed: boolean): { tags: RouteMetaTags; status: number } {
+  const heading = failed ? 'We couldn’t load this story' : 'No story has been published at this address';
+  const description = failed
+    ? 'The site is temporarily unable to retrieve this article. This is a loading problem; publication status could not be checked.'
+    : 'The archive was checked successfully. This link may have been shared before publication, or the address may be incorrect.';
+  return { status: failed ? 503 : 404, tags: completeMeta({ title: `${heading} | ${NEWS_NAME}`, description,
+    url: `${SITE_ORIGIN}${route}`, noindex: true,
+    bodyHtml: `<main><h1>${esc(heading)}</h1><p>${esc(description)}</p><p><a href="${esc(route)}">${failed ? 'Try again' : 'Check again'}</a> · <a href="/news">Read the latest stories →</a></p></main>` }) };
+}
+
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
-  const { articles, competitors, dispatches = [], people = [], social = [], socialArchive = [], discussions = [], wire = [] } = getNewsIndex();
+  const storyRoute = route.match(/^\/news\/([a-z0-9][a-z0-9-]{0,99})$/);
+  let archive: ReturnType<typeof loadNewsArchive>;
+  try { archive = loadNewsArchive(); }
+  catch (error) {
+    // Readers must not mistake an unreadable archive for proof that nothing was published.
+    if (storyRoute) return unavailableStoryMeta(route, true);
+    throw error;
+  }
+  const { articles, competitors, dispatches = [], people = [], social = [], socialArchive = [], discussions = [], wire = [] } = archive.index;
   if (route === '/news') {
     const tags = frontPageMeta(articles, dispatches, wire, social, discussions, people);
     return { status: 200, tags };
@@ -238,6 +258,10 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     jsonLd: dispatchStructuredData(dispatch, SITE_ORIGIN), bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people))}</main>`,
   }) };
 
+  if (storyRoute) {
+    const rejected = archive.skipped.some(item => ['articles', 'dispatches'].some(folder => item.file === `${folder}/${storyRoute[1]}.json`));
+    return unavailableStoryMeta(route, rejected);
+  }
   return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit the newspaper front page for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
 }
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);

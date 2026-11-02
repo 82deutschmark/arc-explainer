@@ -22,3 +22,9 @@ The direct-story route checks, reader loading/retry checks and production build 
 ARC3’s single full-article visual proof was delivered to private Discord at message 1566956173712691360. It remains a review draft. The rebrand gate remains unchanged.
 
 The editor subsequently required a live working ARC3 URL before Discord delivery. Publish the already filed ARC3 story at its permanent address under that instruction; preserve its dated observations and the separate rebrand gate. A draft image delivery is no substitute for that live URL.
+
+## Team names and initial error pages
+
+The editor explicitly requested parallel agents. Separate agents implemented verified team-name highlighting, initial HTML publication states and the canonical style-guide/distribution corrections. Team names use bold dark burgundy text through shared semantic rendering, with the original source spelling preserved. Both React and initial HTML now identify infinity as a team. Unpublished addresses, rejected publication files and archive read errors have distinct public messages and HTTP statuses.
+
+Validation covers the real filed infinity story, full React/server markup parity, overlapping and Japanese names, unrelated words, URL boundaries and preserved numeric semantics. Existing front-page tests compare readable prose so intentional semantic markup cannot hide a real content regression. Production client and server builds pass. The style guide and X playbook were separately committed and pushed in loose-goose at 3ace80c.

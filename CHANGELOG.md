@@ -1,3 +1,9 @@
+### Version 9.161.33 · November 2, 2026
+
+- Highlight verified team names in article headlines and prose in bold burgundy, using the story’s dated team names and the same renderer in browser and initial HTML. Preserve source spelling, Japanese names, numeric typography and ordinary words outside verified names. The house style records this rule in the newsroom repository.
+- Give initial article pages the same clear distinction as the reader: unpublished address (404), publication loading failure (503), retry and front-page links. Keep internal diagnostic details private.
+- Author: GPT-6 / Codex (reasoning effort not exposed), with user-requested parallel agents. Validation: real infinity story, client/server parity, publication errors, archive rendering and production client/server builds.
+
 ### Version 9.161.32 · November 2, 2026
 
 - Publish the filed ARC3 infinity article at its permanent address, following the editor’s requirement for a working live story before Discord delivery. Keep its original dated evidence and illustration, and preserve the separate identity-reveal gate. Author: GPT-6 / Codex (reasoning effort not exposed).

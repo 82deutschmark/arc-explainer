@@ -1,16 +1,17 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed)
  * Date: 02-November-2026
- * PURPOSE: Render shared semantic figure runs without changing source records.
+ * PURPOSE: Render shared semantic team-name and figure runs without changing source records.
  * SRP/DRY check: Pass — classification is shared with initial server HTML.
  */
 import { Fragment } from 'react';
-import { figureRuns, figureClass, statScores, type FigureSpan } from '@shared/newsFigures';
+import { figureRuns, figureClass, statScores, statTeamNames, type FigureSpan } from '@shared/newsFigures';
 import { competitionName, type NewsStat, type NewsCompetition } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 export function SportsText({ text, stats = [], figures = [] }: { text: string; stats?: NewsStat[]; figures?: FigureSpan[] }) {
-  return <>{figureRuns(text, statScores(stats), figures).map((run, index) => run.kind
-    ? <span key={index} className={figureClass(run.kind)}>{run.text}</span>
+  return <>{figureRuns(text, statScores(stats), figures, statTeamNames(stats)).map((run, index) => run.kind === 'team'
+    ? <strong key={index} className="news-team-name">{run.text}</strong>
+    : run.kind ? <span key={index} className={figureClass(run.kind)}>{run.text}</span>
     : <Fragment key={index}>{run.text}</Fragment>)}</>;
 }
 export function NumberKey({ stats, competition }: { stats: NewsStat[]; competition?: NewsCompetition }) {
