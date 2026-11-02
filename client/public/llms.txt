@@ -5,6 +5,7 @@
 ## Start here
 
 - [The ARC Daily](https://arc.markbarney.net/news): sourced morning and evening competition reporting, separate from the live box scores.
+- [The Duck That Launched a Thousand Ships](https://arc.markbarney.net/specials/2026-11-02-the-duck-that-launched-a-thousand-ships.html): ARC-3 season feature, interactive score history, model and notebook releases, plus ARC-2 comparison.
 - [Competitor profiles](https://arc.markbarney.net/news/competitors): dated public backgrounds and distinct competition identities.
 - [ARC Daily RSS](https://arc.markbarney.net/news/feed.xml): permanent article links and summaries.
 

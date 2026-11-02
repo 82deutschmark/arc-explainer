@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-11-02T06:07:11.478120+00:00",
+  "publishedAt": "2026-11-02T06:02:42.170013+00:00",
+  "sources": {
+    "arc3-board.json.gz": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+    "arc2-board.json.gz": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+    "tong-history.json.gz": "https://tonghuikang--arc3-leaderboard-monitor-get-history.modal.run",
+    "qwen4-search.json": "https://huggingface.co/api/models?author=Qwen&search=Qwen4&limit=100",
+    "qwen27-initial-tree.json": "https://huggingface.co/api/models/Qwen/Qwen3.8-27B/tree/6714f561f4c678235aa4780ba4fb904d99a3cca8"
+  }
+}

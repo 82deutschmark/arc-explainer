@@ -1,3 +1,10 @@
+### Version 9.161.13 · November 2, 2026
+
+- Publish **The Duck That Launched a Thousand Ships**, with the May 6 bird-in-hand lead, Cristiano Calcagno’s idea credit, the Duck–Franzen–Turducken lineage and a link to the existing Run Record. Author: GPT-6 / Codex; editorial review: Claude Opus 5.5.
+- Add a whole-field ARC-3 season chart with chapter zoom, log/linear scales, medal/fixed-rank views, model/notebook markers and CSV export; compare both contests’ score distributions and completed public-notebook census. Add a news dispatch and permanent feature URL.
+- Commit the template, public source snapshots, deterministic builder and reviewer handoff. Qwen 4 status is checked and timestamped; private team notes are excluded. Rollout Discord is authorized; X remains pending the editor’s thumbs-up.
+- Validation: feature/data rebuild checks, dispatch schema, JavaScript syntax, chart controls, CSV export and desktop/phone layout pass; 104 Python newsroom checks pass. The broader news suites have 34 passes and four previously recorded failures (two missing QueryClient fixtures, one portrait-label expectation and one archive-walk timeout).
+
 ### Version 9.161.12 · November 2, 2026
 
 - Run record: correct the Qwen 3.8 27B and Flash Next marks to when the weights were published, Aug 14 and Aug 26, not when their empty repositories were created (Author: Claude Opus 5.5).
