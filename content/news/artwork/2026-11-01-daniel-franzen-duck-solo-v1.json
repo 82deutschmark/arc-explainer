@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "2026-11-01-daniel-franzen-duck-solo-v1",
+  "title": "Daniel Franzen — approved individual duck character",
+  "kind": "native-generation",
+  "mode": "native-edit-and-reframe",
+  "tool": "image_gen.imagegen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "generatedAt": "2026-11-01T22:56:48.652Z",
+  "rawSrc": "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png",
+  "rawSha256": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
+  "prompt": "Use case: identity-preserve / precise-object-edit. EDIT AND REFRAME INPUT IMAGE1, the already approved ARChitects workshop illustration, into ONE SOLO portrait of its EXISTING YELLOW DUCK character, DANIEL. This is extraction and portrait recomposition of an established illustrated character, NOT inventing a new person or redesigning him. In image1 he is MID-RIGHT, behind the holographic citadel, wearing black sunglasses, blue/copper engineer armour, smiling orange bill. Preserve THAT EXACT DRAWN FACE: yellow feather shape/tuft, orange rounded bill and smile, broad black sunglasses and facial proportions. Preserve his existing blue/cyan, graphite and burnished-copper armour design, mechanical gloves, shoulder plate details and white collar. INPUT IMAGE2 is his own frozen individual yellow-duck avatar, identity-support ONLY. Image1 controls the sophisticated painterly cyberpunk finish; do NOT flatten the final into the simple avatar style. No human face, no human hair, no human skin.\nREMOVE the fox, cat and mouse completely. Remove their hands and hardware belonging to them. Reframe and naturally complete only the existing duck's upper torso and arms as a handsome confident SOLO cyber-engineer portrait, head-to-waist at most. Keep the scene's inviting warm amber/cyan light, cinematic illustrated/cartoon realism, rich metal textures and natural 3D painted depth. He lightly adjusts ONE small fragment of the same delicate luminous cyan/gold geometric drafting model from the original scene at chest height, with both original-design mechanical gloves visible. Background remains the SAME established blue-night architectural workshop overlooking the luminous valley bridges/citadels, gently simplified/defocused. Existing character and established scene, not a new costume or a different genre. No teammate, extra animal, mascot, human or fictional replacement face.\nOUTPUT CANVAS EXACTLY PORTRAIT5:7, requested1500x2100. Full bleed. Do not output the old landscape or a narrow poster. Calm top200px; subject face/glasses/bill and both hands/model all betweeny200..1450 on1500x2100, eyes roughlyy650; quieter dark bottom650 for later code-drawn card labels. No essential facial features or hands in lower overlay zone. Absolutely NO text, lettering, names, numbers, ranks, scores, badges, logos, card frame, border or watermark. ONE established yellow duck only. Preserve the approved group original unchanged; produce a separate edit preview.",
+  "references": [
+    {
+      "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+      "sha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
+      "role": "Approved ARChitects team illustration: native edit target preserving this established character and style.",
+      "generationRecord": "2026-10-26-architects-dream-team-base"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-daniel-franzen-reference-1-v1.webp",
+      "sha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49",
+      "sourceUrl": "https://www.kaggle.com/dfranzen",
+      "role": "Registered own avatar confirms yellow duck, orange bill and broad black sunglasses; approved group target supplies finished costume/style."
+    }
+  ],
+  "reviewStatus": "reviewed",
+  "reviewedAt": "2026-11-01T23:06:09.241899+00:00",
+  "review": "Visually inspected: exactly one yellow duck with preserved smiling orange bill, tuft, broad black sunglasses, blue/cyan/copper cyber-engineer armour and mechanical gloves. Existing workshop/model world preserved. No human face, teammates, text, score, rank or card frame. Separate edit preview, not bound.",
+  "approvedBy": "mark-barney",
+  "approvalSource": "Editor approved the displayed solo pair in chat and instructed commit and push.",
+  "dimensions": {
+    "width": 1060,
+    "height": 1484
+  },
+  "requestedDimensions": {
+    "width": 1500,
+    "height": 2100
+  },
+  "limitations": [
+    "Native output is 1060×1484, exact 5:7, below the requested 1500×2100; preserved without upscaling."
+  ],
+  "identitySourceUrls": [
+    "https://www.kaggle.com/dfranzen"
+  ],
+  "scope": "Individual established animal-avatar character. Not a human likeness. Historical team original remains unchanged."
+}
