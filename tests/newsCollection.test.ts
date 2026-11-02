@@ -130,6 +130,41 @@ describe('Card Cabinet identity and statistics', () => {
     expect(collection.cards[0].entries[0].members[0].cardUrl).toBe(collectionCardPath(older.id));
   });
 
+  it('links a person to their team card from the same set', () => {
+    const older = { ...teamCard(), id: 'team-legacy', setId: 'legacy-set' };
+    const newer = { ...teamCard(), id: 'team-specific', number: 'T002', setId: 'arc3-set', issuedAt: '2026-10-02T12:00:00Z' };
+    const player = { ...personCard('alpha'), id: 'alpha-legacy', setId: 'legacy-set' };
+    const sets = [{ id: 'legacy-set', name: 'Legacy', season: '2026', competitionIds: [entry().competitionId] }];
+    const collection = buildNewsCollection(registry([older, newer, player], [snapshot('arc-3', '100', ['alpha'])]), index([person('alpha')]), [], {}, null, null, sets);
+    expect(collection.cards[2].entries[0].cardUrl).toBe(collectionCardPath(older.id));
+    expect(collection.cards[2].teamHistory[0].cardUrl).toBe(collectionCardPath(older.id));
+  });
+
+  it('keeps a competition edition’s live and final results inside that set', () => {
+    const arc3 = { ...personCard('alpha'), id: 'alpha-arc3', setId: 'arc3-set' };
+    const arc2 = { ...personCard('alpha', 'P002'), id: 'alpha-arc2', setId: 'arc2-set' };
+    const general = { ...personCard('alpha', 'P003'), id: 'alpha-general', setId: 'general-set' };
+    const sets = [
+      { id: 'arc3-set', name: 'ARC3', season: '2026', competitionIds: [entry('arc-3').competitionId] },
+      { id: 'arc2-set', name: 'ARC2', season: '2026', competitionIds: [entry('arc-2').competitionId] },
+      { id: 'general-set', name: 'General', season: '2026', competitionIds: [] },
+    ];
+    const snapshots = [snapshot('arc-3', '100', ['alpha']), snapshot('arc-2', '200', ['alpha'])];
+    const final = [result({ id: 'arc2-final', ...entry('arc-2', '200'), creditedHandles: ['alpha'] })];
+    const cards = buildNewsCollection(registry([arc3, arc2, general], snapshots), index([person('alpha')]), final, {}, null, null, sets).cards;
+    expect(cards[0].entries.map(row => row.competition)).toEqual(['arc-3']);
+    expect(cards[0].honors).toEqual([]);
+    expect(cards[1].entries.map(row => row.competition)).toEqual(['arc-2']);
+    expect(cards[1].honors.some(honor => honor.kind === 'kaggle-medal')).toBe(true);
+    expect(cards[2].entries.map(row => row.competition)).toEqual(['arc-3', 'arc-2']);
+  });
+
+  it('does not put the current board on an earlier-season card', () => {
+    const earlier = { ...personCard('alpha'), id: 'alpha-2025', season: '2025' };
+    const card = buildNewsCollection(registry([earlier], [snapshot('arc-3', '100', ['alpha'])]), index([person('alpha')])).cards[0];
+    expect(card.entries).toEqual([]);
+  });
+
   it('keeps simultaneous contest teams and orders transfers by observed instants, not ledger order', () => {
     const player = person('alpha');
     const membership = (competition: NewsCompetition, teamId: string, observedAt: string): NewsPerson['memberships'][number] => ({

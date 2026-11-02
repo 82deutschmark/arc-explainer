@@ -42,7 +42,8 @@ export function activeCardResults(results: FinalCardResult[]): FinalCardResult[]
 const teamKey = (row: { competitionId: string; teamId: string }) => `${row.competitionId}:${row.teamId}`;
 const contestKey = (row: { competitionId: string; season: string }) => `${row.season}:${row.competitionId}`;
 
-function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCards: Map<string, string>, notebooks: Map<string, string>): CollectionTeamHistory[] {
+type TeamCardLookup = (row: { competitionId: string; teamId: string }, season: string, setId?: string) => string | undefined;
+function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCard: TeamCardLookup, notebooks: Map<string, string>, setId?: string): CollectionTeamHistory[] {
   const handles = new Set(person.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
   const observed = new Map<string, NewsPerson['memberships'][number]>();
   const add = (row: NewsPerson['memberships'][number]) => {
@@ -76,7 +77,7 @@ function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCards
     // without this player leaves the latest team uncertain, rather than inventing a transfer.
     const status: CollectionTeamHistory['status'] = seen < latestMembership.get(contestKey(row))! ? 'previous'
       : !latestBoard.has(contestKey(row)) || seen < latestBoard.get(contestKey(row))! || row.season !== registry.season ? 'last-observed' : 'current';
-    const cardUrl = teamCards.get(teamKey(row));
+    const cardUrl = teamCard(row, row.season, setId);
     return { ...row, status, ...(cardUrl ? { cardUrl } : {}), profileUrl: notebooks.get(teamKey(row)) ?? row.sourceUrl };
   }).sort((a, b) => Date.parse(b.lastObservedAt) - Date.parse(a.lastObservedAt) || a.competitionId.localeCompare(b.competitionId) || a.teamId.localeCompare(b.teamId));
 }
@@ -124,17 +125,32 @@ function zoneOf(score: number | null, saved: ReturnType<typeof boardNear>): 'gol
   return saved.gold != null && score >= saved.gold ? 'gold' : saved.silver != null && score >= saved.silver ? 'silver' : saved.bronze != null && score >= saved.bronze ? 'bronze' : null;
 }
 
-export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, results: FinalCardResult[] = [], careers: Record<string, CollectionCareer> = {}, board: BoardHistory | null = null, hallOfFame: HallOfFameFile | null = null): NewsCollection {
+export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, results: FinalCardResult[] = [], careers: Record<string, CollectionCareer> = {}, board: BoardHistory | null = null, hallOfFame: HallOfFameFile | null = null, sets: NewsCollection['sets'] = []): NewsCollection {
   cardRegistrySchema.parse(registry);
   const final = activeCardResults(results);
   const people = index.people ?? [];
   // Who each edition names is worked out once per build: it is a name search over every section.
   const articlePeople = new Map(index.articles.map(article => [article.id, new Set(reportedPeople([article], people).map(item => item.id))] as const));
   const byHandle = new Map(people.flatMap(person => person.accounts.filter(account => account.platform === 'kaggle').map(account => [account.handle, person] as const)));
-  const teamCards = new Map(registry.cards.filter(card => card.kind === 'team').flatMap(card => card.entries.map(row => [teamKey(row), collectionCardPath(card.id)] as const)));
-  const personCard = (season: string, personId: string, setId?: string) => {
-    const matches = registry.cards.filter(card => card.kind === 'person' && card.season === season && card.personId === personId);
-    const selected = matches.find(card => card.setId === setId) ?? matches.sort((a, b) => b.issuedAt.localeCompare(a.issuedAt) || a.id.localeCompare(b.id))[0];
+  const teamEditions = new Map<string, CardRegistry['cards']>();
+  const personEditions = new Map<string, CardRegistry['cards']>();
+  for (const card of registry.cards) {
+    if (card.kind === 'person') {
+      const key = `${card.season}:${card.personId}`;
+      personEditions.set(key, [...(personEditions.get(key) ?? []), card]);
+    } else for (const row of card.entries) {
+      const key = `${card.season}:${teamKey(row)}`;
+      teamEditions.set(key, [...(teamEditions.get(key) ?? []), card]);
+    }
+  }
+  const choose = (matches: CardRegistry['cards'], setId?: string, preferSet = true) => (preferSet ? matches.find(card => card.setId === setId) : undefined)
+    ?? [...matches].sort((a, b) => Date.parse(b.issuedAt) - Date.parse(a.issuedAt) || a.id.localeCompare(b.id))[0];
+  const teamCard: TeamCardLookup = (row, season, setId) => {
+    const selected = choose(teamEditions.get(`${season}:${teamKey(row)}`) ?? [], setId);
+    return selected ? collectionCardPath(selected.id) : undefined;
+  };
+  const personCard = (season: string, personId: string, setId?: string, preferSet = true) => {
+    const selected = choose(personEditions.get(`${season}:${personId}`) ?? [], setId, preferSet);
     return selected ? collectionCardPath(selected.id) : undefined;
   };
   const notebooks = new Map<string, string>(index.competitors.map(team => [`${KAGGLE_COMPETITIONS[team.competition].slug}:${team.teamId}`, competitorPath(team.id)] as const));
@@ -142,29 +158,32 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const person = people.find(item => item.id === definition.personId);
     if (definition.kind === 'person' && !person) throw Error('Card has no verified person: ' + definition.id);
     const handles = new Set(person?.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
+    const set = definition.setId ? sets.find(row => row.id === definition.setId) : undefined;
+    // A general set has no contest restriction. An unknown set must not acquire unrelated results.
+    const scopedIds = set ? (set.competitionIds.length ? set.competitionIds : undefined)
+      : definition.setId ? definition.entries.map(row => row.competitionId) : undefined;
+    const inSet = (row: { competitionId: string }) => !scopedIds || scopedIds.includes(row.competitionId);
     const entryRefs = definition.kind === 'team' ? [...definition.entries]
-      : registry.snapshots.filter(row => row.members.some(handle => handles.has(handle)));
+      : definition.season === registry.season ? registry.snapshots.filter(row => inSet(row) && row.members.some(handle => handles.has(handle))) : [];
     // When the board cache is absent, retain only the latest positively observed team
     // in each contest. This is a dated roster reference, not a standing or a transfer.
     const membershipRefs = new Map<string, NewsPerson['memberships'][number]>();
     if (person) {
-      const set = definition.setId ? loadSeriesFile().sets.find(row => row.id === definition.setId) : undefined;
-      const scopedIds = set?.competitionIds ?? (definition.setId ? definition.entries.map(row => row.competitionId) : undefined);
       for (const row of person.memberships) {
-        if (row.season !== definition.season || !handles.has(row.memberHandle) || (scopedIds && !scopedIds.includes(row.competitionId))) continue;
+        if (row.season !== definition.season || !handles.has(row.memberHandle) || !inSet(row)) continue;
         const prior = membershipRefs.get(contestKey(row));
         if (!prior || Date.parse(row.lastObservedAt) > Date.parse(prior.lastObservedAt)) membershipRefs.set(contestKey(row), row);
       }
       for (const row of membershipRefs.values()) {
-        if (registry.snapshots.some(snapshot => snapshot.competitionId === row.competitionId && snapshot.members.some(handle => handles.has(handle))
+        if (definition.season === registry.season && registry.snapshots.some(snapshot => snapshot.competitionId === row.competitionId && snapshot.members.some(handle => handles.has(handle))
           && Date.parse(snapshot.observedAt) > Date.parse(row.lastObservedAt))) continue;
         // A snapshot or final result for this team has its own authoritative roster.
-        if (registry.snapshots.some(snapshot => teamKey(snapshot) === teamKey(row)) || final.some(result => result.season === row.season && teamKey(result) === teamKey(row))) continue;
+        if ((definition.season === registry.season && registry.snapshots.some(snapshot => teamKey(snapshot) === teamKey(row))) || final.some(result => result.season === row.season && teamKey(result) === teamKey(row))) continue;
         if (!entryRefs.some(ref => teamKey(ref) === teamKey(row))) entryRefs.push(row);
       }
     }
     // An official credited roster can reconnect a former member without using today's roster.
-    if (person) for (const row of final.filter(row => row.season === definition.season && row.creditedHandles.some(handle => handles.has(handle)))) {
+    if (person) for (const row of final.filter(row => row.season === definition.season && inSet(row) && row.creditedHandles.some(handle => handles.has(handle)))) {
       if (!entryRefs.some(ref => ref.competitionId === row.competitionId && ref.teamId === row.teamId)) entryRefs.push(row);
     }
     // An ARC3 character card can lead with its ARC3 team while retaining other verified entries.
@@ -177,7 +196,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     }
     const honors: CollectionCard['honors'] = [];
     const entries = entryRefs.map(ref => {
-      const snapshot = registry.snapshots.find(row => row.competitionId === ref.competitionId && row.teamId === ref.teamId);
+      const snapshot = definition.season === registry.season ? registry.snapshots.find(row => row.competitionId === ref.competitionId && row.teamId === ref.teamId) : undefined;
       const membership = person ? membershipRefs.get(contestKey({ ...ref, season: definition.season })) : undefined;
       const rosterObservation = membership && teamKey(membership) === teamKey(ref) ? membership : undefined;
       const notebook = rosterObservation && index.competitors.find(team => team.competition === ref.competition && team.teamId === ref.teamId
@@ -190,6 +209,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         honors.push(...result.awards.map(award => ({ ...credit, label: award.label, kind: award.kind })));
       }
       const roster = result?.creditedHandles ?? snapshot?.members ?? notebook?.members ?? [];
+      const cardUrl = teamCard(ref, definition.season, definition.setId);
       return { competition: ref.competition, competitionId: ref.competitionId, teamId: ref.teamId,
         teamName: snapshot?.teamName ?? rosterObservation?.teamName ?? index.competitors.find(team => team.teamId === ref.teamId && team.competition === ref.competition)?.name ?? definition.name,
         observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? rosterObservation?.lastObservedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
@@ -198,7 +218,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         peakRank: (() => { const peak = board?.peaks[`${ref.competition}:${ref.teamId}`]?.rank; const now = result?.rank ?? snapshot?.rank; return peak != null && now != null && peak < now ? peak : null; })(),
         zone: result ? null : zoneOf(snapshot?.score ?? null, boardNear(board, ref.competition, snapshot?.observedAt ?? null)),
         sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl ?? rosterObservation?.sourceUrl ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard?teamId=${encodeURIComponent(ref.teamId)}`,
-        ...(teamCards.has(teamKey(ref)) ? { cardUrl: teamCards.get(teamKey(ref)) } : {}),
+        ...(cardUrl ? { cardUrl } : {}),
         profileUrl: notebooks.get(teamKey(ref)) ?? result?.sourceUrl ?? snapshot?.sourceUrl ?? rosterObservation?.sourceUrl
           ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard`,
         status: result ? 'final' as const : snapshot ? 'public' as const : 'unavailable' as const,
@@ -224,7 +244,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
       highlights: [...careerHonors, ...facts], accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url }))
         : [...new Set(entries.flatMap(ref => ref.members.map(member => member.handle)))].map(handle => ({ label: handle, url: `https://www.kaggle.com/${encodeURIComponent(handle)}` })),
-      entries, honors, artNotes: definition.artNotes, teamHistory: person ? playerTeamHistory(person, registry, teamCards, notebooks) : [],
+      entries, honors, artNotes: definition.artNotes, teamHistory: person ? playerTeamHistory(person, registry, teamCard, notebooks, definition.setId) : [],
       pastCards: pastCardsFor(person), stories: storiesFor(index, articlePeople, person, entries),
       career: person ? careers[person.id] ?? null : null,
     };
@@ -232,7 +252,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
   const archive: CollectionArchive | null = hallOfFame ? {
     series: hallOfFame.series,
     cards: hallOfFame.cards.map(card => ({ ...card, cardUrls: people.filter(person => person.hallOfFame.some(honor => honor.path === card.path))
-      .flatMap(person => { const url = personCard(registry.season, person.id); return url ? [{ name: person.name, url }] : []; }) })),
+      .flatMap(person => { const url = personCard(registry.season, person.id, undefined, false); return url ? [{ name: person.name, url }] : []; }) })),
   } : null;
   return { season: registry.season, commissionedBy: registry.commissionedBy, commissionedAt: registry.commissionedAt, updatedAt: registry.updatedAt, cards, archive };
 }
@@ -283,8 +303,9 @@ function buildCollectionFromFiles(directory: string): NewsCollection {
   const board = !wiki && fs.existsSync(boardFile) ? boardHistorySchema.parse(JSON.parse(fs.readFileSync(boardFile, 'utf8'))) : null;
   const hofFile = path.join(directory, 'hall-of-fame.json');
   const hallOfFame = fs.existsSync(hofFile) ? hallOfFameSchema.parse(JSON.parse(fs.readFileSync(hofFile, 'utf8'))) : null;
-  const collection = buildNewsCollection(registry, index, results, careers, board, hallOfFame);
-  collection.sets = loadSeriesFile(directory).sets.map(set => ({ id: set.id, name: set.setName, season: set.season, competitionIds: set.competitionIds ?? [] }));
+  const sets = loadSeriesFile(directory).sets.map(set => ({ id: set.id, name: set.setName, season: set.season, competitionIds: set.competitionIds ?? [] }));
+  const collection = buildNewsCollection(registry, index, results, careers, board, hallOfFame, sets);
+  collection.sets = sets;
   for (const card of collection.cards) if (card.art) {
     const image = path.join(process.cwd(), 'client/public', card.art.src);
     if (!fs.existsSync(image)) throw Error('Missing collectible artwork: ' + card.art.src);
