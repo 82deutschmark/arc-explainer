@@ -243,6 +243,27 @@ export function getPlayerRuns(player: string, gameId: string, data: HumanPlayDat
   return orderRuns(data.runs.filter((run) => run.player === player && run.gameId === gameId));
 }
 
+/** A run's own replay on arcprize.org. */
+export function arcPrizeReplayUrl(guid: string): string {
+  return `https://arcprize.org/replay/${guid}`;
+}
+
+/**
+ * Boss's replays of one game, best first: furthest run, a win before a loss at the same level,
+ * then fewest actions. One entry per replay, since runs in one play session share a guid.
+ * Added 2026-11-01 (Claude Opus 5.5 High) for the hub's table and the game pages.
+ */
+export function getOwnerReplays(gameId: string, data: HumanPlayData = HUMAN_PLAY_DATA): HumanPlayRun[] {
+  const ranked = getPlayerRuns(OWNER_PLAYER, gameId, data).sort(
+    (a, b) =>
+      b.levelsCompleted - a.levelsCompleted ||
+      Number(b.state === 'WIN') - Number(a.state === 'WIN') ||
+      a.actions - b.actions,
+  );
+  const seen = new Set<string>();
+  return ranked.filter((run) => !seen.has(run.guid) && Boolean(seen.add(run.guid)));
+}
+
 /** Play order: card open time, then card id (only matters if two cards share a time), then position inside the card. */
 export function orderRuns(runs: readonly HumanPlayRun[]): HumanPlayRun[] {
   return [...runs].sort(

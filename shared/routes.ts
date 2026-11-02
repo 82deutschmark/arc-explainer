@@ -108,8 +108,8 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
-    title: 'ARC-AGI-3 Resource Hub — walkthroughs, games, harnesses, papers',
-    description: 'Human walkthroughs of every public ARC-AGI-3 game, games to play with no login, and the harnesses, winning write-ups, papers, datasets and tools, all in one place.',
+    title: 'ARC-AGI-3 Resource Hub — human reasoning, replays, games, papers',
+    description: 'A guide to the human reasoning behind every public ARC-AGI-3 game with the replay to watch, games to play with no login, and the harnesses, winning write-ups, papers, datasets and tools.',
     url: `${SITE}/home`,
     type: 'website',
     bodyHtml: '<h1>ARC-AGI-3 Resource Hub</h1>',

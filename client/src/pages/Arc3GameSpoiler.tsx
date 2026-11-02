@@ -61,6 +61,7 @@ import { getArcBaseline, getOwnerGameRating, getPlayerRuns, OWNER_PLAYER } from 
 import { buildGameLevels, pickHeadlineRun, runOnLevel } from '@shared/arc3Games/gameLevels';
 import type { HumanLeaderboard } from '@/components/arc3/gamePage/humanLeaderboard';
 import { ActionCountStrip } from '@/components/arc3/gamePage/ActionCountStrip';
+import { BossReplays } from '@/components/arc3/gamePage/BossReplays';
 import { SlipperySevenBadge } from '@/components/arc3/SlipperySevenBadge';
 import { DifficultyBadge, describeOwnerRating, describeTop10Rating } from '@/components/arc3/gamePage/DifficultyBadges';
 import { ControlsCard } from '@/components/arc3/gamePage/ControlsCard';
@@ -343,6 +344,7 @@ export default function Arc3GameSpoiler() {
           <CardContent>
             <p className="text-base leading-relaxed">{game.simpleExplanation}</p>
             <ActionCountStrip gameId={game.gameId} owner={owner} board={board} boardFailed={leaderboardFailed} />
+            <BossReplays gameId={game.gameId} />
           </CardContent>
         </Card>
         <ControlsCard mappings={game.actionMappings} />
