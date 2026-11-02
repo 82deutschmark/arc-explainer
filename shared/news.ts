@@ -273,7 +273,7 @@ export const NEWS_CARD_DESIGN = 3;
  * keep a picture for as long as its address stays the same.
  */
 export const NEWS_SECTION_CARD_PATH = '/api/news/og-image.png';
-export const NEWS_SECTION_CARD_ALT = `${NEWS_NAME}: daily reporting on the ARC Prize 2026 leaderboards for ARC-AGI-3 and ARC-AGI-2, with an ARC puzzle of the day`;
+export const NEWS_SECTION_CARD_ALT = NEWS_BRAND.goose ? `${NEWS_NAME}: the sports tabloid of the Kaggleverse, reporting on major competitions and their contenders` : `${NEWS_NAME}: daily reporting on the ARC Prize 2026 leaderboards for ARC-AGI-3 and ARC-AGI-2, with an ARC puzzle of the day`;
 /** The three leading rows of the article's own box score, the only standings a card shows. */
 export const cardStandings = (article: NewsArticle) => [...article.stats].sort((a, b) => a.rank - b.rank).slice(0, 3);
 

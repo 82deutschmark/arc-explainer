@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
+ * Date: 02-November-2026
  * PURPOSE: FRONT LAYOUT of the Card Cabinet card (the 1986-88 Topps baseball card look): cream card stock, tier-colour
  *          band, ribbon name bar, round season logo and pennant, number box, starburst LIVE / FINAL stamp, round tier
  *          medallion, price-guide stats table, medal coins. Exports:
@@ -156,7 +156,7 @@ async function contestTable(vm: VM, y: number, h: number): Promise<Node[]> {
     const longTag = c.tag.toUpperCase();
     const tag = (await textWidth(longTag, FONT.bebas, 400, tagSize, tagSize * 0.06)) + 22 <= labelW - 8 ? longTag : c.short.toUpperCase();
     const cell = (v: string | null, w: number, size: number, fam: string, wt: number, color: string) =>
-      box({ width: w, justifyContent: 'flex-end', alignItems: 'center', height: rowH }, v ? box({ fontFamily: ff(fam), fontWeight: wt, fontSize: size, color, letterSpacing: fam === FONT.slab ? 0 : -0.5, lineHeight: 1 }, v) : null);
+      box({ width: w, justifyContent: 'flex-end', alignItems: 'center', height: rowH }, v ? box({ fontFamily: ff(fam), fontWeight: wt, fontSize: size, color, ...(['#2453a6', '#17703f'].includes(color) ? { background: '#f5f0e5', padding: '2px 3px' } : {}), letterSpacing: fam === FONT.slab ? 0 : -0.5, lineHeight: 1 }, v) : null);
     const entry = c.entryLine == null ? null
       : c.solo ? label(c.entryLine, tall ? 19 : 14, T.light, { marginTop: tall ? 6 : 2, letterSpacing: 1.8 })
       : nowrap({ marginTop: tall ? 5 : 2, fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: tall ? 20 : 15, color: WHITE, lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', width: labelW - 10 }, c.entryLine);
@@ -164,9 +164,9 @@ async function contestTable(vm: VM, y: number, h: number): Promise<Node[]> {
       box({ width: labelW, flexDirection: 'column', justifyContent: 'center', paddingRight: 8 },
         nowrap({ alignSelf: 'flex-start', background: T.main, color: T.ink, fontFamily: ff(FONT.bebas), fontSize: tagSize, lineHeight: 1, letterSpacing: tagSize * 0.06, padding: tall ? '3px 10px 2px 10px' : '2px 7px 1px 7px', border: '2px solid #000', boxShadow: '2px 2px 0 #000' }, tag),
         entry),
-      cell(c.rank, col.rankW, big, FONT.slab, 400, WHITE),
-      col.peak ? cell(c.peak, col.peakW, mid, FONT.mono, 700, T.light) : null,
-      cell(c.score, col.scoreW, mid, FONT.mono, 700, WHITE),
+      cell(c.rank, col.rankW, big, FONT.cond, 700, '#2453a6'),
+      col.peak ? cell(c.peak, col.peakW, mid, FONT.cond, 700, '#2453a6') : null,
+      cell(c.score, col.scoreW, mid, FONT.mono, 600, '#17703f'),
       col.subs ? cell(c.subs, col.subsW, mid, FONT.mono, 700, T.light) : null));
   }
   return nodes;

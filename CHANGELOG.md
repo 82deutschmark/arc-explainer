@@ -1,3 +1,10 @@
+### Version 9.161.26 · November 2, 2026
+
+- Polish the prepared Goose banner using the existing licensed fonts and the unchanged artwork at its natural proportions. Keep the tagline in place as a working tip-line link, with the public community invitation separate from newsroom delivery.
+- Apply semantic blue places and green monospace scores to shared story renderers, numeric tables and card frames while preserving native score precision, quotations, dates, money, counts and model versions. Browser and initial HTML use the same figure runs.
+- Prepare the proposed Goose hostname's front door on this app; no DNS or canonical-origin cutover is activated. Preserve the other assistant's separate Daniel proof and story-loader edits.
+- Author: GPT-6 / Codex (reasoning effort not exposed). Validation and remaining SEO/release work are recorded in docs/02-Nov-2026-goose-integration-plan.md.
+
 ### Version 9.161.24 · November 2, 2026
 
 - Connect the existing newspaper to the Loose Goose wiki: competitions, durable person/team briefings, permanent cards, reviewed art and source links use one generated projection. New contests need data entries rather than code allowlists. Current measurements come from the dated board store and disappear when stale; passed deadlines never imply final results. Keep the archive and card addresses.

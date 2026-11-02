@@ -104,7 +104,7 @@ export function NotebookColumns({ index, markets }: { index: NewsIndex; markets?
   return <section className="news-notebook" aria-label="Competitor profiles">
     <h2 className="news-flag"><span>Competitor profiles</span><em>Meet the teams, in today’s board order</em></h2>
     <div className="news-notebook-list">{placed.map(({ record, board, row }) => <article key={record.id} className="news-notebook-line">
-      <h3><Link href={competitorPath(record.id)}>{record.name}</Link>{row && board && <span className="num">{board.label} · {row.rank} · {row.score.toFixed(2)}</span>}</h3>
+      <h3><Link href={competitorPath(record.id)}>{record.name}</Link>{row && board && <span className="num">{board.label} · <b className="pl">#{row.rank.toLocaleString('en-US')}</b> · <b className="sc">{String(row.score)}</b></span>}</h3>
       {record.facts[0]
         ? <p>{clip(record.facts[0].text, 190)} <a href={record.facts[0].sourceUrl} className="news-card-source">Source ↗</a></p>
         : <p className="news-muted">{record.members.length} listed {record.members.length === 1 ? 'member' : 'members'}; no sourced background yet.</p>}

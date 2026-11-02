@@ -192,6 +192,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     return { id: definition.id, number: definition.number, kind: definition.kind, setId: definition.setId, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
       season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art,
       description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
+      biography: definition.biography,
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
       highlights: [...careerHonors, ...facts], accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url }))
         : [...new Set(entries.flatMap(ref => ref.members.map(member => member.handle)))].map(handle => ({ label: handle, url: `https://www.kaggle.com/${encodeURIComponent(handle)}` })),

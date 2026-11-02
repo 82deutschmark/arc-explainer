@@ -15,6 +15,7 @@ export interface KaggleCompetition {
   path: string;
   closeAt: string | null;
   scoreLabel: string;
+  scoreDirection?: 'higher' | 'lower' | null;
   featuredTeamIds: string[];
   pinnedTeamIds: string[];
   backfillSource: string | null;
@@ -57,7 +58,7 @@ export const KAGGLE_COMPETITIONS: Record<string, KaggleCompetition> = {
       path: old?.path ?? `${row.url}${row.format === 'judged' || !row.url.includes('kaggle.com/competitions/') ? '' : '/leaderboard'}`,
       closeAt: row.closeAt, scoreLabel: 'Official score', featuredTeamIds: old?.featuredTeamIds ?? [],
       pinnedTeamIds: old?.pinnedTeamIds ?? [], backfillSource: old?.backfillSource ?? null,
-      wikiId: row.wikiId, format: row.format, officialHosts: row.officialHosts, season: row.season }];
+      scoreDirection: row.scoreDirection as 'higher' | 'lower' | null, wikiId: row.wikiId, format: row.format, officialHosts: row.officialHosts, season: row.season }];
   })),
 };
 export type KaggleCompetitionKey = string;

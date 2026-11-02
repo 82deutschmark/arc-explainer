@@ -80,7 +80,7 @@ export function Tile({ card, index }: { card: CollectionCard; index: number }) {
     <div className="cb-caption">
       <div className="cb-caption-top"><span className="cb-no">{card.number}</span><TierBadge card={card} /></div>
       <h2><Link href={card.cardUrl}>{card.name}</Link></h2>
-      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num">{rankText(lead)}</span><span className="cb-num">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionEarnedLine(card) ?? ''}</p>}
+      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionEarnedLine(card) ?? ''}</p>}
     </div>
   </article>;
 }
@@ -106,8 +106,8 @@ function Sheet({ cards, sort, setSort }: { cards: CollectionCard[]; sort: SortKe
         <td><TierBadge card={card} /></td>
         <td>{lead ? competitionName(lead.competition) : '—'}{more.map(entry => <small key={entry.competitionId}>{competitionName(entry.competition)}</small>)}</td>
         <td>{lead?.teamName ?? '—'}{more.map(entry => <small key={entry.competitionId}>{entry.teamName}</small>)}</td>
-        <td className="cb-num">{rankText(lead)}{more.map(entry => <small key={entry.competitionId}>{rankText(entry)}</small>)}</td>
-        <td className="cb-num">{scoreText(lead)}{more.map(entry => <small key={entry.competitionId}>{scoreText(entry)}</small>)}</td>
+        <td className="cb-num pl">{rankText(lead)}{more.map(entry => <small key={entry.competitionId}>{rankText(entry)}</small>)}</td>
+        <td className="cb-num sc">{scoreText(lead)}{more.map(entry => <small key={entry.competitionId}>{scoreText(entry)}</small>)}</td>
         <td><MedalRow card={card} /></td>
       </tr>;
     })}</tbody>
@@ -284,7 +284,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
         {!!entries.length && <Panel title={card.role === 'team' ? 'Team standings' : 'Standings'}>
           <table className="cb-table"><thead><tr><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Best</th><th scope="col">Score</th><th scope="col">Entries</th></tr></thead>
             <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
-              <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table>
+              <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num pl">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num pl">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num sc">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table>
           <p className="cb-note">{status === 'final' ? 'Final results' : 'Live'}{asOf ? `, as of ${asOf}` : ''}. {entries.some(entry => entry.sourceUrl) && <a href={entries.find(entry => entry.sourceUrl)!.sourceUrl}>Leaderboard ↗</a>}</p>
         </Panel>}
         {card.role === 'team' && !!roster.length && <Panel title="Roster">
@@ -293,7 +293,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
         {card.role === 'competitor' && !!careerRows.length && <Panel title="Completed Kaggle competitions" wide>
           <table className="cb-table"><thead><tr><th scope="col">Year</th><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Finish</th><th scope="col">Medal</th></tr></thead>
             <tbody>{careerRows.slice(0, 14).map(row => <tr key={row.competitionUrl}><td className="cb-num">{row.year ?? ''}</td><td><a href={row.competitionUrl}>{row.competition} ↗</a></td><td>{row.team ?? ''}</td>
-              <td className="cb-num">{ordinal(row.rank)} of {row.fieldSize.toLocaleString('en-US')}</td><td>{row.medal ? <span className={`cb-medal ${row.medal}`}>{row.medal}</span> : ''}</td></tr>)}</tbody></table>
+              <td className="cb-num"><span className="pl">#{row.rank.toLocaleString('en-US')}</span> of {row.fieldSize.toLocaleString('en-US')}</td><td>{row.medal ? <span className={`cb-medal ${row.medal}`}>{row.medal}</span> : ''}</td></tr>)}</tbody></table>
           <p className="cb-note">Best finishes first. {careerRows.length > 14 ? `${careerRows.length - 14} more on ` : 'Full list on '}<a href={`${career!.profileUrl}/competitions`}>Kaggle ↗</a></p>
         </Panel>}
         {card.role === 'competitor' && !!card.teamHistory.length && <Panel title="Teams">

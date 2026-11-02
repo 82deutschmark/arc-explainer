@@ -1,12 +1,12 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
- * Date: 2026-10-29
- * PURPOSE: Register the Card Cabinet and permanent player/team card pages alongside newspaper routes.
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; existing contributors credited below
+ * Date: 02-November-2026
+ * PURPOSE: Register the Goose tip line alongside the existing newspaper, card and ARC application routes.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /*
-Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
-Date: 26-October-2026
+Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
+Date: 02-November-2026
 PURPOSE: Registers the focused /arc2/capped cohort gallery. Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 review tooling and supporting newspaper people, community and method routes.
@@ -60,6 +60,7 @@ const Arc2Run = lazy(() => import("@/pages/team/Arc2Run"));
 const Arc2Evals = lazy(() => import("@/pages/team/Arc2Evals"));
 const Arc2Eval = lazy(() => import("@/pages/team/Arc2Eval"));
 const ArcLeaderboards = lazy(() => import("@/pages/ArcLeaderboards"));
+const NewsTips = lazy(() => import("@/pages/NewsTips"));
 const News = lazy(() => import("@/pages/News"));
 const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
 const NewsCommunity = lazy(() => import("@/pages/NewsCommunity"));
@@ -202,6 +203,7 @@ function Router() {
         <Route path="/team/arc2-evals/:key" component={Arc2Eval} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
+        <Route path="/news/tips" component={NewsTips} />
         <Route path="/news" component={News} />
         <Route path="/news/cards" component={NewsCards} />
         <Route path="/news/cards/:cardId" component={NewsCards} />

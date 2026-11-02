@@ -16,6 +16,8 @@
  *          30-Oct-2026 (Claude Sonnet 5.5 Medium): the thumbnail route takes its width limits from the renderer instead of repeating them.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
+import { mountNewsHost } from '../services/news/newsHost';
+import { mountNewsFonts } from '../services/news/newsFonts';
 import type { Express, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -32,6 +34,8 @@ const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => c
   ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
   : res.status(404).set('Cache-Control', 'no-store').json({ error: 'Preview image not found' });
 export function mountNews(app: Express) {
+  mountNewsFonts(app);
+  mountNewsHost(app);
   app.get('/api/news/cards', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsCollection()); } catch (error) { next(error); }
   });

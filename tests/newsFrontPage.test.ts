@@ -35,6 +35,8 @@ import { reportedPeople, featuredPerson, displayPortrait } from '../shared/news'
 import { newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
 
+// Inline sporting spans preserve readable source values and words.
+const readable = (html: string) => html.replace(/<[^>]*>/g, '').replaceAll('&amp;', '&').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1').replaceAll('#', '');
 const NOW = '2026-10-09T23:54:00Z';
 const DAY_AGO = '2026-10-08T23:51:00Z';
 const row = (rank: number, id: string, name: string, score: number, members: string): KaggleBoardRow => [rank, id, name, '2026-10-09 12:00:00', score, 9, members, null, null];
@@ -79,7 +81,7 @@ test('a newer ARC2 special leads with its full reserved feature and illustration
   const lead = html.split('aria-label="Lead stories"')[1];
   expect(lead.indexOf(feature.headline)).toBeLessThan(lead.indexOf(earlier.headline));
   expect(lead.slice(0, lead.indexOf(earlier.headline))).toContain(feature.image.src);
-  expect(lead).toContain(feature.sections.at(-1).text);
+  expect(readable(lead)).toContain(readable(feature.sections.at(-1).text));
 });
 
 test('equally timed routine editions keep ARC3 first', () => {
@@ -116,7 +118,7 @@ test('without the digest the reporting still leads and the market sections stay 
   const index = getNewsIndex();
   const html = render(News, '/news', index);
   expect(html).toContain('What’s news');
-  expect(html).toContain(index.articles[0].headline.replace(/&/g, '&amp;').replace(/'/g, '&#x27;').slice(0, 30));
+  expect(readable(html)).toContain(readable(index.articles[0].headline.slice(0, 30)));
   for (const text of ['news-ticker', 'Market movers', 'Where the past winners stand', 'The board<']) expect(html).not.toContain(text);
 });
 

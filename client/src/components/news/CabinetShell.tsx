@@ -21,7 +21,7 @@ export function CabinetShell({ children }: { children: ReactNode }) {
   const close = theClose();
   return <div className="arc-daily is-cabinet">
     <header className="cb-bar">
-      <Link href="/news" className="cb-brand">{NEWS_BRAND.logo && <img src={NEWS_BRAND.logo} alt="" width="40" height="40" />} {NEWS_NAME}</Link>
+      <Link href="/news" className="cb-brand">{NEWS_BRAND.logo && <img src={NEWS_BRAND.logo} alt="" width="40" style={{ height: 'auto' }} />} {NEWS_NAME}</Link>
       <NewsNav className="cb-nav" />
       {close && <span className="cb-close">{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
       <MastheadAd />

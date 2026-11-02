@@ -32,8 +32,8 @@ it('exports source-linked identities and no wiki standings or global rank copy',
 });
 it('uses a corrected wiki briefing on the rendered card model', () => {
   const collection = getNewsCollection(), card = collection.cards[0];
-  const corrected = { ...card, description: 'A durable corrected biography.' };
-  expect(cardFaceModel(corrected, { ...collection, cards: collection.cards.map(c => c.id === card.id ? corrected : c) }).model.bio).toBe(corrected.description);
+  const corrected = { ...card, biography: 'A durable corrected biography.' };
+  expect(cardFaceModel(corrected, { ...collection, cards: collection.cards.map(c => c.id === card.id ? corrected : c) }).model.bio).toBe(corrected.biography);
 });
 it('orders the server front page by the same published competition leads', () => {
   const { articles, dispatches = [] } = getNewsIndex();
@@ -72,4 +72,11 @@ it('holds the prepared identity until time and every official closing check pass
   expect(newsBrandAt(Date.parse('2026-11-03T00:02:00Z'), value).goose).toBe(true);
   value.closeChecks[0].sourceUrl = `https://www.kaggle.com/competitions/${value.requiredCompetitions[0]}-spoof`;
   expect(newsBrandAt(Date.parse('2026-11-03T00:02:00Z'), value).goose).toBe(false);
+});
+
+it('serves the tip line through the same metadata route', () => {
+  const tips = resolveNewsMeta('/news/tips');
+  expect(tips?.status).toBe(200);
+  expect(tips?.tags.bodyHtml).toContain('Talk to me, Goose.');
+  expect(tips?.tags.bodyHtml).toContain('https://x.com/82deutschmark');
 });

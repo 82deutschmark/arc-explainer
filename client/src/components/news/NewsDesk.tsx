@@ -38,6 +38,7 @@ import { StoryPeopleCards, TeamFaces } from './NewsPeople';
 import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 import { NEWS_BRAND } from '@shared/newsBrand';
+import { SportsText, NumberKey } from './SportsText';
 import { DispatchPreview } from './NewsDispatch';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -66,7 +67,7 @@ export const sortedArticles = (articles: NewsArticle[]) => [...articles].sort((a
 export function datelineDate(value: string): string {
   const date = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
   return Number.isFinite(date.getTime())
-    ? new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
+    ? new Intl.DateTimeFormat('en-GB', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
     : 'Date unavailable';
 }
 
@@ -98,35 +99,30 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
 
 export function NewsPaper({ children, frontPage = false, date, edition, issue, brand = NEWS_BRAND }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number; brand?: typeof NEWS_BRAND }) {
   const close = theClose();
-  return (
-    <div className="arc-daily">
-      <div className="news-paper">
-        <header className={`news-masthead${frontPage ? ' is-front' : ''}`}>
-          <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
-          <div className="news-brand-row">
-            <div className="news-ear">
-              {brand.logo && <img className="news-goose-logo" src={brand.logo} alt="The approved Loose Goose reporter logo" width="96" height="96" />}
-              <strong>{edition ? `${editionName(edition)} edition` : 'Competition desk'}</strong>
-              {date && <span>{datelineDate(date)}</span>}
-              {!brand.goose && close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
-            </div>
-            {frontPage ? <h1 className="news-name">{brand.name}</h1> : <Link href="/news" className="news-name">{brand.name}</Link>}
-            <MastheadAd />
+  const name = brand.goose ? <><small>The</small><span>{brand.name.replace(/^The /, '')}</span></> : brand.name;
+  return <div className={`arc-daily${brand.goose ? ' is-goose' : ''}`}>
+    <div className="news-paper">
+      <header className={`news-masthead${frontPage ? ' is-front' : ''}`}>
+        <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
+        {brand.goose ? <div className="news-goose-banner">
+          <Link href="/news" className="news-brand-art" aria-label={`${brand.name} front page`}><img src={brand.logo!} alt="The Loose Goose reporter, in the approved artwork" /></Link>
+          <div className="news-brand-type"><p className="news-brand-overline">The sports tabloid of the Kaggleverse</p>
+            {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}
+            <div className="news-brand-dateline">{edition && <strong>{editionName(edition)} edition · </strong>}{date && datelineDate(date)}</div>
           </div>
-          <div className="news-edition-line"><span>{brand.goose ? 'The sports tabloid of the Kaggleverse' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span><span>{brand.tagline ?? 'Early edition 6 am · Late edition 6 pm Eastern · The wire all day'}</span></div>
-          <NewsNav brand={brand} />
-        </header>
-        {children}
-        <NewsWelcome />
-        <footer className="news-footer">
-          <strong>{brand.name}</strong><span>Competition reporting · writer credited on each story</span>
-          <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
-          {!brand.goose && <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>}
-          <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · {brand.goose ? <a href="https://github.com/Autoresearch-Arena/loose-goose">An Autoresearch Arena publication →</a> : <Link href="/home">An ARC Explainer publication →</Link>}
-        </footer>
-      </div>
+        </div> : <div className="news-brand-row"><div className="news-ear"><strong>{edition ? `${editionName(edition)} edition` : 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
+          {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}<MastheadAd /></div>}
+        <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Early edition 6 am · Late edition 6 pm Eastern · The wire all day</span>}</div>
+        <NewsNav brand={brand} />
+        {brand.goose && <div className="news-sponsor-rail"><MastheadAd /></div>}
+      </header>
+      {children}<NewsWelcome />
+      <footer className="news-footer"><strong>{brand.name}</strong><span>Competition reporting · writer credited on each story</span><p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
+        {brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. Send us a tip →</Link> : <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>}
+        <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · {brand.goose ? <a href="https://github.com/Autoresearch-Arena/loose-goose">An Autoresearch Arena publication →</a> : <Link href="/home">An ARC Explainer publication →</Link>}
+      </footer>
     </div>
-  );
+  </div>;
 }
 
 /** Front-page info box: what the paper is, where its data comes from, and who to tell when it is wrong. */
@@ -167,7 +163,7 @@ export function EditionLabel({ article }: { article: NewsArticle }) {
 export function EditionArtwork({ article, lead = false }: { article: NewsArticle; lead?: boolean }) {
   return article.image ? <figure className="news-edition-art">
     <a href={article.image.src} aria-label="Open the full editorial illustration"><img src={article.image.src} alt={article.image.alt} loading={lead ? 'eager' : 'lazy'} /></a>
-    <figcaption>{article.image.caption}</figcaption>
+    <figcaption><SportsText text={article.image.caption} stats={article.stats} /></figcaption>
   </figure> : null;
 }
 
@@ -180,22 +176,23 @@ export function StoryPreview({ article, feature, lead = false, people = [], sect
   const more = article.sections.length > shown.length;
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
-    <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
-    <p className="news-dek">{article.dek}</p>
+    <h2><Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link></h2>
+    <p className="news-dek"><SportsText text={article.dek} stats={article.stats} /></p>
     <div className="news-byline">By {NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    {feature && <DispatchPreview dispatch={feature} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
+    <NumberKey stats={article.stats} competition={article.competition} />
+    {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
     {feature?.image?.src !== article.image?.src && (article.image ? <EditionArtwork article={article} lead={lead} /> : art)}
-    {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} /></div>}
+    {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={article.stats} /></div>}
     {!feature && <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />}
-    {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} />)}</div>}
+    {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} stats={article.stats} />)}</div>}
     <Link href={newsArticlePath(article.id)} className="news-read">{more ? 'Continue reading, with sources and the box score →' : 'Sources and the box score →'}</Link>
   </article>;
 }
 
-function StoryBodySection({ section }: { section: NewsArticle['sections'][number] }) {
+function StoryBodySection({ section, stats }: { section: NewsArticle['sections'][number]; stats: NewsArticle['stats'] }) {
   return <section>
     {section.heading && <h3>{section.heading}</h3>}
-    <p>{section.text}</p>
+    <p><SportsText text={section.text} stats={stats} /></p>
   </section>;
 }
 
@@ -215,7 +212,7 @@ export function ArticleArchive({ articles, heading = 'From the archive' }: { art
     <h2 className="news-section-title">{heading}</h2>
     {articles.length ? <ol>{articles.map(article => <li key={article.id}>
       <div className="news-archive-date"><time dateTime={article.publishedAt}>{newsDate(article.date)}</time><span>{editionName(article.edition)} · {competitionName(article.competition)}</span></div>
-      <Link href={newsArticlePath(article.id)}>{article.headline}</Link>
+      <Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link>
     </li>)}</ol> : <p className="news-muted">No earlier editions have been published.</p>}
   </section>;
 }

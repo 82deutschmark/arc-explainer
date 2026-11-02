@@ -30,7 +30,7 @@ export const cardDefinitionSchema = z.object({
   entries: z.array(entry), art: collectionArtSchema.optional(), artNotes: z.array(z.string()),
   // A shared historical team picture can remain in the archive without becoming an individual front.
   artFallback: z.literal('none').optional(),
-  description: z.string().optional(),
+  description: z.string().optional(), biography: z.string().min(1).max(1000).optional(),
 }).strict().refine(card => card.kind === 'person' ? !!card.personId : !card.personId && card.entries.length > 0, 'Card subject is incomplete');
 export const cardSnapshotSchema = z.object({
   competition, competitionId: z.string(), teamId: z.string().regex(/^\d+$/),
@@ -140,6 +140,8 @@ export interface CollectionStory {
 export interface CollectionCard {
   id: string; number: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
   setId?: string;
+  /** Authored wiki card copy, separate from the newsroom briefing. */
+  biography?: string;
   /** What the card is: a Kaggle competitor, a competition sponsor, or a team. Nobody is a "player". */
   role: 'competitor' | 'sponsor' | 'team';
   personId?: string; art: CollectionArt | null; description: string; highlights: CompetitorFact[];

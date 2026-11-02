@@ -8,6 +8,7 @@
  */
 import express from 'express';
 import type { Server } from 'node:http';
+import { get as httpGet } from 'node:http';
 import sharp from 'sharp';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { mountNews } from '../server/routes/news';
@@ -140,4 +141,20 @@ it('returns an explicit unindexed 404 for an unknown share card', async () => {
   expect(html).toContain('Card not found');
   expect(html).toContain('href="/news/cards"');
   expect(resolveNewsMeta('/news/cards/unknown')?.tags.noindex).toBe(true);
+});
+
+it('opens the newspaper at the proposed hostname without changing the ARC front door', async () => {
+  const alias = await new Promise<{ status: number; location?: string }>((resolve, reject) => {
+    httpGet(`${origin}/?from=alias`, { headers: { Host: 'goose.markbarney.net' } }, response => {
+      response.resume(); resolve({ status: response.statusCode!, location: response.headers.location });
+    }).on('error', reject);
+  });
+  expect(alias.status).toBe(302); expect(alias.location).toBe('/news?from=alias');
+  const ordinary = await fetch(`${origin}/`, { redirect: 'manual' });
+  expect(ordinary.headers.get('location')).not.toBe('/news');
+});
+it('serves only the named licensed newspaper fonts', async () => {
+  const font = await fetch(`${origin}/api/news/fonts/AlfaSlabOne-Regular.ttf`);
+  expect(font.status).toBe(200); expect((await font.arrayBuffer()).byteLength).toBeGreaterThan(90000);
+  expect((await fetch(`${origin}/api/news/fonts/%2e%2e%2fpackage.json`)).status).toBe(404);
 });

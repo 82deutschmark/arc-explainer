@@ -12,6 +12,7 @@
  *          under the byline; roster names in the rail carry their faces too.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
+import { SportsText, NumberKey } from '@/components/news/SportsText';
 import { DispatchPreview } from '@/components/news/NewsDispatch';
 import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
@@ -23,7 +24,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
-const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+const points = (value: number) => String(value);
 
 export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
@@ -47,17 +48,18 @@ export default function NewsArticle() {
     {article && <article>
       <header className="news-article-header">
         <EditionLabel article={article} />
-        <h1 className="news-article-title">{article.headline}</h1>
-        <p className="news-dek">{article.dek}</p>
+        <h1 className="news-article-title"><SportsText text={article.headline} stats={article.stats} /></h1>
+        <p className="news-dek"><SportsText text={article.dek} stats={article.stats} /></p>
         <p className="news-byline">{NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        <NumberKey stats={article.stats} competition={article.competition} />
       </header>
-      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
+      {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
       {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
       <div className="news-article-grid">
         <div>
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>
             {section.heading && <h2>{section.heading}</h2>}
-            <p>{section.text}</p>
+            <p><SportsText text={section.text} stats={article.stats} /></p>
             {index === 0 && !feature && <StoryPeopleCards people={reportedPeople([article], query.data?.people ?? [])} competition={article.competition} />}
             {section.image && <figure className="news-edition-art" style={section.image.layout === "inset" ? { maxWidth: 480, marginInline: "auto" } : undefined}><a href={section.image.src}><img src={section.image.src} alt={section.image.alt} loading="lazy" /></a><figcaption>{section.image.caption}</figcaption></figure>}
             {!!section.sourceIds.length && <div className="news-section-sources">{section.sourceIds.map(id => {
@@ -67,7 +69,7 @@ export default function NewsArticle() {
           </section>)}</div>
           {!!article.stats.length && <div className="news-boxscore-wrap" tabIndex={0} role="region" aria-label="Scrollable edition box score">
             <table className="news-boxscore"><caption>The box score</caption><thead><tr><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Score</th><th scope="col">Rank change</th><th scope="col">Score change</th></tr></thead>
-              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td>#{stat.rank}</td><td>{points(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td>{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
+              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td className="pl">#{stat.rank.toLocaleString('en-US')}</td><td className="sc">{String(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td>{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
             </table><p className="news-muted">Scores and movement recorded for this edition, not live standings.</p>
           </div>}
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>

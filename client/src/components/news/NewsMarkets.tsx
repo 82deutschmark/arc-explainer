@@ -28,9 +28,9 @@ export function useMarkets() {
 export const marketBoards = (markets?: MarketsPayload) =>
   BOARD_ORDER.map(key => markets?.boards[key]).filter((board): board is MarketBoard => !!board);
 
-const fig = (value: number) => value.toFixed(2);
+const fig = (value: number) => String(value);
 const count = (value: number) => value.toLocaleString('en-US');
-const ordinal = (n: number) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'}`;
+const ordinal = (n: number) => `#${n.toLocaleString('en-US')}`;
 /** Eastern clock time of a save, e.g. "7:54 pm ET". */
 export const clockEt = (iso: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' })
   .format(new Date(iso)).replace(/\s?([AP])M$/, (_, half: string) => ` ${half.toLowerCase()}m`) + ' ET';
@@ -39,7 +39,7 @@ export const clockEt = (iso: string) => new Intl.DateTimeFormat('en-US', { timeZ
 export function Change({ value, digits = 2 }: { value: number | null; digits?: number }) {
   if (value == null) return null;
   if (Math.abs(value) < 0.005) return <span className="news-chg is-flat" title="Unchanged">–</span>;
-  const size = digits ? Math.abs(value).toFixed(digits) : count(Math.abs(value));
+  const size = digits ? String(Number(Math.abs(value).toPrecision(15))) : count(Math.abs(value));
   return <span className={`news-chg ${value > 0 ? 'is-up' : 'is-down'}`}><span aria-hidden="true">{value > 0 ? '▲' : '▼'}</span>{value > 0 ? '+' : '−'}{size}</span>;
 }
 
@@ -63,7 +63,7 @@ function TeamName({ row, competition, links }: { row: MarketRow; competition: Ne
 
 function Quote({ label, value, then, integer = false, note }: { label: ReactNode; value: number | null; then: number | null; integer?: boolean; note?: string }) {
   if (value == null) return null;
-  return <div title={note}><dt>{label}</dt><dd><b>{integer ? count(value) : fig(value)}</b> <Change value={then == null ? null : value - then} digits={integer ? 0 : 2} /></dd></div>;
+  return <div title={note}><dt>{label}</dt><dd><b className={integer ? undefined : 'sc'}>{integer ? count(value) : fig(value)}</b> <Change value={then == null ? null : value - then} digits={integer ? 0 : 2} /></dd></div>;
 }
 
 /** The terminal strip under the masthead: leader, medal lines, field and countdown for both boards. */
@@ -94,7 +94,7 @@ export function BoardTable({ board, links, limit = 25 }: { board: MarketBoard; l
   return <div className="news-agate-block">
     <table className="news-agate">
       <caption><a href={board.boardPath}>{board.label}</a> <span>top {rows.length} of {count(board.teams)}</span></caption>
-      <thead><tr><th scope="col" className="num">Rk</th><th scope="col"><span className="sr-only">Places moved</span></th><th scope="col">Team</th><th scope="col" className="num">Score</th><th scope="col" className="num">Day</th></tr></thead>
+      <thead><tr><th scope="col" className="num">Place</th><th scope="col"><span className="sr-only">Places moved</span></th><th scope="col">Team</th><th scope="col" className="num">Score</th><th scope="col" className="num">Δ Score</th></tr></thead>
       <tbody>{rows.map(row => <BoardRow key={row.teamId} row={row} board={board} links={links} medal={medal(row.rank)} />)}</tbody>
     </table>
     <a className="news-read" href={board.boardPath}>All {count(board.teams)} teams, charts and history →</a>
@@ -105,10 +105,10 @@ function BoardRow({ row, board, links, medal }: { row: MarketRow; board: MarketB
   const cut = row.rank === board.medalRanks.gold;
   return <>
     <tr className={medal}>
-      <td className="num">{row.rank}</td>
+      <td className="num pl">#{count(row.rank)}</td>
       <td className="move"><Places row={row} /></td>
       <td className="team"><TeamName row={row} competition={board.competition} links={links} /></td>
-      <td className="num">{fig(row.score)}</td>
+      <td className="num sc">{fig(row.score)}</td>
       <td className="num"><Change value={marketGain(row)} /></td>
     </tr>
     {cut && <tr className="news-agate-cut"><td colSpan={5}>Gold line · {board.medalRanks.gold} places</td></tr>}
@@ -134,12 +134,12 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
       return <div key={board.competition} className="news-movers-board">
         <h3><a href={board.boardPath}>{board.label}</a></h3>
         <div className="news-movers-grid">
-          <MoverList title="Biggest gains" board={board} links={links} rows={board.gainers} empty="No score gains in the top 100."
-            value={row => <><Change value={marketGain(row)} /> <small>to {fig(row.score)}</small></>} />
-          <MoverList title="Biggest climbs" board={board} links={links} rows={board.climbers} empty="No climbs into the top 100."
-            value={row => <><Places row={row} /> <small>to {ordinal(row.rank)}</small></>} />
+          <MoverList title="Biggest gains" board={board} links={links} rows={board.gainers} empty="No supported score gains."
+            value={row => <><Change value={marketGain(row)} /> <small>to <span className="sc">{fig(row.score)}</span></small></>} />
+          <MoverList title="Biggest climbs" board={board} links={links} rows={board.climbers} empty="No supported place gains."
+            value={row => <><Places row={row} /> <small>to <span className="pl">{ordinal(row.rank)}</span></small></>} />
           <MoverList title="New on the board" board={board} links={links} rows={board.newcomers} empty="No new team reached the top 500."
-            value={row => <><b>{ordinal(row.rank)}</b> <small>{fig(row.score)}</small></>} />
+            value={row => <><b className="pl">{ordinal(row.rank)}</b> <small className="sc">{fig(row.score)}</small></>} />
           <MoverList title="On the bubble" board={board} links={links} rows={board.bubble} empty="No teams below the gold line."
             value={row => <>{gold == null ? fig(row.score) : <>−{fig(gold - row.score)}</>} <small>{ordinal(row.rank)}</small></>} />
         </div>
@@ -148,7 +148,7 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
           {!!board.outOfGold.length && <><strong>Out of gold:</strong> {board.outOfGold.map((row, index) => <span key={row.teamId}>{index ? ', ' : ''}<TeamName row={row} competition={board.competition} links={links} /> ({ordinal(row.rank)})</span>)}.</>}
         </p>}
         <p className="news-muted">{board.since
-          ? <>{count(board.improved)} teams in the top 500 raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {clockEt(board.since)} the day before.</>
+          ? <>{count(board.improved)} teams with comparison evidence raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {clockEt(board.since)} the day before.</>
           : 'No save from a day earlier, so the past day’s changes are unknown.'}</p>
       </div>;
     })}
@@ -171,15 +171,15 @@ export function PastWinners({ markets, people, links }: { markets?: MarketsPaylo
   return <section className="news-winners" aria-label="Where the past winners stand">
     <h2 className="news-flag"><span>Where the past winners stand</span><em>Prize winners and credited contenders on this year’s boards</em></h2>
     <table className="news-agate news-winners-table">
-      <thead><tr><th scope="col">Person and honor</th><th scope="col">Team now</th><th scope="col" className="num">Rk</th><th scope="col" className="num">Score</th><th scope="col" className="num">Day</th></tr></thead>
+      <thead><tr><th scope="col">Person and honor</th><th scope="col">Team now</th><th scope="col" className="num">Place</th><th scope="col" className="num">Score</th><th scope="col" className="num">Δ Score</th></tr></thead>
       <tbody>{entries.flatMap(({ person, teams }) => teams.map(({ board, row }, index) => <tr key={`${person.id}-${row.teamId}`}>
         {index === 0 && <td rowSpan={teams.length} className="news-winner"><div className="news-winner-cell">
           <Link href={personPath(person.id)} tabIndex={-1} aria-hidden="true"><PersonPortrait person={person} size="face" decorative /></Link>
           <span><Link href={personPath(person.id)} className="news-winner-name">{shortPersonName(person.name)}</Link><Link href={person.hallOfFame[0].path} className="news-winner-honor">{person.hallOfFame[0].label}</Link></span>
         </div></td>}
         <td className="team"><TeamName row={row} competition={board.competition} links={links} /> <small>{board.label}</small></td>
-        <td className="num">{row.rank}</td>
-        <td className="num">{fig(row.score)}</td>
+        <td className="num pl">#{count(row.rank)}</td>
+        <td className="num sc">{fig(row.score)}</td>
         <td className="num"><Change value={marketGain(row)} /></td>
       </tr>))}</tbody>
     </table>

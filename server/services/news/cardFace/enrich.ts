@@ -403,7 +403,7 @@ function enrichOne(ctx: Context, card: CollectionCard) {
     contests, pastTeams, career: kind === 'competitor' ? careerFor(ctx, card) : null,
     honors: kind === 'team' ? [] : honors, previousCards, art: artFor(ctx, card), roster,
   };
-  out.bio = ctx.wiki && card.description ? card.description : bioFor(out, sponsor);
+  out.bio = card.biography ?? bioFor(out, sponsor);
   out.facts = factsFor(ctx, out, card, sponsor);
   return out;
 }

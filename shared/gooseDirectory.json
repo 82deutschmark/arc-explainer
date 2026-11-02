@@ -8,6 +8,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "2026-ieee-big-data-traffic-flow-bench",
       "url": "https://kaggle.com/competitions/2026-ieee-big-data-traffic-flow-bench",
@@ -21,6 +22,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "abstraction-and-reasoning-challenge",
       "url": "https://www.kaggle.com/competitions/abstraction-and-reasoning-challenge",
@@ -34,6 +36,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "adaptive-immune-profiling-challenge-2025",
       "url": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
@@ -47,6 +50,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-agent-security-multi-step-tool-attacks",
       "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
@@ -60,6 +64,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-mathematical-olympiad-prize",
       "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
@@ -73,6 +78,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-mathematical-olympiad-progress-prize-2",
       "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
@@ -86,6 +92,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-mathematical-olympiad-progress-prize-3",
       "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
@@ -99,6 +106,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-mathematical-olympiad-proof-pilot",
       "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-proof-pilot",
@@ -112,6 +120,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-village-capture-the-flag-defcon31",
       "url": "https://www.kaggle.com/competitions/ai-village-capture-the-flag-defcon31",
@@ -125,6 +134,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ai-village-ctf",
       "url": "https://www.kaggle.com/competitions/ai-village-ctf",
@@ -139,6 +149,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "aipho-2027",
       "url": "https://aipho.org",
@@ -152,6 +163,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "allstate-claims-severity",
       "url": "https://www.kaggle.com/competitions/allstate-claims-severity",
@@ -165,6 +177,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "amex-default-prediction",
       "url": "https://www.kaggle.com/competitions/amex-default-prediction",
@@ -178,6 +191,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "amp-parkinsons-disease-progression-prediction",
       "url": "https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction",
@@ -191,6 +205,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": "higher",
       "season": "2026",
       "slug": "arc-prize-2026-arc-agi-2",
       "url": "https://kaggle.com/competitions/arc-prize-2026-arc-agi-2",
@@ -204,6 +219,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": "higher",
       "season": "2026",
       "slug": "arc-prize-2026-arc-agi-3",
       "url": "https://kaggle.com/competitions/arc-prize-2026-arc-agi-3",
@@ -217,6 +233,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "arc-agi-3-preview-2025",
       "url": "https://www.kaggle.com/competitions/arc-agi-3-preview-2025",
@@ -230,6 +247,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "arc-prize-2024",
       "url": "https://www.kaggle.com/competitions/arc-prize-2024",
@@ -243,6 +261,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "arc-prize-2025",
       "url": "https://www.kaggle.com/competitions/arc-prize-2025",
@@ -256,6 +275,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "arc-prize-2026-paper-track",
       "url": "https://kaggle.com/competitions/arc-prize-2026-paper-track",
@@ -269,6 +289,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ariel-data-challenge-2024",
       "url": "https://www.kaggle.com/competitions/ariel-data-challenge-2024",
@@ -282,6 +303,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ariel-data-challenge-2025",
       "url": "https://www.kaggle.com/competitions/ariel-data-challenge-2025",
@@ -295,6 +317,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ashrae-energy-prediction",
       "url": "https://www.kaggle.com/competitions/ashrae-energy-prediction",
@@ -308,6 +331,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "asl-fingerspelling",
       "url": "https://www.kaggle.com/competitions/asl-fingerspelling",
@@ -321,6 +345,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "asl-signs",
       "url": "https://www.kaggle.com/competitions/asl-signs",
@@ -334,6 +359,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "autonomous-agent-prediction-beta",
       "url": "https://www.kaggle.com/competitions/autonomous-agent-prediction-beta",
@@ -347,6 +373,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "avito-demand-prediction",
       "url": "https://www.kaggle.com/competitions/avito-demand-prediction",
@@ -360,6 +387,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "avito-duplicate-ads-detection",
       "url": "https://www.kaggle.com/competitions/avito-duplicate-ads-detection",
@@ -373,6 +401,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "basket-analysis",
       "url": "https://www.kaggle.com/competitions/basket-analysis",
@@ -386,6 +415,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "benetech-making-graphs-accessible",
       "url": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
@@ -399,6 +429,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "bengaliai-speech",
       "url": "https://www.kaggle.com/competitions/bengaliai-speech",
@@ -412,6 +443,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "biohub-cell-tracking-during-development",
       "url": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
@@ -425,6 +457,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "birdclef-2022",
       "url": "https://www.kaggle.com/competitions/birdclef-2022",
@@ -438,6 +471,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "birdclef-2023",
       "url": "https://www.kaggle.com/competitions/birdclef-2023",
@@ -451,6 +485,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "birdclef-2024",
       "url": "https://www.kaggle.com/competitions/birdclef-2024",
@@ -464,6 +499,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "birdclef-2025",
       "url": "https://www.kaggle.com/competitions/birdclef-2025",
@@ -477,6 +513,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "birdclef-2026",
       "url": "https://www.kaggle.com/competitions/birdclef-2026",
@@ -490,6 +527,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "bms-molecular-translation",
       "url": "https://www.kaggle.com/competitions/bms-molecular-translation",
@@ -503,6 +541,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "bnp-paribas-cardif-claims-management",
       "url": "https://www.kaggle.com/competitions/bnp-paribas-cardif-claims-management",
@@ -516,6 +555,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "bosch-production-line-performance",
       "url": "https://www.kaggle.com/competitions/bosch-production-line-performance",
@@ -529,6 +569,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "byu-locating-bacterial-flagellar-motors-2025",
       "url": "https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025",
@@ -542,6 +583,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "cafa-5-protein-function-prediction",
       "url": "https://www.kaggle.com/competitions/cafa-5-protein-function-prediction",
@@ -555,6 +597,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "cafa-6-protein-function-prediction",
       "url": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
@@ -568,6 +611,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "carvana-image-masking-challenge",
       "url": "https://www.kaggle.com/competitions/carvana-image-masking-challenge",
@@ -581,6 +625,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2",
       "url": "https://www.kaggle.com/competitions/catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2",
@@ -594,6 +639,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "cdiscount-image-classification-challenge",
       "url": "https://www.kaggle.com/competitions/cdiscount-image-classification-challenge",
@@ -607,6 +653,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "champs-scalar-coupling",
       "url": "https://www.kaggle.com/competitions/champs-scalar-coupling",
@@ -620,6 +667,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "child-mind-institute-detect-sleep-states",
       "url": "https://www.kaggle.com/competitions/child-mind-institute-detect-sleep-states",
@@ -633,6 +681,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "child-mind-institute-problematic-internet-use",
       "url": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
@@ -646,6 +695,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "classification-of-math-problems-by-kasut-academy",
       "url": "https://www.kaggle.com/competitions/classification-of-math-problems-by-kasut-academy",
@@ -659,6 +709,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "cmi-detect-behavior-with-sensor-data",
       "url": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
@@ -672,6 +723,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "coleridgeinitiative-show-us-the-data",
       "url": "https://www.kaggle.com/competitions/coleridgeinitiative-show-us-the-data",
@@ -685,6 +737,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "commonlit-evaluate-student-summaries",
       "url": "https://www.kaggle.com/competitions/commonlit-evaluate-student-summaries",
@@ -698,6 +751,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "commonlitreadabilityprize",
       "url": "https://www.kaggle.com/competitions/commonlitreadabilityprize",
@@ -711,6 +765,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "competitive-data-science-final-project",
       "url": "https://www.kaggle.com/competitions/competitive-data-science-final-project",
@@ -724,6 +779,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "coupon-purchase-prediction",
       "url": "https://www.kaggle.com/competitions/coupon-purchase-prediction",
@@ -737,6 +793,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "crowdflower-search-relevance",
       "url": "https://www.kaggle.com/competitions/crowdflower-search-relevance",
@@ -750,6 +807,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "cs-506-midterm-a1-b1",
       "url": "https://www.kaggle.com/competitions/cs-506-midterm-a1-b1",
@@ -763,6 +821,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "csiro-biomass",
       "url": "https://www.kaggle.com/competitions/csiro-biomass",
@@ -776,6 +835,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "czii-cryo-et-object-identification",
       "url": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
@@ -789,6 +849,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "data-analytics-ue20cs312",
       "url": "https://www.kaggle.com/competitions/data-analytics-ue20cs312",
@@ -802,6 +863,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "data-science-bowl-2019",
       "url": "https://www.kaggle.com/competitions/data-science-bowl-2019",
@@ -815,6 +877,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "deep-past-initiative-machine-translation",
       "url": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
@@ -828,6 +891,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "deepfake-detection-challenge",
       "url": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
@@ -841,6 +905,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "drawing-with-llms",
       "url": "https://www.kaggle.com/competitions/drawing-with-llms",
@@ -854,6 +919,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "drw-crypto-market-prediction",
       "url": "https://www.kaggle.com/competitions/drw-crypto-market-prediction",
@@ -867,6 +933,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "eedi-mining-misconceptions-in-mathematics",
       "url": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics",
@@ -880,6 +947,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "elo-merchant-category-recommendation",
       "url": "https://www.kaggle.com/competitions/elo-merchant-category-recommendation",
@@ -893,6 +961,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "enveda-casmi26-molecule-id-mass-spectra",
       "url": "https://kaggle.com/competitions/enveda-casmi26-molecule-id-mass-spectra",
@@ -906,6 +975,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "equity-post-hct-survival-predictions",
       "url": "https://www.kaggle.com/competitions/equity-post-hct-survival-predictions",
@@ -919,6 +989,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "expedia-hotel-recommendations",
       "url": "https://www.kaggle.com/competitions/expedia-hotel-recommendations",
@@ -932,6 +1003,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "fake-or-real-the-impostor-hunt",
       "url": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
@@ -945,6 +1017,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "favorita-grocery-sales-forecasting",
       "url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
@@ -958,6 +1031,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "feedback-prize-2021",
       "url": "https://www.kaggle.com/competitions/feedback-prize-2021",
@@ -971,6 +1045,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "feedback-prize-effectiveness",
       "url": "https://www.kaggle.com/competitions/feedback-prize-effectiveness",
@@ -984,6 +1059,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "feedback-prize-english-language-learning",
       "url": "https://www.kaggle.com/competitions/feedback-prize-english-language-learning",
@@ -997,6 +1073,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "fide-google-efficiency-chess-ai-challenge",
       "url": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
@@ -1010,6 +1087,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "findit2022",
       "url": "https://www.kaggle.com/competitions/findit2022",
@@ -1023,6 +1101,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "foursquare-location-matching",
       "url": "https://www.kaggle.com/competitions/foursquare-location-matching",
@@ -1036,6 +1115,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "freesound-audio-tagging-2019",
       "url": "https://www.kaggle.com/competitions/freesound-audio-tagging-2019",
@@ -1049,6 +1129,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "g2net-detecting-continuous-gravitational-waves",
       "url": "https://www.kaggle.com/competitions/g2net-detecting-continuous-gravitational-waves",
@@ -1062,6 +1143,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "g2net-gravitational-wave-detection",
       "url": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
@@ -1075,6 +1157,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ga-customer-revenue-prediction",
       "url": "https://www.kaggle.com/competitions/ga-customer-revenue-prediction",
@@ -1088,6 +1171,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "gemma-4-developer-agent",
       "url": "https://kaggle.com/competitions/gemma-4-developer-agent",
@@ -1101,6 +1185,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "gemma-4-developer-agent-paper",
       "url": "https://kaggle.com/competitions/gemma-4-developer-agent-paper",
@@ -1114,6 +1199,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "generative-dog-images",
       "url": "https://www.kaggle.com/competitions/generative-dog-images",
@@ -1127,6 +1213,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "google-ai-open-images-object-detection-track",
       "url": "https://www.kaggle.com/competitions/google-ai-open-images-object-detection-track",
@@ -1140,6 +1227,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "google-code-golf-2025",
       "url": "https://www.kaggle.com/competitions/google-code-golf-2025",
@@ -1153,6 +1241,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "google-io-demo-competition",
       "url": "https://www.kaggle.com/competitions/google-io-demo-competition",
@@ -1166,6 +1255,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "google-quest-challenge",
       "url": "https://www.kaggle.com/competitions/google-quest-challenge",
@@ -1179,6 +1269,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "google-verifiable-quantum-circuit-compilation",
       "url": "https://kaggle.com/competitions/google-verifiable-quantum-circuit-compilation",
@@ -1192,6 +1283,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "h-and-m-personalized-fashion-recommendations",
       "url": "https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations",
@@ -1205,6 +1297,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "handwritten-to-data",
       "url": "https://www.kaggle.com/competitions/handwritten-to-data",
@@ -1218,6 +1311,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "higgs-boson",
       "url": "https://www.kaggle.com/competitions/higgs-boson",
@@ -1231,6 +1325,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "hms-harmful-brain-activity-classification",
       "url": "https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification",
@@ -1244,6 +1339,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "home-credit-credit-risk-model-stability",
       "url": "https://www.kaggle.com/competitions/home-credit-credit-risk-model-stability",
@@ -1257,6 +1353,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "home-credit-default-risk",
       "url": "https://www.kaggle.com/competitions/home-credit-default-risk",
@@ -1270,6 +1367,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "home-depot-product-search-relevance",
       "url": "https://www.kaggle.com/competitions/home-depot-product-search-relevance",
@@ -1283,6 +1381,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "homesite-quote-conversion",
       "url": "https://www.kaggle.com/competitions/homesite-quote-conversion",
@@ -1296,6 +1395,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "hubmap-hacking-the-human-vasculature",
       "url": "https://www.kaggle.com/competitions/hubmap-hacking-the-human-vasculature",
@@ -1309,6 +1409,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "hull-tactical-market-prediction",
       "url": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
@@ -1322,6 +1423,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "humpback-whale-identification",
       "url": "https://www.kaggle.com/competitions/humpback-whale-identification",
@@ -1335,6 +1437,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "hungry-geese",
       "url": "https://www.kaggle.com/competitions/hungry-geese",
@@ -1348,6 +1451,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "hyperspectral-object-detection-challenge-2026",
       "url": "https://www.kaggle.com/competitions/hyperspectral-object-detection-challenge-2026",
@@ -1361,6 +1465,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "icecube-neutrinos-in-deep-ice",
       "url": "https://www.kaggle.com/competitions/icecube-neutrinos-in-deep-ice",
@@ -1374,6 +1479,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "icr-identify-age-related-conditions",
       "url": "https://www.kaggle.com/competitions/icr-identify-age-related-conditions",
@@ -1387,6 +1493,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ieee-fraud-detection",
       "url": "https://www.kaggle.com/competitions/ieee-fraud-detection",
@@ -1400,6 +1507,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "image-matching-challenge-2022",
       "url": "https://www.kaggle.com/competitions/image-matching-challenge-2022",
@@ -1413,6 +1521,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "image-matching-challenge-2024",
       "url": "https://www.kaggle.com/competitions/image-matching-challenge-2024",
@@ -1426,6 +1535,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "image-matching-challenge-2025",
       "url": "https://www.kaggle.com/competitions/image-matching-challenge-2025",
@@ -1439,6 +1549,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "imet-2019-fgvc6",
       "url": "https://www.kaggle.com/competitions/imet-2019-fgvc6",
@@ -1452,6 +1563,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "indoor-location-navigation",
       "url": "https://www.kaggle.com/competitions/indoor-location-navigation",
@@ -1465,6 +1577,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "intel-mobileodt-cervical-cancer-screening",
       "url": "https://www.kaggle.com/competitions/intel-mobileodt-cervical-cancer-screening",
@@ -1478,6 +1591,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "isic-2024-challenge",
       "url": "https://www.kaggle.com/competitions/isic-2024-challenge",
@@ -1491,6 +1605,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jane-street-real-time-market-data-forecasting",
       "url": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
@@ -1504,6 +1619,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jigsaw-agile-community-rules",
       "url": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
@@ -1517,6 +1633,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jigsaw-multilingual-toxic-comment-classification",
       "url": "https://www.kaggle.com/competitions/jigsaw-multilingual-toxic-comment-classification",
@@ -1530,6 +1647,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jigsaw-toxic-comment-classification-challenge",
       "url": "https://www.kaggle.com/competitions/jigsaw-toxic-comment-classification-challenge",
@@ -1543,6 +1661,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jigsaw-toxic-severity-rating",
       "url": "https://www.kaggle.com/competitions/jigsaw-toxic-severity-rating",
@@ -1556,6 +1675,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "jigsaw-unintended-bias-in-toxicity-classification",
       "url": "https://www.kaggle.com/competitions/jigsaw-unintended-bias-in-toxicity-classification",
@@ -1569,6 +1689,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "kaggle-llm-science-exam",
       "url": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
@@ -1582,6 +1703,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "kaggriculture",
       "url": "https://www.kaggle.com/competitions/kaggriculture",
@@ -1595,6 +1717,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "konwinski-prize",
       "url": "https://www.kaggle.com/competitions/konwinski-prize",
@@ -1608,6 +1731,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "kore-2022",
       "url": "https://www.kaggle.com/competitions/kore-2022",
@@ -1621,6 +1745,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "landmark-recognition-2020",
       "url": "https://www.kaggle.com/competitions/landmark-recognition-2020",
@@ -1634,6 +1759,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "landmark-retrieval-2020",
       "url": "https://www.kaggle.com/competitions/landmark-retrieval-2020",
@@ -1647,6 +1773,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "lanl-earthquake-prediction",
       "url": "https://www.kaggle.com/competitions/lanl-earthquake-prediction",
@@ -1660,6 +1787,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "leap-atmospheric-physics-ai-climsim",
       "url": "https://www.kaggle.com/competitions/leap-atmospheric-physics-ai-climsim",
@@ -1673,6 +1801,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "learning-agency-lab-automated-essay-scoring-2",
       "url": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
@@ -1686,6 +1815,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "leash-belka",
       "url": "https://www.kaggle.com/competitions/leash-belka",
@@ -1699,6 +1829,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "liberty-mutual-group-property-inspection-prediction",
       "url": "https://www.kaggle.com/competitions/liberty-mutual-group-property-inspection-prediction",
@@ -1712,6 +1843,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "linking-writing-processes-to-writing-quality",
       "url": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
@@ -1725,6 +1857,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "lish-moa",
       "url": "https://www.kaggle.com/competitions/lish-moa",
@@ -1738,6 +1871,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "liverpool-ion-switching",
       "url": "https://www.kaggle.com/competitions/liverpool-ion-switching",
@@ -1751,6 +1885,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "llm-20-questions",
       "url": "https://www.kaggle.com/competitions/llm-20-questions",
@@ -1764,6 +1899,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "llm-detect-ai-generated-text",
       "url": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
@@ -1777,6 +1913,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "llm-prompt-recovery",
       "url": "https://www.kaggle.com/competitions/llm-prompt-recovery",
@@ -1790,6 +1927,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "llms-you-cant-please-them-all",
       "url": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
@@ -1803,6 +1941,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "lmsys-chatbot-arena",
       "url": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
@@ -1816,6 +1955,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "lux-ai-2021",
       "url": "https://www.kaggle.com/competitions/lux-ai-2021",
@@ -1829,6 +1969,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "lux-ai-season-3",
       "url": "https://www.kaggle.com/competitions/lux-ai-season-3",
@@ -1842,6 +1983,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "m5-forecasting-accuracy",
       "url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
@@ -1855,6 +1997,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "m5-forecasting-uncertainty",
       "url": "https://www.kaggle.com/competitions/m5-forecasting-uncertainty",
@@ -1868,6 +2011,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mabe-mouse-behavior-detection",
       "url": "https://www.kaggle.com/competitions/mabe-mouse-behavior-detection",
@@ -1881,6 +2025,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "make-data-count-finding-data-references",
       "url": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
@@ -1894,6 +2039,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mallorn-astronomical-classification-challenge",
       "url": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
@@ -1907,6 +2053,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "map-charting-student-math-misunderstandings",
       "url": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
@@ -1920,6 +2067,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "march-machine-learning-mania-2023",
       "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2023",
@@ -1933,6 +2081,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "march-machine-learning-mania-2025",
       "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2025",
@@ -1946,6 +2095,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "march-machine-learning-mania-2026",
       "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
@@ -1959,6 +2109,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mayo-clinic-strip-ai",
       "url": "https://www.kaggle.com/competitions/mayo-clinic-strip-ai",
@@ -1972,6 +2123,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "maze-crawler",
       "url": "https://www.kaggle.com/competitions/maze-crawler",
@@ -1985,6 +2137,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mercari-price-suggestion-challenge",
       "url": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge",
@@ -1998,6 +2151,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mercedes-benz-greener-manufacturing",
       "url": "https://www.kaggle.com/competitions/mercedes-benz-greener-manufacturing",
@@ -2011,6 +2165,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "microsoft-malware-prediction",
       "url": "https://www.kaggle.com/competitions/microsoft-malware-prediction",
@@ -2024,6 +2179,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "misconception-detection-in-k-12-student-math-workings",
       "url": "https://kaggle.com/competitions/misconception-detection-in-k-12-student-math-workings",
@@ -2037,6 +2193,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "mitsui-commodity-prediction-challenge",
       "url": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
@@ -2050,6 +2207,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ms-capital-real-financial-market-forecasting",
       "url": "https://www.kaggle.com/competitions/ms-capital-real-financial-market-forecasting",
@@ -2063,6 +2221,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "name-that-llm",
       "url": "https://kaggle.com/competitions/name-that-llm",
@@ -2076,6 +2235,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nbme-score-clinical-patient-notes",
       "url": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
@@ -2089,6 +2249,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "neural-debris-removal-in-streak-detection-models",
       "url": "https://www.kaggle.com/competitions/neural-debris-removal-in-streak-detection-models",
@@ -2102,6 +2263,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "neurips-2023-machine-unlearning",
       "url": "https://www.kaggle.com/competitions/neurips-2023-machine-unlearning",
@@ -2115,6 +2277,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "neurips-2026-smart-buildings",
       "url": "https://kaggle.com/competitions/neurips-2026-smart-buildings",
@@ -2128,6 +2291,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "neurips-open-polymer-prediction-2025",
       "url": "https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025",
@@ -2141,6 +2305,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "neurogolf-2026",
       "url": "https://www.kaggle.com/competitions/neurogolf-2026",
@@ -2154,6 +2319,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nfl-big-data-bowl-2020",
       "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2020",
@@ -2167,6 +2333,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nfl-big-data-bowl-2026-prediction",
       "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
@@ -2180,6 +2347,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nfl-big-data-bowl-2027",
       "url": "https://kaggle.com/competitions/nfl-big-data-bowl-2027",
@@ -2193,6 +2361,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nfl-health-and-safety-helmet-assignment",
       "url": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
@@ -2206,6 +2375,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nfl-player-contact-detection",
       "url": "https://www.kaggle.com/competitions/nfl-player-contact-detection",
@@ -2219,6 +2389,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "noaa-fisheries-steller-sea-lion-population-count",
       "url": "https://www.kaggle.com/competitions/noaa-fisheries-steller-sea-lion-population-count",
@@ -2232,6 +2403,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "nvidia-nemotron-model-reasoning-challenge",
       "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
@@ -2245,6 +2417,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "open-problems-single-cell-perturbations",
       "url": "https://www.kaggle.com/competitions/open-problems-single-cell-perturbations",
@@ -2258,6 +2431,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "optiver-realized-volatility-prediction",
       "url": "https://www.kaggle.com/competitions/optiver-realized-volatility-prediction",
@@ -2271,6 +2445,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "optiver-trading-at-the-close",
       "url": "https://www.kaggle.com/competitions/optiver-trading-at-the-close",
@@ -2284,6 +2459,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "orbit-wars",
       "url": "https://www.kaggle.com/competitions/orbit-wars",
@@ -2297,6 +2473,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "otto-group-product-classification-challenge",
       "url": "https://www.kaggle.com/competitions/otto-group-product-classification-challenge",
@@ -2310,6 +2487,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "outbrain-click-prediction",
       "url": "https://www.kaggle.com/competitions/outbrain-click-prediction",
@@ -2323,6 +2501,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "petfinder-pawpularity-score",
       "url": "https://www.kaggle.com/competitions/petfinder-pawpularity-score",
@@ -2336,6 +2515,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "physionet-ecg-image-digitization",
       "url": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
@@ -2349,6 +2529,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "pii-detection-removal-from-educational-data",
       "url": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
@@ -2362,6 +2543,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "planet-understanding-the-amazon-from-space",
       "url": "https://www.kaggle.com/competitions/planet-understanding-the-amazon-from-space",
@@ -2375,6 +2557,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "plasticc-2018",
       "url": "https://www.kaggle.com/competitions/plasticc-2018",
@@ -2388,6 +2571,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s3e11",
       "url": "https://www.kaggle.com/competitions/playground-series-s3e11",
@@ -2401,6 +2585,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s3e12",
       "url": "https://www.kaggle.com/competitions/playground-series-s3e12",
@@ -2414,6 +2599,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s4e8",
       "url": "https://www.kaggle.com/competitions/playground-series-s4e8",
@@ -2427,6 +2613,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s5e1",
       "url": "https://www.kaggle.com/competitions/playground-series-s5e1",
@@ -2440,6 +2627,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s5e12",
       "url": "https://www.kaggle.com/competitions/playground-series-s5e12",
@@ -2453,6 +2641,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s5e4",
       "url": "https://www.kaggle.com/competitions/playground-series-s5e4",
@@ -2466,6 +2655,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s5e5",
       "url": "https://www.kaggle.com/competitions/playground-series-s5e5",
@@ -2479,6 +2669,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s5e6",
       "url": "https://www.kaggle.com/competitions/playground-series-s5e6",
@@ -2492,6 +2683,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s6e4",
       "url": "https://www.kaggle.com/competitions/playground-series-s6e4",
@@ -2505,6 +2697,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s6e6",
       "url": "https://www.kaggle.com/competitions/playground-series-s6e6",
@@ -2518,6 +2711,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s6e8",
       "url": "https://www.kaggle.com/competitions/playground-series-s6e8",
@@ -2531,6 +2725,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "playground-series-s6e9",
       "url": "https://www.kaggle.com/competitions/playground-series-s6e9",
@@ -2544,6 +2739,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "pokemon-tcg-ai-battle",
       "url": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
@@ -2557,6 +2753,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "porto-seguro-safe-driver-prediction",
       "url": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
@@ -2570,6 +2767,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "predict-student-performance-from-game-play",
       "url": "https://www.kaggle.com/competitions/predict-student-performance-from-game-play",
@@ -2583,6 +2781,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "predicting-red-hat-business-value",
       "url": "https://www.kaggle.com/competitions/predicting-red-hat-business-value",
@@ -2596,6 +2795,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "prostate-cancer-grade-assessment",
       "url": "https://www.kaggle.com/competitions/prostate-cancer-grade-assessment",
@@ -2609,6 +2809,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "quickdraw-doodle-recognition",
       "url": "https://www.kaggle.com/competitions/quickdraw-doodle-recognition",
@@ -2622,6 +2823,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "quora-question-pairs",
       "url": "https://www.kaggle.com/competitions/quora-question-pairs",
@@ -2635,6 +2837,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "recodai-luc-scientific-image-forgery-detection",
       "url": "https://www.kaggle.com/competitions/recodai-luc-scientific-image-forgery-detection",
@@ -2648,6 +2851,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "recruit-restaurant-visitor-forecasting",
       "url": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
@@ -2661,6 +2865,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "recursion-cellular-image-classification",
       "url": "https://www.kaggle.com/competitions/recursion-cellular-image-classification",
@@ -2674,6 +2879,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rfcx-species-audio-detection",
       "url": "https://www.kaggle.com/competitions/rfcx-species-audio-detection",
@@ -2687,6 +2893,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "riiid-test-answer-prediction",
       "url": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
@@ -2700,6 +2907,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rock-paper-scissors",
       "url": "https://www.kaggle.com/competitions/rock-paper-scissors",
@@ -2713,6 +2921,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rogii-wellbore-geology-prediction",
       "url": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
@@ -2726,6 +2935,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rossmann-store-sales",
       "url": "https://www.kaggle.com/competitions/rossmann-store-sales",
@@ -2739,6 +2949,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-2022-cervical-spine-fracture-detection",
       "url": "https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection",
@@ -2752,6 +2963,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-2024-lumbar-spine-degenerative-classification",
       "url": "https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification",
@@ -2765,6 +2977,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-breast-cancer-detection",
       "url": "https://www.kaggle.com/competitions/rsna-breast-cancer-detection",
@@ -2778,6 +2991,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-intracranial-aneurysm-detection",
       "url": "https://www.kaggle.com/competitions/rsna-intracranial-aneurysm-detection",
@@ -2791,6 +3005,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-intracranial-hemorrhage-detection",
       "url": "https://www.kaggle.com/competitions/rsna-intracranial-hemorrhage-detection",
@@ -2804,6 +3019,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-knee-abnormality-detection",
       "url": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
@@ -2817,6 +3033,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "rsna-str-pulmonary-embolism-detection",
       "url": "https://www.kaggle.com/competitions/rsna-str-pulmonary-embolism-detection",
@@ -2830,6 +3047,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santa-2020",
       "url": "https://www.kaggle.com/competitions/santa-2020",
@@ -2843,6 +3061,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santa-2023",
       "url": "https://www.kaggle.com/competitions/santa-2023",
@@ -2856,6 +3075,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santa-2024",
       "url": "https://www.kaggle.com/competitions/santa-2024",
@@ -2869,6 +3089,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santa-2025",
       "url": "https://www.kaggle.com/competitions/santa-2025",
@@ -2882,6 +3103,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santa-workshop-tour-2019",
       "url": "https://www.kaggle.com/competitions/santa-workshop-tour-2019",
@@ -2895,6 +3117,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santander-customer-satisfaction",
       "url": "https://www.kaggle.com/competitions/santander-customer-satisfaction",
@@ -2908,6 +3131,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santander-customer-transaction-prediction",
       "url": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
@@ -2921,6 +3145,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santander-product-recommendation",
       "url": "https://www.kaggle.com/competitions/santander-product-recommendation",
@@ -2934,6 +3159,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santander-value-prediction-challenge",
       "url": "https://www.kaggle.com/competitions/santander-value-prediction-challenge",
@@ -2947,6 +3173,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "santas-uncertain-bags",
       "url": "https://www.kaggle.com/competitions/santas-uncertain-bags",
@@ -2960,6 +3187,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "sartorius-cell-instance-segmentation",
       "url": "https://www.kaggle.com/competitions/sartorius-cell-instance-segmentation",
@@ -2973,6 +3201,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "sberbank-russian-housing-market",
       "url": "https://www.kaggle.com/competitions/sberbank-russian-housing-market",
@@ -2986,6 +3215,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "spr-2026-mammography-report-classification",
       "url": "https://www.kaggle.com/competitions/spr-2026-mammography-report-classification",
@@ -2999,6 +3229,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "springleaf-marketing-response",
       "url": "https://www.kaggle.com/competitions/springleaf-marketing-response",
@@ -3012,6 +3243,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "squares-in-squares",
       "url": "https://kaggle.com/competitions/squares-in-squares",
@@ -3025,6 +3257,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "stable-diffusion-image-to-prompts",
       "url": "https://www.kaggle.com/competitions/stable-diffusion-image-to-prompts",
@@ -3038,6 +3271,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "stanford-covid-vaccine",
       "url": "https://www.kaggle.com/competitions/stanford-covid-vaccine",
@@ -3051,6 +3285,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "stanford-rna-3d-folding",
       "url": "https://www.kaggle.com/competitions/stanford-rna-3d-folding",
@@ -3064,6 +3299,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "stanford-rna-3d-folding-2",
       "url": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
@@ -3077,6 +3313,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "statoil-iceberg-classifier-challenge",
       "url": "https://www.kaggle.com/competitions/statoil-iceberg-classifier-challenge",
@@ -3090,6 +3327,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "talkingdata-adtracking-fraud-detection",
       "url": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
@@ -3103,6 +3341,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "talkingdata-mobile-user-demographics",
       "url": "https://www.kaggle.com/competitions/talkingdata-mobile-user-demographics",
@@ -3116,6 +3355,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "tensorflow-speech-recognition-challenge",
       "url": "https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge",
@@ -3129,6 +3369,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "tensorflow2-question-answering",
       "url": "https://www.kaggle.com/competitions/tensorflow2-question-answering",
@@ -3142,6 +3383,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "text-normalization-challenge-english-language",
       "url": "https://www.kaggle.com/competitions/text-normalization-challenge-english-language",
@@ -3155,6 +3397,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "text-normalization-challenge-russian-language",
       "url": "https://www.kaggle.com/competitions/text-normalization-challenge-russian-language",
@@ -3168,6 +3411,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "tgs-salt-identification-challenge",
       "url": "https://www.kaggle.com/competitions/tgs-salt-identification-challenge",
@@ -3181,6 +3425,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "the-allen-ai-science-challenge",
       "url": "https://www.kaggle.com/competitions/the-allen-ai-science-challenge",
@@ -3194,6 +3439,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "the-nature-conservancy-fisheries-monitoring",
       "url": "https://www.kaggle.com/competitions/the-nature-conservancy-fisheries-monitoring",
@@ -3207,6 +3453,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "tlvmc-parkinsons-freezing-gait-prediction",
       "url": "https://www.kaggle.com/competitions/tlvmc-parkinsons-freezing-gait-prediction",
@@ -3220,6 +3467,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "traveling-santa-2018-prime-paths",
       "url": "https://www.kaggle.com/competitions/traveling-santa-2018-prime-paths",
@@ -3233,6 +3481,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ts-forecasting",
       "url": "https://www.kaggle.com/competitions/ts-forecasting",
@@ -3246,6 +3495,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ubc-ocean",
       "url": "https://www.kaggle.com/competitions/ubc-ocean",
@@ -3259,6 +3509,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ubiquant-market-prediction",
       "url": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
@@ -3272,6 +3523,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ue20cs344-nam-assignment-2",
       "url": "https://www.kaggle.com/competitions/ue20cs344-nam-assignment-2",
@@ -3285,6 +3537,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "um-game-playing-strength-of-mcts-variants",
       "url": "https://www.kaggle.com/competitions/um-game-playing-strength-of-mcts-variants",
@@ -3298,6 +3551,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "uspto-explainable-ai",
       "url": "https://www.kaggle.com/competitions/uspto-explainable-ai",
@@ -3311,6 +3565,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "uw-madison-gi-tract-image-segmentation",
       "url": "https://www.kaggle.com/competitions/uw-madison-gi-tract-image-segmentation",
@@ -3324,6 +3579,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "ventilator-pressure-prediction",
       "url": "https://www.kaggle.com/competitions/ventilator-pressure-prediction",
@@ -3337,6 +3593,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "vesuvius-challenge-ink-detection",
       "url": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
@@ -3350,6 +3607,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "vesuvius-challenge-surface-detection",
       "url": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
@@ -3363,6 +3621,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "vinbigdata-chest-xray-abnormalities-detection",
       "url": "https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection",
@@ -3376,6 +3635,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "waveform-inversion",
       "url": "https://www.kaggle.com/competitions/waveform-inversion",
@@ -3389,6 +3649,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "web-traffic-time-series-forecasting",
       "url": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting",
@@ -3402,6 +3663,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "wsdm-cup-multilingual-chatbot-arena",
       "url": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
@@ -3415,6 +3677,7 @@
         "kaggle.com",
         "www.kaggle.com"
       ],
+      "scoreDirection": null,
       "season": null,
       "slug": "zillow-prize-1",
       "url": "https://www.kaggle.com/competitions/zillow-prize-1",

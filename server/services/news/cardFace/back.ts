@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
+ * Date: 02-November-2026
  * PURPOSE: The REVERSE of the TOPPS card, 750 x 1050: grey cardboard in two inks (the tier colour darkened to print
  *          on grey, and near-black), like a 1987 Topps back. Exports back(card, opts) -> image buffer (png, webp or
  *          jpeg) and backNode(card, opts) -> Satori node tree. What may be printed is decided in backModel.ts; this
@@ -18,6 +18,8 @@
  *          Performance: the cardboard is built once per process (a small tiled fibre texture, few colours); the
  *          miniature reuses a front buffer when the caller passes one (opts.frontBuffer) and only otherwise renders
  *          the front lazily; the PNG is palette-quantised so it stays far below 500 KB.
+ *          An opt-in reverse illustration is contained whole in spare room after the career table;
+ *          it never displaces career rows or relies on an automatic attention crop.
  * SRP/DRY check: Pass. Data decisions: backModel.ts; vocabulary and fonts: kit.ts; art: art.ts; the front: render.ts
  *          (imported lazily, so there is no import cycle).
  *
@@ -34,10 +36,12 @@
  */
 import satori from 'satori';
 import sharp from 'sharp';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, frameSvg, starburst, halftone, alpha, textWidth, fitNameLines, MEDAL, TIERS, svgUri, type Node, type Style } from './kit';
 import { viewModel, num, type VM, type CareerRowVM, type MedalsVM } from './model';
 import { backModel, type BackModel, type StandingRow, type RosterRow, type MateGroup, type VitalCell } from './backModel';
-import { artLayer, W, H, ZONE, type ArtResult } from './art';
+import { artLayer, assertCollectionArtPath, W, H, ZONE, type ArtResult } from './art';
 
 export interface BackOpts {
   namesById?: Record<string, string>; tierOverride?: string | null;
@@ -46,6 +50,8 @@ export interface BackOpts {
   frontBuffer?: Buffer;
   /** Output encoding of back(): png (default, palette-quantised), webp or jpeg (share previews). */
   format?: 'png' | 'webp' | 'jpeg'; quality?: number;
+  /** Independently composed comic vignette. Proof-only unless explicitly supplied by a caller. */
+  reverseArt?: { src: string; maxHeight?: number };
 }
 
 const INK2 = '#15161d';
@@ -135,7 +141,7 @@ const titleBar = (ink1: string, left: string, right: Node | string | null): Node
 const tableFrame = (...kids: (Node | null)[]): Node => box({ flexDirection: 'column', border: `2px solid ${INK2}`, background: 'rgba(255,255,255,0.28)' }, ...kids);
 const colHead = (t: string, w: number, ink1: string): Node => box({ width: w, justifyContent: 'flex-end', paddingRight: 8 }, bebas(t, 14, ink1, { letterSpacing: 1.6 }));
 const numCell = (text: string | null, w: number, size = 17, color = INK2, weight = 700): Node =>
-  box({ width: w, justifyContent: 'flex-end', alignItems: 'center', paddingRight: 8 }, text ? mono(text, size, color, weight) : null);
+  box({ width: w, justifyContent: 'flex-end', alignItems: 'center', paddingRight: 8 }, text ? (color === '#2453a6' ? box({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: size, color }, text) : mono(text, size, color, weight)) : null);
 const coinRow = (m: MedalsVM, size = 18): Node => box({ alignItems: 'center' }, ...(['gold', 'silver', 'bronze'] as const).map(k =>
   box({ alignItems: 'center', marginLeft: 12 }, dot(MEDAL[k], 15), mono(String(m[k]), size, '#fff', 700, { marginLeft: 5 }))));
 
@@ -207,7 +213,7 @@ function standings(rows: StandingRow[], vm: VM, ink1: string, rowH: number): Nod
         bebas(c.title, titleF, INK2, { letterSpacing: 1, ...clip({ width: titleW }) }),
         // tall rows let the sub line wrap to two lines; compact rows keep it on one line with an ellipsis
         c.sub || c.note ? box({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: rowH >= 52 ? 16 : 14, color: ink1, marginTop: rowH >= 52 ? 5 : 2, lineHeight: 1.15, width: titleW, ...(rowH >= 70 ? {} : clip({})) }, [c.sub, c.note].filter(Boolean).join(' · ')) : null),
-      numCell(c.rank, cw.rank, rankF), peak ? numCell(c.peak, cw.peak, auxF, ink1) : null, numCell(c.score, cw.score, scoreF), subs ? numCell(c.subs, cw.subs, auxF, ink1) : null)));
+      numCell(c.rank, cw.rank, rankF, '#2453a6'), peak ? numCell(c.peak, cw.peak, auxF, '#2453a6') : null, numCell(c.score, cw.score, scoreF, '#17703f', 600), subs ? numCell(c.subs, cw.subs, auxF, ink1) : null)));
 }
 
 /** Career table: header, the n best rows, a plain note when more contests exist than are listed, then the bold CAREER row. */
@@ -218,7 +224,7 @@ function careerTable(cb: NonNullable<BackModel['career']>, ink1: string, n: numb
   const fs = rowH >= 30 ? 18 : rowH >= 24 ? 16 : 14.5;
   const body = rows.map((r, i) => box({ height: rowH, alignItems: 'center', padding: '0 10px', background: i % 2 ? 'rgba(0,0,0,0.065)' : 'transparent' },
     box({ flexGrow: 1, minWidth: 0, fontFamily: ff(FONT.cond), fontWeight: r.medal ? 700 : 500, fontSize: fs, color: INK2, ...clip({ width: 360 }) }, r.name),
-    numCell(r.place, cw.place, fs - 1), numCell(r.of, cw.of, fs - 1, '#4a4a55', 500), numCell(r.top, cw.top, fs - 1, ink1),
+    numCell('#' + r.place, cw.place, fs - 1, '#2453a6'), numCell(r.of, cw.of, fs - 1, '#4a4a55', 500), numCell(r.top, cw.top, fs - 1, ink1),
     box({ width: cw.medal, justifyContent: 'flex-start', alignItems: 'center', paddingLeft: 10 }, r.medal ? box({ alignItems: 'center' }, dot(MEDAL[r.medal], rowH >= 26 ? 16 : 13), bebas(MEDAL_WORD[r.medal], rowH >= 26 ? 17 : 14, INK2, { marginLeft: 5, letterSpacing: 1 })) : null)));
   const careerRow = box({ height: 32, alignItems: 'center', justifyContent: 'space-between', padding: '0 10px', background: INK2, borderTop: `3px double ${STOCK}` },
     box({ alignItems: 'baseline' }, bebas('CAREER', 22, '#fff', { letterSpacing: 2.4 }), bebas(`${num(cb.completed)} CONTEST${cb.completed === 1 ? "" : "S"}`, 15, '#c8cbd6', { marginLeft: 10, letterSpacing: 1.4 })),
@@ -515,9 +521,10 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     }
 
     // Leftover height, spent in a fixed order. A strip of the card's own picture first (cover crop, the picture grows),
-    const realArt = !!(art.plate || art.kind === 'contract');
+    const realArt = !!(opts.reverseArt || art.plate || art.kind === 'contract');
     let stripH = 0, stripPlate = false;
-    if (realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, 340); spend(stripH); }
+    const stripMax = opts.reverseArt ? clamp(opts.reverseArt.maxHeight ?? 188, 130, 220) : 340;
+    if (realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, stripMax); spend(stripH); }
     // then bigger standings rows (numerals scale with the row),
     if (nS && left > 0) {
       const extra = Math.min(Math.floor(left / nS), 96 - sRow);
@@ -532,13 +539,19 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     // then, only when the card has no picture of its own and nothing else to grow, the designed plate,
     if (!stripH && left >= 260) { stripH = Math.min(left - GAP, 340); stripPlate = true; spend(stripH); }
     // then whatever picture there is takes the rest (up to a tall portrait crop),
-    if (stripH && left > 0) { const grow = Math.min(left, 640 - stripH); stripH += grow; left -= grow; }
+    if (stripH && left > 0 && !opts.reverseArt) { const grow = Math.min(left, 640 - stripH); stripH += grow; left -= grow; }
     // and last, slightly wider gaps so the footer is never stranded.
     gap = GAP + clamp(Math.floor(left / Math.max(1, count - 1)), 0, 14);
     let strip: Placed | null = null;
     if (stripH) {
       let jpg: Buffer | null;
-      if (stripPlate) {
+      if (opts.reverseArt) {
+        // The source is an authored wide composition; containing it keeps every intended feature visible.
+        // Read through the same public-art boundary as the normal renderer. A dense career never gets here.
+        await assertCollectionArtPath(opts.reverseArt.src);
+        const source = await fs.readFile(path.join(process.cwd(), 'client/public', opts.reverseArt.src.slice(1)));
+        jpg = await sharp(source).resize(COL_W - 8, stripH - 8, { fit: 'contain', background: '#101c2b' }).jpeg({ quality: 90 }).toBuffer();
+      } else if (stripPlate) {
         // the designed placeholder: full width, centred on its head and shoulders
         const ph = Math.min(H, Math.round(W * (stripH - 8) / (COL_W - 8))), top = clamp(Math.round(330 - ph / 2), 0, H - ph);
         jpg = await sharp(art.png).extract({ left: 0, top, width: W, height: ph }).resize(COL_W - 8, stripH - 8, { fit: 'fill' }).jpeg({ quality: 86 }).toBuffer();

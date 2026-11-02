@@ -53,6 +53,7 @@ const RULE = '#b8afa0';
 const MUTED = '#645d53';
 const SERIF = 'IBM Plex Serif';
 const SANS = 'IBM Plex Sans Condensed';
+const MONO = 'IBM Plex Mono';
 const FONT_DIRECTORY = path.join(process.cwd(), 'server', 'assets', 'fonts', 'news-card');
 
 type Node = { type: string; props: Record<string, unknown> };
@@ -68,6 +69,7 @@ function loadFonts() {
     { name: SERIF, data: read('IBMPlexSerif-Regular.ttf'), weight: 400, style: 'normal' },
     { name: SANS, data: read('IBMPlexSansCondensed-Bold.ttf'), weight: 700, style: 'normal' },
     { name: SANS, data: read('IBMPlexSansCondensed-Medium.ttf'), weight: 500, style: 'normal' },
+    { name: MONO, data: read('IBMPlexMono-Medium.ttf'), weight: 600, style: 'normal' },
   ];
   return fonts;
 }
@@ -77,7 +79,7 @@ export function cardText(value: string): string {
   return value.replace(/[^\u0020-\u024F\u2013\u2014\u2018-\u201F\u2026\u00B7]/gu, '').replace(/\s+/g, ' ').trim();
 }
 const teamName = (stat: NewsStat) => cardText(stat.name) || `Kaggle team ${stat.teamId}`;
-const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+const points = (value: number) => String(value);
 const movement = (stat: NewsStat) => stat.rankChange == null ? '' : stat.rankChange === 0 ? 'unchanged' : `${stat.rankChange > 0 ? 'up' : 'down'} ${Math.abs(stat.rankChange)}`;
 /** Long headlines step down in size so three lines always fit above the box score. */
 const headlineSize = (text: string) => text.length <= 42 ? 72 : text.length <= 64 ? 62 : text.length <= 90 ? 52 : 44;
@@ -119,10 +121,10 @@ function articleCard(article: NewsArticle): Node {
     standings.length ? box({ flexDirection: 'column', borderTop: `3px solid ${INK}`, paddingTop: 10, marginBottom: 16 },
       box({ fontFamily: SANS, fontWeight: 700, fontSize: 17, letterSpacing: 2, color: MUTED, textTransform: 'uppercase', marginBottom: 8 }, 'The box score'),
       box({}, ...standings.map((stat, index) => box({ flex: 1, alignItems: 'baseline', paddingLeft: index ? 22 : 0, marginLeft: index ? 22 : 0, borderLeft: index ? `1px solid ${RULE}` : 'none', overflow: 'hidden' },
-        box({ fontFamily: SERIF, fontWeight: 700, fontSize: 38, color: RED, marginRight: 12 }, String(stat.rank)),
+        box({ fontFamily: SANS, fontWeight: 700, fontSize: 38, color: '#2453a6', marginRight: 12 }, '#' + stat.rank.toLocaleString('en-US')),
         box({ flexDirection: 'column', overflow: 'hidden' },
           box({ fontFamily: SERIF, fontWeight: 700, fontSize: 26, color: INK, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 270 }, teamName(stat)),
-          box({ fontFamily: SANS, fontWeight: 500, fontSize: 20, color: MUTED }, `${points(stat.score)} ${stat.score === 1 ? 'point' : 'points'}${movement(stat) ? ` · ${movement(stat)}` : ''}`)))))) : null,
+          box({ fontFamily: MONO, fontWeight: 600, fontSize: 20, color: '#17703f' }, `Score ${points(stat.score)}${movement(stat) ? ` · ${movement(stat)}` : ''}`)))))) : null,
     footer('Early and late editions'));
 }
 
