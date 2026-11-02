@@ -8825,7 +8825,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "55958edb1ed76fbda79b26646a3cab42d932b11665fe3c17df1334f9d68db45f",
+  "fingerprint": "0a6bd39e6114e2380b1be3c391b7a54fdacb9c3551cd4859bb29e2ed40370a1a",
   "people": [
     {
       "accounts": [
@@ -9138,6 +9138,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:23+00:00",
+          "handle": "boliu0",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/boliu0"
+        }
+      ],
+      "briefing": "Bo Liu is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "bo-liu",
+      "memberships": [],
+      "name": "Bo Liu"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-31T17:24:05Z",
           "handle": "chankhavu",
           "platform": "kaggle",
@@ -9201,6 +9219,42 @@
         "src": "/news-images/people/chan-kha-vu.webp"
       },
       "role": "competitor"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:23+00:00",
+          "handle": "cdeotte",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/cdeotte"
+        }
+      ],
+      "briefing": "Chris Deotte is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "chris-deotte",
+      "memberships": [],
+      "name": "Chris Deotte"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:24+00:00",
+          "handle": "christofhenkel",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/christofhenkel"
+        }
+      ],
+      "briefing": "Christof Henkel is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "christof-henkel",
+      "memberships": [],
+      "name": "Christof Henkel"
     },
     {
       "accounts": [
@@ -9668,6 +9722,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:24+00:00",
+          "handle": "tivfrvqhs5",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/tivfrvqhs5"
+        }
+      ],
+      "briefing": "David Austin is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "david-austin",
+      "memberships": [],
+      "name": "David Austin"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-08T03:38:00Z",
           "handle": "dvhrtm",
           "platform": "kaggle",
@@ -9828,6 +9900,55 @@
         }
       ],
       "name": "Dawid Kopiczko"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:10:36Z",
+          "handle": "dlorah",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle account",
+          "sourceUrl": "https://www.kaggle.com/dlorah",
+          "url": "https://www.kaggle.com/dlorah"
+        }
+      ],
+      "briefing": "The dlorah Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "dlorah",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-08T03:42:46Z",
+          "lastObservedAt": "2026-11-02T00:56:31Z",
+          "memberHandle": "dlorah",
+          "season": "2026",
+          "sourceTitle": "Dated public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "dlorah"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:24+00:00",
+          "handle": "dott1718",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/dott1718"
+        }
+      ],
+      "briefing": "Dmitry Gordeev is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "dmitry-gordeev",
+      "memberships": [],
+      "name": "Dmitry Gordeev"
     },
     {
       "accounts": [
@@ -10043,6 +10164,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:24+00:00",
+          "handle": "arc144",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/arc144"
+        }
+      ],
+      "briefing": "Eduardo Rocha de Andrade is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "eduardo-rocha-de-andrade",
+      "memberships": [],
+      "name": "Eduardo Rocha de Andrade"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-13T17:33:14Z",
           "handle": "eladsarafian",
           "platform": "kaggle",
@@ -10103,6 +10242,24 @@
         "sourceUrl": "https://www.kaggle.com/eladsarafian",
         "src": "/news-images/people/elad-sarafian.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:24+00:00",
+          "handle": "bloodaxe",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/bloodaxe"
+        }
+      ],
+      "briefing": "Eugene Khvedchenia is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "eugene-khvedchenia",
+      "memberships": [],
+      "name": "Eugene Khvedchenia"
     },
     {
       "accounts": [
@@ -10500,6 +10657,49 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:10:36Z",
+          "handle": "titericz",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle account",
+          "sourceUrl": "https://www.kaggle.com/titericz",
+          "url": "https://www.kaggle.com/titericz"
+        }
+      ],
+      "briefing": "Giba is Kaggle competitor Gilberto Titericz, an NVIDIA RAPIDS data scientist.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "gilberto-titericz",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-08T03:42:46Z",
+          "lastObservedAt": "2026-11-02T00:56:31Z",
+          "memberHandle": "titericz",
+          "season": "2026",
+          "sourceTitle": "Dated public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15770880",
+          "teamName": "NVARC3"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-22T10:35:33Z",
+          "lastObservedAt": "2026-10-22T21:37:08Z",
+          "memberHandle": "titericz",
+          "season": "2026",
+          "sourceTitle": "Dated public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15487246",
+          "teamName": "Giba"
+        }
+      ],
+      "name": "Gilberto Titericz (Giba)"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T19:41:08.261436+00:00",
           "handle": "gklambauer",
           "platform": "kaggle",
@@ -10684,6 +10884,37 @@
         }
       ],
       "name": "gromml"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:10:36Z",
+          "handle": "infinitecreativity",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle account",
+          "sourceUrl": "https://www.kaggle.com/infinitecreativity",
+          "url": "https://www.kaggle.com/infinitecreativity"
+        }
+      ],
+      "briefing": "The InfiniteCreativity Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "infinitecreativity",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-08T03:42:46Z",
+          "lastObservedAt": "2026-11-02T00:56:31Z",
+          "memberHandle": "infinitecreativity",
+          "season": "2026",
+          "sourceTitle": "Dated public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "InfiniteCreativity"
     },
     {
       "accounts": [
@@ -11539,6 +11770,42 @@
         "sourceUrl": "https://www.kaggle.com/jeroencottaar",
         "src": "/news-images/people/jeroen-cottaar.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:25+00:00",
+          "handle": "jiweiliu",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/jiweiliu"
+        }
+      ],
+      "briefing": "Jiwei Liu is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "jiwei-liu",
+      "memberships": [],
+      "name": "Jiwei Liu"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:25+00:00",
+          "handle": "onodera",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/onodera"
+        }
+      ],
+      "briefing": "Kazuki Onodera is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "kazuki-onodera",
+      "memberships": [],
+      "name": "Kazuki Onodera"
     },
     {
       "accounts": [
@@ -13191,6 +13458,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:25+00:00",
+          "handle": "conjuring92",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/conjuring92"
+        }
+      ],
+      "briefing": "Raja Biswas is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "raja-biswas",
+      "memberships": [],
+      "name": "Raja Biswas"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:26:08.724960Z",
           "handle": "refv00",
           "platform": "kaggle",
@@ -13445,6 +13730,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:25+00:00",
+          "handle": "ryches",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/ryches"
+        }
+      ],
+      "briefing": "Ryan Chesler is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "ryan-chesler",
+      "memberships": [],
+      "name": "Ryan Chesler"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-27T01:16:06.263620+00:00",
           "handle": "sbrodehl",
           "platform": "kaggle",
@@ -13517,6 +13820,24 @@
         "sourceUrl": "https://www.kaggle.com/sbrodehl",
         "src": "/news-images/people/sebastian-brodehl.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:26+00:00",
+          "handle": "simjeg",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/simjeg"
+        }
+      ],
+      "briefing": "Simon Jegou is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "simon-jegou",
+      "memberships": [],
+      "name": "Simon Jegou"
     },
     {
       "accounts": [
@@ -13951,6 +14272,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:26+00:00",
+          "handle": "theoviel",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/theoviel"
+        }
+      ],
+      "briefing": "Théo Viel is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "theo-viel",
+      "memberships": [],
+      "name": "Théo Viel"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:42:34.924214+00:00",
           "handle": "rinnnntt",
           "platform": "kaggle",
@@ -14173,6 +14512,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:26+00:00",
+          "handle": "ybabakhin",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/ybabakhin"
+        }
+      ],
+      "briefing": "Yauhen Babakhin is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "yauhen-babakhin",
+      "memberships": [],
+      "name": "Yauhen Babakhin"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-13T17:33:14Z",
           "handle": "yeyinzhu",
           "platform": "kaggle",
@@ -14313,6 +14670,24 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T22:11:26+00:00",
+          "handle": "yiheng",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/yiheng"
+        }
+      ],
+      "briefing": "Yiheng Wang is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "yiheng-wang",
+      "memberships": [],
+      "name": "Yiheng Wang"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:24:34.248388Z",
           "handle": "yktori",
           "platform": "kaggle",
@@ -14359,6 +14734,24 @@
         }
       ],
       "name": "yktori"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T22:11:26+00:00",
+          "handle": "youhanlee",
+          "platform": "kaggle",
+          "sourceTitle": "NVIDIA KGMoN directory links directly to this Kaggle profile",
+          "sourceUrl": "https://www.nvidia.com/en-us/ai-data-science/kaggle-grandmasters/",
+          "url": "https://www.kaggle.com/youhanlee"
+        }
+      ],
+      "briefing": "Youhan Lee is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "youhan-lee",
+      "memberships": [],
+      "name": "Youhan Lee"
     },
     {
       "accounts": [
@@ -15977,6 +16370,272 @@
         "name": "V | A | M",
         "number": "T020",
         "season": "2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Giba is Kaggle competitor Gilberto Titericz, an NVIDIA RAPIDS data scientist.",
+        "entries": [],
+        "id": "person-gilberto-titericz-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:10:44+00:00",
+        "kind": "person",
+        "name": "Gilberto Titericz (Giba)",
+        "number": "P069",
+        "personId": "gilberto-titericz",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "The dlorah Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+        "entries": [],
+        "id": "person-dlorah-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:10:44+00:00",
+        "kind": "person",
+        "name": "dlorah",
+        "number": "P070",
+        "personId": "dlorah",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "The InfiniteCreativity Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+        "entries": [],
+        "id": "person-infinitecreativity-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:10:44+00:00",
+        "kind": "person",
+        "name": "InfiniteCreativity",
+        "number": "P071",
+        "personId": "infinitecreativity",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Bo Liu is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-bo-liu-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:27+00:00",
+        "kind": "person",
+        "name": "Bo Liu",
+        "number": "P072",
+        "personId": "bo-liu",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Chris Deotte is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-chris-deotte-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:27+00:00",
+        "kind": "person",
+        "name": "Chris Deotte",
+        "number": "P073",
+        "personId": "chris-deotte",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Christof Henkel is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-christof-henkel-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:28+00:00",
+        "kind": "person",
+        "name": "Christof Henkel",
+        "number": "P074",
+        "personId": "christof-henkel",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "David Austin is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-david-austin-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:28+00:00",
+        "kind": "person",
+        "name": "David Austin",
+        "number": "P075",
+        "personId": "david-austin",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Dmitry Gordeev is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-dmitry-gordeev-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:29+00:00",
+        "kind": "person",
+        "name": "Dmitry Gordeev",
+        "number": "P076",
+        "personId": "dmitry-gordeev",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Eduardo Rocha de Andrade is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-eduardo-rocha-de-andrade-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:29+00:00",
+        "kind": "person",
+        "name": "Eduardo Rocha de Andrade",
+        "number": "P077",
+        "personId": "eduardo-rocha-de-andrade",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Eugene Khvedchenia is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-eugene-khvedchenia-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:29+00:00",
+        "kind": "person",
+        "name": "Eugene Khvedchenia",
+        "number": "P078",
+        "personId": "eugene-khvedchenia",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Jiwei Liu is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-jiwei-liu-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:30+00:00",
+        "kind": "person",
+        "name": "Jiwei Liu",
+        "number": "P079",
+        "personId": "jiwei-liu",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Kazuki Onodera is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-kazuki-onodera-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:30+00:00",
+        "kind": "person",
+        "name": "Kazuki Onodera",
+        "number": "P080",
+        "personId": "kazuki-onodera",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Raja Biswas is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-raja-biswas-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:30+00:00",
+        "kind": "person",
+        "name": "Raja Biswas",
+        "number": "P081",
+        "personId": "raja-biswas",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Ryan Chesler is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-ryan-chesler-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:31+00:00",
+        "kind": "person",
+        "name": "Ryan Chesler",
+        "number": "P082",
+        "personId": "ryan-chesler",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Simon Jegou is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-simon-jegou-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:31+00:00",
+        "kind": "person",
+        "name": "Simon Jegou",
+        "number": "P083",
+        "personId": "simon-jegou",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Théo Viel is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-theo-viel-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:32+00:00",
+        "kind": "person",
+        "name": "Théo Viel",
+        "number": "P084",
+        "personId": "theo-viel",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Yauhen Babakhin is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-yauhen-babakhin-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:32+00:00",
+        "kind": "person",
+        "name": "Yauhen Babakhin",
+        "number": "P085",
+        "personId": "yauhen-babakhin",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Yiheng Wang is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-yiheng-wang-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:32+00:00",
+        "kind": "person",
+        "name": "Yiheng Wang",
+        "number": "P086",
+        "personId": "yiheng-wang",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Youhan Lee is a Kaggle competitor listed among NVIDIA’s Kaggle Grandmasters.",
+        "entries": [],
+        "id": "person-youhan-lee-kaggleverse-2026",
+        "issuedAt": "2026-11-02T22:11:33+00:00",
+        "kind": "person",
+        "name": "Youhan Lee",
+        "number": "P087",
+        "personId": "youhan-lee",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -15986,7 +16645,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-01T23:06:09.241899+00:00",
+    "updatedAt": "2026-11-02T22:11:33+00:00",
     "version": 1
   },
   "results": [],
@@ -16007,6 +16666,16 @@
         "publisher": "The ARC Daily Digest",
         "season": "2026",
         "setName": "ARC Prize 2026",
+        "timeZone": "America/New_York"
+      },
+      {
+        "competitionIds": [],
+        "id": "kaggleverse-2026",
+        "look": "topps86",
+        "name": "Kaggleverse",
+        "publisher": "The Loose Goose",
+        "season": "2026",
+        "setName": "Kaggleverse 2026",
         "timeZone": "America/New_York"
       }
     ],

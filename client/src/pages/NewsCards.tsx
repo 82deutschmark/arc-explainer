@@ -244,7 +244,7 @@ export function CopyCardLink({ card }: { card: CollectionCard }) {
   </span>;
 }
 
-type ShelfItem = { key: string; kind: 'current' | 'past' | 'team'; label: string; sub: string; src: string; alt: string; href?: string };
+type ShelfItem = { key: string; kind: 'current' | 'past' | 'team' | 'edition'; label: string; sub: string; src: string; alt: string; href?: string };
 
 /**
  * Every card we hold for this subject, laid out like a collection: this season's card, the earlier cards
@@ -254,10 +254,10 @@ function Shelf({ items, stage, setStage }: { items: ShelfItem[]; stage: string; 
   return <section className="cb-shelf" aria-label="All their cards">
     <h2>Their cards <i>{items.length}</i></h2>
     <ul>{items.map(item => <li key={item.key} className={`${item.kind}${stage === item.key ? ' is-staged' : ''}`}>
-      {item.kind === 'team'
+      {item.kind === 'team' || item.kind === 'edition'
         ? <Link href={item.href!}><img src={item.src} alt={item.alt} loading="lazy" /></Link>
         : <button type="button" onClick={() => setStage(item.key)} aria-pressed={stage === item.key} aria-label={`Show the ${item.label} card`}><img src={item.src} alt={item.alt} loading="lazy" /></button>}
-      <span><b>{item.label}</b>{item.sub}{item.kind === 'past' && item.href && <a href={item.href}>In the Hall of Fame ↗</a>}{item.kind === 'team' && <a href={item.href}>Open the team card →</a>}</span>
+      <span><b>{item.label}</b>{item.sub}{item.kind === 'past' && item.href && <a href={item.href}>In the Hall of Fame ↗</a>}{item.kind === 'team' && <a href={item.href}>Open the team card →</a>}{item.kind === 'edition' && <Link href={item.href!}>Open this edition →</Link>}</span>
     </li>)}</ul>
   </section>;
 }
@@ -276,6 +276,8 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
     { key: 'current', kind: 'current', label: `${card.season}`, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'} · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
+    ...all.filter(other => card.kind === 'person' && other.kind === 'person' && other.personId === card.personId && other.id !== card.id)
+      .map(other => ({ key: other.id, kind: 'edition' as const, label: other.season, sub: `Edition · No. ${other.number}`, src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card ${other.number}`, href: other.cardUrl })),
     ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);

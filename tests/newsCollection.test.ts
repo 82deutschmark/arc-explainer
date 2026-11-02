@@ -122,6 +122,14 @@ describe('Card Cabinet identity and statistics', () => {
     expect(collectionCardPath('a card/#')).toBe('/news/cards/a%20card%2F%23');
   });
 
+  it('links a roster to the person edition in the same set', () => {
+    const team = { ...teamCard(), setId: 'arc-three' };
+    const older = { ...personCard('alpha'), id: 'alpha-arc-three', setId: 'arc-three' };
+    const newer = { ...personCard('alpha', 'P002'), id: 'alpha-arc-two', setId: 'arc-two', issuedAt: '2026-10-02T12:00:00Z' };
+    const collection = buildNewsCollection(registry([team, older, newer], [snapshot('arc-3', '100', ['alpha'])]), index([person('alpha')]));
+    expect(collection.cards[0].entries[0].members[0].cardUrl).toBe(collectionCardPath(older.id));
+  });
+
   it('keeps simultaneous contest teams and orders transfers by observed instants, not ledger order', () => {
     const player = person('alpha');
     const membership = (competition: NewsCompetition, teamId: string, observedAt: string): NewsPerson['memberships'][number] => ({
@@ -317,6 +325,7 @@ function importFixture() {
   fs.mkdirSync(news, { recursive: true });
   fs.writeFileSync(path.join(news, 'cards.json'), JSON.stringify(registry()));
   fs.writeFileSync(path.join(news, 'card-results.json'), '[]\n');
+  fs.copyFileSync(path.resolve('content/news/series.json'), path.join(news, 'series.json'));
   return { root, news };
 }
 function runImport(root: string, incoming: FinalCardResult[]) {

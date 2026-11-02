@@ -132,7 +132,11 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
   const articlePeople = new Map(index.articles.map(article => [article.id, new Set(reportedPeople([article], people).map(item => item.id))] as const));
   const byHandle = new Map(people.flatMap(person => person.accounts.filter(account => account.platform === 'kaggle').map(account => [account.handle, person] as const)));
   const teamCards = new Map(registry.cards.filter(card => card.kind === 'team').flatMap(card => card.entries.map(row => [teamKey(row), collectionCardPath(card.id)] as const)));
-  const personCards = new Map(registry.cards.filter(card => card.kind === 'person').map(card => [`${card.season}:${card.personId}`, collectionCardPath(card.id)] as const));
+  const personCard = (season: string, personId: string, setId?: string) => {
+    const matches = registry.cards.filter(card => card.kind === 'person' && card.season === season && card.personId === personId);
+    const selected = matches.find(card => card.setId === setId) ?? matches.sort((a, b) => b.issuedAt.localeCompare(a.issuedAt) || a.id.localeCompare(b.id))[0];
+    return selected ? collectionCardPath(selected.id) : undefined;
+  };
   const notebooks = new Map<string, string>(index.competitors.map(team => [`${KAGGLE_COMPETITIONS[team.competition].slug}:${team.teamId}`, competitorPath(team.id)] as const));
   const cards: CollectionCard[] = registry.cards.map(definition => {
     const person = people.find(item => item.id === definition.personId);
@@ -177,7 +181,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         status: result ? 'final' as const : snapshot ? 'public' as const : 'unavailable' as const,
         members: roster.map(handle => {
           const owner = byHandle.get(handle);
-          const cardUrl = owner && personCards.get(`${definition.season}:${owner.id}`);
+          const cardUrl = owner && personCard(definition.season, owner.id, definition.setId);
           return { handle, name: owner?.name ?? handle, ...(owner ? { personId: owner.id } : {}), ...(cardUrl ? { cardUrl } : {}) };
         }),
       };
@@ -205,7 +209,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
   const archive: CollectionArchive | null = hallOfFame ? {
     series: hallOfFame.series,
     cards: hallOfFame.cards.map(card => ({ ...card, cardUrls: people.filter(person => person.hallOfFame.some(honor => honor.path === card.path))
-      .flatMap(person => personCards.has(`${registry.season}:${person.id}`) ? [{ name: person.name, url: personCards.get(`${registry.season}:${person.id}`)! }] : []) })),
+      .flatMap(person => { const url = personCard(registry.season, person.id); return url ? [{ name: person.name, url }] : []; }) })),
   } : null;
   return { season: registry.season, commissionedBy: registry.commissionedBy, commissionedAt: registry.commissionedAt, updatedAt: registry.updatedAt, cards, archive };
 }
