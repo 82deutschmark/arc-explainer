@@ -1,0 +1,232 @@
+{
+  "baselineAt": "2026-10-31T21:59:10Z",
+  "competition": "arc-3",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-11-01T22:32:06Z",
+  "date": "2026-11-01",
+  "dek": "The leading pair remain separated from the chase as the competition enters its final full night. Fourth and fifth are almost level.",
+  "discord": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
+  "edition": "evening",
+  "frontPageFeatureId": "2026-11-01-nvarc3-passes-turducken",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken",
+  "id": "2026-11-01-evening-arc-3",
+  "image": {
+    "alt": "Illustration for The Night Watch: Chen holds the lead, NVARC3 edges ahead of Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
+    "artworkId": "2026-11-01-evening-arc-3-dfb6afb3d2",
+    "caption": "Score panel: Nov 1, 2026 · 5:32 PM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-evening-arc-3-dfb6afb3d2.webp"
+  },
+  "publishedAt": "2026-11-01T23:09:56Z",
+  "sections": [
+    {
+      "heading": "The leaders hold their ground",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Yi-Chia Chen @ Fields Model leads the ARC-AGI-3 public board on 75.56, with Tufa Labs second on 70.24. The latest observation available for this edition was recorded at 5:32 pm Eastern on Sunday. Chen’s advantage is 5.32 points. Below them, faster machine is all you need holds third on 58.59. These are public standings, not the final private results."
+    },
+    {
+      "heading": "The pass that changed the chase",
+      "sourceIds": [
+        "board",
+        "dispatch-2026-11-01-nvarc3-passes-turducken"
+      ],
+      "text": "NVARC3 finishes this edition’s observation in fourth on 56.15, just 0.13 ahead of Team Turducken on 56.02. This is today’s established overtake, not a new move this evening. The saved history first recorded NVARC3’s advance from eighth to fourth at 4 am Eastern, after a gain of 6.26 points. Turducken’s score stayed the same. The narrow gap leaves fourth place very much in play."
+    },
+    {
+      "heading": "Movement beyond the leading pack",
+      "sourceIds": [
+        "wire-2026-11-01-1104-arc-3-unk-enters-gold",
+        "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
+      ],
+      "text": "The morning wire recorded UNK climbing from 27th to 17th on 41.00, entering the provisional gold places at that observation. By the 5:02 pm wire check, K.nosaka had climbed to 62nd on 35.75, tomo11111 to 76th on 35.12, and Luxshan Thavarasa to 81st on 34.82. Those are dated wire observations; they should not be read as promised finishing positions."
+    },
+    {
+      "heading": "One more night",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The picture at the top is clear enough: Chen leads, Tufa is the nearest challenger, and the contest for fourth is exceptionally close. The public board can still change, and the private evaluation will decide the final result. Tonight’s Night Watch cover keeps the leading pair in view; the accompanying overtake illustration shows the separate fight below them."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-01T23:09:56Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-11-01T23:09:56Z",
+      "id": "wire-2026-11-01-1104-arc-3-unk-enters-gold",
+      "title": "UNK enters ARC-3 gold places",
+      "url": "https://arc.markbarney.net/news/wire#2026-11-01-1104-arc-3-unk-enters-gold"
+    },
+    {
+      "accessedAt": "2026-11-01T23:09:56Z",
+      "id": "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge",
+      "title": "K.nosaka, tomo11111 and Luxshan Thavarasa surge on ARC-3",
+      "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
+    },
+    {
+      "accessedAt": "2026-11-01T23:09:56Z",
+      "id": "dispatch-2026-11-01-nvarc3-passes-turducken",
+      "title": "NVARC3 noses past Turducken as the juggernaut joins the chase",
+      "url": "https://arc.markbarney.net/news#2026-11-01-nvarc3-passes-turducken"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.24,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "faster machine is all you need",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 58.59,
+      "scoreChange": 0.0,
+      "teamId": "15487093"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.15,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 6,
+      "rankChange": -1,
+      "score": 51.51,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    },
+    {
+      "name": "yktori",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 51.04,
+      "scoreChange": 0.0,
+      "teamId": "16760837"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "rank": 8,
+      "rankChange": null,
+      "score": 50.48,
+      "scoreChange": null,
+      "teamId": "16490178"
+    },
+    {
+      "name": "mtg",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 50.37,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 10,
+      "rankChange": 0,
+      "score": 46.82,
+      "scoreChange": 0.0,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 11,
+      "rankChange": 0,
+      "score": 45.41,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 12,
+      "rankChange": 0,
+      "score": 45.03,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "The ARChitects",
+      "rank": 16,
+      "rankChange": 0,
+      "score": 41.03,
+      "scoreChange": 0.0,
+      "teamId": "16032816"
+    },
+    {
+      "name": "Michael Poluektov",
+      "rank": 21,
+      "rankChange": 6,
+      "score": 40.49,
+      "scoreChange": 1.57,
+      "teamId": "15707928"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 22,
+      "rankChange": -2,
+      "score": 39.94,
+      "scoreChange": 0.0,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "rank": 23,
+      "rankChange": -2,
+      "score": 39.69,
+      "scoreChange": 0.0,
+      "teamId": "15488763"
+    },
+    {
+      "name": "Team Alicia",
+      "rank": 40,
+      "rankChange": 4,
+      "score": 36.89,
+      "scoreChange": 0.35,
+      "teamId": "16782490"
+    },
+    {
+      "name": "Giovanny Rodríguez",
+      "rank": 117,
+      "rankChange": 161,
+      "score": 34.06,
+      "scoreChange": 1.52,
+      "teamId": "16459830"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15487093",
+    "15770880",
+    "15605182"
+  ]
+}

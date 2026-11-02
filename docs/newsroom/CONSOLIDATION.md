@@ -27,4 +27,4 @@ The collector's original scripts, Git repository and board history are preserved
 
 ## Release status
 
-The CPMP corrections and tonight's edition are held locally for review. Nothing from this handover has been pushed or sent. The proposed CPMP reply must not be sent until the corrected pages have been approved and pushed.
+Mark subsequently authorized “A CIRCUS” unchanged as the evening post; it was sent November 1 at 7:02 pm Eastern (https://x.com/82deutschmark/status/2117044685231260003). He authorized the prepared Night Watch edition for a single release at 11 pm Eastern November 1. The local release package is `.newsroom-local/review/2026-11-01/`; publish its two prepared articles and send its one approved image announcement once. No recurring desk is reinstated. The CPMP reply remains unsent and requires its own approval. The previously requested page corrections are included in the local handover commit.
