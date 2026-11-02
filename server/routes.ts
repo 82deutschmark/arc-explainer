@@ -54,7 +54,6 @@ import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 import kaggleRouter from "./routes/kaggle";
 import teamRunsRouter from "./routes/teamRuns";
 import teamEvalsRouter from "./routes/teamEvals";
-import teamGuideRouter from "./routes/teamGuide";
 import teamAuthRouter from "./routes/teamAuth";
 
 // Import middleware
@@ -139,7 +138,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Team-only ARC-AGI-2 eval runs and their reasoning traces (2026-10-21).
   app.use("/api/team", teamEvalsRouter);
   // Private reference content is stored in the database, never public assets.
-  app.use("/api/team", teamGuideRouter);
   // Google sign-in for the team pages, as on the AutoResearchArena (2026-10-19).
   app.use("/api/auth", teamAuthRouter);
 

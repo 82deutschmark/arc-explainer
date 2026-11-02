@@ -105,7 +105,6 @@ export async function metaTagInjector(req: Request, res: Response, next: NextFun
     if ((req.get('host') || '').split(':')[0] === 'arc-explainer-staging.up.railway.app') tags.noindex = true;
     const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
-    if (req.path === '/notes1023' || /^\/summit\//.test(req.path)) res.set({ 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'private, no-store' });
     if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');
     res.type('html').send(injectPageHtml(html, tags));
   } catch (error) {

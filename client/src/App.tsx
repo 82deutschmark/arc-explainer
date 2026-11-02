@@ -24,6 +24,7 @@ PURPOSE: Registers the focused /arc2/capped cohort gallery. Client-side router f
          2026-10-21 (Claude Opus 5.5): /team/arc2-evals and /team/arc2-evals/:key, the team-only
          eval runs and their reasoning traces.
          2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
+         2026-11-01 (Claude Opus 5.5): removed the Boston summit notebook routes; it was never meant to be hosted.
          2026-10-16 (Claude Opus 5.5 Medium): "/" is the final-stretch front page (countdown, medal
          race, wire, our placing); the earlier landing stays at /synthetic.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
@@ -56,7 +57,6 @@ const TeamLogin = lazy(() => import("@/pages/team/TeamLogin"));
 const Arc2Runs = lazy(() => import("@/pages/team/Arc2Runs"));
 const Arc2Run = lazy(() => import("@/pages/team/Arc2Run"));
 // Unlisted reference notebook; its content is fetched only after team sign-in.
-const SummitGuide = lazy(() => import("@/pages/team/SummitGuide"));
 const Arc2Evals = lazy(() => import("@/pages/team/Arc2Evals"));
 const Arc2Eval = lazy(() => import("@/pages/team/Arc2Eval"));
 const ArcLeaderboards = lazy(() => import("@/pages/ArcLeaderboards"));
@@ -198,9 +198,6 @@ function Router() {
         <Route path="/team/login" component={TeamLogin} />
         <Route path="/team/arc2-runs" component={Arc2Runs} />
         <Route path="/team/arc2-runs/:key" component={Arc2Run} />
-        <Route path="/team/summit-2026" component={SummitGuide} />
-        <Route path="/summit/:shareKey" component={SummitGuide} />
-        <Route path="/notes1023" component={SummitGuide} />
         <Route path="/team/arc2-evals" component={Arc2Evals} />
         <Route path="/team/arc2-evals/:key" component={Arc2Eval} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>

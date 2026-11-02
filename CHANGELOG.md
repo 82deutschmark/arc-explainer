@@ -1,3 +1,7 @@
+### Version 9.161.7 · November 1, 2026
+
+- Remove the Boston summit notebook, which was never meant to be hosted (Author: Claude Opus 5.5, at the editor's request). Its team page, its two sign-in-free addresses, its share links, its reading and publishing endpoints, its data reader, its test and its plan documents are gone. Git history is left as it was. The stored document stays in the private database with no route reading it.
+
 ### Version 9.161.6 · November 1, 2026
 
 - Repair already-shared special-report URLs: resolve dispatches in both the reader page and server metadata, preserving full copy, citations and illustrations. Include permanent report URLs in the sitemap and headline links. Author: GPT-6 / Codex.

@@ -432,8 +432,6 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/arc2/hard-set', 'ARC-2 hard set research', 'Team research on ARC-2 hard-set puzzles.', true],
   ['/arc2/hard-set/findings', 'ARC-2 hard set findings', 'Team findings from ARC-2 hard-set research.', true],
   ['/arc2/capped', 'ARC-2: the always-capped test outputs', 'Inspect Lattice’s reported 22 always-capped test outputs across 20 ARC-2 tasks, with inputs, known solutions and task links.', true],
-  ['/notes1023', 'Boston field notes', 'Summit conversation notes.', true],
-  ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],
   ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],
   ['/team/arc2-runs', 'ARC-AGI-2 runs (team)', 'Team-only record of ARC Mutants submissions.', true],
   ['/team/arc2-evals', 'ARC-AGI-2 eval runs (team)', 'Team-only record of ARC Mutants model evaluation runs.', true],
