@@ -1,3 +1,8 @@
+### Version 9.161.8 · November 2, 2026
+
+- Add the public run record at /specials/run-record.html (Author: Claude Opus 5.5, at the editor's request): every scored Team Turducken ARC-3 run and ARC Mutants ARC-2 run on a real calendar, with the team-best staircase, gold-medal line and dated public milestones. scripts/build_public_run_record.py passes on only times and public scores, so private notes cannot reach it; the sign-in runs page is unchanged.
+- Validation: tests/test_public_run_record.py passes, including a planted private note that must not reach the output. Desktop, phone and log views visually checked.
+
 ### Version 9.161.7 · November 1, 2026
 
 - Remove the Boston summit notebook, which was never meant to be hosted (Author: Claude Opus 5.5, at the editor's request). Its team page, its two sign-in-free addresses, its share links, its reading and publishing endpoints, its data reader, its test and its plan documents are gone. Git history is left as it was. The stored document stays in the private database with no route reading it.
