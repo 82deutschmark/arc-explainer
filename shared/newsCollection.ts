@@ -175,6 +175,8 @@ export type CollectionArchiveCard = HallOfFameFile['cards'][number] & {
 export interface CollectionArchive { series: HallOfFameFile['series']; cards: CollectionArchiveCard[] }
 export interface NewsCollection {
   season: string; commissionedBy: string; commissionedAt: string; updatedAt: string; cards: CollectionCard[];
+  /** Competition editions share a continuing person identity; old issued cards stay addressable. */
+  sets?: { id: string; name: string; season: string; competitionIds: string[] }[];
   /** Earlier sets we keep and show (the 2025 Hall of Fame), or null when none is on file. */
   archive: CollectionArchive | null;
 }
@@ -200,10 +202,10 @@ export function collectionLeadEntry(card: Pick<CollectionCard, 'entries'>): Coll
   const ranked = card.entries.filter(entry => entry.status !== 'unavailable' && entry.rank != null);
   return ranked.find(entry => entry.status === 'final') ?? [...ranked].sort((a, b) => a.rank! - b.rank!)[0] ?? card.entries[0];
 }
-/** The one date a card's standings carry: the newest observation, as a short Eastern day ("Oct 29"). */
+/** The one date a card's standings carry: the newest observation, as a short UTC day ("Oct 29"). */
 export function collectionAsOfLabel(card: Pick<CollectionCard, 'entries'>): string | null {
   const stamps = card.entries.filter(entry => entry.status !== 'unavailable' && entry.observedAt).map(entry => Date.parse(entry.observedAt!)).filter(Number.isFinite);
-  return stamps.length ? new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' }).format(new Date(Math.max(...stamps))) : null;
+  return stamps.length ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'short', day: 'numeric' }).format(new Date(Math.max(...stamps))) : null;
 }
 /** LIVE while any contest on the card is still being decided, FINAL once all are official results. */
 export const collectionStatus = (card: Pick<CollectionCard, 'entries'>): 'live' | 'final' | null => {

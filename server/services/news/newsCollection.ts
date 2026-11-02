@@ -19,6 +19,7 @@ import { boardHistorySchema, cardRegistrySchema, careersFileSchema, hallOfFameSc
 import { competitionName, personPath, competitorPath, newsArticlePath, wirePath, reportedPeople, type NewsIndex, type NewsPerson } from '../../../shared/news';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
 import { getNewsIndex, NEWS_DIRECTORY } from './newsStore';
+import { loadSeriesFile } from './cardFace/sets';
 import { loadWikiInputs } from './wikiInputs';
 import { cardBoardCache, freshCardRows } from './cardBoards';
 
@@ -256,6 +257,7 @@ function buildCollectionFromFiles(directory: string): NewsCollection {
   const hofFile = path.join(directory, 'hall-of-fame.json');
   const hallOfFame = fs.existsSync(hofFile) ? hallOfFameSchema.parse(JSON.parse(fs.readFileSync(hofFile, 'utf8'))) : null;
   const collection = buildNewsCollection(registry, index, results, careers, board, hallOfFame);
+  collection.sets = loadSeriesFile(directory).sets.map(set => ({ id: set.id, name: set.setName, season: set.season, competitionIds: set.competitionIds ?? [] }));
   for (const card of collection.cards) if (card.art) {
     const image = path.join(process.cwd(), 'client/public', card.art.src);
     if (!fs.existsSync(image)) throw Error('Missing collectible artwork: ' + card.art.src);

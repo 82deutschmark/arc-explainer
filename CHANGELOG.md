@@ -1,3 +1,8 @@
+### Version 9.161.28 · November 2, 2026
+
+- Make the catalog independent of ARC and a fixed year, expose competition card sets and seasons, and label individual, team and sponsor cards explicitly. Preserve continuing identities across set editions, existing card frames and Kaggle medals.
+- Keep competition filters useful without live standings, compare places within the selected contest, make card pictures open their permanent pages, and render only 24 cards per page. Validation: 12 focused tests, scoped type checking, production frontend build and local pagination/team/phone checks. Author: GPT-6 / Codex (reasoning effort not exposed). The set-issuance and identity audit remains active; see docs/02-Nov-2026-card-catalog-plan.md.
+
 ### Version 9.161.27 · November 2, 2026
 
 - Keep Daniel Franzen’s original trading-card frame and approved front illustration. Correct its full-card framing, use the earlier close-up duck illustration on the reverse without cutting it off, and show both separate faces together at the existing shareable card address. Keep the dense career table and earlier-card links. Other competitors retain their existing cards.

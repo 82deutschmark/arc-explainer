@@ -29,6 +29,8 @@ import { NewsStatus, newsDate, useNewsCardImage } from '@/components/news/NewsDe
 import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair } from '@/components/news/CardPair';
 import { cardFrameRepair } from '@shared/cardFrameRepair';
+import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '@shared/cardCatalog';
+import '@/components/news/cardCatalog.css';
 
 type RoleFilter = 'all' | CollectionCard['role'];
 type TierFilter = 'all' | KaggleTier;
@@ -37,7 +39,6 @@ type View = 'binder' | 'sheet';
 
 const tierRank = (card: CollectionCard) => card.career?.tier ? KAGGLE_TIERS.indexOf(card.career.tier) : -1;
 const medalScore = (card: CollectionCard) => { const m = card.career?.medals; return m ? m.gold * 1000 + m.silver * 30 + m.bronze : -1; };
-const bestRank = (card: CollectionCard) => { const e = collectionLeadEntry(card); return e?.status !== 'unavailable' && e?.rank != null ? e.rank : Infinity; };
 /** One class per rung of the ladder (plus sponsor and team) so a border, a badge and a chip always agree. */
 const toneOf = (card: CollectionCard) => card.role === 'sponsor' ? 'sponsor' : card.role === 'team' ? 'team' : card.career?.tier?.toLowerCase() ?? 'none';
 const ordinal = (n: number) => {
@@ -63,7 +64,7 @@ function TierBadge({ card, full = false }: { card: CollectionCard; full?: boolea
 }
 
 /** The real card, front and back, with a flip. The back image loads only when it is asked for. */
-function FlipFace({ card, width, priority = false }: { card: CollectionCard; width: number; priority?: boolean }) {
+function FlipFace({ card, width, priority = false, openHref }: { card: CollectionCard; width: number; priority?: boolean; openHref?: string }) {
   const [side, setSide] = useState<'front' | 'back'>('front');
   const [seenBack, setSeenBack] = useState(false);
   const version = useMemo(() => collectionShareVersion(card), [card]);
@@ -73,16 +74,17 @@ function FlipFace({ card, width, priority = false }: { card: CollectionCard; wid
       <img className="cb-front" src={faceSrc(card, 'front', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, front`} loading={priority ? 'eager' : 'lazy'} decoding="async" />
       {seenBack && <img className="cb-reverse" src={faceSrc(card, 'back', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, card ${card.number}, back: the career record`} decoding="async" />}
     </div>
+    {openHref && <Link href={openHref} className="cb-open-card" aria-label={`Open ${card.name} ${catalogSubjectLabel(card).toLowerCase()}`} />}
     <button type="button" className="cb-flip" onClick={flip} aria-pressed={side === 'back'} aria-label={`Turn the ${card.name} card over to see the ${side === 'front' ? 'back' : 'front'}`}>{side === 'front' ? 'Back ↻' : 'Front ↻'}</button>
   </div>;
 }
 
-export function Tile({ card, index }: { card: CollectionCard; index: number }) {
-  const lead = collectionLeadEntry(card);
+export function Tile({ card, index, contest = 'all' }: { card: CollectionCard; index: number; contest?: string }) {
+  const lead = catalogEntry(card, contest);
   return <article className={`cb-tile tone-${toneOf(card)}`} id={`card-${card.id}`}>
-    <FlipFace card={card} width={300} priority={index < 6} />
+    <FlipFace card={card} width={300} priority={index < 6} openHref={card.cardUrl} />
     <div className="cb-caption">
-      <div className="cb-caption-top"><span className="cb-no">{card.number}</span><TierBadge card={card} /></div>
+      <div className="cb-caption-top"><span className="cb-no">{card.number} · {catalogSubjectLabel(card)}</span><TierBadge card={card} /></div>
       <h2><Link href={card.cardUrl}>{card.name}</Link></h2>
       {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionEarnedLine(card) ?? ''}</p>}
     </div>
@@ -96,14 +98,14 @@ function MedalRow({ card }: { card: CollectionCard }) {
 }
 
 /** The price-guide view: every card on one dense line, sortable. */
-function Sheet({ cards, sort, setSort }: { cards: CollectionCard[]; sort: SortKey; setSort: (key: SortKey) => void }) {
-  const head = (key: SortKey, label: string) => <th scope="col"><button type="button" onClick={() => setSort(key)} aria-pressed={sort === key}>{label}{sort === key ? ' ▾' : ''}</button></th>;
+function Sheet({ cards, sort, setSort, contest }: { cards: CollectionCard[]; sort: SortKey; setSort: (key: SortKey) => void; contest: string }) {
+  const head = (key: SortKey, label: string) => <th scope="col"><button type="button" onClick={() => setSort(key)} disabled={key === 'rank' && contest === 'all'} aria-pressed={sort === key}>{label}{sort === key ? ' ▾' : ''}</button></th>;
   return <div className="cb-sheet-wrap"><table className="cb-sheet">
     <caption className="sr-only">Every card in the Cabinet, with role, tier, standing and medals</caption>
     <thead><tr>{head('number', 'No.')}<th scope="col">Card</th>{head('tier', 'Tier')}<th scope="col">Contest</th><th scope="col">Team</th>{head('rank', 'Rank')}<th scope="col">Score</th>{head('medals', 'G · S · B')}</tr></thead>
     <tbody>{cards.map(card => {
-      const lead = collectionLeadEntry(card);
-      const more = card.entries.filter(entry => entry !== lead && entry.status !== 'unavailable');
+      const lead = catalogEntry(card, contest);
+      const more = card.entries.filter(entry => contest === 'all' && entry !== lead && entry.status !== 'unavailable');
       return <tr key={card.id} className={`tone-${toneOf(card)}`}>
         <td className="cb-no">{card.number}</td>
         <th scope="row"><Link href={card.cardUrl}>{card.name}</Link></th>
@@ -132,19 +134,19 @@ function ArchiveTile({ card }: { card: CollectionArchiveCard }) {
       <div className="cb-caption-top"><span className="cb-no">{card.year ?? ''}</span><span className="cb-badge tone-none">{CATEGORY_LABEL[card.category] ?? card.category}</span></div>
       <h2><a href={card.path}>{card.name}</a></h2>
       {card.achievement && <p className="cb-line cb-dim"><span>{card.achievement}</span></p>}
-      <p className="cb-links"><a href={card.path}>In the Hall of Fame ↗</a>{card.cardUrls.map(link => <Link key={link.url} href={link.url}>{link.name}’s 2026 card →</Link>)}</p>
+      <p className="cb-links"><a href={card.path}>In the Hall of Fame ↗</a>{card.cardUrls.map(link => <Link key={link.url} href={link.url}>{link.name}’s card →</Link>)}</p>
     </div>
   </article>;
 }
 
 function Archive({ archive }: { archive: NonNullable<NewsCollection['archive']> }) {
   return <>
-    <p className="cb-sub cb-archive-note">{archive.series.title}, {archive.series.season}: the {archive.series.name} cards, kept exactly as they were issued. {archive.cards.length} cards, from the 2020 winner to the 2025 champions.</p>
+    <p className="cb-sub cb-archive-note">{archive.series.title}, {archive.series.season}: the {archive.series.name} cards, kept exactly as they were issued. {archive.cards.length} preserved cards.</p>
     <div className="cb-grid cb-grid-old">{archive.cards.map(card => <ArchiveTile key={card.id} card={card} />)}</div>
   </>;
 }
 
-function Cabinet({ collection }: { collection: NewsCollection }) {
+export function Cabinet({ collection }: { collection: NewsCollection }) {
   const [role, setRole] = useState<RoleFilter>('all');
   const [tier, setTier] = useState<TierFilter>('all');
   const [contest, setContest] = useState('all');
@@ -152,35 +154,49 @@ function Cabinet({ collection }: { collection: NewsCollection }) {
   const [sort, setSort] = useState<SortKey>('number');
   const [view, setView] = useState<View>('binder');
   const [set, setSet] = useState<'current' | 'archive'>('current');
+  const [season, setSeason] = useState('all');
+  const [edition, setEdition] = useState('all');
+  const [pageChoice, setPageChoice] = useState({ key: '', page: 0 });
   const cards = collection.cards;
-  const contests = useMemo(() => [...new Map(cards.flatMap(card => card.entries).map(entry => [entry.competitionId, entry.competition] as const)).entries()]
-    .map(([id, key]) => ({ id, label: competitionName(key) })), [cards]);
+  const seasons = [...new Set(cards.map(card => card.season))].sort().reverse();
+  const contests = useMemo(() => [...new Map(cards.flatMap(card => catalogCompetitions(card, collection.sets)).map(entry => [entry.id, entry.key] as const)).entries()]
+    .map(([id, key]) => ({ id, label: competitionName(key) })), [cards, collection.sets]);
   const counts = useMemo(() => ({
     competitors: cards.filter(card => card.role === 'competitor').length, sponsors: cards.filter(card => card.role === 'sponsor').length, teams: cards.filter(card => card.role === 'team').length,
     tiers: [...KAGGLE_TIERS].reverse().map(name => ({ name, count: cards.filter(card => card.career?.tier === name).length })).filter(row => row.count),
   }), [cards]);
   const needle = search.trim().toLocaleLowerCase();
   const shown = useMemo(() => cards.filter(card => {
+    if (edition !== 'all' && catalogSet(card, collection.sets)?.id !== edition) return false;
+    if (season !== 'all' && card.season !== season) return false;
     if (role !== 'all' && card.role !== role) return false;
     if (tier !== 'all' && card.career?.tier !== tier) return false;
-    if (contest !== 'all' && !card.entries.some(entry => entry.competitionId === contest)) return false;
+    if (contest !== 'all' && !catalogCompetitions(card, collection.sets).some(entry => entry.id === contest)) return false;
     if (!needle) return true;
     const words = [card.name, card.number, collectionRoleLabel(card), ...card.accounts.map(account => account.label),
       ...card.entries.flatMap(entry => [entry.teamName, ...entry.members.flatMap(member => [member.name, member.handle])]), ...card.teamHistory.map(team => team.teamName)];
     return words.join(' ').toLocaleLowerCase().includes(needle);
   }).sort((a, b) => {
     const byNumber = a.number.localeCompare(b.number, 'en', { numeric: true });
-    if (sort === 'rank') return bestRank(a) - bestRank(b) || byNumber;
+    if (sort === 'rank' && contest !== 'all') {
+      const rank = (card: CollectionCard) => catalogEntry(card, contest)?.rank ?? Infinity;
+      return rank(a) - rank(b) || byNumber;
+    }
     if (sort === 'tier') return tierRank(b) - tierRank(a) || medalScore(b) - medalScore(a) || byNumber;
     if (sort === 'medals') return medalScore(b) - medalScore(a) || byNumber;
     return byNumber;
-  }), [cards, role, tier, contest, needle, sort]);
+  }), [cards, role, tier, contest, needle, sort, season, edition, collection.sets]);
+  const filterKey = JSON.stringify([role, tier, contest, needle, sort, season, edition, view]);
+  const pages = Math.max(1, Math.ceil(shown.length / CATALOG_PAGE_SIZE));
+  const page = pageChoice.key === filterKey ? Math.min(pageChoice.page, pages - 1) : 0;
+  const visible = shown.slice(page * CATALOG_PAGE_SIZE, (page + 1) * CATALOG_PAGE_SIZE);
+  const pagination = pages > 1 && <nav className="cb-pagination" aria-label="Card pages"><button type="button" disabled={page === 0} onClick={() => setPageChoice({key: filterKey, page: page - 1})}>← Previous</button><span>Page {page + 1} of {pages}</span><button type="button" disabled={page + 1 === pages} onClick={() => setPageChoice({key: filterKey, page: page + 1})}>Next →</button></nav>;
   const chip = <T extends string>(current: T, set: (value: T) => void, value: T, label: string, count?: number) =>
     <button key={value} type="button" aria-pressed={current === value} onClick={() => set(value)}>{label}{count != null ? <i>{count}</i> : null}</button>;
   return <main className="cb">
     <header className="cb-head">
-      <h1>ARC Prize 2026 Cards</h1>
-      <p className="cb-sub">Every Kaggle competitor, sponsor and team in the ARC Prize {collection.season} competitions, one card each. Open a card for its full record.</p>
+      <h1>Kaggle card catalog</h1>
+      <p className="cb-sub">Individual competitors, teams and sponsors across Kaggle competitions. Each card keeps its own permanent link and season; open it for the full record.</p>
       <ul className="cb-ticker" aria-label="The set">
         <li><b>{cards.length}</b> cards</li><li><b>{counts.competitors}</b> competitors</li><li><b>{counts.sponsors}</b> sponsors</li><li><b>{counts.teams}</b> teams</li>
         {counts.tiers.map(row => <li key={row.name} className={`tone-${row.name.toLowerCase()}`}><b>{row.count}</b> {row.name}{row.count === 1 ? '' : 's'}</li>)}
@@ -192,17 +208,21 @@ function Cabinet({ collection }: { collection: NewsCollection }) {
     {set === 'archive' && collection.archive ? <Archive archive={collection.archive} /> : <>
     <form className="cb-controls" onSubmit={event => event.preventDefault()} aria-label="Find cards">
       <label className="cb-search"><span className="sr-only">Find a card</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a name, team or Kaggle handle" /></label>
-      <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{chip(role, setRole, 'competitor', 'Competitors', counts.competitors)}{chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
-      <div className="cb-chips" role="group" aria-label="Kaggle tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
-      {contests.length > 1 && <div className="cb-chips" role="group" aria-label="Competition">{chip(contest, setContest, 'all', 'Any contest')}{contests.map(row => chip(contest, setContest, row.id, row.label))}</div>}
-      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="number">Card number</option><option value="rank">Best rank</option><option value="tier">Kaggle tier</option><option value="medals">Medals</option></select></label>
+      <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{chip(role, setRole, 'competitor', 'Individuals', counts.competitors)}{chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
+      <div className="cb-chips" role="group" aria-label="Individual Kaggle tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
+      {contests.length > 1 && <div className="cb-chips" role="group" aria-label="Competition">{chip(contest, (value: string) => { setContest(value); if (sort === 'rank') setSort('number'); }, 'all', 'Any contest')}{contests.map(row => chip(contest, setContest, row.id, row.label))}</div>}
+      <label className="cb-sort"><span>Card set</span><select value={edition} onChange={event => setEdition(event.target.value)}><option value="all">All sets</option>{collection.sets?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+      <label className="cb-sort"><span>Season</span><select value={season} onChange={event => setSeason(event.target.value)}><option value="all">All seasons</option>{seasons.map(year => <option key={year} value={year}>{year}</option>)}</select></label>
+      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="number">Card number</option><option value="rank" disabled={contest === 'all'}>Place in selected contest</option><option value="tier">Kaggle tier</option><option value="medals">Medals</option></select></label>
       <div className="cb-chips cb-view" role="group" aria-label="View">{chip(view, setView, 'binder', 'Binder')}{chip(view, setView, 'sheet', 'Checklist')}</div>
-      <p className="cb-shown" role="status" aria-live="polite">{shown.length} of {cards.length}</p>
+      <p className="cb-shown" role="status" aria-live="polite">{shown.length} matches · {shown.length ? page * CATALOG_PAGE_SIZE + 1 : 0}–{Math.min((page + 1) * CATALOG_PAGE_SIZE, shown.length)} shown</p>
     </form>
-    {view === 'binder' ? <div className="cb-grid">{shown.map((card, index) => <Tile key={card.id} card={card} index={index} />)}</div> : <Sheet cards={shown} sort={sort} setSort={setSort} />}
-    {!shown.length && <div className="cb-empty"><h2>No cards match.</h2><button type="button" onClick={() => { setSearch(''); setRole('all'); setTier('all'); setContest('all'); }}>Show every card →</button></div>}
+    {pagination}
+    {view === 'binder' ? <div className="cb-grid">{visible.map((card, index) => <Tile key={card.id} card={card} index={index} contest={contest} />)}</div> : <Sheet cards={visible} sort={sort} setSort={setSort} contest={contest} />}
+    {pagination}
+    {!shown.length && <div className="cb-empty"><h2>No cards match.</h2><button type="button" onClick={() => { setSearch(''); setRole('all'); setTier('all'); setContest('all'); setSeason('all'); setEdition('all'); }}>Show every card →</button></div>}
     </>}
-    <footer className="cb-colophon"><p>The {collection.season} set, commissioned by {collection.commissionedBy} and updated {newsDate(collection.updatedAt)}. Every card has its own link and share image. Illustrations are ARC Hall of Fame renderings of the real competitors; the tier, standings and medals are drawn from Kaggle.</p></footer>
+    <footer className="cb-colophon"><p>Collection commissioned by {collection.commissionedBy} and updated {newsDate(collection.updatedAt)}. Every card has its own link and share image. Individual cards follow competitors across contests; team cards represent a specific competition entry. Current standings come from dated Kaggle readings when available.</p></footer>
   </main>;
 }
 
@@ -334,7 +354,7 @@ export default function NewsCards() {
   const selected = query.data?.cards.find(card => card.id === cardId);
   const sectionImage = useNewsCardImage();
   usePageMeta({
-    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `ARC Prize Cards | ${NEWS_NAME}`,
+    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Kaggle card catalog | ${NEWS_NAME}`,
     description: selected ? collectionCardDescription(selected) : `${NEWS_NAME} cards: illustrated competitors and teams, linked history and original Kaggle sources for current standings.`,
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
     noindex: !!cardId && !!query.data && !selected,
@@ -343,7 +363,7 @@ export default function NewsCards() {
   return <CabinetShell cardProof={!!selected && !!cardFrameRepair(selected)}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
-      ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the ARC Prize cards →</Link></div></main>
+      ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the card catalog →</Link></div></main>
       : <Cabinet collection={query.data} />)}
   </CabinetShell>;
 }

@@ -1,0 +1,14 @@
+/*
+Author: GPT-6 / Codex (reasoning effort not exposed)
+Date: 02-November-2026
+PURPOSE: Keep catalog navigation and subject labels readable without changing collectible artwork.
+SRP/DRY check: Pass — extend the existing binder styles with bounded page navigation.
+*/
+.cb-pagination { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 14px 0; font: 12px/1.5 var(--sans); }
+.cb-pagination button { padding: 7px 12px; border: 1px solid var(--cb-line2); background: var(--cb-panel); color: var(--cb-ink); cursor: pointer; }
+.cb-pagination button:disabled { opacity: .4; cursor: default; }
+.cb-pagination button:focus-visible { outline: 2px solid #2453a6; outline-offset: 3px; }
+.cb-caption-top { flex-wrap: wrap; }
+.cb-caption-top .cb-no { text-transform: none; }
+.cb-open-card { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.cb-open-card:focus-visible { outline: 3px solid #2453a6; outline-offset: -4px; }

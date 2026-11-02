@@ -101,7 +101,10 @@ it('the Cabinet page is a binder and a checklist with every tier named, starting
   // does, under "Everything else"). The link is checked on a card page; whether the list should link it too is for the page's owner.
   expect(renderPage('/news/cards/person-jean-francois-puget-2026', '/news/cards/:cardId')).toContain('href="/hall-of-fame"');
   expect(html).not.toMatch(/\bplayers?\b/i);
-  expect(html).toMatch(/<h1>ARC Prize 2026 Cards<\/h1>/);
+  expect(html).toContain('<h1>Kaggle card catalog</h1>');
+  expect((html.match(/class="cb-tile /g) ?? []).length).toBe(24);
+  expect(html).toContain('Individual card');
+  expect(html).toContain('Card pages');
 });
 
 it('a shared card address opens that card with its record', () => {
@@ -114,5 +117,5 @@ it('a shared card address opens that card with its record', () => {
 it('a missing shared card shows a return to the collection', () => {
   const html = renderPage('/news/cards/missing-card', '/news/cards/:cardId');
   expect(html).toContain('Card not found');
-  expect(html).toContain('Browse the ARC Prize cards');
+  expect(html).toContain('Browse the card catalog');
 });

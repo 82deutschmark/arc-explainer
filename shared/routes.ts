@@ -104,7 +104,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/wire': { title: 'The wire | The ARC Daily Digest', description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', url: `${SITE}/news/wire`, ...NEWS_CARD },
   '/news/competitors': { title: 'Competitor profiles | The ARC Daily Digest', description: 'Meet the ARC-AGI competitors: team backgrounds, members and coverage from The ARC Daily Digest.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
-  '/news/cards': { title: 'ARC Prize Cards | The ARC Daily Digest', description: 'The ARC Daily Digest’s ARC Prize cards: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with illustrations, Kaggle tiers, standings and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
+  '/news/cards': { title: 'Kaggle card catalog | The ARC Daily Digest', description: 'Competition card sets for individual Kaggle competitors, teams and sponsors, with permanent editions, Kaggle medals, tiers and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
@@ -369,7 +369,7 @@ if (NEWS_BRAND.goose) {
     '/news/wire': ['The wire', 'Source-linked competition developments, with each story’s date and writer.'],
     '/news/competitors': ['Competitor profiles', 'Competition-specific teams, dated identity context and original Kaggle links.'],
     '/news/people': ['People behind the teams', 'The recurring cast across Kaggle competitions, with verified public profiles and linked history.'],
-    '/news/cards': ['Kaggleverse cards', 'Illustrated competitors and teams, approved art, linked career history and current Kaggle sources.'],
+    '/news/cards': ['Kaggle card catalog', 'Competition card sets for individual competitors, teams and sponsors, with approved art, Kaggle medals and linked career history.'],
     '/news/community': ['Around the contests', 'Public methods, discussions and reactions with original source links.'],
   };
   for (const [route, [title, description]] of Object.entries(sections)) {
