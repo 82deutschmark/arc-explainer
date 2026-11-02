@@ -29,11 +29,10 @@
       "heading": "The road from eighth to fourth",
       "sourceIds": [
         "board",
-        "fact-15770880-0",
-        "person-jean-francois-puget-identity-0",
-        "person-ivan-sorokin-identity-0"
+        "huikang-history",
+        "nvidia-seven"
       ],
-      "text": "Saturday’s NVIDIA seven were eighth on 49.89. Sunday brought the big advance: 56.15, four places gained, and the pass on Turducken. Monday’s extra 0.11 takes NVARC3 to 56.26 and stretches that narrow advantage to 0.24. The juggernaut has been climbing all weekend.\n\nPuget and Ivan Sorokin won the 2025 ARC Prize together as NVARC. Now they are part of a seven-account NVARC3 crew. The next place up the mountain belongs to xz, third on 58.59: a further 2.33 points away."
+      "text": "The juggernaut advances in bursts. Tong Hui Kang’s leaderboard history shows NVARC3 going from 16.07 to 21.79 and then 37.51 in early October—the second step alone worth 15.72 points. This morning the board lists 80 submissions for NVARC3, against Turducken’s 217 and Tufa’s 179. That history records changes in the public best, not the result of every submission.\n\nSaturday’s NVIDIA seven were eighth on 49.89. Sunday brought another big advance: 56.15, a gain of 6.26 points, four places, and the pass on Turducken. Monday’s extra 0.11 takes NVARC3 to 56.26 and stretches its advantage to 0.24. Next up is xz, third on 58.59, another 2.33 points away.\n\nWe met the seven-person crew in Saturday’s NVIDIA profile: Puget, Ivan Sorokin and a formidable gathering of Kaggle talent. Today the numbers tell the story."
     },
     {
       "heading": "The strongholds hold—for now",
@@ -70,22 +69,22 @@
       "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     },
     {
-      "accessedAt": "2026-10-08T03:38:00Z",
-      "id": "fact-15770880-0",
-      "title": "NVIDIA — 2025 NVARC competition report",
-      "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
-    },
-    {
       "accessedAt": "2026-10-09T03:23:31Z",
       "id": "person-jean-francois-puget-identity-0",
       "title": "Jean-François Puget — GitHub profile linked Kaggle account",
       "url": "https://github.com/jfpuget"
     },
     {
-      "accessedAt": "2026-10-08T03:38:00Z",
-      "id": "person-ivan-sorokin-identity-0",
-      "title": "NVARC — 2025 team write-up crediting sorokin and cpmpml",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc"
+      "id": "huikang-history",
+      "title": "Tong Hui Kang’s ARC-3 leaderboard history",
+      "url": "https://arc3.huikang.dev/leaderboard/",
+      "accessedAt": "2026-11-02T15:56:31.454348+00:00"
+    },
+    {
+      "id": "nvidia-seven",
+      "title": "Saturday: meet the NVIDIA seven",
+      "url": "https://arc.markbarney.net/news/2026-10-31-saturday-nvarc3-juggernaut",
+      "accessedAt": "2026-11-02T16:07:14.582474+00:00"
     }
   ],
   "stats": [
