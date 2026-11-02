@@ -20,3 +20,5 @@ The editor has explicitly approved ARC2 and ordered publication and X distributi
 The direct-story route checks, reader loading/retry checks and production build passed. The broader integration suite passed all 24 archive, initial HTML, image, feed, sitemap and identity checks. The front-page regression assumed ARC3 would always be the newest lead; it now selects the actual newest published story across competitions. The new ARC2 edition correctly leads by publication time. Test dependencies missing from the local checkout were installed on T4 and linked locally; dependency manifests were preserved.
 
 ARC3’s single full-article visual proof was delivered to private Discord at message 1566956173712691360. It remains a review draft. The rebrand gate remains unchanged.
+
+The editor subsequently required a live working ARC3 URL before Discord delivery. Publish the already filed ARC3 story at its permanent address under that instruction; preserve its dated observations and the separate rebrand gate. A draft image delivery is no substitute for that live URL.

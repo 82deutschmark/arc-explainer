@@ -1,3 +1,7 @@
+### Version 9.161.32 · November 2, 2026
+
+- Publish the filed ARC3 infinity article at its permanent address, following the editor’s requirement for a working live story before Discord delivery. Keep its original dated evidence and illustration, and preserve the separate identity-reveal gate. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.161.31 · November 2, 2026
 
 - Publish the editor-approved ARC2 story at its promised permanent address with its original dated observations and illustration. The earlier 404 was caused by leaving the story in the filing folder.

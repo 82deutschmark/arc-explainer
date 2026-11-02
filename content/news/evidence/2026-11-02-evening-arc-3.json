@@ -1,0 +1,231 @@
+{
+  "articleId": "2026-11-02-evening-arc-3",
+  "sourceFiling": "docs/newsroom/2026-11-02-late-edition-filing/arc-3-article.json",
+  "sourceFilingSha256": "90e02b055aa9ad244f638ca064bcf1d776a407d3e1f3f6dd933851b78d2aed73",
+  "dataAsOf": "2026-11-02T19:15:14Z",
+  "baselineAt": "2026-11-01T22:32:06Z",
+  "publishedAt": "2026-11-02T23:30:43.296812Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-02T19:21:10Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-0",
+      "title": "Van-Phuc Huynh — Kaggle profile",
+      "url": "https://www.kaggle.com/hvanphucs112"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-1",
+      "title": "Trần M. Tiến — Kaggle profile",
+      "url": "https://www.kaggle.com/trnmtin"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-2",
+      "title": "Van-Phuc Huynh — ARC forum comments",
+      "url": "https://www.kaggle.com/hvanphucs112/discussion"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-3",
+      "title": "Tong Hui Kang — ARC-3 leaderboard tracker",
+      "url": "https://arc3.huikang.dev/leaderboard/"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 70.24,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "xz",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 58.59,
+      "scoreChange": 0.0,
+      "teamId": "15487093"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.26,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "rank": 6,
+      "rankChange": 2,
+      "score": 54.55,
+      "scoreChange": 4.07,
+      "teamId": "16490178"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 54.52,
+      "scoreChange": 3.01,
+      "teamId": "16021367"
+    },
+    {
+      "name": "infinity",
+      "rank": 8,
+      "rankChange": null,
+      "score": 53.12,
+      "scoreChange": null,
+      "teamId": "15494354"
+    },
+    {
+      "name": "yktori",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 51.04,
+      "scoreChange": 0.0,
+      "teamId": "16760837"
+    },
+    {
+      "name": "All your GPU are belong to us",
+      "rank": 10,
+      "rankChange": 4,
+      "score": 51.03,
+      "scoreChange": 9.22,
+      "teamId": "16429297"
+    },
+    {
+      "name": "mtg",
+      "rank": 11,
+      "rankChange": -2,
+      "score": 50.37,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "Md Boktiar Mahbub Murad",
+      "rank": 12,
+      "rankChange": 12,
+      "score": 47.29,
+      "scoreChange": 7.77,
+      "teamId": "15487522"
+    },
+    {
+      "name": "The ARChitects",
+      "rank": 13,
+      "rankChange": 3,
+      "score": 47.19,
+      "scoreChange": 6.16,
+      "teamId": "16032816"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 14,
+      "rankChange": -4,
+      "score": 46.82,
+      "scoreChange": 0.0,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 15,
+      "rankChange": -4,
+      "score": 45.41,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 16,
+      "rankChange": -4,
+      "score": 45.03,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "大阪公立大学 & Maciej & Natalia",
+      "rank": 17,
+      "rankChange": 10,
+      "score": 43.73,
+      "scoreChange": 4.75,
+      "teamId": "16754530"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 21,
+      "rankChange": 1,
+      "score": 41.17,
+      "scoreChange": 1.23,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "rank": 29,
+      "rankChange": -6,
+      "score": 39.69,
+      "scoreChange": 0.0,
+      "teamId": "15488763"
+    },
+    {
+      "name": "Cakpo Vital",
+      "rank": 38,
+      "rankChange": 100,
+      "score": 38.15,
+      "scoreChange": 4.38,
+      "teamId": "17084555"
+    },
+    {
+      "name": "Muku",
+      "rank": 46,
+      "rankChange": 33,
+      "score": 36.9,
+      "scoreChange": 2.01,
+      "teamId": "17145682"
+    },
+    {
+      "name": "Pushpak Teja",
+      "rank": 75,
+      "rankChange": 85,
+      "score": 35.61,
+      "scoreChange": 2.04,
+      "teamId": "17037347"
+    },
+    {
+      "name": "arc-needs-to-be-agi",
+      "rank": 77,
+      "rankChange": 91,
+      "score": 35.53,
+      "scoreChange": 2.03,
+      "teamId": "16831884"
+    }
+  ],
+  "publicationNote": "Published from the filed story at the editor’s direction to supply a live working article URL before Discord delivery. Source observations retain their original dates; no final results or new closing checks are claimed.",
+  "artwork": {
+    "src": "/news-images/2026-11-02-infinity-lightning-leap-v1.webp",
+    "sha256": "c2324aaa8bbd199bbef47ca209d5aa8b2b445b8f17fb7c66ffc72ab3e3511c3c"
+  }
+}

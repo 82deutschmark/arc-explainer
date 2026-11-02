@@ -1,0 +1,314 @@
+{
+  "baselineAt": "2026-11-01T22:32:06Z",
+  "competition": "arc-3",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-11-02T19:15:14Z",
+  "date": "2026-11-02",
+  "dek": "A month stuck on the same score. Then a thunderbolt: Van-Phuc Huynh and Trần M. Tiến burst into the summit chase.",
+  "discord": "From #593 to the top ten: infinity’s overnight leap. Van-Phuc Huynh and Trần M. Tiến sat on 31.24 for a month; one run took them to 53.12.",
+  "edition": "evening",
+  "generatedBy": "claude-opus-5-5",
+  "headline": "Lightning strikes! infinity blasts out of the pack",
+  "id": "2026-11-02-evening-arc-3",
+  "image": {
+    "alt": "A living red-rock storm lifts a white cat with round glasses and a blue book out of a long GPU Valley queue toward a high ridge.",
+    "artworkId": "2026-11-02-infinity-lightning-leap-v1",
+    "caption": "Editorial illustration of infinity’s leap out of the pack; the public board remains provisional.",
+    "src": "/news-images/2026-11-02-infinity-lightning-leap-v1.webp"
+  },
+  "intakeReview": [
+    {
+      "disposition": "not-selected",
+      "id": "dispatch-2026-11-02-the-duck-that-launched-a-thousand-ships",
+      "reason": "The Duck feature ran this morning as its own special; tonight’s edition leads with the closing-day leaps instead."
+    },
+    {
+      "disposition": "carried",
+      "id": "editorial-oct29-held-team-profile-reserve",
+      "reason": "Held team-feature manuscripts stay in reserve; not used in tonight’s closing-day story."
+    },
+    {
+      "disposition": "covered",
+      "id": "editorial-nov02-late-infinity-leap",
+      "reason": "Infinity’s leap leads the story, with All your GPU are belong to us and The ARChitects among the other climbers."
+    }
+  ],
+  "publishedAt": "2026-11-02T23:30:43.296812Z",
+  "sections": [
+    {
+      "heading": "A month in the pack. Then lightning.",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "A month in the pack. Then lightning. Infinity delivered the day’s biggest score leap among the top-20 teams after sitting on the same score since 3 October. Its latest submission was logged on 1 November at 20:33 UTC. Before 06:00 UTC the next day, a new public reading had hurled it into the top ten. Other climbers have since moved ahead, but infinity still held a high ridge at the dated observation below."
+    },
+    {
+      "heading": "Not new to the top",
+      "sourceIds": [
+        "fact-15494354-3"
+      ],
+      "text": "Infinity has been here before. It reached the leading pack in July and again in September. Then the October notebook wave carried its score upward—and left it sitting still while hundreds of teams went past."
+    },
+    {
+      "heading": "Days of queue trouble, then a breakthrough",
+      "sourceIds": [
+        "fact-15494354-0",
+        "fact-15494354-1",
+        "fact-15494354-2"
+      ],
+      "text": "Infinity is two people in Ho Chi Minh City: Van-Phuc Huynh, a bioinformatics software developer and Kaggle Competitions Expert, and Trần M. Tiến. In the last week of October, Huynh was in the ARC forums describing runs that scored zero, slow data loading and a submission queue he expected to jam near the deadline. He wrote that he had been giving up solving time just to avoid a zero, and pictured himself “standing in front of my GPU with a pile of plans.” He promised to share his findings if his results improved. Overnight, they did."
+    },
+    {
+      "heading": "The other closing-day climbers",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The closing-day chase is charging upward too. All your GPU are belong to us, Md Boktiar Mahbub Murad and The ARChitects all made substantial gains. 大阪公立大学 & Maciej & Natalia, Grigoriy Zatravkin & co and fshindo also surged. Farther back, Cakpo Vital cut through the field. The dated table records the selected comparisons available in the brief."
+    },
+    {
+      "heading": "The top five held",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The leading group held across the comparison window. Yi-Chia Chen remains ahead of Tufa Labs, with xz, NVARC3 and Team Turducken behind them. The editor competes on Team Turducken."
+    },
+    {
+      "heading": "The private-board reckoning",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The published submission deadline is 2 November at 23:59 UTC. Infinity’s first observed higher score came about nine hours after its latest recorded submission timestamp; those observations do not establish which run produced it or how long scoring took. Public standings are provisional; medals are decided on the private leaderboard. They have seized a ridge near the summit. Can infinity hold it when the private board lands?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-02T19:21:10Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-0",
+      "title": "Van-Phuc Huynh — Kaggle profile",
+      "url": "https://www.kaggle.com/hvanphucs112"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-1",
+      "title": "Trần M. Tiến — Kaggle profile",
+      "url": "https://www.kaggle.com/trnmtin"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-2",
+      "title": "Van-Phuc Huynh — ARC forum comments",
+      "url": "https://www.kaggle.com/hvanphucs112/discussion"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494354-3",
+      "title": "Tong Hui Kang — ARC-3 leaderboard tracker",
+      "url": "https://arc3.huikang.dev/leaderboard/"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 70.24,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "xz",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 58.59,
+      "scoreChange": 0.0,
+      "teamId": "15487093"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.26,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "rank": 6,
+      "rankChange": 2,
+      "score": 54.55,
+      "scoreChange": 4.07,
+      "teamId": "16490178"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 54.52,
+      "scoreChange": 3.01,
+      "teamId": "16021367"
+    },
+    {
+      "name": "infinity",
+      "rank": 8,
+      "rankChange": null,
+      "score": 53.12,
+      "scoreChange": null,
+      "teamId": "15494354"
+    },
+    {
+      "name": "yktori",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 51.04,
+      "scoreChange": 0.0,
+      "teamId": "16760837"
+    },
+    {
+      "name": "All your GPU are belong to us",
+      "rank": 10,
+      "rankChange": 4,
+      "score": 51.03,
+      "scoreChange": 9.22,
+      "teamId": "16429297"
+    },
+    {
+      "name": "mtg",
+      "rank": 11,
+      "rankChange": -2,
+      "score": 50.37,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "Md Boktiar Mahbub Murad",
+      "rank": 12,
+      "rankChange": 12,
+      "score": 47.29,
+      "scoreChange": 7.77,
+      "teamId": "15487522"
+    },
+    {
+      "name": "The ARChitects",
+      "rank": 13,
+      "rankChange": 3,
+      "score": 47.19,
+      "scoreChange": 6.16,
+      "teamId": "16032816"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 14,
+      "rankChange": -4,
+      "score": 46.82,
+      "scoreChange": 0.0,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 15,
+      "rankChange": -4,
+      "score": 45.41,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 16,
+      "rankChange": -4,
+      "score": 45.03,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "大阪公立大学 & Maciej & Natalia",
+      "rank": 17,
+      "rankChange": 10,
+      "score": 43.73,
+      "scoreChange": 4.75,
+      "teamId": "16754530"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 21,
+      "rankChange": 1,
+      "score": 41.17,
+      "scoreChange": 1.23,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "rank": 29,
+      "rankChange": -6,
+      "score": 39.69,
+      "scoreChange": 0.0,
+      "teamId": "15488763"
+    },
+    {
+      "name": "Cakpo Vital",
+      "rank": 38,
+      "rankChange": 100,
+      "score": 38.15,
+      "scoreChange": 4.38,
+      "teamId": "17084555"
+    },
+    {
+      "name": "Muku",
+      "rank": 46,
+      "rankChange": 33,
+      "score": 36.9,
+      "scoreChange": 2.01,
+      "teamId": "17145682"
+    },
+    {
+      "name": "Pushpak Teja",
+      "rank": 75,
+      "rankChange": 85,
+      "score": 35.61,
+      "scoreChange": 2.04,
+      "teamId": "17037347"
+    },
+    {
+      "name": "arc-needs-to-be-agi",
+      "rank": 77,
+      "rankChange": 91,
+      "score": 35.53,
+      "scoreChange": 2.03,
+      "teamId": "16831884"
+    }
+  ],
+  "teamIds": [
+    "15494354",
+    "16429297",
+    "15487522",
+    "16032816",
+    "16754530",
+    "16490178",
+    "15499660",
+    "15486995",
+    "15487093",
+    "15770880",
+    "15605182"
+  ]
+}
