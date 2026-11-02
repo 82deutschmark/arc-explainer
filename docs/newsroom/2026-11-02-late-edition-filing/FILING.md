@@ -16,7 +16,7 @@ Two stories are written and pass the newsroom's checks against this afternoon's 
 | ARC-3 (lead) | From #593 to the top ten: infinity’s overnight leap | `arc-3-article.json` |
 | ARC-2 | One run, #9 on arrival: Kaggle’s #2 drops in on ARC-2 | `arc-2-article.json` |
 
-Both were written against a preview brief (article ids ending `-preview`; the brief itself is working data and stays out of Git). At 6 pm, run the normal closing `prepare` without `--preview`. Copy the headline, dek, sections, team list, Discord line and intake review onto the fresh base. Recheck the quoted numbers against the fresh table, validate, then publish. Two editorial assignments mark these as tonight's leads: `nov02-late-infinity-leap` and `nov02-late-tascj-one-entry`. The new public facts the stories cite are filed in `content/news/competitors.json` (infinity, Progress, tascj).
+Both were checked against a preview brief from this afternoon, so their ids end in `-preview`. Two editorial assignments mark them as tonight's leads: `nov02-late-infinity-leap` and `nov02-late-tascj-one-entry`. The new public facts the stories cite are filed in `content/news/competitors.json` (infinity, Progress, tascj).
 
 ## Art request 1: ARC-3 lead, "The bolt from #593" (required)
 
@@ -37,7 +37,7 @@ Both were written against a preview brief (article ids ending `-preview`; the br
 
 **Style references only, not scenes to copy:** `2026-11-02-morning-hairpin-v1-base.webp` and `2026-10-18-top-ten-siege-full-crew-v1-base.webp`. The new picture needs a new setting, camera and action.
 
-**Rules.** No text, numbers, scores, places or logos in the art; the score panel is added afterwards in code. No other real people. Make it with the built-in image tool in the app, then register and compose it under `docs/newsroom/ART_DESK.md`.
+**Rules.** No text, numbers, scores, places or logos in the art; the score panel is added afterwards in code. No other real people.
 
 ## Art request 2: ARC-2, "One wingbeat" (nice to have)
 
