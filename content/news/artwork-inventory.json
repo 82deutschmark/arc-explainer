@@ -1957,7 +1957,8 @@
       "status": "published-on-commissioned-feature",
       "targetEditionId": "2026-11-01-evening-arc-3",
       "articleUses": [
-        "2026-11-01-nvarc3-passes-turducken"
+        "2026-11-01-nvarc3-passes-turducken",
+        "2026-11-01-evening-arc-3"
       ],
       "xAttachments": [],
       "discordShares": [
@@ -1968,9 +1969,36 @@
           "attachmentSha256": "cf325eb1fda0c858b103c9fc6abe237e619d10c848c3ab372dfa9149efa7a045",
           "discordUrl": "https://discord.com/channels/@me/1550165647911034940/1566581175311532032",
           "purpose": "Finished Boss-commissioned overtake picture with intended report link; evening original Night Watch remains separate."
+        },
+        {
+          "artworkId": "2026-11-01-evening-arc-3-e3b7fc7865",
+          "channelId": "1550165647911034940",
+          "confirmedAttachment": true,
+          "imageSha256": "9aefc43d4a7a6d281c3cbc6b524cb2eb70f51db733a93c4c52a9800bb33bc347",
+          "kind": "finished-edition",
+          "messageId": "1566623224031084565",
+          "sharedAt": "2026-11-02T01:21:23.750000+00:00"
         }
       ],
       "selectionNote": "New native episode explicitly commissioned by Boss November 1: NVARC3 crawler ahead of Turducken chicken, leaders on separate ridges. Used for this report and explicitly reserved for the SAME report included in the evening edition, alongside separate original Night Watch cover. Not a replacement for the approved rabbit-and-spiders picture. No routine X authorization."
+    },
+    {
+      "articleUses": [
+        "2026-11-01-evening-arc-2"
+      ],
+      "discordShares": [
+        {
+          "artworkId": "2026-11-01-evening-arc-2-01dfa19d7e",
+          "channelId": "1550165647911034940",
+          "confirmedAttachment": true,
+          "imageSha256": "3adf754bd86e04fd11bfa5ba47acccb5eccfbde6f5fbb244bb4cac3fe8f9a949",
+          "kind": "finished-edition",
+          "messageId": "1566623286786269204",
+          "sharedAt": "2026-11-02T01:21:38.467000+00:00"
+        }
+      ],
+      "generationRecord": "2026-10-31-colosseum-v5-arc2-stock",
+      "xAttachments": []
     }
   ],
   "existingXPosts": [

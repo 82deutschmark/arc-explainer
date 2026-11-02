@@ -152,6 +152,18 @@ or no accurate scene fits, publish the verified text and report the concrete art
 with the edition X announcement blocked for missing artwork. Never use a paid API, a stale
 illustration, or a text-only X fallback.
 
+## Movement panels and selected rivals (1 November 2026)
+
+Author: GPT-6 Astra Extra high. Call the team pages **competitor profiles**; a notebook means actual Kaggle/Jupyter code.
+
+An explicit `artworkConditions.requiredRanks` map can select a pair below first place, as in the October 29 cat/Turducken picture. Specify both team IDs and their actual ranks. Without it, the existing first-place requirement still applies. Never change the headline merely to trick the planner into selecting a team.
+
+For a jump picture, set `artworkOverlay` to `{"showMovement": true, "showBanner": true, "placement": "corners", "brandPlacement": "top-center"}`. The compositor reads consecutive saved observations into rank-from/to, places gained/lost, points gained and **First seen** time. Missing history remains unknown. The panel separately dates the closing board; tracker observation time is not a Kaggle submission timestamp. Rank arrows are polygons, not font glyphs. The gap is written in words because short bars cannot resolve hundredths of a point. Attachment validation rejects altered movement evidence or gaps.
+
+Keep the bottom-left panel on the juggernaut scene; the top-center brand/banner leaves the rabbits visible. When a supplied scene has characters across its corners, `artworkOverlay.placement: "footer"` keeps the entire picture above a separate score/brand band. The existing corner history-chart layout remains available through `artworkHistoryChart`; its competition label follows the actual contest.
+
+Approved imported stock uses an `approved-stock` record with the exact source bytes, source commit, editor approval, review and an honest provenance note. Do not invent an image-generation tool, prompt or references when older stock lacks them. Preserve original art and every published composition. A revised article saves its previous article and evidence in a separate artwork-revision record before binding the replacement.
+
 ## Required attachment proof before reporting completion
 
 Boss correction, November 1, 2026: every newly commissioned, reviewed picture must be

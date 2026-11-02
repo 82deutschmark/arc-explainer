@@ -1,3 +1,10 @@
+### Version 9.161.3 · November 1, 2026
+
+- **The jump belongs on the picture** — The compositor now supports explicitly selected rival pairs below first place, observed rank/score changes, first-seen times, geometric arrows, a written score gap and scene-safe brand/footer placement. It validates movement against archived observations and accepts explicitly approved imported stock without inventing native-generation metadata. Author: GPT-6 Astra Extra high.
+- Lead Down to the Wire with the NVARC3–Turducken juggernaut and its four-place climb. Add the ARC-2 Colosseum with Tufa and Chen, tighten the two article headlines and awkward copy, date the board references, and include @kaggle in the prepared X text. Preserve the previous published articles, evidence and illustrations in revision records; no automation is resumed.
+- The reading page now starts with the jump cover and readable HTML scores, combines the ARC-3 feature and recap, dates its title, and pairs the two-week table with a chart. Simplify repetitive verbs, naming and timing; edition permalinks show a shared feature/cover image only once.
+- Validation: all 103 newsroom Python tests and 23 news integration tests pass; all 32 artwork tests pass, including altered-movement rejection, nonleading-pair conditions, unknown history, imported-stock approval and missing-glyph prevention. Both finished images visually reviewed with the principal cast unobscured.
+
 ### Version 9.161.2 · November 1, 2026
 
 - **Competitor profiles** — Replace the misleading “competitor notebook” label across navigation, team pages, cards, wire links, search previews and the resource directory. Reserve notebook for actual Kaggle/Jupyter code notebooks; record the rule in the newsroom guidance. Author: GPT-6 Astra Extra high.

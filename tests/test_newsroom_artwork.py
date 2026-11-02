@@ -1,5 +1,5 @@
-# Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
-# Date: 15-October-2026 (used scenes are not offered again automatically)
+# Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
+# Date: 1-November-2026 (pair selection, observed movements and imported stock); 15-October-2026 (used scenes are not offered again automatically)
 # PURPOSE: Verify native-art planning, immutable composition and publication evidence, including
 # score/image mutations, wrong editions/headlines and missing comparisons. No model calls.
 # Covered illustrated commissions cannot publish without their freshly bound approved base.
@@ -329,6 +329,79 @@ class ArtworkTests(unittest.TestCase):
         media = edition_media(n.load(published), self.root)
         self.assertEqual(media['artworkId'], report['id'])
         self.assertEqual(media['sourceSha256'], report['imageSha256'])
+
+    def movement_commission(self):
+        item = self.commission()
+        a, b = item['articleBase']['stats'][:2]
+        a.update(rank=4, score=56.15)
+        b.update(rank=5, score=56.02)
+        earlier = n.iso(self.now - n.timedelta(days=1))
+        seen = n.iso(self.now - n.timedelta(hours=2))
+        item['evidence']['scoreHistory'] = {'1': [[earlier, 49.89, 8], [seen, 56.15, 4]],
+                                          '2': [[earlier, 56.02, 4], [seen, 56.02, 5]]}
+        assignment = item['intake']['editorialAssignments'][0]
+        assignment['artworkHistoryChart'] = False
+        assignment['artworkConditions']['requiredRanks'] = {'1': 4, '2': 5}
+        assignment['artworkOverlay'] = {'showMovement': True, 'showBanner': True, 'brandPlacement': 'top-center'}
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        return item
+
+    def test_nonleading_pair_carries_observed_jump_and_unchanged_rival_score(self):
+        item = self.movement_commission()
+        report = self.compose()
+        first, rival = report['movement']
+        self.assertEqual((first['rankFrom'], first['rankTo'], first['scoreChange']), (8, 4, 6.26))
+        self.assertEqual((rival['rankChange'], rival['scoreChange']), (-1, 0))
+        self.assertEqual(first['firstSeenAt'], item['evidence']['scoreHistory']['1'][-1][0])
+        self.assertEqual(report['scoreGap'], 'Thirteen hundredths of a point apart')
+        art.validate_attachment(report['image'], self.article, self.brief, self.root)
+        # Alter the claimed move without touching image bytes: the evidence check must fail.
+        for mutation, error in [(lambda r: r['movement'][0].update(rankFrom=9), 'movement differs'),
+                                (lambda r: r.pop('movement'), 'movement differs'),
+                                (lambda r: r.pop('scoreGap'), 'gap differs')]:
+            corrupted = copy.deepcopy(report)
+            mutation(corrupted)
+            n.write(self.root / 'content/news/artwork' / (report['id'] + '.json'), corrupted)
+            with self.assertRaisesRegex(ValueError, error):
+                art.validate_attachment(report['image'], self.article, self.brief, self.root)
+
+    def test_explicit_rank_pair_does_not_allow_a_changed_standing(self):
+        item = self.movement_commission()
+        item['articleBase']['stats'][0]['rank'] = 3
+        self.assertEqual(art.plan(self.brief, self.article, self.root)['jobs'], [])
+
+    def test_unknown_movement_stays_unknown_and_future_points_are_ignored(self):
+        item = self.movement_commission()
+        rows = item['articleBase']['stats'][:2]
+        item['evidence']['scoreHistory']['1'] = [['2030-01-01T00:00:00Z', 49.89, 8], ['2030-01-02T00:00:00Z', 56.15, 4]]
+        self.assertIsNone(art.movement_data(rows, item)[0])
+
+    def test_footer_preserves_the_full_scene_and_stock_cannot_fake_native_provenance(self):
+        item = self.movement_commission()
+        item['intake']['editorialAssignments'][0]['artworkOverlay']['placement'] = 'footer'
+        record = n.load(self.root / 'content/news/artwork/native-base.json')
+        record.update(kind='approved-stock', approvedBy='mark-barney', sourceCommit='saved-source-commit',
+                      provenanceNote='Existing supplied scene; original generation metadata unavailable.', review='Inspected.')
+        record.pop('tool')
+        n.write(self.root / 'content/news/artwork/native-base.json', record)
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        report = self.compose()
+        with art.Image.open(self.raw) as raw, art.Image.open(art.public_file(report['image']['src'], self.root)) as image:
+            scene_height = round(raw.height * 1920 / raw.width)
+            self.assertGreater(image.height - scene_height, 314)
+        record.pop('approvedBy')
+        with self.assertRaisesRegex(ValueError, 'provenance'):
+            art.validate_base(record, self.raw)
+
+    def test_arrows_use_shapes_instead_of_missing_font_glyphs(self):
+        from unittest.mock import Mock
+        draw = Mock()
+        art.draw_rank_arrow(draw, 10, 10, 4, '#28624b')
+        art.draw_rank_arrow(draw, 10, 10, -1, '#8b3a2a')
+        self.assertEqual(draw.polygon.call_count, 2)
+        draw.text.assert_not_called()
 
 
 class UsedSceneTests(unittest.TestCase):

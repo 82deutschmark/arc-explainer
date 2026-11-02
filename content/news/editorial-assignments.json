@@ -1261,7 +1261,7 @@
     "targetEditionId": "2026-11-01-evening-arc-3",
     "placement": "front-page-feature",
     "featureId": "2026-11-01-nvarc3-passes-turducken",
-    "instructions": "Boss explicitly commissioned the factual overtake story and BOTH pictures for November 1 Late. Include the complete newly published NVARC3 overtake dispatch, with its new juggernaut artwork, as the reserved front-page feature so it appears on the permanent evening edition URL too. Preserve the separate Night Watch rabbit-and-spiders picture as the edition-bound main artwork. Do not replace either image with the other or report the two-image request covered with only one. The dispatch is a dated Sunday-afternoon report; prepare the scheduled 6 pm evidence afresh and explain any changed positions in the closing recap rather than rewriting the dispatch. Cite the dispatch source in the recap. This updates the earlier art-only handoff: this desk has now written the report at Boss request. No routine X send: November 1-2 special lineup hold remains. Deliver final closing composition to Discord and preserve existing clean-base/feature receipts.",
+    "instructions": "The final-day edition carries the NVARC3 feature. Editor revision selects the juggernaut with verified movement overlays as the edition and X lead. Previous Night Watch artwork remains archived.",
     "sourceUrls": [
       "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
       "https://arc.markbarney.net/news#2026-11-01-nvarc3-passes-turducken"
@@ -1272,7 +1272,7 @@
     "competition": "arc-3",
     "createdAt": "2026-11-01T22:34:43.245290+00:00",
     "expiresAt": "2026-11-02T04:00:00Z",
-    "status": "pending",
+    "status": "superseded",
     "commissionedBy": "mark-barney",
     "title": "Keep the original Night Watch rabbit-and-spiders illustration in the evening edition",
     "priority": "Boss-approved evening cover, alongside new overtake feature",
@@ -1297,6 +1297,62 @@
     "sourceUrls": [
       "https://arc.markbarney.net/news/cards/team-yi-chia-chen-2026",
       "https://arc.markbarney.net/news/cards/team-tufa-labs-2026"
-    ]
+    ],
+    "supersededBy": "nov1-down-to-wire-jump-cover"
+  },
+  {
+    "artworkConditions": {
+      "leaderTeamId": "16756524",
+      "requiredPersonIds": [],
+      "rivalTeamId": "15501171"
+    },
+    "artworkGenerationRecord": "2026-10-31-colosseum-v5-arc2-stock",
+    "artworkOverlay": {
+      "placement": "footer"
+    },
+    "commissionedBy": "mark-barney",
+    "competition": "arc-2",
+    "createdAt": "2026-11-02T01:18:42Z",
+    "expiresAt": "2026-11-03T00:00:00Z",
+    "id": "nov1-down-to-wire-arc2-colosseum",
+    "instructions": "Editor-requested final-day revision. Use this reviewed scene and the edition’s dated board evidence. Final images go to Discord before X; all automations stay off.",
+    "status": "pending",
+    "subjectNames": [
+      "Tufa",
+      "Chen"
+    ],
+    "targetEditionId": "2026-11-01-evening-arc-2",
+    "title": "Tufa and Chen in the ARC-2 Colosseum"
+  },
+  {
+    "artworkConditions": {
+      "leaderTeamId": "15770880",
+      "requiredPersonIds": [],
+      "requiredRanks": {
+        "15605182": 5,
+        "15770880": 4
+      },
+      "rivalTeamId": "15605182"
+    },
+    "artworkGenerationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+    "artworkOverlay": {
+      "brandPlacement": "top-center",
+      "placement": "corners",
+      "showBanner": true,
+      "showMovement": true
+    },
+    "commissionedBy": "mark-barney",
+    "competition": "arc-3",
+    "createdAt": "2026-11-02T01:18:42Z",
+    "expiresAt": "2026-11-03T00:00:00Z",
+    "id": "nov1-down-to-wire-jump-cover",
+    "instructions": "Editor-requested final-day revision. Use this reviewed scene and the edition’s dated board evidence. Final images go to Discord before X; all automations stay off.",
+    "status": "pending",
+    "subjectNames": [
+      "NVARC3",
+      "Turducken"
+    ],
+    "targetEditionId": "2026-11-01-evening-arc-3",
+    "title": "NVARC3 jump leads the final-day edition"
   }
 ]

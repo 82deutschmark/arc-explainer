@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-29
+ * Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 2026-11-01
  * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
  *          with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
@@ -49,7 +49,7 @@ export default function NewsArticle() {
         <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
       {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} showPeople={false} />}
-      <EditionArtwork article={article} lead={!feature} />
+      {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
       <div className="news-article-grid">
         <div>
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>

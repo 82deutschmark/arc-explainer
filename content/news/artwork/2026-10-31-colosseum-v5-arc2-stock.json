@@ -1,0 +1,13 @@
+{
+  "approvedAt": "2026-11-02T01:18:42Z",
+  "approvedBy": "mark-barney",
+  "approvedUse": "The editor explicitly selected v5-arc2 for the Down to the Wire ARC-2 panel.",
+  "id": "2026-10-31-colosseum-v5-arc2-stock",
+  "kind": "approved-stock",
+  "provenanceNote": "Existing Colosseum v5 ARC-2 scene by Son Pham and Bubba, documented in client/public/news-images/colosseum/README.md. Original PNG retained on the Samsung SSD. Generation tool, prompt and input-image metadata were not supplied with this stock; no native-generation claim is inferred.",
+  "rawSha256": "dfe64ce462d203546556d8f6d1faff1dbd9fe043d812b913fe35d497f87b73a8",
+  "rawSrc": "/news-images/colosseum/2026-10-31-two-giants-colosseum-v5-arc2.webp",
+  "review": "Inspected the supplied v5 ARC-2 scene: Tufa citadel, two Chen rabbits, the cat and other competitors. Faces fill the lower foreground and upper right, so keep the complete artwork above a separate score/brand footer.",
+  "sourceCommit": "1ff7a0224db4fd9f0f2a9c3a41f9d97693d41eb6",
+  "version": 1
+}

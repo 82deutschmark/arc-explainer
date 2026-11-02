@@ -4,12 +4,18 @@
   "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
   "dataAsOf": "2026-11-02T00:56:33Z",
   "date": "2026-11-01",
-  "dek": "Ravi Teja Chilakala and Lashen Learning have stormed up the order. Tufa leads Chen by less than a point, while another wave of huge jumps sweeps through the field.",
-  "discord": "Down to the Wire: ARC-2’s climbers crash the top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
+  "dek": "Tufa’s lead is just 0.84 points. Ravi Teja Chilakala and Lashen Learning have reached the top ten, while much bigger jumps reshape the field below.",
+  "discord": "Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
   "edition": "evening",
   "generatedBy": "gpt-6-astra-extra-high",
-  "headline": "Down to the Wire: ARC-2’s climbers crash the top ten",
+  "headline": "Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten",
   "id": "2026-11-01-evening-arc-2",
+  "image": {
+    "alt": "Illustration for Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen @ Fields Model: rank 2, score 87.22.",
+    "artworkId": "2026-11-01-evening-arc-2-01dfa19d7e",
+    "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+    "src": "/news-images/2026-11-01-evening-arc-2-01dfa19d7e.webp"
+  },
   "publishedAt": "2026-11-02T00:57:44Z",
   "sections": [
     {
@@ -17,7 +23,7 @@
       "sourceIds": [
         "board"
       ],
-      "text": "Two weeks ago, Ravi Teja Chilakala stood 38th in ARC-2 and Lashen Learning was 25th. Now they are eighth and tenth. Ravi has piled on nearly 35 points; Lashen has added more than 23. Between them sits V | A | M, up from 28th to ninth. The top ten has a very different look as the contest enters its final 24 hours."
+      "text": "Two weeks ago, Ravi Teja Chilakala stood 38th in ARC-2 and Lashen Learning was 25th. At Sunday’s 7:56 p.m. EST check, they were eighth and tenth. Between them sits V | A | M, up from 28th to ninth. Three teams have given the top ten a new look."
     },
     {
       "heading": "Less than a point at the front",
@@ -27,12 +33,12 @@
       "text": "Tufa Labs holds the lead on 88.06. Yi-Chia Chen @ Fields Model is right behind on 87.22: a gap of just 0.84. Chen leads ARC-3, while Tufa has the upper hand here. Behind them, nvbanana’s 83.89 puts it third, only 0.42 ahead of Domdolus Tolus. There is precious little breathing room at either end of that leading quartet."
     },
     {
-      "heading": "The charge from the back",
+      "heading": "From deep in the field",
       "sourceIds": [
         "board",
         "wire-2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th"
       ],
-      "text": "areno has just torn through the field: 995th to 59th, adding 22.22 points to reach 53.19. Keyser Soze’s leap was even bigger in places, from 1,910th to 66th on Sunday afternoon; the entry now sits 67th on 49.17. Those two jumps alone carried the teams past more than 2,700 positions combined. Giovanny Rodríguez has also surged, from 61st to 49th with a gain of 6.52 points in the latest check."
+      "text": "After NVARC3’s early-morning move on ARC-3, ARC-2 supplied its own afternoon drama. Keyser Soze climbed 1,844 places, from 1,910th to 66th, and stood 67th on 49.17 at 7:56 p.m. EST. areno moved from 995th to 59th, adding 22.22 points to reach 53.19. Together those jumps gained more than 2,700 places. Giovanny Rodríguez rose from 61st to 49th with another 6.52 points."
     },
     {
       "heading": "A crowded gold line",
@@ -40,14 +46,14 @@
         "board",
         "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
       ],
-      "text": "S & M & N & S & Y jumped from 33rd to 15th with an eight-point surge. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just seven-tenths of a point away."
+      "text": "S & M & N & S & Y jumped from 33rd to 15th after gaining eight points. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just seven-tenths of a point away."
     },
     {
       "heading": "Fourteen days that changed the race",
       "sourceIds": [
         "board"
       ],
-      "text": "ARCane has more than doubled its score in two weeks, climbing from 70th to 17th with a 37.50-point gain. Ravi Teja Chilakala has added 34.72, kibuna 31.11 and Ramesh Arvind 30.70. V | A | M’s rise into the top ten came with another 26.11 points; Lashen Learning gained 23.33. These are substantial climbs through a field now 3,591 teams deep."
+      "text": "ARCane has more than doubled its score in two weeks, putting it on the public gold line."
     },
     {
       "heading": "The clock is running",
@@ -55,7 +61,7 @@
         "board",
         "deadline"
       ],
-      "text": "Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern. A little over 23 hours remained at our latest board check. Tufa and Chen have the lead story; the climbers are making sure the rest of the page belongs to them."
+      "text": "Watch Tufa’s narrow lead over Chen, the new top-ten contenders and ARCane’s hold on the public gold line. Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern."
     }
   ],
   "sources": [

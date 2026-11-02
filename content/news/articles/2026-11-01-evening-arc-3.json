@@ -4,35 +4,28 @@
   "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
   "dataAsOf": "2026-11-02T00:56:31Z",
   "date": "2026-11-01",
-  "dek": "Less than 24 hours remain. Chen has the lead, Tufa is giving chase, and fourth place hangs on thirteen hundredths of a point.",
-  "discord": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
+  "dek": "Four places gained and 6.26 points added: the juggernaut is on the move. Above the chase, Chen leads Tufa into the final day.",
+  "discord": "NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
   "edition": "evening",
   "frontPageFeatureId": "2026-11-01-nvarc3-passes-turducken",
   "generatedBy": "gpt-6-astra-extra-high",
-  "headline": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken",
+  "headline": "NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken",
   "id": "2026-11-01-evening-arc-3",
   "image": {
-    "alt": "Illustration for Down to the Wire: Chen leads as NVARC3 squeezes past Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
-    "artworkId": "2026-11-01-evening-arc-3-6628af5a33",
-    "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
-    "src": "/news-images/2026-11-01-evening-arc-3-6628af5a33.webp"
+    "alt": "Illustration for NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
+    "artworkId": "2026-11-01-evening-arc-3-e3b7fc7865",
+    "caption": "NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST. Board checked Nov 1, 2026 · 7:56 PM EST.",
+    "src": "/news-images/2026-11-01-evening-arc-3-e3b7fc7865.webp"
   },
   "publishedAt": "2026-11-02T00:57:44Z",
   "sections": [
     {
-      "heading": "A sliver of daylight",
+      "heading": "Chen sets the pace",
       "sourceIds": [
         "board",
         "dispatch-2026-11-01-nvarc3-passes-turducken"
       ],
-      "text": "NVARC3 has fourth place by a whisker. Its Sunday surge from eighth carried it past Team Turducken, 56.15 to 56.02, leaving just 0.13 between them. Six points gained, four places climbed, and suddenly the chase behind the leaders looks very different. Third-placed xz is next on 58.59."
-    },
-    {
-      "heading": "Chen sets the pace",
-      "sourceIds": [
-        "board"
-      ],
-      "text": "Yi-Chia Chen @ Fields Model enters the final day on 75.56, with Tufa Labs on 70.24. Chen’s advantage is a little over five points. The pair have opened a wide gap over the chasing pack, but there is still a full day’s worth of pressure to absorb. Across on ARC-2, their positions are reversed: the two leading contenders have a contest apiece to defend."
+      "text": "Yi-Chia Chen @ Fields Model enters the final day on 75.56, with Tufa Labs on 70.24. Chen’s advantage is a little over five points. The pair have opened a wide gap over the chasing pack, but there is still a full day’s worth of pressure to absorb. Across on ARC-2, their positions are reversed: Tufa is trying to hold off Chen there while chasing Chen here."
     },
     {
       "heading": "The field keeps moving",
@@ -41,7 +34,7 @@
         "wire-2026-11-01-1104-arc-3-unk-enters-gold",
         "wire-2026-11-01-1730-arc-3-knosaka-tomo-luxshan-surge"
       ],
-      "text": "Yukai Liu supplied the newest jolt, jumping from 671st to 39th as six more points lifted the score to 36.96. Earlier, UNK climbed into the gold places and now stands 17th on 41.00. K.nosaka, tomo11111 and Luxshan Thavarasa also charged into the top hundred on Sunday."
+      "text": "Yukai Liu supplied the newest jolt, jumping from 671st to 39th as six more points lifted the score to 36.96. Earlier, UNK climbed into the gold places and now stands 17th on 41.00. K.nosaka, tomo11111 and Luxshan Thavarasa also reached the top hundred on Sunday."
     },
     {
       "heading": "The long climb",
@@ -56,7 +49,7 @@
         "board",
         "deadline"
       ],
-      "text": "The deadline is Monday at 23:59 UTC, or 6:59 p.m. Eastern. Chen has the lead to protect, Tufa has the gap to close, and NVARC3 and Turducken are almost shoulder to shoulder. The final day begins with plenty still within reach."
+      "text": "Watch Tufa’s pursuit of Chen, NVARC3’s hold on fourth and the teams around twentieth place before Monday’s 23:59 UTC deadline."
     }
   ],
   "sources": [

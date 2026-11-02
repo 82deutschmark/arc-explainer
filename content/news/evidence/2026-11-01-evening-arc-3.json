@@ -3,49 +3,81 @@
   "articleId": "2026-11-01-evening-arc-3",
   "artwork": {
     "articleId": "2026-11-01-evening-arc-3",
-    "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
+    "briefSha256": "94931122941525a36e095d621a8c7dd60428ed08cbd0ad13f50121b6b6ff2a5c",
     "dataAsOf": "2026-11-02T00:56:31Z",
-    "generationRecord": "2026-11-01-late-night-watch-v1-base",
-    "headline": "Down to the Wire: Chen leads as NVARC3 squeezes past Turducken",
+    "generationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+    "headline": "NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken",
     "historyChart": null,
-    "id": "2026-11-01-evening-arc-3-6628af5a33",
+    "id": "2026-11-01-evening-arc-3-e3b7fc7865",
     "image": {
-      "alt": "Illustration for Down to the Wire: Chen leads as NVARC3 squeezes past Turducken. Yi-Chia Chen @ Fields Model: rank 1, score 75.56; Tufa Labs: rank 2, score 70.24.",
-      "artworkId": "2026-11-01-evening-arc-3-6628af5a33",
-      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
-      "src": "/news-images/2026-11-01-evening-arc-3-6628af5a33.webp"
+      "alt": "Illustration for NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
+      "artworkId": "2026-11-01-evening-arc-3-e3b7fc7865",
+      "caption": "NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST. Board checked Nov 1, 2026 · 7:56 PM EST.",
+      "src": "/news-images/2026-11-01-evening-arc-3-e3b7fc7865.webp"
     },
-    "imageSha256": "6b9ade59aa611dc4a80dfe2bceaebcc55e42bdf4f7ddbaeb7cc06ca1f5558ecd",
+    "imageSha256": "dc3a22e54dbe4e03da2ed4625a69c153a745dba0df9403332cc2ff2e8b714396",
     "kind": "edition-composition",
-    "layout": "corner-overlays-v1",
-    "leadGap": {
-      "current": 5.32,
-      "extends": false,
-      "previous": null
-    },
-    "personIds": [
-      "dries-smit",
-      "yi-chia-chen"
-    ],
-    "rawSha256": "2c6e4fab1a5129f637420fe4d122cd2ab7f062b613be8b0bdd93cc2bf2d48fe8",
-    "rows": [
+    "layout": "story-panel-v2",
+    "leadGap": null,
+    "movement": [
       {
-        "name": "Yi-Chia Chen @ Fields Model",
-        "rank": 1,
-        "rankChange": 0,
-        "score": 75.56,
-        "scoreChange": 0.0,
-        "teamId": "15499660"
+        "firstSeenAt": "2026-11-01T09:00:28Z",
+        "rankChange": 4,
+        "rankFrom": 8,
+        "rankTo": 4,
+        "scoreChange": 6.26,
+        "scoreFrom": 49.89,
+        "scoreTo": 56.15,
+        "teamId": "15770880"
       },
       {
-        "name": "Tufa Labs",
-        "rank": 2,
-        "rankChange": null,
-        "score": 70.24,
-        "scoreChange": null,
-        "teamId": "15486995"
+        "firstSeenAt": "2026-11-01T09:00:28Z",
+        "rankChange": -1,
+        "rankFrom": 4,
+        "rankTo": 5,
+        "scoreChange": 0.0,
+        "scoreFrom": 56.02,
+        "scoreTo": 56.02,
+        "teamId": "15605182"
       }
     ],
+    "overlayOptions": {
+      "brandPlacement": "top-center",
+      "placement": "corners",
+      "showBanner": true,
+      "showMovement": true
+    },
+    "personIds": [
+      "darragh-hanley",
+      "elad-sarafian",
+      "gal-kaplun",
+      "ivan-sorokin",
+      "jean-francois-puget",
+      "keith-tyser",
+      "mark-barney",
+      "mitubant",
+      "son-pham"
+    ],
+    "rawSha256": "cf325eb1fda0c858b103c9fc6abe237e619d10c848c3ab372dfa9149efa7a045",
+    "rows": [
+      {
+        "name": "NVARC3",
+        "rank": 4,
+        "rankChange": null,
+        "score": 56.15,
+        "scoreChange": null,
+        "teamId": "15770880"
+      },
+      {
+        "name": "Team Turducken",
+        "rank": 5,
+        "rankChange": -1,
+        "score": 56.02,
+        "scoreChange": 0.0,
+        "teamId": "15605182"
+      }
+    ],
+    "scoreGap": "Thirteen hundredths of a point apart",
     "trigger": "editor-commissioned-leading-scene",
     "version": 1
   },
@@ -58,7 +90,7 @@
     "top": 75.56
   },
   "baselineTargetAt": "2026-10-31T22:00:00Z",
-  "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
+  "briefSha256": "94931122941525a36e095d621a8c7dd60428ed08cbd0ad13f50121b6b6ff2a5c",
   "closingSnapshot": {
     "bronze": 31.57,
     "gold": 40.75,
@@ -675,16 +707,92 @@
   ],
   "editorialIntake": [
     {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "createdAt": "2026-10-29T23:50:07.085614Z",
+      "expiresAt": "2026-11-04T12:00:00Z",
       "id": "oct29-held-team-profile-reserve",
-      "title": "Held team-feature manuscripts and saved character artwork"
+      "instructions": "Seven completed ARC3 team features, led by yktori, are saved in the committed held-feature reserve with reviewed recurring avatars, exact source notes and public source links. Keep The Last Dance’s existing October30 Early reservation intact. Do not publish all reserve stories now. Select a later edition and refresh standings/rosters/current wording before release; preserve historical individual/team honors and unresolved identities. The Boss explicitly authorized the illustrated cheat sheets to ARC3 rollout feed, and those seven messages are already sent with receipts; do not duplicate them. X remains held. All selected art is archived and must be preserved, including the art-only nvbanana duo. Darren/Domdolus Tolus is separately commissioned as the current ARC2 people-feature priority.",
+      "manuscriptPath": "/Users/macmini/GitHub/arc-explainer/docs/newsroom/feature-reserve/2026-10-29/index.json",
+      "placement": "feature-reserve",
+      "priority": "Boss-requested later-edition feature reserve",
+      "sourceUrls": [
+        "https://www.kaggle.com/yktori",
+        "https://www.kaggle.com/michaeltgao",
+        "https://www.kaggle.com/majkel1337"
+      ],
+      "status": "pending",
+      "teamIds": [
+        "16760837",
+        "16153655",
+        "16490178",
+        "16569113",
+        "16132261",
+        "16958599",
+        "15488763"
+      ],
+      "title": "Held team-feature manuscripts and saved character artwork",
+      "verificationNotes": "Eight completed manuscripts in the committed reserve including Darren; no publication timestamps assigned. Curated art library preserves raw native outputs, inputs, exact prompts and cast mappings."
     },
     {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "createdAt": "2026-11-01T22:34:43.245290+00:00",
+      "expiresAt": "2026-11-02T04:00:00Z",
+      "featureId": "2026-11-01-nvarc3-passes-turducken",
       "id": "nov1-evening-nvarc3-overtake-report",
+      "instructions": "Carry the NVARC3 overtake feature. The editor now selects the juggernaut as the edition and X lead, with observed movement drawn in code; retain previous art in the archive.",
+      "placement": "front-page-feature",
+      "priority": "Boss-requested two-picture evening package",
+      "sourceUrls": [
+        "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+        "https://arc.markbarney.net/news#2026-11-01-nvarc3-passes-turducken"
+      ],
+      "status": "pending",
+      "subjectNames": [
+        "NVARC3",
+        "Team Turducken"
+      ],
+      "targetEditionId": "2026-11-01-evening-arc-3",
+      "teamIds": [
+        "15770880",
+        "15605182",
+        "15499660",
+        "15486995",
+        "15487093"
+      ],
       "title": "NVARC3 overtake report and new juggernaut illustration in the Late edition"
     },
     {
-      "id": "nov1-evening-preserve-night-watch-cover",
-      "title": "Keep the original Night Watch rabbit-and-spiders illustration in the evening edition"
+      "artworkConditions": {
+        "leaderTeamId": "15770880",
+        "requiredPersonIds": [],
+        "requiredRanks": {
+          "15605182": 5,
+          "15770880": 4
+        },
+        "rivalTeamId": "15605182"
+      },
+      "artworkGenerationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+      "artworkOverlay": {
+        "brandPlacement": "top-center",
+        "placement": "corners",
+        "showBanner": true,
+        "showMovement": true
+      },
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "createdAt": "2026-11-02T01:18:42Z",
+      "expiresAt": "2026-11-03T00:00:00Z",
+      "id": "nov1-down-to-wire-jump-cover",
+      "instructions": "Editor-requested final-day revision. Use this reviewed scene and the edition’s dated board evidence. Final images go to Discord before X; all automations stay off.",
+      "status": "pending",
+      "subjectNames": [
+        "NVARC3",
+        "Turducken"
+      ],
+      "targetEditionId": "2026-11-01-evening-arc-3",
+      "title": "NVARC3 jump leads the final-day edition"
     }
   ],
   "events": [
@@ -1132,8 +1240,8 @@
     },
     {
       "disposition": "covered",
-      "id": "editorial-nov1-evening-preserve-night-watch-cover",
-      "reason": "The approved Chen–Tufa scene carries refreshed score and time overlays."
+      "id": "editorial-nov1-down-to-wire-jump-cover",
+      "reason": "The selected pair and scene carry the edition’s verified standings with programmatic overlays."
     }
   ],
   "latestAt": "2026-11-02T00:56:31Z",
@@ -4179,6 +4287,7 @@
       ]
     }
   ],
+  "revisionRecord": "2026-11-01-evening-arc-3-artwork-revision-1",
   "scoreHistory": {
     "15486995": [
       [

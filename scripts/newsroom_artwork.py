@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Sonnet 5.5 Medium
-# Date: 31-October-2026 (edition score-panel captions no longer carry the "AI-generated editorial illustration ... metaphors"
+# Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Sonnet 5.5 Medium
+# Date: 1-November-2026 (observed movement, explicit rival pairs and scene-safe overlay placement); 31-October-2026 (edition score-panel captions no longer carry the "AI-generated editorial illustration ... metaphors"
 # boilerplate, per the Boss and ART_DESK.md of 29 October); 15-October-2026 (an approved scene that already ran in the contest or on X is no longer
 # offered automatically; the comic-strip rule, found in the backup desk's rehearsal)
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
@@ -273,14 +273,67 @@ def commissioned_scene(item, article, subjects, root):
             continue
         selected = [rows[leader_id], rows[rival_id]]
         cast = {p for tid in ids for p in subjects[tid].get('personIds', [])}
-        if (selected[0]['rank'] != 1 or selected[0]['score'] <= selected[1]['score']
+        ranks = conditions.get('requiredRanks', {leader_id: 1})
+        if 'requiredRanks' in conditions and set(ranks) != ids:
+            continue
+        if (any(rows.get(tid, {}).get('rank') != rank for tid, rank in ranks.items())
+                or (leader_id not in ranks) or selected[0]['rank'] >= selected[1]['rank']
+                or selected[0]['score'] <= selected[1]['score']
                 or not set(conditions.get('requiredPersonIds', [])).issubset(cast)):
             continue
         record = load(Path(root) / 'content/news/artwork' / (assignment['artworkGenerationRecord'] + '.json'))
-        if record.get('kind') != 'native-generation' or file_sha(public_file(record['rawSrc'], root)) != record['rawSha256']:
-            raise ValueError('commissioned native scene provenance mismatch')
+        validate_base(record, public_file(record['rawSrc'], root))
         return assignment, selected, record
     return None
+
+
+def validate_base(record, source):
+    """Keep native provenance; imported stock records state what is actually known."""
+    native = record.get('kind') == 'native-generation' and record.get('tool') == 'image_gen.imagegen'
+    stock = (record.get('kind') == 'approved-stock' and record.get('approvedBy') == 'mark-barney'
+             and record.get('provenanceNote') and record.get('sourceCommit') and record.get('review'))
+    if not (native or stock):
+        raise ValueError('artwork requires native generation provenance or explicitly approved stock')
+    if file_sha(source) != record['rawSha256']:
+        raise ValueError('raw image differs from the reviewed native generation or approved stock')
+
+
+def movement_data(rows, item):
+    """Last observed transition into each pictured standing, never an inferred submission time."""
+    result = []
+    for row in rows:
+        history = sorted((p for p in item['evidence'].get('scoreHistory', {}).get(row['teamId'], [])
+                          if stamp(p[0]) <= stamp(item['articleBase']['dataAsOf'])), key=lambda p: stamp(p[0]))
+        pairs = [(a, b) for a, b in zip(history, history[1:])
+                 if b[1:] == [row['score'], row['rank']] and a[1:] != b[1:]]
+        if not pairs:
+            result.append(None)
+            continue
+        a, b = pairs[-1]
+        result.append({'teamId': row['teamId'], 'rankFrom': a[2], 'rankTo': b[2],
+                       'rankChange': a[2] - b[2], 'scoreFrom': a[1], 'scoreTo': b[1],
+                       'scoreChange': round(b[1] - a[1], 2), 'firstSeenAt': b[0]})
+    return result
+
+
+def ordinal(value):
+    suffix = 'th' if 10 <= value % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(value % 10, 'th')
+    return f'{value}{suffix}'
+
+
+def gap_words(rows):
+    if len(rows) != 2:
+        return None
+    cents = round(abs(rows[0]['score'] - rows[1]['score']) * 100)
+    small = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+             'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+    tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+    if cents == 0:
+        return 'Scores level'
+    if cents < 100:
+        number = small[cents] if cents < 20 else tens[cents // 10] + ('-' + small[cents % 10] if cents % 10 else '')
+        return number.capitalize() + (' hundredth' if cents == 1 else ' hundredths') + ' of a point apart'
+    return f'{cents / 100:.2f} points apart'
 
 
 def score_chart_data(rows, item):
@@ -386,21 +439,24 @@ def plan(brief, article, root=ROOT):
             public_file(scene['reusableBase'], root)
             reuse = {'src': scene['reusableBase'], 'recordId': scene['generationRecord']}
     history = None
+    overlay = assignment.get('artworkOverlay', {}) if commission else {}
+    movement = movement_data(selected, item) if overlay.get('showMovement') else None
     if commission:
         # Explicit edition commissioning permits a base generated the previous evening;
         # current observations still govern the cast, lead, scores and chart.
         reuse = {'src': native['rawSrc'], 'recordId': assignment['artworkGenerationRecord']}
         if assignment.get('artworkHistoryChart'):
             history = score_chart_data(selected, item)
-    layout = HISTORY_LAYOUT if history else OVERLAY_LAYOUT
+    layout = HISTORY_LAYOUT if history else ('story-panel-v2' if overlay else OVERLAY_LAYOUT)
     # A reference update must produce a new asset even with the same brief and headline.
     key = digest({'brief': brief['sha256'], 'headline': article['headline'], 'teams': [r['teamId'] for r in selected],
                   'references': refs, 'cast': sorted(cast), 'scene': scene, 'prompt': prompt,
-                  'layout': layout, 'history': history, 'commission': assignment['id'] if commission else None})[:10]
+                  'layout': layout, 'history': history, 'overlay': overlay, 'movement': movement,
+                  'commission': assignment['id'] if commission else None})[:10]
     job = {'id': f"{article['id']}-{key}", 'articleId': article['id'], 'competition': base['competition'],
            'headline': article['headline'], 'briefSha256': brief['sha256'], 'dataAsOf': base['dataAsOf'],
            'rows': selected, 'trigger': reason, 'leadGap': gap, 'personIds': sorted(cast), 'references': refs, 'reuseBase': reuse,
-           'layout': layout, 'historyChart': history,
+           'layout': layout, 'historyChart': history, 'overlayOptions': overlay, 'movement': movement,
            'toolArguments': {'prompt': prompt, 'referenced_image_paths': [str(public_file(r['src'], root)) for r in refs], 'transparent_background': False}}
     return {'version': 1, 'articleId': article['id'], 'jobs': [job]}
 
@@ -453,7 +509,7 @@ def draw_history_panel(draw, canvas, job, font, date_label):
     y = canvas.height - height - 32
     draw.rectangle((x, y, x + width, y + height), fill='#f5f0e5', outline='#171512', width=2)
     draw.rectangle((x, y, x + width, y + 5), fill='#8b3a2a')
-    draw.text((x + 18, y + 13), 'ARC-AGI-3 · OBSERVED PUBLIC SCORES', font=font(23, True), fill='#8b3a2a')
+    draw.text((x + 18, y + 13), job['competition'].replace('arc-', 'ARC-AGI-') + ' · OBSERVED PUBLIC SCORES', font=font(23, True), fill='#8b3a2a')
     colors = ['#8b3a2a', '#355970']
     for i, row in enumerate(job['rows']):
         yy = y + 46 + i * 32
@@ -501,6 +557,58 @@ def draw_history_panel(draw, canvas, job, font, date_label):
     draw.text((x + 18, y + height - 29), date_label + ' · provisional', font=font(19), fill='#534c40')
 
 
+def draw_rank_arrow(draw, x, y, change, color):
+    """Geometry works even when the house font lacks triangle glyphs."""
+    if change > 0:
+        draw.polygon([(x, y + 16), (x + 8, y), (x + 16, y + 16)], fill=color)
+    elif change < 0:
+        draw.polygon([(x, y), (x + 16, y), (x + 8, y + 16)], fill=color)
+    else:
+        draw.line((x, y + 8, x + 16, y + 8), fill=color, width=3)
+
+
+def draw_story_panel(draw, canvas, job, font, date_label):
+    x, width = 32, 590
+    movement = job['movement']
+    step = 94 if movement else 68
+    height = 126 + step * len(job['rows'])
+    y = canvas.height - height - 24
+    draw.rectangle((x, y, x + width, y + height), fill='#f5f0e5', outline='#171512', width=2)
+    draw.rectangle((x, y, x + width, y + 5), fill='#8b3a2a')
+    draw.text((x + 18, y + 13), job['competition'].replace('arc-', 'ARC-AGI-') + ' · PUBLIC STANDINGS', font=font(23, True), fill='#8b3a2a')
+    for i, row in enumerate(job['rows']):
+        yy = y + 47 + step * i
+        name = f"#{row['rank']}  {row['name']}"
+        face = font(31, True)
+        while draw.textlength(name, font=face) > width - 145 and face.size > 18:
+            face = font(face.size - 1, True)
+        if draw.textlength(name, font=face) > width - 145:
+            raise ValueError('team name cannot fit the story panel')
+        draw.text((x + 18, yy), name, font=face, fill='#171512')
+        score = f"{row['score']:.2f}"
+        draw.text((x + width - 18 - draw.textlength(score, font=font(34, True)), yy - 2), score, font=font(34, True), fill='#171512')
+        move = movement[i] if movement else None
+        if move:
+            color = '#28624b' if move['rankChange'] > 0 else '#8b3a2a'
+            draw_rank_arrow(draw, x + 18, yy + 40, move['rankChange'], color)
+            places = abs(move['rankChange'])
+            direction = 'up' if move['rankChange'] > 0 else 'down' if move['rankChange'] < 0 else 'level'
+            rank_line = f"{ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])} · {places} {'place' if places == 1 else 'places'} {direction}"
+            points = f"{move['scoreChange']:+.2f} points" if move['scoreChange'] else 'score unchanged'
+            draw.text((x + 43, yy + 35), rank_line + ' · ' + points, font=font(23), fill=color)
+            first_seen = stamp(move['firstSeenAt']).astimezone(ET).strftime('%b %-d · %-I:%M %p %Z')
+            draw.text((x + 18, yy + 65), 'First seen ' + first_seen, font=font(19), fill='#534c40')
+        elif movement:
+            draw.text((x + 18, yy + 40), 'Earlier movement unavailable', font=font(23), fill='#534c40')
+        else:
+            draw.rectangle((x + 18, yy + 43, x + width - 18, yy + 49), fill='#d5cebf')
+            draw.rectangle((x + 18, yy + 43, x + 18 + (width - 36) * min(100, max(0, row['score'])) / 100, yy + 49), fill='#8b3a2a' if i == 0 else '#355970')
+    gap = gap_words(job['rows'])
+    if gap:
+        draw.text((x + 18, y + height - 72), gap, font=font(25, True), fill='#171512')
+    draw.text((x + 18, y + height - 38), 'Board: ' + date_label, font=font(19), fill='#534c40')
+
+
 def compose(source, brief_path, output=None, article=None, root=ROOT, generation_record=None, now=None):
     brief = checked_brief(brief_path, now)
     if article is None:
@@ -520,13 +628,13 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     if generation_record in curated and (not job['reuseBase'] or job['reuseBase']['recordId'] != generation_record):
         raise ValueError('the reusable scene no longer matches the verified move')
     generation = load(Path(root) / 'content/news/artwork' / (generation_record + '.json'))
-    if generation.get('kind') != 'native-generation' or generation.get('tool') != 'image_gen.imagegen':
-        raise ValueError('artwork requires native generation provenance')
-    if file_sha(source) != generation['rawSha256']:
-        raise ValueError('raw image differs from the reviewed native generation')
-    placement = generation.get('overlayPlacement', 'corners')
-    if placement not in ('corners', 'center'):
+    validate_base(generation, source)
+    overlay = job['overlayOptions']
+    placement = overlay.get('placement', generation.get('overlayPlacement', 'corners'))
+    if placement not in ('corners', 'center', 'footer'):
         raise ValueError('unknown native artwork overlay placement')
+    if overlay and placement == 'center':
+        raise ValueError('story panels require corners or a separate footer')
     if placement == 'center':
         if job['historyChart']:
             raise ValueError('centered overlays require the compact score panel')
@@ -544,11 +652,17 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     font = lambda size, bold=False: ImageFont.truetype(str(fonts / ('IBMPlexSansCondensed-Bold.ttf' if bold else 'IBMPlexSansCondensed-Medium.ttf')), size)
     # Corner graphics are deterministic; keep the scene's aspect ratio and its raw source.
     canvas = raw.copy()
+    if placement == 'footer':
+        panel_height = 344 if job['historyChart'] else 126 + (94 if job['movement'] else 68) * len(job['rows'])
+        canvas = Image.new('RGB', (width, raw.height + panel_height + 64), '#e7e0d2')
+        canvas.paste(raw, (0, 0))
     draw = ImageDraw.Draw(canvas)
     observed = stamp(job['dataAsOf']).astimezone(ET)
     date_label = observed.strftime('%b %-d, %Y · %-I:%M %p %Z')
     if job['historyChart']:
         draw_history_panel(draw, canvas, job, font, date_label)
+    elif overlay:
+        draw_story_panel(draw, canvas, job, font, date_label)
     else:
         panel_width = 560
         x = (width - panel_width) // 2 if placement == 'center' else 32
@@ -572,8 +686,10 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
             draw.rectangle((x + 20, row_y + 44, x + 20 + (panel_width - 40) * min(100, max(0, row['score'])) / 100, row_y + 51), fill='#8b3a2a' if i == 0 else '#355970')
         draw.text((x + 20, y + panel_height - 30), date_label + ' · provisional', font=font(19), fill='#534c40')
     brand_x, brand_y, brand_width = width - 662, 32, 630
-    if placement == 'center':
+    if placement == 'center' or overlay.get('brandPlacement') == 'top-center':
         brand_x = (width - brand_width) // 2
+    if placement == 'footer':
+        brand_y = raw.height + 32
     draw.rectangle((brand_x, brand_y, brand_x + brand_width, brand_y + 106), fill='#f5f0e5', outline='#171512', width=2)
     draw.rectangle((brand_x, brand_y + 101, brand_x + brand_width, brand_y + 106), fill='#8b3a2a')
     logo = Image.open(public_file('/favicon-32x32.png', root)).convert('RGBA').resize((64, 64), Image.Resampling.NEAREST)
@@ -581,6 +697,13 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     draw.text((brand_x + 100, brand_y + 12), 'ARC EXPLAINER · COMPETITION DESK', font=font(21, True), fill='#8b3a2a')
     serif = ImageFont.truetype(str(fonts / 'IBMPlexSerif-Bold.ttf'), 38)
     draw.text((brand_x + 100, brand_y + 41), 'The ARC Daily Digest', font=serif, fill='#171512')
+    if overlay.get('showBanner') and job['movement'] and job['movement'][0]:
+        move, row = job['movement'][0], job['rows'][0]
+        banner = f"{row['name']}: {ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])}"
+        if draw.textlength(banner, font=font(34, True)) > brand_width - 36:
+            raise ValueError('movement banner cannot fit')
+        draw.rectangle((brand_x, brand_y + 116, brand_x + brand_width, brand_y + 173), fill='#f5f0e5', outline='#171512', width=2)
+        draw.text((brand_x + 18, brand_y + 123), banner, font=font(34, True), fill='#28624b')
     stream = BytesIO()
     canvas.save(stream, format='WEBP', quality=93)
     data = stream.getvalue()
@@ -589,12 +712,20 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     alt = 'Illustration for ' + job['headline'] + '. ' + '; '.join(f"{r['name']}: rank {r['rank']}, score {r['score']:.2f}" for r in job['rows']) + '.'
     # The picture is an obvious cartoon; the caption only dates the standings it shows (Boss, 29 and 31 October 2026).
     caption = f"Score panel: {date_label}; provisional public standings."
+    if job['movement']:
+        moves = [f"{row['name']}: {ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])}, {move['scoreChange']:+.2f} points; first seen "
+                 + stamp(move['firstSeenAt']).astimezone(ET).strftime('%b %-d, %Y at %-I:%M %p %Z')
+                 for row, move in zip(job['rows'], job['movement']) if move]
+        alt += ' ' + '; '.join(moves) + '.'
+        caption = '; '.join(moves) + '. Board checked ' + date_label + '.'
     image = {'src': src, 'alt': alt, 'caption': caption, 'artworkId': job['id']}
     report = {'version': 1, 'id': job['id'], 'kind': 'edition-composition', 'articleId': job['articleId'],
               'headline': job['headline'], 'briefSha256': job['briefSha256'], 'dataAsOf': job['dataAsOf'],
               'rows': job['rows'], 'trigger': job['trigger'], 'leadGap': job['leadGap'], 'personIds': job['personIds'],
               'layout': job['layout'], 'historyChart': job['historyChart'], 'generationRecord': generation_record,
               'rawSha256': generation['rawSha256'], 'imageSha256': __import__('hashlib').sha256(data).hexdigest(), 'image': image}
+    if overlay:
+        report.update(overlayOptions=overlay, movement=job['movement'], scoreGap=gap_words(job['rows']))
     record_path = Path(root) / 'content/news/artwork' / (job['id'] + '.json')
     # Check both immutable destinations before writing either one.
     for path, body in [(record_path, encoded(report)), (asset, data)]:
@@ -624,6 +755,11 @@ def validate_attachment(image, article, brief, root=ROOT):
         raise ValueError('illustration scores differ from edition evidence')
     if report.get('historyChart') is not None and report['historyChart'] != score_chart_data(report['rows'], item):
         raise ValueError('illustration history differs from edition evidence')
+    if ((report.get('overlayOptions', {}).get('showMovement') or report.get('movement') is not None)
+            and report.get('movement') != movement_data(report['rows'], item)):
+        raise ValueError('illustration movement differs from edition evidence')
+    if ('overlayOptions' in report or 'scoreGap' in report) and report.get('scoreGap') != gap_words(report['rows']):
+        raise ValueError('illustration gap differs from edition evidence')
     validate_commission_use(report, item, article, root)
     if file_sha(public_file(image['src'], root)) != report['imageSha256']:
         raise ValueError('illustration bytes changed after composition')

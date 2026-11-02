@@ -1,6 +1,59 @@
 {
   "accessedAt": "2026-11-02T00:57:44Z",
   "articleId": "2026-11-01-evening-arc-2",
+  "artwork": {
+    "articleId": "2026-11-01-evening-arc-2",
+    "briefSha256": "94931122941525a36e095d621a8c7dd60428ed08cbd0ad13f50121b6b6ff2a5c",
+    "dataAsOf": "2026-11-02T00:56:33Z",
+    "generationRecord": "2026-10-31-colosseum-v5-arc2-stock",
+    "headline": "Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten",
+    "historyChart": null,
+    "id": "2026-11-01-evening-arc-2-01dfa19d7e",
+    "image": {
+      "alt": "Illustration for Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen @ Fields Model: rank 2, score 87.22.",
+      "artworkId": "2026-11-01-evening-arc-2-01dfa19d7e",
+      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+      "src": "/news-images/2026-11-01-evening-arc-2-01dfa19d7e.webp"
+    },
+    "imageSha256": "b7922dac6ae1d61a69816b449a1cb53c21e3d63a0a844e196073dd3a0ef33a83",
+    "kind": "edition-composition",
+    "layout": "story-panel-v2",
+    "leadGap": {
+      "current": 0.84,
+      "extends": false,
+      "previous": 0.84
+    },
+    "movement": null,
+    "overlayOptions": {
+      "placement": "footer"
+    },
+    "personIds": [
+      "dries-smit",
+      "yi-chia-chen"
+    ],
+    "rawSha256": "dfe64ce462d203546556d8f6d1faff1dbd9fe043d812b913fe35d497f87b73a8",
+    "rows": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      }
+    ],
+    "scoreGap": "Eighty-four hundredths of a point apart",
+    "trigger": "editor-commissioned-leading-scene",
+    "version": 1
+  },
   "baselineSnapshot": {
     "bronze": 32.22,
     "gold": 72.92,
@@ -10,7 +63,7 @@
     "top": 88.06
   },
   "baselineTargetAt": "2026-10-31T22:00:00Z",
-  "briefSha256": "8417e419259ef8d3b8defc5983ebf737c84c251f34e2cfa716dcafcfded98c4c",
+  "briefSha256": "94931122941525a36e095d621a8c7dd60428ed08cbd0ad13f50121b6b6ff2a5c",
   "closingSnapshot": {
     "bronze": 32.22,
     "gold": 73.89,
@@ -385,7 +438,32 @@
   ],
   "cutoffAt": "2026-11-02T00:57:44Z",
   "discussionThreads": [],
-  "editorialIntake": [],
+  "editorialIntake": [
+    {
+      "artworkConditions": {
+        "leaderTeamId": "16756524",
+        "requiredPersonIds": [],
+        "rivalTeamId": "15501171"
+      },
+      "artworkGenerationRecord": "2026-10-31-colosseum-v5-arc2-stock",
+      "artworkOverlay": {
+        "placement": "footer"
+      },
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "createdAt": "2026-11-02T01:18:42Z",
+      "expiresAt": "2026-11-03T00:00:00Z",
+      "id": "nov1-down-to-wire-arc2-colosseum",
+      "instructions": "Editor-requested final-day revision. Use this reviewed scene and the edition’s dated board evidence. Final images go to Discord before X; all automations stay off.",
+      "status": "pending",
+      "subjectNames": [
+        "Tufa",
+        "Chen"
+      ],
+      "targetEditionId": "2026-11-01-evening-arc-2",
+      "title": "Tufa and Chen in the ARC-2 Colosseum"
+    }
+  ],
   "events": [
     {
       "from": 67.78,
@@ -857,6 +935,11 @@
       "disposition": "covered",
       "id": "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold",
       "reason": "Reported with its observed time and cited source."
+    },
+    {
+      "disposition": "covered",
+      "id": "editorial-nov1-down-to-wire-arc2-colosseum",
+      "reason": "The selected pair and scene carry the edition’s verified standings with programmatic overlays."
     }
   ],
   "latestAt": "2026-11-02T00:56:33Z",
@@ -2641,6 +2724,7 @@
       ]
     }
   ],
+  "revisionRecord": "2026-11-01-evening-arc-2-artwork-revision-1",
   "scoreHistory": {
     "15486728": [
       [
