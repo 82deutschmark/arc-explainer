@@ -3,29 +3,214 @@
   "articleId": "2026-11-01-evening-arc-2",
   "artwork": {
     "articleId": "2026-11-01-evening-arc-2",
-    "briefSha256": "238424fef420b22988366765fbc642cf31fd3b465e6a3682f8cbdc576a6c6708",
+    "briefSha256": "ef7362e009ea6caff3aa94673faade0ba1a1b44120f0df471949b1322b1d24ce",
     "dataAsOf": "2026-11-02T00:56:33Z",
     "generationRecord": "2026-10-31-colosseum-v5-arc2-stock",
     "headline": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten",
     "historyChart": null,
-    "id": "2026-11-01-evening-arc-2-2cae03a0ba",
+    "id": "2026-11-01-evening-arc-2-c45133ab3b",
     "image": {
       "alt": "Illustration for Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 87.22.",
-      "artworkId": "2026-11-01-evening-arc-2-2cae03a0ba",
+      "artworkId": "2026-11-01-evening-arc-2-c45133ab3b",
       "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
-      "src": "/news-images/2026-11-01-evening-arc-2-2cae03a0ba.webp"
+      "src": "/news-images/2026-11-01-evening-arc-2-c45133ab3b.webp"
     },
-    "imageSha256": "3b003debafbdd43c9bc3be7b0772b5a0a568490295c413732f2426d415a4653e",
+    "imageSha256": "3984d1e868041836dd3258596c0ad1f8ef06c732c67b8019f5bb53d2776b227f",
     "kind": "edition-composition",
-    "layout": "story-panel-v3.1",
+    "layout": "story-panel-v3.2b",
     "leadGap": {
       "current": 0.84,
       "extends": false,
       "previous": 0.84
     },
+    "leaderboardMovement": [
+      {
+        "firstSeenAt": "2026-10-09T05:21:54Z",
+        "rankChange": 0,
+        "rankFrom": 1,
+        "rankTo": 1,
+        "scoreChange": 4.45,
+        "scoreFrom": 83.61,
+        "scoreTo": 88.06,
+        "teamId": "16756524"
+      },
+      {
+        "firstSeenAt": "2026-10-29T18:52:07Z",
+        "rankChange": 0,
+        "rankFrom": 2,
+        "rankTo": 2,
+        "scoreChange": 2.5,
+        "scoreFrom": 84.72,
+        "scoreTo": 87.22,
+        "teamId": "15501171"
+      },
+      {
+        "firstSeenAt": "2026-10-29T17:51:53Z",
+        "rankChange": 1,
+        "rankFrom": 4,
+        "rankTo": 3,
+        "scoreChange": 2.5,
+        "scoreFrom": 81.39,
+        "scoreTo": 83.89,
+        "teamId": "15486939"
+      },
+      {
+        "firstSeenAt": "2026-10-29T17:51:53Z",
+        "rankChange": -1,
+        "rankFrom": 3,
+        "rankTo": 4,
+        "scoreChange": 0.0,
+        "scoreFrom": 83.47,
+        "scoreTo": 83.47,
+        "teamId": "16559402"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": 18,
+        "rankFrom": 23,
+        "rankTo": 5,
+        "scoreChange": 12.23,
+        "scoreFrom": 69.58,
+        "scoreTo": 81.81,
+        "teamId": "16442485"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": -1,
+        "rankFrom": 5,
+        "rankTo": 6,
+        "scoreChange": 0.0,
+        "scoreFrom": 80.83,
+        "scoreTo": 80.83,
+        "teamId": "15789060"
+      },
+      {
+        "firstSeenAt": "2026-10-30T22:25:32Z",
+        "rankChange": 1,
+        "rankFrom": 8,
+        "rankTo": 7,
+        "scoreChange": 2.08,
+        "scoreFrom": 76.81,
+        "scoreTo": 78.89,
+        "teamId": "16373916"
+      },
+      {
+        "firstSeenAt": "2026-10-30T22:55:36Z",
+        "rankChange": 0,
+        "rankFrom": 8,
+        "rankTo": 8,
+        "scoreChange": 0.97,
+        "scoreFrom": 77.22,
+        "scoreTo": 78.19,
+        "teamId": "17021430"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": -1,
+        "rankFrom": 8,
+        "rankTo": 9,
+        "scoreChange": 0.0,
+        "scoreFrom": 76.25,
+        "scoreTo": 76.25,
+        "teamId": "16600664"
+      },
+      {
+        "firstSeenAt": "2026-10-31T23:29:23Z",
+        "rankChange": 7,
+        "rankFrom": 17,
+        "rankTo": 10,
+        "scoreChange": 3.19,
+        "scoreFrom": 72.92,
+        "scoreTo": 76.11,
+        "teamId": "17054447"
+      }
+    ],
+    "leaderboardRows": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      },
+      {
+        "name": "nvbanana",
+        "rank": 3,
+        "rankChange": 0,
+        "score": 83.89,
+        "scoreChange": 0.0,
+        "teamId": "15486939"
+      },
+      {
+        "name": "Domdolus Tolus",
+        "rank": 4,
+        "rankChange": 0,
+        "score": 83.47,
+        "scoreChange": 0.0,
+        "teamId": "16559402"
+      },
+      {
+        "name": "Sakayori Lab",
+        "rank": 5,
+        "rankChange": 0,
+        "score": 81.81,
+        "scoreChange": 0.0,
+        "teamId": "16442485"
+      },
+      {
+        "name": "rabbithole",
+        "rank": 6,
+        "rankChange": 0,
+        "score": 80.83,
+        "scoreChange": 0.0,
+        "teamId": "15789060"
+      },
+      {
+        "name": "Majkel1337",
+        "rank": 7,
+        "rankChange": 0,
+        "score": 78.89,
+        "scoreChange": 0.0,
+        "teamId": "16373916"
+      },
+      {
+        "name": "Ravi Teja Chilakala",
+        "rank": 8,
+        "rankChange": 0,
+        "score": 78.19,
+        "scoreChange": 0.0,
+        "teamId": "17021430"
+      },
+      {
+        "name": "V | A | M",
+        "rank": 9,
+        "rankChange": 0,
+        "score": 76.25,
+        "scoreChange": 0.0,
+        "teamId": "16600664"
+      },
+      {
+        "name": "Lashen Learning",
+        "rank": 10,
+        "rankChange": null,
+        "score": 76.11,
+        "scoreChange": null,
+        "teamId": "17054447"
+      }
+    ],
     "movement": null,
     "overlayOptions": {
       "gapPlacement": "footer-center",
+      "leaderboardFooter": true,
       "placement": "footer",
       "teamLabels": {
         "15499660": "Yi-Chia Chen",
@@ -71,7 +256,7 @@
     "top": 88.06
   },
   "baselineTargetAt": "2026-10-31T22:00:00Z",
-  "briefSha256": "238424fef420b22988366765fbc642cf31fd3b465e6a3682f8cbdc576a6c6708",
+  "briefSha256": "ef7362e009ea6caff3aa94673faade0ba1a1b44120f0df471949b1322b1d24ce",
   "closingSnapshot": {
     "bronze": 32.22,
     "gold": 73.89,
@@ -456,6 +641,7 @@
       "artworkGenerationRecord": "2026-10-31-colosseum-v5-arc2-stock",
       "artworkOverlay": {
         "gapPlacement": "footer-center",
+        "leaderboardFooter": true,
         "placement": "footer",
         "teamLabels": {
           "15499660": "Yi-Chia Chen",
@@ -2740,7 +2926,7 @@
       ]
     }
   ],
-  "revisionRecord": "2026-11-01-evening-arc-2-artwork-revision-2",
+  "revisionRecord": "2026-11-01-evening-arc-2-artwork-revision-3",
   "scoreHistory": {
     "15486728": [
       [

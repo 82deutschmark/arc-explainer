@@ -462,7 +462,7 @@ def plan(brief, article, root=ROOT):
         reuse = {'src': native['rawSrc'], 'recordId': assignment['artworkGenerationRecord']}
         if assignment.get('artworkHistoryChart'):
             history = score_chart_data(selected, item)
-    layout = HISTORY_LAYOUT if history else ('story-panel-v3.1' if overlay else OVERLAY_LAYOUT)
+    layout = HISTORY_LAYOUT if history else ('story-panel-v3.2b' if overlay.get('leaderboardFooter') else 'story-panel-v3.1' if overlay else OVERLAY_LAYOUT)
     # A reference update must produce a new asset even with the same brief and headline.
     key = digest({'brief': brief['sha256'], 'headline': article['headline'], 'teams': [r['teamId'] for r in selected],
                   'references': refs, 'cast': sorted(cast), 'scene': scene, 'prompt': prompt,
@@ -669,6 +669,43 @@ def draw_compact_panel(draw, canvas, job, font, date_label):
     draw.text((x + width - 12 - draw.textlength(label, font=font(15)), y + 164), label, font=font(15), fill='#534c40')
 
 
+def draw_leaderboard_footer(draw, canvas, job, font, date_label, top):
+    """Use the full footer for ten evidence-backed entries, with compact branding."""
+    ink, muted, accent = '#171512', '#534c40', '#8b3a2a'
+    draw.rectangle((0, top, canvas.width, top + 5), fill=accent)
+    draw.text((30, top + 12), job['competition'].upper() + '  |  PUBLIC TOP 10', font=font(28, True), fill=accent)
+    gap = score_gap(job['rows'], job['overlayOptions'])
+    draw.text((630, top + 9), gap, font=font(35, True), fill=accent)
+    label = 'THE ARC DAILY DIGEST'
+    draw.text((1888 - draw.textlength(label, font=font(28, True)), top + 12), label, font=font(28, True), fill=ink)
+    for col in range(2):
+        x = 30 + col * 960
+        for dx, label in [(0, 'RANK / TEAM'), (470, 'SCORE'), (580, 'GAP TO #1'), (730, 'LAST MOVE')]:
+            draw.text((x + dx, top + 56), label, font=font(18, True), fill=muted)
+        for i in range(5):
+            j = col * 5 + i; row = job['leaderboardRows'][j]; move = job['leaderboardMovement'][j]
+            y = top + 82 + i * 44
+            if i % 2 == 0: draw.rectangle((x - 6, y - 1, x + 898, y + 42), fill='#f5f0e5')
+            name = f"{row['rank']:02d}  {panel_name(row, job['overlayOptions'])}"
+            face = font(27, True)
+            while draw.textlength(name, font=face) > 450: face = font(face.size - 1, True)
+            draw.text((x, y + 4), name, font=face, fill=ink)
+            for right, text in [(546, f"{row['score']:.2f}"), (676, f"{job['leaderboardRows'][0]['score'] - row['score']:.2f}")]:
+                draw.text((x + right - draw.textlength(text, font=font(27, True)), y + 4), text, font=font(27, True), fill=ink)
+            if move:
+                change = f"{move['rankChange']:+d} pl. / {move['scoreChange']:+.2f}"
+                color = '#28624b' if move['rankChange'] >= 0 else accent
+                draw.text((x + 714, y), change, font=font(19, True), fill=color)
+                when = stamp(move['firstSeenAt']).astimezone(ET).strftime('%b %-d %-I:%M %p')
+                draw.text((x + 714, y + 22), when, font=font(16), fill=muted)
+            else:
+                draw.text((x + 714, y + 9), 'Not observed', font=font(19), fill=muted)
+    draw.line((960, top + 55, 960, top + 301), fill='#b8af9d', width=2)
+    draw.text((30, top + 316), 'Board: ' + date_label, font=font(20), fill=muted)
+    legend = 'Last move: places / points gained; time first seen by tracker'
+    draw.text((1888 - draw.textlength(legend, font=font(20)), top + 316), legend, font=font(20), fill=muted)
+
+
 def compose(source, brief_path, output=None, article=None, root=ROOT, generation_record=None, now=None):
     brief = checked_brief(brief_path, now)
     if article is None:
@@ -705,6 +742,11 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     item = next(x for x in brief['competitions'].values()
                 if x['status'] == 'ready' and x['articleBase']['id'] == article['id'])
     validate_commission_use({'generationRecord': generation_record, 'rows': job['rows']}, item, article, root)
+    if overlay.get('leaderboardFooter'):
+        job['leaderboardRows'] = sorted([r for r in item['articleBase']['stats'] if r['rank'] <= 10], key=lambda r: r['rank'])
+        if [r['rank'] for r in job['leaderboardRows']] != list(range(1, 11)):
+            raise ValueError('top-ten footer requires all ten verified ranks')
+        job['leaderboardMovement'] = movement_data(job['leaderboardRows'], item)
     width = 1920
     raw = Image.open(source).convert('RGB')
     raw = raw.resize((width, round(raw.height * width / raw.width)), Image.Resampling.LANCZOS)
@@ -714,12 +756,14 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     canvas = raw.copy()
     if placement == 'footer':
         panel_height = 344 if job['historyChart'] else 126 + (94 if job['movement'] else 68) * len(job['rows'])
-        canvas = Image.new('RGB', (width, raw.height + panel_height + 64), '#e7e0d2')
+        canvas = Image.new('RGB', (width, raw.height + (350 if overlay.get('leaderboardFooter') else panel_height + 64)), '#e7e0d2')
         canvas.paste(raw, (0, 0))
     draw = ImageDraw.Draw(canvas)
     observed = stamp(job['dataAsOf']).astimezone(ET)
     date_label = observed.strftime('%b %-d, %Y · %-I:%M %p %Z')
-    if job['historyChart']:
+    if overlay.get('leaderboardFooter'):
+        draw_leaderboard_footer(draw, canvas, job, font, date_label, raw.height)
+    elif job['historyChart']:
         draw_history_panel(draw, canvas, job, font, date_label)
     elif overlay:
         draw_story_panel(draw, canvas, job, font, date_label)
@@ -745,32 +789,33 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
             draw.rectangle((x + 20, row_y + 44, x + panel_width - 20, row_y + 51), fill='#d5cebf')
             draw.rectangle((x + 20, row_y + 44, x + 20 + (panel_width - 40) * min(100, max(0, row['score'])) / 100, row_y + 51), fill='#8b3a2a' if i == 0 else '#355970')
         draw.text((x + 20, y + panel_height - 30), date_label + ' · provisional', font=font(19), fill='#534c40')
-    brand_x, brand_y, brand_width = width - 662, 32, 630
-    if placement == 'center' or overlay.get('brandPlacement') == 'top-center':
-        brand_x = (width - brand_width) // 2
-    if placement == 'footer':
-        brand_y = raw.height + 32
-        if overlay.get('gapPlacement') == 'footer-center':
-            label = score_gap(job['rows'], overlay)
-            face = font(57, True)
-            while draw.textlength(label, font=face) > 570 and face.size > 30:
-                face = font(face.size - 1, True)
-            middle_x = (622 + brand_x) / 2
-            draw.text((middle_x - draw.textlength(label, font=face) / 2, raw.height + 135), label, font=face, fill='#8b3a2a')
-    draw.rectangle((brand_x, brand_y, brand_x + brand_width, brand_y + 106), fill='#f5f0e5', outline='#171512', width=2)
-    draw.rectangle((brand_x, brand_y + 101, brand_x + brand_width, brand_y + 106), fill='#8b3a2a')
-    logo = Image.open(public_file('/favicon-32x32.png', root)).convert('RGBA').resize((64, 64), Image.Resampling.NEAREST)
-    canvas.paste(logo, (brand_x + 18, brand_y + 21), logo)
-    draw.text((brand_x + 100, brand_y + 12), 'ARC EXPLAINER · COMPETITION DESK', font=font(21, True), fill='#8b3a2a')
-    serif = ImageFont.truetype(str(fonts / 'IBMPlexSerif-Bold.ttf'), 38)
-    draw.text((brand_x + 100, brand_y + 41), 'The ARC Daily Digest', font=serif, fill='#171512')
-    if overlay.get('showBanner') and job['movement'] and job['movement'][0]:
-        move, row = job['movement'][0], job['rows'][0]
-        banner = f"{row['name']}: {ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])}"
-        if draw.textlength(banner, font=font(34, True)) > brand_width - 36:
-            raise ValueError('movement banner cannot fit')
-        draw.rectangle((brand_x, brand_y + 116, brand_x + brand_width, brand_y + 173), fill='#f5f0e5', outline='#171512', width=2)
-        draw.text((brand_x + 18, brand_y + 123), banner, font=font(34, True), fill='#28624b')
+    if not overlay.get('leaderboardFooter'):
+        brand_x, brand_y, brand_width = width - 662, 32, 630
+        if placement == 'center' or overlay.get('brandPlacement') == 'top-center':
+            brand_x = (width - brand_width) // 2
+        if placement == 'footer':
+            brand_y = raw.height + 32
+            if overlay.get('gapPlacement') == 'footer-center':
+                label = score_gap(job['rows'], overlay)
+                face = font(57, True)
+                while draw.textlength(label, font=face) > 570 and face.size > 30:
+                    face = font(face.size - 1, True)
+                middle_x = (622 + brand_x) / 2
+                draw.text((middle_x - draw.textlength(label, font=face) / 2, raw.height + 135), label, font=face, fill='#8b3a2a')
+        draw.rectangle((brand_x, brand_y, brand_x + brand_width, brand_y + 106), fill='#f5f0e5', outline='#171512', width=2)
+        draw.rectangle((brand_x, brand_y + 101, brand_x + brand_width, brand_y + 106), fill='#8b3a2a')
+        logo = Image.open(public_file('/favicon-32x32.png', root)).convert('RGBA').resize((64, 64), Image.Resampling.NEAREST)
+        canvas.paste(logo, (brand_x + 18, brand_y + 21), logo)
+        draw.text((brand_x + 100, brand_y + 12), 'ARC EXPLAINER · COMPETITION DESK', font=font(21, True), fill='#8b3a2a')
+        serif = ImageFont.truetype(str(fonts / 'IBMPlexSerif-Bold.ttf'), 38)
+        draw.text((brand_x + 100, brand_y + 41), 'The ARC Daily Digest', font=serif, fill='#171512')
+        if overlay.get('showBanner') and job['movement'] and job['movement'][0]:
+            move, row = job['movement'][0], job['rows'][0]
+            banner = f"{row['name']}: {ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])}"
+            if draw.textlength(banner, font=font(34, True)) > brand_width - 36:
+                raise ValueError('movement banner cannot fit')
+            draw.rectangle((brand_x, brand_y + 116, brand_x + brand_width, brand_y + 173), fill='#f5f0e5', outline='#171512', width=2)
+            draw.text((brand_x + 18, brand_y + 123), banner, font=font(34, True), fill='#28624b')
     stream = BytesIO()
     canvas.save(stream, format='WEBP', quality=93)
     data = stream.getvalue()
@@ -794,6 +839,8 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
               'rawSha256': generation['rawSha256'], 'imageSha256': __import__('hashlib').sha256(data).hexdigest(), 'image': image}
     if overlay:
         report.update(overlayOptions=overlay, movement=job['movement'], scoreGap=score_gap(job['rows'], overlay))
+    if overlay.get('leaderboardFooter'):
+        report.update(leaderboardRows=job['leaderboardRows'], leaderboardMovement=job['leaderboardMovement'])
     record_path = Path(root) / 'content/news/artwork' / (job['id'] + '.json')
     # Check both immutable destinations before writing either one.
     for path, body in [(record_path, encoded(report)), (asset, data)]:
@@ -826,6 +873,10 @@ def validate_attachment(image, article, brief, root=ROOT):
     if ((report.get('overlayOptions', {}).get('showMovement') or report.get('movement') is not None)
             and report.get('movement') != movement_data(report['rows'], item)):
         raise ValueError('illustration movement differs from edition evidence')
+    if report.get('overlayOptions', {}).get('leaderboardFooter'):
+        expected = sorted([r for r in stats.values() if r['rank'] <= 10], key=lambda r: r['rank'])
+        if report.get('leaderboardRows') != expected or report.get('leaderboardMovement') != movement_data(expected, item):
+            raise ValueError('leaderboard footer differs from edition evidence')
     expected_gap = (score_gap(report['rows'], report.get('overlayOptions', {}))
                     if report.get('layout', '').startswith('story-panel-v3') else gap_words(report['rows']))
     if ('overlayOptions' in report or 'scoreGap' in report) and report.get('scoreGap') != expected_gap:

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-02T01:48:25.585240+00:00",
+  "updatedAt": "2026-11-02T01:55:32.664188+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -2020,6 +2020,19 @@
           "supersedes": [
             "1566623224031084565",
             "1566623286786269204"
+          ]
+        },
+        {
+          "artworkId": "2026-11-01-evening-arc-2-c45133ab3b",
+          "channelId": "1550165647911034940",
+          "confirmedAttachment": true,
+          "imageSha256": "33126685ce71e219e84e83ed61e2d8a2f5657035833fb8f6cbbb77a763cec876",
+          "kind": "replacement-edition-preview",
+          "messageId": "1566631812749594735",
+          "sharedAt": "2026-11-02T01:55:32.664188+00:00",
+          "supersedes": [
+            "1566623286786269204",
+            "1566630008854683740"
           ]
         }
       ],

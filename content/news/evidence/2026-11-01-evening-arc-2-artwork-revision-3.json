@@ -1,0 +1,840 @@
+{
+  "artwork": {
+    "articleId": "2026-11-01-evening-arc-2",
+    "briefSha256": "ef7362e009ea6caff3aa94673faade0ba1a1b44120f0df471949b1322b1d24ce",
+    "dataAsOf": "2026-11-02T00:56:33Z",
+    "generationRecord": "2026-10-31-colosseum-v5-arc2-stock",
+    "headline": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten",
+    "historyChart": null,
+    "id": "2026-11-01-evening-arc-2-c45133ab3b",
+    "image": {
+      "alt": "Illustration for Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 87.22.",
+      "artworkId": "2026-11-01-evening-arc-2-c45133ab3b",
+      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+      "src": "/news-images/2026-11-01-evening-arc-2-c45133ab3b.webp"
+    },
+    "imageSha256": "3984d1e868041836dd3258596c0ad1f8ef06c732c67b8019f5bb53d2776b227f",
+    "kind": "edition-composition",
+    "layout": "story-panel-v3.2b",
+    "leadGap": {
+      "current": 0.84,
+      "extends": false,
+      "previous": 0.84
+    },
+    "leaderboardMovement": [
+      {
+        "firstSeenAt": "2026-10-09T05:21:54Z",
+        "rankChange": 0,
+        "rankFrom": 1,
+        "rankTo": 1,
+        "scoreChange": 4.45,
+        "scoreFrom": 83.61,
+        "scoreTo": 88.06,
+        "teamId": "16756524"
+      },
+      {
+        "firstSeenAt": "2026-10-29T18:52:07Z",
+        "rankChange": 0,
+        "rankFrom": 2,
+        "rankTo": 2,
+        "scoreChange": 2.5,
+        "scoreFrom": 84.72,
+        "scoreTo": 87.22,
+        "teamId": "15501171"
+      },
+      {
+        "firstSeenAt": "2026-10-29T17:51:53Z",
+        "rankChange": 1,
+        "rankFrom": 4,
+        "rankTo": 3,
+        "scoreChange": 2.5,
+        "scoreFrom": 81.39,
+        "scoreTo": 83.89,
+        "teamId": "15486939"
+      },
+      {
+        "firstSeenAt": "2026-10-29T17:51:53Z",
+        "rankChange": -1,
+        "rankFrom": 3,
+        "rankTo": 4,
+        "scoreChange": 0.0,
+        "scoreFrom": 83.47,
+        "scoreTo": 83.47,
+        "teamId": "16559402"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": 18,
+        "rankFrom": 23,
+        "rankTo": 5,
+        "scoreChange": 12.23,
+        "scoreFrom": 69.58,
+        "scoreTo": 81.81,
+        "teamId": "16442485"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": -1,
+        "rankFrom": 5,
+        "rankTo": 6,
+        "scoreChange": 0.0,
+        "scoreFrom": 80.83,
+        "scoreTo": 80.83,
+        "teamId": "15789060"
+      },
+      {
+        "firstSeenAt": "2026-10-30T22:25:32Z",
+        "rankChange": 1,
+        "rankFrom": 8,
+        "rankTo": 7,
+        "scoreChange": 2.08,
+        "scoreFrom": 76.81,
+        "scoreTo": 78.89,
+        "teamId": "16373916"
+      },
+      {
+        "firstSeenAt": "2026-10-30T22:55:36Z",
+        "rankChange": 0,
+        "rankFrom": 8,
+        "rankTo": 8,
+        "scoreChange": 0.97,
+        "scoreFrom": 77.22,
+        "scoreTo": 78.19,
+        "teamId": "17021430"
+      },
+      {
+        "firstSeenAt": "2026-10-30T21:55:28Z",
+        "rankChange": -1,
+        "rankFrom": 8,
+        "rankTo": 9,
+        "scoreChange": 0.0,
+        "scoreFrom": 76.25,
+        "scoreTo": 76.25,
+        "teamId": "16600664"
+      },
+      {
+        "firstSeenAt": "2026-10-31T23:29:23Z",
+        "rankChange": 7,
+        "rankFrom": 17,
+        "rankTo": 10,
+        "scoreChange": 3.19,
+        "scoreFrom": 72.92,
+        "scoreTo": 76.11,
+        "teamId": "17054447"
+      }
+    ],
+    "leaderboardRows": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      },
+      {
+        "name": "nvbanana",
+        "rank": 3,
+        "rankChange": 0,
+        "score": 83.89,
+        "scoreChange": 0.0,
+        "teamId": "15486939"
+      },
+      {
+        "name": "Domdolus Tolus",
+        "rank": 4,
+        "rankChange": 0,
+        "score": 83.47,
+        "scoreChange": 0.0,
+        "teamId": "16559402"
+      },
+      {
+        "name": "Sakayori Lab",
+        "rank": 5,
+        "rankChange": 0,
+        "score": 81.81,
+        "scoreChange": 0.0,
+        "teamId": "16442485"
+      },
+      {
+        "name": "rabbithole",
+        "rank": 6,
+        "rankChange": 0,
+        "score": 80.83,
+        "scoreChange": 0.0,
+        "teamId": "15789060"
+      },
+      {
+        "name": "Majkel1337",
+        "rank": 7,
+        "rankChange": 0,
+        "score": 78.89,
+        "scoreChange": 0.0,
+        "teamId": "16373916"
+      },
+      {
+        "name": "Ravi Teja Chilakala",
+        "rank": 8,
+        "rankChange": 0,
+        "score": 78.19,
+        "scoreChange": 0.0,
+        "teamId": "17021430"
+      },
+      {
+        "name": "V | A | M",
+        "rank": 9,
+        "rankChange": 0,
+        "score": 76.25,
+        "scoreChange": 0.0,
+        "teamId": "16600664"
+      },
+      {
+        "name": "Lashen Learning",
+        "rank": 10,
+        "rankChange": null,
+        "score": 76.11,
+        "scoreChange": null,
+        "teamId": "17054447"
+      }
+    ],
+    "movement": null,
+    "overlayOptions": {
+      "gapPlacement": "footer-center",
+      "leaderboardFooter": true,
+      "placement": "footer",
+      "teamLabels": {
+        "15499660": "Yi-Chia Chen",
+        "15501171": "Yi-Chia Chen",
+        "15605182": "Turducken",
+        "15770880": "NVARC3",
+        "16756524": "Tufa"
+      }
+    },
+    "personIds": [
+      "dries-smit",
+      "yi-chia-chen"
+    ],
+    "rawSha256": "dfe64ce462d203546556d8f6d1faff1dbd9fe043d812b913fe35d497f87b73a8",
+    "rows": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      }
+    ],
+    "scoreGap": "Tufa leads by 0.84",
+    "trigger": "editor-commissioned-leading-scene",
+    "version": 1
+  },
+  "author": "GPT-6 Astra Extra high",
+  "authorizedBy": "mark-barney",
+  "originalArticle": {
+    "baselineAt": "2026-10-31T21:59:12Z",
+    "competition": "arc-2",
+    "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
+    "dataAsOf": "2026-11-02T00:56:33Z",
+    "date": "2026-11-01",
+    "dek": "Tufa’s lead is just 0.84 points. Ravi Teja Chilakala and Lashen Learning have reached the top ten, while much bigger jumps reshape the field below.",
+    "discord": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
+    "edition": "evening",
+    "generatedBy": "gpt-6-astra-extra-high",
+    "headline": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten",
+    "id": "2026-11-01-evening-arc-2",
+    "image": {
+      "alt": "Illustration for Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 87.22.",
+      "artworkId": "2026-11-01-evening-arc-2-2cae03a0ba",
+      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+      "src": "/news-images/2026-11-01-evening-arc-2-2cae03a0ba.webp"
+    },
+    "publishedAt": "2026-11-02T00:57:44Z",
+    "sections": [
+      {
+        "heading": "New faces at the summit",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "Two weeks ago, Ravi Teja Chilakala stood 38th in ARC-2 and Lashen Learning was 25th. At Sunday’s 7:56 p.m. EST check, they were eighth and tenth. Between them sits V | A | M, up from 28th to ninth. Three teams have given the top ten a new look."
+      },
+      {
+        "heading": "Less than a point at the front",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "Tufa Labs holds the lead on 88.06. Yi-Chia Chen is right behind on 87.22: a gap of just 0.84. Yi-Chia Chen leads ARC-3, while Tufa has the upper hand here. Behind them, nvbanana’s 83.89 puts it third, only 0.42 ahead of Domdolus Tolus. There is precious little breathing room at either end of that leading quartet."
+      },
+      {
+        "heading": "From deep in the field",
+        "sourceIds": [
+          "board",
+          "wire-2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th"
+        ],
+        "text": "After NVARC3’s early-morning move on ARC-3, ARC-2 supplied its own afternoon drama. Keyser Soze climbed 1,844 places, from 1,910th to 66th, and stood 67th on 49.17 at 7:56 p.m. EST. areno moved from 995th to 59th, adding 22.22 points to reach 53.19. Together those jumps gained more than 2,700 places. Giovanny Rodríguez rose from 61st to 49th with another 6.52 points."
+      },
+      {
+        "heading": "A crowded gold line",
+        "sourceIds": [
+          "board",
+          "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
+        ],
+        "text": "S & M & N & S & Y jumped from 33rd to 15th after gaining eight points. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just 0.70 points away."
+      },
+      {
+        "heading": "Fourteen days that changed the race",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "ARCane has more than doubled its score in two weeks, putting it on the public gold line."
+      },
+      {
+        "heading": "The clock is running",
+        "sourceIds": [
+          "board",
+          "deadline"
+        ],
+        "text": "Watch Tufa’s narrow lead over Yi-Chia Chen, the new top-ten contenders and ARCane’s hold on the public gold line. Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern."
+      }
+    ],
+    "sources": [
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "board",
+        "title": "ARC-2 public leaderboard and observed history",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "wire-2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th",
+        "title": "Keyser Soze jumps from 1,910th to 66th on ARC-2",
+        "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold",
+        "title": "S & M & N & S & Y climbs into ARC-2 gold with an 8.06-point gain",
+        "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "deadline",
+        "title": "Kaggle competition deadline: November 2, 23:59 UTC",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview"
+      }
+    ],
+    "stats": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      },
+      {
+        "name": "nvbanana",
+        "rank": 3,
+        "rankChange": 0,
+        "score": 83.89,
+        "scoreChange": 0.0,
+        "teamId": "15486939"
+      },
+      {
+        "name": "Domdolus Tolus",
+        "rank": 4,
+        "rankChange": 0,
+        "score": 83.47,
+        "scoreChange": 0.0,
+        "teamId": "16559402"
+      },
+      {
+        "name": "Sakayori Lab",
+        "rank": 5,
+        "rankChange": 0,
+        "score": 81.81,
+        "scoreChange": 0.0,
+        "teamId": "16442485"
+      },
+      {
+        "name": "rabbithole",
+        "rank": 6,
+        "rankChange": 0,
+        "score": 80.83,
+        "scoreChange": 0.0,
+        "teamId": "15789060"
+      },
+      {
+        "name": "Majkel1337",
+        "rank": 7,
+        "rankChange": 0,
+        "score": 78.89,
+        "scoreChange": 0.0,
+        "teamId": "16373916"
+      },
+      {
+        "name": "Ravi Teja Chilakala",
+        "rank": 8,
+        "rankChange": 0,
+        "score": 78.19,
+        "scoreChange": 0.0,
+        "teamId": "17021430"
+      },
+      {
+        "name": "V | A | M",
+        "rank": 9,
+        "rankChange": 0,
+        "score": 76.25,
+        "scoreChange": 0.0,
+        "teamId": "16600664"
+      },
+      {
+        "name": "Lashen Learning",
+        "rank": 10,
+        "rankChange": null,
+        "score": 76.11,
+        "scoreChange": null,
+        "teamId": "17054447"
+      },
+      {
+        "name": "Rick",
+        "rank": 23,
+        "rankChange": 6,
+        "score": 71.25,
+        "scoreChange": 3.19,
+        "teamId": "16861695"
+      },
+      {
+        "name": "kibuna",
+        "rank": 24,
+        "rankChange": 4,
+        "score": 70.83,
+        "scoreChange": 2.36,
+        "teamId": "17026534"
+      },
+      {
+        "name": "この遥かなる旅路に祝福を",
+        "rank": 28,
+        "rankChange": -3,
+        "score": 70.14,
+        "scoreChange": 0.42,
+        "teamId": "15526034"
+      },
+      {
+        "name": "insuperabilehart",
+        "rank": 33,
+        "rankChange": 12,
+        "score": 68.47,
+        "scoreChange": 9.3,
+        "teamId": "16597340"
+      },
+      {
+        "name": "Giovanny Rodríguez",
+        "rank": 49,
+        "rankChange": 10,
+        "score": 58.19,
+        "scoreChange": 6.52,
+        "teamId": "15522325"
+      },
+      {
+        "name": "Kaz",
+        "rank": 51,
+        "rankChange": 9,
+        "score": 57.5,
+        "scoreChange": 5.83,
+        "teamId": "17096234"
+      },
+      {
+        "name": "wally0593",
+        "rank": 66,
+        "rankChange": 3,
+        "score": 50.28,
+        "scoreChange": 4.59,
+        "teamId": "17024200"
+      },
+      {
+        "name": "ARC Mutants",
+        "rank": 70,
+        "rankChange": -4,
+        "score": 47.08,
+        "scoreChange": 0.0,
+        "teamId": "17023174"
+      },
+      {
+        "name": "Leszek Góra",
+        "rank": 78,
+        "rankChange": 12,
+        "score": 44.58,
+        "scoreChange": 4.16,
+        "teamId": "16487050"
+      },
+      {
+        "name": "StnDyq",
+        "rank": 85,
+        "rankChange": 10,
+        "score": 42.36,
+        "scoreChange": 2.92,
+        "teamId": "16794074"
+      },
+      {
+        "name": "ship ship",
+        "rank": 95,
+        "rankChange": 7,
+        "score": 40.56,
+        "scoreChange": 2.5,
+        "teamId": "17012502"
+      },
+      {
+        "name": "alexey pavlov",
+        "rank": 115,
+        "rankChange": 23,
+        "score": 36.94,
+        "scoreChange": 2.08,
+        "teamId": "16863282"
+      },
+      {
+        "name": "Mithil A Vakde",
+        "rank": 133,
+        "rankChange": 22,
+        "score": 35.69,
+        "scoreChange": 1.8,
+        "teamId": "15486728"
+      },
+      {
+        "name": "Jan Disselhoff",
+        "rank": 2369,
+        "rankChange": null,
+        "score": 21.67,
+        "scoreChange": null,
+        "teamId": "15507730"
+      }
+    ],
+    "teamIds": [
+      "16756524",
+      "15501171",
+      "15486939",
+      "16559402"
+    ]
+  },
+  "originalEvidenceCommit": "3908af41",
+  "originalEvidencePath": "content/news/evidence/2026-11-01-evening-arc-2.json",
+  "reason": "Replace empty footer with verified top ten, gaps and last observed moves; compact masthead.",
+  "replacementArticle": {
+    "baselineAt": "2026-10-31T21:59:12Z",
+    "competition": "arc-2",
+    "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
+    "dataAsOf": "2026-11-02T00:56:33Z",
+    "date": "2026-11-01",
+    "dek": "Tufa’s lead is just 0.84 points. Ravi Teja Chilakala and Lashen Learning have reached the top ten, while much bigger jumps reshape the field below.",
+    "discord": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
+    "edition": "evening",
+    "generatedBy": "gpt-6-astra-extra-high",
+    "headline": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten",
+    "id": "2026-11-01-evening-arc-2",
+    "image": {
+      "alt": "Illustration for Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 87.22.",
+      "artworkId": "2026-11-01-evening-arc-2-c45133ab3b",
+      "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
+      "src": "/news-images/2026-11-01-evening-arc-2-c45133ab3b.webp"
+    },
+    "publishedAt": "2026-11-02T00:57:44Z",
+    "sections": [
+      {
+        "heading": "New faces at the summit",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "Two weeks ago, Ravi Teja Chilakala stood 38th in ARC-2 and Lashen Learning was 25th. At Sunday’s 7:56 p.m. EST check, they were eighth and tenth. Between them sits V | A | M, up from 28th to ninth. Three teams have given the top ten a new look."
+      },
+      {
+        "heading": "Less than a point at the front",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "Tufa Labs holds the lead on 88.06. Yi-Chia Chen is right behind on 87.22: a gap of just 0.84. Yi-Chia Chen leads ARC-3, while Tufa has the upper hand here. Behind them, nvbanana’s 83.89 puts it third, only 0.42 ahead of Domdolus Tolus. There is precious little breathing room at either end of that leading quartet."
+      },
+      {
+        "heading": "From deep in the field",
+        "sourceIds": [
+          "board",
+          "wire-2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th"
+        ],
+        "text": "After NVARC3’s early-morning move on ARC-3, ARC-2 supplied its own afternoon drama. Keyser Soze climbed 1,844 places, from 1,910th to 66th, and stood 67th on 49.17 at 7:56 p.m. EST. areno moved from 995th to 59th, adding 22.22 points to reach 53.19. Together those jumps gained more than 2,700 places. Giovanny Rodríguez rose from 61st to 49th with another 6.52 points."
+      },
+      {
+        "heading": "A crowded gold line",
+        "sourceIds": [
+          "board",
+          "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
+        ],
+        "text": "S & M & N & S & Y jumped from 33rd to 15th after gaining eight points. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just 0.70 points away."
+      },
+      {
+        "heading": "Fourteen days that changed the race",
+        "sourceIds": [
+          "board"
+        ],
+        "text": "ARCane has more than doubled its score in two weeks, putting it on the public gold line."
+      },
+      {
+        "heading": "The clock is running",
+        "sourceIds": [
+          "board",
+          "deadline"
+        ],
+        "text": "Watch Tufa’s narrow lead over Yi-Chia Chen, the new top-ten contenders and ARCane’s hold on the public gold line. Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern."
+      }
+    ],
+    "sources": [
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "board",
+        "title": "ARC-2 public leaderboard and observed history",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "wire-2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th",
+        "title": "Keyser Soze jumps from 1,910th to 66th on ARC-2",
+        "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-2-keyser-soze-jumps-to-66th"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold",
+        "title": "S & M & N & S & Y climbs into ARC-2 gold with an 8.06-point gain",
+        "url": "https://arc.markbarney.net/news/wire#2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
+      },
+      {
+        "accessedAt": "2026-11-02T00:57:44Z",
+        "id": "deadline",
+        "title": "Kaggle competition deadline: November 2, 23:59 UTC",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview"
+      }
+    ],
+    "stats": [
+      {
+        "name": "Tufa Labs",
+        "rank": 1,
+        "rankChange": 0,
+        "score": 88.06,
+        "scoreChange": 0.0,
+        "teamId": "16756524"
+      },
+      {
+        "name": "Yi-Chia Chen",
+        "rank": 2,
+        "rankChange": 0,
+        "score": 87.22,
+        "scoreChange": 0.0,
+        "teamId": "15501171"
+      },
+      {
+        "name": "nvbanana",
+        "rank": 3,
+        "rankChange": 0,
+        "score": 83.89,
+        "scoreChange": 0.0,
+        "teamId": "15486939"
+      },
+      {
+        "name": "Domdolus Tolus",
+        "rank": 4,
+        "rankChange": 0,
+        "score": 83.47,
+        "scoreChange": 0.0,
+        "teamId": "16559402"
+      },
+      {
+        "name": "Sakayori Lab",
+        "rank": 5,
+        "rankChange": 0,
+        "score": 81.81,
+        "scoreChange": 0.0,
+        "teamId": "16442485"
+      },
+      {
+        "name": "rabbithole",
+        "rank": 6,
+        "rankChange": 0,
+        "score": 80.83,
+        "scoreChange": 0.0,
+        "teamId": "15789060"
+      },
+      {
+        "name": "Majkel1337",
+        "rank": 7,
+        "rankChange": 0,
+        "score": 78.89,
+        "scoreChange": 0.0,
+        "teamId": "16373916"
+      },
+      {
+        "name": "Ravi Teja Chilakala",
+        "rank": 8,
+        "rankChange": 0,
+        "score": 78.19,
+        "scoreChange": 0.0,
+        "teamId": "17021430"
+      },
+      {
+        "name": "V | A | M",
+        "rank": 9,
+        "rankChange": 0,
+        "score": 76.25,
+        "scoreChange": 0.0,
+        "teamId": "16600664"
+      },
+      {
+        "name": "Lashen Learning",
+        "rank": 10,
+        "rankChange": null,
+        "score": 76.11,
+        "scoreChange": null,
+        "teamId": "17054447"
+      },
+      {
+        "name": "Rick",
+        "rank": 23,
+        "rankChange": 6,
+        "score": 71.25,
+        "scoreChange": 3.19,
+        "teamId": "16861695"
+      },
+      {
+        "name": "kibuna",
+        "rank": 24,
+        "rankChange": 4,
+        "score": 70.83,
+        "scoreChange": 2.36,
+        "teamId": "17026534"
+      },
+      {
+        "name": "この遥かなる旅路に祝福を",
+        "rank": 28,
+        "rankChange": -3,
+        "score": 70.14,
+        "scoreChange": 0.42,
+        "teamId": "15526034"
+      },
+      {
+        "name": "insuperabilehart",
+        "rank": 33,
+        "rankChange": 12,
+        "score": 68.47,
+        "scoreChange": 9.3,
+        "teamId": "16597340"
+      },
+      {
+        "name": "Giovanny Rodríguez",
+        "rank": 49,
+        "rankChange": 10,
+        "score": 58.19,
+        "scoreChange": 6.52,
+        "teamId": "15522325"
+      },
+      {
+        "name": "Kaz",
+        "rank": 51,
+        "rankChange": 9,
+        "score": 57.5,
+        "scoreChange": 5.83,
+        "teamId": "17096234"
+      },
+      {
+        "name": "wally0593",
+        "rank": 66,
+        "rankChange": 3,
+        "score": 50.28,
+        "scoreChange": 4.59,
+        "teamId": "17024200"
+      },
+      {
+        "name": "ARC Mutants",
+        "rank": 70,
+        "rankChange": -4,
+        "score": 47.08,
+        "scoreChange": 0.0,
+        "teamId": "17023174"
+      },
+      {
+        "name": "Leszek Góra",
+        "rank": 78,
+        "rankChange": 12,
+        "score": 44.58,
+        "scoreChange": 4.16,
+        "teamId": "16487050"
+      },
+      {
+        "name": "StnDyq",
+        "rank": 85,
+        "rankChange": 10,
+        "score": 42.36,
+        "scoreChange": 2.92,
+        "teamId": "16794074"
+      },
+      {
+        "name": "ship ship",
+        "rank": 95,
+        "rankChange": 7,
+        "score": 40.56,
+        "scoreChange": 2.5,
+        "teamId": "17012502"
+      },
+      {
+        "name": "alexey pavlov",
+        "rank": 115,
+        "rankChange": 23,
+        "score": 36.94,
+        "scoreChange": 2.08,
+        "teamId": "16863282"
+      },
+      {
+        "name": "Mithil A Vakde",
+        "rank": 133,
+        "rankChange": 22,
+        "score": 35.69,
+        "scoreChange": 1.8,
+        "teamId": "15486728"
+      },
+      {
+        "name": "Jan Disselhoff",
+        "rank": 2369,
+        "rankChange": null,
+        "score": 21.67,
+        "scoreChange": null,
+        "teamId": "15507730"
+      }
+    ],
+    "teamIds": [
+      "16756524",
+      "15501171",
+      "15486939",
+      "16559402"
+    ]
+  },
+  "revisedAt": "2026-11-02T01:54:59.719342+00:00"
+}

@@ -1,3 +1,9 @@
+### Version 9.161.5 · November 1, 2026
+
+- Replace the sparse ARC-2 footer with the full public top ten in two columns: rank, score, gap to first, last observed rank/score change and its first-seen time. Keep the original art intact and reduce branding to one line. Author: GPT-6 Astra Extra high.
+- Implement the layout in the shared compositor, bind all ten rows to the saved board evidence, preserve the prior illustration, and send a fresh replacement Discord preview. The displayed board time remains explicitly dated; X stays unsent.
+- Validation: 33 artwork tests pass, including rejection of altered footer scores and missing ranks. Final image visually inspected.
+
 ### Version 9.161.4 · November 1, 2026
 
 - Compact, information-dense ARC-3 panel: both ranks and scores, observed movement, points gained, numeric gap and dated observations; clear the tank and remove the duplicate sky banner. ARC-2 carries “Tufa leads by 0.84” prominently in its footer. Author: GPT-6 Astra Extra high.

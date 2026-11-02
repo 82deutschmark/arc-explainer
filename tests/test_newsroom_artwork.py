@@ -347,6 +347,29 @@ class ArtworkTests(unittest.TestCase):
         n.write(self.path, self.brief)
         return item
 
+    def test_top_ten_footer_rejects_changed_scores_and_missing_ranks(self):
+        item = self.commission()
+        rows = item['articleBase']['stats']
+        rows[:] = [dict(rows[0], rank=1), dict(rows[1], rank=2)]
+        rows.extend(dict(rows[1], teamId=str(i), name=f'Team {i}', rank=i, score=10-i/10) for i in range(3, 11))
+        assignment = item['intake']['editorialAssignments'][0]
+        assignment['artworkHistoryChart'] = False
+        assignment['artworkOverlay'] = {'placement': 'footer', 'leaderboardFooter': True}
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        report = self.compose()
+        self.assertEqual(len(report['leaderboardRows']), 10)
+        art.validate_attachment(report['image'], self.article, self.brief, self.root)
+        report['leaderboardRows'][8]['score'] += 1
+        n.write(self.root / 'content/news/artwork' / (report['id'] + '.json'), report)
+        with self.assertRaisesRegex(ValueError, 'footer differs'):
+            art.validate_attachment(report['image'], self.article, self.brief, self.root)
+        rows.pop()
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        with self.assertRaisesRegex(ValueError, 'all ten verified ranks'):
+            self.compose()
+
     def test_nonleading_pair_carries_observed_jump_and_unchanged_rival_score(self):
         item = self.movement_commission()
         report = self.compose()
