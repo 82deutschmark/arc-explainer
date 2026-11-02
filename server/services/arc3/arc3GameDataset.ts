@@ -41,7 +41,7 @@ import {
   type MechanicPoint,
   type PlayerObservation,
 } from '../../../shared/arc3Games';
-import { getArcBaseline, getPlayerRuns, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
+import { arcPrizeReplayUrl, getArcBaseline, getPlayerRuns, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
 import { buildGameLevels, screenshotKind, type LevelRun } from '../../../shared/arc3Games/gameLevels';
 import { SITE_ORIGIN } from './arc3GameMechanicsDoc';
 
@@ -201,7 +201,7 @@ export function buildArc3GameDataset(gameId: string): Arc3GameDataset | null {
     runs: runs.map((run) => ({
       player: run.player,
       guid: run.guid,
-      replayUrl: `https://arcprize.org/replay/${run.guid}`,
+      replayUrl: arcPrizeReplayUrl(run.guid),
       openedAt: run.openAt,
       state: run.state,
       levelsCompleted: run.levelsCompleted,

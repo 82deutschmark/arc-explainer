@@ -171,6 +171,12 @@ export const vc33: Arc3GameMetadata = {
       description: 'The same run as the video on this page, on the original 9-level VC33 (vc33-6ae7bf49eea5), before ARC Prize reworked it. It does not look like today\'s game.',
       originalGame: true,
     },
+    {
+      title: 'VC33 Boss\'s Run on an Earlier Build',
+      url: 'https://arcprize.org/replay/13bd6bcf-6f01-4ade-9c26-990dec1b34e3',
+      type: 'replay',
+      description: 'Boss\'s run on an earlier build (vc33-9851e02b), published 8 Feb 2026: six levels in 358 actions before the game ended. It is not the build playable today.',
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/vc33/lvl1.png' },

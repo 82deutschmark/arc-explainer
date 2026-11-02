@@ -122,6 +122,12 @@ export const ls20: Arc3GameMetadata = {
       originalGame: true,
     },
     {
+      title: 'LS20 Boss\'s Win on an Earlier Build',
+      url: 'https://arcprize.org/replay/6184a865-6ee3-409d-a712-17c9608245a1',
+      type: 'replay',
+      description: 'Boss\'s win on an earlier build (ls20-cb3b57cc), published 8 Feb 2026: all seven levels in 378 actions. It is not the build playable today.',
+    },
+    {
       title: 'LS20 Human Replay (Win, 7/7 Levels, Score 100)',
       url: 'https://arcprize.org/replay/7537433d-75af-48fa-ad3d-45fd32b23c00',
       type: 'replay',

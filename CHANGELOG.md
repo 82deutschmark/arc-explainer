@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.161.1  Nov 1, 2026
+
+- **The hub leads with Boss's guide to the reasoning and his replay of every game** (Author: Claude Opus 5.5 High). What: the table's human column was reading hand-kept links in each game file and fell back to ARC Prize's board for the games that had none, when his runs were in our own scorecard data all along. Why: Boss: the point of the site is the guide to human reasoning plus his replay, and he has played every game. How: new `getOwnerReplays` and `arcPrizeReplayUrl` in `shared/arc3Games/humanDifficulty.ts` (the dataset now shares the URL helper); `WalkthroughTable` shows his best replay with how it ended, any other wins, and the top-ten board as its own column; new `BossReplays` on every game page; `LandingPage` lead rewritten; `shared/routes.ts`, `server/services/seo/pageContent.ts` and `client/public/llms.txt` follow.
+
 ### Version 9.161.0  Nov 1, 2026
 
 - **/home is now the ARC-AGI-3 resource hub, ARC-3 only** (Author: Claude Opus 5.5 High). Boss: this was the page he meant; his collection is being displayed badly, the human walkthroughs are not advertised, and ARC-2 must not lead. The page opens on a table of every public game with its walkthrough, a human winning replay, AI replays, the original build and one-click Play. Below it: the reasoning traces, the wall of our games, then a searchable directory of every outside resource.

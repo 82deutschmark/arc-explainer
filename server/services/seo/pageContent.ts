@@ -25,7 +25,7 @@ import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
 import { SITE_ORIGIN, clientRouteMeta, completeMeta, escapeHtml as esc, isDynamicAppRoute } from '../../../shared/seo';
 import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 import { buildGameLevels } from '../../../shared/arc3Games/gameLevels';
-import { getArcBaseline } from '../../../shared/arc3Games/humanDifficulty';
+import { arcPrizeReplayUrl, getArcBaseline, getOwnerReplays } from '../../../shared/arc3Games/humanDifficulty';
 import { resolveNewsMeta, newsSitemapEntries, newsSitemapUrls } from '../news/newsPresentation';
 import { puzzleLoader } from '../puzzleLoader';
 
@@ -64,7 +64,7 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
     if (route === '/arc3/games') {
       tags.bodyHtml = `<main><h1>ARC-AGI-3 Game Mechanics</h1><p>Guides to the 25 public demonstration games, plus separately labeled preview history. These are spoilers; the private competition games have different mechanics.</p><p><a href="/arc3/slippery-seven">The Slippery Seven</a> · <a href="/human-records.html">Human and AI results</a> · <a href="/arc3/games.md">Markdown reference</a></p><ul>${getAllGames().map((game: Arc3GameMetadata) => `<li>${gameLink(game.gameId)}${game.gameId === 'as66' ? ' (withdrawn preview)' : ''} — ${esc(game.simpleExplanation)}</li>`).join('')}</ul></main>`;
     }
-    if (route === '/home') tags.bodyHtml = `<main><h1>ARC-AGI-3 Resource Hub</h1>${paragraphs(tags.description)}<h2>Human walkthroughs</h2><ul>${getAllGames().map(g => `<li><a href="/arc3/games/${esc(g.gameId)}">${esc(g.gameId)} walkthrough</a></li>`).join('')}</ul>${ARC3_HUB_SECTIONS.map(s => `<h2>${esc(s.title)}</h2>${paragraphs(s.blurb)}<ul>${s.items.map(r => `<li><a href="${esc(r.url)}">${esc(r.title)}</a>: ${esc(r.desc)}</li>`).join('')}</ul>`).join('')}<p><a href="/arc2">ARC-1 and ARC-2 resources</a></p></main><section><h2>Explore all public sections</h2>${publicPageLinks()}</section>`;
+    if (route === '/home') tags.bodyHtml = `<main><h1>ARC-AGI-3 Resource Hub</h1>${paragraphs(tags.description)}<h2>Boss's guide and replay for every public game</h2><ul>${getAllGames().map(g => { const best = getOwnerReplays(g.gameId)[0]; return `<li><a href="/arc3/games/${esc(g.gameId)}">${esc(g.gameId)} guide</a>${best ? `, <a href="${esc(arcPrizeReplayUrl(best.guid))}">Boss's replay</a>` : ''}</li>`; }).join('')}</ul>${ARC3_HUB_SECTIONS.map(s => `<h2>${esc(s.title)}</h2>${paragraphs(s.blurb)}<ul>${s.items.map(r => `<li><a href="${esc(r.url)}">${esc(r.title)}</a>: ${esc(r.desc)}</li>`).join('')}</ul>`).join('')}<p><a href="/arc2">ARC-1 and ARC-2 resources</a></p></main><section><h2>Explore all public sections</h2>${publicPageLinks()}</section>`;
     if (route === '/browser') tags.bodyHtml = `<main><h1>ARC puzzle browser</h1>${paragraphs(tags.description)}<ul>${puzzleLoader.getPuzzleList().map(p => `<li><a href="/puzzle/${encodeURIComponent(p.id)}">${esc(p.id)}</a> — ${esc(p.source)}</li>`).join('')}</ul></main>`;
     return { tags: completeMeta(tags), status: 200 };
   }
