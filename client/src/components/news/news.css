@@ -539,122 +539,63 @@
   .news-post-with-face .news-portrait-card { width: 56px; height: 56px; }
 }
 
-/* The approved illustration keeps its native proportions; typography supplies the banner. */
-@font-face { font-family: Goose Slab; src: url('/api/news/fonts/AlfaSlabOne-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+/* The illustrated nameplate uses real text over the integrated reporter goose. */
+@font-face { font-family: Goose Comic; src: url('/api/news/fonts/Bangers-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
 @font-face { font-family: News Serif; src: url('/api/news/fonts/IBMPlexSerif-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
 @font-face { font-family: News Serif; src: url('/api/news/fonts/IBMPlexSerif-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 @font-face { font-family: News Mono; src: url('/api/news/fonts/IBMPlexMono-Medium.ttf') format('truetype'); font-weight: 500 600; font-display: swap; }
-.is-goose { --serif: 'News Serif', Georgia, serif; --display: 'News Serif', Georgia, serif; }
-.news-goose-banner { display: grid; grid-template-columns: clamp(128px, 15vw, 184px) minmax(0, 1fr); gap: 28px; align-items: center; padding: 14px 4px 16px; }
-.news-brand-art img { display: block; width: 100%; height: auto; }
-.news-brand-type { text-align: center; min-width: 0; }
-.news-brand-overline { margin: 0 0 8px; font: 600 11px/1.4 var(--sans); letter-spacing: .23em; text-transform: uppercase; }
-.is-goose .news-name, .is-goose .is-front .news-name { margin: 0; font: 400 clamp(38px, 6.4vw, 84px)/1.06 'Goose Slab', Georgia, serif; letter-spacing: -.045em; white-space: normal; }
-.is-goose .news-name small { display: block; margin: 0 0 3px; font: italic 400 22px/1 var(--serif); letter-spacing: .03em; }
-.news-brand-dateline { margin-top: 12px; font: 500 11px/1.4 var(--sans); color: var(--muted); }
+@font-face { font-family: News Difference; src: url('/api/news/fonts/IBMPlexSansCondensed-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: News Japanese; src: url('/api/news/fonts/NotoSansJP-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; unicode-range: U+3000-30FF,U+31F0-31FF,U+3400-9FFF,U+F900-FAFF,U+FF00-FFEF; }
+.arc-daily { --serif: 'News Serif', 'News Japanese', 'Yu Mincho', Georgia, serif; --sans: Arial, 'News Japanese', 'Yu Gothic', sans-serif; line-break: strict; word-break: normal; }
+.is-goose { --display: var(--serif); }
+.news-goose-banner { position: relative; margin: 12px 0; text-align: center; }
+.news-goose-banner.has-world { height: clamp(136px, 17vw, 200px); overflow: hidden; border-block: 1px solid var(--ink); }
+.news-banner-world { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 65%; }
+.news-brand-lockup { display: grid; place-items: center; min-height: 112px; }
+.has-world .news-brand-lockup { position: absolute; inset: 0; }
+.news-brand-type { min-width: 0; text-align: center; }
+.has-world .news-brand-type { position: absolute; left: 32%; right: 14%; top: 50%; transform: translateY(-50%); }
+.news-brand-overline { margin: 0 0 7px; font: 700 10px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.is-goose .news-name, .is-goose .is-front .news-name { margin: 0; font: 400 clamp(34px, 5.4vw, 62px)/1 'Goose Comic', 'News Japanese', sans-serif; letter-spacing: .025em; white-space: nowrap; text-transform: uppercase; text-shadow: 0 1px #f5f0e5; }
+.news-brand-dateline { margin-top: 8px; color: #322d25; font: 500 11px/1.3 var(--sans); }
 .news-tip-link { font-weight: 700; text-decoration: underline !important; text-underline-offset: 3px; }
 .news-sponsor-rail .news-masthead-ad { display: flex; align-items: center; max-width: none; border: 0; border-bottom: 1px solid var(--hair); }
-.news-sponsor-rail .news-masthead-ad-label { display: block; flex: 0 0 140px; border: 0; padding-left: 0; }
+.news-sponsor-rail .news-masthead-ad-label { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; flex: 0 0 140px; border: 0; padding-left: 0; }
 .news-sponsor-rail .news-masthead-ad-link { flex: 1; grid-template-columns: 56px minmax(0,1fr) auto; padding: 5px 0; }
 .news-sponsor-rail .news-masthead-ad-link img { width: 56px; height: auto; object-fit: contain; }
 .news-sponsor-rail .news-masthead-ad-cta { grid-column: auto; }
 .news-sponsor-rail .news-masthead-ad-copy strong { font-size: 13px; }
 .news-sponsor-rail .news-masthead-ad-copy em { font-size: 10px; }
 @media (max-width: 600px) {
-  .news-goose-banner { grid-template-columns: 104px minmax(0,1fr); gap: 12px; padding: 10px 0 12px; }
-  .news-brand-overline { font-size: 8px; letter-spacing: .12em; margin-bottom: 6px; }
-  .is-goose .news-name, .is-goose .is-front .news-name { font-size: clamp(26px, 8.8vw, 43px); letter-spacing: -.04em; }
-  .is-goose .news-name small { font-size: 16px; }
-  .news-brand-dateline { font-size: 9px; margin-top: 8px; }
+  .news-goose-banner.has-world { height: 112px; }
+  .has-world .news-brand-type { left: 32%; right: 3%; }
+  .is-goose .news-name, .is-goose .is-front .news-name { font-size: clamp(23px, 7.2vw, 36px); letter-spacing: .012em; }
+  .news-brand-overline { font-size: 7px; letter-spacing: .01em; margin-bottom: 5px; }
+  .news-brand-dateline { font-size: 9px; margin-top: 6px; }
   .news-sponsor-rail .news-masthead-ad-label { flex-basis: 88px; font-size: 7px; }
   .news-sponsor-rail .news-masthead-ad-link { grid-template-columns: 40px minmax(0,1fr); gap: 5px; }
   .news-sponsor-rail .news-masthead-ad-link img { width: 40px; }
   .news-sponsor-rail .news-masthead-ad-cta { display: none; }
 }
 
-.arc-daily .sc, .arc-daily .news-score { font-family: 'News Mono', ui-monospace, monospace; }
-.news-number-key { display: flex; flex-wrap: wrap; gap: 5px 14px; margin: 8px 0 12px; padding: 5px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font: 10px/1.4 var(--sans); color: var(--muted); }
+/* Semantic sporting values retain their own faces even in numeric table cells. */
+.arc-daily .pl, .arc-daily .news-place, .arc-daily .news-agate .num.pl, .arc-daily .news-boxscore td.pl { color: #2453a6; font-family: system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
+.arc-daily .sc, .arc-daily .news-score, .arc-daily .news-agate .num.sc, .arc-daily .news-boxscore td.sc { color: #17703f; font-family: 'News Mono', ui-monospace, monospace; font-weight: 600; font-variant-numeric: tabular-nums; }
+.arc-daily .sd, .arc-daily .news-score-difference, .arc-daily .news-chg.sd, .arc-daily .news-boxscore td.sd { color: #496e43; font-family: 'News Difference', 'News Japanese', sans-serif; font-weight: 500; font-style: italic; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .arc-daily .pl, .arc-daily .sc { white-space: nowrap; font-size: .94em; }
-
+.news-number-key { display: flex; flex-wrap: wrap; gap: 5px 14px; margin: 12px 0; padding: 5px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font: 10px/1.4 var(--sans); color: var(--muted); }
 .news-ticker .sc, .news-ticker .pl { background: var(--paper); padding: 0 3px; }
 .arc-daily .cb-num.pl small { color: var(--muted); font-weight: 400; font-family: var(--sans); }
-
-.news-tips { max-width: 760px; margin: 28px auto 45px; font: 18px/1.6 var(--serif); }
-.news-tip-action { display: inline-block; padding: 10px 16px; border: 2px solid var(--ink); font: 700 14px/1.4 var(--sans); }
-
-/* Three semantic number styles. Differences keep units; Japanese text uses the
-   existing licensed Noto font on demand without replacing the paper's Latin type. */
-@font-face { font-family: News Difference; src: url('/api/news/fonts/IBMPlexSansCondensed-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
-@font-face { font-family: News Japanese; src: url('/api/news/fonts/NotoSansJP-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; unicode-range: U+3000-30FF,U+31F0-31FF,U+3400-9FFF,U+F900-FAFF,U+FF00-FFEF; }
-.arc-daily { --serif: 'News Serif', 'News Japanese', 'Yu Mincho', Georgia, serif; --sans: Arial, 'News Japanese', 'Yu Gothic', sans-serif; line-break: strict; word-break: normal; }
-.arc-daily .sd, .arc-daily .news-score-difference { color: #496e43; font-family: 'News Difference', 'News Japanese', sans-serif; font-weight: 500; font-style: italic; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .arc-daily :lang(ja) { font-family: 'News Japanese', 'Yu Gothic', sans-serif; letter-spacing: normal; text-transform: none; }
 .arc-daily a:focus-visible, .arc-daily button:focus-visible { outline: 3px solid #2453a6; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .arc-daily *, .arc-daily *::before, .arc-daily *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
 
-/* Keep the story and its picture together. Balanced short newspaper columns
-   must not split a single opening paragraph or create rivers of justified text. */
+/* Keep each opening with its picture and its cast in a single swipeable row. */
 .news-story-body { columns: auto; max-width: 72ch; font-size: 17px; line-height: 1.55; }
 .news-story-body p { text-align: start; hyphens: manual; overflow-wrap: break-word; }
 .news-story-cards { display: flex; flex-wrap: nowrap; gap: 10px; overflow-x: auto; padding: 2px 2px 10px; scroll-snap-type: x proximity; }
 .news-story-card { flex: 0 0 96px; scroll-snap-align: start; }
 .news-story-card img { width: 96px; height: auto; }
-.news-number-key { margin-top: 12px; }
-
-/* An actual panoramic image carries the banner. The selected square logo is
-   layered separately at its natural proportions; neither image is cropped. */
-.news-goose-banner { position: relative; display: block; padding: 0; margin: 12px 0; }
-.news-banner-world { display: block; width: 100%; height: auto; }
-.news-brand-lockup { display: grid; grid-template-columns: clamp(90px,13vw,150px) minmax(0,1fr); gap: 20px; align-items: center; padding: 16px; }
-.has-world .news-brand-lockup { position: absolute; inset: 0; }
-.has-world .news-brand-type { padding: 10px 12px; background: rgba(245,240,229,.92); }
-.is-goose .news-name, .is-goose .is-front .news-name { font-size: clamp(32px,5.8vw,72px); }
-@media (max-width:600px) {
-  .news-brand-lockup { grid-template-columns: 76px minmax(0,1fr); gap: 8px; padding: 8px; }
-  .has-world .news-brand-type { padding: 4px; }
-  .is-goose .news-name, .is-goose .is-front .news-name { font-size: clamp(23px,7vw,36px); }
-  .news-brand-overline { font-size: 7px; margin-bottom: 4px; letter-spacing: .06em; }
-  .is-goose .news-name small { font-size: 12px; margin-bottom: 2px; }
-  .news-brand-dateline { font-size: 8px; margin-top: 5px; }
-}
-
-@font-face { font-family: Goose Comic; src: url('/api/news/fonts/Bangers-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-/* Letter directly onto the panorama's quiet paper sky. No solid inset panel. */
-.has-world .news-brand-lockup { display: block; padding: 0; }
-.has-world .news-brand-type { position: absolute; left: 24%; right: 16%; top: 49%; transform: translateY(-50%); padding: 0; background: transparent; }
-.has-world .news-brand-art { position: absolute; left: 2%; top: 50%; transform: translateY(-50%); width: 17%; max-width: 150px; }
-.has-world .news-brand-art img { mix-blend-mode: multiply; }
-.is-goose .news-name, .is-goose .is-front .news-name { font: 400 clamp(38px,7vw,86px)/1 'Goose Comic', 'News Japanese', sans-serif; letter-spacing: .012em; text-transform: uppercase; text-shadow: 0 1px 0 #fff5dd; }
-.has-world .news-brand-overline { font-size: clamp(7px,.85vw,10px); letter-spacing: .12em; margin-bottom: 7px; }
-.has-world .news-brand-dateline { margin-top: 8px; color: #3a352c; }
-@media (max-width:600px) {
-  .has-world .news-brand-type { left: 23%; right: 5%; }
-  .has-world .news-brand-art { left: 1%; width: 21%; }
-  .is-goose .news-name, .is-goose .is-front .news-name { font-size: clamp(30px,8.2vw,48px); }
-  .has-world .news-brand-overline { font-size: 6px; letter-spacing: .02em; margin-bottom: 4px; }
-  .has-world .news-brand-dateline { font-size: 8px; margin-top: 5px; }
-}
-
-/* Compact illustrated nameplate: decorative scenery frames a quiet centre.
-   The approved logo remains whole; only the unpeopled backdrop is masked. */
-.news-goose-banner.has-world { height: clamp(136px,17vw,184px); overflow: hidden; border-block: 1px solid var(--ink); }
-.has-world .news-banner-world { width: 100%; height: 100%; object-fit: cover; object-position: center 63%; }
-.has-world::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg,transparent 9%,rgba(245,240,229,.45) 23%,rgba(245,240,229,.88) 35%,rgba(245,240,229,.9) 68%,rgba(245,240,229,.35) 85%,transparent); }
-.has-world .news-brand-lockup { z-index: 1; }
-.has-world .news-brand-art { left: 14px; width: 104px; max-width: 16%; }
-.has-world .news-brand-type { left: 20%; right: 12%; top: 50%; }
-.has-world .news-name, .is-goose .is-front .news-name { font-size: clamp(38px,5.4vw,62px); line-height: 1; letter-spacing: .025em; text-shadow: 1px 1px #f5f0e5,-1px -1px #f5f0e5; }
-.has-world .news-brand-overline { font-size: 10px; letter-spacing: .10em; margin-bottom: 8px; }
-.has-world .news-brand-dateline { font-size: 11px; margin-top: 9px; color: #322d25; }
-@media (max-width:600px) {
-  .news-goose-banner.has-world { height: 116px; }
-  .has-world .news-brand-art { left: 6px; width: 72px; max-width: 21%; }
-  .has-world .news-brand-type { left: 23%; right: 3%; }
-  .has-world .news-name, .is-goose .is-front .news-name { font-size: clamp(28px,7.2vw,40px); letter-spacing: .012em; }
-  .has-world .news-brand-overline { font-size: 7px; letter-spacing: .025em; margin-bottom: 6px; }
-  .has-world .news-brand-dateline { font-size: 9px; margin-top: 7px; }
-}
-
 .news-story-card-name { display: block; padding-top: 4px; font: 600 11px/1.3 var(--sans); color: var(--ink); overflow-wrap: break-word; }
-
-.arc-daily .news-chg.sd { color: #496e43; font-family: "News Difference", sans-serif; font-style: italic; }
+.news-tips { max-width: 760px; margin: 28px auto 45px; font: 18px/1.6 var(--serif); }
+.news-tip-action { display: inline-block; padding: 10px 16px; border: 2px solid var(--ink); font: 700 14px/1.4 var(--sans); }

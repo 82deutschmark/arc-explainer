@@ -36,6 +36,7 @@ app.get(['/__goose-layout', '/news/:articleId'], async (req, res, next) => {
     if (!article) return next();
     const query = new QueryClient(); query.setQueryData(['/api/news/cards'], cardData);
     const previewIndex = { ...index, articles: [...filings, ...index.articles] };
+    query.setQueryData(['/api/news'], previewIndex);
     filings.forEach(story => query.setQueryData(['/api/news/stories', story.id], previewIndex));
     const { default: ArticlePage } = await vite.ssrLoadModule('/src/pages/NewsArticle.tsx');
     const brand = { name: preparedBrand.name, logo: preparedBrand.logo, banner: preparedBrand.banner, tagline: preparedBrand.tagline, goose: true };

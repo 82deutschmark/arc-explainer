@@ -1,3 +1,7 @@
+### Version 9.161.30 · November 2, 2026
+
+- Preserve the organic Goose masthead draft without a separate square inset, consolidated header styles and compatible local preview data. The user ended the session; final rendered review and Discord approval remain outstanding. See docs/newsroom/NEXT_GOOSE_SESSION.md. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.161.29 · November 2, 2026
 
 - Complete the illustrated Loose Goose presentation with a compact panoramic masthead, transparent comic lettering, unchanged inset logo, new story scenes and avatar-based characters. Apply the Boss’s number-free headlines, lighter numeric prose, UTC clocks, Japanese glyph fallback and separate place/score/difference styles.

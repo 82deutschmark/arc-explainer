@@ -110,7 +110,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue, b
         {brand.goose ? <div className={`news-goose-banner${brand.banner ? " has-world" : ""}`}>
           {brand.banner && <img className="news-banner-world" src={brand.banner} alt="" width={2172} height={724} />}
           <div className="news-brand-lockup">
-          <Link href="/news" className="news-brand-art" aria-label={`${brand.name} front page`}><img src={brand.logo!} alt="The Loose Goose reporter, in the approved artwork" /></Link>
+          
           <div className="news-brand-type"><p className="news-brand-overline">The sports tabloid of the Kaggleverse</p>
             {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}
             <div className="news-brand-dateline">{edition && <strong>{editionName(edition)} edition · </strong>}{date && datelineDate(date)}</div>
