@@ -1,0 +1,2247 @@
+{
+ "a3": {
+  "listed_total": 1100,
+  "listed_votes": 12162,
+  "sample": 300,
+  "sample_votes": 11201,
+  "min_votes_in_sample": 3,
+  "failed": [],
+  "families": {
+   "Qwen 3.8 Flash Next": {
+    "notebooks_weights": 49,
+    "notebooks_runtime_name_only": 21,
+    "votes_weights": 2974,
+    "votes_runtime": 1291,
+    "authors": 56,
+    "kits": 9
+   },
+   "Qwen 3.8 27B": {
+    "notebooks_weights": 17,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 766,
+    "votes_runtime": 0,
+    "authors": 17,
+    "kits": 11
+   },
+   "Gemma 4": {
+    "notebooks_weights": 7,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 277,
+    "votes_runtime": 0,
+    "authors": 7,
+    "kits": 4
+   },
+   "Qwen 3 4B": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 15,
+    "votes_runtime": 0,
+    "authors": 2,
+    "kits": 2
+   },
+   "Qwen 2.5 3B": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 12,
+    "votes_runtime": 0,
+    "authors": 2,
+    "kits": 2
+   },
+   "Qwen 3 14B": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 10,
+    "votes_runtime": 0,
+    "authors": 2,
+    "kits": 2
+   },
+   "Qwen (version unstated)": {
+    "notebooks_weights": 0,
+    "notebooks_runtime_name_only": 1,
+    "votes_weights": 0,
+    "votes_runtime": 59,
+    "authors": 1,
+    "kits": 1
+   },
+   "gpt-oss": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 46,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 2.5 7B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 9,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 2.5 1.5B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 6,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3.6 35B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 6,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3.1 7B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 6,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3 30B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 5,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 2.5 32B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 5,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3 1.7B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 5,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Falcon": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 4,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3 8B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 4,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Llama": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 3,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "DeepSeek": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 3,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Embedding model (not an LLM)": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 3,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   }
+  },
+  "buckets": {
+   "weights named": {
+    "notebooks": 88,
+    "votes": 4142,
+    "authors": 76
+   },
+   "GPU, nothing attached": {
+    "notebooks": 62,
+    "votes": 2371,
+    "authors": 40
+   },
+   "no GPU, nothing attached": {
+    "notebooks": 53,
+    "votes": 1289,
+    "authors": 51
+   },
+   "GPU, unnamed or opaque attachments": {
+    "notebooks": 46,
+    "votes": 1364,
+    "authors": 40
+   },
+   "runtime names a model, no weights named": {
+    "notebooks": 21,
+    "votes": 1291,
+    "authors": 18
+   },
+   "no GPU, opaque attachments": {
+    "notebooks": 21,
+    "votes": 639,
+    "authors": 14
+   },
+   "off-topic data": {
+    "notebooks": 6,
+    "votes": 92,
+    "authors": 4
+   },
+   "model attached, name hidden by Kaggle": {
+    "notebooks": 3,
+    "votes": 13,
+    "authors": 3
+   }
+  },
+  "by_month": {
+   "2026-03": {
+    "no named model": 31,
+    "hidden model": 1
+   },
+   "2026-04": {
+    "no named model": 22,
+    "Qwen 3 4B": 1
+   },
+   "2026-05": {
+    "no named model": 24,
+    "Qwen 3.1 7B": 1
+   },
+   "2026-06": {
+    "no named model": 28,
+    "Gemma 4": 3,
+    "gpt-oss": 1,
+    "Qwen 3.6 35B": 1
+   },
+   "2026-07": {
+    "no named model": 32,
+    "Gemma 4": 3,
+    "Qwen 2.5 32B": 1,
+    "Qwen 3 1.7B": 1
+   },
+   "2026-08": {
+    "no named model": 19,
+    "Qwen 3.8 27B": 13,
+    "Qwen 3 14B": 2,
+    "Qwen 2.5 7B": 1,
+    "Qwen 3 4B": 1,
+    "Qwen 3 30B": 1
+   },
+   "2026-09": {
+    "Qwen 3.8 Flash Next": 21,
+    "no named model": 14,
+    "Qwen 3.8 27B": 3,
+    "Qwen 2.5 3B": 1,
+    "Gemma 4": 1,
+    "hidden model": 1
+   },
+   "2026-10": {
+    "Qwen 3.8 Flash Next": 46,
+    "no named model": 17,
+    "Qwen 2.5 3B": 1,
+    "Llama": 1,
+    "Embedding model (not an LLM)": 1,
+    "Qwen 3.8 27B": 1,
+    "hidden model": 1
+   },
+   "2026-11": {
+    "Qwen 3.8 Flash Next": 3,
+    "no named model": 1
+   }
+  },
+  "kernel_sources": {
+   "notebooks_with_any": 21,
+   "top": [
+    {
+     "ref": "philipvonderlind/vllm-deps",
+     "notebooks": 8,
+     "authors": 8,
+     "votes": 320
+    },
+    {
+     "ref": "mbmmurad/vllm-0-23-0-tf5-wheelhouse",
+     "notebooks": 3,
+     "authors": 3,
+     "votes": 118
+    },
+    {
+     "ref": "(name hidden)",
+     "notebooks": 3,
+     "authors": 3,
+     "votes": 13
+    },
+    {
+     "ref": "nihilisticneuralnet/0-46-arc-agi-3-persistent-memory-bfs-arc-solver",
+     "notebooks": 2,
+     "authors": 1,
+     "votes": 10
+    },
+    {
+     "ref": "cdnghnam/fork-of-notebook-rvq-colbert-beir-53b0c0",
+     "notebooks": 2,
+     "authors": 2,
+     "votes": 6
+    },
+    {
+     "ref": "samrishb/just-resubmission-rn-working-on-experiments",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 34
+    },
+    {
+     "ref": "packagemanager/pm-113529076-at-04-09-2026-13-22-54",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 12
+    },
+    {
+     "ref": "cpmpml/arc2-trm-v31",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 10
+    },
+    {
+     "ref": "geekyrishukumar/qwen-2-5-7b",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 9
+    },
+    {
+     "ref": "baopv051/xla-setup-eval",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 5
+    },
+    {
+     "ref": "baopv051/xla-setup",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 5
+    },
+    {
+     "ref": "saurabhkumar234/tough-guard-v2",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 5
+    },
+    {
+     "ref": "boristown/agi-duck-harness-fast-eval",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 5
+    },
+    {
+     "ref": "foysalemonshanto/vllm-wheels",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 5
+    },
+    {
+     "ref": "vnguynbnh/thuvien-binh",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 4
+    }
+   ]
+  },
+  "datasets_top": [
+   {
+    "ref": "(name hidden)",
+    "notebooks": 59,
+    "authors": 48
+   },
+   {
+    "ref": "dfranzen/taaf-kaggle-source-bundle-copy",
+    "notebooks": 46,
+    "authors": 39
+   },
+   {
+    "ref": "dfranzen/pennyroyal-v253",
+    "notebooks": 46,
+    "authors": 39
+   },
+   {
+    "ref": "keithtyser/duck-qwen38-nvfp4-mtp-vllm-smoke-v1",
+    "notebooks": 23,
+    "authors": 20
+   },
+   {
+    "ref": "keithtyser/qwen38-flash-next-vllm-nvfp4-runtime-v1",
+    "notebooks": 23,
+    "authors": 20
+   },
+   {
+    "ref": "jeroencottaar/taaf-kaggle-source-share",
+    "notebooks": 15,
+    "authors": 12
+   },
+   {
+    "ref": "jakobbrggen/taaf-kaggle-source-anim-20260807-anim",
+    "notebooks": 12,
+    "authors": 10
+   },
+   {
+    "ref": "thezetaproject/bittertruth-ai",
+    "notebooks": 10,
+    "authors": 1
+   },
+   {
+    "ref": "jeroencottaar/taaf-kaggle-source",
+    "notebooks": 6,
+    "authors": 6
+   },
+   {
+    "ref": "keithtyser/taaf-duck-qwen38-serving-v1",
+    "notebooks": 4,
+    "authors": 4
+   },
+   {
+    "ref": "thezetaproject/bittertruth-knowledge",
+    "notebooks": 3,
+    "authors": 1
+   },
+   {
+    "ref": "thtennant/taaf-kaggle-source-share-fork",
+    "notebooks": 3,
+    "authors": 3
+   },
+   {
+    "ref": "nhatlong1103/extended-cmu-seasons",
+    "notebooks": 3,
+    "authors": 2
+   },
+   {
+    "ref": "nhatlong1103/bundle",
+    "notebooks": 3,
+    "authors": 2
+   },
+   {
+    "ref": "nhatlong1103/4seasons",
+    "notebooks": 3,
+    "authors": 2
+   },
+   {
+    "ref": "nhatlong1103/robotcar-seasons-v2",
+    "notebooks": 3,
+    "authors": 2
+   },
+   {
+    "ref": "nhatlong1103/extended-cmu-seasons-2",
+    "notebooks": 3,
+    "authors": 2
+   },
+   {
+    "ref": "thinam4/rvq-wheels",
+    "notebooks": 3,
+    "authors": 3
+   },
+   {
+    "ref": "jakobbrggen/qwen3-8-27b-fp8-hf-snapshot",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "ko0kip/vllm-0230-offline",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "destinyfire1/arc3-cpython312-runtime",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "quangnguyen711/cnn-backbone-pytorch-weights",
+    "notebooks": 2,
+    "authors": 1
+   },
+   {
+    "ref": "nhatlong1103/nordland-full-47-6gb",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hngphongkiu/karpathy",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hngphongkiu/benchmark-lgbiovlm",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hngphongkiu/train-kaggle",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hngphongkiu/cub200-caption",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hussensehs/trace-ace",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hussensehs/trace-ace-wheel",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "camvsfd/code-switch-ir",
+    "notebooks": 2,
+    "authors": 2
+   }
+  ],
+  "models_all": [
+   {
+    "ref": "dfranzen/albucino-qwen3-8-flash-next-drafter/Transformers/default/1",
+    "family": "Qwen 3.8 Flash Next",
+    "notebooks": 46,
+    "authors": 39
+   },
+   {
+    "ref": "dfranzen/intel-qwen3.8-flash-next-w4a16-autoround/Transformers/default/1",
+    "family": "Qwen 3.8 Flash Next",
+    "notebooks": 45,
+    "authors": 38
+   },
+   {
+    "ref": "(name hidden)",
+    "family": null,
+    "notebooks": 27,
+    "authors": 24
+   },
+   {
+    "ref": "foysalemonshanto/qwen3-8-27b-fp8-repacked-v1/PyTorch/hf-fp8/1",
+    "family": "Qwen 3.8 27B",
+    "notebooks": 13,
+    "authors": 13
+   },
+   {
+    "ref": "google/gemma-4/Transformers/gemma-4-31b-it/1",
+    "family": "Gemma 4",
+    "notebooks": 7,
+    "authors": 7
+   },
+   {
+    "ref": "trungnguyen2710t/pretrain-dl/PyTorch/default/1",
+    "family": null,
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "phamngocthangkt1/dl-biolvm/PyTorch/default/1",
+    "family": null,
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "hngphongkiu/resnet50/PyTorch/default/1",
+    "family": null,
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/14b/1",
+    "family": "Qwen 3 14B",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "lordhansolo/qwen3-8-flash-next-mixed-nvfp4-fp8/PyTorch/hf-mixed-mtp-nvfp4/1",
+    "family": "Qwen 3.8 Flash Next",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "woochangsim/qwen38-flash-next-w4a16-autoround-4c67bf6/Transformers/w4a16-autoround-4c67bf6/1",
+    "family": "Qwen 3.8 Flash Next",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "danielhanchen/gpt-oss-120b/Transformers/default/1",
+    "family": "gpt-oss",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "jek1wantaufik/buddy/Other/arc-agi-3/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/4b/1",
+    "family": "Qwen 3 4B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen2.5-vl/Transformers/3b-instruct/2",
+    "family": "Qwen 2.5 3B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "janettdoe/unified/Keras/default/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "metaresearch/mms/PyTorch/300m/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen2.5/Transformers/1.5b-instruct/1",
+    "family": "Qwen 2.5 1.5B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "baopv051/bfree-baseline-weights/PyTorch/default/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3-vl/Transformers/30b-a3b-instruct-fp8/1",
+    "family": "Qwen 3 30B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen2.5/Transformers/32b-instruct/1",
+    "family": "Qwen 2.5 32B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/1.7b/1",
+    "family": "Qwen 3 1.7B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "boristown/qwen3-8-flash-next-nvfp4-reap-448e/PyTorch/nvfp4-reap-k448/2",
+    "family": "Qwen 3.8 Flash Next",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/8b/1",
+    "family": "Qwen 3 8B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "presucc/deepseek-r1-distill-qwen-32b/Transformers/default/1",
+    "family": "DeepSeek",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3-embedding/Transformers/8b/1",
+    "family": "Embedding model (not an LLM)",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "anam1karoy/xlm-roberta-large/Transformers/default/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "manaslol/bge-m3/Transformers/default/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   }
+  ],
+  "kits_top": [
+   {
+    "kit": "dfranzen/albucino-qwen3-8-flash-next-drafter/Transformers/default/1|dfranzen/intel-qwen3.8-flash-next-w4a16-autoround/Transformers/default/1|dfranzen/pennyroyal-v253|dfranzen/taaf-kaggle-source-bundle",
+    "notebooks": 43,
+    "authors": 36,
+    "votes": 2769,
+    "top_ref": "dfranzen/arc-agi-3-milestone-2-solution"
+   },
+   {
+    "kit": "|keithtyser/duck-qwen38-nvfp4-mtp-vllm-smoke-v1|keithtyser/qwen38-flash-next-vllm-nvfp4-runtime-v1",
+    "notebooks": 20,
+    "authors": 17,
+    "votes": 1277,
+    "top_ref": "wuliao0/duck-qwen3-8-anim-base"
+   },
+   {
+    "kit": "||jeroencottaar/taaf-kaggle-source-share",
+    "notebooks": 13,
+    "authors": 11,
+    "votes": 890,
+    "top_ref": "jeroencottaar/tufa-labs-duck-harness-june-30-milestone-winner"
+   },
+   {
+    "kit": "||jeroencottaar/taaf-kaggle-source",
+    "notebooks": 6,
+    "authors": 6,
+    "votes": 389,
+    "top_ref": "jeroencottaar/taaf-duck-harness-kaggle"
+   },
+   {
+    "kit": "||",
+    "notebooks": 5,
+    "authors": 4,
+    "votes": 127,
+    "top_ref": "caoyupeng/arc3-duck-v12-1d7d88"
+   },
+   {
+    "kit": "thezetaproject/bittertruth-ai",
+    "notebooks": 5,
+    "authors": 1,
+    "votes": 25,
+    "top_ref": "thezetaproject/llm-visual-analyzer-arc-agi-3"
+   },
+   {
+    "kit": "|foysalemonshanto/qwen3-8-27b-fp8-repacked-v1/PyTorch/hf-fp8/1|jakobbrggen/taaf-kaggle-source-anim-20260807-anim",
+    "notebooks": 4,
+    "authors": 4,
+    "votes": 314,
+    "top_ref": "foysalemonshanto/lb-9-arc3-duck-v12-with-qwen-3-8-27b"
+   },
+   {
+    "kit": "||jakobbrggen/taaf-kaggle-source-anim-20260807-anim",
+    "notebooks": 4,
+    "authors": 4,
+    "votes": 142,
+    "top_ref": "jakobbrggen/taaf-anim-arc-agi-3-solver"
+   },
+   {
+    "kit": "|foysalemonshanto/qwen3-8-27b-fp8-repacked-v1/PyTorch/hf-fp8/1|keithtyser/taaf-duck-qwen38-serving-v1",
+    "notebooks": 4,
+    "authors": 4,
+    "votes": 250,
+    "top_ref": "romantamrazov/arc-real-agi-solution"
+   },
+   {
+    "kit": "google/gemma-4/Transformers/gemma-4-31b-it/1",
+    "notebooks": 3,
+    "authors": 3,
+    "votes": 118,
+    "top_ref": "mbmmurad/arc-agi-3-lb-0-86-3rd-place-candidate-milestone"
+   }
+  ],
+  "kits_distinct": 77,
+  "top25": [
+   {
+    "rank": 1,
+    "ref": "dfranzen/arc-agi-3-milestone-2-solution",
+    "votes": 1191,
+    "last": "2026-10-03",
+    "model": "Qwen 3.8 Flash Next",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 2,
+    "ref": "inversion/arc3-sample-submission-random-agent",
+    "votes": 768,
+    "last": "2026-03-24",
+    "model": "no GPU, nothing attached",
+    "bucket": "no GPU, nothing attached"
+   },
+   {
+    "rank": 3,
+    "ref": "inversion/arc3-sample-submission-stochastic-goose",
+    "votes": 751,
+    "last": "2026-03-24",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 4,
+    "ref": "jeroencottaar/tufa-labs-duck-harness-june-30-milestone-winner",
+    "votes": 396,
+    "last": "2026-07-01",
+    "model": "GPU, unnamed or opaque attachments",
+    "bucket": "GPU, unnamed or opaque attachments"
+   },
+   {
+    "rank": 5,
+    "ref": "romantamrazov/the-agi-boys-i-am-better",
+    "votes": 391,
+    "last": "2026-10-21",
+    "model": "Qwen 3.8 Flash Next",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 6,
+    "ref": "foysalemonshanto/lb-9-arc3-duck-v12-with-qwen-3-8-27b",
+    "votes": 297,
+    "last": "2026-08-18",
+    "model": "Qwen 3.8 27B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 7,
+    "ref": "wuliao0/duck-qwen3-8-anim-base",
+    "votes": 294,
+    "last": "2026-09-18",
+    "model": "name-only: Qwen 3.8 Flash Next",
+    "bucket": "runtime names a model, no weights named"
+   },
+   {
+    "rank": 8,
+    "ref": "jeroencottaar/taaf-duck-harness-kaggle",
+    "votes": 268,
+    "last": "2026-06-30",
+    "model": "no GPU, opaque attachments",
+    "bucket": "no GPU, opaque attachments"
+   },
+   {
+    "rank": 9,
+    "ref": "boristown/agi-duck-harness-fast-eval",
+    "votes": 265,
+    "last": "2026-07-22",
+    "model": "GPU, unnamed or opaque attachments",
+    "bucket": "GPU, unnamed or opaque attachments"
+   },
+   {
+    "rank": 10,
+    "ref": "ashvinsingh/ash-s-arc-agi-3-agent",
+    "votes": 242,
+    "last": "2026-06-10",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 11,
+    "ref": "chiakazirim/duck-qwen3-8-tuned",
+    "votes": 220,
+    "last": "2026-09-04",
+    "model": "name-only: Qwen 3.8 Flash Next",
+    "bucket": "runtime names a model, no weights named"
+   },
+   {
+    "rank": 12,
+    "ref": "keithtyser/duck-qwen3-8-flash-next-nvfp4-mtp",
+    "votes": 212,
+    "last": "2026-09-01",
+    "model": "name-only: Qwen 3.8 Flash Next",
+    "bucket": "runtime names a model, no weights named"
+   },
+   {
+    "rank": 13,
+    "ref": "scottlegrand/taaf-flashnext-sheetu12b-0922",
+    "votes": 197,
+    "last": "2026-09-22",
+    "model": "name-only: Qwen 3.8 Flash Next",
+    "bucket": "runtime names a model, no weights named"
+   },
+   {
+    "rank": 14,
+    "ref": "projectforty2/forge-arc-agi-3-agent",
+    "votes": 167,
+    "last": "2026-03-31",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 15,
+    "ref": "nihilisticneuralnet/0-46-arc-agi-3-persistent-memory-bfs-arc-solver",
+    "votes": 153,
+    "last": "2026-05-29",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 16,
+    "ref": "rokaiyasomapti/taaf-duck-harness-kaggle-share-resubmission",
+    "votes": 152,
+    "last": "2026-07-05",
+    "model": "GPU, unnamed or opaque attachments",
+    "bucket": "GPU, unnamed or opaque attachments"
+   },
+   {
+    "rank": 17,
+    "ref": "jingshuifu/arc3-m2-solution",
+    "votes": 139,
+    "last": "2026-10-11",
+    "model": "Qwen 3.8 Flash Next",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 18,
+    "ref": "inversion/arc3-sample-submission-just-explore",
+    "votes": 131,
+    "last": "2026-03-24",
+    "model": "no GPU, opaque attachments",
+    "bucket": "no GPU, opaque attachments"
+   },
+   {
+    "rank": 19,
+    "ref": "heliosli/try-merging-it-you-might-get-lucky-and-win-gold",
+    "votes": 129,
+    "last": "2026-10-26",
+    "model": "Qwen 3.8 Flash Next",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 20,
+    "ref": "jeroencottaar/simplified-submission-approach",
+    "votes": 122,
+    "last": "2026-05-02",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 21,
+    "ref": "jakobbrggen/taaf-anim-arc-agi-3-solver",
+    "votes": 121,
+    "last": "2026-08-07",
+    "model": "GPU, unnamed or opaque attachments",
+    "bucket": "GPU, unnamed or opaque attachments"
+   },
+   {
+    "rank": 22,
+    "ref": "romantamrazov/arc-real-agi-solution",
+    "votes": 111,
+    "last": "2026-08-29",
+    "model": "Qwen 3.8 27B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 23,
+    "ref": "vickyfym/arc-agi-3-lalalia-final",
+    "votes": 107,
+    "last": "2026-10-24",
+    "model": "Qwen 3.8 Flash Next",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 24,
+    "ref": "pscamillo/arc-prize-2026-arc-agi-3-starter",
+    "votes": 107,
+    "last": "2026-07-03",
+    "model": "GPU, nothing attached",
+    "bucket": "GPU, nothing attached"
+   },
+   {
+    "rank": 25,
+    "ref": "keithtyser/duck-qwen3-8-27b-fp8",
+    "votes": 106,
+    "last": "2026-08-17",
+    "model": "Qwen 3.8 27B",
+    "bucket": "weights named"
+   }
+  ],
+  "unmatched_named": [
+   [
+    "dfranzen/pennyroyal-v253",
+    46
+   ],
+   [
+    "dfranzen/taaf-kaggle-source-bundle-copy",
+    46
+   ],
+   [
+    "jeroencottaar/taaf-kaggle-source-share",
+    15
+   ],
+   [
+    "jakobbrggen/taaf-kaggle-source-anim-20260807-anim",
+    12
+   ],
+   [
+    "thezetaproject/bittertruth-ai",
+    10
+   ],
+   [
+    "philipvonderlind/vllm-deps",
+    8
+   ],
+   [
+    "jeroencottaar/taaf-kaggle-source",
+    6
+   ],
+   [
+    "mbmmurad/vllm-0-23-0-tf5-wheelhouse",
+    3
+   ],
+   [
+    "thezetaproject/bittertruth-knowledge",
+    3
+   ],
+   [
+    "thtennant/taaf-kaggle-source-share-fork",
+    3
+   ],
+   [
+    "nhatlong1103/4seasons",
+    3
+   ],
+   [
+    "nhatlong1103/bundle",
+    3
+   ],
+   [
+    "nhatlong1103/extended-cmu-seasons",
+    3
+   ],
+   [
+    "nhatlong1103/extended-cmu-seasons-2",
+    3
+   ],
+   [
+    "nhatlong1103/robotcar-seasons-v2",
+    3
+   ],
+   [
+    "thinam4/rvq-wheels",
+    3
+   ],
+   [
+    "ko0kip/vllm-0230-offline",
+    2
+   ],
+   [
+    "destinyfire1/arc3-cpython312-runtime",
+    2
+   ],
+   [
+    "quangnguyen711/cnn-backbone-pytorch-weights",
+    2
+   ],
+   [
+    "nhatlong1103/nordland-full-47-6gb",
+    2
+   ],
+   [
+    "phamngocthangkt1/dl-biolvm/PyTorch/default/1",
+    2
+   ],
+   [
+    "trungnguyen2710t/pretrain-dl/PyTorch/default/1",
+    2
+   ],
+   [
+    "hngphongkiu/resnet50/PyTorch/default/1",
+    2
+   ],
+   [
+    "hngphongkiu/benchmark-lgbiovlm",
+    2
+   ],
+   [
+    "hngphongkiu/cub200-caption",
+    2
+   ],
+   [
+    "hngphongkiu/karpathy",
+    2
+   ],
+   [
+    "hngphongkiu/train-kaggle",
+    2
+   ],
+   [
+    "hussensehs/trace-ace",
+    2
+   ],
+   [
+    "hussensehs/trace-ace-wheel",
+    2
+   ],
+   [
+    "nihilisticneuralnet/0-46-arc-agi-3-persistent-memory-bfs-arc-solver",
+    2
+   ],
+   [
+    "camvsfd/code-switch-ir",
+    2
+   ],
+   [
+    "camvsfd/lexicon-multilingual",
+    2
+   ],
+   [
+    "cdnghnam/fork-of-notebook-rvq-colbert-beir-53b0c0",
+    2
+   ],
+   [
+    "inversion/arc-agi-3-just-explore",
+    1
+   ],
+   [
+    "jakobbrggen/taaf-kaggle-source",
+    1
+   ],
+   [
+    "lordhansolo/vllm-main-e975732-arc3",
+    1
+   ],
+   [
+    "lordhansolo/taaf-kaggle-source",
+    1
+   ],
+   [
+    "ruichardliu/vllm-0230-offline",
+    1
+   ],
+   [
+    "quangnguyen711/flickr30k-images",
+    1
+   ],
+   [
+    "quangnguyen711/flickr30k-label-data",
+    1
+   ],
+   [
+    "samrishb/just-resubmission-rn-working-on-experiments",
+    1
+   ],
+   [
+    "quangnguyen711/vqa-v2-baseline-dataset",
+    1
+   ],
+   [
+    "ravikaash/qor-arc3-agent",
+    1
+   ],
+   [
+    "gktrkakman/taaf-kaggle-source-duck-sub-20260805",
+    1
+   ],
+   [
+    "packagemanager/pm-113529076-at-04-09-2026-13-22-54",
+    1
+   ],
+   [
+    "josefedwards/pmll-hindsight-pip-wheels-dataset",
+    1
+   ],
+   [
+    "cpmpml/arc2-trm-v31",
+    1
+   ],
+   [
+    "jek1wantaufik/buddy/Other/arc-agi-3/1",
+    1
+   ],
+   [
+    "hashpanda/vllm-0230-offline",
+    1
+   ],
+   [
+    "koushikkumardinda/deep-past-challenge-offline-nlp-wheels",
+    1
+   ],
+   [
+    "xuanhuydinh/phomt-vin",
+    1
+   ],
+   [
+    "yuan1103/robotcar-location-metadata",
+    1
+   ],
+   [
+    "vucongaaa/dar-step-vila-runtime",
+    1
+   ],
+   [
+    "vucongaaa/dar-teacher-runtime-wheels",
+    1
+   ],
+   [
+    "vucongaaa/dar-annotation",
+    1
+   ],
+   [
+    "vucongaaa/dar-r1",
+    1
+   ],
+   [
+    "vucongaaa/vce-original-videos",
+    1
+   ],
+   [
+    "vucongaaa/videollama3-7b",
+    1
+   ],
+   [
+    "aliasifkhan2105131/label-fault-merged-more",
+    1
+   ],
+   [
+    "danxray/companion-arc",
+    1
+   ],
+   [
+    "janettdoe/unified/Keras/default/1",
+    1
+   ],
+   [
+    "metaresearch/mms/PyTorch/300m/1",
+    1
+   ],
+   [
+    "cmechevalier/face-of-agi-wheelhouse",
+    1
+   ],
+   [
+    "del=46a2189cba2f6d40/arc-forge-pretrained-v1",
+    1
+   ],
+   [
+    "baopv051/bfree-baseline-weights/PyTorch/default/1",
+    1
+   ],
+   [
+    "baopv051/ai-genbench-v1",
+    1
+   ],
+   [
+    "ngovanphuong2604/bfree-viral-images",
+    1
+   ],
+   [
+    "ngovanphuong2604/synthwildx-dataset",
+    1
+   ],
+   [
+    "ngovanphuong2604/wildrf-dataset",
+    1
+   ],
+   [
+    "baopv051/xla-setup-eval",
+    1
+   ],
+   [
+    "baopv051/xla-setup",
+    1
+   ],
+   [
+    "tunguz/the-abstraction-and-reasoning-corpus-arc",
+    1
+   ],
+   [
+    "boristown/agi-duck-harness-fast-eval",
+    1
+   ],
+   [
+    "saurabhkumar234/tough-guard-v2",
+    1
+   ],
+   [
+    "nguyenlamphuquy/ai-race-bnb-wheels",
+    1
+   ],
+   [
+    "nguyenlamphuquy/ai-race-experiment",
+    1
+   ],
+   [
+    "helmirinaldi/taaf-kaggle-source-bundle",
+    1
+   ],
+   [
+    "foysalemonshanto/vllm-wheels",
+    1
+   ],
+   [
+    "vnguynbnh/thuvien-binh",
+    1
+   ],
+   [
+    "nhatlong1103/norlandshort",
+    1
+   ],
+   [
+    "foysalemonshanto/vllm-0-30-0-runtime",
+    1
+   ],
+   [
+    "naileafalcon/arc-wheels-313",
+    1
+   ],
+   [
+    "hussensehs/dat-parkinson",
+    1
+   ],
+   [
+    "haniagamal/dat-wheel-libs",
+    1
+   ],
+   [
+    "salehahmedframel/trace-normal",
+    1
+   ],
+   [
+    "salehahmedframel/trace-purge",
+    1
+   ],
+   [
+    "mohamed3abdelrazik/trsce-second-run",
+    1
+   ],
+   [
+    "iseesmth/duck-harness-prolong-source-20260811",
+    1
+   ],
+   [
+    "belalemadhussein/models",
+    1
+   ],
+   [
+    "haniagamal/models-waxal",
+    1
+   ],
+   [
+    "belalemadhussein/phase2cache",
+    1
+   ],
+   [
+    "haniagamal/teleco-wheels",
+    1
+   ],
+   [
+    "hussensehs/w2v2bert",
+    1
+   ],
+   [
+    "anglolodorf/arc-agi-3-pretrained-weights",
+    1
+   ],
+   [
+    "xvmhieu/llmembed-acl2024-dataset",
+    1
+   ],
+   [
+    "xvmhieu/llmembed-pretrained-encoders",
+    1
+   ],
+   [
+    "maoxin123/arc3-25-optimal-solutions",
+    1
+   ],
+   [
+    "trungkinenguyn/fedcbdr-cifar100-fcil",
+    1
+   ],
+   [
+    "trankevin02/trajectory-variants-patch",
+    1
+   ],
+   [
+    "anam1karoy/xlm-roberta-large/Transformers/default/1",
+    1
+   ],
+   [
+    "parkwave1/baseline-plaidx",
+    1
+   ],
+   [
+    "parkwave1/colbert-clir-baseline",
+    1
+   ],
+   [
+    "parkwave1/langdetect",
+    1
+   ],
+   [
+    "camvsfd/multilingual-msmarco",
+    1
+   ],
+   [
+    "camvsfd/non-code-switch",
+    1
+   ],
+   [
+    "driessmit1/arc3-vllm-h100-wheelhouse-v3",
+    1
+   ],
+   [
+    "dhiaalhemdani/taaf-temporary",
+    1
+   ],
+   [
+    "leoprovorov/arc-agi-3-fable-harness-analytical-handbook",
+    1
+   ],
+   [
+    "manaslol/bge-m3/Transformers/default/1",
+    1
+   ],
+   [
+    "souhardyatalukdar/amazonml",
+    1
+   ],
+   [
+    "manaslol/wheelssss",
+    1
+   ],
+   [
+    "beraterolelk/istanbul-real-estate-2024-anonymized",
+    1
+   ]
+  ],
+  "runtime_tagged": [
+   "keithtyser/duck-qwen38-nvfp4-mtp-vllm-smoke-v1",
+   "keithtyser/qwen38-flash-next-vllm-nvfp4-runtime-v1",
+   "keithtyser/taaf-duck-qwen38-serving-v1",
+   "sirikilohit/sglang-penny-build-qwen"
+  ],
+  "weights_tagged_ds": [
+   "cihanatak/swift15-flashnext-nvfp4-nonple",
+   "cmechevalier/face-of-agi-qwen36-35b-fp8-weights",
+   "driessmit1/qwen3-8-27b-fp8-hf-017b9c7a",
+   "geekyrishukumar/qwen-2-5-7b",
+   "jakobbrggen/qwen3-8-27b-fp8-hf-snapshot",
+   "naileafalcon/falconomega",
+   "ragnar123/qwen2-5-7b-instruct",
+   "saltb0x/qwen3-8-27b-fp8",
+   "shuvocs23/qwen2-5-3b-instruct",
+   "stanlystan/unsloth-qwen3-1-7b",
+   "thanhjash/qwen3-4b-instruct-2507-4bit-unsloth-bnb-4bit",
+   "xvmhieu/llama2-7b-chat-hf"
+  ],
+  "shapes": [
+   [
+    "NvidiaRtxPro6000",
+    156
+   ],
+   [
+    "None",
+    78
+   ],
+   [
+    "NvidiaTeslaT4",
+    43
+   ],
+   [
+    "Gpu",
+    23
+   ]
+  ],
+  "comp_mismatch": [
+   "samrishb/just-resubmission-rn-working-on-experiments",
+   "darkun1c0rn/goldworm-v7-arc-agi-3-submission",
+   "anglolodorf/taaf-duck-harness-grammar",
+   "pajakchaithongchai/gemma-4-developer-agent-competition"
+  ],
+  "comp_mismatch_n": 4,
+  "internet_on": 22
+ },
+ "a2": {
+  "listed_total": 651,
+  "listed_votes": 5670,
+  "sample": 150,
+  "sample_votes": 5179,
+  "min_votes_in_sample": 4,
+  "failed": [],
+  "families": {
+   "Qwen 3 4B": {
+    "notebooks_weights": 81,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 4336,
+    "votes_runtime": 0,
+    "authors": 61,
+    "kits": 18
+   },
+   "Qwen 3.8 27B": {
+    "notebooks_weights": 7,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 166,
+    "votes_runtime": 0,
+    "authors": 6,
+    "kits": 5
+   },
+   "Qwen 3 2B": {
+    "notebooks_weights": 3,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 95,
+    "votes_runtime": 0,
+    "authors": 3,
+    "kits": 2
+   },
+   "gpt-oss": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 148,
+    "votes_runtime": 0,
+    "authors": 2,
+    "kits": 2
+   },
+   "Qwen 3 1.7B": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 46,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 2
+   },
+   "Qwen 3.6 35B": {
+    "notebooks_weights": 2,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 25,
+    "votes_runtime": 0,
+    "authors": 2,
+    "kits": 2
+   },
+   "Qwen 3.5 4B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 22,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 3 8B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 19,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Qwen 2.5 7B": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 7,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   },
+   "Llama": {
+    "notebooks_weights": 1,
+    "notebooks_runtime_name_only": 0,
+    "votes_weights": 5,
+    "votes_runtime": 0,
+    "authors": 1,
+    "kits": 1
+   }
+  },
+  "buckets": {
+   "weights named": {
+    "notebooks": 93,
+    "votes": 4546,
+    "authors": 69
+   },
+   "no GPU, nothing attached": {
+    "notebooks": 41,
+    "votes": 396,
+    "authors": 32
+   },
+   "GPU, nothing attached": {
+    "notebooks": 9,
+    "votes": 109,
+    "authors": 8
+   },
+   "GPU, unnamed or opaque attachments": {
+    "notebooks": 3,
+    "votes": 96,
+    "authors": 3
+   },
+   "no GPU, opaque attachments": {
+    "notebooks": 3,
+    "votes": 25,
+    "authors": 2
+   },
+   "model attached, name hidden by Kaggle": {
+    "notebooks": 1,
+    "votes": 7,
+    "authors": 1
+   }
+  },
+  "by_month": {
+   "2026-03": {
+    "no named model": 15,
+    "Qwen 3 4B": 3,
+    "Qwen 3 1.7B": 2,
+    "hidden model": 1
+   },
+   "2026-04": {
+    "Qwen 3 4B": 17,
+    "no named model": 10,
+    "Qwen 3 2B": 1
+   },
+   "2026-05": {
+    "no named model": 6,
+    "Qwen 3 4B": 3
+   },
+   "2026-06": {
+    "no named model": 5,
+    "Qwen 3 4B": 4,
+    "gpt-oss": 1
+   },
+   "2026-07": {
+    "Qwen 3 4B": 14,
+    "no named model": 6,
+    "Qwen 3 2B": 1
+   },
+   "2026-08": {
+    "Qwen 3 4B": 12,
+    "Qwen 3.8 27B": 1
+   },
+   "2026-09": {
+    "Qwen 3 4B": 6,
+    "no named model": 3,
+    "Qwen 3.8 27B": 1,
+    "Qwen 2.5 7B": 1,
+    "Llama": 1,
+    "Qwen 3 2B": 1
+   },
+   "2026-10": {
+    "Qwen 3 4B": 17,
+    "no named model": 11,
+    "Qwen 3.8 27B": 5,
+    "Qwen 3.6 35B": 1
+   },
+   "2026-11": {
+    "Qwen 3 4B": 1
+   }
+  },
+  "kernel_sources": {
+   "notebooks_with_any": 80,
+   "top": [
+    {
+     "ref": "sorokin/pip-install-unsloth-flash-patch",
+     "notebooks": 72,
+     "authors": 56,
+     "votes": 3987
+    },
+    {
+     "ref": "mirzamilanfarabi/qwen3-4b-grids15-sft139",
+     "notebooks": 4,
+     "authors": 3,
+     "votes": 112
+    },
+    {
+     "ref": "konstantinboyko/unsloth-2025-9-7-torch-2-8-0-py3-12-patched",
+     "notebooks": 2,
+     "authors": 2,
+     "votes": 145
+    },
+    {
+     "ref": "mirzamilanfarabi/pip-install-unsloth-flash-patch",
+     "notebooks": 2,
+     "authors": 2,
+     "votes": 85
+    },
+    {
+     "ref": "(name hidden)",
+     "notebooks": 2,
+     "authors": 2,
+     "votes": 13
+    },
+    {
+     "ref": "andreasbis/aimo-3-utils",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 16
+    },
+    {
+     "ref": "rahulvimalkanth/build-trm-wheels",
+     "notebooks": 1,
+     "authors": 1,
+     "votes": 8
+    }
+   ]
+  },
+  "datasets_top": [
+   {
+    "ref": "(name hidden)",
+    "notebooks": 10,
+    "authors": 8
+   },
+   {
+    "ref": "mirzamilanfarabi/arc3-vllm-h100-wheelhouse-v3",
+    "notebooks": 6,
+    "authors": 4
+   },
+   {
+    "ref": "christopherdaleman/arc-proof-search-trm-2026-source",
+    "notebooks": 4,
+    "authors": 2
+   },
+   {
+    "ref": "boristown/arc-route-common-utils",
+    "notebooks": 3,
+    "authors": 1
+   },
+   {
+    "ref": "konstantinboyko/flash-attn-2-8-2",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "keithtyser/taaf-duck-qwen38-serving-v1",
+    "notebooks": 2,
+    "authors": 1
+   },
+   {
+    "ref": "sorokin/nvarc-synthetic-puzzles",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "boristown/darkagicompressarc",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "karnakbaevarthur/arc-task-logic-labels",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "andreshzapke/arc-agi-primitive-classes",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "dmitriigluzdov/arc2-generated-rule-families",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "beraterolelk/istanbul-real-estate-2024-anonymized",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "chanhainguyen/trm-code",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "limyenwee/arc-agi2-trm-pydeps",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "yhay81/arc-agi-2-atlas-program-corpus-data",
+    "notebooks": 1,
+    "authors": 1
+   }
+  ],
+  "models_all": [
+   {
+    "ref": "sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "family": "Qwen 3 4B",
+    "notebooks": 75,
+    "authors": 59
+   },
+   {
+    "ref": "foysalemonshanto/qwen3-8-27b-fp8-repacked-v1/PyTorch/hf-fp8/1",
+    "family": "Qwen 3.8 27B",
+    "notebooks": 4,
+    "authors": 3
+   },
+   {
+    "ref": "sorokin/qwen3_2b_grids15_sft141/Transformers/bfloat16/1",
+    "family": "Qwen 3 2B",
+    "notebooks": 3,
+    "authors": 3
+   },
+   {
+    "ref": "mikedan7/qwen3-8-27b-fp8-official/PyTorch/hf-fp8/1",
+    "family": "Qwen 3.8 27B",
+    "notebooks": 3,
+    "authors": 3
+   },
+   {
+    "ref": "konstantinboyko/qwen3-4b-bfloat16-v02-01-01/Transformers/default/1",
+    "family": "Qwen 3 4B",
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/1.7b-base/1",
+    "family": "Qwen 3 1.7B",
+    "notebooks": 2,
+    "authors": 1
+   },
+   {
+    "ref": "(name hidden)",
+    "family": null,
+    "notebooks": 2,
+    "authors": 2
+   },
+   {
+    "ref": "jek1wantaufik/buddy/Other/arc-agi-2/4",
+    "family": null,
+    "notebooks": 2,
+    "authors": 1
+   },
+   {
+    "ref": "danielhanchen/gpt-oss-120b/Transformers/default/1",
+    "family": "gpt-oss",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "limamateus/qwen3-5-4b/PyTorch/default/1",
+    "family": "Qwen 3.5 4B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "zerabytex/qwen-3-6-35b-a3b-fp8/Transformers/default/1",
+    "family": "Qwen 3.6 35B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/8b/1",
+    "family": "Qwen 3 8B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen-3/Transformers/4b/1",
+    "family": "Qwen 3 4B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "danielhanchen/gpt-oss-20b/Transformers/default/1",
+    "family": "gpt-oss",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "qwen-lm/qwen2.5-coder/Transformers/7b-instruct/1",
+    "family": "Qwen 2.5 7B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "janettdoe/unified/Keras/default/1",
+    "family": null,
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "giovannimuniz/qwen3-6-35b-a3b/Transformers/transformers/1",
+    "family": "Qwen 3.6 35B",
+    "notebooks": 1,
+    "authors": 1
+   },
+   {
+    "ref": "serhiikharchuk/llama-3.1-storm-8b/Transformers/llama-3.1-storm-8b-bf16/1",
+    "family": "Llama",
+    "notebooks": 1,
+    "authors": 1
+   }
+  ],
+  "kits_top": [
+   {
+    "kit": "sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "notebooks": 56,
+    "authors": 46,
+    "votes": 3540,
+    "top_ref": "koushikrudra/failed-in-aimo"
+   },
+   {
+    "kit": "|christopherdaleman/arc-proof-search-trm-2026-source|sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "notebooks": 4,
+    "authors": 2,
+    "votes": 87,
+    "top_ref": "christopherdaleman/arc-2026-nvarc-trm-evidence-cost-v1"
+   },
+   {
+    "kit": "konstantinboyko/flash-attn-2-8-2|konstantinboyko/qwen3-4b-bfloat16-v02-01-01/Transformers/default/1",
+    "notebooks": 2,
+    "authors": 2,
+    "votes": 145,
+    "top_ref": "evgendvorkin/arc-2-2026-6-6-local-boyko-nvarc"
+   },
+   {
+    "kit": "sorokin/qwen3_2b_grids15_sft141/Transformers/bfloat16/1|sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "notebooks": 2,
+    "authors": 2,
+    "votes": 91,
+    "top_ref": "albartrose/nvarc-winning-2025-for-2xt4s-best-score-19-17"
+   },
+   {
+    "kit": "foysalemonshanto/qwen3-8-27b-fp8-repacked-v1/PyTorch/hf-fp8/1|keithtyser/taaf-duck-qwen38-serving-v1|mirzamilanfarabi/arc3-vllm-h100-wheelhouse-v3",
+    "notebooks": 2,
+    "authors": 1,
+    "votes": 73,
+    "top_ref": "madarshbb/arc-qwen-3-8-27b-agent"
+   },
+   {
+    "kit": "mikedan7/qwen3-8-27b-fp8-official/PyTorch/hf-fp8/1|mirzamilanfarabi/arc3-vllm-h100-wheelhouse-v3",
+    "notebooks": 2,
+    "authors": 2,
+    "votes": 29,
+    "top_ref": "delongyang/arc-agi-2-inference-qwen3-8-27b-fp8-within-4-hours"
+   },
+   {
+    "kit": "jek1wantaufik/buddy/Other/arc-agi-2/4",
+    "notebooks": 2,
+    "authors": 1,
+    "votes": 19,
+    "top_ref": "jek1wantaufik/arc-prize-2026-paper-track"
+   },
+   {
+    "kit": "danielhanchen/gpt-oss-120b/Transformers/default/1|sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "notebooks": 1,
+    "authors": 1,
+    "votes": 132,
+    "top_ref": "koushikrudra/arc-agi2-original-kg"
+   },
+   {
+    "kit": "boristown/darkagicompressarc",
+    "notebooks": 1,
+    "authors": 1,
+    "votes": 75,
+    "top_ref": "baidalinadilzhan/prev-year-s-compressarc-method-p100-gpu-lb-1-67"
+   },
+   {
+    "kit": "karnakbaevarthur/arc-task-logic-labels|sorokin/qwen3_4b_grids15_sft139/Transformers/bfloat16/1",
+    "notebooks": 1,
+    "authors": 1,
+    "votes": 48,
+    "top_ref": "karnakbaevarthur/logic-profiler-for-each-task"
+   }
+  ],
+  "kits_distinct": 33,
+  "top25": [
+   {
+    "rank": 1,
+    "ref": "koushikrudra/failed-in-aimo",
+    "votes": 1080,
+    "last": "2026-08-03",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 2,
+    "ref": "chiakazirim/learned-from-aimo",
+    "votes": 260,
+    "last": "2026-07-11",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 3,
+    "ref": "mikelou1/arc-agi2-lb33-89-minimal-perfpatch",
+    "votes": 234,
+    "last": "2026-07-14",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 4,
+    "ref": "nihilisticneuralnet/baseline-nvarc-arc-25-winning-solution-for-t4x2",
+    "votes": 230,
+    "last": "2026-04-03",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 5,
+    "ref": "yiheng/reproduce-nvarc-2025-results",
+    "votes": 191,
+    "last": "2026-04-08",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 6,
+    "ref": "junaid512/arc-agi-31-11",
+    "votes": 152,
+    "last": "2026-10-29",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 7,
+    "ref": "evgendvorkin/arc-2-2026-6-6-local-boyko-nvarc",
+    "votes": 138,
+    "last": "2026-11-01",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 8,
+    "ref": "koushikrudra/arc-agi2-original-kg",
+    "votes": 132,
+    "last": "2026-09-02",
+    "model": "Qwen 3 4B + gpt-oss",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 9,
+    "ref": "luxluxshan/arc2-nvarc-v1",
+    "votes": 122,
+    "last": "2026-09-08",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 10,
+    "ref": "yusuketogashi/arc-baseline-rebuild",
+    "votes": 111,
+    "last": "2026-10-13",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 11,
+    "ref": "rokaiyasomapti/reproduce-nvarc-2025-results",
+    "votes": 95,
+    "last": "2026-07-31",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 12,
+    "ref": "albartrose/nvarc-winning-2025-for-2xt4s-best-score-19-17",
+    "votes": 83,
+    "last": "2026-04-07",
+    "model": "Qwen 3 2B + Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 13,
+    "ref": "pragnyanramtha/11-25-lb-5",
+    "votes": 77,
+    "last": "2026-04-06",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 14,
+    "ref": "baidalinadilzhan/prev-year-s-compressarc-method-p100-gpu-lb-1-67",
+    "votes": 75,
+    "last": "2026-03-27",
+    "model": "GPU, unnamed or opaque attachments",
+    "bucket": "GPU, unnamed or opaque attachments"
+   },
+   {
+    "rank": 15,
+    "ref": "mirzamilanfarabi/arc-2-2026-qwen3-unsloth-mar-26",
+    "votes": 69,
+    "last": "2026-03-27",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 16,
+    "ref": "sigmaborov/arc-agi-2-baseline-starter",
+    "votes": 67,
+    "last": "2026-03-25",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 17,
+    "ref": "woguoat/arc2-nvarc-full-cost-sota-triple-pass",
+    "votes": 62,
+    "last": "2026-10-23",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 18,
+    "ref": "qiuqiuh/arc-highscore-lb3389-replica",
+    "votes": 62,
+    "last": "2026-09-23",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 19,
+    "ref": "kaiserm/nvarc-winning-solution-2025-4xl4s",
+    "votes": 61,
+    "last": "2026-04-08",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 20,
+    "ref": "fayche/arc-prize-2026-solver",
+    "votes": 59,
+    "last": "2026-08-27",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 21,
+    "ref": "christopherdaleman/arc-2026-nvarc-trm-evidence-cost-v1",
+    "votes": 56,
+    "last": "2026-07-24",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 22,
+    "ref": "foysalemonshanto/arc-2026d",
+    "votes": 54,
+    "last": "2026-04-26",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 23,
+    "ref": "madarshbb/arc-qwen-3-8-27b-agent",
+    "votes": 51,
+    "last": "2026-10-09",
+    "model": "Qwen 3.8 27B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 24,
+    "ref": "karnakbaevarthur/logic-profiler-for-each-task",
+    "votes": 48,
+    "last": "2026-04-26",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   },
+   {
+    "rank": 25,
+    "ref": "dajaistewart/twin-lb33-verbatim",
+    "votes": 44,
+    "last": "2026-08-08",
+    "model": "Qwen 3 4B",
+    "bucket": "weights named"
+   }
+  ],
+  "unmatched_named": [
+   [
+    "sorokin/pip-install-unsloth-flash-patch",
+    72
+   ],
+   [
+    "mirzamilanfarabi/arc3-vllm-h100-wheelhouse-v3",
+    6
+   ],
+   [
+    "christopherdaleman/arc-proof-search-trm-2026-source",
+    4
+   ],
+   [
+    "boristown/arc-route-common-utils",
+    3
+   ],
+   [
+    "konstantinboyko/flash-attn-2-8-2",
+    2
+   ],
+   [
+    "konstantinboyko/unsloth-2025-9-7-torch-2-8-0-py3-12-patched",
+    2
+   ],
+   [
+    "mirzamilanfarabi/pip-install-unsloth-flash-patch",
+    2
+   ],
+   [
+    "sorokin/nvarc-synthetic-puzzles",
+    2
+   ],
+   [
+    "jek1wantaufik/buddy/Other/arc-agi-2/4",
+    2
+   ],
+   [
+    "boristown/darkagicompressarc",
+    1
+   ],
+   [
+    "karnakbaevarthur/arc-task-logic-labels",
+    1
+   ],
+   [
+    "andreshzapke/arc-agi-primitive-classes",
+    1
+   ],
+   [
+    "andreasbis/aimo-3-utils",
+    1
+   ],
+   [
+    "dmitriigluzdov/arc2-generated-rule-families",
+    1
+   ],
+   [
+    "beraterolelk/istanbul-real-estate-2024-anonymized",
+    1
+   ],
+   [
+    "rahulvimalkanth/build-trm-wheels",
+    1
+   ],
+   [
+    "limyenwee/arc-agi2-trm-pydeps",
+    1
+   ],
+   [
+    "chanhainguyen/trm-code",
+    1
+   ],
+   [
+    "janettdoe/unified/Keras/default/1",
+    1
+   ],
+   [
+    "yhay81/arc-agi-2-atlas-program-corpus-data",
+    1
+   ]
+  ],
+  "runtime_tagged": [
+   "keithtyser/taaf-duck-qwen38-serving-v1"
+  ],
+  "weights_tagged_ds": [
+   "mirzamilanfarabi/qwen3-4b-grids15-sft139"
+  ],
+  "shapes": [
+   [
+    "NvidiaL4",
+    77
+   ],
+   [
+    "None",
+    53
+   ],
+   [
+    "NvidiaTeslaT4",
+    17
+   ],
+   [
+    "Gpu",
+    3
+   ]
+  ],
+  "comp_mismatch": [
+   "caoyupeng/aimo3-v1"
+  ],
+  "comp_mismatch_n": 1,
+  "internet_on": 23
+ }
+}
