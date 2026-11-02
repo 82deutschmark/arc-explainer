@@ -1,3 +1,5 @@
+SENT TO DISCORD #arc-3 ON 2 NOVEMBER 2026 WITH THE BOSS’S OKAY. NO X POST: THE BOSS SAID NOT TO ANNOUNCE THIS ON X.
+
 THE ARC DAILY DIGEST / THE LOOSE GOOSE — HELD FEATURE: THE SPOILERS PAGE
 
 State: HELD. The Boss asked for this to be ready to publish, and he gives the okay first. Nothing here authorizes an edition, an X post, a Discord send or a schedule. One approval from him covers the exact article, picture and post.
