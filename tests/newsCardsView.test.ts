@@ -45,8 +45,13 @@ it('keeps Tufa identities and the verified account avatar on their own cards', (
   expect(cards.find(card => card.personId === 'dlorah')?.name).toBe('Harold Bessis');
   for (const id of ['mohamed-osman', 'jerome-sieber']) expect(cards.some(card => card.personId === id)).toBe(true);
   const flamingo = cards.find(card => card.personId === 'infinitecreativity')!;
-  expect(flamingo.name).toBe('InfiniteCreativity');
+  expect(flamingo.name).toBe('Michal Tešnar');
   expect(flamingo.art?.src).toBe('/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg');
+  for (const id of ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel', 'dlorah', 'mohamed-osman', 'jerome-sieber']) {
+    expect(cards.find(card => card.personId === id)?.art?.src, id).toBeTruthy();
+  }
+  expect(cards.find(card => card.personId === 'dlorah')?.career?.rows.map(row => row.medal)).toEqual(['silver', 'bronze']);
+  expect(cards.find(card => card.personId === 'mohamed-osman')?.career?.rows[0]).toMatchObject({ competition: 'ARC Prize 2025', rank: 3, medal: 'gold' });
 });
 
 it('names each of a person’s competition editions in the card shelf', () => {

@@ -10,6 +10,7 @@
     "/jfPuget3.png": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37",
     "/news-images/2026-10-19-arc-mutants-academy-v1.png": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3",
     "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a",
+    "/news-images/2026-10-19-tufa-citadel-v5-base.webp": "926a097348ab04e3f0a1e2e3945febb97647070120522b373907f95fb223bb72",
     "/news-images/2026-10-26-architects-dream-team-base.png": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
     "/news-images/2026-10-29-turducken-nt-corrected-v2.webp": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
     "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
@@ -91,6 +92,7 @@
     "/news-images/people/yi-chia-chen.webp": "3a295b52389dd269227da539625abaf980af8b6fcbd5026b85e332374e7b6867",
     "/news-images/people/yuto0712.webp": "f91e864bab80d9f3a298d60954198ff1f46bd2861622a1669af4c84dbdb119ff",
     "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e",
+    "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
     "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp": "d96682c0423db96e8067b3fec8e839eb886e7ae27a914eba00f251e9a08a1f45",
     "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp": "cbdd1a4b4c219fe1a5d9a1e987c1a2a9ac2466a5333e427ec997653526cde44c",
     "/news-images/references/2026-10-29-darren-individual-avatar-v1-base.png": "5885a483826cd18337f05d9c03f3560ca4afd7113e67c102a83b6657f7bb4746",
@@ -1011,6 +1013,36 @@
         }
       ],
       "tier": "Master"
+    },
+    "dlorah": {
+      "checkedAt": "2026-11-02T23:06:33.009766+00:00",
+      "joinedYear": 2017,
+      "location": null,
+      "medals": null,
+      "organisation": null,
+      "profileUrl": "https://www.kaggle.com/dlorah",
+      "rank": null,
+      "rows": [
+        {
+          "competition": "Microsoft Malware Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/microsoft-malware-prediction",
+          "fieldSize": 2410,
+          "medal": "silver",
+          "rank": 70,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Shopee - Price Match Guarantee",
+          "competitionUrl": "https://www.kaggle.com/competitions/shopee-product-matching",
+          "fieldSize": 2426,
+          "medal": "bronze",
+          "rank": 228,
+          "team": null,
+          "year": null
+        }
+      ],
+      "tier": "Expert"
     },
     "dongming-sheng": {
       "checkedAt": "2026-10-30T14:06:41Z",
@@ -2792,6 +2824,27 @@
         }
       ],
       "tier": "Expert"
+    },
+    "mohamed-osman": {
+      "checkedAt": "2026-11-02T23:06:33.009766+00:00",
+      "joinedYear": 2020,
+      "location": null,
+      "medals": null,
+      "organisation": "Tufa Labs",
+      "profileUrl": "https://www.kaggle.com/moeosman",
+      "rank": null,
+      "rows": [
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": "gold",
+          "rank": 3,
+          "team": "MindsAI & Tufa Labs",
+          "year": 2025
+        }
+      ],
+      "tier": null
     },
     "muhammad-yassir-ramadhan": {
       "checkedAt": "2026-10-30T13:33:13Z",
@@ -8884,7 +8937,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "65c433f193ed304063f993893f80b87b53972b827ad6f6f8a29abd7e4b9ddcf4",
+  "fingerprint": "dee2646affb0c2e05442a0a1d6b67738ddd779a7a08b484555bde7a34a4d913d",
   "people": [
     {
       "accounts": [
@@ -10962,8 +11015,15 @@
           "url": "https://www.kaggle.com/infinitecreativity"
         }
       ],
-      "briefing": "The InfiniteCreativity Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
-      "facts": [],
+      "briefing": "Michal Tešnar coauthored Tufa Labs’ Duck Harness write-up and competed as InfiniteCreativity on its ARC-AGI-3 roster.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-02T23:03:02+00:00",
+          "sourceTitle": "Tufa Labs — Duck Harness",
+          "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
+          "text": "Tufa Labs credits Michal Tešnar as a coauthor of its Duck Harness write-up."
+        }
+      ],
       "hallOfFame": [],
       "id": "infinitecreativity",
       "memberships": [
@@ -10980,9 +11040,9 @@
           "teamName": "Tufa Labs"
         }
       ],
-      "name": "InfiniteCreativity",
+      "name": "Michal Tešnar",
       "portrait": {
-        "alt": "InfiniteCreativity’s own pink flamingo Kaggle avatar",
+        "alt": "Michal Tešnar’s pink flamingo Kaggle avatar",
         "checkedAt": "2026-11-02T22:20:00Z",
         "kind": "kaggle",
         "sourceTitle": "InfiniteCreativity — Kaggle profile",
@@ -15221,7 +15281,16 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "Dries Smit’s established comic character with green eyepiece and GPU gear",
+          "artworkId": "2026-10-12-dries-smit-character-v1-base",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Existing ARC Daily character illustration",
+          "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-10-12-dries-smit-character-v1-base.md"
+        ],
         "description": "ARC Prize lists Dries Smit as lead developer of StochasticGoose @ Tufa Labs, which won the 2025 ARC-AGI-3 Preview competition.",
         "entries": [],
         "id": "person-dries-smit-2026",
@@ -15335,7 +15404,16 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "Isaiah Pressman’s Canada goose Kaggle avatar",
+          "artworkId": "character-isaiahp",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Isaiah Pressman’s Kaggle avatar",
+          "src": "/news-images/people/isaiahp.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/character-isaiahp.md"
+        ],
         "description": "ARC Prize’s 2025 results list MindsAI third; the final Kaggle leaderboard lists pressman1 (displayed as IsaiahP) on that MindsAI & Tufa Labs team with jcole75, driessmit1, moeosman and michaelhodel.",
         "entries": [],
         "id": "person-isaiahp-2026",
@@ -15558,7 +15636,16 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "Stefano Viel’s own Kaggle profile portrait",
+          "artworkId": "asset-8e7a30ca16fed6dc3037",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Stefano Viel’s Kaggle portrait",
+          "src": "/news-images/people/stefano-viel.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-8e7a30ca16fed6dc3037.md"
+        ],
         "description": "Stefano Viel’s Kaggle profile gives his job as Research Scientist at Tufa Labs, based in Zürich, Switzerland, and links to his GitHub, LinkedIn and X accounts.",
         "entries": [],
         "id": "person-stefano-viel-2026",
@@ -16691,8 +16778,17 @@
         "setId": "kaggleverse-2026"
       },
       {
+        "art": {
+          "alt": "The established Tufa Labs spider mascots in their GPU citadel; no portrait of Harold is implied.",
+          "artworkId": "2026-10-19-tufa-citadel-v5-base",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Previously published Tufa Labs mascot scene",
+          "src": "/news-images/2026-10-19-tufa-citadel-v5-base.webp"
+        },
         "artFallback": "none",
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-10-19-tufa-citadel-v5-base.md"
+        ],
         "description": "Harold Bessis coauthored Tufa Labs’ Duck Harness write-up and appeared as dlorah on the ARC-AGI-3 Tufa Labs competition roster.",
         "entries": [],
         "id": "person-dlorah-kaggleverse-2026",
@@ -16706,22 +16802,22 @@
       },
       {
         "art": {
-          "alt": "InfiniteCreativity’s pink flamingo avatar, from the account’s Kaggle profile",
+          "alt": "Michal Tešnar’s pink flamingo Kaggle avatar",
           "artworkId": "asset-e5860c4a8c998039bf75",
           "commissionedAt": "2026-11-02T22:27:18+00:00",
-          "credit": "InfiniteCreativity’s Kaggle avatar",
+          "credit": "Michal Tešnar’s Kaggle avatar",
           "src": "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg"
         },
         "artFallback": "none",
         "artNotes": [
-          "Own Kaggle account avatar; the account holder’s real name is unverified."
+          "The editor confirmed the account identity on 2 November 2026."
         ],
-        "description": "The InfiniteCreativity Kaggle account appeared on the Tufa Labs ARC-AGI-3 competition roster; the account holder’s name and lab affiliation remain unverified.",
+        "description": "Michal Tešnar coauthored Tufa Labs’ Duck Harness write-up and competed as InfiniteCreativity on its ARC-AGI-3 roster.",
         "entries": [],
         "id": "person-infinitecreativity-kaggleverse-2026",
         "issuedAt": "2026-11-02T22:10:44+00:00",
         "kind": "person",
-        "name": "InfiniteCreativity",
+        "name": "Michal Tešnar",
         "number": "P071",
         "personId": "infinitecreativity",
         "season": "2026",
@@ -17021,8 +17117,17 @@
         "setId": "2026"
       },
       {
+        "art": {
+          "alt": "Mohamed Osman’s Tufa Labs team portrait",
+          "artworkId": "asset-5e08180135a81c31fd3e",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Tufa Labs team portrait",
+          "src": "/news-images/people/2026-11-02-mohamed-osman-tufa-portrait.webp"
+        },
         "artFallback": "none",
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-5e08180135a81c31fd3e.md"
+        ],
         "description": "Tufa Labs lists Mohamed Osman as an AI researcher. He coauthored research on ARC with Jack Cole.",
         "entries": [],
         "id": "person-mohamed-osman-kaggleverse-2026",
@@ -17035,8 +17140,17 @@
         "setId": "kaggleverse-2026"
       },
       {
+        "art": {
+          "alt": "Jerome Sieber’s Tufa Labs team portrait",
+          "artworkId": "asset-888a2e2341df4e767cd9",
+          "commissionedAt": "2026-11-02T23:03:02+00:00",
+          "credit": "Tufa Labs team portrait",
+          "src": "/news-images/people/2026-11-02-jerome-sieber-tufa-portrait.jpg"
+        },
         "artFallback": "none",
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-888a2e2341df4e767cd9.md"
+        ],
         "description": "Jerome Sieber is an AI researcher at Tufa Labs; his Kaggle profile uses the same name and lists the lab.",
         "entries": [],
         "id": "person-jerome-sieber-kaggleverse-2026",
@@ -17056,7 +17170,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-02T22:27:18+00:00",
+    "updatedAt": "2026-11-02T23:03:02+00:00",
     "version": 1
   },
   "results": [],
