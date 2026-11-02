@@ -147,7 +147,20 @@
   {
     "aliases": [],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "text": "Van-Phuc Huynh (hvanphucs112) is a Kaggle Competitions Expert and bioinformatics software developer based in Ho Chi Minh City, Vietnam.",
+        "sourceTitle": "Van-Phuc Huynh — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/hvanphucs112",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      },
+      {
+        "text": "Trần M. Tiến (trnmtin) is based in Ho Chi Minh City, Vietnam.",
+        "sourceTitle": "Trần M. Tiến — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/trnmtin",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      }
+    ],
     "firstObservedAt": "2026-11-02T15:14:37Z",
     "id": "arc-2-15494357",
     "lastObservedAt": "2026-11-02T15:14:37Z",
@@ -2149,7 +2162,14 @@
   {
     "aliases": [],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "text": "tascj (tascj0) is a Kaggle Competitions Grandmaster based in Kyoto, Japan, ranked second of 225,007 in Kaggle’s competition rankings when checked on 2 November 2026.",
+        "sourceTitle": "tascj — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/tascj0",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      }
+    ],
     "firstObservedAt": "2026-11-02T15:14:37Z",
     "id": "arc-2-17204147",
     "lastObservedAt": "2026-11-02T15:14:37Z",
@@ -2337,7 +2357,32 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "text": "Van-Phuc Huynh (hvanphucs112) is a Kaggle Competitions Expert and bioinformatics software developer based in Ho Chi Minh City, Vietnam.",
+        "sourceTitle": "Van-Phuc Huynh — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/hvanphucs112",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      },
+      {
+        "text": "Trần M. Tiến (trnmtin) is based in Ho Chi Minh City, Vietnam.",
+        "sourceTitle": "Trần M. Tiến — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/trnmtin",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      },
+      {
+        "text": "In the last week of October, Van-Phuc Huynh wrote in the ARC-AGI-2 and ARC-AGI-3 forums about runs scoring zero, slow dataset loading and a submission queue he expected to worsen near the deadline. He said he had given up solving time to avoid scores of zero, described himself “standing in front of my GPU with a pile of plans”, and said he would share his findings if his results improved.",
+        "sourceTitle": "Van-Phuc Huynh — ARC forum comments",
+        "sourceUrl": "https://www.kaggle.com/hvanphucs112/discussion",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      },
+      {
+        "text": "Tong Hui Kang’s public ARC-3 leaderboard tracker records infinity at #6 on 5 July 2026 and #7 on 6 September 2026, and at a score of 31.24 from 3 October until 1 November 2026.",
+        "sourceTitle": "Tong Hui Kang — ARC-3 leaderboard tracker",
+        "sourceUrl": "https://arc3.huikang.dev/leaderboard/",
+        "checkedAt": "2026-11-02T19:15:00Z"
+      }
+    ],
     "firstObservedAt": "2026-11-02T15:14:35Z",
     "id": "arc-3-15494354",
     "lastObservedAt": "2026-11-02T15:14:35Z",

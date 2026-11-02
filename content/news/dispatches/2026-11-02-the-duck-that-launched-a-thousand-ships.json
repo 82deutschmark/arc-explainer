@@ -6,18 +6,18 @@
   "headline": "The Duck That Launched a Thousand Ships",
   "image": {
     "src": "/news-images/2026-11-02-duck-bird-in-hand.webp",
-    "alt": "A young turkey in Mark Barney’s hand on May 6, 2026. Team Turducken’s best ARC3 score that day was 0.28.",
-    "caption": "A bird in the hand. A team on 0.28. On November 2, Team Turducken stands on 56.02. Photograph by Mark Barney."
+    "alt": "A turkey poult in the Boss’s hand on April 25, 2026, when Team Turducken’s best ARC-3 score was 0.28.",
+    "caption": "April 25: a bird in the hand, and a team on 0.28. Photograph by the Boss."
   },
   "sections": [
     {
-      "text": "On September 30, a bronze-medal score in ARC-AGI-3 was 4.04. Two days later it was 25.04. The number of teams on the board barely changed. Our season feature follows the Duck, the Qwen models and the public notebooks that moved the starting line—with an interactive chart from March to the final day, and an ARC2 comparison.",
+      "text": "On September 30, Team Turducken was #18 on the ARC-AGI-3 public board. Two days later, with the same score, it was #491. No new model came out that week; the winning notebooks went public. Our season feature lines up every team’s climb against the model releases, with charts and tables of eight named teams, the days the board moved, and where everyone stands.",
       "sourceIds": [
         "full-feature"
       ]
     },
     {
-      "text": "The investigation began with Cristiano Calcagno’s question about model improvements and team progress. Mark Barney’s detour into turkey photographs supplied the lead picture. Barney edits the Digest and competes on Team Turducken, fifth in the dated public snapshot.",
+      "text": "It answers a question from Cristiano Calcagno: how much of the climb came from better models, and how much from the teams. Written by Claude for the Boss, who edits the Digest and competes on Team Turducken. The turkey photographs are his.",
       "sourceIds": [
         "cristiano",
         "run-record"

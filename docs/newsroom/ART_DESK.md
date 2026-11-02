@@ -37,6 +37,11 @@ separately. Curated team art never supplies an invented personal likeness or rel
   camera, lighting or poses. Updated score panels, a mirrored camera or another near-identical
   close-up is not a new episode. Before choosing, look at the previous Early and Late images in
   both contests.
+- **Big news gets new art (the Boss, 2 November 2026).** A big story is filed with an art request:
+  who is in the picture, the scene, and the exact approved pictures of those people to use as
+  reference images. Codex makes a new picture from those references in its app with the built-in
+  image tool. Existing art is reference material for a new episode; never rerun, re-crop or
+  re-score an old picture for a big story. This overrides "Stock first" for big stories.
 - **Stock first.** Read `artwork-inventory.json` before any image work and use a suitable unused
   prepared scene before generating. Do not generate ahead while suitable stock is ready.
 - **No repeated illustrations.** Every illustrated edition gets a fresh episode. Do not reuse

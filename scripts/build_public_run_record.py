@@ -37,7 +37,7 @@ MILESTONE_2 = {'t': '2026-09-30T00:00:00Z', 'short': 'Milestone 2', 'label': 'Mi
 CONTESTS = {
     'arc3': dict(number='3', contest='ARC-AGI-3', team='Team Turducken', logToggle=True, yMax=60,
                  events=sorted(QWEN + [DUCK, MILESTONE_2], key=lambda e: e['t']),
-                 lede='From 1.21 on Jul 2 to 8.62 on Sep 27, then 32.74 a week later and 56.02 by Oct 23. On this log scale each main gridline is ten times the one below, and zero scores sit on the floor.'),
+                 lede='Team Turducken began as Son Pham and the Boss; teammates who merged in during October brought their earlier runs, so the early dots include theirs. From 1.21 on Jul 2 to 8.62 on Sep 27, then 32.74 a week later and 56.02 by Oct 23. On this log scale each main gridline is ten times the one below, and zero scores sit on the floor.'),
     'arc2': dict(number='2', contest='ARC-AGI-2', team='ARC Mutants', logToggle=False, yMax=75,
                  events=QWEN,
                  lede='From May 5 to Oct 5 our best barely moved, 32.36 to 33.61, despite a long run of attempts. It reached 50.83 by Oct 31.'),

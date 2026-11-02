@@ -170,12 +170,14 @@
 
 /* Compact player cards borrow the Hall of Fame's portrait/name/honor hierarchy. */
 .news-story-people { clear: both; min-width: 0; margin: 14px 0 20px; }
-.arc-daily .news-story-people > h2 { margin: 0 0 6px; padding: 4px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--hair); font: 700 10px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-story-people .news-story-people-grid { display: flex; overflow-x: auto; gap: 8px; padding: 4px 0 8px; }
 .news-story-people .news-subject-card { flex: 0 0 220px; }
-.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 46%), 1fr)); gap: 10px; margin-bottom: 8px; }
+/* Optional and secondary to the reporting: a small label and thumbnail-sized cards. */
+.news-story-people-label, .news-story .news-story-people-label { margin: 0 0 8px; padding-top: 4px; border-top: 1px solid var(--ink); color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 112px)); gap: 8px; margin-bottom: 8px; }
+.news-sidebar .news-story-cards { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
 .arc-daily .news-story-card { display: block; line-height: 0; }
-.news-story-card img { width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 10px; box-shadow: 2px 3px 0 var(--ink); transition: transform .12s; }
+.news-story-card img { width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 6px; box-shadow: 1px 2px 0 var(--ink); transition: transform .12s; }
 .arc-daily .news-story-card:hover img { transform: translateY(-3px) rotate(-.6deg); }
 .news-story-people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 8px; }
 .arc-daily .news-subject-card { display: flex; align-items: center; gap: 11px; padding: 7px; border: 1px solid var(--ink); border-left: 3px solid var(--accent); background: var(--paper); color: var(--ink); }
@@ -527,6 +529,9 @@
   .news-ad-body { display: block; padding: 12px; }
   .news-ad-thumb { margin-bottom: 10px; }
   .news-ad-actions { margin-top: 10px; }
+  /* Phones: one swipeable row of small cards, never a stack of full-size ones. */
+  .news-story-cards, .news-sidebar .news-story-cards { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 4px; scroll-snap-type: x proximity; }
+  .news-story-card { flex: 0 0 76px; scroll-snap-align: start; }
   .news-ad-actions a { flex: 1 1 140px; }
   .news-person-header { flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 8px; }
   .news-portrait-hero { width: 132px; height: 132px; }

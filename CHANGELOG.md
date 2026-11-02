@@ -4,6 +4,38 @@
 - Prepare the approved masthead, logo and shared metadata behind the post-7-pm release gate and official closing checks. Unify published competition order across browser and initial HTML, with small cast cards after the opening. No article or social send is part of this change.
 - Author: GPT-6 / Codex (reasoning effort not exposed). Validation is recorded in docs/02-Nov-2026-goose-integration-plan.md.
 
+### Version 9.161.23 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: places and scores each have their own look everywhere, in the text, the tables and the charts. Places are bold blue with a #; scores are green figures. The key under the title shows both. (Claude Opus 5.5 Medium)
+
+### Version 9.161.22 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: charts and tables first. Four tables: places on the board, scores, teams that doubled their score in a day, and the place a given score earned. Each holds only scores or only places, and places are always written #N. NVARC3 added to the team chart. Franzen's line continues as The ARChitects after his merge. Data refreshed to the afternoon public board. (Claude Opus 5.5 Medium)
+
+### Version 9.161.21 · November 2, 2026
+
+- Stories lead with the reporting again. On the front page the lead story now runs headline, standfirst, byline, artwork and its opening section before the "In this story" cards; the cards are thumbnail-sized under a small label (it had been inheriting the giant headline style), and on phones they are one swipeable row instead of a stack of full-size cards. The plain page sent before the browser finishes loading puts the cards after the opening section too. (Claude Opus 5.5 High)
+
+### Version 9.161.20 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships, rewritten from the ground up to answer Cristiano Calcagno's question. New charts: eight named teams' seasons by score or by place against the model and code releases; the share of teams that doubled their score each day; and where every team sits now. New prose built on Team Turducken's fall from 18th to 491st with an unchanged score, with the Boss's dated farm photos. The medal-line charts, ARC-2 sidebar and Qwen 4 ending are gone. (Claude Opus 5.5 Medium)
+
+### Version 9.161.19 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships and the Run Record: no current leaderboard place is stated as fact on closing day. The article says near the top that every score and place is from the public board and that the private board decides final places; the sidebar no longer names Team Turducken's current place, the season note no longer names the current leader, and the Run Record tile reads "Public board place … not final". Dated history (August 20, September 1) stays. (Claude Opus 5.5 Medium)
+
+### Version 9.161.18 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: new top of page. The bird-in-hand photo sits beside the title and the score lead, followed by a small chart of the medal lines around the September 30 deadline and the three key numbers, then the full season chart. The note on who wrote the piece and who the Boss is moves to an "About this piece" section at the bottom, linked from the byline (Author: Claude Opus 5.5).
+
+### Version 9.161.17 · November 2, 2026
+
+- Run record: the ARC-3 introduction says the team began as Son Pham and the Boss, and that teammates who merged in during October brought their earlier runs, so the early dots include theirs (Author: Claude Opus 5.5).
+
+### Version 9.161.16 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: Team Turducken was near the top before the milestone notebooks went public (about 60th of 2,400 on August 20, ahead of all of today's top ten but Tufa Labs; fourth on September 1), fell hundreds of places in the flood and was back in the top ten by October 10. Ranks rebuilt from Tong Hui Kang's tracker and matched against notes written at the time (Author: Claude Opus 5.5).
+
 ### Version 9.161.15 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: add a short passage on who the Boss is (a video game producer for fifteen years whose hobbies are Kaggle, ARC in particular, and breeding exotic poultry) and his Ornitharch program, stop splitting hairs over which birds hatched on the farm, and say how much of his work Claude is part of: the team’s code, the birds and the farm. The Ornitharch line now tells it as the joke it is: technologically adept chickens bred to replace humans as the dominant megafauna (Author: Claude Opus 5.5).

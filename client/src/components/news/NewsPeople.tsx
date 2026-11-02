@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-29
+ * Date: 2026-10-29; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards)
  * PURPOSE: Reusable person pieces for competition reporting: faces (Hall of Fame crop or saved
  *          Kaggle picture, initials when a person has neither), roster chips, the "in this story"
  *          subject cards for every reported person, directory cards and honors that link to the person's Hall of Fame cards.
@@ -49,7 +49,7 @@ export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]
   const carded = people.map(person => ({ person, card: cardOf(person) }));
   const withCard = carded.filter(item => item.card), without = carded.filter(item => !item.card);
   return <section className="news-story-people" aria-label="In this story">
-    <h2 className="news-section-title">In this story</h2>
+    <h2 className="news-story-people-label">In this story</h2>
     {!!withCard.length && <div className="news-story-cards">{withCard.map(({ person, card }) => <Link key={card!.id} href={card!.cardUrl} className="news-story-card">
       <img src={`/api/news/cards/${encodeURIComponent(card!.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card!)}`} width={300} height={420} loading="lazy"
         alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} />
