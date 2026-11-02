@@ -59,6 +59,17 @@ class RealPage(unittest.TestCase):
                 self.assertRegex(run[0], r'^2026-\d\d-\d\dT')
                 self.assertIsInstance(run[1], float)
 
+    def test_flock_photos_exist_with_alt_text_and_no_metadata(self):
+        import re
+        page = rr.PAGE.read_text()
+        images = re.findall(r'<img src="(/specials/img/flock/[^"]+)" alt="([^"]+)"', page)
+        self.assertEqual(len(images), page.count('<img '))
+        self.assertEqual(len(images), 11)
+        for path, _alt in images:
+            data = (ROOT / 'client/public' / path.lstrip('/')).read_bytes()
+            for chunk in (b'EXIF', b'Exif', b'XMP ', b'GPS'):     # phone pictures can carry the farm's location
+                self.assertNotIn(chunk, data[:4096], path)
+
 
 if __name__ == '__main__':
     unittest.main()

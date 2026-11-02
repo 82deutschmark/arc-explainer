@@ -1,3 +1,8 @@
+### Version 9.161.9 · November 2, 2026
+
+- Add the Boss's turkey photos to the public run record, hatching beside the hardware to birds too big for the nesting box, in his words (Author: Claude Opus 5.5). The pictures are resized, carry no location or camera data, and two are cropped so no screen can be read.
+- Validation: tests/test_public_run_record.py now checks every photo is present, has alt text and carries no metadata. Desktop and phone views visually checked.
+
 ### Version 9.161.8 · November 2, 2026
 
 - Add the public run record at /specials/run-record.html (Author: Claude Opus 5.5, at the editor's request): every scored Team Turducken ARC-3 run and ARC Mutants ARC-2 run on a real calendar, with the team-best staircase, gold-medal line and dated public milestones. scripts/build_public_run_record.py passes on only times and public scores, so private notes cannot reach it; the sign-in runs page is unchanged.
