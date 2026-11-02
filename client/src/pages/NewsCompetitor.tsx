@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: Competition-scoped competitor profile showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
  *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
@@ -10,7 +10,7 @@
 import { TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
-import { competitorTitle, competitorDescription } from '@shared/news';
+import { NEWS_NAME, competitorTitle, competitorDescription } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, NewsPaper, NewsStatus, competitionName, newsDate, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 
@@ -20,7 +20,7 @@ export default function NewsCompetitor() {
   const competitor = query.data?.competitors.find(record => record.id === competitorId);
   const missing = !!query.data && !competitor;
   const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => article.competition === competitor.competition && article.teamIds.includes(competitor.teamId)) : [];
-  usePageMeta({ title: competitor ? competitorTitle(competitor) : 'Competitor profiles | The ARC Daily Digest', description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
+  usePageMeta({ title: competitor ? competitorTitle(competitor) : `Competitor profiles | ${NEWS_NAME}`, description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
   return <NewsPaper>
     <Link href="/news/competitors" className="news-back">← All competitor profiles</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />

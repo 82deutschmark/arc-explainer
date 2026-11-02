@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-29
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex
+ * Date: 02-November-2026
  * PURPOSE: Exercise shareable competitor/team pages, linked records, artwork-led social previews and front/back PNG downloads,
  *          missing-card metadata and the crawlable Cabinet through production middleware
  * without exposing source-generation prompts, private paths or held manuscripts.
@@ -83,8 +83,8 @@ it('shares a team card with its own canonical page, exact preview and linked pla
   expect(html).toContain('property="og:image:height" content="630"');
   expect(html).toContain('Domdolus Tolus — Team card');
   expect(html).toContain('Team card');
-  expect(html).toContain('href="/news/cards/person-darren-amadeus-martin-2026"');
-  expect(html).toContain('href="/news/cards/person-alwin-theodoric-2026"');
+  expect(html).toContain('Current standings at Kaggle');
+  expect(html).toContain('/leaderboard?teamId=');
   expect(html).not.toMatch(/<article id="card-team-last-dance-2026"/);
   expect(html).not.toContain('content="noindex');
   expect(newsSitemapEntries().some(entry => entry.url === `${SITE_ORIGIN}/news/cards/${id}`)).toBe(true);
@@ -128,7 +128,7 @@ it('shares competitor history and links current and earlier teams to their cards
   const card = getNewsCollection().cards.find(item => item.id === id)!;
   for (const team of card.teamHistory) {
     expect(html).toContain(`href="${team.cardUrl ?? team.profileUrl}"`);
-    if (team.status !== 'current') expect(html).toContain('earlier team');
+    if (team.status === 'previous') expect(html).toContain('earlier team');
   }
   expect(html).toContain(`property="og:url" content="${SITE_ORIGIN}/news/cards/${id}"`);
 });

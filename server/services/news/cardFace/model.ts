@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
+ * Date: 02-November-2026
  * PURPOSE: DATA -> VIEW MODEL for the TOPPS card design. Turns an enriched card (see sample-cards.json
  *          _doc) into exactly the strings and numbers the layout may print, and decides what is never
  *          printed. No coordinates, no colours beyond picking a tier style: those live in render.ts and
@@ -56,7 +56,7 @@ export interface VM {
   /** team size as printed: "7 ACCOUNTS", "1 ACCOUNT" */
   sizeLabel: string | null;
   number: string; numberOf: number | null; wordmark: string; publisher: string | null; season: string;
-  stamp: { word: 'LIVE' | 'FINAL'; date: string } | null;
+  stamp: { word: 'LIVE' | 'PUBLIC' | 'FINAL'; date: string } | null;
   contests: ContestVM[]; medals: MedalsVM | null;
   overall: { rank: string; outOf: string | null; best: string | null } | null;
   honour: string | null; bestFinish: string | null; bestFinishParts: { place: string; competition: string } | null;
@@ -112,16 +112,16 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     short: c.shortName ?? c.name, full, team: teamName, size,
     tag: String(full || c.shortName || '').replace(/\s+[-\u2013\u2014]\s+/g, ' \u00b7 '), solo,
     entryLine: family === 'team' ? null : solo ? 'SOLO ENTRY' : teamName,
-    rank: hash(c.rank), peak: hash(c.peakRank), score: typeof c.score === 'number' ? c.score.toFixed(2) : null,
+    rank: hash(c.rank), peak: hash(c.peakRank), score: typeof c.score === 'number' ? String(c.score) : null,
     subs: typeof c.submissions === 'number' ? num(c.submissions) : null, status: c.status,
   }; });
-  // The stamp: LIVE while any contest is open, FINAL when all are official final results; none when no standings exist.
-  // A contest whose close time has passed is final even when the saved board still says it is open.
-  const closed = (c: any) => c.status === 'final' || (c.closesAt && Date.parse(c.closesAt) <= (opts.now ?? Date.now()));
-  const allClosed = (card.contests ?? []).length > 0 && (card.contests ?? []).every(closed);
-  const status = allClosed || card.status === 'final' ? 'FINAL' : card.status === 'live' ? 'LIVE' : null;
+  // A deadline ends submissions, never awards a result. A cached public reading
+  // after the close stays PUBLIC until an explicit official-final result exists.
+  const allFinal = (card.contests ?? []).length > 0 && (card.contests ?? []).every((c: any) => c.status === 'final');
+  const allClosed = (card.contests ?? []).length > 0 && (card.contests ?? []).every((c: any) => c.closesAt && Date.parse(c.closesAt) <= (opts.now ?? Date.now()));
+  const status = allFinal || card.status === 'final' ? 'FINAL' : card.status === 'live' ? (allClosed ? 'PUBLIC' : 'LIVE') : null;
   const date = dayLabel(card.asOfDate);
-  const stamp = status && date ? { word: status as 'LIVE' | 'FINAL', date } : null;
+  const stamp = status && date ? { word: status as 'LIVE' | 'PUBLIC' | 'FINAL', date } : null;
 
   const roster = (card.roster ?? []).map((r: any) => ({ name: printableName(r.name ?? r.handle, r.handle), tier: tierByName(r.tier)?.key ?? null, medals: medalsOf(r.medals), handle: r.handle }));
   const withMedals = roster.filter((r: any) => r.medals);

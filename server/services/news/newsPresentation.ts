@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
+ * Date: 02-November-2026
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
@@ -27,7 +27,7 @@
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
-  articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
+  articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit, publishedCompetitionOrder, competitionStories,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
 } from '../../../shared/news';
@@ -38,7 +38,9 @@ import { collectionShareVersion, collectionCardPath, collectionCardTitle, collec
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
 import { getNewsIndex } from './newsStore';
-export const boardPath = (competition: string) => competition === 'arc-2' ? '/kaggle-leaderboard/arc-2' : '/kaggle-leaderboard';
+import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
+import { NEWS_BRAND } from '../../../shared/newsBrand';
+export const boardPath = (competition: string) => KAGGLE_COMPETITIONS[competition]?.path ?? '/news';
 /** The front-page share card under today's address: ARC Daily pages without a card of their own use it. */
 const cardFor = (articles: NewsArticle[]) => ({ image: `${SITE_ORIGIN}${sectionCardPath(articles)}`, imageAlt: sectionCardAlt(articles) });
 const articleLink = (article: NewsArticle) => `<a href="${newsArticlePath(article.id)}">${esc(article.headline)}</a>`;
@@ -59,21 +61,21 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
   }] };
 }
 /** The full dispatch, including its own art and sources, stays identical across server views. */
-function dispatchHtml(dispatch: NewsDispatch): string {
-  return `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${illustrationHtml(dispatch)}${dispatch.sections.map(section => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${newlineText(section.text)}`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
+function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = []): string {
+  return `<article id="${esc(dispatch.id)}"><h2>${esc(dispatch.headline)}</h2>${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${newlineText(section.text)}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition) : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
 }
+
 export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = [], people: NewsPerson[] = []): RouteMetaTags {
   const url = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const feature = editionFeature(article, dispatches);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
-    <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p>${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}<p>ARC Daily sports desk · ${esc(writerCredit(article.generatedBy))}</p>
+    <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
-    ${feature ? dispatchHtml(feature) : ''}
-    ${storyPeopleHtml(reportedPeople(feature ? [feature, article] : [article], people), article.competition)}
-    ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
+    ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people)) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
+    ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
-    <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">The ARC Daily Digest front page</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
+    <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;
   return completeMeta({ title: articleTitle(article), description: articleDescription(article), url, type: 'article', jsonLd, bodyHtml,
     image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT,
@@ -137,28 +139,35 @@ function staffMeta(): RouteMetaTags {
 function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/wire'], ...cardFor(articles) });
   return { ...tags, jsonLd: collection(tags, wire.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
-    bodyHtml: `<main><h1>The wire</h1><p>Short sourced stories from both boards, checked every two hours by the ARC Daily Digest wire desk. Each story credits its writer. Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)} · ${esc(writerCredit(story.generatedBy))}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
+    bodyHtml: `<main><h1>The wire</h1><p>Source-linked competition developments, dated and credited to their writer. Each story credits its writer. Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)} · ${esc(writerCredit(story.generatedBy))}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
 }
-function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[], social: NewsSocialPost[], discussions: NewsDiscussion[]): RouteMetaTags {
+function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[], social: NewsSocialPost[], discussions: NewsDiscussion[], people: NewsPerson[] = []): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });
   const posts = frontPageSocialPosts(social);
   const socialHtml = posts.length ? `<section><h2>From X</h2><p>Research and reactions around the contests</p>${posts.map(post => `<article><h3><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h3><p>${esc(post.summary)}</p>${post.postedAt ? `<p>${timeTag(post.postedAt, false)}</p>` : ''}</article>`).join('')}<a href="/news/community#tweet-archive">Browse the collected tweet archive</a></section>` : '';
-  const dispatchesHtml = dispatches.map(dispatchHtml).join('');
-  return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: `/news#${dispatch.id}` })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
-    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Early (6 am) and late (6 pm Eastern) editions from both Kaggle competitions, short wire stories through the day, and the live public boards: leaders, medal lines, the past day's movers and where past prize winners stand, all from recorded leaderboard observations and cited sources.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${dispatchesHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3>${illustrationHtml(article)}<p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+  const leadsHtml = publishedCompetitionOrder(articles, dispatches).map(competition => {
+    const stories = competitionStories(articles, dispatches, competition), first = stories[0];
+    const feature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
+    const storyHtml = 'article' in first
+      ? newsArticleMeta(first.article, dispatches, people).bodyHtml!.replace(/^<main>|<\/main>$/g, '')
+      : dispatchHtml(first.dispatch, reportedPeople([first.dispatch], people));
+    return `${storyHtml}<ul>${stories.slice(1).filter(story => story.id !== feature?.id).slice(0, 3).map(story => `<li><a href="${newsArticlePath(story.id)}">${esc('article' in story ? story.article.headline : story.dispatch.headline)}</a></li>`).join('')}</ul>`;
+  }).join('');
+  return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: newsArticlePath(dispatch.id) })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
+    bodyHtml: `<main><h1>${NEWS_NAME}: ${NEWS_BRAND.goose ? "the sports tabloid of the Kaggleverse" : "ARC-AGI-3 and ARC-AGI-2 contest reporting"}</h1><p>Source-linked competition reporting, meaningful moves and the people behind the teams. Each report preserves its dates and evidence; the linked Kaggle pages provide current standings.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${leadsHtml || '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles) });
   return { ...tags, jsonLd: collection(tags, competitors.map(record => ({ name: `${record.name} (${competitionName(record.competition)})`, path: competitorPath(record.id) }))),
-    bodyHtml: `<main><h1>Competitor profiles</h1><p>Meet the teams, follow their progress, and explore their stories across ARC-2 and ARC-3.</p><ul>${competitors.map(record => `<li><a href="${competitorPath(record.id)}">${esc(record.name)}</a> — ${esc(competitionName(record.competition))}</li>`).join('')}</ul><p><a href="/news">Back to the sports page</a></p></main>` };
+    bodyHtml: `<main><h1>Competitor profiles</h1><p>Meet the teams, follow their progress, and explore their stories across competitions.</p><ul>${competitors.map(record => `<li><a href="${competitorPath(record.id)}">${esc(record.name)}</a> — ${esc(competitionName(record.competition))}</li>`).join('')}</ul><p><a href="/news">Back to the sports page</a></p></main>` };
 }
 /** Card pages and the collection list share the same sourced record and links, drawn here as plain HTML for readers and crawlers. */
 function collectionEntryHtml(entry: CollectionEntry): string {
-  if (entry.status === 'unavailable') return '';
+  if (entry.status === 'unavailable') return `<section><h3>${esc(competitionName(entry.competition))} · ${esc(entry.teamName)}</h3><p><a href="${esc(entry.sourceUrl ?? entry.profileUrl)}">Current standings at Kaggle ↗</a></p></section>`;
   const teamUrl = entry.cardUrl ?? entry.profileUrl;
   const roster = entry.members.length ? `<ul>${entry.members.map(member => `<li><a href="${esc(member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`))}">${esc(member.name || member.handle)}</a></li>`).join('')}</ul>` : '';
   const standing = entry.rank == null ? '' : `Rank ${entry.rank}${entry.score != null ? `, score ${entry.score}` : ''} · `;
-  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${standing}${entry.status === 'final' ? 'Final result' : 'Live standing'}${entry.observedAt ? ` as of ${esc(newsDate(entry.observedAt))}` : ''}</p>${entry.sourceUrl ? `<p><a href="${esc(entry.sourceUrl)}">Leaderboard</a></p>` : ''}${roster}</section>`;
+  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${standing}${entry.status === 'final' ? 'Final result' : entry.rank == null ? 'Current standings at Kaggle' : 'Public standing'}${entry.observedAt ? ` as of ${esc(newsDate(entry.observedAt))}` : ''}</p>${entry.sourceUrl ? `<p><a href="${esc(entry.sourceUrl)}">Leaderboard</a></p>` : ''}${roster}</section>`;
 }
 function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const heading = standalone ? 'h1' : 'h2';
@@ -184,20 +193,20 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
       isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
       mainEntity: { '@type': card.kind === 'person' ? 'Person' : 'Organization', name: card.name, url } }] },
-    bodyHtml: `<main><p><a href="/news/cards">All ARC Prize cards</a></p>${collectionCardHtml(card, true)}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+    bodyHtml: `<main><p><a href="/news/cards">${NEWS_BRAND.goose ? "All Kaggleverse cards" : "All ARC Prize cards"}</a></p>${collectionCardHtml(card, true)}<p><a href="/news">${esc(NEWS_NAME)}</a></p></main>` });
 }
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
   const { articles, competitors, dispatches = [], people = [], social = [], socialArchive = [], discussions = [], wire = [] } = getNewsIndex();
   if (route === '/news') {
-    const tags = frontPageMeta(articles, dispatches, wire, social, discussions);
+    const tags = frontPageMeta(articles, dispatches, wire, social, discussions, people);
     return { status: 200, tags };
   }
   if (route === '/news/wire') return { status: 200, tags: wireMeta(wire, articles) };
   if (route === '/news/cards') {
     const cabinet = getNewsCollection();
     const tags = completeMeta({ ...ROUTE_META_TAGS['/news/cards'], ...cardFor(articles),
-      bodyHtml: `<main><h1>ARC Prize 2026 cards</h1><p>The ARC Daily Digest’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">The ARC Daily Digest</a></p></main>` });
+      bodyHtml: `<main><h1>${NEWS_BRAND.goose ? 'Kaggleverse cards' : 'ARC Prize 2026 cards'}</h1><p>${esc(NEWS_NAME)}’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}<p><a href="/news">${esc(NEWS_NAME)}</a></p></main>` });
     return { status: 200, tags: { ...tags, jsonLd: collection(tags, cabinet.cards.map(card => ({ name: card.name, path: card.cardUrl }))) } };
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
@@ -205,7 +214,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     const card = getNewsCollection().cards.find(item => item.id === cardRoute[1]);
     if (card) return { status: 200, tags: collectionCardMeta(card) };
     return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
-      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse every ARC Prize card</a></p></main>' }) };
+      bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse the Card Cabinet</a></p></main>' }) };
   }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };
@@ -222,10 +231,10 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     title: `${dispatch.headline} | ${NEWS_NAME}`, description: dispatch.sections[0]?.text ?? dispatch.headline,
     url: `${SITE_ORIGIN}${route}`, type: 'article', publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition),
     ...(dispatch.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : cardFor(articles)),
-    bodyHtml: `<main>${dispatchHtml(dispatch)}</main>`,
+    bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people))}</main>`,
   }) };
 
-  return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit The ARC Daily Digest for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
+  return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit the newspaper front page for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
 }
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);
 /** News URLs with a real last-change time: publication for editions, last check for notebooks. */

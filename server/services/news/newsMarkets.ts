@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-09; 10-October-2026 (Claude Sonnet 5.5: latestMarkets, the same cached digest as an object)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: Serves the ARC Daily Digest's market digest (GET /api/news/markets): one compact
  *          summary per Kaggle board for the front page's ticker, standings and movers, and the
  *          evidence the wire desk's reporters write from. Reads the board documents the Mac Mini
@@ -24,7 +24,6 @@ let cached: { at: number; payload: MarketsPayload; raw: Buffer; gzip: Buffer } |
 /** Teams the paper follows on a board: notebook dossiers, ledger memberships and featured teams. */
 function watchedTeams(index: NewsIndex, competition: NewsCompetition): Set<string> {
   return new Set([
-    ...KAGGLE_COMPETITIONS[competition].featuredTeamIds,
     ...index.competitors.filter(record => record.competition === competition).map(record => record.teamId),
     ...(index.people ?? []).flatMap(person => person.memberships.filter(member => member.competition === competition).map(member => member.teamId)),
   ]);

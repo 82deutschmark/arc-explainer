@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Date: 02-November-2026
  * PURPOSE: The per-season SET DESIGN REGISTRY for the Card Cabinet. Baseball cards change look every year, so
  *          which look draws a card is a data row, not code: each row names the season, the series name printed on
  *          the pennant, the set name, the publisher and the key of the look module that draws it. 2025's painted
@@ -16,6 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
+import { loadWikiInputs } from '../wikiInputs';
 
 /** The look modules that exist. A new design adds its key here and one module that draws it. */
 export const SET_LOOKS = ['topps86'] as const;
@@ -28,6 +29,7 @@ const setSchema = z.object({
   look: z.enum(SET_LOOKS),
   /** The newsroom calendar the as-of day is read in. */
   timeZone: z.string().min(1),
+  competitionIds: z.array(z.string()).optional(),
 }).strict();
 const sponsorSchema = z.object({
   organisation: z.string().min(1), bio: z.string().min(1),
@@ -40,20 +42,23 @@ const seriesFileSchema = z.object({
   /** Hand-written card text for the competition sponsors, by person id; every fact cites a source. */
   sponsors: z.record(sponsorSchema),
 }).strict().superRefine((file, ctx) => {
-  for (const key of ['id', 'season'] as const) if (new Set(file.sets.map(row => row[key])).size !== file.sets.length)
+  for (const key of ['id'] as const) if (new Set(file.sets.map(row => row[key])).size !== file.sets.length)
     ctx.addIssue({ code: 'custom', message: `Duplicate set ${key}` });
 });
 export type SetDesign = z.infer<typeof setSchema>;
 export type SponsorProfile = z.infer<typeof sponsorSchema>;
 export type SeriesFile = z.infer<typeof seriesFileSchema>;
 
-const cache = new Map<string, SeriesFile>();
+const cache = new Map<string, { stamp: string; value: SeriesFile }>();
 /** Read and validate content/news/series.json (cached per file path). */
 export function loadSeriesFile(directory = path.join(process.cwd(), 'content/news')): SeriesFile {
   const file = path.join(directory, 'series.json');
+  const wiki = loadWikiInputs(directory);
+  const stamp = wiki?.fingerprint ?? String(fs.statSync(file).mtimeMs);
   let found = cache.get(file);
-  if (!found) cache.set(file, found = seriesFileSchema.parse(JSON.parse(fs.readFileSync(file, 'utf8'))));
-  return found;
+  if (found?.stamp !== stamp) cache.set(file, found = { stamp,
+    value: seriesFileSchema.parse(wiki?.series ?? JSON.parse(fs.readFileSync(file, 'utf8'))) });
+  return found!.value;
 }
 
 /** Every set, oldest season first. */

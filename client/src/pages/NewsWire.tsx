@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: /news/wire, the past week of wire stories (the news index carries a week, at most 40;
  *          the files in content/news/wire are the permanent record), newest first and grouped by
  *          Eastern date, each at its own anchor with its sources, people, profile links and evidence.
@@ -18,7 +18,7 @@ import { WireStory, sortedWire } from '@/components/news/NewsWire';
 export default function NewsWire() {
   const query = useNews();
   const stories = sortedWire(query.data?.wire ?? []);
-  usePageMeta({ title: `The wire | ${NEWS_NAME}`, description: 'The ARC Daily Digest wire desk checks both ARC-AGI-3 and ARC-AGI-2 boards every two hours for consequential uncovered moves.', canonicalPath: '/news/wire', image: useNewsCardImage() });
+  usePageMeta({ title: `The wire | ${NEWS_NAME}`, description: 'Source-linked competition developments, with dated observations and the writer credited on each story.', canonicalPath: '/news/wire', image: useNewsCardImage() });
   // Stories mount after the archive loads; honor a link to one of them once they exist.
   useEffect(() => {
     if (stories.length && window.location.hash) requestAnimationFrame(() => document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView());

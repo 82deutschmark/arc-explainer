@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 2026-11-01 (2026-10-30 earlier)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Date: 02-November-2026
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots, linked player/team histories and explicitly official final
  * results. Never exposes desk drafts or infers a player's departure from roster absence.
@@ -14,10 +14,13 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { boardHistorySchema, cardRegistrySchema, careersFileSchema, hallOfFameSchema, type BoardHistory, type HallOfFameFile, type CollectionArchive, collectionCardPath, type CollectionCareer, finalCardResultSchema, type CardRegistry, type CollectionArt, type CollectionCard, type CollectionPastCard, type CollectionStory, type CollectionTeamHistory, type FinalCardResult, type NewsCollection } from '../../../shared/newsCollection';
 import { competitionName, personPath, competitorPath, newsArticlePath, wirePath, reportedPeople, type NewsIndex, type NewsPerson } from '../../../shared/news';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
 import { getNewsIndex, NEWS_DIRECTORY } from './newsStore';
+import { loadWikiInputs } from './wikiInputs';
+import { cardBoardCache, freshCardRows } from './cardBoards';
 
 export function activeCardResults(results: FinalCardResult[]): FinalCardResult[] {
   const ids = new Set<string>();
@@ -71,7 +74,7 @@ function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCards
     // Only a later positive membership in this contest proves a previous team. A newer board
     // without this player leaves the latest team uncertain, rather than inventing a transfer.
     const status: CollectionTeamHistory['status'] = seen < latestMembership.get(contestKey(row))! ? 'previous'
-      : seen < (latestBoard.get(contestKey(row)) ?? seen) || row.season !== registry.season ? 'last-observed' : 'current';
+      : !latestBoard.has(contestKey(row)) || seen < latestBoard.get(contestKey(row))! || row.season !== registry.season ? 'last-observed' : 'current';
     const cardUrl = teamCards.get(teamKey(row));
     return { ...row, status, ...(cardUrl ? { cardUrl } : {}), profileUrl: notebooks.get(teamKey(row)) ?? row.sourceUrl };
   }).sort((a, b) => Date.parse(b.lastObservedAt) - Date.parse(a.lastObservedAt) || a.competitionId.localeCompare(b.competitionId) || a.teamId.localeCompare(b.teamId));
@@ -134,7 +137,8 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const person = people.find(item => item.id === definition.personId);
     if (definition.kind === 'person' && !person) throw Error('Card has no verified person: ' + definition.id);
     const handles = new Set(person?.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
-    const entryRefs = definition.kind === 'team' ? definition.entries : registry.snapshots.filter(row => row.members.some(handle => handles.has(handle)));
+    const entryRefs = definition.kind === 'team' ? [...definition.entries]
+      : registry.snapshots.filter(row => row.members.some(handle => handles.has(handle)));
     // An official credited roster can reconnect a former member without using today's roster.
     if (person) for (const row of final.filter(row => row.season === definition.season && row.creditedHandles.some(handle => handles.has(handle)))) {
       if (!entryRefs.some(ref => ref.competitionId === row.competitionId && ref.teamId === row.teamId)) entryRefs.push(row);
@@ -165,7 +169,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         fieldSize: boardNear(board, ref.competition, snapshot?.observedAt ?? null)?.teams ?? null,
         peakRank: (() => { const peak = board?.peaks[`${ref.competition}:${ref.teamId}`]?.rank; const now = result?.rank ?? snapshot?.rank; return peak != null && now != null && peak < now ? peak : null; })(),
         zone: result ? null : zoneOf(snapshot?.score ?? null, boardNear(board, ref.competition, snapshot?.observedAt ?? null)),
-        sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl,
+        sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard?teamId=${encodeURIComponent(ref.teamId)}`,
         ...(teamCards.has(teamKey(ref)) ? { cardUrl: teamCards.get(teamKey(ref)) } : {}),
         profileUrl: notebooks.get(teamKey(ref)) ?? result?.sourceUrl ?? snapshot?.sourceUrl
           ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard`,
@@ -185,9 +189,9 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       ?? (editorial ? { src: editorial.src, alt: editorial.alt, credit: editorial.sourceTitle, artworkId: editorial.artworkId } : null));
     const facts = person?.facts ?? index.competitors.filter(team => definition.entries.some(ref => ref.teamId === team.teamId && ref.competition === team.competition)).flatMap(team => team.facts);
     const careerHonors = person?.hallOfFame.map(honor => ({ text: honor.label, sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle, checkedAt: honor.checkedAt })) ?? [];
-    return { id: definition.id, number: definition.number, kind: definition.kind, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
+    return { id: definition.id, number: definition.number, kind: definition.kind, setId: definition.setId, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
       season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art,
-      description: definition.description ?? facts[0]?.text ?? (person ? 'A competitor in the ARC Daily collection.' : 'A commissioned team card from the ARC Daily collection.'),
+      description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
       highlights: [...careerHonors, ...facts], accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url }))
         : [...new Set(entries.flatMap(ref => ref.members.map(member => member.handle)))].map(handle => ({ label: handle, url: `https://www.kaggle.com/${encodeURIComponent(handle)}` })),
@@ -205,7 +209,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
 }
 
 /** Files the collection is built from, besides the news index; a change to any of them rebuilds the memo at once. */
-const WATCHED = ['cards.json', 'card-results.json', 'careers.json', 'board-history.json', 'hall-of-fame.json', 'series.json'];
+const WATCHED = ['goose-wiki.json', 'cards.json', 'card-results.json', 'careers.json', 'board-history.json', 'hall-of-fame.json', 'series.json'];
 const MEMO_TTL_MS = 15_000;                   // the news index (stories on cards) is not watched file by file: it is re-read this often
 let memo: { directory: string; stamp: string; at: number; collection: NewsCollection } | null = null;
 const statStamp = (file: string) => { try { const s = fs.statSync(file); return `${s.mtimeMs}:${s.size}`; } catch { return '-'; } };
@@ -218,15 +222,17 @@ function setKeyOf(directory: string, cards: CollectionCard[]): string {
   for (const card of cards) kinds[card.number[0]] = (kinds[card.number[0]] ?? 0) + 1;
   const extrasDir = path.join(directory, 'evidence', 'kaggle-careers');
   const extras = fs.existsSync(extrasDir) ? fs.readdirSync(extrasDir).sort().map(f => `${f}:${statStamp(path.join(extrasDir, f))}`) : [];
-  const series = fs.existsSync(path.join(directory, 'series.json')) ? fs.readFileSync(path.join(directory, 'series.json'), 'utf8') : '';
-  const text = JSON.stringify([cards.length, tiers, kinds, extras, series]);
+  const series = loadWikiInputs(directory)?.series ?? (fs.existsSync(path.join(directory, 'series.json')) ? fs.readFileSync(path.join(directory, 'series.json'), 'utf8') : '');
+  const text = JSON.stringify([cards.length, tiers, kinds, extras, series, loadWikiInputs(directory)?.fingerprint]);
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return h.toString(36);
 }
 
 export function getNewsCollection(directory = NEWS_DIRECTORY): NewsCollection {
-  const stamp = WATCHED.map(f => statStamp(path.join(directory, f))).join('|');
+  const wiki = loadWikiInputs(directory);
+  const boards = wiki ? cardBoardCache(directory, wiki.registry, getNewsIndex(directory)) : null;
+  const stamp = WATCHED.map(f => statStamp(path.join(directory, f))).join('|') + '|' + (boards?.generation ?? 'archive');
   if (memo && memo.directory === directory && memo.stamp === stamp && Date.now() - memo.at < MEMO_TTL_MS) return memo.collection;
   const collection = buildCollectionFromFiles(directory);
   const setKey = setKeyOf(directory, collection.cards);
@@ -236,20 +242,26 @@ export function getNewsCollection(directory = NEWS_DIRECTORY): NewsCollection {
 }
 
 function buildCollectionFromFiles(directory: string): NewsCollection {
-  const registry = cardRegistrySchema.parse(JSON.parse(fs.readFileSync(path.join(directory, 'cards.json'), 'utf8')));
+  const wiki = loadWikiInputs(directory);
+  const index = getNewsIndex(directory);
+  const registry = wiki ? { ...wiki.registry, snapshots: freshCardRows(cardBoardCache(directory, wiki.registry, index)) }
+    : cardRegistrySchema.parse(JSON.parse(fs.readFileSync(path.join(directory, 'cards.json'), 'utf8')));
   const resultFile = path.join(directory, 'card-results.json');
-  const results = resultFile && fs.existsSync(resultFile) ? JSON.parse(fs.readFileSync(resultFile, 'utf8')) as FinalCardResult[] : [];
+  const results = wiki?.results ?? (resultFile && fs.existsSync(resultFile) ? JSON.parse(fs.readFileSync(resultFile, 'utf8')) as FinalCardResult[] : []);
   const careerFile = path.join(directory, 'careers.json');
-  const careers = fs.existsSync(careerFile) ? careersFileSchema.parse(JSON.parse(fs.readFileSync(careerFile, 'utf8'))).careers : {};
+  const careers = wiki?.careers ?? (fs.existsSync(careerFile) ? careersFileSchema.parse(JSON.parse(fs.readFileSync(careerFile, 'utf8'))).careers : {});
   const boardFile = path.join(directory, 'board-history.json');
-  const board = fs.existsSync(boardFile) ? boardHistorySchema.parse(JSON.parse(fs.readFileSync(boardFile, 'utf8'))) : null;
+  const board = !wiki && fs.existsSync(boardFile) ? boardHistorySchema.parse(JSON.parse(fs.readFileSync(boardFile, 'utf8'))) : null;
   const hofFile = path.join(directory, 'hall-of-fame.json');
   const hallOfFame = fs.existsSync(hofFile) ? hallOfFameSchema.parse(JSON.parse(fs.readFileSync(hofFile, 'utf8'))) : null;
-  const collection = buildNewsCollection(registry, getNewsIndex(directory), results, careers, board, hallOfFame);
+  const collection = buildNewsCollection(registry, index, results, careers, board, hallOfFame);
   for (const card of collection.cards) if (card.art) {
     const image = path.join(process.cwd(), 'client/public', card.art.src);
     if (!fs.existsSync(image)) throw Error('Missing collectible artwork: ' + card.art.src);
-    if (card.art.artworkId) {
+    if (wiki) {
+      const actual = createHash('sha256').update(fs.readFileSync(image)).digest('hex');
+      if (wiki.assetDigests[card.art.src] !== actual) throw Error('Wiki artwork digest mismatch: ' + card.id);
+    } else if (card.art.artworkId) {
       const record = JSON.parse(fs.readFileSync(path.join(directory, 'artwork', `${card.art.artworkId}.json`), 'utf8'));
       if (record.rawSrc !== card.art.src) throw Error('Wrong collectible artwork binding: ' + card.id);
     }

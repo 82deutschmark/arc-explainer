@@ -1,19 +1,19 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
- * Date: 15-October-2026 (the backup desk is now Claude Sonnet 5.5; Claude Opus 5.5 writes commissioned features);
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
+ * Date: 02-November-2026
  *       21-October-2026, Claude Opus 5.5 Low (Claude Haiku 5.5 takes the backup wire)
  * PURPOSE: Institutional masthead and editor portrait for the unified About the Paper
  *          page, story credits and crawler HTML. Current desks and archive bylines are distinct;
  *          the editorial portrait is separate from Mark Barney's Kaggle competitor avatar.
  * SRP/DRY check: Pass — writer names reuse the news credit registry; staff copy has one source.
  */
-import { writerCredit, type NewsWriter } from './news';
+import { writerCredit, NEWS_NAME, NEWS_BRAND, type NewsWriter } from './news';
 
 export const NEWS_STAFF_PATH = '/news/staff';
 export const NEWS_STAFF_HEADING = 'About the Paper';
-export const NEWS_STAFF_TITLE = `${NEWS_STAFF_HEADING} | The ARC Daily Digest`;
-export const NEWS_STAFF_DESCRIPTION = 'The ARC Daily Digest masthead: Mark Barney, the AI reporting desks, the news cycle and our editorial standards.';
-export const NEWS_STAFF_INTRO = 'The ARC Daily Digest covers the people, results and research around ARC Prize. A human editor sets the direction; AI reporting desks keep the wire moving and bring the day’s news into the morning and evening editions.';
+export const NEWS_STAFF_TITLE = `${NEWS_STAFF_HEADING} | ${NEWS_NAME}`;
+export const NEWS_STAFF_DESCRIPTION = `${NEWS_NAME} masthead: Mark Barney, the reporting desks and our editorial standards.`;
+export const NEWS_STAFF_INTRO = NEWS_BRAND.goose ? 'The Loose Goose follows the people, research and sporting drama across major Kaggle competitions. The human editor sets the direction; reporting starts with original sources and preserves a continuing cast across contests.' : 'The ARC Daily Digest covers the people, results and research around ARC Prize. A human editor sets the direction; AI reporting desks keep the wire moving and bring the day’s news into the morning and evening editions.';
 export const NEWS_EDITOR_CONTACT = { xUrl: 'https://x.com/82deutschmark', discordUrl: 'https://discord.gg/9b77dPAmcA' };
 export const NEWS_HUMAN_EDITOR = {
   id: 'mark-barney', name: 'Mark Barney', role: 'Head human editor · Human-in-the-loop editor',
@@ -34,6 +34,6 @@ const WRITER_ROLES: Record<NewsWriter, { role: string; description: string; curr
   'claude-opus-5-5': { role: 'Commissioned features', description: 'Writes the in-depth features the human editor commissions from it directly, through the Claude Code subscription, from public sources and the studio’s own data. Its stories carry its name and follow the same reporting rules.', current: true },
 };
 const writers = (Object.keys(WRITER_ROLES) as NewsWriter[]).map(id => ({ id, name: writerCredit(id), ...WRITER_ROLES[id] }));
-export const NEWS_STAFF_WRITERS = writers.filter(writer => writer.current);
+export const NEWS_STAFF_WRITERS = NEWS_BRAND.goose ? writers.map(writer => ({ ...writer, role: 'Contributing writer', description: 'Published work keeps the actual model’s credit. Contributions do not imply a separate active desk or schedule.' })) : writers.filter(writer => writer.current);
 export const NEWS_STAFF_ARCHIVE_WRITERS = writers.filter(writer => !writer.current);
 export const NEWS_STAFF_TOOL_CREDIT = 'Newsroom tools and page design also carry contributions from Claude Opus 5.5 and Claude Sonnet 5.5.';

@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Date: 02-November-2026
  * PURPOSE: ADAPTER from the production collection (shared/newsCollection.ts CollectionCard / NewsCollection) to the
  *          ENRICHED CARD MODEL that cardFace/model.ts viewModel() consumes. The TypeScript port of the design
  *          scratch's Python enrichment, so the renderer never touches raw collection data.
@@ -41,9 +41,11 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { SITE_ORIGIN } from '../../../../shared/seo';
+import { loadWikiInputs } from '../wikiInputs';
 import { KAGGLE_COMPETITIONS } from '../../../../shared/kaggleCompetitions';
 import { KAGGLE_TIERS, type BoardHistory, type CollectionCard, type CollectionCareer, type CollectionEntry, type NewsCollection, boardHistorySchema, careersFileSchema } from '../../../../shared/newsCollection';
-import { contestTitle, setForSeason, sponsorProfile, type SetDesign } from './sets';
+import { contestTitle, setById, setForSeason, sponsorProfile, type SetDesign } from './sets';
 
 const LADDER: readonly string[] = KAGGLE_TIERS;
 const COLOURS = ['gold', 'silver', 'bronze'] as const;
@@ -55,7 +57,7 @@ const CONTRACT = { ratio: 5 / 7, tolerance: 0.005, minW: 1500, minH: 2100 };
 type Medals = { gold: number; silver: number; bronze: number };
 export interface CareerExtra { completedCount?: number; joinedMonth?: string; displayName?: string }
 export interface EnrichOptions {
-  /** Site origin for urlAbsolute; default is read from the saved links in the collection. */
+  /** Site origin for urlAbsolute; default is the shared canonical site origin. */
   origin?: string;
   /** Per-person extras from the evidence files (default: loadCareerExtras()). */
   extras?: Record<string, CareerExtra>;
@@ -185,7 +187,7 @@ function scanContractFiles(publicDir: string, season: string): Map<string, strin
 // ---------------------------------------------------------------------------------------------------------------
 interface Context {
   opts: Required<Pick<EnrichOptions, 'publicDir' | 'discoverContractArt'>>;
-  origin: string; extras: Record<string, CareerExtra>; careers: Record<string, CollectionCareer>; board: BoardHistory | null;
+  origin: string; wiki: boolean; extras: Record<string, CareerExtra>; careers: Record<string, CollectionCareer>; board: BoardHistory | null;
   cardsById: Map<string, CollectionCard>; numberOf: Map<string, number>;
   tierByPerson: Map<string, string | null>; personByHandle: Map<string, string>;
   sharedArt: Map<string, string[]>; titleBySlug: Map<string, string>; tierCounts: Record<string, number>;
@@ -195,8 +197,11 @@ const contexts = new WeakMap<NewsCollection, Context>();
 
 function buildContext(collection: NewsCollection, opts: EnrichOptions): Context {
   const root = process.cwd();
-  const careers = opts.careers ?? loadCareers(root);
   const cards = collection.cards;
+  const wiki = loadWikiInputs(path.join(root, 'content/news'));
+  const careers = opts.careers ?? (wiki
+    ? Object.fromEntries(cards.filter(card => card.personId && card.career).map(card => [card.personId!, card.career!]))
+    : loadCareers(root));
   const personByHandle = new Map<string, string>();
   for (const card of cards) if (card.personId) for (const a of card.accounts) { const h = handleOfUrl(a.url); if (h) personByHandle.set(lowerHandle(h), card.personId); }
   for (const [pid, career] of Object.entries(careers)) { const h = handleOfUrl(career.profileUrl); if (h) personByHandle.set(lowerHandle(h), pid); }
@@ -218,9 +223,9 @@ function buildContext(collection: NewsCollection, opts: EnrichOptions): Context 
   for (const career of Object.values(careers)) for (const row of career.rows) if (!titleBySlug.has(slugOf(row.competitionUrl).toLowerCase())) titleBySlug.set(slugOf(row.competitionUrl).toLowerCase(), row.competition);
   const tierCounts: Record<string, number> = {};
   for (const card of cards) if (card.kind === 'person' && card.role === 'competitor') { const t = tierByPerson.get(card.personId!); if (t) tierCounts[t] = (tierCounts[t] ?? 0) + 1; }
-  const origin = opts.origin ?? cards.flatMap(c => [...c.entries.map(e => e.sourceUrl), ...c.pastCards.map(p => p.sourceUrl)]).map(u => /^https?:\/\/[^/]+/.exec(u ?? '')?.[0]).find(o => o && !/kaggle\.com|arcprize\.org|x\.com|github\.com/.test(o)) ?? '';
+  const origin = opts.origin ?? SITE_ORIGIN;
   return { opts: { publicDir: opts.publicDir ?? path.join(root, 'client/public'), discoverContractArt: !!opts.discoverContractArt },
-    origin, extras: opts.extras ?? loadCareerExtras(root), careers, board: opts.board === undefined ? loadBoard(root) : opts.board,
+    origin, wiki: !!wiki, extras: opts.extras ?? (wiki ? {} : loadCareerExtras(root)), careers, board: opts.board === undefined ? (wiki ? null : loadBoard(root)) : opts.board,
     cardsById: new Map(cards.map(c => [c.id, c])), numberOf, tierByPerson, personByHandle, sharedArt, titleBySlug, tierCounts, contractFiles: new Map() };
 }
 function contextFor(collection: NewsCollection, opts?: EnrichOptions): Context {
@@ -294,7 +299,7 @@ function careerFor(ctx: Context, card: CollectionCard) {
   // The list is the whole record only when it is as long as the profile says AND its medals add up to the profile's totals.
   const listedMedals = Object.fromEntries(COLOURS.map(k => [k, rows.filter(r => r.medal === k).length]));
   const medalsAdd = !c.medals || COLOURS.every(k => (listedMedals[k] ?? 0) >= (c.medals![k] ?? 0));
-  const complete = (!isNum(listed) || rows.length >= listed) && medalsAdd;
+  const complete = isNum(listed) && rows.length >= listed && medalsAdd;
   const best = rows[0];
   return {
     asOf: c.checkedAt, profileUrls: [c.profileUrl], completedListed: isNum(listed) ? listed : rows.length, rowsRecorded: rows.length, complete,
@@ -333,7 +338,7 @@ export function teamTitle(name: string, boardNames: string[] = []): string {
 const article = (n: number) => (n === 8 || n === 11 || n === 18 ? 'an' : 'a');
 
 function enrichOne(ctx: Context, card: CollectionCard) {
-  const set = setForSeason(card.season);
+  const set = card.setId ? setById(card.setId) : setForSeason(card.season);
   if (!set) throw Error(`No set design registered for season ${card.season} (card ${card.id})`);
   const kind: 'competitor' | 'sponsor' | 'team' = card.kind === 'team' ? 'team' : card.role === 'sponsor' ? 'sponsor' : 'competitor';
   const career = card.career;
@@ -398,7 +403,7 @@ function enrichOne(ctx: Context, card: CollectionCard) {
     contests, pastTeams, career: kind === 'competitor' ? careerFor(ctx, card) : null,
     honors: kind === 'team' ? [] : honors, previousCards, art: artFor(ctx, card), roster,
   };
-  out.bio = bioFor(out, sponsor);
+  out.bio = ctx.wiki && card.description ? card.description : bioFor(out, sponsor);
   out.facts = factsFor(ctx, out, card, sponsor);
   return out;
 }

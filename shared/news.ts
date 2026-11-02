@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -22,8 +22,10 @@
  */
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
 import NEWS_WRITER_IDS from './newsWriters.json';
+import { NEWS_NAME, NEWS_BRAND } from './newsBrand';
+export { NEWS_NAME, NEWS_BRAND } from './newsBrand';
 
-export type NewsCompetition = 'arc-3' | 'arc-2';
+export type NewsCompetition = string;
 export type NewsEdition = 'morning' | 'evening';
 /** Writer IDs remain stable in archived stories; scheduled editions use GPT-6.1 Sol, the wire GPT-6 Luna and
  *  the Claude Code backup desk Claude Sonnet 5.5. The one list lives in shared/newsWriters.json, which
@@ -51,9 +53,11 @@ export interface CompetitorRecord {
   id: string; competition: NewsCompetition; teamId: string; name: string;
   aliases: string[]; members: string[]; firstObservedAt: string; lastObservedAt: string;
   facts: CompetitorFact[];
+  briefing?: string;
 }
 export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
+  dek?: string;
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
   /** Historical dispatches lack a writer ID; new features record their actual writer. */
   generatedBy?: typeof NEWS_EDITION_WRITERS[number];
@@ -79,6 +83,7 @@ export interface NewsEditorialPortrait extends Omit<NewsPortrait, 'kind'> { artw
 /** People persist across seasons; membership observations belong to a specific contest. */
 export interface NewsPerson {
   id: string; name: string;
+  briefing?: string;
   /** Absent means a Kaggle competitor. A sponsor runs or funds the competition (the ARC Prize co-founders) and has no Kaggle tier. */
   role?: 'competitor' | 'sponsor';
   accounts: ({ platform: 'kaggle' | 'x'; handle: string; url: string } & Omit<CompetitorFact, 'text'>)[];
@@ -141,7 +146,18 @@ export interface NewsWireStory {
   generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
 export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; socialArchive?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[] }
-export const NEWS_NAME = 'The ARC Daily Digest';
+/** One publication order for browser and initial HTML; no fixed competition slate. */
+export function competitionStories(articles: NewsArticle[], dispatches: NewsDispatch[], competition: NewsCompetition) {
+  return [
+    ...articles.filter(article => article.competition === competition).map(article => ({ publishedAt: article.publishedAt, id: article.id, article })),
+    ...dispatches.filter(dispatch => dispatch.competition === competition).map(dispatch => ({ publishedAt: dispatch.publishedAt, id: dispatch.id, dispatch })),
+  ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
+}
+
+export function publishedCompetitionOrder(articles: NewsArticle[], dispatches: NewsDispatch[] = []): NewsCompetition[] {
+  return [...new Set([...articles, ...dispatches].sort((a, b) =>
+    b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)).map(story => story.competition))];
+}
 export const personPath = (id: string) => `/news/people/${id}`;
 /** Current roster cards use exact verified account handles, never fuzzy name matches. */
 export const peopleForTeam = (people: NewsPerson[], team: CompetitorRecord) => people.filter(person =>
@@ -213,7 +229,7 @@ export const writerCredit = (generatedBy: NewsWriter) =>
 /** Wire stories live on one page, each at its own anchor. */
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
-export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
+export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key]?.label ?? key;
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
 /** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
@@ -240,11 +256,11 @@ export const articleTitle = (article: NewsArticle) => newsTitle(article.headline
 /** Dated lead-in when it fits a snippet (~160 characters), so each edition reads distinctly. */
 export function articleDescription(article: NewsArticle): string {
   const dated = `${competitionName(article.competition)} ${editionName(article.edition).toLowerCase()} edition, ${newsDate(article.date)}: ${article.dek}`;
-  return dated.length <= 160 ? dated : article.dek;
+  return dated.length <= 160 ? dated : article.dek.length <= 160 ? article.dek : article.dek.slice(0, 157).replace(/\s+\S*$/, '') + '…';
 }
 export const competitorTitle = (record: CompetitorRecord) => newsTitle(`${record.name} — ${competitionName(record.competition)} competitor`);
 export const competitorDescription = (record: CompetitorRecord) =>
-  `Explore ${record.name} in ${competitionName(record.competition)}: team background, members and ARC Daily coverage.`;
+  `Explore ${record.name} in ${competitionName(record.competition)}: team background, observed members and source-linked competition coverage.`;
 
 /** Share cards: 1200x630, the size every major unfurler renders as a large image. */
 export const NEWS_CARD_WIDTH = 1200;
@@ -288,7 +304,7 @@ export const easternDay = (now: number): string =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
 /** The newest still-fresh edition of each contest, ARC-AGI-3 first. Empty means the card shows the evergreen panel. */
 export function sectionCardArticles(articles: NewsArticle[], now = Date.now()): NewsArticle[] {
-  return (['arc-3', 'arc-2'] as const).flatMap(competition => {
+  return [...new Set(articles.map(article => article.competition))].sort().flatMap(competition => {
     const newest = articles.filter(article => article.competition === competition)
       .reduce<NewsArticle | undefined>((best, article) => !best || article.publishedAt > best.publishedAt ? article : best, undefined);
     return newest && now - Date.parse(newest.publishedAt) <= NEWS_CARD_FRESH_MS ? [newest] : [];
@@ -315,13 +331,13 @@ export function articleCardAlt(article: NewsArticle): string {
 export function articleStructuredData(article: NewsArticle, origin: string): Record<string, unknown> {
   const url = `${origin}${newsArticlePath(article.id)}`;
   const publisher = { '@type': 'Organization', '@id': `${origin}/news#publisher`, name: NEWS_NAME, url: `${origin}/news`,
-    logo: { '@type': 'ImageObject', url: `${origin}/android-chrome-512x512.png`, width: 512, height: 512 } };
+    logo: { '@type': 'ImageObject', url: `${origin}${NEWS_BRAND.logo ?? '/android-chrome-512x512.png'}` } };
   return { '@context': 'https://schema.org', '@graph': [{
     '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: article.headline, description: article.dek,
     datePublished: article.publishedAt, dateModified: article.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
     image: [{ '@type': 'ImageObject', url: `${origin}${articleCardPath(article)}`, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, caption: articleCardAlt(article) }],
     articleSection: competitionName(article.competition),
-    author: { '@type': 'Organization', name: 'ARC Daily sports desk', url: `${origin}/news` },
+    author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news` },
     publisher, mainEntityOfPage: url, citation: [...new Set(article.sources.map(source => source.url))],
     isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },
   }] };

@@ -1,0 +1,3425 @@
+{
+  "competitions": {
+    "2026-ieee-big-data-traffic-flow-bench": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "2026 IEEE Big Data-Traffic Flow Bench",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "2026-ieee-big-data-traffic-flow-bench",
+      "url": "https://kaggle.com/competitions/2026-ieee-big-data-traffic-flow-bench",
+      "wikiId": "competitions/2026-ieee-big-data-traffic-flow-bench"
+    },
+    "abstraction-and-reasoning-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Abstraction and Reasoning Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "abstraction-and-reasoning-challenge",
+      "url": "https://www.kaggle.com/competitions/abstraction-and-reasoning-challenge",
+      "wikiId": "competitions/abstraction-and-reasoning-challenge"
+    },
+    "adaptive-immune-profiling-challenge-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "adaptive-immune-profiling-challenge-2025",
+      "url": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
+      "wikiId": "competitions/adaptive-immune-profiling-challenge-2025"
+    },
+    "ai-agent-security-multi-step-tool-attacks": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Agent Security - Multi-Step Tool Attacks",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-agent-security-multi-step-tool-attacks",
+      "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+      "wikiId": "competitions/ai-agent-security-multi-step-tool-attacks"
+    },
+    "ai-mathematical-olympiad-prize": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Mathematical Olympiad - Progress Prize 1",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-mathematical-olympiad-prize",
+      "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+      "wikiId": "competitions/ai-mathematical-olympiad-prize"
+    },
+    "ai-mathematical-olympiad-progress-prize-2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Mathematical Olympiad - Progress Prize 2",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-mathematical-olympiad-progress-prize-2",
+      "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+      "wikiId": "competitions/ai-mathematical-olympiad-progress-prize-2"
+    },
+    "ai-mathematical-olympiad-progress-prize-3": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Mathematical Olympiad - Progress Prize 3",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-mathematical-olympiad-progress-prize-3",
+      "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+      "wikiId": "competitions/ai-mathematical-olympiad-progress-prize-3"
+    },
+    "ai-mathematical-olympiad-proof-pilot": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Mathematical Olympiad - Proof Pilot",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-mathematical-olympiad-proof-pilot",
+      "url": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-proof-pilot",
+      "wikiId": "competitions/ai-mathematical-olympiad-proof-pilot"
+    },
+    "ai-village-capture-the-flag-defcon31": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Village Capture the Flag @ DEFCON31",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-village-capture-the-flag-defcon31",
+      "url": "https://www.kaggle.com/competitions/ai-village-capture-the-flag-defcon31",
+      "wikiId": "competitions/ai-village-capture-the-flag-defcon31"
+    },
+    "ai-village-ctf": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AI Village Capture the Flag @ DEFCON",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ai-village-ctf",
+      "url": "https://www.kaggle.com/competitions/ai-village-ctf",
+      "wikiId": "competitions/ai-village-ctf"
+    },
+    "aipho-2027": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Artificial Intelligence Physics Olympiad — announced 2027 launch",
+      "officialHosts": [
+        "aipho.org",
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "aipho-2027",
+      "url": "https://aipho.org",
+      "wikiId": "competitions/aipho-2027"
+    },
+    "allstate-claims-severity": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Allstate Claims Severity",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "allstate-claims-severity",
+      "url": "https://www.kaggle.com/competitions/allstate-claims-severity",
+      "wikiId": "competitions/allstate-claims-severity"
+    },
+    "amex-default-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "American Express - Default Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "amex-default-prediction",
+      "url": "https://www.kaggle.com/competitions/amex-default-prediction",
+      "wikiId": "competitions/amex-default-prediction"
+    },
+    "amp-parkinsons-disease-progression-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "AMP®-Parkinson's Disease Progression Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "amp-parkinsons-disease-progression-prediction",
+      "url": "https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction",
+      "wikiId": "competitions/amp-parkinsons-disease-progression-prediction"
+    },
+    "arc-2": {
+      "closeAt": "2026-11-02T23:59:00Z",
+      "format": "scored",
+      "label": "ARC Prize 2026 — ARC-AGI-2",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": "2026",
+      "slug": "arc-prize-2026-arc-agi-2",
+      "url": "https://kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+      "wikiId": "competitions/arc-prize-2026-arc-agi-2"
+    },
+    "arc-3": {
+      "closeAt": "2026-11-02T23:59:00Z",
+      "format": "scored",
+      "label": "ARC Prize 2026 — ARC-AGI-3",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": "2026",
+      "slug": "arc-prize-2026-arc-agi-3",
+      "url": "https://kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "wikiId": "competitions/arc-prize-2026-arc-agi-3"
+    },
+    "arc-agi-3-preview-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ARC-AGI-3 Agent Preview 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "arc-agi-3-preview-2025",
+      "url": "https://www.kaggle.com/competitions/arc-agi-3-preview-2025",
+      "wikiId": "competitions/arc-agi-3-preview-2025"
+    },
+    "arc-prize-2024": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ARC Prize 2024",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "arc-prize-2024",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2024",
+      "wikiId": "competitions/arc-prize-2024"
+    },
+    "arc-prize-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ARC Prize 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "arc-prize-2025",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025",
+      "wikiId": "competitions/arc-prize-2025"
+    },
+    "arc-prize-2026-paper-track": {
+      "closeAt": "2026-11-09T23:59:00Z",
+      "format": "judged",
+      "label": "ARC Prize 2026 — Paper Track",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "arc-prize-2026-paper-track",
+      "url": "https://kaggle.com/competitions/arc-prize-2026-paper-track",
+      "wikiId": "competitions/arc-prize-2026-paper-track"
+    },
+    "ariel-data-challenge-2024": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS - Ariel Data Challenge 2024",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ariel-data-challenge-2024",
+      "url": "https://www.kaggle.com/competitions/ariel-data-challenge-2024",
+      "wikiId": "competitions/ariel-data-challenge-2024"
+    },
+    "ariel-data-challenge-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS - Ariel Data Challenge 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ariel-data-challenge-2025",
+      "url": "https://www.kaggle.com/competitions/ariel-data-challenge-2025",
+      "wikiId": "competitions/ariel-data-challenge-2025"
+    },
+    "ashrae-energy-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ASHRAE - Great Energy Predictor III",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ashrae-energy-prediction",
+      "url": "https://www.kaggle.com/competitions/ashrae-energy-prediction",
+      "wikiId": "competitions/ashrae-energy-prediction"
+    },
+    "asl-fingerspelling": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google - American Sign Language Fingerspelling Recognition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "asl-fingerspelling",
+      "url": "https://www.kaggle.com/competitions/asl-fingerspelling",
+      "wikiId": "competitions/asl-fingerspelling"
+    },
+    "asl-signs": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google - Isolated Sign Language Recognition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "asl-signs",
+      "url": "https://www.kaggle.com/competitions/asl-signs",
+      "wikiId": "competitions/asl-signs"
+    },
+    "autonomous-agent-prediction-beta": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Autonomous Agent Prediction (Beta)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "autonomous-agent-prediction-beta",
+      "url": "https://www.kaggle.com/competitions/autonomous-agent-prediction-beta",
+      "wikiId": "competitions/autonomous-agent-prediction-beta"
+    },
+    "avito-demand-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Avito Demand Prediction Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "avito-demand-prediction",
+      "url": "https://www.kaggle.com/competitions/avito-demand-prediction",
+      "wikiId": "competitions/avito-demand-prediction"
+    },
+    "avito-duplicate-ads-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Avito Duplicate Ads Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "avito-duplicate-ads-detection",
+      "url": "https://www.kaggle.com/competitions/avito-duplicate-ads-detection",
+      "wikiId": "competitions/avito-duplicate-ads-detection"
+    },
+    "basket-analysis": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Market Basket Analysis",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "basket-analysis",
+      "url": "https://www.kaggle.com/competitions/basket-analysis",
+      "wikiId": "competitions/basket-analysis"
+    },
+    "benetech-making-graphs-accessible": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Benetech - Making Graphs Accessible",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "benetech-making-graphs-accessible",
+      "url": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
+      "wikiId": "competitions/benetech-making-graphs-accessible"
+    },
+    "bengaliai-speech": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Bengali.AI Speech Recognition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "bengaliai-speech",
+      "url": "https://www.kaggle.com/competitions/bengaliai-speech",
+      "wikiId": "competitions/bengaliai-speech"
+    },
+    "biohub-cell-tracking-during-development": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Biohub - Cell Tracking During Development",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "biohub-cell-tracking-during-development",
+      "url": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+      "wikiId": "competitions/biohub-cell-tracking-during-development"
+    },
+    "birdclef-2022": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BirdCLEF 2022",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "birdclef-2022",
+      "url": "https://www.kaggle.com/competitions/birdclef-2022",
+      "wikiId": "competitions/birdclef-2022"
+    },
+    "birdclef-2023": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BirdCLEF 2023",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "birdclef-2023",
+      "url": "https://www.kaggle.com/competitions/birdclef-2023",
+      "wikiId": "competitions/birdclef-2023"
+    },
+    "birdclef-2024": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BirdCLEF 2024",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "birdclef-2024",
+      "url": "https://www.kaggle.com/competitions/birdclef-2024",
+      "wikiId": "competitions/birdclef-2024"
+    },
+    "birdclef-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BirdCLEF+ 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "birdclef-2025",
+      "url": "https://www.kaggle.com/competitions/birdclef-2025",
+      "wikiId": "competitions/birdclef-2025"
+    },
+    "birdclef-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BirdCLEF+ 2026",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "birdclef-2026",
+      "url": "https://www.kaggle.com/competitions/birdclef-2026",
+      "wikiId": "competitions/birdclef-2026"
+    },
+    "bms-molecular-translation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Bristol-Myers Squibb – Molecular Translation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "bms-molecular-translation",
+      "url": "https://www.kaggle.com/competitions/bms-molecular-translation",
+      "wikiId": "competitions/bms-molecular-translation"
+    },
+    "bnp-paribas-cardif-claims-management": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BNP Paribas Cardif Claims Management",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "bnp-paribas-cardif-claims-management",
+      "url": "https://www.kaggle.com/competitions/bnp-paribas-cardif-claims-management",
+      "wikiId": "competitions/bnp-paribas-cardif-claims-management"
+    },
+    "bosch-production-line-performance": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Bosch Production Line Performance",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "bosch-production-line-performance",
+      "url": "https://www.kaggle.com/competitions/bosch-production-line-performance",
+      "wikiId": "competitions/bosch-production-line-performance"
+    },
+    "byu-locating-bacterial-flagellar-motors-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "BYU - Locating Bacterial Flagellar Motors 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "byu-locating-bacterial-flagellar-motors-2025",
+      "url": "https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025",
+      "wikiId": "competitions/byu-locating-bacterial-flagellar-motors-2025"
+    },
+    "cafa-5-protein-function-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CAFA 5 Protein Function Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "cafa-5-protein-function-prediction",
+      "url": "https://www.kaggle.com/competitions/cafa-5-protein-function-prediction",
+      "wikiId": "competitions/cafa-5-protein-function-prediction"
+    },
+    "cafa-6-protein-function-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CAFA 6 Protein Function Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "cafa-6-protein-function-prediction",
+      "url": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
+      "wikiId": "competitions/cafa-6-protein-function-prediction"
+    },
+    "carvana-image-masking-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Carvana Image Masking Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "carvana-image-masking-challenge",
+      "url": "https://www.kaggle.com/competitions/carvana-image-masking-challenge",
+      "wikiId": "competitions/carvana-image-masking-challenge"
+    },
+    "catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Catch Me If You Can (\"Alice\")",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2",
+      "url": "https://www.kaggle.com/competitions/catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2",
+      "wikiId": "competitions/catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2"
+    },
+    "cdiscount-image-classification-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Cdiscount’s Image Classification Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "cdiscount-image-classification-challenge",
+      "url": "https://www.kaggle.com/competitions/cdiscount-image-classification-challenge",
+      "wikiId": "competitions/cdiscount-image-classification-challenge"
+    },
+    "champs-scalar-coupling": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Molecular Properties",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "champs-scalar-coupling",
+      "url": "https://www.kaggle.com/competitions/champs-scalar-coupling",
+      "wikiId": "competitions/champs-scalar-coupling"
+    },
+    "child-mind-institute-detect-sleep-states": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Child Mind Institute - Detect Sleep States",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "child-mind-institute-detect-sleep-states",
+      "url": "https://www.kaggle.com/competitions/child-mind-institute-detect-sleep-states",
+      "wikiId": "competitions/child-mind-institute-detect-sleep-states"
+    },
+    "child-mind-institute-problematic-internet-use": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Child Mind Institute — Problematic Internet Use",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "child-mind-institute-problematic-internet-use",
+      "url": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
+      "wikiId": "competitions/child-mind-institute-problematic-internet-use"
+    },
+    "classification-of-math-problems-by-kasut-academy": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "KAChallenges Series 1: Classifying Math Problems",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "classification-of-math-problems-by-kasut-academy",
+      "url": "https://www.kaggle.com/competitions/classification-of-math-problems-by-kasut-academy",
+      "wikiId": "competitions/classification-of-math-problems-by-kasut-academy"
+    },
+    "cmi-detect-behavior-with-sensor-data": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CMI - Detect Behavior with Sensor Data",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "cmi-detect-behavior-with-sensor-data",
+      "url": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+      "wikiId": "competitions/cmi-detect-behavior-with-sensor-data"
+    },
+    "coleridgeinitiative-show-us-the-data": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Coleridge Initiative - Show US the Data",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "coleridgeinitiative-show-us-the-data",
+      "url": "https://www.kaggle.com/competitions/coleridgeinitiative-show-us-the-data",
+      "wikiId": "competitions/coleridgeinitiative-show-us-the-data"
+    },
+    "commonlit-evaluate-student-summaries": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CommonLit - Evaluate Student Summaries",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "commonlit-evaluate-student-summaries",
+      "url": "https://www.kaggle.com/competitions/commonlit-evaluate-student-summaries",
+      "wikiId": "competitions/commonlit-evaluate-student-summaries"
+    },
+    "commonlitreadabilityprize": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CommonLit Readability Prize",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "commonlitreadabilityprize",
+      "url": "https://www.kaggle.com/competitions/commonlitreadabilityprize",
+      "wikiId": "competitions/commonlitreadabilityprize"
+    },
+    "competitive-data-science-final-project": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Final project: predict future sales",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "competitive-data-science-final-project",
+      "url": "https://www.kaggle.com/competitions/competitive-data-science-final-project",
+      "wikiId": "competitions/competitive-data-science-final-project"
+    },
+    "coupon-purchase-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Coupon Purchase Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "coupon-purchase-prediction",
+      "url": "https://www.kaggle.com/competitions/coupon-purchase-prediction",
+      "wikiId": "competitions/coupon-purchase-prediction"
+    },
+    "crowdflower-search-relevance": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Crowdflower Search Results Relevance",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "crowdflower-search-relevance",
+      "url": "https://www.kaggle.com/competitions/crowdflower-search-relevance",
+      "wikiId": "competitions/crowdflower-search-relevance"
+    },
+    "cs-506-midterm-a1-b1": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CS 506 Midterm A1&B1",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "cs-506-midterm-a1-b1",
+      "url": "https://www.kaggle.com/competitions/cs-506-midterm-a1-b1",
+      "wikiId": "competitions/cs-506-midterm-a1-b1"
+    },
+    "csiro-biomass": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CSIRO - Image2Biomass Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "csiro-biomass",
+      "url": "https://www.kaggle.com/competitions/csiro-biomass",
+      "wikiId": "competitions/csiro-biomass"
+    },
+    "czii-cryo-et-object-identification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CZII - CryoET Object Identification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "czii-cryo-et-object-identification",
+      "url": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+      "wikiId": "competitions/czii-cryo-et-object-identification"
+    },
+    "data-analytics-ue20cs312": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Data Analytics (UE20CS312) Assignment",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "data-analytics-ue20cs312",
+      "url": "https://www.kaggle.com/competitions/data-analytics-ue20cs312",
+      "wikiId": "competitions/data-analytics-ue20cs312"
+    },
+    "data-science-bowl-2019": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "2019 Data Science Bowl",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "data-science-bowl-2019",
+      "url": "https://www.kaggle.com/competitions/data-science-bowl-2019",
+      "wikiId": "competitions/data-science-bowl-2019"
+    },
+    "deep-past-initiative-machine-translation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Deep Past Challenge - Translate Akkadian to English",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "deep-past-initiative-machine-translation",
+      "url": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+      "wikiId": "competitions/deep-past-initiative-machine-translation"
+    },
+    "deepfake-detection-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Deepfake Detection Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "deepfake-detection-challenge",
+      "url": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
+      "wikiId": "competitions/deepfake-detection-challenge"
+    },
+    "drawing-with-llms": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Drawing with LLMs",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "drawing-with-llms",
+      "url": "https://www.kaggle.com/competitions/drawing-with-llms",
+      "wikiId": "competitions/drawing-with-llms"
+    },
+    "drw-crypto-market-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "DRW - Crypto Market Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "drw-crypto-market-prediction",
+      "url": "https://www.kaggle.com/competitions/drw-crypto-market-prediction",
+      "wikiId": "competitions/drw-crypto-market-prediction"
+    },
+    "eedi-mining-misconceptions-in-mathematics": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Eedi - Mining Misconceptions in Mathematics",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "eedi-mining-misconceptions-in-mathematics",
+      "url": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics",
+      "wikiId": "competitions/eedi-mining-misconceptions-in-mathematics"
+    },
+    "elo-merchant-category-recommendation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Elo Merchant Category Recommendation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "elo-merchant-category-recommendation",
+      "url": "https://www.kaggle.com/competitions/elo-merchant-category-recommendation",
+      "wikiId": "competitions/elo-merchant-category-recommendation"
+    },
+    "enveda-casmi26-molecule-id-mass-spectra": {
+      "closeAt": "2026-12-14T23:59:00Z",
+      "format": "scored",
+      "label": "Enveda CASMI 2026 — Molecule ID From Mass Spectra",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "enveda-casmi26-molecule-id-mass-spectra",
+      "url": "https://kaggle.com/competitions/enveda-casmi26-molecule-id-mass-spectra",
+      "wikiId": "competitions/enveda-casmi26-molecule-id-mass-spectra"
+    },
+    "equity-post-hct-survival-predictions": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "CIBMTR - Equity in post-HCT Survival Predictions",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "equity-post-hct-survival-predictions",
+      "url": "https://www.kaggle.com/competitions/equity-post-hct-survival-predictions",
+      "wikiId": "competitions/equity-post-hct-survival-predictions"
+    },
+    "expedia-hotel-recommendations": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Expedia Hotel Recommendations",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "expedia-hotel-recommendations",
+      "url": "https://www.kaggle.com/competitions/expedia-hotel-recommendations",
+      "wikiId": "competitions/expedia-hotel-recommendations"
+    },
+    "fake-or-real-the-impostor-hunt": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Fake or Real: The Impostor Hunt in Texts",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "fake-or-real-the-impostor-hunt",
+      "url": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
+      "wikiId": "competitions/fake-or-real-the-impostor-hunt"
+    },
+    "favorita-grocery-sales-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Corporación Favorita Grocery Sales Forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "favorita-grocery-sales-forecasting",
+      "url": "https://www.kaggle.com/competitions/favorita-grocery-sales-forecasting",
+      "wikiId": "competitions/favorita-grocery-sales-forecasting"
+    },
+    "feedback-prize-2021": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Feedback Prize - Evaluating Student Writing",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "feedback-prize-2021",
+      "url": "https://www.kaggle.com/competitions/feedback-prize-2021",
+      "wikiId": "competitions/feedback-prize-2021"
+    },
+    "feedback-prize-effectiveness": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Feedback Prize - Predicting Effective Arguments",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "feedback-prize-effectiveness",
+      "url": "https://www.kaggle.com/competitions/feedback-prize-effectiveness",
+      "wikiId": "competitions/feedback-prize-effectiveness"
+    },
+    "feedback-prize-english-language-learning": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Feedback Prize - English Language Learning",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "feedback-prize-english-language-learning",
+      "url": "https://www.kaggle.com/competitions/feedback-prize-english-language-learning",
+      "wikiId": "competitions/feedback-prize-english-language-learning"
+    },
+    "fide-google-efficiency-chess-ai-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "FIDE & Google Efficient Chess AI Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "fide-google-efficiency-chess-ai-challenge",
+      "url": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
+      "wikiId": "competitions/fide-google-efficiency-chess-ai-challenge"
+    },
+    "findit2022": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Data Analytics Competition FIND IT 2022",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "findit2022",
+      "url": "https://www.kaggle.com/competitions/findit2022",
+      "wikiId": "competitions/findit2022"
+    },
+    "foursquare-location-matching": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Foursquare - Location Matching",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "foursquare-location-matching",
+      "url": "https://www.kaggle.com/competitions/foursquare-location-matching",
+      "wikiId": "competitions/foursquare-location-matching"
+    },
+    "freesound-audio-tagging-2019": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Freesound Audio Tagging 2019",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "freesound-audio-tagging-2019",
+      "url": "https://www.kaggle.com/competitions/freesound-audio-tagging-2019",
+      "wikiId": "competitions/freesound-audio-tagging-2019"
+    },
+    "g2net-detecting-continuous-gravitational-waves": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "G2Net Detecting Continuous Gravitational Waves",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "g2net-detecting-continuous-gravitational-waves",
+      "url": "https://www.kaggle.com/competitions/g2net-detecting-continuous-gravitational-waves",
+      "wikiId": "competitions/g2net-detecting-continuous-gravitational-waves"
+    },
+    "g2net-gravitational-wave-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "G2Net Gravitational Wave Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "g2net-gravitational-wave-detection",
+      "url": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
+      "wikiId": "competitions/g2net-gravitational-wave-detection"
+    },
+    "ga-customer-revenue-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google Analytics Customer Revenue Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ga-customer-revenue-prediction",
+      "url": "https://www.kaggle.com/competitions/ga-customer-revenue-prediction",
+      "wikiId": "competitions/ga-customer-revenue-prediction"
+    },
+    "gemma-4-developer-agent": {
+      "closeAt": "2026-12-02T23:59:00Z",
+      "format": "scored",
+      "label": "Google — Gemma 4 Developer Agent Competition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "gemma-4-developer-agent",
+      "url": "https://kaggle.com/competitions/gemma-4-developer-agent",
+      "wikiId": "competitions/gemma-4-developer-agent"
+    },
+    "gemma-4-developer-agent-paper": {
+      "closeAt": "2026-11-12T23:59:00Z",
+      "format": "judged",
+      "label": "Google — Gemma 4 Developer Agent Paper Track",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "gemma-4-developer-agent-paper",
+      "url": "https://kaggle.com/competitions/gemma-4-developer-agent-paper",
+      "wikiId": "competitions/gemma-4-developer-agent-paper"
+    },
+    "generative-dog-images": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Generative Dog Images",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "generative-dog-images",
+      "url": "https://www.kaggle.com/competitions/generative-dog-images",
+      "wikiId": "competitions/generative-dog-images"
+    },
+    "google-ai-open-images-object-detection-track": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google AI Open Images - Object Detection Track",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "google-ai-open-images-object-detection-track",
+      "url": "https://www.kaggle.com/competitions/google-ai-open-images-object-detection-track",
+      "wikiId": "competitions/google-ai-open-images-object-detection-track"
+    },
+    "google-code-golf-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS 2025 - Google Code Golf Championship",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "google-code-golf-2025",
+      "url": "https://www.kaggle.com/competitions/google-code-golf-2025",
+      "wikiId": "competitions/google-code-golf-2025"
+    },
+    "google-io-demo-competition": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google IO Demo Competition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "google-io-demo-competition",
+      "url": "https://www.kaggle.com/competitions/google-io-demo-competition",
+      "wikiId": "competitions/google-io-demo-competition"
+    },
+    "google-quest-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google QUEST Q&A Labeling",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "google-quest-challenge",
+      "url": "https://www.kaggle.com/competitions/google-quest-challenge",
+      "wikiId": "competitions/google-quest-challenge"
+    },
+    "google-verifiable-quantum-circuit-compilation": {
+      "closeAt": "2027-01-20T23:59:00Z",
+      "format": "scored",
+      "label": "Google Quantum AI — Verifiable Quantum Circuit Compilation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "google-verifiable-quantum-circuit-compilation",
+      "url": "https://kaggle.com/competitions/google-verifiable-quantum-circuit-compilation",
+      "wikiId": "competitions/google-verifiable-quantum-circuit-compilation"
+    },
+    "h-and-m-personalized-fashion-recommendations": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "H&M Personalized Fashion Recommendations",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "h-and-m-personalized-fashion-recommendations",
+      "url": "https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations",
+      "wikiId": "competitions/h-and-m-personalized-fashion-recommendations"
+    },
+    "handwritten-to-data": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Handwritten to Data",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "handwritten-to-data",
+      "url": "https://www.kaggle.com/competitions/handwritten-to-data",
+      "wikiId": "competitions/handwritten-to-data"
+    },
+    "higgs-boson": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Higgs Boson Machine Learning Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "higgs-boson",
+      "url": "https://www.kaggle.com/competitions/higgs-boson",
+      "wikiId": "competitions/higgs-boson"
+    },
+    "hms-harmful-brain-activity-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "HMS - Harmful Brain Activity Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "hms-harmful-brain-activity-classification",
+      "url": "https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification",
+      "wikiId": "competitions/hms-harmful-brain-activity-classification"
+    },
+    "home-credit-credit-risk-model-stability": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Home Credit - Credit Risk Model Stability",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "home-credit-credit-risk-model-stability",
+      "url": "https://www.kaggle.com/competitions/home-credit-credit-risk-model-stability",
+      "wikiId": "competitions/home-credit-credit-risk-model-stability"
+    },
+    "home-credit-default-risk": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Home Credit Default Risk",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "home-credit-default-risk",
+      "url": "https://www.kaggle.com/competitions/home-credit-default-risk",
+      "wikiId": "competitions/home-credit-default-risk"
+    },
+    "home-depot-product-search-relevance": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Home Depot Product Search Relevance",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "home-depot-product-search-relevance",
+      "url": "https://www.kaggle.com/competitions/home-depot-product-search-relevance",
+      "wikiId": "competitions/home-depot-product-search-relevance"
+    },
+    "homesite-quote-conversion": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Homesite Quote Conversion",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "homesite-quote-conversion",
+      "url": "https://www.kaggle.com/competitions/homesite-quote-conversion",
+      "wikiId": "competitions/homesite-quote-conversion"
+    },
+    "hubmap-hacking-the-human-vasculature": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "HuBMAP - Hacking the Human Vasculature",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "hubmap-hacking-the-human-vasculature",
+      "url": "https://www.kaggle.com/competitions/hubmap-hacking-the-human-vasculature",
+      "wikiId": "competitions/hubmap-hacking-the-human-vasculature"
+    },
+    "hull-tactical-market-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Hull Tactical - Market Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "hull-tactical-market-prediction",
+      "url": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+      "wikiId": "competitions/hull-tactical-market-prediction"
+    },
+    "humpback-whale-identification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Humpback Whale Identification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "humpback-whale-identification",
+      "url": "https://www.kaggle.com/competitions/humpback-whale-identification",
+      "wikiId": "competitions/humpback-whale-identification"
+    },
+    "hungry-geese": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Hungry Geese",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "hungry-geese",
+      "url": "https://www.kaggle.com/competitions/hungry-geese",
+      "wikiId": "competitions/hungry-geese"
+    },
+    "hyperspectral-object-detection-challenge-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Hyperspectral Object Detection Challenge 2026",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "hyperspectral-object-detection-challenge-2026",
+      "url": "https://www.kaggle.com/competitions/hyperspectral-object-detection-challenge-2026",
+      "wikiId": "competitions/hyperspectral-object-detection-challenge-2026"
+    },
+    "icecube-neutrinos-in-deep-ice": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "IceCube - Neutrinos in Deep Ice",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "icecube-neutrinos-in-deep-ice",
+      "url": "https://www.kaggle.com/competitions/icecube-neutrinos-in-deep-ice",
+      "wikiId": "competitions/icecube-neutrinos-in-deep-ice"
+    },
+    "icr-identify-age-related-conditions": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ICR - Identifying Age-Related Conditions",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "icr-identify-age-related-conditions",
+      "url": "https://www.kaggle.com/competitions/icr-identify-age-related-conditions",
+      "wikiId": "competitions/icr-identify-age-related-conditions"
+    },
+    "ieee-fraud-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "IEEE-CIS Fraud Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ieee-fraud-detection",
+      "url": "https://www.kaggle.com/competitions/ieee-fraud-detection",
+      "wikiId": "competitions/ieee-fraud-detection"
+    },
+    "image-matching-challenge-2022": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Image Matching Challenge 2022",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "image-matching-challenge-2022",
+      "url": "https://www.kaggle.com/competitions/image-matching-challenge-2022",
+      "wikiId": "competitions/image-matching-challenge-2022"
+    },
+    "image-matching-challenge-2024": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Image Matching Challenge 2024 - Hexathlon",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "image-matching-challenge-2024",
+      "url": "https://www.kaggle.com/competitions/image-matching-challenge-2024",
+      "wikiId": "competitions/image-matching-challenge-2024"
+    },
+    "image-matching-challenge-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Image Matching Challenge 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "image-matching-challenge-2025",
+      "url": "https://www.kaggle.com/competitions/image-matching-challenge-2025",
+      "wikiId": "competitions/image-matching-challenge-2025"
+    },
+    "imet-2019-fgvc6": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "iMet Collection 2019 - FGVC6",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "imet-2019-fgvc6",
+      "url": "https://www.kaggle.com/competitions/imet-2019-fgvc6",
+      "wikiId": "competitions/imet-2019-fgvc6"
+    },
+    "indoor-location-navigation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Indoor Location & Navigation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "indoor-location-navigation",
+      "url": "https://www.kaggle.com/competitions/indoor-location-navigation",
+      "wikiId": "competitions/indoor-location-navigation"
+    },
+    "intel-mobileodt-cervical-cancer-screening": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Intel & MobileODT Cervical Cancer Screening",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "intel-mobileodt-cervical-cancer-screening",
+      "url": "https://www.kaggle.com/competitions/intel-mobileodt-cervical-cancer-screening",
+      "wikiId": "competitions/intel-mobileodt-cervical-cancer-screening"
+    },
+    "isic-2024-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "isic-2024-challenge",
+      "url": "https://www.kaggle.com/competitions/isic-2024-challenge",
+      "wikiId": "competitions/isic-2024-challenge"
+    },
+    "jane-street-real-time-market-data-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Jane Street Real-Time Market Data Forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jane-street-real-time-market-data-forecasting",
+      "url": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+      "wikiId": "competitions/jane-street-real-time-market-data-forecasting"
+    },
+    "jigsaw-agile-community-rules": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Jigsaw - Agile Community Rules Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jigsaw-agile-community-rules",
+      "url": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+      "wikiId": "competitions/jigsaw-agile-community-rules"
+    },
+    "jigsaw-multilingual-toxic-comment-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Jigsaw Multilingual Toxic Comment Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jigsaw-multilingual-toxic-comment-classification",
+      "url": "https://www.kaggle.com/competitions/jigsaw-multilingual-toxic-comment-classification",
+      "wikiId": "competitions/jigsaw-multilingual-toxic-comment-classification"
+    },
+    "jigsaw-toxic-comment-classification-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Toxic Comment Classification Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jigsaw-toxic-comment-classification-challenge",
+      "url": "https://www.kaggle.com/competitions/jigsaw-toxic-comment-classification-challenge",
+      "wikiId": "competitions/jigsaw-toxic-comment-classification-challenge"
+    },
+    "jigsaw-toxic-severity-rating": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Jigsaw Rate Severity of Toxic Comments",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jigsaw-toxic-severity-rating",
+      "url": "https://www.kaggle.com/competitions/jigsaw-toxic-severity-rating",
+      "wikiId": "competitions/jigsaw-toxic-severity-rating"
+    },
+    "jigsaw-unintended-bias-in-toxicity-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Jigsaw Unintended Bias in Toxicity Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "jigsaw-unintended-bias-in-toxicity-classification",
+      "url": "https://www.kaggle.com/competitions/jigsaw-unintended-bias-in-toxicity-classification",
+      "wikiId": "competitions/jigsaw-unintended-bias-in-toxicity-classification"
+    },
+    "kaggle-llm-science-exam": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Kaggle - LLM Science Exam",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "kaggle-llm-science-exam",
+      "url": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
+      "wikiId": "competitions/kaggle-llm-science-exam"
+    },
+    "kaggriculture": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Kaggriculture",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "kaggriculture",
+      "url": "https://www.kaggle.com/competitions/kaggriculture",
+      "wikiId": "competitions/kaggriculture"
+    },
+    "konwinski-prize": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Konwinski Prize",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "konwinski-prize",
+      "url": "https://www.kaggle.com/competitions/konwinski-prize",
+      "wikiId": "competitions/konwinski-prize"
+    },
+    "kore-2022": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Kore 2022",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "kore-2022",
+      "url": "https://www.kaggle.com/competitions/kore-2022",
+      "wikiId": "competitions/kore-2022"
+    },
+    "landmark-recognition-2020": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google Landmark Recognition 2020",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "landmark-recognition-2020",
+      "url": "https://www.kaggle.com/competitions/landmark-recognition-2020",
+      "wikiId": "competitions/landmark-recognition-2020"
+    },
+    "landmark-retrieval-2020": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google Landmark Retrieval 2020",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "landmark-retrieval-2020",
+      "url": "https://www.kaggle.com/competitions/landmark-retrieval-2020",
+      "wikiId": "competitions/landmark-retrieval-2020"
+    },
+    "lanl-earthquake-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LANL Earthquake Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "lanl-earthquake-prediction",
+      "url": "https://www.kaggle.com/competitions/lanl-earthquake-prediction",
+      "wikiId": "competitions/lanl-earthquake-prediction"
+    },
+    "leap-atmospheric-physics-ai-climsim": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LEAP - Atmospheric Physics using AI (ClimSim)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "leap-atmospheric-physics-ai-climsim",
+      "url": "https://www.kaggle.com/competitions/leap-atmospheric-physics-ai-climsim",
+      "wikiId": "competitions/leap-atmospheric-physics-ai-climsim"
+    },
+    "learning-agency-lab-automated-essay-scoring-2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Learning Agency Lab - Automated Essay Scoring 2.0",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "learning-agency-lab-automated-essay-scoring-2",
+      "url": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+      "wikiId": "competitions/learning-agency-lab-automated-essay-scoring-2"
+    },
+    "leash-belka": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS 2024 - Predict New Medicines with BELKA",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "leash-belka",
+      "url": "https://www.kaggle.com/competitions/leash-belka",
+      "wikiId": "competitions/leash-belka"
+    },
+    "liberty-mutual-group-property-inspection-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Liberty Mutual Group: Property Inspection Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "liberty-mutual-group-property-inspection-prediction",
+      "url": "https://www.kaggle.com/competitions/liberty-mutual-group-property-inspection-prediction",
+      "wikiId": "competitions/liberty-mutual-group-property-inspection-prediction"
+    },
+    "linking-writing-processes-to-writing-quality": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Linking Writing Processes to Writing Quality",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "linking-writing-processes-to-writing-quality",
+      "url": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
+      "wikiId": "competitions/linking-writing-processes-to-writing-quality"
+    },
+    "lish-moa": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Mechanisms of Action (MoA) Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "lish-moa",
+      "url": "https://www.kaggle.com/competitions/lish-moa",
+      "wikiId": "competitions/lish-moa"
+    },
+    "liverpool-ion-switching": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "University of Liverpool - Ion Switching",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "liverpool-ion-switching",
+      "url": "https://www.kaggle.com/competitions/liverpool-ion-switching",
+      "wikiId": "competitions/liverpool-ion-switching"
+    },
+    "llm-20-questions": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LLM 20 Questions",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "llm-20-questions",
+      "url": "https://www.kaggle.com/competitions/llm-20-questions",
+      "wikiId": "competitions/llm-20-questions"
+    },
+    "llm-detect-ai-generated-text": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LLM - Detect AI Generated Text",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "llm-detect-ai-generated-text",
+      "url": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+      "wikiId": "competitions/llm-detect-ai-generated-text"
+    },
+    "llm-prompt-recovery": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LLM Prompt Recovery",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "llm-prompt-recovery",
+      "url": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+      "wikiId": "competitions/llm-prompt-recovery"
+    },
+    "llms-you-cant-please-them-all": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LLMs - You Can't Please Them All",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "llms-you-cant-please-them-all",
+      "url": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+      "wikiId": "competitions/llms-you-cant-please-them-all"
+    },
+    "lmsys-chatbot-arena": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "LMSYS - Chatbot Arena Human Preference Predictions",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "lmsys-chatbot-arena",
+      "url": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
+      "wikiId": "competitions/lmsys-chatbot-arena"
+    },
+    "lux-ai-2021": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Lux AI",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "lux-ai-2021",
+      "url": "https://www.kaggle.com/competitions/lux-ai-2021",
+      "wikiId": "competitions/lux-ai-2021"
+    },
+    "lux-ai-season-3": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS 2024 - Lux AI Season 3",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "lux-ai-season-3",
+      "url": "https://www.kaggle.com/competitions/lux-ai-season-3",
+      "wikiId": "competitions/lux-ai-season-3"
+    },
+    "m5-forecasting-accuracy": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "M5 Forecasting - Accuracy",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "m5-forecasting-accuracy",
+      "url": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+      "wikiId": "competitions/m5-forecasting-accuracy"
+    },
+    "m5-forecasting-uncertainty": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "M5 Forecasting - Uncertainty",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "m5-forecasting-uncertainty",
+      "url": "https://www.kaggle.com/competitions/m5-forecasting-uncertainty",
+      "wikiId": "competitions/m5-forecasting-uncertainty"
+    },
+    "mabe-mouse-behavior-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "MABe Challenge - Social Action Recognition in Mice",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mabe-mouse-behavior-detection",
+      "url": "https://www.kaggle.com/competitions/mabe-mouse-behavior-detection",
+      "wikiId": "competitions/mabe-mouse-behavior-detection"
+    },
+    "make-data-count-finding-data-references": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Make Data Count - Finding Data References",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "make-data-count-finding-data-references",
+      "url": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
+      "wikiId": "competitions/make-data-count-finding-data-references"
+    },
+    "mallorn-astronomical-classification-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "MALLORN Astronomical Classification Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mallorn-astronomical-classification-challenge",
+      "url": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
+      "wikiId": "competitions/mallorn-astronomical-classification-challenge"
+    },
+    "map-charting-student-math-misunderstandings": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "MAP - Charting Student Math Misunderstandings",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "map-charting-student-math-misunderstandings",
+      "url": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+      "wikiId": "competitions/map-charting-student-math-misunderstandings"
+    },
+    "march-machine-learning-mania-2023": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "March Machine Learning Mania 2023",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "march-machine-learning-mania-2023",
+      "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2023",
+      "wikiId": "competitions/march-machine-learning-mania-2023"
+    },
+    "march-machine-learning-mania-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "March Machine Learning Mania 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "march-machine-learning-mania-2025",
+      "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2025",
+      "wikiId": "competitions/march-machine-learning-mania-2025"
+    },
+    "march-machine-learning-mania-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "March Machine Learning Mania 2026",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "march-machine-learning-mania-2026",
+      "url": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+      "wikiId": "competitions/march-machine-learning-mania-2026"
+    },
+    "mayo-clinic-strip-ai": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Mayo Clinic - STRIP AI",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mayo-clinic-strip-ai",
+      "url": "https://www.kaggle.com/competitions/mayo-clinic-strip-ai",
+      "wikiId": "competitions/mayo-clinic-strip-ai"
+    },
+    "maze-crawler": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Maze Crawler",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "maze-crawler",
+      "url": "https://www.kaggle.com/competitions/maze-crawler",
+      "wikiId": "competitions/maze-crawler"
+    },
+    "mercari-price-suggestion-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Mercari Price Suggestion Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mercari-price-suggestion-challenge",
+      "url": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge",
+      "wikiId": "competitions/mercari-price-suggestion-challenge"
+    },
+    "mercedes-benz-greener-manufacturing": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Mercedes-Benz Greener Manufacturing",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mercedes-benz-greener-manufacturing",
+      "url": "https://www.kaggle.com/competitions/mercedes-benz-greener-manufacturing",
+      "wikiId": "competitions/mercedes-benz-greener-manufacturing"
+    },
+    "microsoft-malware-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Microsoft Malware Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "microsoft-malware-prediction",
+      "url": "https://www.kaggle.com/competitions/microsoft-malware-prediction",
+      "wikiId": "competitions/microsoft-malware-prediction"
+    },
+    "misconception-detection-in-k-12-student-math-workings": {
+      "closeAt": "2026-11-17T23:59:00Z",
+      "format": "scored",
+      "label": "Misconception Detection in K-12 Student Math Workings",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "misconception-detection-in-k-12-student-math-workings",
+      "url": "https://kaggle.com/competitions/misconception-detection-in-k-12-student-math-workings",
+      "wikiId": "competitions/misconception-detection-in-k-12-student-math-workings"
+    },
+    "mitsui-commodity-prediction-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "MITSUI&CO. Commodity Prediction Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "mitsui-commodity-prediction-challenge",
+      "url": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
+      "wikiId": "competitions/mitsui-commodity-prediction-challenge"
+    },
+    "ms-capital-real-financial-market-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "MSCapital – Real Financial Market Forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ms-capital-real-financial-market-forecasting",
+      "url": "https://www.kaggle.com/competitions/ms-capital-real-financial-market-forecasting",
+      "wikiId": "competitions/ms-capital-real-financial-market-forecasting"
+    },
+    "name-that-llm": {
+      "closeAt": "2027-01-13T23:59:00Z",
+      "format": "scored",
+      "label": "Name That LLM",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "name-that-llm",
+      "url": "https://kaggle.com/competitions/name-that-llm",
+      "wikiId": "competitions/name-that-llm"
+    },
+    "nbme-score-clinical-patient-notes": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NBME - Score Clinical Patient Notes",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nbme-score-clinical-patient-notes",
+      "url": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
+      "wikiId": "competitions/nbme-score-clinical-patient-notes"
+    },
+    "neural-debris-removal-in-streak-detection-models": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Neural Debris Removal in Streak Detection Models",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "neural-debris-removal-in-streak-detection-models",
+      "url": "https://www.kaggle.com/competitions/neural-debris-removal-in-streak-detection-models",
+      "wikiId": "competitions/neural-debris-removal-in-streak-detection-models"
+    },
+    "neurips-2023-machine-unlearning": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS 2023 - Machine Unlearning",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "neurips-2023-machine-unlearning",
+      "url": "https://www.kaggle.com/competitions/neurips-2023-machine-unlearning",
+      "wikiId": "competitions/neurips-2023-machine-unlearning"
+    },
+    "neurips-2026-smart-buildings": {
+      "closeAt": "2027-01-15T23:59:00Z",
+      "format": "scored",
+      "label": "Smart Buildings Competition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "neurips-2026-smart-buildings",
+      "url": "https://kaggle.com/competitions/neurips-2026-smart-buildings",
+      "wikiId": "competitions/neurips-2026-smart-buildings"
+    },
+    "neurips-open-polymer-prediction-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NeurIPS - Open Polymer Prediction 2025",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "neurips-open-polymer-prediction-2025",
+      "url": "https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025",
+      "wikiId": "competitions/neurips-open-polymer-prediction-2025"
+    },
+    "neurogolf-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "The 2026 NeuroGolf Championship",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "neurogolf-2026",
+      "url": "https://www.kaggle.com/competitions/neurogolf-2026",
+      "wikiId": "competitions/neurogolf-2026"
+    },
+    "nfl-big-data-bowl-2020": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NFL Big Data Bowl",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nfl-big-data-bowl-2020",
+      "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2020",
+      "wikiId": "competitions/nfl-big-data-bowl-2020"
+    },
+    "nfl-big-data-bowl-2026-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NFL Big Data Bowl 2026 - Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nfl-big-data-bowl-2026-prediction",
+      "url": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
+      "wikiId": "competitions/nfl-big-data-bowl-2026-prediction"
+    },
+    "nfl-big-data-bowl-2027": {
+      "closeAt": "2027-01-06T23:59:00Z",
+      "format": "judged",
+      "label": "NFL Big Data Bowl 2027",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nfl-big-data-bowl-2027",
+      "url": "https://kaggle.com/competitions/nfl-big-data-bowl-2027",
+      "wikiId": "competitions/nfl-big-data-bowl-2027"
+    },
+    "nfl-health-and-safety-helmet-assignment": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NFL Health & Safety - Helmet Assignment",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nfl-health-and-safety-helmet-assignment",
+      "url": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
+      "wikiId": "competitions/nfl-health-and-safety-helmet-assignment"
+    },
+    "nfl-player-contact-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "1st and Future - Player Contact Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nfl-player-contact-detection",
+      "url": "https://www.kaggle.com/competitions/nfl-player-contact-detection",
+      "wikiId": "competitions/nfl-player-contact-detection"
+    },
+    "noaa-fisheries-steller-sea-lion-population-count": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NOAA Fisheries Steller Sea Lion Population Count",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "noaa-fisheries-steller-sea-lion-population-count",
+      "url": "https://www.kaggle.com/competitions/noaa-fisheries-steller-sea-lion-population-count",
+      "wikiId": "competitions/noaa-fisheries-steller-sea-lion-population-count"
+    },
+    "nvidia-nemotron-model-reasoning-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "NVIDIA Nemotron Model Reasoning Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "nvidia-nemotron-model-reasoning-challenge",
+      "url": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+      "wikiId": "competitions/nvidia-nemotron-model-reasoning-challenge"
+    },
+    "open-problems-single-cell-perturbations": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Open Problems – Single-Cell Perturbations",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "open-problems-single-cell-perturbations",
+      "url": "https://www.kaggle.com/competitions/open-problems-single-cell-perturbations",
+      "wikiId": "competitions/open-problems-single-cell-perturbations"
+    },
+    "optiver-realized-volatility-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Optiver Realized Volatility Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "optiver-realized-volatility-prediction",
+      "url": "https://www.kaggle.com/competitions/optiver-realized-volatility-prediction",
+      "wikiId": "competitions/optiver-realized-volatility-prediction"
+    },
+    "optiver-trading-at-the-close": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Optiver - Trading at the Close",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "optiver-trading-at-the-close",
+      "url": "https://www.kaggle.com/competitions/optiver-trading-at-the-close",
+      "wikiId": "competitions/optiver-trading-at-the-close"
+    },
+    "orbit-wars": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Orbit Wars",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "orbit-wars",
+      "url": "https://www.kaggle.com/competitions/orbit-wars",
+      "wikiId": "competitions/orbit-wars"
+    },
+    "otto-group-product-classification-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Otto Group Product Classification Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "otto-group-product-classification-challenge",
+      "url": "https://www.kaggle.com/competitions/otto-group-product-classification-challenge",
+      "wikiId": "competitions/otto-group-product-classification-challenge"
+    },
+    "outbrain-click-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Outbrain Click Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "outbrain-click-prediction",
+      "url": "https://www.kaggle.com/competitions/outbrain-click-prediction",
+      "wikiId": "competitions/outbrain-click-prediction"
+    },
+    "petfinder-pawpularity-score": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "PetFinder.my - Pawpularity Contest",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "petfinder-pawpularity-score",
+      "url": "https://www.kaggle.com/competitions/petfinder-pawpularity-score",
+      "wikiId": "competitions/petfinder-pawpularity-score"
+    },
+    "physionet-ecg-image-digitization": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "PhysioNet - Digitization of ECG Images",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "physionet-ecg-image-digitization",
+      "url": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+      "wikiId": "competitions/physionet-ecg-image-digitization"
+    },
+    "pii-detection-removal-from-educational-data": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "The Learning Agency Lab - PII Data Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "pii-detection-removal-from-educational-data",
+      "url": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+      "wikiId": "competitions/pii-detection-removal-from-educational-data"
+    },
+    "planet-understanding-the-amazon-from-space": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Planet: Understanding the Amazon from Space",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "planet-understanding-the-amazon-from-space",
+      "url": "https://www.kaggle.com/competitions/planet-understanding-the-amazon-from-space",
+      "wikiId": "competitions/planet-understanding-the-amazon-from-space"
+    },
+    "plasticc-2018": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "PLAsTiCC Astronomical Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "plasticc-2018",
+      "url": "https://www.kaggle.com/competitions/plasticc-2018",
+      "wikiId": "competitions/plasticc-2018"
+    },
+    "playground-series-s3e11": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Regression with a Tabular Media Campaign Cost Dataset",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s3e11",
+      "url": "https://www.kaggle.com/competitions/playground-series-s3e11",
+      "wikiId": "competitions/playground-series-s3e11"
+    },
+    "playground-series-s3e12": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Binary Classification with a Tabular Kidney Stone Prediction Dataset",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s3e12",
+      "url": "https://www.kaggle.com/competitions/playground-series-s3e12",
+      "wikiId": "competitions/playground-series-s3e12"
+    },
+    "playground-series-s4e8": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Binary Prediction of Poisonous Mushrooms",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s4e8",
+      "url": "https://www.kaggle.com/competitions/playground-series-s4e8",
+      "wikiId": "competitions/playground-series-s4e8"
+    },
+    "playground-series-s5e1": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Forecasting Sticker Sales",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s5e1",
+      "url": "https://www.kaggle.com/competitions/playground-series-s5e1",
+      "wikiId": "competitions/playground-series-s5e1"
+    },
+    "playground-series-s5e12": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Diabetes Prediction Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s5e12",
+      "url": "https://www.kaggle.com/competitions/playground-series-s5e12",
+      "wikiId": "competitions/playground-series-s5e12"
+    },
+    "playground-series-s5e4": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predict Podcast Listening Time",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s5e4",
+      "url": "https://www.kaggle.com/competitions/playground-series-s5e4",
+      "wikiId": "competitions/playground-series-s5e4"
+    },
+    "playground-series-s5e5": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predict Calorie Expenditure",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s5e5",
+      "url": "https://www.kaggle.com/competitions/playground-series-s5e5",
+      "wikiId": "competitions/playground-series-s5e5"
+    },
+    "playground-series-s5e6": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Optimal Fertilizers",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s5e6",
+      "url": "https://www.kaggle.com/competitions/playground-series-s5e6",
+      "wikiId": "competitions/playground-series-s5e6"
+    },
+    "playground-series-s6e4": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Irrigation Need (Playground Series - Season 6 Episode 4)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s6e4",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e4",
+      "wikiId": "competitions/playground-series-s6e4"
+    },
+    "playground-series-s6e6": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Stellar Class (Playground Series - Season 6 Episode 6)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s6e6",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e6",
+      "wikiId": "competitions/playground-series-s6e6"
+    },
+    "playground-series-s6e8": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Smartphone Addiction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s6e8",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e8",
+      "wikiId": "competitions/playground-series-s6e8"
+    },
+    "playground-series-s6e9": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Electric Vehicle Purchases",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "playground-series-s6e9",
+      "url": "https://www.kaggle.com/competitions/playground-series-s6e9",
+      "wikiId": "competitions/playground-series-s6e9"
+    },
+    "pokemon-tcg-ai-battle": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "pokemon-tcg-ai-battle",
+      "url": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+      "wikiId": "competitions/pokemon-tcg-ai-battle"
+    },
+    "porto-seguro-safe-driver-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Porto Seguro’s Safe Driver Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "porto-seguro-safe-driver-prediction",
+      "url": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
+      "wikiId": "competitions/porto-seguro-safe-driver-prediction"
+    },
+    "predict-student-performance-from-game-play": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predict Student Performance from Game Play",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "predict-student-performance-from-game-play",
+      "url": "https://www.kaggle.com/competitions/predict-student-performance-from-game-play",
+      "wikiId": "competitions/predict-student-performance-from-game-play"
+    },
+    "predicting-red-hat-business-value": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Predicting Red Hat Business Value",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "predicting-red-hat-business-value",
+      "url": "https://www.kaggle.com/competitions/predicting-red-hat-business-value",
+      "wikiId": "competitions/predicting-red-hat-business-value"
+    },
+    "prostate-cancer-grade-assessment": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Prostate cANcer graDe Assessment (PANDA) Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "prostate-cancer-grade-assessment",
+      "url": "https://www.kaggle.com/competitions/prostate-cancer-grade-assessment",
+      "wikiId": "competitions/prostate-cancer-grade-assessment"
+    },
+    "quickdraw-doodle-recognition": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Quick, Draw! Doodle Recognition Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "quickdraw-doodle-recognition",
+      "url": "https://www.kaggle.com/competitions/quickdraw-doodle-recognition",
+      "wikiId": "competitions/quickdraw-doodle-recognition"
+    },
+    "quora-question-pairs": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Quora Question Pairs",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "quora-question-pairs",
+      "url": "https://www.kaggle.com/competitions/quora-question-pairs",
+      "wikiId": "competitions/quora-question-pairs"
+    },
+    "recodai-luc-scientific-image-forgery-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Recod.ai/LUC - Scientific Image Forgery Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "recodai-luc-scientific-image-forgery-detection",
+      "url": "https://www.kaggle.com/competitions/recodai-luc-scientific-image-forgery-detection",
+      "wikiId": "competitions/recodai-luc-scientific-image-forgery-detection"
+    },
+    "recruit-restaurant-visitor-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Recruit Restaurant Visitor Forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "recruit-restaurant-visitor-forecasting",
+      "url": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+      "wikiId": "competitions/recruit-restaurant-visitor-forecasting"
+    },
+    "recursion-cellular-image-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Recursion Cellular Image Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "recursion-cellular-image-classification",
+      "url": "https://www.kaggle.com/competitions/recursion-cellular-image-classification",
+      "wikiId": "competitions/recursion-cellular-image-classification"
+    },
+    "rfcx-species-audio-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Rainforest Connection Species Audio Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rfcx-species-audio-detection",
+      "url": "https://www.kaggle.com/competitions/rfcx-species-audio-detection",
+      "wikiId": "competitions/rfcx-species-audio-detection"
+    },
+    "riiid-test-answer-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Riiid Answer Correctness Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "riiid-test-answer-prediction",
+      "url": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
+      "wikiId": "competitions/riiid-test-answer-prediction"
+    },
+    "rock-paper-scissors": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Rock, Paper, Scissors",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rock-paper-scissors",
+      "url": "https://www.kaggle.com/competitions/rock-paper-scissors",
+      "wikiId": "competitions/rock-paper-scissors"
+    },
+    "rogii-wellbore-geology-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ROGII - Wellbore Geology Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rogii-wellbore-geology-prediction",
+      "url": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+      "wikiId": "competitions/rogii-wellbore-geology-prediction"
+    },
+    "rossmann-store-sales": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Rossmann Store Sales",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rossmann-store-sales",
+      "url": "https://www.kaggle.com/competitions/rossmann-store-sales",
+      "wikiId": "competitions/rossmann-store-sales"
+    },
+    "rsna-2022-cervical-spine-fracture-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA 2022 Cervical Spine Fracture Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-2022-cervical-spine-fracture-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection",
+      "wikiId": "competitions/rsna-2022-cervical-spine-fracture-detection"
+    },
+    "rsna-2024-lumbar-spine-degenerative-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA 2024 Lumbar Spine Degenerative Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-2024-lumbar-spine-degenerative-classification",
+      "url": "https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification",
+      "wikiId": "competitions/rsna-2024-lumbar-spine-degenerative-classification"
+    },
+    "rsna-breast-cancer-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA Screening Mammography Breast Cancer Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-breast-cancer-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-breast-cancer-detection",
+      "wikiId": "competitions/rsna-breast-cancer-detection"
+    },
+    "rsna-intracranial-aneurysm-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA Intracranial Aneurysm Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-intracranial-aneurysm-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-intracranial-aneurysm-detection",
+      "wikiId": "competitions/rsna-intracranial-aneurysm-detection"
+    },
+    "rsna-intracranial-hemorrhage-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA Intracranial Hemorrhage Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-intracranial-hemorrhage-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-intracranial-hemorrhage-detection",
+      "wikiId": "competitions/rsna-intracranial-hemorrhage-detection"
+    },
+    "rsna-knee-abnormality-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA Knee Abnormality Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-knee-abnormality-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+      "wikiId": "competitions/rsna-knee-abnormality-detection"
+    },
+    "rsna-str-pulmonary-embolism-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "RSNA STR Pulmonary Embolism Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "rsna-str-pulmonary-embolism-detection",
+      "url": "https://www.kaggle.com/competitions/rsna-str-pulmonary-embolism-detection",
+      "wikiId": "competitions/rsna-str-pulmonary-embolism-detection"
+    },
+    "santa-2020": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa 2020 - The Candy Cane Contest",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santa-2020",
+      "url": "https://www.kaggle.com/competitions/santa-2020",
+      "wikiId": "competitions/santa-2020"
+    },
+    "santa-2023": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa 2023 - The Polytope Permutation Puzzle",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santa-2023",
+      "url": "https://www.kaggle.com/competitions/santa-2023",
+      "wikiId": "competitions/santa-2023"
+    },
+    "santa-2024": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa 2024 - The Perplexity Permutation Puzzle",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santa-2024",
+      "url": "https://www.kaggle.com/competitions/santa-2024",
+      "wikiId": "competitions/santa-2024"
+    },
+    "santa-2025": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa 2025 - Christmas Tree Packing Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santa-2025",
+      "url": "https://www.kaggle.com/competitions/santa-2025",
+      "wikiId": "competitions/santa-2025"
+    },
+    "santa-workshop-tour-2019": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa's Workshop Tour 2019",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santa-workshop-tour-2019",
+      "url": "https://www.kaggle.com/competitions/santa-workshop-tour-2019",
+      "wikiId": "competitions/santa-workshop-tour-2019"
+    },
+    "santander-customer-satisfaction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santander Customer Satisfaction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santander-customer-satisfaction",
+      "url": "https://www.kaggle.com/competitions/santander-customer-satisfaction",
+      "wikiId": "competitions/santander-customer-satisfaction"
+    },
+    "santander-customer-transaction-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santander Customer Transaction Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santander-customer-transaction-prediction",
+      "url": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+      "wikiId": "competitions/santander-customer-transaction-prediction"
+    },
+    "santander-product-recommendation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santander Product Recommendation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santander-product-recommendation",
+      "url": "https://www.kaggle.com/competitions/santander-product-recommendation",
+      "wikiId": "competitions/santander-product-recommendation"
+    },
+    "santander-value-prediction-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santander Value Prediction Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santander-value-prediction-challenge",
+      "url": "https://www.kaggle.com/competitions/santander-value-prediction-challenge",
+      "wikiId": "competitions/santander-value-prediction-challenge"
+    },
+    "santas-uncertain-bags": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Santa's Uncertain Bags",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "santas-uncertain-bags",
+      "url": "https://www.kaggle.com/competitions/santas-uncertain-bags",
+      "wikiId": "competitions/santas-uncertain-bags"
+    },
+    "sartorius-cell-instance-segmentation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Sartorius - Cell Instance Segmentation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "sartorius-cell-instance-segmentation",
+      "url": "https://www.kaggle.com/competitions/sartorius-cell-instance-segmentation",
+      "wikiId": "competitions/sartorius-cell-instance-segmentation"
+    },
+    "sberbank-russian-housing-market": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Sberbank Russian Housing Market",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "sberbank-russian-housing-market",
+      "url": "https://www.kaggle.com/competitions/sberbank-russian-housing-market",
+      "wikiId": "competitions/sberbank-russian-housing-market"
+    },
+    "spr-2026-mammography-report-classification": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "SPR 2026 Mammography Report Classification",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "spr-2026-mammography-report-classification",
+      "url": "https://www.kaggle.com/competitions/spr-2026-mammography-report-classification",
+      "wikiId": "competitions/spr-2026-mammography-report-classification"
+    },
+    "springleaf-marketing-response": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Springleaf Marketing Response",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "springleaf-marketing-response",
+      "url": "https://www.kaggle.com/competitions/springleaf-marketing-response",
+      "wikiId": "competitions/springleaf-marketing-response"
+    },
+    "squares-in-squares": {
+      "closeAt": "2027-07-18T23:59:00Z",
+      "format": "scored",
+      "label": "Squares in Squares",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "squares-in-squares",
+      "url": "https://kaggle.com/competitions/squares-in-squares",
+      "wikiId": "competitions/squares-in-squares"
+    },
+    "stable-diffusion-image-to-prompts": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Stable Diffusion - Image to Prompts",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "stable-diffusion-image-to-prompts",
+      "url": "https://www.kaggle.com/competitions/stable-diffusion-image-to-prompts",
+      "wikiId": "competitions/stable-diffusion-image-to-prompts"
+    },
+    "stanford-covid-vaccine": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "OpenVaccine: COVID-19 mRNA Vaccine Degradation Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "stanford-covid-vaccine",
+      "url": "https://www.kaggle.com/competitions/stanford-covid-vaccine",
+      "wikiId": "competitions/stanford-covid-vaccine"
+    },
+    "stanford-rna-3d-folding": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Stanford RNA 3D Folding",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "stanford-rna-3d-folding",
+      "url": "https://www.kaggle.com/competitions/stanford-rna-3d-folding",
+      "wikiId": "competitions/stanford-rna-3d-folding"
+    },
+    "stanford-rna-3d-folding-2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Stanford RNA 3D Folding Part 2",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "stanford-rna-3d-folding-2",
+      "url": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+      "wikiId": "competitions/stanford-rna-3d-folding-2"
+    },
+    "statoil-iceberg-classifier-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Statoil/C-CORE Iceberg Classifier Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "statoil-iceberg-classifier-challenge",
+      "url": "https://www.kaggle.com/competitions/statoil-iceberg-classifier-challenge",
+      "wikiId": "competitions/statoil-iceberg-classifier-challenge"
+    },
+    "talkingdata-adtracking-fraud-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "TalkingData AdTracking Fraud Detection Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "talkingdata-adtracking-fraud-detection",
+      "url": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
+      "wikiId": "competitions/talkingdata-adtracking-fraud-detection"
+    },
+    "talkingdata-mobile-user-demographics": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "TalkingData Mobile User Demographics",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "talkingdata-mobile-user-demographics",
+      "url": "https://www.kaggle.com/competitions/talkingdata-mobile-user-demographics",
+      "wikiId": "competitions/talkingdata-mobile-user-demographics"
+    },
+    "tensorflow-speech-recognition-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "TensorFlow Speech Recognition Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "tensorflow-speech-recognition-challenge",
+      "url": "https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge",
+      "wikiId": "competitions/tensorflow-speech-recognition-challenge"
+    },
+    "tensorflow2-question-answering": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "TensorFlow 2.0 Question Answering",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "tensorflow2-question-answering",
+      "url": "https://www.kaggle.com/competitions/tensorflow2-question-answering",
+      "wikiId": "competitions/tensorflow2-question-answering"
+    },
+    "text-normalization-challenge-english-language": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Text Normalization Challenge - English Language",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "text-normalization-challenge-english-language",
+      "url": "https://www.kaggle.com/competitions/text-normalization-challenge-english-language",
+      "wikiId": "competitions/text-normalization-challenge-english-language"
+    },
+    "text-normalization-challenge-russian-language": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Text Normalization Challenge - Russian Language",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "text-normalization-challenge-russian-language",
+      "url": "https://www.kaggle.com/competitions/text-normalization-challenge-russian-language",
+      "wikiId": "competitions/text-normalization-challenge-russian-language"
+    },
+    "tgs-salt-identification-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "TGS Salt Identification Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "tgs-salt-identification-challenge",
+      "url": "https://www.kaggle.com/competitions/tgs-salt-identification-challenge",
+      "wikiId": "competitions/tgs-salt-identification-challenge"
+    },
+    "the-allen-ai-science-challenge": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "The Allen AI Science Challenge",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "the-allen-ai-science-challenge",
+      "url": "https://www.kaggle.com/competitions/the-allen-ai-science-challenge",
+      "wikiId": "competitions/the-allen-ai-science-challenge"
+    },
+    "the-nature-conservancy-fisheries-monitoring": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "The Nature Conservancy Fisheries Monitoring",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "the-nature-conservancy-fisheries-monitoring",
+      "url": "https://www.kaggle.com/competitions/the-nature-conservancy-fisheries-monitoring",
+      "wikiId": "competitions/the-nature-conservancy-fisheries-monitoring"
+    },
+    "tlvmc-parkinsons-freezing-gait-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Parkinson's Freezing of Gait Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "tlvmc-parkinsons-freezing-gait-prediction",
+      "url": "https://www.kaggle.com/competitions/tlvmc-parkinsons-freezing-gait-prediction",
+      "wikiId": "competitions/tlvmc-parkinsons-freezing-gait-prediction"
+    },
+    "traveling-santa-2018-prime-paths": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Traveling Santa 2018 - Prime Paths",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "traveling-santa-2018-prime-paths",
+      "url": "https://www.kaggle.com/competitions/traveling-santa-2018-prime-paths",
+      "wikiId": "competitions/traveling-santa-2018-prime-paths"
+    },
+    "ts-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Hedge fund - Time series forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ts-forecasting",
+      "url": "https://www.kaggle.com/competitions/ts-forecasting",
+      "wikiId": "competitions/ts-forecasting"
+    },
+    "ubc-ocean": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "UBC Ovarian Cancer Subtype Classification and Outlier Detection (UBC-OCEAN)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ubc-ocean",
+      "url": "https://www.kaggle.com/competitions/ubc-ocean",
+      "wikiId": "competitions/ubc-ocean"
+    },
+    "ubiquant-market-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Ubiquant Market Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ubiquant-market-prediction",
+      "url": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
+      "wikiId": "competitions/ubiquant-market-prediction"
+    },
+    "ue20cs344-nam-assignment-2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "UE20CS344 NAM Assignment 2",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ue20cs344-nam-assignment-2",
+      "url": "https://www.kaggle.com/competitions/ue20cs344-nam-assignment-2",
+      "wikiId": "competitions/ue20cs344-nam-assignment-2"
+    },
+    "um-game-playing-strength-of-mcts-variants": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "UM - Game-Playing Strength of MCTS Variants",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "um-game-playing-strength-of-mcts-variants",
+      "url": "https://www.kaggle.com/competitions/um-game-playing-strength-of-mcts-variants",
+      "wikiId": "competitions/um-game-playing-strength-of-mcts-variants"
+    },
+    "uspto-explainable-ai": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "USPTO - Explainable AI for Patent Professionals",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "uspto-explainable-ai",
+      "url": "https://www.kaggle.com/competitions/uspto-explainable-ai",
+      "wikiId": "competitions/uspto-explainable-ai"
+    },
+    "uw-madison-gi-tract-image-segmentation": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "UW-Madison GI Tract Image Segmentation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "uw-madison-gi-tract-image-segmentation",
+      "url": "https://www.kaggle.com/competitions/uw-madison-gi-tract-image-segmentation",
+      "wikiId": "competitions/uw-madison-gi-tract-image-segmentation"
+    },
+    "ventilator-pressure-prediction": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Google Brain - Ventilator Pressure Prediction",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "ventilator-pressure-prediction",
+      "url": "https://www.kaggle.com/competitions/ventilator-pressure-prediction",
+      "wikiId": "competitions/ventilator-pressure-prediction"
+    },
+    "vesuvius-challenge-ink-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Vesuvius Challenge - Ink Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "vesuvius-challenge-ink-detection",
+      "url": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
+      "wikiId": "competitions/vesuvius-challenge-ink-detection"
+    },
+    "vesuvius-challenge-surface-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Vesuvius Challenge - Surface Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "vesuvius-challenge-surface-detection",
+      "url": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
+      "wikiId": "competitions/vesuvius-challenge-surface-detection"
+    },
+    "vinbigdata-chest-xray-abnormalities-detection": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "VinBigData Chest X-ray Abnormalities Detection",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "vinbigdata-chest-xray-abnormalities-detection",
+      "url": "https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection",
+      "wikiId": "competitions/vinbigdata-chest-xray-abnormalities-detection"
+    },
+    "waveform-inversion": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Yale/UNC-CH - Geophysical Waveform Inversion",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "waveform-inversion",
+      "url": "https://www.kaggle.com/competitions/waveform-inversion",
+      "wikiId": "competitions/waveform-inversion"
+    },
+    "web-traffic-time-series-forecasting": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Web Traffic Time Series Forecasting",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "web-traffic-time-series-forecasting",
+      "url": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting",
+      "wikiId": "competitions/web-traffic-time-series-forecasting"
+    },
+    "wsdm-cup-multilingual-chatbot-arena": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "WSDM Cup - Multilingual Chatbot Arena",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "wsdm-cup-multilingual-chatbot-arena",
+      "url": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
+      "wikiId": "competitions/wsdm-cup-multilingual-chatbot-arena"
+    },
+    "zillow-prize-1": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Zillow Prize: Zillow’s Home Value Prediction (Zestimate)",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "season": null,
+      "slug": "zillow-prize-1",
+      "url": "https://www.kaggle.com/competitions/zillow-prize-1",
+      "wikiId": "competitions/zillow-prize-1"
+    }
+  },
+  "version": 1
+}

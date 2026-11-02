@@ -1,0 +1,14 @@
+{
+  "closeChecks": [],
+  "enabled": false,
+  "legacyName": "The ARC Daily Digest",
+  "logo": "/brand/loose-goose-logo.png",
+  "name": "The Loose Goose",
+  "notBefore": "2026-11-03T00:00:00Z",
+  "requiredCompetitions": [
+    "arc-prize-2026-arc-agi-3",
+    "arc-prize-2026-arc-agi-2"
+  ],
+  "tagline": "Talk to me, Goose.",
+  "version": 1
+}

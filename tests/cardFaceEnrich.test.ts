@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Date: 02-November-2026
  * PURPOSE: Invariants for the Card Cabinet adapter (cardFace/enrich.ts) and the set registry (cardFace/sets.ts) over the
  *          REAL collection: every card enriches, only the three kinds exist, no banned word reaches a printed string,
  *          solo entries carry no team name, each face has one as-of day, numbers are consistent, sponsor lines are all
@@ -140,9 +140,9 @@ describe('review fixes (30-Oct-2026)', () => {
   it('prints one team size everywhere: every account on the roster', () => {
     const tufa = cards.find(c => c.id === 'team-tufa-labs-2026')!;
     const vm = viewModel(tufa);
-    expect(vm.teamSize).toBe(tufa.roster.length);
-    expect(vm.sizeLabel).toBe(`${tufa.roster.length} ACCOUNTS`);
-    expect(tufa.bio).toContain(`${tufa.roster.length}-account`);
+    expect(vm.teamSize).toBe(tufa.roster.length || null);
+    expect(vm.sizeLabel).toBe(tufa.roster.length ? `${tufa.roster.length} ACCOUNTS` : null);
+    if (tufa.roster.length) expect(tufa.bio).toContain(`${tufa.roster.length}-account`);
   });
 
   it('never calls a partial career list the whole record, and ranks best finish and the table by place', () => {
@@ -154,7 +154,7 @@ describe('review fixes (30-Oct-2026)', () => {
       if (c.career.completedListed > rows.length) expect(c.career.complete, c.id).toBe(false);
     }
     const alijs = cards.find(c => c.id === 'person-alijs-2026');
-    if (alijs?.career) expect(alijs.career.completedListed).toBeGreaterThan(alijs.career.rows.length);
+    if (alijs?.career) expect(alijs.career.complete).toBe(false);
   });
 
   it('leads the honours with the highest placing', () => {
@@ -164,11 +164,13 @@ describe('review fixes (30-Oct-2026)', () => {
     }
   });
 
-  it('draws FINAL once every contest has closed, and LIVE before', () => {
-    const live = cards.find(c => c.status === 'live' && c.contests.every((k: any) => k.closesAt))!;
-    const close = Math.max(...live.contests.map((k: any) => Date.parse(k.closesAt)));
-    expect(viewModel(live, { now: close - 60_000 }).stamp?.word).toBe('LIVE');
-    expect(viewModel(live, { now: close + 60_000 }).stamp?.word).toBe('FINAL');
+  it('keeps a closed public reading provisional until an explicit official result', () => {
+    const close = Date.parse('2026-11-02T23:59:00Z');
+    const reading = { ...cards[0], status: 'live', asOfDate: '2026-11-02', contests: [{ name: 'Fixture Cup', status: 'live', closesAt: '2026-11-02T23:59:00Z', score: 0.123456789, rank: 900 }] };
+    expect(viewModel(reading, { now: close - 60_000 }).stamp?.word).toBe('LIVE');
+    expect(viewModel(reading, { now: close + 60_000 }).stamp?.word).toBe('PUBLIC');
+    expect(viewModel(reading).contests[0].score).toBe('0.123456789');
+    expect(viewModel({ ...reading, status: 'final', contests: reading.contests.map((c: any) => ({ ...c, status: 'final' })) }).stamp?.word).toBe('FINAL');
   });
 
   it('prints a name in a script the fonts cannot draw as the handle', () => {

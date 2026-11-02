@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5 (Bubba)
- * Date: 08-October-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 (Bubba)
+ * Date: 02-November-2026
  * PURPOSE: Renders The ARC Daily's 1200x630 link-preview cards: one per article (masthead,
  *          competition and edition, headline, top three of that edition's own box score)
  *          and one section card for /news and the other ARC Daily pages (the latest headline
@@ -38,7 +38,7 @@ import satori from 'satori';
 import sharp from 'sharp';
 import { ARC_COLORS_TUPLES } from '../../../shared/config/colors';
 import {
-  type NewsArticle, type NewsStat, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME,
+  type NewsArticle, type NewsStat, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_BRAND,
   articleCardVersion, cardStandings, competitionName, easternDay, editionLabel, newsDate, sectionCardArticles, sectionCardVersion,
 } from '../../../shared/news';
 import { getNewsIndex } from './newsStore';
@@ -92,7 +92,7 @@ function masthead(size: number, centred = false): Node {
     box({ height: 6, background: INK }),
     box({ justifyContent: centred ? 'center' : 'space-between', alignItems: 'flex-end', padding: '14px 0 10px' },
       box({ fontFamily: SERIF, fontWeight: 700, fontSize: size, color: INK, lineHeight: 1 }, NEWS_NAME),
-      centred ? null : box({ fontFamily: SANS, fontWeight: 500, fontSize: 20, color: MUTED, letterSpacing: 2, textTransform: 'uppercase', paddingBottom: 6 }, 'ARC Prize 2026 · Kaggle')),
+      centred ? null : box({ fontFamily: SANS, fontWeight: 500, fontSize: 20, color: MUTED, letterSpacing: 2, textTransform: 'uppercase', paddingBottom: 6 }, NEWS_BRAND.goose ? 'The Kaggleverse' : 'ARC Prize 2026 · Kaggle')),
     box({ height: 3, background: INK }), box({ height: 3 }), box({ height: 1, background: INK }));
 }
 /**
@@ -152,7 +152,7 @@ function puzzleColumn(puzzle: CardPuzzle): Node {
 /** What the paper is: shown beside one fresh edition (short form), or alone when no edition is fresh. */
 const identityColumn = (short: boolean): Node[] => [
   kicker('What this is', { fontSize: 19 }),
-  headlineBlock('The ARC Prize 2026 leaderboards, reported daily.', short ? 30 : 50, 3, { marginTop: 10 }),
+  headlineBlock(NEWS_BRAND.goose ? 'The sports tabloid of the Kaggleverse.' : 'The ARC Prize 2026 leaderboards, reported daily.', short ? 30 : 50, 3, { marginTop: 10 }),
   dek(short ? 'Early edition at 6 am, late edition at 6 pm Eastern: box scores, medal lines, movers and sourced notes on the teams.'
     : 'Early edition at 6 am and late edition at 6 pm Eastern, with wire stories between: box scores, medal lines, the day’s movers and sourced notes on the teams, for ARC-AGI-3 and ARC-AGI-2.', short ? 20 : 26, 4, { marginTop: 12 }),
 ];
@@ -167,7 +167,7 @@ function sectionCard(articles: NewsArticle[], puzzle: CardPuzzle | null, now: nu
   const columns = fresh.length === 0 ? [identityColumn(false)] : fresh.length === 1 ? [articleColumn(fresh[0]), identityColumn(true)] : fresh.map(articleColumn);
   return box({ width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, flexDirection: 'column', background: PAPER, padding: '34px 60px 30px' },
     masthead(88, true),
-    box({ justifyContent: 'center', marginTop: 14 }, kicker('ARC Prize 2026 leaderboards  ·  ARC-AGI-3 and ARC-AGI-2  ·  Early and late editions', { fontSize: 20 })),
+    box({ justifyContent: 'center', marginTop: 14 }, kicker(NEWS_BRAND.goose ? 'Major Kaggle competitions  ·  Source-linked reporting' : 'ARC Prize 2026 leaderboards  ·  ARC-AGI-3 and ARC-AGI-2  ·  Early and late editions', { fontSize: 20 })),
     box({ marginTop: 30, flexGrow: 1 },
       ...columns.map((children, index) => box({ flex: 1, flexDirection: 'column', overflow: 'hidden', paddingLeft: index ? 26 : 0, marginLeft: index ? 26 : 0, borderLeft: index ? `1px solid ${RULE}` : 'none' }, ...children)),
       puzzle ? puzzleColumn(puzzle) : null),

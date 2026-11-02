@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
+ * Date: 02-November-2026
  * PURPOSE: The 1200 x 630 link preview in the Topps look: exact size, the real front render at the left (not a re-draw),
  *          the name, tier line, lead contest rank and score and the single AS OF date at the right, Japanese names, a card
  *          with no art, and image addresses that change with the content.
@@ -33,14 +33,14 @@ it('advertises the exact landscape PNG and draws the card’s real front at the 
   expect((await fs.stat(source)).isFile()).toBe(true);
 });
 
-it('competitor previews carry the name, tier line, lead rank and score and the as-of date', async () => {
+it('competitor previews retain the identity and omit unavailable standings', async () => {
   const card = byId('person-ivan-sorokin-2026');
   const text = textOf(await buildCollectionShareNode(card, collection, null)).join('\n');
   expect(text).toContain('Ivan Sorokin');
   expect(text).toContain('KAGGLE GRANDMASTER');
-  expect(text).toContain('RANK');
-  expect(text).toContain('SCORE');
-  expect(text).toMatch(/AS OF [A-Z]{3} \d{1,2}/u);
+  expect(card.entries).toEqual([]);
+  expect(text).not.toContain('RANK');
+  expect(text).not.toContain('SCORE');
   expect(text).toContain('ARC.MARKBARNEY.NET');
   expect(collectionCardDescription(card)).toContain('Ivan Sorokin');
 });

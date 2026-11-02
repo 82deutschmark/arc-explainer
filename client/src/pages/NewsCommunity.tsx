@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-12
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: Searchable, chronological collected public-tweet archive and selected Kaggle
  *          discussion summaries, reached from the Digest's source columns. Source links,
  *          original dates and verified faces remain visible while readers catch up.
@@ -32,7 +32,7 @@ export default function NewsCommunity() {
     window.addEventListener('hashchange', scrollToSource);
     return () => window.removeEventListener('hashchange', scrollToSource);
   }, [query.isSuccess]);
-  usePageMeta({ title: `Around the contests | ${NEWS_NAME}`, description: 'Browse the collected ARC tweet archive and selected Kaggle discussions, with original source links.', canonicalPath: '/news/community', image: useNewsCardImage() });
+  usePageMeta({ title: `Around the contests | ${NEWS_NAME}`, description: 'Browse public competition conversations and selected Kaggle discussions, with original source links.', canonicalPath: '/news/community', image: useNewsCardImage() });
   return <NewsPaper>
     <Link href="/news" className="news-back">← Front page</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
@@ -43,7 +43,7 @@ export default function NewsCommunity() {
       <p className="news-muted">All dated public posts collected by the desk in the past 30 days, newest first. Each entry is a short summary linked to its original tweet.</p>
       <div className="news-source-controls">
         <label htmlFor="tweet-search">Search collected tweets<Input id="tweet-search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Name, handle or topic" /></label>
-        <div role="group" aria-label="Filter tweets by competition">{(['all', 'arc-3', 'arc-2'] as const).map(value => <Button key={value} variant="outline" className="news-source-filter" aria-pressed={competition === value} onClick={() => setCompetition(value)}>{value === 'all' ? 'Both contests' : competitionName(value)}</Button>)}</div>
+        <div role="group" aria-label="Filter tweets by competition">{['all', ...new Set(archive.flatMap(post => post.competitions))].map(value => <Button key={value} variant="outline" className="news-source-filter" aria-pressed={competition === value} onClick={() => setCompetition(value)}>{value === 'all' ? 'All contests' : competitionName(value)}</Button>)}</div>
       </div>
       {query.data && <p className="news-muted" role="status">{posts.length} of {archive.length} collected posts</p>}
       <div className="news-community-list">{posts.map(post => {

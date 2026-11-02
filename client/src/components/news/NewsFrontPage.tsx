@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the newest contest report printed in full, the other contest under it)
@@ -14,7 +14,7 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { competitorPath, newsDate, newsArticlePath, editionFeature, editionLabel, personForXHandle, personPath, frontPageSocialPosts } from '@shared/news';
+import { competitorPath, newsDate, newsArticlePath, editionFeature, editionLabel, personForXHandle, personPath, frontPageSocialPosts, publishedCompetitionOrder, competitionStories } from '@shared/news';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
@@ -22,26 +22,23 @@ import { PersonPortrait } from './NewsPeople';
 import { WhatsNews } from './NewsWire';
 import { DispatchArt, DispatchPreview } from './NewsDispatch';
 import { FromKaggleBoards } from './NewsSources';
+import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 
 /** The newest story for one contest (edition or dispatch), then its earlier headlines. */
 function CompetitionDesk({ articles, dispatches, competition, lead = false, people }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean; people: NewsPerson[] }) {
-  const stories = [
-    ...articles.filter(article => article.competition === competition).map(article => ({ publishedAt: article.publishedAt, id: article.id, article })),
-    ...dispatches.filter(dispatch => dispatch.competition === competition).map(dispatch => ({ publishedAt: dispatch.publishedAt, id: dispatch.id, dispatch })),
-  ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
+  const stories = competitionStories(articles, dispatches, competition);
   const first = stories[0];
-  if (!first) return <p className="news-muted">No published coverage yet. <Link href={competition === 'arc-3' ? '/kaggle-leaderboard' : '/kaggle-leaderboard/arc-2'}>Open the live board →</Link></p>;
+  if (!first) return <p className="news-muted">No published coverage yet. <a href={KAGGLE_COMPETITIONS[competition]?.path}>Open the official source →</a></p>;
   // Same-day artwork keeps its dated caption when an edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
   const reservedFeature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
   return <div className={`news-desk${lead ? ' is-lead' : ''}`}>
-    {reservedFeature && <DispatchPreview dispatch={reservedFeature} lead={lead} people={people} />}
     {'article' in first
-      ? <StoryPreview article={first.article} lead={lead && !reservedFeature} people={people} sections={lead && !reservedFeature ? first.article.sections.length : 2} art={lead && companionArt ? <DispatchArt dispatch={companionArt} lead /> : undefined} />
+      ? <StoryPreview article={first.article} feature={reservedFeature} lead={lead} people={people} sections={lead ? first.article.sections.length : 2} art={lead && companionArt ? <DispatchArt dispatch={companionArt} lead /> : undefined} />
       : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
     {stories.length > 1 && <ul className="news-latest-list">{stories.slice(1).filter(story => story.id !== reservedFeature?.id).slice(0, 3).map(story => <li key={story.id}>
       <span>{'article' in story ? editionLabel(story.article) : 'From the contenders'} · {newsDate(story.publishedAt)}</span>
-      {'article' in story ? <Link href={newsArticlePath(story.id)}>{story.article.headline}</Link> : <a href={`#${story.id}`}>{story.dispatch.headline}</a>}
+      {'article' in story ? <Link href={newsArticlePath(story.id)}>{story.article.headline}</Link> : <Link href={newsArticlePath(story.id)}>{story.dispatch.headline}</Link>}
     </li>)}</ul>}
     {/* Older dispatches keep their permanent front-page anchors after a new edition leads. */}
     {stories.slice(1).filter(story => 'dispatch' in story && story.id !== reservedFeature?.id).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} people={people} /></details>)}
@@ -51,10 +48,7 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
 export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: MarketsPayload }) {
   const articles = sortedArticles(index.articles);
   const dispatches = index.dispatches ?? [];
-  const newestStory = [...articles, ...dispatches].sort((a, b) =>
-    b.publishedAt.localeCompare(a.publishedAt) || b.competition.localeCompare(a.competition))[0];
-  const leadCompetition = newestStory?.competition ?? 'arc-3';
-  const competitions: NewsCompetition[] = [leadCompetition, leadCompetition === 'arc-3' ? 'arc-2' : 'arc-3'];
+  const competitions = publishedCompetitionOrder(articles, dispatches);
   const people = index.people ?? [];
   const boards = marketBoards(markets);
   const links = { competitors: index.competitors, people };

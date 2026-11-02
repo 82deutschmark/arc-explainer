@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
@@ -15,10 +15,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { competitorPath, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 import { daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
+import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { ARC_DISCORD_URL } from './NewsDesk';
 import { PersonPortrait } from './NewsPeople';
 
-export const BOARD_ORDER: NewsCompetition[] = ['arc-3', 'arc-2'];
+export const BOARD_ORDER: NewsCompetition[] = Object.keys(KAGGLE_COMPETITIONS);
 
 export function useMarkets() {
   return useQuery<MarketsPayload>({ queryKey: ['/api/news/markets'], staleTime: 120_000, refetchInterval: 300_000 });

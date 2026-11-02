@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 2026-11-01 (2026-10-30 earlier)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Date: 02-November-2026
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -11,21 +11,22 @@
  * SRP/DRY check: Pass — reuses news identities and competition slugs; no medal inference.
  */
 import { z } from 'zod';
-import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
+import { KAGGLE_COMPETITIONS, competitionRegistered } from './kaggleCompetitions';
 import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition } from './news';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const stamp = z.string().datetime({ offset: true });
-const competition = z.enum(['arc-2', 'arc-3']);
+const competition = z.string().refine(competitionRegistered, 'Competition is not in the publication directory');
 const entry = z.object({ competition, competitionId: z.string(), teamId: z.string().regex(/^\d+$/) }).strict()
-  .refine(value => value.competitionId === KAGGLE_COMPETITIONS[value.competition].slug, 'Competition identity mismatch');
+  .refine(value => value.competitionId === KAGGLE_COMPETITIONS[value.competition]?.slug, 'Competition identity mismatch');
 export const collectionArtSchema = z.object({
   src: z.string().regex(/^\/news-images\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:webp|png|jpg|jpeg)$/),
   alt: z.string().min(1), credit: z.string().min(1), artworkId: id.optional(), commissionedAt: stamp.optional(),
 }).strict();
 export const cardDefinitionSchema = z.object({
-  id, number: z.string().regex(/^[PT]\d{3}$/), kind: z.enum(['person', 'team']), name: z.string().min(1),
+  id, number: z.string().regex(/^[PT]\d{3,6}$/), kind: z.enum(['person', 'team']), name: z.string().min(1),
   season: z.string().regex(/^\d{4}$/), issuedAt: stamp, personId: id.optional(),
+  setId: id.optional(),
   entries: z.array(entry), art: collectionArtSchema.optional(), artNotes: z.array(z.string()),
   // A shared historical team picture can remain in the archive without becoming an individual front.
   artFallback: z.literal('none').optional(),
@@ -35,7 +36,7 @@ export const cardSnapshotSchema = z.object({
   competition, competitionId: z.string(), teamId: z.string().regex(/^\d+$/),
   observedAt: stamp, teamName: z.string(), rank: z.number().int().positive(), score: z.number().finite(),
   submissions: z.number().int().nonnegative(), members: z.array(z.string()), sourceUrl: z.string().url(),
-}).strict().refine(value => value.competitionId === KAGGLE_COMPETITIONS[value.competition].slug, 'Snapshot competition identity mismatch');
+}).strict().refine(value => value.competitionId === KAGGLE_COMPETITIONS[value.competition]?.slug, 'Snapshot competition identity mismatch');
 export const cardRegistrySchema = z.object({
   version: z.literal(1), season: z.string().regex(/^\d{4}$/), commissionedBy: z.literal('Mark Barney'),
   commissionedAt: stamp, updatedAt: stamp, excludedPersonIds: z.array(id).optional(), cards: z.array(cardDefinitionSchema), snapshots: z.array(cardSnapshotSchema),
@@ -44,10 +45,13 @@ export const cardRegistrySchema = z.object({
     context.addIssue({ code: 'custom', message: 'Excluded person cannot have a current card' });
   for (const field of ['id', 'number'] as const) if (new Set(registry.cards.map(card => card[field])).size !== registry.cards.length)
     context.addIssue({ code: 'custom', message: `Duplicate card ${field}` });
-  if (registry.cards.some(card => card.season !== registry.season)) context.addIssue({ code: 'custom', message: 'Mixed card seasons' });
-  if (registry.snapshots.some(row => !row.competitionId.startsWith(`arc-prize-${registry.season}-`))
-    || registry.cards.some(card => card.entries.some(row => !row.competitionId.startsWith(`arc-prize-${card.season}-`))))
-    context.addIssue({ code: 'custom', message: 'Card season does not match competition' });
+  // Card issue years and competition slugs are independent: contests can span
+  // years, and a person can hold cards linked to several verified competitions.
+  // Imported legacy sets retain their explicit recorded season contract. New
+  // named sets can carry earlier history without rewriting the older issued card.
+  if (registry.cards.some(card => !card.setId && card.entries.some(row => KAGGLE_COMPETITIONS[row.competition]?.season && KAGGLE_COMPETITIONS[row.competition].season !== card.season))
+    || registry.snapshots.some(row => KAGGLE_COMPETITIONS[row.competition]?.season && KAGGLE_COMPETITIONS[row.competition].season !== registry.season))
+    context.addIssue({ code: 'custom', message: 'Card season does not match its recorded competition season' });
   const keys = registry.snapshots.map(row => `${row.competitionId}:${row.teamId}`);
   if (new Set(keys).size !== keys.length) context.addIssue({ code: 'custom', message: 'Duplicate statistics snapshot' });
 });
@@ -56,16 +60,19 @@ export const finalCardResultSchema = z.object({
   id, season: z.string().regex(/^\d{4}$/), competition, competitionId: z.string(), teamId: z.string().regex(/^\d+$/),
   status: z.literal('official-final'), rank: z.number().int().positive(), score: z.number().finite().nullable(),
   medal: z.enum(['gold', 'silver', 'bronze']).nullable(),
-  awards: z.array(z.object({ label: z.string().min(1), kind: z.literal('arc-prize') }).strict()),
+  awards: z.array(z.object({ label: z.string().min(1), kind: z.enum(['arc-prize', 'competition-prize']) }).strict()),
   creditedHandles: z.array(z.string()).min(1), confirmedAt: stamp, sourceUrl: z.string().url(), sourceTitle: z.string().min(1),
   supersedesId: id.optional(),
 }).strict().superRefine((result, context) => {
   const url = new URL(result.sourceUrl);
-  if (url.protocol !== 'https:' || !['kaggle.com', 'www.kaggle.com', 'arcprize.org', 'www.arcprize.org'].includes(url.hostname))
-    context.addIssue({ code: 'custom', message: 'Final result needs an official Kaggle or ARC Prize source' });
-  if (result.competitionId !== KAGGLE_COMPETITIONS[result.competition].slug)
+  const known = KAGGLE_COMPETITIONS[result.competition];
+  const official = new Set(['kaggle.com', 'www.kaggle.com', ...(known?.officialHosts ?? [])]);
+  if (known?.slug.startsWith('arc-prize-')) { official.add('arcprize.org'); official.add('www.arcprize.org'); }
+  if (url.protocol !== 'https:' || !official.has(url.hostname))
+    context.addIssue({ code: 'custom', message: 'Final result needs a verified official competition source' });
+  if (result.competitionId !== known?.slug)
     context.addIssue({ code: 'custom', message: 'Final competition identity mismatch' });
-  if (!result.competitionId.startsWith(`arc-prize-${result.season}-`))
+  if (known?.season && result.season !== known.season)
     context.addIssue({ code: 'custom', message: 'Final season does not match competition' });
   if (Date.parse(result.confirmedAt) > Date.now()) context.addIssue({ code: 'custom', message: 'Cannot confirm a future result' });
   if (new Set(result.creditedHandles).size !== result.creditedHandles.length)
@@ -77,7 +84,7 @@ export type CardSnapshot = z.infer<typeof cardSnapshotSchema>;
 export type FinalCardResult = z.infer<typeof finalCardResultSchema>;
 export type CollectionArt = z.infer<typeof collectionArtSchema>;
 export interface CollectionHonor {
-  label: string; kind: 'arc-prize' | 'kaggle-medal'; competition: NewsCompetition; season: string;
+  label: string; kind: 'arc-prize' | 'competition-prize' | 'kaggle-medal'; competition: NewsCompetition; season: string;
   sourceUrl: string; sourceTitle: string; scope: 'team' | 'individual';
 }
 /** Saved board context (content/news/board-history.json, built from the edition evidence): team counts, medal-band cut scores, best ranks. */
@@ -132,6 +139,7 @@ export interface CollectionStory {
 }
 export interface CollectionCard {
   id: string; number: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
+  setId?: string;
   /** What the card is: a Kaggle competitor, a competition sponsor, or a team. Nobody is a "player". */
   role: 'competitor' | 'sponsor' | 'team';
   personId?: string; art: CollectionArt | null; description: string; highlights: CompetitorFact[];

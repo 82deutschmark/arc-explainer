@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 01-November-2026 (publish story citations, not the complete research briefing catalogue)
+# Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+# Date: 02-November-2026
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
@@ -601,7 +601,7 @@ def publish(draft, brief, root=ROOT):
 
 def validate_dispatch(draft):
     required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
-    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote'}:
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote', 'dek'}:
         raise ValueError('invalid dispatch fields')
     if 'generatedBy' in draft and draft['generatedBy'] not in WRITERS:
         raise ValueError('invalid dispatch writer')
@@ -609,12 +609,18 @@ def validate_dispatch(draft):
         raise ValueError('unknown commissioning editor')
     if 'editorNote' in draft:
         text(draft['editorNote'], 'editor note', 700)
-    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in FEATURED:
-        raise ValueError('invalid dispatch identity')
+    # Publication follows the wiki directory, independently of the old ARC desk's
+    # fixed board settings. The override is a local staging input, never source text.
+    import os
+    directory_path = Path(os.environ.get('GOOSE_DIRECTORY_FILE', str(ROOT / 'shared/gooseDirectory.json')))
+    supported = set(load(directory_path)['competitions']) if directory_path.exists() else set(FEATURED)
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in supported:
+        raise ValueError('invalid dispatch identity: competition needs a registered wiki source')
     published = contract_stamp(draft['publishedAt'])
     if published > datetime.now(UTC):
         raise ValueError('dispatch cannot be published in the future')
     text(draft['headline'], 'dispatch headline', 240)
+    if 'dek' in draft: text(draft['dek'], 'dispatch standfirst', 700)
     if not isinstance(draft['sources'], list) or not draft['sources']:
         raise ValueError('dispatch requires sources')
     source_ids = set()

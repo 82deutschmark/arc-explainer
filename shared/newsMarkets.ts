@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's market digest: a compact, dated summary of one Kaggle board
  *          for the newspaper's ticker, standings and movers tables, and the evidence the wire
  *          desk's reporters write from (scripts/newsroom_wire.py reads GET /api/news/markets).
@@ -32,8 +32,7 @@ const TRAIL_TOP = 300;
 const EVENT_RANK = 500;
 const STANDINGS = 25;
 const LIST = 6;
-/** Gainers and climbers are drawn from the teams now in the top 100. */
-const MOVER_RANK = 100;
+/** Every team with supported comparison evidence can reach the movers list. */
 const WATCH_LIMIT = 160;
 
 export interface MarketRow {
@@ -152,11 +151,11 @@ export function buildMarketBoard(competition: NewsCompetition, latest: KaggleBoa
     return { ...base, rankThen: null, scoreThen: row[0] <= EVENT_RANK ? row[4] : null, isNew };
   };
 
-  const covered = rows.filter(row => row[0] <= EVENT_RANK).map(toRow);
+  const covered = rows.map(toRow);
   const byId = new Map(covered.map(row => [row.teamId, row]));
   const rowFor = (row: KaggleBoardRow) => byId.get(row[1]) ?? toRow(row);
   const { gold, silver, bronze } = latest.medalRanks;
-  const top100 = covered.filter(row => row.rank <= MOVER_RANK);
+  const movers = covered;
 
   let previous: MarketRow | null = null;
   if (since != null) {
@@ -184,9 +183,9 @@ export function buildMarketBoard(competition: NewsCompetition, latest: KaggleBoa
     lines: { top: line(1, 'top'), gold: line(gold, 'gold'), silver: line(silver, 'silver'), bronze: line(bronze, 'bronze') },
     leader: { row: rowFor(rows[0]), leadBy: rows[1] ? rows[0][4] - rows[1][4] : null, heldSince, previous },
     standings: rows.slice(0, STANDINGS).map(rowFor),
-    gainers: top100.filter(row => (marketGain(row) ?? 0) > 0.005)
+    gainers: movers.filter(row => (marketGain(row) ?? 0) > 0.005)
       .sort((a, b) => marketGain(b)! - marketGain(a)! || a.rank - b.rank).slice(0, LIST),
-    climbers: top100.filter(row => (marketClimb(row) ?? 0) > 0)
+    climbers: movers.filter(row => (marketClimb(row) ?? 0) > 0)
       .sort((a, b) => marketClimb(b)! - marketClimb(a)! || a.rank - b.rank).slice(0, LIST),
     newcomers: covered.filter(row => row.isNew).slice(0, LIST),
     intoGold: covered.filter(row => row.rank <= gold && !row.isNew && row.rankThen != null && row.rankThen > gold),

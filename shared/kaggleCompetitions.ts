@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex
- * Date: 2026-10-08
+ * Author: GPT-6 / Codex (reasoning effort not exposed)
+ * Date: 02-November-2026
  * PURPOSE: Competition identities and presentation settings shared by the public Kaggle
  *          pages and server metadata. Team IDs belong to a single competition; names and
  *          standings always come from its latest board. Unknown close times stay absent.
@@ -8,6 +8,7 @@
  *          source; the front page's clock, the newspaper masthead and the board tiles read them.
  * SRP/DRY check: Pass — one registry prevents chart dates, links and featured teams drifting.
  */
+import directory from './gooseDirectory.json';
 export interface KaggleCompetition {
   slug: string;
   label: string;
@@ -17,9 +18,15 @@ export interface KaggleCompetition {
   featuredTeamIds: string[];
   pinnedTeamIds: string[];
   backfillSource: string | null;
+  wikiId?: string;
+  format?: string;
+  officialHosts?: string[];
+  season?: string | null;
 }
 
-export const KAGGLE_COMPETITIONS = {
+// These are the existing board routes' historical settings. They do not select
+// Goose coverage; every wiki competition below receives the same publishing path.
+const LEGACY_BOARDS = {
   'arc-3': {
     slug: 'arc-prize-2026-arc-agi-3',
     label: 'ARC-AGI-3',
@@ -42,7 +49,19 @@ export const KAGGLE_COMPETITIONS = {
   },
 } satisfies Record<string, KaggleCompetition>;
 
-export type KaggleCompetitionKey = keyof typeof KAGGLE_COMPETITIONS;
+export const KAGGLE_COMPETITIONS: Record<string, KaggleCompetition> = {
+  ...LEGACY_BOARDS,
+  ...Object.fromEntries(Object.entries(directory.competitions).map(([key, row]) => {
+    const old = (LEGACY_BOARDS as Record<string, KaggleCompetition>)[key];
+    return [key, { slug: row.slug, label: old?.label ?? row.label,
+      path: old?.path ?? `${row.url}${row.format === 'judged' || !row.url.includes('kaggle.com/competitions/') ? '' : '/leaderboard'}`,
+      closeAt: row.closeAt, scoreLabel: 'Official score', featuredTeamIds: old?.featuredTeamIds ?? [],
+      pinnedTeamIds: old?.pinnedTeamIds ?? [], backfillSource: old?.backfillSource ?? null,
+      wikiId: row.wikiId, format: row.format, officialHosts: row.officialHosts, season: row.season }];
+  })),
+};
+export type KaggleCompetitionKey = string;
+export const competitionRegistered = (key: string) => Object.hasOwn(KAGGLE_COMPETITIONS, key);
 export const kaggleLeaderboardUrl = (competition: KaggleCompetition) => `https://www.kaggle.com/competitions/${competition.slug}/leaderboard`;
 
 /** The close as epoch milliseconds, or null while Kaggle has not published one. */

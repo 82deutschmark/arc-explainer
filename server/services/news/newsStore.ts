@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
- * Date: 30-October-2026 (portraits may also come from a public web page that names the person: Claude Sonnet 5.5)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+ * Date: 02-November-2026
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -21,13 +21,15 @@ import path from 'node:path';
 import { z } from 'zod';
 import type { NewsArticle, NewsIndex, NewsDispatch, CompetitorRecord, NewsWireStory } from '../../../shared/news';
 import { NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS } from '../../../shared/news';
+import { KAGGLE_COMPETITIONS, competitionRegistered } from '../../../shared/kaggleCompetitions';
+import { loadWikiInputs, mergeWikiRows } from './wikiInputs';
 const stamp = z.string().datetime({ offset: true });
 const webUrl = z.string().url().refine(value => /^https:\/\//.test(value), 'Sources must use HTTPS');
-const competition = z.enum(['arc-3', 'arc-2']);
+const competition = z.string().refine(competitionRegistered, 'Competition is not in the publication directory');
 const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
 export const newsDispatchSchema = z.object({
-  id: safeId, competition, publishedAt: stamp, headline: text.max(240),
+  id: safeId, competition, publishedAt: stamp, headline: text.max(240), dek: text.max(700).optional(),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
@@ -60,6 +62,7 @@ export const newsArticleSchema = z.object({
 });
 export const competitorSchema = z.object({
   id: safeId, competition, teamId: z.string().regex(/^\d+$/), name: text,
+  briefing: text.optional(),
   aliases: z.array(z.string()), members: z.array(z.string()), firstObservedAt: stamp, lastObservedAt: stamp,
   facts: z.array(z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp })),
 }).refine(record => record.id === `${record.competition}-${record.teamId}`, 'Competitor IDs must include competition');
@@ -73,12 +76,13 @@ const PORTRAIT_FILE = /^\/news-images\/people\/[a-z0-9-]+\.(?:webp|png|jpe?g)$/;
 const HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net';
 export const newsPersonSchema = z.object({
   id: safeId, name: text, role: z.enum(['competitor', 'sponsor']).optional(),
+  briefing: text.optional(),
   accounts: z.array(z.object({ platform: z.enum(['kaggle', 'x']), handle: z.string().regex(/^[A-Za-z0-9_]+$/), url: webUrl, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict()
     .refine(account => account.url.toLowerCase() === `https://${account.platform === 'kaggle' ? 'www.kaggle.com' : 'x.com'}/${account.handle}`.toLowerCase(), 'Account URL and handle must agree')).min(1),
   facts: z.array(factSchema),
   memberships: z.array(z.object({ competition, competitionId: text, season: z.string().regex(/^\d{4}$/), teamId: z.string().regex(/^\d+$/), teamName: text, memberHandle: text, firstObservedAt: stamp, lastObservedAt: stamp, sourceUrl: webUrl, sourceTitle: text }).strict()
     .refine(member => Date.parse(member.firstObservedAt) <= Date.parse(member.lastObservedAt), 'Reversed membership observations')
-    .refine(member => member.competitionId === `arc-prize-${member.season}-${member.competition.replace('arc-', 'arc-agi-')}`, 'Membership competition and season must agree')),
+    .refine(member => member.competitionId === KAGGLE_COMPETITIONS[member.competition]?.slug, 'Membership competition identity must agree')),
   hallOfFame: z.array(z.object({ path: z.string().regex(HALL_OF_FAME_PATH), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
     image: z.object({ src: z.string().regex(HALL_OF_FAME_ART), alt: text.max(700) }).strict().optional() }).strict()),
   portrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), kind: z.enum(['hall-of-fame', 'kaggle', 'web']), sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
@@ -224,14 +228,23 @@ function readLedger<T>(directory: string, file: string, schema: z.ZodType<T, z.Z
 /** The public archive plus anything that had to be left out of it. */
 export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex; skipped: NewsSkip[] } {
   const skipped: NewsSkip[] = [];
+  let wiki: ReturnType<typeof loadWikiInputs> = null;
+  try { wiki = loadWikiInputs(directory); }
+  catch (error) { leaveOut(skipped, { file: 'goose-wiki.json', reason: String(error) }); }
+  const wikiRows = <T,>(rows: unknown[], validator: z.ZodType<T>): T[] => rows.flatMap((row, position) => {
+    const parsed = validator.safeParse(row);
+    if (parsed.success) return [parsed.data];
+    leaveOut(skipped, { file: 'goose-wiki.json', record: String(position), reason: parsed.error.message });
+    return [];
+  });
   const articles: NewsArticle[] = readStoryFolder(directory, 'articles', newsArticleSchema, skipped)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition));
-  const competitors: CompetitorRecord[] = readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped);
+  const competitors: CompetitorRecord[] = mergeWikiRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema));
   const dispatches: NewsDispatch[] = readStoryFolder(directory, 'dispatches', newsDispatchSchema, skipped)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
   // A verified account names one person; a later record claiming an earlier person's account is left out whole.
   const claimed = new Set<string>();
-  const people = readLedger(directory, 'people.json', newsPersonSchema, person => person.id, skipped).filter(person => {
+  const people = mergeWikiRows(readLedger(directory, 'people.json', newsPersonSchema, person => person.id, skipped), wikiRows(wiki?.people ?? [], newsPersonSchema)).filter(person => {
     const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
     const taken = accounts.find(account => claimed.has(account));
     if (taken) {

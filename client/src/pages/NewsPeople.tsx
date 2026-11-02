@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: People directory and durable person profiles with separate, dated competition memberships.
  *          09-Oct-2026 (Claude Opus 5.5): every card and profile leads with the person's face and
  *          their honors from the ARC Explainer Hall of Fame; each card's art appears once.
@@ -43,6 +43,7 @@ function PersonProfile({ person, competitors }: { person: NewsPerson; competitor
     </header>
     <div className="news-article-grid">
       <section>
+        {person.briefing && <p className="news-dek">{person.briefing}</p>}
         {!!person.facts.length && <><h2 className="news-section-title">On the record</h2><ul className="news-facts">{person.facts.map((fact, index) => <li key={index}><p>{fact.text}</p><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a><div className="news-muted">Checked {newsDate(fact.checkedAt)}</div></li>)}</ul></>}
         <h2 className="news-section-title">Observed competition teams</h2>
         <ul className="news-facts">{person.memberships.map(member => <li key={`${member.competitionId}-${member.teamId}`}><h3><Link href={competitors.some(team => team.id === `${member.competition}-${member.teamId}`) ? competitorPath(`${member.competition}-${member.teamId}`) : member.sourceUrl}>{member.teamName}</Link></h3><p>{competitionName(member.competition)} · {member.season} · <code>{member.memberHandle}</code></p><p className="news-muted">Observed {newsDate(member.firstObservedAt)}–{newsDate(member.lastObservedAt)}. <a href={member.sourceUrl}>Roster source ↗</a></p></li>)}</ul>

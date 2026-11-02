@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: Describe the permanent Card Cabinet and Mark Barney's research and original-game collection.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -40,7 +40,7 @@
  */
 
 import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
+import { NEWS_NAME, NEWS_BRAND, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
 import { NEWS_STAFF_PATH, NEWS_STAFF_TITLE, NEWS_STAFF_DESCRIPTION, NEWS_HUMAN_EDITOR } from './newsStaff';
 
 export interface RouteMetaTags {
@@ -360,6 +360,22 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   // '/debate/:id': dynamic meta tags based on debate data
   // '/worm-arena/live/:id': dynamic meta tags for live matches
 };
+
+
+// The prepared rebrand shares one identity across crawler metadata and navigation.
+if (NEWS_BRAND.goose) {
+  const sections: Record<string, [string, string]> = {
+    '/news': ['The sports tabloid of the Kaggleverse', 'Major Kaggle competitions, meaningful moves, public methods and the people behind the teams. Current standings remain at the linked original sources.'],
+    '/news/wire': ['The wire', 'Source-linked competition developments, with each story’s date and writer.'],
+    '/news/competitors': ['Competitor profiles', 'Competition-specific teams, dated identity context and original Kaggle links.'],
+    '/news/people': ['People behind the teams', 'The recurring cast across Kaggle competitions, with verified public profiles and linked history.'],
+    '/news/cards': ['Kaggleverse cards', 'Illustrated competitors and teams, approved art, linked career history and current Kaggle sources.'],
+    '/news/community': ['Around the contests', 'Public methods, discussions and reactions with original source links.'],
+  };
+  for (const [route, [title, description]] of Object.entries(sections)) {
+    ROUTE_META_TAGS[route] = { ...ROUTE_META_TAGS[route], title: `${title} | ${NEWS_NAME}`, description };
+  }
+}
 /**
  * Meta for "/" by host. Both hosts render the same landing page now, so the copy is
  * shared, with arc.markbarney.net as the preferred canonical origin for both.

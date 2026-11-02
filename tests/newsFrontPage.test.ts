@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
@@ -27,6 +27,7 @@ import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
+import { getNewsCollection } from '../server/services/news/newsCollection';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
@@ -58,6 +59,8 @@ function render(page: React.ComponentType, path: string, index: NewsIndex, paylo
   // Seeded data only: anything unseeded stays pending, as a slow network would.
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity, queryFn: () => new Promise(() => {}) } } });
   client.setQueryData(['/api/news'], index);
+  client.setQueryData(['/api/news/cards'], getNewsCollection());
+  if (path.startsWith('/news/')) client.setQueryData(['/api/news/stories', path.split('/').pop()], index);
   if (payload) client.setQueryData(['/api/news/markets'], payload);
   return renderToStaticMarkup(createElement(QueryClientProvider, { client },
     createElement(HelmetProvider, {}, createElement(Router, { ssrPath: path, children: page === NewsArticle ? createElement(Route, { path: "/news/:articleId", component: page }) : createElement(page) }))));
@@ -71,7 +74,8 @@ test('a newer ARC2 special leads with its full reserved feature and illustration
   const special = JSON.parse(fs.readFileSync('content/news/articles/2026-10-30-evening-arc-2-preview.json', 'utf8'));
   const feature = JSON.parse(fs.readFileSync(`content/news/dispatches/${special.frontPageFeatureId}.json`, 'utf8'));
   const earlier = { ...special, id: 'earlier-arc3', competition: 'arc-3' as const, publishedAt: '2026-10-30T10:00:00Z', frontPageFeatureId: undefined, headline: 'Earlier ARC3 report' };
-  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles: [earlier, special], dispatches: [feature] } }) }));
+  const input = { ...index, articles: [earlier, special], dispatches: [feature] };
+  const html = render(() => createElement(NewsFrontPage, { index: input }), '/news', input);
   const lead = html.split('aria-label="Lead stories"')[1];
   expect(lead.indexOf(feature.headline)).toBeLessThan(lead.indexOf(earlier.headline));
   expect(lead.slice(0, lead.indexOf(earlier.headline))).toContain(feature.image.src);
@@ -83,7 +87,8 @@ test('equally timed routine editions keep ARC3 first', () => {
   const index = getNewsIndex();
   const base = index.articles[0];
   const articles = (['arc-2', 'arc-3'] as const).map(competition => ({ ...base, competition, id: `same-time-${competition}`, headline: `Routine ${competition}`, frontPageFeatureId: undefined }));
-  const html = renderToStaticMarkup(createElement(Router, { ssrPath: '/news', children: createElement(NewsFrontPage, { index: { ...index, articles, dispatches: [] } }) }));
+  const input = { ...index, articles, dispatches: [] };
+  const html = render(() => createElement(NewsFrontPage, { index: input }), '/news', input);
   const lead = html.split('aria-label="Lead stories"')[1];
   expect(lead.indexOf('Routine arc-3')).toBeLessThan(lead.indexOf('Routine arc-2'));
 });
@@ -205,7 +210,7 @@ test('missing or unrelated reserved features leave the ordinary edition readable
   }
 });
 
-test('the morning sidebar includes xz and Chen with the correct sourced portraits', () => {
+test('the morning cast row links xz and Chen to their wiki-backed cards after the opening', () => {
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const article = index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!;
@@ -214,9 +219,11 @@ test('the morning sidebar includes xz and Chen with the correct sourced portrait
   expect(subjects.map(person => person.id)).toEqual(['xz', 'yi-chia-chen']);
   const html = render(NewsArticle, `/news/${article.id}`, index);
   const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
-  expect(sidebar).toContain('/news-images/people/xz.webp');
-  expect(sidebar).toContain('/news-images/people/yi-chia-chen-editorial-v1.webp');
-  expect(sidebar).toContain('AI editorial portrait');
+  for (const subject of subjects) {
+    const card = getNewsCollection().cards.find(c => c.personId === subject.id)!;
+    expect(sidebar).toContain(card.cardUrl);
+  }
+  expect(html.indexOf('class="news-story-people"')).toBeGreaterThan(html.indexOf(article.sections[0].text.slice(0, 40)));
   expect(sidebar).not.toContain('/news/people/dries-smit');
   const initialHtml = newsArticleMeta(article, [], index.people).bodyHtml!;
   for (const subject of subjects) expect(initialHtml).toContain(`/news/people/${subject.id}`);
@@ -245,8 +252,11 @@ test('all reported subjects survive deduplication across a feature and recap, wi
   expect(reportedPeople([feature, article], index.people!).map(person => person.id)).toEqual(people.map(person => person.id));
   expect(reportedPeople([{ headline: 'axzonal results', sections: [] }], index.people!)).toEqual([]);
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
-  const sidebar = html.match(/<aside class="news-sidebar"[\s\S]*?<\/aside>/)![0];
-  for (const person of people) expect(sidebar).toContain(`href="/news/people/${person.id}" class="news-subject-card"`);
+  const cast = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
+  for (const person of people) {
+    const card = getNewsCollection().cards.find(c => c.personId === person.id);
+    expect(cast).toContain(card?.cardUrl ?? `/news/people/${person.id}`);
+  }
 });
 
 // GPT-6 / Codex, 2026-11-01: previously shared special-report URLs must render directly.

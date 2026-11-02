@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -27,7 +27,7 @@ import { useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
@@ -35,6 +35,8 @@ import { MastheadAd } from './SponsorPlacement';
 import { StoryPeopleCards, TeamFaces } from './NewsPeople';
 import { NewsWelcome } from './NewsWelcome';
 import './news.css';
+import { NEWS_BRAND } from '@shared/newsBrand';
+import { DispatchPreview } from './NewsDispatch';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
 export const ARC_DISCORD_URL = NEWS_EDITOR_CONTACT.discordUrl;
@@ -74,48 +76,51 @@ export function theClose(now = Date.now()): { days: number; date: string } | nul
 }
 
 /** The paper's section links; the slim Cabinet bar and the broadsheet masthead print the same list. */
-export function NewsNav({ className = 'news-nav' }: { className?: string }) {
-  return <nav className={className} aria-label="ARC Daily sections">
+export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { className?: string; brand?: typeof NEWS_BRAND }) {
+  return <nav className={className} aria-label={`${NEWS_NAME} sections`}>
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
-    <Link href="/news/cards">ARC Prize Cards</Link>
+    <Link href="/news/cards">{brand.goose ? 'Cards' : 'ARC Prize Cards'}</Link>
     <Link href="/news/competitors">Competitors</Link>
     <Link href="/news/people">People</Link>
     <Link href="/news/community">Around the contests</Link>
     <Link href={NEWS_STAFF_PATH}>About the paper</Link>
+    {brand.goose ? <a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener noreferrer">Kaggle contests ↗</a> : <>
     <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>
     <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 board ↗</a>
     <a href="/human-records.html">Records ↗</a>
     <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Discord ↗</a>
+    </>}
   </nav>;
 }
 
-export function NewsPaper({ children, frontPage = false, date, edition, issue }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number }) {
+export function NewsPaper({ children, frontPage = false, date, edition, issue, brand = NEWS_BRAND }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number; brand?: typeof NEWS_BRAND }) {
   const close = theClose();
   return (
     <div className="arc-daily">
       <div className="news-paper">
         <header className={`news-masthead${frontPage ? ' is-front' : ''}`}>
-          <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
+          <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
           <div className="news-brand-row">
             <div className="news-ear">
+              {brand.logo && <img className="news-goose-logo" src={brand.logo} alt="The approved Loose Goose reporter logo" width="96" height="96" />}
               <strong>{edition ? `${editionName(edition)} edition` : 'Competition desk'}</strong>
               {date && <span>{datelineDate(date)}</span>}
-              {close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
+              {!brand.goose && close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
             </div>
-            {frontPage ? <h1 className="news-name">{NEWS_NAME}</h1> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
+            {frontPage ? <h1 className="news-name">{brand.name}</h1> : <Link href="/news" className="news-name">{brand.name}</Link>}
             <MastheadAd />
           </div>
-          <div className="news-edition-line"><span>ARC Prize 2026 · ARC-AGI-3 &amp; ARC-AGI-2 on Kaggle</span><span>Early edition 6 am · Late edition 6 pm Eastern · The wire all day</span></div>
-          <NewsNav />
+          <div className="news-edition-line"><span>{brand.goose ? 'The sports tabloid of the Kaggleverse' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span><span>{brand.tagline ?? 'Early edition 6 am · Late edition 6 pm Eastern · The wire all day'}</span></div>
+          <NewsNav brand={brand} />
         </header>
         {children}
         <NewsWelcome />
         <footer className="news-footer">
-          <strong>{NEWS_NAME}</strong><span>AI-written editions and wire reports · writer credited on each story</span>
+          <strong>{brand.name}</strong><span>Competition reporting · writer credited on each story</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
-          <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>
-          <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
+          {!brand.goose && <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>}
+          <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · {brand.goose ? <a href="https://github.com/Autoresearch-Arena/loose-goose">An Autoresearch Arena publication →</a> : <Link href="/home">An ARC Explainer publication →</Link>}
         </footer>
       </div>
     </div>
@@ -128,10 +133,16 @@ export function AboutThisPaper() {
     <aside className="news-about" aria-label="About this paper">
       <h2>About this paper</h2>
       <ul>
+        {NEWS_BRAND.goose ? <>
+          <li><strong>Written by AI.</strong> Competition reporting with linked public sources, reviewed identities and dated evidence.</li>
+          <li><strong>The numbers.</strong> Kaggle links provide current standings. Cards show a dated reading only when a fresh source is available.</li>
+          <li><strong>The beat.</strong> Substantial cash and medal competitions, with extra attention near their close and to published methods and results afterward.</li>
+        </> : <>
         <li><strong>Written by AI.</strong> Reporting desks draft stories from saved standings and linked sources. Newsroom helpers check citations, format and box-score figures before publication.</li>
         <li><strong>The numbers.</strong> Standings come from the public Kaggle leaderboards, saved every half hour. Movers compare with the save about a day earlier, and anything the saved history cannot support is left blank.</li>
         <li><strong>The people.</strong> Stories also draw on public X posts, Kaggle discussions and profiles, and linked primary sources. A contestant's claim is kept apart from an established result.</li>
         <li><strong>The schedule.</strong> An early edition at 6 am and a late edition at 6 pm Eastern, short wire stories through the day, and each edition is posted to X. If a scheduled run fails, a backup writer covers it and the story says so.</li>
+        </>}
         <li><strong>Provisional.</strong> Public standings are not final; the private leaderboard decides the results.</li>
       </ul>
       <p className="news-about-contact"><strong>Corrections, retractions or complaints?</strong> Contact Boss on <a href={ARC_DAILY_X_URL} target="_blank" rel="noopener noreferrer">X</a> or in the <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">ARC Discord</a>.</p>
@@ -162,19 +173,20 @@ export function EditionArtwork({ article, lead = false }: { article: NewsArticle
  * A newspaper preview prints opening sections; the article page keeps sources and box score.
  * An edition-bound illustration takes precedence over a same-day companion dispatch's art.
  */
-export function StoryPreview({ article, lead = false, people = [], sections = 0, art }: { article: NewsArticle; lead?: boolean; people?: NewsPerson[]; sections?: number; art?: ReactNode }) {
+export function StoryPreview({ article, feature, lead = false, people = [], sections = 0, art }: { article: NewsArticle; feature?: NewsDispatch; lead?: boolean; people?: NewsPerson[]; sections?: number; art?: ReactNode }) {
   const shown = article.sections.slice(0, sections);
   const more = article.sections.length > shown.length;
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
-    <div className="news-byline">By the ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />
-    {article.image ? <EditionArtwork article={article} lead={lead} /> : art}
+    <div className="news-byline">By {NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
+    {feature && <DispatchPreview dispatch={feature} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
+    {feature?.image?.src !== article.image?.src && (article.image ? <EditionArtwork article={article} lead={lead} /> : art)}
     {!!shown.length && <div className="news-story-body">{shown.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
       <p>{section.text}</p>
+      {index === 0 && !feature && <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />}
     </section>)}</div>}
     <Link href={newsArticlePath(article.id)} className="news-read">{more ? 'Continue reading, with sources and the box score →' : 'Sources and the box score →'}</Link>
   </article>;

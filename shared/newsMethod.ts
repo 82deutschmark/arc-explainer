@@ -1,11 +1,18 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-11
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 02-November-2026
  * PURPOSE: News cycle and editorial standards for the unified About the Paper page,
  *          shared by the browser and crawler HTML. Operational instructions remain in docs/newsroom.
  * SRP/DRY check: Pass — one source for institutional production and standards copy.
  */
-export const NEWS_PRODUCTION = [
+import { NEWS_BRAND } from './newsBrand';
+
+export const NEWS_PRODUCTION = NEWS_BRAND.goose ? [
+  { heading: 'Follow the changing field', text: 'Research follows substantial Kaggle competitions, public methods and discussions. Verified closing dates raise the attention given to a contest. Partial or failed source reads remain visible to the newsroom.' },
+  { heading: 'Develop the story', text: 'Meaningful developments become source-linked reporting assignments. A continuing story is updated at its permanent address; a changed team name does not create a new identity.' },
+  { heading: 'Use the original record', text: 'The newsroom keeps durable context, editorial choices and artwork references. Current standings remain at Kaggle or in a clearly dated data cache, with direct source links.' },
+  { heading: 'Publish a checked report', text: 'Every story carries its date, writer and sources. Major stories receive a new illustration made from approved character references. Public standings remain provisional until official results.' },
+] : [
   { heading: 'Gather the record', text: 'The paper saves both public Kaggle boards every half hour. A research desk checks public posts, discussions and linked releases every six hours. Saved observations and original sources give the reporting its dates and its starting point.' },
   { heading: 'File to the wire', text: 'Every two hours, including midnight Eastern, the wire desk looks for consequential uncovered moves. Short reports appear on the wire and the front page as they are filed. The desk can file nothing when there is no worthwhile new story; larger developments can receive a separate feature or dispatch between editions.' },
   { heading: 'Make the edition', text: 'The early edition publishes at 6 am and the late edition at 6 pm Eastern. The edition desk reviews the wire, dispatches, research and open editorial assignments, chooses the leads, and adds context. The morning intake includes reports filed since the previous evening, including overnight news. Items held for further reporting remain in the next desk’s intake.' },

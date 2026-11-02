@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-12
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: ARC Daily landing page for both Kaggle contests, laid out like a broadsheet's front
  *          page: masthead with ears, the terminal ticker, public X coverage, What's News (the wire), the lead
  *          reports run in full, the board in agate type, the past day's movers, where the past
@@ -13,7 +13,7 @@
  *          GET /api/news/markets; without them the reporting still leads the page.
  * SRP/DRY check: Pass — composition only; sections live in components/news.
  */
-import { NEWS_NAME } from '@shared/news';
+import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { AboutThisPaper, ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
@@ -27,7 +27,7 @@ export default function News() {
   const latest = articles[0];
   // The issue number counts published scheduled editions (one per date and edition), never previews.
   const issue = new Set(articles.filter(article => !article.id.endsWith('-preview')).map(article => `${article.date}-${article.edition}`)).size || undefined;
-  usePageMeta({ title: `${NEWS_NAME} — ARC-AGI-3 and ARC-AGI-2 news`, description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', canonicalPath: '/news', image: useNewsCardImage() });
+  usePageMeta({ title: `${NEWS_NAME} — ${NEWS_BRAND.goose ? "the sports tabloid of the Kaggleverse" : "ARC-AGI-3 and ARC-AGI-2 news"}`, description: NEWS_BRAND.goose ? 'Major Kaggle competitions, meaningful moves, public methods and the people behind the teams, with original source links and continuing illustrated coverage.' : 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', canonicalPath: '/news', image: useNewsCardImage() });
   const people = query.data?.people ?? [];
   const links = { competitors: query.data?.competitors ?? [], people };
 

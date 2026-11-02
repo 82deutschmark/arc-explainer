@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high
+ * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's Card Cabinet, rebuilt as a collector's binder and a price-guide checklist.
  *          The rendered cards ARE the page: a grid of real card faces (front and back) and a dense checklist
  *          of the same cards, filtered by Kaggle tier, role and contest. Each card page puts the card beside
@@ -21,7 +21,7 @@ import {
   collectionCardTitle, collectionEarnedLine, collectionLeadEntry, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionShareVersion, collectionStatus,
   type CollectionArchiveCard, type CollectionCard, type CollectionEntry, type KaggleTier, type NewsCollection,
 } from '@shared/newsCollection';
-import { NEWS_NAME } from '@shared/news';
+import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { NewsStatus, newsDate, useNewsCardImage } from '@/components/news/NewsDesk';
 import { CabinetShell } from '@/components/news/CabinetShell';
@@ -42,7 +42,7 @@ const ordinal = (n: number) => {
 };
 const rankText = (entry: CollectionEntry | undefined) => entry && entry.status !== 'unavailable' && entry.rank != null ? `#${entry.rank.toLocaleString('en-US')}` : '—';
 const fieldText = (entry: CollectionEntry | undefined) => entry && entry.status !== 'unavailable' && entry.fieldSize ? ` of ${entry.fieldSize.toLocaleString('en-US')}` : '';
-const scoreText = (entry: CollectionEntry | undefined) => entry && entry.status !== 'unavailable' && entry.score != null ? entry.score.toFixed(2) : '—';
+const scoreText = (entry: CollectionEntry | undefined) => entry && entry.status !== 'unavailable' && entry.score != null ? String(entry.score) : '—';
 
 /** External sources use the browser; the app's own pages use the router. */
 function Go({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
@@ -251,7 +251,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
-    { key: 'current', kind: 'current', label: `${card.season}`, sub: `ARC Prize · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
+    { key: 'current', kind: 'current', label: `${card.season}`, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'} · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
     ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);
@@ -280,6 +280,7 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
           </dl>
           <p className="cb-note"><a href={career.profileUrl}>Kaggle profile ↗</a></p>
         </Panel>}
+        {card.entries.some(entry => entry.status === 'unavailable') && <p className="cb-note">{card.entries.filter(entry => entry.status === 'unavailable').map(entry => <a key={`${entry.competitionId}-${entry.teamId}`} href={entry.sourceUrl ?? entry.profileUrl}>{competitionName(entry.competition)}: current standings at Kaggle ↗ </a>)}</p>}
         {!!entries.length && <Panel title={card.role === 'team' ? 'Team standings' : 'Standings'}>
           <table className="cb-table"><thead><tr><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Best</th><th scope="col">Score</th><th scope="col">Entries</th></tr></thead>
             <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
@@ -329,7 +330,7 @@ export default function NewsCards() {
   const sectionImage = useNewsCardImage();
   usePageMeta({
     title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `ARC Prize Cards | ${NEWS_NAME}`,
-    description: selected ? collectionCardDescription(selected) : 'The ARC Daily Digest’s ARC Prize cards: a trading card for every Kaggle competitor, competition sponsor and team in the ARC Prize competitions, with linked teams, career records and standings.',
+    description: selected ? collectionCardDescription(selected) : `${NEWS_NAME} cards: illustrated competitors and teams, linked history and original Kaggle sources for current standings.`,
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
     noindex: !!cardId && !!query.data && !selected,
     image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,

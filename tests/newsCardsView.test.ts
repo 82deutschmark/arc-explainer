@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild)
- * Date: 2026-10-30
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild)
+ * Date: 02-November-2026
  * PURPOSE: Render the real Card Cabinet pages and protect what the Boss asked for: every card we already hold for a
  *          person is shown and linked, tiers and sponsor roles are named in Kaggle's words, nobody is a "player",
  *          no internal notes reach the page, Mark has his own avatar, and team cards link their roster.
@@ -70,13 +70,13 @@ it('Mark has his own avatar on his card', () => {
 
 it('nobody is a player: competitors, sponsors and teams are named in Kaggle\'s words', () => {
   const cards = prepare().cards;
-  expect(cards.find(card => card.id === 'person-mike-knoop-2026')!.role).toBe('sponsor');
+  expect(cards.some(card => card.id === 'person-mike-knoop-2026')).toBe(false); // Current editorial omission.
   expect(cards.find(card => card.id === 'person-francois-chollet-2026')!.role).toBe('sponsor');
   expect(cards.filter(card => card.kind === 'team').every(card => card.role === 'team')).toBe(true);
-  const sponsor = renderDetail('person-mike-knoop-2026').html;
+  const sponsor = renderDetail('person-francois-chollet-2026').html;
   expect(sponsor).toContain('Competition sponsor');
   expect(sponsor).not.toContain('Kaggle profile');
-  for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026', 'person-mike-knoop-2026']) {
+  for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026', 'person-francois-chollet-2026']) {
     const { card, html: page } = renderDetail(id);
     // The Digest's own story headlines are quoted as they were printed; everything else is ours.
     const html = card.stories.reduce((text, story) => text.split(story.headline).join(''), page);
@@ -85,12 +85,11 @@ it('nobody is a player: competitors, sponsors and teams are named in Kaggle\'s w
   }
 });
 
-it('a team page links its roster to their cards', () => {
+it('a team page with no fresh roster links readers to the actual Kaggle entry', () => {
   const { card, html } = renderDetail('team-turducken-2026');
-  const members = card.entries.flatMap(entry => entry.members).filter(member => member.cardUrl);
-  expect(members.length).toBeGreaterThan(1);
-  for (const member of members) expect(html).toContain(`href="${member.cardUrl}"`);
-  expect(html).toContain('Roster');
+  expect(card.entries.every(entry => entry.rank == null && entry.score == null && !entry.members.length)).toBe(true);
+  for (const entry of card.entries) expect(html).toContain(entry.sourceUrl!.replaceAll('&', '&amp;'));
+  expect(html).toContain('current standings at Kaggle');
 });
 
 it('the Cabinet page is a binder and a checklist with every tier named, starting with the cards', () => {

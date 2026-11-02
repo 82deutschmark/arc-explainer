@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex
+ * Date: 02-November-2026
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
  *          NT's ARC3 card preference preserves his separate verified ARC2 membership.
@@ -138,7 +138,7 @@ describe('Card Cabinet identity and statistics', () => {
     const otherContest = { ...teamCard('arc-2', '300'), number: 'T002' };
     const card = buildNewsCollection(registry([personCard('alpha'), latest, otherContest], []), index([player])).cards[0];
     expect(card.teamHistory.map(row => [row.competition, row.teamId, row.status])).toEqual([
-      ['arc-2', '300', 'current'], ['arc-3', '200', 'current'], ['arc-3', '100', 'previous'],
+      ['arc-2', '300', 'last-observed'], ['arc-3', '200', 'last-observed'], ['arc-3', '100', 'previous'],
     ]);
     expect(card.teamHistory[1]).toMatchObject({ cardUrl: collectionCardPath(latest.id), sourceTitle: 'Saved public roster',
       firstObservedAt: '2026-10-02T08:30:00Z', lastObservedAt: '2026-10-02T08:30:00Z' });
@@ -380,9 +380,9 @@ describe('the real permanent commissioned collection', () => {
     const card = getNewsCollection().cards.find(card => card.personId === 'mitubant')!;
     expect(card.name).toBe('NT');
     expect(card.accounts.some(account => account.label === 'mitubant')).toBe(true);
-    expect(card.entries[0]).toMatchObject({ competition: 'arc-3', teamId: '15605182' });
-    expect(card.entries.some(entry => entry.competition === 'arc-2' && entry.teamId === '15526034')).toBe(true);
-    expect(card.entries.some(entry => entry.teamId === '17023174')).toBe(false);
+    expect(card.entries).toEqual([]); // No fresh board source in this offline test.
+    expect(card.teamHistory.some(entry => entry.competition === 'arc-3' && entry.teamId === '15605182')).toBe(true);
+    expect(card.teamHistory.some(entry => entry.competition === 'arc-2' && entry.teamId === '15526034')).toBe(true);
     expect(card.art?.artworkId).toBe('2026-10-29-nt-mitubant-avatar-v2');
     expect(card.art?.alt).toMatch(/yellow bird/i);
   });
@@ -435,7 +435,11 @@ describe('the real permanent commissioned collection', () => {
     const individual = cards.find(card => card.kind === 'person' && card.accounts.some(account => account.label === 'darrenamadeusmartin'))!;
     const roster = ['alwintheodoric', 'billyanggara', 'darrenamadeusmartin', 'rinnnntt', 'yassirramadhan'];
     expect(team.entries).toHaveLength(2);
-    for (const row of team.entries) expect(row.members.map(member => member.handle).sort()).toEqual(roster);
+    for (const row of team.entries) {
+      expect(row.members).toEqual([]); expect(row.rank).toBeNull(); expect(row.score).toBeNull();
+      expect(row.sourceUrl).toContain('/leaderboard');
+    }
+    expect(getNewsIndex().competitors.find(c => c.id === team.entries[0].competition + '-' + team.entries[0].teamId)?.members.sort()).toEqual(roster);
     expect(team.artNotes.join(' ')).toMatch(/five|5/i);
     expect(team.artNotes.join(' ')).toMatch(/six|6/i);
     expect(individual.art).not.toBeNull();

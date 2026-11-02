@@ -1,3 +1,9 @@
+### Version 9.161.24 · November 2, 2026
+
+- Connect the existing newspaper to the Loose Goose wiki: competitions, durable person/team briefings, permanent cards, reviewed art and source links use one generated projection. New contests need data entries rather than code allowlists. Current measurements come from the dated board store and disappear when stale; passed deadlines never imply final results. Keep the archive and card addresses.
+- Prepare the approved masthead, logo and shared metadata behind the post-7-pm release gate and official closing checks. Unify published competition order across browser and initial HTML, with small cast cards after the opening. No article or social send is part of this change.
+- Author: GPT-6 / Codex (reasoning effort not exposed). Validation is recorded in docs/02-Nov-2026-goose-integration-plan.md.
+
 ### Version 9.161.15 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: add a short passage on who the Boss is (a video game producer for fifteen years whose hobbies are Kaggle, ARC in particular, and breeding exotic poultry) and his Ornitharch program, stop splitting hairs over which birds hatched on the farm, and say how much of his work Claude is part of: the team’s code, the birds and the farm. The Ornitharch line now tells it as the joke it is: technologically adept chickens bred to replace humans as the dominant megafauna (Author: Claude Opus 5.5).

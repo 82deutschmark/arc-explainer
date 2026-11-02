@@ -1,5 +1,5 @@
-/* Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-29
+/* Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 02-November-2026
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
  * articles, notebook, people, community and unified masthead, and disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
@@ -52,6 +52,12 @@
 .news-topline a { text-decoration: underline; text-underline-offset: 2px; }
 .news-brand-row { display: grid; grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr); align-items: center; gap: 18px; padding: 10px 0 9px; }
 .news-name { display: block; margin: 0; font: 700 clamp(28px, 3.4vw, 44px)/1 var(--display); letter-spacing: -.01em; text-align: center; white-space: nowrap; }
+.news-goose-logo { display: block; width: 96px; height: 96px; object-fit: contain; }
+.arc-daily .pl, .arc-daily .news-place { color: #2453a6; font-family: system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
+.arc-daily .sc, .arc-daily .news-score { color: #17703f; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 600; font-variant-numeric: tabular-nums; }
+.news-story-people .news-story-cards { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 10px; scroll-snap-type: x proximity; }
+.news-story-people .news-story-card { flex: 0 0 96px; width: 96px; max-width: 96px; scroll-snap-align: start; }
+.news-story-people .news-story-card img { display: block; width: 96px; height: auto; }
 /* Sized so the nameplate always fits between its two ears above 900px. */
 .is-front .news-name { font-size: clamp(36px, 4.6vw, 64px); }
 .arc-daily a.news-name:hover { color: var(--ink); text-decoration: none; }
@@ -163,7 +169,10 @@
 .news-section-sources a { text-decoration: underline; text-underline-offset: 2px; }
 
 /* Compact player cards borrow the Hall of Fame's portrait/name/honor hierarchy. */
-.news-story-people { clear: both; margin: 14px 0 20px; }
+.news-story-people { clear: both; min-width: 0; margin: 14px 0 20px; }
+.arc-daily .news-story-people > h2 { margin: 0 0 6px; padding: 4px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--hair); font: 700 10px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.news-story-people .news-story-people-grid { display: flex; overflow-x: auto; gap: 8px; padding: 4px 0 8px; }
+.news-story-people .news-subject-card { flex: 0 0 220px; }
 .news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 46%), 1fr)); gap: 10px; margin-bottom: 8px; }
 .arc-daily .news-story-card { display: block; line-height: 0; }
 .news-story-card img { width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 10px; box-shadow: 2px 3px 0 var(--ink); transition: transform .12s; }

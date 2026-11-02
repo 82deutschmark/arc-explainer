@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-11-01
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 02-November-2026
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
  *          with evidence timestamps, linked section
@@ -17,7 +17,7 @@ import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -34,7 +34,7 @@ export default function NewsArticle() {
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
   const missing = !!query.data && !article && !dispatch;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | The ARC Daily Digest` : 'Dispatch | The ARC Daily Digest', description: article ? articleDescription(article) : dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
+  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Dispatch | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
     image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : dispatch?.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : undefined,
     article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : dispatch ? { publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
@@ -49,15 +49,16 @@ export default function NewsArticle() {
         <EditionLabel article={article} />
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
-        <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        <p className="news-byline">{NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
-      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} showPeople={false} />}
+      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
       {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
       <div className="news-article-grid">
         <div>
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>
             {section.heading && <h2>{section.heading}</h2>}
             <p>{section.text}</p>
+            {index === 0 && !feature && <StoryPeopleCards people={reportedPeople([article], query.data?.people ?? [])} competition={article.competition} />}
             {section.image && <figure className="news-edition-art" style={section.image.layout === "inset" ? { maxWidth: 480, marginInline: "auto" } : undefined}><a href={section.image.src}><img src={section.image.src} alt={section.image.alt} loading="lazy" /></a><figcaption>{section.image.caption}</figcaption></figure>}
             {!!section.sourceIds.length && <div className="news-section-sources">{section.sourceIds.map(id => {
               const source = article.sources.find(item => item.id === id);
@@ -72,7 +73,6 @@ export default function NewsArticle() {
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
-          <StoryPeopleCards people={reportedPeople(feature ? [feature, article] : [article], query.data?.people ?? [])} competition={article.competition} />
           <h2 className="news-section-title">How this report was checked</h2>
           <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>
