@@ -6,7 +6,8 @@
  * type; dates, money, counts, model versions and quoted wording stay untouched.
  * SRP/DRY check: Pass — browser and initial HTML consume the same runs.
  */
-export type FigureKind = 'place' | 'score';
+export type FigureKind = 'place' | 'score' | 'difference';
+export const figureClass = (kind: FigureKind) => ({ place: 'pl', score: 'sc', difference: 'sd' })[kind];
 export interface FigureSpan { start: number; end: number; kind: FigureKind }
 export interface FigureRun { text: string; kind?: FigureKind; value?: string }
 const numeric = /#?\d[\d,]*(?:\.\d+)?(?:st|nd|rd|th)?/g;
@@ -43,8 +44,9 @@ export function figureRuns(text: string, scores: number[] = [], explicit: Figure
     let kind = spans.get(start)?.end === end ? spans.get(start)!.kind : undefined;
     if (!kind && !wordEdge && !quantity && !date && !quoted) {
       if (/^#\d/.test(raw) || /(?:st|nd|rd|th)$/.test(raw) || /\b(?:rank(?:ed)?|place|position)\s*#?\s*$/i.test(before)) kind = 'place';
-      else if (/\b(?:score(?:s)?(?: of| is| was)?|scored|scoring)\s*[:=]?\s*$/i.test(before) || /^[- ](?:score[- ]?)?points?\b/i.test(after)) kind = 'score';
-      else if (/^\s+ahead\b/.test(after) && /\./.test(raw)) kind = 'score';
+      else if (/\b(?:score(?:s)?(?: of| is| was)?|scored|scoring)\s*[:=]?\s*$/i.test(before)) kind = 'score';
+      else if (/^[- ](?:score[- ]?)?points?\b|^\s+(?:ahead|behind)\b/i.test(after)
+        || /\b(?:gain(?:ed|s)?|lead|margin|gap|difference|improv(?:ed|ement)|add(?:ed|s|ing)?|up|down)(?: of| by)?\s*[:+−-]?\s*$/i.test(before)) kind = 'difference';
       else if (scores.length && raw.includes('.') && /\b(?:on|at|from|to)\s*$/i.test(before) && !technical) kind = 'score';
       else if (!technical && sourceScores.has(String(Number(raw.replaceAll(',', '')))) && /\b(?:on|at|from|to|reach(?:es|ed)?|with|adds?|adding|share(?:s|d)?)\s*$/i.test(before)) kind = 'score';
     }
@@ -58,5 +60,5 @@ export function figureRuns(text: string, scores: number[] = [], explicit: Figure
 }
 
 export function figuresHtml(text: string, escape: (text: string) => string, scores: number[] = [], explicit: FigureSpan[] = []): string {
-  return figureRuns(text, scores, explicit).map(run => run.kind ? `<span class="${run.kind === 'place' ? 'pl' : 'sc'}">${escape(run.text)}</span>` : escape(run.text)).join('');
+  return figureRuns(text, scores, explicit).map(run => run.kind ? `<span class="${figureClass(run.kind)}">${escape(run.text)}</span>` : escape(run.text)).join('');
 }

@@ -4,11 +4,11 @@
   "coverageNote": "Public leaderboard readings through 2026-11-02T15:14:37Z. Event times mark the first saved observation of a change.",
   "dataAsOf": "2026-11-02T15:14:37Z",
   "date": "2026-11-02",
-  "dek": "tascj lands a first recorded score of 76.81; S & M & N & S & Y moves to ninth, and ibyyue reaches the gold line.",
+  "dek": "tascj crashes into the summit chase. Behind the leaders, the pack is trading places and the gold line is under siege.",
   "discord": "ARC-2 morning edition: Tufa leads Chen by 0.84. tascj’s first recorded score reaches the top ten, S & M & N & S & Y climbs to ninth, and ibyyue reaches gold. https://arc.markbarney.net/news/2026-11-02-morning-arc-2",
   "edition": "morning",
   "generatedBy": "gpt-6.1-sol",
-  "headline": "Tufa guards a 0.84-point lead as the top ten changes behind it",
+  "headline": "Tufa guards a thin lead",
   "id": "2026-11-02-morning-arc-2",
   "publishedAt": "2026-11-02T15:39:55Z",
   "sections": [
@@ -16,14 +16,14 @@
       "sourceIds": [
         "board"
       ],
-      "text": "Tufa Labs starts the final morning on 88.06, just 0.84 ahead of Yi-Chia Chen @ Fields Model at 87.22. Neither leader has improved overnight. nvbanana remains third on 83.89, with Domdolus Tolus fourth at 83.47. The closest race at the summit is still here in ARC-2."
+      "text": "Tufa Labs holds a wafer-thin advantage over Yi-Chia Chen @ Fields Model. Neither leader has improved across the comparison window, while nvbanana and Domdolus Tolus keep watch behind them. The closest summit fight is still here."
     },
     {
       "heading": "New pressure in the top ten",
       "sourceIds": [
         "board"
       ],
-      "text": "tascj’s first recorded score is 76.81, enough for ninth when it appeared overnight. The team now sits tenth, with one submission listed. S & M & N & S & Y has moved ahead on 77.36 after adding 2.22 points. Ravi Teja Chilakala has also improved, from 78.19 to 80.56, taking seventh.\n\nAt the edge of gold, ibyyue jumps from 69.17 to 75.14 and seventeenth. That is now the cutoff: three teams share 75.14 across fifteenth through seventeenth, with ảc next on 74.31."
+      "text": "tascj’s first recorded score crashed into the top ten on arrival. The newcomer has since slipped a place, while S & M & N & S & Y and Ravi Teja Chilakala press upward.\n\nAt the edge of gold, ibyyue has forced its way onto the cutoff. Several teams share the same score there. One more strong run could rearrange the whole ledge."
     },
     {
       "heading": "The late climbs continue",
@@ -31,7 +31,7 @@
         "board",
         "person-daniel-franzen-identity-0"
       ],
-      "text": "Daniel Franzen adds 11.80 points to reach 70.97 and twenty-eighth. KaggleARC rises from 36.94 to 55.14, reaching fifty-eighth. ARC Mutants stands sixty-seventh on 50.83. The top six have held their scores overnight; places farther down are still changing hands."
+      "text": "Daniel Franzen makes a big solo climb. KaggleARC also surges, and ARC Mutants improves. The leading group has held its scores across the comparison window; farther down, places keep changing hands.\n\nThe figures below are a dated reading of the public board. Will the leaders hold when the private scores land?"
     }
   ],
   "sources": [

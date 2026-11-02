@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex; existing contributors credited below; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Date: 02-November-2026
  * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -61,7 +61,7 @@ export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: strin
   if (route.startsWith('/kaggle-leaderboard')) items.push({ name: LEADERBOARD_CRUMBS['/arc-leaderboards'], url: `${SITE_ORIGIN}/arc-leaderboards` });
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
-  if (route.startsWith('/news/')) items.push({ name: 'The ARC Daily', url: `${SITE_ORIGIN}/news` });
+  if (route.startsWith('/news/')) items.push({ name: NEWS_NAME, url: `${SITE_ORIGIN}/news` });
   if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor profiles', url: `${SITE_ORIGIN}/news/competitors` });
   const name = route === '/news' ? NEWS_NAME : LEADERBOARD_CRUMBS[route] ?? tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
   items.push({ name: game ? game[1] : name, url: tags.url });
@@ -84,7 +84,7 @@ export function breadcrumbsHtml(tags: RouteMetaTags): string {
   return crumbs.length ? `<nav aria-label="Breadcrumb">${crumbs.map((crumb, index) => index === crumbs.length - 1 ? `<span aria-current="page">${escapeHtml(crumb.name)}</span>` : `<a href="${escapeHtml(new URL(crumb.url).pathname)}">${escapeHtml(crumb.name)}</a>`).join(' / ')}</nav>` : '';
 }
 export const DISCOVERY_LINKS = [
-  ['/', 'Home'], ['/news', 'The ARC Daily'], ['/home', 'Resource hub'], ['/arc-leaderboards', 'ARC leaderboards'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
+  ['/', 'Home'], ['/news', NEWS_NAME], ['/home', 'Resource hub'], ['/arc-leaderboards', 'ARC leaderboards'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
   ['/kaggle-leaderboard/arc-2', 'ARC-AGI-2 leaderboard'], ['/arc3/games', 'Game guides'],
   ['/arc3/slippery-seven', 'Slippery Seven'], ['/arc3/gallery', 'Play ARC-AGI-3 games'], ['/arc3', 'ARC-AGI-3 engine explained'],
   ['/arc3/hypotheses', 'Research'], ['/browser', 'ARC puzzles'], ['/analytics', 'Model results archive'],
@@ -105,8 +105,9 @@ export function completeMeta(tags: RouteMetaTags): RouteMetaTags {
 export function socialMetaEntries(input: RouteMetaTags): ['property' | 'name', string, string][] {
   const tags = completeMeta(input);
   const article = tags.type === 'article';
+  const news = /^\/news(?:\/|$)/.test(new URL(tags.url).pathname);
   const entries: ['property' | 'name', string, string | undefined][] = [
-    ['property', 'og:site_name', 'ARC Explainer'], ['property', 'og:locale', 'en_US'],
+    ['property', 'og:site_name', news ? NEWS_NAME : 'ARC Explainer'], ['property', 'og:locale', 'en_US'],
     ['property', 'og:type', tags.type || 'website'], ['property', 'og:url', tags.url],
     ['property', 'og:title', tags.title], ['property', 'og:description', tags.description],
     ['property', 'og:image', tags.image], ['property', 'og:image:alt', tags.imageAlt],

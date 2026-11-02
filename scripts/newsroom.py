@@ -30,10 +30,9 @@ UTC = timezone.utc
 ET = ZoneInfo('America/New_York')
 ROOT = Path(__file__).resolve().parents[1]
 SITE = 'https://arc.markbarney.net'
-FEATURED = {
-    'arc-3': {'15605182', '15770880', '16032816', '15501006', '16371045', '16021367', '15508513'},
-    'arc-2': {'17023174', '15605185', '15507730', '15486939', '15487968', '15486728', '15526034'},
-}
+# Existing board services, not the Goose coverage directory or a featured cast.
+BOARD_FEEDS = json.loads((ROOT / 'shared/newsBoardFeeds.json').read_text())
+REGISTERED_COMPETITIONS = set(json.loads((ROOT / 'shared/gooseDirectory.json').read_text())['competitions'])
 NARRATIVE = {'id', 'headline', 'dek', 'sections', 'teamIds', 'discord'}
 
 
@@ -155,7 +154,7 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
             if len(p) != 3 or not finite(p[1]) or not isinstance(p[2], int) or p[2] < 1 or stamp(p[0]) > actual_now:
                 raise ValueError('invalid trail observation')
         # ARC3's original pinned team was tracked throughout the existing collector.
-        continuously_pinned = '15605182' if competition == 'arc-3' else None
+        continuously_pinned = None  # No contestant gets a hard-coded coverage exception.
         end = observation(tid, row, trail, closing_at, latest_at, continuously_pinned)
         start = observation(tid, row, trail, baseline_at, latest_at, continuously_pinned) if baseline_at else None
         if not end:
@@ -172,7 +171,9 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
                      key=lambda s: (-s['scoreChange'], s['rank']))[:10]
     assigned_ids = {tid for assignment in open_editorial_assignments(ROOT, competition, actual_now)
                     for tid in assignment.get('teamIds', [])}
-    selected_ids = {s['teamId'] for s in stats if s['rank'] <= 10} | FEATURED[competition] | {s['teamId'] for s in gainers} | assigned_ids
+    # Uncompared high entries are leads to investigate, not proven debuts or gains.
+    uncompared = {s['teamId'] for s in stats if s['rank'] <= 20 and s['scoreChange'] is None}
+    selected_ids = {s['teamId'] for s in stats if s['rank'] <= 10} | uncompared | {s['teamId'] for s in gainers} | assigned_ids
     selected = [s for s in stats if s['teamId'] in selected_ids]
     if not selected:
         raise ValueError('no verified candidate observations at cutoff')
@@ -200,7 +201,7 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
                                  for tid in sorted(selected_ids & observations.keys())}}
     return {'status': 'ready', 'articleBase': article_base, 'evidence': evidence,
             'candidates': {'leaders': [s['teamId'] for s in selected if s['rank'] <= 10],
-                           'featured': sorted(FEATURED[competition]), 'gainers': [s['teamId'] for s in gainers]}}
+                           'featured': [], 'uncomparedHighEntries': sorted(uncompared), 'gainers': [s['teamId'] for s in gainers]}}
 
 
 def fetch(url):
@@ -367,8 +368,7 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, wr
     if now > actual_now:
         raise ValueError('--now may not be in the future')
     result = {'version': 1, 'preparedAt': iso(actual_now), 'edition': edition, 'competitions': {}}
-    for comp in FEATURED:
-        url = f'{SITE}/api/kaggle/arc-prize-2026-{comp.replace("arc-", "arc-agi-")}/board'
+    for comp, url in BOARD_FEEDS.items():
         try:
             board, sha = fetcher(url)
             result['competitions'][comp] = board_brief(board, comp, edition, now, actual_now, url, sha, preview, writer)
@@ -411,7 +411,7 @@ def validate_notebook(records):
     seen = set()
     for record in records:
         rid = record['id']
-        if (record['competition'] not in FEATURED or not re.fullmatch(r'\d+', record['teamId'])
+        if (record['competition'] not in REGISTERED_COMPETITIONS or not re.fullmatch(r'\d+', record['teamId'])
                 or rid != f"{record['competition']}-{record['teamId']}" or len(rid) > 100 or rid in seen):
             raise ValueError('invalid or duplicate competitor identity')
         seen.add(rid)
@@ -613,7 +613,7 @@ def validate_dispatch(draft):
     # fixed board settings. The override is a local staging input, never source text.
     import os
     directory_path = Path(os.environ.get('GOOSE_DIRECTORY_FILE', str(ROOT / 'shared/gooseDirectory.json')))
-    supported = set(load(directory_path)['competitions']) if directory_path.exists() else set(FEATURED)
+    supported = set(load(directory_path)['competitions']) if directory_path.exists() else REGISTERED_COMPETITIONS
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in supported:
         raise ValueError('invalid dispatch identity: competition needs a registered wiki source')
     published = contract_stamp(draft['publishedAt'])

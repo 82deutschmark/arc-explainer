@@ -18,7 +18,7 @@ import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -32,10 +32,10 @@ export default function NewsArticle() {
   const article = query.data?.articles.find(item => item.id === articleId);
   const dispatch = !article ? query.data?.dispatches?.find(item => item.id === articleId) : undefined;
   const feature = article ? editionFeature(article, query.data?.dispatches) : undefined;
-  const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
+  const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : dispatch ? dispatchStructuredData(dispatch, SITE_ORIGIN) : undefined, [article, dispatch]);
   const missing = !!query.data && !article && !dispatch;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Dispatch | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
+  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Dispatch | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.dek ?? dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
     image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : dispatch?.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : undefined,
     article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : dispatch ? { publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
@@ -51,7 +51,6 @@ export default function NewsArticle() {
         <h1 className="news-article-title"><SportsText text={article.headline} stats={article.stats} /></h1>
         <p className="news-dek"><SportsText text={article.dek} stats={article.stats} /></p>
         <p className="news-byline">{NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
-        <NumberKey stats={article.stats} competition={article.competition} />
       </header>
       {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
       {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
@@ -67,16 +66,16 @@ export default function NewsArticle() {
               return source ? <a key={id} href={source.url}>{source.title} ↗</a> : null;
             })}</div>}
           </section>)}</div>
-          {!!article.stats.length && <div className="news-boxscore-wrap" tabIndex={0} role="region" aria-label="Scrollable edition box score">
+          {!!article.stats.length && <><NumberKey stats={article.stats} competition={article.competition} /><div className="news-boxscore-wrap" tabIndex={0} role="region" aria-label="Scrollable edition box score">
             <table className="news-boxscore"><caption>The box score</caption><thead><tr><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Score</th><th scope="col">Rank change</th><th scope="col">Score change</th></tr></thead>
-              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td className="pl">#{stat.rank.toLocaleString('en-US')}</td><td className="sc">{String(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td>{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
+              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td className="pl">#{stat.rank.toLocaleString('en-US')}</td><td className="sc">{String(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td className="sd">{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
             </table><p className="news-muted">Scores and movement recorded for this edition, not live standings.</p>
-          </div>}
+          </div></>}
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
           <h2 className="news-section-title">How this report was checked</h2>
-          <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
+          <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf, true)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt, true)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>
           <SponsorPlacement format="rail" />
           <h2 className="news-section-title">Sources</h2>

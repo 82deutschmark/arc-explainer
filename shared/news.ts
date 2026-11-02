@@ -176,7 +176,7 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
 export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
   return namedPeople(story.headline, people)[0] ?? namedPeople(story.dek, people)[0] ?? citedPeople(story.sections, people)[0];
 }
-type ReportedStory = { headline: string; dek?: string; sections: NewsSection[] };
+type ReportedStory = { headline: string; dek?: string; sections: NewsSection[]; competition?: NewsCompetition; dataAsOf?: string; publishedAt?: string };
 /** Whole names only: handles such as xz also match title case, never a substring in another word. */
 function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson[] {
   if (!text) return [];
@@ -186,11 +186,29 @@ function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson
     return { person, position: match?.index ?? -1 };
   }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person);
 }
-/** Everyone named in the reporting or explicitly cited; never add uncited teammates from a roster. */
+/** People in a passage include the verified cast of a named team in this contest.
+ * A later team move must not attach a historical teammate to the wrong story. */
+function passagePeople(text: string | undefined, story: ReportedStory, people: NewsPerson[]): NewsPerson[] {
+  if (!text) return [];
+  const direct = namedPeople(text, people);
+  const at = story.dataAsOf ?? story.publishedAt;
+  const members = story.competition ? people.map(person => {
+    const roster = person.memberships.filter(m => m.competition === story.competition && (!at || m.firstObservedAt <= at))
+      .sort((a, b) => b.lastObservedAt.localeCompare(a.lastObservedAt))[0];
+    if (!roster) return { person, position: -1 };
+    const team = roster.teamName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = new RegExp(`(^|[^\\p{L}\\p{N}_])${team}(?=$|[^\\p{L}\\p{N}_])`, 'iu').exec(text);
+    return { person, position: match?.index ?? -1 };
+  }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person) : [];
+  return [...new Map([...members, ...direct].map(person => [person.id, person])).values()];
+}
+/** Headline and opening subjects lead; named teams bring their sourced cast. */
 export function reportedPeople(stories: ReportedStory[], people: NewsPerson[]): NewsPerson[] {
   const subjects = stories.flatMap(story => [
-    ...namedPeople(story.headline, people), ...namedPeople(story.dek, people),
-    ...story.sections.flatMap(section => [...namedPeople(section.text, people), ...citedPeople([section], people)]),
+    ...passagePeople(story.headline, story, people),
+    ...passagePeople(story.sections[0]?.text, story, people),
+    ...passagePeople(story.dek, story, people),
+    ...story.sections.flatMap(section => [...passagePeople(section.text, story, people), ...citedPeople([section], people)]),
   ]);
   return [...new Map(subjects.map(person => [person.id, person])).values()];
 }
@@ -233,16 +251,16 @@ export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
 /** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
-export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview'
+export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? `${editionName(article.edition)} edition`
   : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`;
 
-/** Newspaper dates are Eastern. Date-only edition labels must not roll back a day. */
+/** Newspaper dates and clocks are UTC. Date-only edition labels must not roll back a day. */
 export function newsDate(value: string, withTime = false): string {
   const date = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
   if (!Number.isFinite(date.getTime())) return 'Date unavailable';
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric',
-    ...(withTime ? { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' } as const : {}),
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'UTC', month: 'long', day: 'numeric', year: 'numeric',
+    ...(withTime ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZoneName: 'short' } as const : {}),
   }).format(date);
 }
 
@@ -299,9 +317,9 @@ export function articleCardVersion(article: NewsArticle): string {
 export const NEWS_CARD_FRESH_MS = 36 * 3_600_000;
 /** Bump when the front-page card layout changes, so cached front-page cards are fetched again. */
 export const NEWS_SECTION_CARD_DESIGN = 1;
-/** Eastern calendar day as "2026-10-10"; the front-page card's puzzle changes with it. */
+/** UTC calendar day as "2026-10-10"; the front-page card's puzzle changes with it. */
 export const easternDay = (now: number): string =>
-  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'UTC', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
 /** The newest still-fresh edition of each contest, ARC-AGI-3 first. Empty means the card shows the evergreen panel. */
 export function sectionCardArticles(articles: NewsArticle[], now = Date.now()): NewsArticle[] {
   return [...new Set(articles.map(article => article.competition))].sort().flatMap(competition => {
@@ -327,18 +345,38 @@ export function articleCardAlt(article: NewsArticle): string {
   return `${NEWS_NAME} front page for the ${competitionName(article.competition)} ${editionName(article.edition).toLowerCase()} edition of ${newsDate(article.date)}: “${article.headline}”${standings.length ? `, with the top ${standings.length} of the box score` : ''}.`;
 }
 
+/** The real masthead and standards page, shared by every newspaper story. */
+export function newsPublisher(origin: string): Record<string, unknown> {
+  return { '@type': 'NewsMediaOrganization', '@id': `${origin}/news#publisher`, name: NEWS_NAME, url: `${origin}/news`,
+    masthead: `${origin}/news/staff`, ethicsPolicy: `${origin}/news/staff#standards`,
+    correctionsPolicy: `${origin}/news/staff#contact`, actionableFeedbackPolicy: `${origin}/news/tips`,
+    logo: { '@type': 'ImageObject', url: `${origin}${NEWS_BRAND.logo ?? '/android-chrome-512x512.png'}` } };
+}
 /** Same article schema for initial HTML and in-app navigation. */
 export function articleStructuredData(article: NewsArticle, origin: string): Record<string, unknown> {
   const url = `${origin}${newsArticlePath(article.id)}`;
-  const publisher = { '@type': 'Organization', '@id': `${origin}/news#publisher`, name: NEWS_NAME, url: `${origin}/news`,
-    logo: { '@type': 'ImageObject', url: `${origin}${NEWS_BRAND.logo ?? '/android-chrome-512x512.png'}` } };
   return { '@context': 'https://schema.org', '@graph': [{
     '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: article.headline, description: article.dek,
     datePublished: article.publishedAt, dateModified: article.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
-    image: [{ '@type': 'ImageObject', url: `${origin}${articleCardPath(article)}`, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, caption: articleCardAlt(article) }],
+    image: [{ '@type': 'ImageObject', url: `${origin}${articleCardPath(article)}`, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, caption: articleCardAlt(article) },
+      ...(article.image ? [{ '@type': 'ImageObject', url: `${origin}${article.image.src}`, caption: article.image.caption }] : [])],
     articleSection: competitionName(article.competition),
     author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news` },
-    publisher, mainEntityOfPage: url, citation: [...new Set(article.sources.map(source => source.url))],
+    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: [...new Set(article.sources.map(source => source.url))],
+    isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },
+  }] };
+}
+
+/** Portable wiki stories receive the same dated, source-linked schema as editions. */
+export function dispatchStructuredData(dispatch: NewsDispatch, origin: string): Record<string, unknown> {
+  const url = `${origin}${newsArticlePath(dispatch.id)}`;
+  return { '@context': 'https://schema.org', '@graph': [{
+    '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: dispatch.headline,
+    description: dispatch.dek ?? dispatch.sections[0]?.text ?? dispatch.headline,
+    datePublished: dispatch.publishedAt, dateModified: dispatch.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
+    ...(dispatch.image ? { image: [{ '@type': 'ImageObject', url: `${origin}${dispatch.image.src}`, caption: dispatch.image.caption }] } : {}),
+    articleSection: competitionName(dispatch.competition), author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news/staff` },
+    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: [...new Set(dispatch.sources.map(source => source.url))],
     isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },
   }] };
 }

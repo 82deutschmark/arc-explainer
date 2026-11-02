@@ -1,3 +1,9 @@
+### Version 9.161.29 · November 2, 2026
+
+- Complete the illustrated Loose Goose presentation with a compact panoramic masthead, transparent comic lettering, unchanged inset logo, new story scenes and avatar-based characters. Apply the Boss’s number-free headlines, lighter numeric prose, UTC clocks, Japanese glyph fallback and separate place/score/difference styles.
+- Give wiki dispatches the same sourced NewsArticle metadata as editions; include both in RSS, expose the tip page to discovery and use the newspaper’s identity in social metadata. Remove fixed featured contestants from the inherited briefing selector.
+- Follow independent GPT-6.1 Terra criticism: clarify source timing, retain source-linked roster observations without inventing standings or final results, preserve whole editorial portraits and add readable cast labels. Final Discord proofs precede any approved X post. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.161.28 · November 2, 2026
 
 - Make the catalog independent of ARC and a fixed year, expose competition card sets and seasons, and label individual, team and sponsor cards explicitly. Preserve continuing identities across set editions, existing card frames and Kaggle medals.

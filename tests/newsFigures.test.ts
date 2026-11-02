@@ -25,3 +25,10 @@ it('uses matching semantics in the server page and keeps unsafe prose escaped', 
   const html = figuresHtml('Place 491, score 18.99 <img>', s => s.replaceAll('<', '&lt;').replaceAll('>', '&gt;'));
   expect(html).toContain('class="pl">#491'); expect(html).toContain('class="sc">18.99'); expect(html).toContain('&lt;img&gt;');
 });
+
+it('keeps margins and point gains distinct from absolute scores', () => {
+  const text = 'Tufa guards a 0.84-point lead on a score of 88.06, just 0.84 ahead of a rival on 87.22. A gain of 21.88 points sends infinity to #6.';
+  const runs = figureRuns(text, [88.06, 87.22]).filter(run => run.kind);
+  expect(runs.map(run => [run.kind, run.text])).toEqual([['difference', '0.84'], ['score', '88.06'], ['difference', '0.84'], ['score', '87.22'], ['difference', '21.88'], ['place', '#6']]);
+  expect(figuresHtml('A 0.84-point lead', x => x)).toContain('class="sd">0.84');
+});

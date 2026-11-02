@@ -4,11 +4,11 @@
   "coverageNote": "Public leaderboard readings through 2026-11-02T15:14:35Z. Event times mark the first saved observation of a change.",
   "dataAsOf": "2026-11-02T15:14:35Z",
   "date": "2026-11-02",
-  "dek": "Jean-François Puget and the NVIDIA juggernaut are ahead of Turducken. Chen and Tufa still hold the heights, while a final-day surge compresses the chase below them.",
+  "dek": "Jean-François Puget and the NVIDIA juggernaut have passed Turducken. Chen and Tufa hold the heights while a final-day surge compresses the chase.",
   "discord": "Full speed ahead: NVIDIA presses the siege. NVARC3 holds fourth at 56.26, ahead of Turducken’s 56.02. Chen and Tufa hold the heights; Grigoriy and the last dance close in behind, and infinity leaps into the top ten. Morning edition: https://arc.markbarney.net/news/2026-11-02-morning-arc-3",
   "edition": "morning",
   "generatedBy": "gpt-6.1-sol",
-  "headline": "Full speed ahead: NVIDIA presses the siege",
+  "headline": "Full speed ahead! NVIDIA presses the siege",
   "id": "2026-11-02-morning-arc-3",
   "image": {
     "alt": "Illustration for Full speed ahead: NVIDIA presses the siege. NVARC3: rank 4, score 56.26; Team Turducken: rank 5, score 56.02.",
@@ -23,7 +23,7 @@
         "board",
         "person-jean-francois-puget-identity-0"
       ],
-      "text": "Full speed ahead. NVIDIA’s juggernaut has passed Team Turducken, and the climb toward the two strongholds continues. Jean-François Puget and his NVARC3 teammates hold fourth on 56.26 this morning, with Turducken close behind on 56.02. Above them, Yi-Chia Chen and Tufa Labs still command the heights. Can they withstand the siege?"
+      "text": "Full speed ahead! NVIDIA’s juggernaut has passed Team Turducken, and the climb toward the strongholds continues. Jean-François Puget and his NVARC3 teammates hold the advantage over Turducken in this reading. Above them, Yi-Chia Chen and Tufa Labs still command the heights. Can they withstand the siege?"
     },
     {
       "heading": "The road from eighth to fourth",
@@ -32,21 +32,21 @@
         "huikang-history",
         "nvidia-seven"
       ],
-      "text": "The juggernaut advances in bursts. Tong Hui Kang’s leaderboard history shows NVARC3 going from 16.07 to 21.79 and then 37.51 in early October—the second step alone worth 15.72 points. This morning the board lists 80 submissions for NVARC3, against Turducken’s 217 and Tufa’s 179. That history records changes in the public best, not the result of every submission.\n\nSaturday’s NVIDIA seven were eighth on 49.89. Sunday brought another big advance: 56.15, a gain of 6.26 points, four places, and the pass on Turducken. Monday’s extra 0.11 takes NVARC3 to 56.26 and stretches its advantage to 0.24. Next up is xz, third on 58.59, another 2.33 points away.\n\nWe met the seven-person crew in Saturday’s NVIDIA profile: Puget, Ivan Sorokin and a formidable gathering of Kaggle talent. Today the numbers tell the story."
+      "text": "The juggernaut advances in bursts. Tong Hui Kang’s leaderboard history shows large steps in NVARC3’s public best through October. That history records changes in the public best, not the result of every submission.\n\nThe NVIDIA crew has gained ground since Saturday’s profile. Sunday brought a major advance and the pass on Turducken; Monday’s smaller improvement stretched the advantage. Next up is xz. The dated box score carries the exact positions and scores."
     },
     {
       "heading": "The strongholds hold—for now",
       "sourceIds": [
         "board"
       ],
-      "text": "Yi-Chia Chen @ Fields Model leads on 75.56; Tufa Labs follows on 70.24. Neither has added to that score overnight. Chen’s advantage is 5.32, and Tufa still has 11.65 points over xz. There is plenty of mountain between the leaders and the machines below.\n\nThe pressure is growing farther down. Grigoriy Zatravkin & co has climbed from 50.48 to 54.55, taking sixth. The last dance has improved from 51.51 to 54.52 and sits seventh, just 0.03 behind Grigoriy. Turducken’s cushion over sixth is now 1.47."
+      "text": "Yi-Chia Chen @ Fields Model and Tufa Labs have held their scores across the comparison window. There is still plenty of mountain between the leaders and the machines below.\n\nFarther down, Grigoriy Zatravkin & co and the last dance have both climbed. The chasing pack is tightening, and Turducken’s cushion has narrowed."
     },
     {
       "heading": "A leap out of the pack",
       "sourceIds": [
         "board"
       ],
-      "text": "Then there is infinity. A jump from 31.24 to 53.12 carried the team from 593rd to sixth in one board reading overnight. Grigoriy and the last dance have since moved ahead, leaving infinity eighth—but still inside the top ten after starting the night hundreds of places away.\n\nMd Boktiar Mahbub Murad reaches 47.29 and eleventh; The ARChitects rises to 47.19 and twelfth. The gold cutoff is now 41.73 at twentieth. The two strongholds may be standing still, but the field beneath them is anything but settled."
+      "text": "Then lightning from the pack: infinity’s score leap carried it from deep in the field into the top ten in a single board reading. Other climbers have since moved ahead, but infinity remains high on the ridge.\n\nMd Boktiar Mahbub Murad and The ARChitects also improve. The strongholds may be standing still; the field beneath them is anything but settled. Who will still be standing when the private board lands?"
     },
     {
       "sourceIds": [

@@ -521,7 +521,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
       const nsH = 118;
       none = { h: nsH, node: tableFrame(titleBar(ink1, 'KAGGLE COMPETITIONS · STANDINGS', null),
         box({ height: nsH - 30, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
-          bebas('NO STANDINGS YET', 46, ink1, { letterSpacing: 3 }),
+          bebas('STANDINGS AT KAGGLE', 46, ink1, { letterSpacing: 3 }),
           vm.handleLine ? mono(vm.handleLine, 15, INK2, 700, { marginTop: 8 }) : null)) };
       spend(nsH);
     }

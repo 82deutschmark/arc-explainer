@@ -230,7 +230,8 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
   // Decide how the picture sits. Measured, not guessed: aspect and how far it must be enlarged to cover the window.
   const wideMax = override?.wideMax ?? WIDE_MAX;
   const aspect = ew / eh, coverScale = Math.max(WIN.w / ew, WIN.h / eh);
-  const mode: 'cover' | 'contain' = aspect <= wideMax && aspect >= MIN_COVER_ASPECT && coverScale <= MAX_COVER_SCALE ? 'cover' : 'contain';
+  const preserveWhole = art.source === 'editorial-portrait' && baked !== true;
+  const mode: 'cover' | 'contain' = !preserveWhole && aspect <= wideMax && aspect >= MIN_COVER_ASPECT && coverScale <= MAX_COVER_SCALE ? 'cover' : 'contain';
   let layer: Buffer, lw: number, lh: number, left: number, top: number, freeBand: Rect | null = null;
 
   if (mode === 'cover') {
@@ -241,7 +242,7 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
     lw = WIN.w; lh = WIN.h; left = WIN.x; top = WIN.y;
   } else {
     // contain. A very wide picture is trimmed at the sides to WIDE_MAX, full width, at the top of the window.
-    const wide = aspect > wideMax;
+    const wide = !preserveWhole && aspect > wideMax;
     const cw = wide ? Math.round(eh * wideMax) : ew;
     const s = wide ? WIN.w / cw : Math.min(WIN.w / ew, WIN.h / eh, 2);
     lw = Math.round(cw * s); lh = Math.round(eh * s);

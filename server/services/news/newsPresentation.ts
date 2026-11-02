@@ -28,7 +28,7 @@ import { NEWS_CONTACT, NEWS_TIPS_PATH } from '../../../shared/newsContact';
 import { figuresHtml, statScores } from '../../../shared/newsFigures';
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
-  type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
+  type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData, dispatchStructuredData, newsPublisher,
   articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit, publishedCompetitionOrder, competitionStories,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
@@ -57,7 +57,7 @@ const scoreChange = (stat: NewsStat) => stat.scoreChange == null ? 'Not availabl
 function collection(tags: RouteMetaTags, items: { name: string; path: string }[]): Record<string, unknown> {
   return { '@context': 'https://schema.org', '@graph': [{
     '@type': 'CollectionPage', '@id': tags.url, url: tags.url, name: tags.title, description: tags.description, inLanguage: 'en',
-    isPartOf: { '@id': `${SITE_ORIGIN}/#website` }, ...(tags.image ? { primaryImageOfPage: { '@type': 'ImageObject', url: tags.image, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT } } : {}),
+    isPartOf: { '@id': `${SITE_ORIGIN}/#website` }, publisher: newsPublisher(SITE_ORIGIN), ...(tags.image ? { primaryImageOfPage: { '@type': 'ImageObject', url: tags.image, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT } } : {}),
     mainEntity: { '@type': 'ItemList', numberOfItems: items.length,
       itemListElement: items.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: `${SITE_ORIGIN}${item.path}` })) },
   }] };
@@ -73,10 +73,10 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
   const feature = editionFeature(article, dispatches);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
     <h1>${figuresHtml(article.headline, esc, statScores(article.stats))}</h1><p>${figuresHtml(article.dek, esc, statScores(article.stats))}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>
-    <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
+    <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, true)}. Exact source observations remain in the archived reporting data.</p>
     ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people)) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
     ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(article.stats)).replace(/\n/g, '<br/>')}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
-    <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
+    <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChange(stat)}</td><td class="sd">${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/competitors">Competitor profiles</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;
   return completeMeta({ title: articleTitle(article), description: articleDescription(article), url, type: 'article', jsonLd, bodyHtml,
@@ -151,7 +151,7 @@ function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire
     const stories = competitionStories(articles, dispatches, competition), first = stories[0];
     const feature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
     const storyHtml = 'article' in first
-      ? newsArticleMeta(first.article, dispatches, people).bodyHtml!.replace(/^<main>|<\/main>$/g, '')
+      ? newsArticleMeta(first.article, dispatches, people).bodyHtml!.replace(/^<main>|<\/main>$/g, '').replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>').replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
       : dispatchHtml(first.dispatch, reportedPeople([first.dispatch], people));
     return `${storyHtml}<ul>${stories.slice(1).filter(story => story.id !== feature?.id).slice(0, 3).map(story => `<li><a href="${newsArticlePath(story.id)}">${esc('article' in story ? story.article.headline : story.dispatch.headline)}</a></li>`).join('')}</ul>`;
   }).join('');
@@ -232,10 +232,10 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   if (article) return { status: 200, tags: newsArticleMeta(article, dispatches, people) };
   const dispatch = dispatches.find(item => newsArticlePath(item.id) === route);
   if (dispatch) return { status: 200, tags: completeMeta({
-    title: `${dispatch.headline} | ${NEWS_NAME}`, description: dispatch.sections[0]?.text ?? dispatch.headline,
+    title: `${dispatch.headline} | ${NEWS_NAME}`, description: dispatch.dek ?? dispatch.sections[0]?.text ?? dispatch.headline,
     url: `${SITE_ORIGIN}${route}`, type: 'article', publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition),
     ...(dispatch.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : cardFor(articles)),
-    bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people))}</main>`,
+    jsonLd: dispatchStructuredData(dispatch, SITE_ORIGIN), bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people))}</main>`,
   }) };
 
   return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit the newspaper front page for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
@@ -254,6 +254,7 @@ export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
     ...cabinet.cards.map(card => ({ url: `${SITE_ORIGIN}${collectionCardPath(card.id)}`, lastmod: cabinet.updatedAt })),
     { url: `${SITE_ORIGIN}/news/community`, lastmod: latest([...socialArchive.map(post => post.checkedAt), ...discussions.map(thread => thread.checkedAt)]) },
     { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
+    { url: `${SITE_ORIGIN}${NEWS_TIPS_PATH}` },
     ...people.map(person => ({ url: `${SITE_ORIGIN}${personPath(person.id)}`, lastmod: latest([...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)]) })),
     ...dispatches.map(dispatch => ({ url: `${SITE_ORIGIN}${newsArticlePath(dispatch.id)}`, lastmod: dispatch.publishedAt })),
     ...articles.map(article => ({ url: `${SITE_ORIGIN}${newsArticlePath(article.id)}`, lastmod: article.publishedAt })),
@@ -261,12 +262,18 @@ export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
   ];
 }
 export const newsSitemapUrls = (): string[] => newsSitemapEntries().map(entry => entry.url);
+/** RSS follows permanent story URLs for both scheduled editions and wiki dispatches. */
 export function newsRss(): string {
-  const { articles } = getNewsIndex();
+  const { articles, dispatches = [] } = getNewsIndex();
+  const stories = [...articles, ...dispatches].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
   const feed = `${SITE_ORIGIN}/news/feed.xml`;
-  const built = latest(articles.map(article => article.publishedAt));
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>${NEWS_NAME}</title><link>${SITE_ORIGIN}/news</link><atom:link href="${feed}" rel="self" type="application/rss+xml"/><description>Early and late editions on the ARC Prize 2026 ARC-AGI-3 and ARC-AGI-2 Kaggle competitions.</description><language>en</language>${built ? `<lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate>` : ''}<ttl>60</ttl>${articles.slice(0, 40).map(article => {
-    const link = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
-    return `<item><title>${esc(article.headline)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate><category>${esc(competitionName(article.competition))}</category><description>${esc(article.dek)}</description><media:content url="${esc(`${SITE_ORIGIN}${articleCardPath(article)}`)}" medium="image" type="image/png" width="${NEWS_CARD_WIDTH}" height="${NEWS_CARD_HEIGHT}"><media:description>${esc(articleCardAlt(article))}</media:description></media:content></item>`;
+  const built = latest(stories.map(story => story.publishedAt));
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>${esc(NEWS_NAME)}</title><link>${SITE_ORIGIN}/news</link><atom:link href="${feed}" rel="self" type="application/rss+xml"/><description>Source-linked competition news, meaningful moves and the people behind major Kaggle contests.</description><language>en</language>${built ? `<lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate>` : ''}<ttl>60</ttl>${stories.slice(0, 40).map(story => {
+    const link = `${SITE_ORIGIN}${newsArticlePath(story.id)}`;
+    const edition = 'stats' in story;
+    const image = edition ? `${SITE_ORIGIN}${articleCardPath(story)}` : story.image ? `${SITE_ORIGIN}${story.image.src}` : null;
+    const alt = edition ? articleCardAlt(story) : story.image?.alt;
+    const dimensions = edition ? ` type="image/png" width="${NEWS_CARD_WIDTH}" height="${NEWS_CARD_HEIGHT}"` : '';
+    return `<item><title>${esc(story.headline)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><pubDate>${new Date(story.publishedAt).toUTCString()}</pubDate><category>${esc(competitionName(story.competition))}</category><description>${esc(story.dek ?? story.sections[0]?.text ?? story.headline)}</description>${image ? `<media:content url="${esc(image)}" medium="image"${dimensions}><media:description>${esc(alt ?? story.headline)}</media:description></media:content>` : ''}</item>`;
   }).join('')}</channel></rss>`;
 }

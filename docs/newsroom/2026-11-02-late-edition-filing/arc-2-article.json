@@ -1,13 +1,77 @@
 {
   "baselineAt": "2026-11-01T22:32:07Z",
   "competition": "arc-2",
-  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. Launch/manual preview, actual cutoff 2026-11-02T19:21:10Z; this is not the scheduled edition.",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
   "dataAsOf": "2026-11-02T19:15:17Z",
   "date": "2026-11-02",
+  "dek": "Kyoto’s grandmaster needed just one submission to crash into the leading pack. A spectacular arrival; a private-board reckoning still to come.",
+  "discord": "Kaggle’s #2 drops in on ARC-2: tascj posted a single run, scored 76.81 and arrived at #9.",
   "edition": "evening",
   "generatedBy": "claude-opus-5-5",
+  "headline": "tascj storms the summit chase",
   "id": "2026-11-02-evening-arc-2-preview",
+  "image": {
+    "alt": "An ARC GPU cyberpunk goose lands high on a GPU cliff while Daniel Franzen’s sunglasses-wearing duck climbs below.",
+    "artworkId": "2026-11-02-tascj-cyber-one-wingbeat-v1",
+    "caption": "Editorial illustration of the dated public-board arrival; final results remain unsettled.",
+    "src": "/news-images/2026-11-02-tascj-cyber-one-wingbeat-v1.webp"
+  },
+  "intakeReview": [
+    {
+      "disposition": "covered",
+      "id": "editorial-nov02-late-tascj-one-entry",
+      "reason": "tascj’s one-entry debut leads the ARC-2 story, with Daniel Franzen and Progress below it."
+    }
+  ],
   "publishedAt": "2026-11-02T19:21:10Z",
+  "sections": [
+    {
+      "heading": "A one-shot debut",
+      "sourceIds": [
+        "board",
+        "fact-17204147-0"
+      ],
+      "text": "One submission was enough to rattle the leading pack. The recorded submission timestamp and the first observed public score were more than a day apart; the observations do not reveal its processing time. It stormed into the top ten on arrival, then slipped outside it by the dated observation below. The newcomer is a Competitions Grandmaster based in Kyoto, Japan, and was near the very top of Kaggle’s overall competition rankings when the reporter checked on 2 November."
+    },
+    {
+      "heading": "Franzen’s other front",
+      "sourceIds": [
+        "board",
+        "fact-15607618-0"
+      ],
+      "text": "Daniel Franzen is fighting on another front. Alongside his ARC-3 work with The ARChitects, he plays ARC-2 alone—and his solo entry has made a major climb. The dated table shows the move."
+    },
+    {
+      "heading": "The infinity pair, here as Progress",
+      "sourceIds": [
+        "board",
+        "fact-15494357-0",
+        "fact-15494357-1"
+      ],
+      "text": "The infinity pair is making noise here too. Van-Phuc Huynh and Trần M. Tiến play ARC-2 as Progress, and they have hauled that entry sharply upward as well."
+    },
+    {
+      "heading": "Big climbs further down",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Hack2Publish delivered the biggest score gain in the table. KaggleARC and AndreasToescher also surged. Nearer the leaders, ibyyue climbed onto the gold cutoff. The pack is not waiting politely for the bell."
+    },
+    {
+      "heading": "The top six held",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The leading group held across the comparison window. Tufa Labs remains ahead of Yi-Chia Chen, with nvbanana and Domdolus Tolus behind them. ARC Mutants, the editor’s ARC-2 team, also improved. Exact standings belong in the dated table below."
+    },
+    {
+      "heading": "The private-board reckoning",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The published submission deadline is 2 November at 23:59 UTC. A public reading cannot tell us whether every submitted run has finished scoring. Medals are decided on the private leaderboard. One shot has already rattled the ledges. Where will this newcomer land when the private scores arrive?"
+    }
+  ],
   "sources": [
     {
       "accessedAt": "2026-11-02T19:21:10Z",
@@ -1598,56 +1662,6 @@
       "teamId": "15507730"
     }
   ],
-  "headline": "One run, #9 on arrival: Kaggle’s #2 drops in on ARC-2",
-  "dek": "tascj, the Kyoto grandmaster ranked second in all of Kaggle, posted a single ARC-2 run. It scored 76.81.",
-  "sections": [
-    {
-      "heading": "A one-shot debut",
-      "sourceIds": [
-        "board",
-        "fact-17204147-0"
-      ],
-      "text": "tascj has made exactly one ARC-2 submission, logged on Saturday evening. Its score, 76.81, reached the public board early on Monday, more than a day later. In places, that run arrived at #9; it is #11 this afternoon. tascj is a Competitions Grandmaster based in Kyoto, Japan, and when we checked on Monday was ranked #2 of 225,007 in Kaggle’s competition rankings."
-    },
-    {
-      "heading": "Franzen’s other front",
-      "sourceIds": [
-        "board",
-        "fact-15607618-0"
-      ],
-      "text": "Daniel Franzen, who plays ARC-3 with The ARChitects, plays ARC-2 alone. His score rose from 59.17 to 70.97 since Sunday evening. In places, he went from #47 to #28."
-    },
-    {
-      "heading": "The infinity pair, here as Progress",
-      "sourceIds": [
-        "board",
-        "fact-15494357-0",
-        "fact-15494357-1"
-      ],
-      "text": "Van-Phuc Huynh and Trần M. Tiến, whose ARC-3 team infinity leapt into the top ten overnight, play ARC-2 as Progress. Their score here rose from 33.47 to 42.50. In places, Progress went from #168 to #93."
-    },
-    {
-      "heading": "Big climbs further down",
-      "sourceIds": [
-        "board"
-      ],
-      "text": "Hack2Publish went from 34.58 to 54.17, the biggest gain in the table. KaggleARC went from 36.94 to 55.14, and AndreasToescher from 34.03 to 45.97. Nearer the top, ibyyue went from 69.17 to 75.14, a climb from #31 to #17."
-    },
-    {
-      "heading": "The top six held",
-      "sourceIds": [
-        "board"
-      ],
-      "text": "The top six places held today. Tufa Labs leads on 88.06, ahead of Yi-Chia Chen on 87.22, nvbanana on 83.89, Domdolus Tolus on 83.47, Sakayori Lab on 81.81 and rabbithole on 80.83. ARC Mutants, the Digest editor’s ARC-2 team, went from 47.08 to 50.83."
-    },
-    {
-      "heading": "Before the bell",
-      "sourceIds": [
-        "board"
-      ],
-      "text": "ARC-2 also closes at 6:59 pm Eastern. tascj’s score took more than a day to reach the public board, so late runs may keep landing after the bell. Medals are decided on the private leaderboard."
-    }
-  ],
   "teamIds": [
     "17204147",
     "15607618",
@@ -1660,13 +1674,5 @@
     "15501171",
     "15486939",
     "17023174"
-  ],
-  "discord": "Kaggle’s #2 drops in on ARC-2: tascj posted a single run, scored 76.81 and arrived at #9.",
-  "intakeReview": [
-    {
-      "id": "editorial-nov02-late-tascj-one-entry",
-      "disposition": "covered",
-      "reason": "tascj’s one-entry debut leads the ARC-2 story, with Daniel Franzen and Progress below it."
-    }
   ]
 }

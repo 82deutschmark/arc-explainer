@@ -7,7 +7,7 @@
  */
 import type { Express } from 'express';
 import path from 'node:path';
-const files = new Set(['AlfaSlabOne-Regular.ttf', 'IBMPlexSerif-Regular.ttf', 'IBMPlexSerif-Bold.ttf', 'IBMPlexMono-Regular.ttf', 'IBMPlexMono-Medium.ttf', 'IBMPlexSansCondensed-Bold.ttf', 'OFL-alfaslabone.txt', 'OFL-IBMPlexSerif.txt', 'OFL-ibmplexmono.txt', 'OFL-IBMPlexSansCondensed.txt']);
+const files = new Set(['AlfaSlabOne-Regular.ttf', 'Bangers-Regular.ttf', 'OFL-bangers.txt', 'IBMPlexSerif-Regular.ttf', 'IBMPlexSerif-Bold.ttf', 'IBMPlexMono-Regular.ttf', 'IBMPlexMono-Medium.ttf', 'IBMPlexSansCondensed-Bold.ttf', 'IBMPlexSansCondensed-Medium.ttf', 'NotoSansJP-Regular.ttf', 'OFL-NotoSansJP.txt', 'OFL-alfaslabone.txt', 'OFL-IBMPlexSerif.txt', 'OFL-ibmplexmono.txt', 'OFL-IBMPlexSansCondensed.txt']);
 export function mountNewsFonts(app: Express) {
   app.get('/api/news/fonts/:file', (req, res) => {
     if (!files.has(req.params.file)) return res.sendStatus(404);

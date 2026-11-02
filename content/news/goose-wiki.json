@@ -34,6 +34,12 @@
     "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg": "e5860c4a8c998039bf75d65d2e59e1d40f0fc89fa75b2b5b5dbf2d5c9c76213d",
     "/news-images/people/2026-11-02-jerome-sieber-tufa-portrait.jpg": "888a2e2341df4e767cd934794fe37fb9c3a534257d717d5d382f1a825df52760",
     "/news-images/people/2026-11-02-mohamed-osman-tufa-portrait.webp": "5e08180135a81c31fd3ed22d5fbe6706c6298b0ec936d34f60996dda9038d03e",
+    "/news-images/people/2026-11-02-tascj-arc-cyber-goose-character-v1.webp": "54a3b666441a1642a47dd0795a95ac8619ff1381b0f24926ff26bf6202b89cd3",
+    "/news-images/people/2026-11-02-tascj-kaggle.png": "830a51fe973a59565f81a14ad2ae6905108b3e124434b23e8081642c9cb43e67",
+    "/news-images/people/2026-11-02-tran-m-tien-cat-character-v1.webp": "d033fc6fb2d4b6fc065b49fceb81417bd84d0e6e833b91c06f77241c155e265b",
+    "/news-images/people/2026-11-02-tran-m-tien-kaggle.png": "1759ec419d20a82e66520cca52763330b92a03d0359e7a858ea0a2b1d3a9be3e",
+    "/news-images/people/2026-11-02-van-phuc-huynh-kaggle.jpg": "13f9697491a946bb54d1170d6c1a9aa45095c9fd524d2525a693c8fad65add66",
+    "/news-images/people/2026-11-02-van-phuc-huynh-storm-character-v1.webp": "9419d2e4885c2863e01a4d0af9dd9282b884a9dfe1159c8d3156da165ad9cca8",
     "/news-images/people/alijs.webp": "c782d20045ebd49229c23afb75272d20690889b28f14470b8480953b161dd057",
     "/news-images/people/alwin-theodoric.webp": "0439ed1fa1d06297dca285a905d511fddf3fc6fd87ab7ccc35ee4ee7d7c91fb2",
     "/news-images/people/chan-kha-vu.webp": "11a4e0b8d9eb596fde4a4dd9d766e352654def4a264d86e3f4b9dbd8f4d23aba",
@@ -3946,6 +3952,23 @@
     },
     {
       "aliases": [
+        "arc-2-15494357"
+      ],
+      "briefing": "Dated roster context for Progress. Read the linked Kaggle team page for current standings and membership; the story filing preserves the observed sporting event.",
+      "competition": "arc-2",
+      "facts": [],
+      "firstObservedAt": "2026-11-02T15:14:37Z",
+      "id": "arc-2-15494357",
+      "lastObservedAt": "2026-11-02T15:14:37Z",
+      "members": [
+        "hvanphucs112",
+        "trnmtin"
+      ],
+      "name": "Progress",
+      "teamId": "15494357"
+    },
+    {
+      "aliases": [
         "arc-2-15494960"
       ],
       "briefing": "Albert_Mikhail_Ruijie_Hannah in ARC Prize 2026 — ARC-AGI-2; roster last observed 2026-10-29T09:50:52Z.",
@@ -6301,6 +6324,22 @@
     },
     {
       "aliases": [
+        "arc-2-17204147"
+      ],
+      "briefing": "Dated roster context for tascj. Read the linked Kaggle team page for current standings and membership; the story filing preserves the observed sporting event.",
+      "competition": "arc-2",
+      "facts": [],
+      "firstObservedAt": "2026-11-02T15:14:37Z",
+      "id": "arc-2-17204147",
+      "lastObservedAt": "2026-11-02T15:14:37Z",
+      "members": [
+        "tascj0"
+      ],
+      "name": "tascj",
+      "teamId": "17204147"
+    },
+    {
+      "aliases": [
         "arc-3-15486995"
       ],
       "briefing": "ARC Prize named Tufa Labs and its Duck agent the first-place open-source solution for the June 2026 ARC-AGI-3 Milestone 1 prize.",
@@ -6502,6 +6541,23 @@
       ],
       "name": "amosokello451",
       "teamId": "15493226"
+    },
+    {
+      "aliases": [
+        "arc-3-15494354"
+      ],
+      "briefing": "Dated roster context for infinity. Read the linked Kaggle team page for current standings and membership; the story filing preserves the observed sporting event.",
+      "competition": "arc-3",
+      "facts": [],
+      "firstObservedAt": "2026-11-02T15:14:35Z",
+      "id": "arc-3-15494354",
+      "lastObservedAt": "2026-11-02T15:14:35Z",
+      "members": [
+        "hvanphucs112",
+        "trnmtin"
+      ],
+      "name": "infinity",
+      "teamId": "15494354"
     },
     {
       "aliases": [
@@ -8828,7 +8884,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "5ed089ce5860d91929c822df7c4491b097963b31c643cf12782ad67526ae0746",
+  "fingerprint": "65c433f193ed304063f993893f80b87b53972b827ad6f6f8a29abd7e4b9ddcf4",
   "people": [
     {
       "accounts": [
@@ -14272,6 +14328,53 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T19:15:00Z",
+          "handle": "tascj0",
+          "platform": "kaggle",
+          "sourceTitle": "tascj — public Kaggle profile, checked by filing reporter",
+          "sourceUrl": "https://www.kaggle.com/tascj0",
+          "url": "https://www.kaggle.com/tascj0"
+        }
+      ],
+      "briefing": "A Kaggle competitor with the public account tascj0, reported from Kyoto, Japan. Read the profile for current tier and rankings. His goose is treated as an ARC GPU cyberpunk character under the editor’s generic-goose rule.",
+      "editorialPortrait": {
+        "alt": "tascj represented by the reviewed avatar-based ARC character",
+        "artworkId": "2026-11-02-tascj-arc-cyber-goose-character-v1",
+        "checkedAt": "2026-11-02T22:15:06.392876+00:00",
+        "sourceTitle": "Own avatar adapted for the ARC competition theme",
+        "sourceUrl": "https://www.kaggle.com/tascj0",
+        "src": "/news-images/people/2026-11-02-tascj-arc-cyber-goose-character-v1.webp"
+      },
+      "facts": [],
+      "hallOfFame": [],
+      "id": "tascj",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-11-02T15:14:37Z",
+          "lastObservedAt": "2026-11-02T15:14:37Z",
+          "memberHandle": "tascj0",
+          "season": "2026",
+          "sourceTitle": "Dated public team roster filed by reporter",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard?teamId=17204147",
+          "teamId": "17204147",
+          "teamName": "tascj"
+        }
+      ],
+      "name": "tascj",
+      "portrait": {
+        "alt": "tascj’s own Kaggle avatar",
+        "checkedAt": "2026-11-02T19:15:00Z",
+        "kind": "kaggle",
+        "sourceTitle": "Own Kaggle profile avatar filed by reporter",
+        "sourceUrl": "https://www.kaggle.com/tascj0",
+        "src": "/news-images/people/2026-11-02-tascj-kaggle.png"
+      }
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:26:08.724960Z",
           "handle": "ttyn4519",
           "platform": "kaggle",
@@ -14374,6 +14477,65 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-02T19:15:00Z",
+          "handle": "trnmtin",
+          "platform": "kaggle",
+          "sourceTitle": "Trần M. Tiến — public Kaggle profile, checked by filing reporter",
+          "sourceUrl": "https://www.kaggle.com/trnmtin",
+          "url": "https://www.kaggle.com/trnmtin"
+        }
+      ],
+      "briefing": "The public Kaggle account trnmtin belongs to Trần M. Tiến. His own white-cat avatar supplies the round glasses and blue book; the dated roster links distinguish his entries across contests.",
+      "editorialPortrait": {
+        "alt": "Trần M. Tiến represented by the reviewed avatar-based ARC character",
+        "artworkId": "2026-11-02-tran-m-tien-cat-character-v1",
+        "checkedAt": "2026-11-02T22:15:06.392876+00:00",
+        "sourceTitle": "Own avatar adapted for the ARC competition theme",
+        "sourceUrl": "https://www.kaggle.com/trnmtin",
+        "src": "/news-images/people/2026-11-02-tran-m-tien-cat-character-v1.webp"
+      },
+      "facts": [],
+      "hallOfFame": [],
+      "id": "tran-m-tien",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-11-02T15:14:37Z",
+          "lastObservedAt": "2026-11-02T15:14:37Z",
+          "memberHandle": "trnmtin",
+          "season": "2026",
+          "sourceTitle": "Dated public team roster filed by reporter",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard?teamId=15494357",
+          "teamId": "15494357",
+          "teamName": "Progress"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-11-02T15:14:35Z",
+          "lastObservedAt": "2026-11-02T15:14:35Z",
+          "memberHandle": "trnmtin",
+          "season": "2026",
+          "sourceTitle": "Dated public team roster filed by reporter",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard?teamId=15494354",
+          "teamId": "15494354",
+          "teamName": "infinity"
+        }
+      ],
+      "name": "Trần M. Tiến",
+      "portrait": {
+        "alt": "Trần M. Tiến’s own Kaggle avatar",
+        "checkedAt": "2026-11-02T19:15:00Z",
+        "kind": "kaggle",
+        "sourceTitle": "Own Kaggle profile avatar filed by reporter",
+        "sourceUrl": "https://www.kaggle.com/trnmtin",
+        "src": "/news-images/people/2026-11-02-tran-m-tien-kaggle.png"
+      }
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:42:34.924214+00:00",
           "handle": "rinnnntt",
           "platform": "kaggle",
@@ -14444,6 +14606,65 @@
         }
       ],
       "name": "Tri Ardian Rinalda"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-02T19:15:00Z",
+          "handle": "hvanphucs112",
+          "platform": "kaggle",
+          "sourceTitle": "Van-Phuc Huynh — public Kaggle profile, checked by filing reporter",
+          "sourceUrl": "https://www.kaggle.com/hvanphucs112",
+          "url": "https://www.kaggle.com/hvanphucs112"
+        }
+      ],
+      "briefing": "A bioinformatics software developer whose public Kaggle account is hvanphucs112. His avatar supplies the red-rock thunderstorm character; verify changing standings at his profile.",
+      "editorialPortrait": {
+        "alt": "Van-Phuc Huynh represented by the reviewed avatar-based ARC character",
+        "artworkId": "2026-11-02-van-phuc-huynh-storm-character-v1",
+        "checkedAt": "2026-11-02T22:15:06.392876+00:00",
+        "sourceTitle": "Own avatar adapted for the ARC competition theme",
+        "sourceUrl": "https://www.kaggle.com/hvanphucs112",
+        "src": "/news-images/people/2026-11-02-van-phuc-huynh-storm-character-v1.webp"
+      },
+      "facts": [],
+      "hallOfFame": [],
+      "id": "van-phuc-huynh",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-11-02T15:14:37Z",
+          "lastObservedAt": "2026-11-02T15:14:37Z",
+          "memberHandle": "hvanphucs112",
+          "season": "2026",
+          "sourceTitle": "Dated public team roster filed by reporter",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard?teamId=15494357",
+          "teamId": "15494357",
+          "teamName": "Progress"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-11-02T15:14:35Z",
+          "lastObservedAt": "2026-11-02T15:14:35Z",
+          "memberHandle": "hvanphucs112",
+          "season": "2026",
+          "sourceTitle": "Dated public team roster filed by reporter",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard?teamId=15494354",
+          "teamId": "15494354",
+          "teamName": "infinity"
+        }
+      ],
+      "name": "Van-Phuc Huynh",
+      "portrait": {
+        "alt": "Van-Phuc Huynh’s own Kaggle avatar",
+        "checkedAt": "2026-11-02T19:15:00Z",
+        "kind": "kaggle",
+        "sourceTitle": "Own Kaggle profile avatar filed by reporter",
+        "sourceUrl": "https://www.kaggle.com/hvanphucs112",
+        "src": "/news-images/people/2026-11-02-van-phuc-huynh-kaggle.jpg"
+      }
     },
     {
       "accounts": [
@@ -16731,6 +16952,75 @@
         "setId": "kaggleverse-2026"
       },
       {
+        "art": {
+          "alt": "van phuc huynh storm character v1",
+          "artworkId": "2026-11-02-van-phuc-huynh-storm-character-v1",
+          "commissionedAt": "2026-11-02T22:15:06.392876+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/2026-11-02-van-phuc-huynh-storm-character-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-11-02-van-phuc-huynh-storm-character-v1.md"
+        ],
+        "description": "A bioinformatics software developer whose public Kaggle account is hvanphucs112. His avatar supplies the red-rock thunderstorm character; verify changing standings at his profile.",
+        "entries": [],
+        "id": "person-van-phuc-huynh-2026",
+        "issuedAt": "2026-11-02T22:15:08+00:00",
+        "kind": "person",
+        "name": "Van-Phuc Huynh",
+        "number": "P088",
+        "personId": "van-phuc-huynh",
+        "season": "2026",
+        "setId": "2026"
+      },
+      {
+        "art": {
+          "alt": "tran m tien cat character v1",
+          "artworkId": "2026-11-02-tran-m-tien-cat-character-v1",
+          "commissionedAt": "2026-11-02T22:15:06.392876+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/2026-11-02-tran-m-tien-cat-character-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-11-02-tran-m-tien-cat-character-v1.md"
+        ],
+        "description": "The public Kaggle account trnmtin belongs to Trần M. Tiến. His own white-cat avatar supplies the round glasses and blue book; the dated roster links distinguish his entries across contests.",
+        "entries": [],
+        "id": "person-tran-m-tien-2026",
+        "issuedAt": "2026-11-02T22:15:09+00:00",
+        "kind": "person",
+        "name": "Trần M. Tiến",
+        "number": "P089",
+        "personId": "tran-m-tien",
+        "season": "2026",
+        "setId": "2026"
+      },
+      {
+        "art": {
+          "alt": "tascj arc cyber goose character v1",
+          "artworkId": "2026-11-02-tascj-arc-cyber-goose-character-v1",
+          "commissionedAt": "2026-11-02T22:15:06.392876+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/2026-11-02-tascj-arc-cyber-goose-character-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-11-02-tascj-arc-cyber-goose-character-v1.md"
+        ],
+        "description": "A Kaggle competitor with the public account tascj0, reported from Kyoto, Japan. Read the profile for current tier and rankings. His goose is treated as an ARC GPU cyberpunk character under the editor’s generic-goose rule.",
+        "entries": [],
+        "id": "person-tascj-2026",
+        "issuedAt": "2026-11-02T22:15:10+00:00",
+        "kind": "person",
+        "name": "tascj",
+        "number": "P090",
+        "personId": "tascj",
+        "season": "2026",
+        "setId": "2026"
+      },
+      {
         "artFallback": "none",
         "artNotes": [],
         "description": "Tufa Labs lists Mohamed Osman as an AI researcher. He coauthored research on ARC with Jack Cole.",
@@ -16787,7 +17077,7 @@
         "publisher": "The ARC Daily Digest",
         "season": "2026",
         "setName": "ARC Prize 2026",
-        "timeZone": "America/New_York"
+        "timeZone": "UTC"
       },
       {
         "competitionIds": [],
@@ -16797,7 +17087,7 @@
         "publisher": "The Loose Goose",
         "season": "2026",
         "setName": "Kaggleverse 2026",
-        "timeZone": "America/New_York"
+        "timeZone": "UTC"
       }
     ],
     "sponsors": {

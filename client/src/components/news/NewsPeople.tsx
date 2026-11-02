@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-29; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 02-November-2026; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards)
  * PURPOSE: Reusable person pieces for competition reporting: faces (Hall of Fame crop or saved
  *          Kaggle picture, initials when a person has neither), roster chips, the "in this story"
  *          subject cards for every reported person, directory cards and honors that link to the person's Hall of Fame cards.
@@ -52,7 +52,7 @@ export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]
     <h2 className="news-story-people-label">In this story</h2>
     {!!withCard.length && <div className="news-story-cards">{withCard.map(({ person, card }) => <Link key={card!.id} href={card!.cardUrl} className="news-story-card">
       <img src={`/api/news/cards/${encodeURIComponent(card!.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card!)}`} width={300} height={420} loading="lazy"
-        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} />
+        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} /><span className="news-story-card-name">{person.name}</span>
     </Link>)}</div>}
     {!!without.length && <div className="news-story-people-grid">{without.map(({ person }) => {
       const team = [...person.memberships].reverse().find(member => member.competition === competition);

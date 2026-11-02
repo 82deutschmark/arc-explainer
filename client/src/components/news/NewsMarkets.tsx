@@ -31,16 +31,15 @@ export const marketBoards = (markets?: MarketsPayload) =>
 const fig = (value: number) => String(value);
 const count = (value: number) => value.toLocaleString('en-US');
 const ordinal = (n: number) => `#${n.toLocaleString('en-US')}`;
-/** Eastern clock time of a save, e.g. "7:54 pm ET". */
-export const clockEt = (iso: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' })
-  .format(new Date(iso)).replace(/\s?([AP])M$/, (_, half: string) => ` ${half.toLowerCase()}m`) + ' ET';
+/** One 24-hour UTC clock for every reader. */
+export const clockUtc = (iso: string) => new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso)) + ' UTC';
 
 /** A signed change with a direction mark, a dash when unchanged, blank when unknown. */
 export function Change({ value, digits = 2 }: { value: number | null; digits?: number }) {
   if (value == null) return null;
   if (Math.abs(value) < 0.005) return <span className="news-chg is-flat" title="Unchanged">–</span>;
   const size = digits ? String(Number(Math.abs(value).toPrecision(15))) : count(Math.abs(value));
-  return <span className={`news-chg ${value > 0 ? 'is-up' : 'is-down'}`}><span aria-hidden="true">{value > 0 ? '▲' : '▼'}</span>{value > 0 ? '+' : '−'}{size}</span>;
+  return <span className={`news-chg ${digits ? "sd" : ""} ${value > 0 ? 'is-up' : 'is-down'}`}><span aria-hidden="true">{value > 0 ? '▲' : '▼'}</span>{value > 0 ? '+' : '−'}{size}</span>;
 }
 
 /** Places moved: ▲4, ▼2, NEW, a dash for no move, blank when unknown. */
@@ -83,7 +82,7 @@ export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
         {days != null && <div><dt>Close</dt><dd><b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div>}
       </dl>;
     })}
-    <p className="news-ticker-note">Public boards saved {clockEt(boards[0].fetched)} · change over the past day · medals settle on the private board</p>
+    <p className="news-ticker-note">Public boards saved {clockUtc(boards[0].fetched)} · change over the past day · medals settle on the private board</p>
   </section>;
 }
 
@@ -148,7 +147,7 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
           {!!board.outOfGold.length && <><strong>Out of gold:</strong> {board.outOfGold.map((row, index) => <span key={row.teamId}>{index ? ', ' : ''}<TeamName row={row} competition={board.competition} links={links} /> ({ordinal(row.rank)})</span>)}.</>}
         </p>}
         <p className="news-muted">{board.since
-          ? <>{count(board.improved)} teams with comparison evidence raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {clockEt(board.since)} the day before.</>
+          ? <>{count(board.improved)} teams with comparison evidence raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {clockUtc(board.since)} the day before.</>
           : 'No save from a day earlier, so the past day’s changes are unknown.'}</p>
       </div>;
     })}

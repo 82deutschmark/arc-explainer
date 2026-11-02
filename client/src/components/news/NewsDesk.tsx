@@ -25,7 +25,7 @@
  *          the compact cast cards follow it instead of sitting under the byline.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
-import { useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
@@ -63,24 +63,24 @@ export { newsDate, competitionName };
 
 export const sortedArticles = (articles: NewsArticle[]) => [...articles].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
 
-/** Weekday and date in Eastern time, as a dateline prints it: "Friday, October 9, 2026". */
+/** Weekday and date in UTC, as a dateline prints it: "Friday, October 9, 2026". */
 export function datelineDate(value: string): string {
   const date = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
   return Number.isFinite(date.getTime())
-    ? new Intl.DateTimeFormat('en-GB', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
+    ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date) + ' · UTC'
     : 'Date unavailable';
 }
 
-/** Days until both boards close (they share a deadline) and the close date in Eastern time; null once past or unknown. */
+/** Days until both boards close (they share a deadline) and the close date in UTC; null once past or unknown. */
 export function theClose(now = Date.now()): { days: number; date: string } | null {
   const close = closeMs(KAGGLE_COMPETITIONS['arc-3']);
   const days = daysToClose(KAGGLE_COMPETITIONS['arc-3'], now);
-  return close != null && days ? { days, date: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
+  return close != null && days ? { days, date: new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
 }
 
 /** The paper's section links; the slim Cabinet bar and the broadsheet masthead print the same list. */
 export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { className?: string; brand?: typeof NEWS_BRAND }) {
-  return <nav className={className} aria-label={`${NEWS_NAME} sections`}>
+  return <nav className={className} aria-label={`${brand.name} sections`}>
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
     <Link href="/news/cards">{brand.goose ? 'Cards' : 'ARC Prize Cards'}</Link>
@@ -97,22 +97,27 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
   </nav>;
 }
 
-export function NewsPaper({ children, frontPage = false, date, edition, issue, brand = NEWS_BRAND }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number; brand?: typeof NEWS_BRAND }) {
+export const NewsBrandContext = createContext(NEWS_BRAND);
+export function NewsPaper({ children, frontPage = false, date, edition, issue, brand: explicitBrand }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number; brand?: typeof NEWS_BRAND }) {
+  const inheritedBrand = useContext(NewsBrandContext);
+  const brand = explicitBrand ?? inheritedBrand;
   const close = theClose();
-  const name = brand.goose ? <><small>The</small><span>{brand.name.replace(/^The /, '')}</span></> : brand.name;
-  return <div className={`arc-daily${brand.goose ? ' is-goose' : ''}`}>
+  const name = brand.name;
+  return <NewsBrandContext.Provider value={brand}><div className={`arc-daily${brand.goose ? ' is-goose' : ''}`}>
     <div className="news-paper">
       <header className={`news-masthead${frontPage ? ' is-front' : ''}`}>
         <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
-        {brand.goose ? <div className="news-goose-banner">
+        {brand.goose ? <div className={`news-goose-banner${brand.banner ? " has-world" : ""}`}>
+          {brand.banner && <img className="news-banner-world" src={brand.banner} alt="" width={2172} height={724} />}
+          <div className="news-brand-lockup">
           <Link href="/news" className="news-brand-art" aria-label={`${brand.name} front page`}><img src={brand.logo!} alt="The Loose Goose reporter, in the approved artwork" /></Link>
           <div className="news-brand-type"><p className="news-brand-overline">The sports tabloid of the Kaggleverse</p>
             {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}
             <div className="news-brand-dateline">{edition && <strong>{editionName(edition)} edition · </strong>}{date && datelineDate(date)}</div>
-          </div>
+          </div></div>
         </div> : <div className="news-brand-row"><div className="news-ear"><strong>{edition ? `${editionName(edition)} edition` : 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
           {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}<MastheadAd /></div>}
-        <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Early edition 6 am · Late edition 6 pm Eastern · The wire all day</span>}</div>
+        <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Competition news · All times UTC</span>}</div>
         <NewsNav brand={brand} />
         {brand.goose && <div className="news-sponsor-rail"><MastheadAd /></div>}
       </header>
@@ -122,7 +127,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue, b
         <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · {brand.goose ? <a href="https://github.com/Autoresearch-Arena/loose-goose">An Autoresearch Arena publication →</a> : <Link href="/home">An ARC Explainer publication →</Link>}
       </footer>
     </div>
-  </div>;
+  </div></NewsBrandContext.Provider>;
 }
 
 /** Front-page info box: what the paper is, where its data comes from, and who to tell when it is wrong. */
@@ -139,7 +144,7 @@ export function AboutThisPaper() {
         <li><strong>Written by AI.</strong> Reporting desks draft stories from saved standings and linked sources. Newsroom helpers check citations, format and box-score figures before publication.</li>
         <li><strong>The numbers.</strong> Standings come from the public Kaggle leaderboards, saved every half hour. Movers compare with the save about a day earlier, and anything the saved history cannot support is left blank.</li>
         <li><strong>The people.</strong> Stories also draw on public X posts, Kaggle discussions and profiles, and linked primary sources. A contestant's claim is kept apart from an established result.</li>
-        <li><strong>The schedule.</strong> An early edition at 6 am and a late edition at 6 pm Eastern, short wire stories through the day, and each edition is posted to X. If a scheduled run fails, a backup writer covers it and the story says so.</li>
+        <li><strong>The schedule.</strong> Reports carry their actual publication and observation dates in UTC. Follow the RSS feed for new stories; public standings remain provisional until official results.</li>
         </>}
         <li><strong>Provisional.</strong> Public standings are not final; the private leaderboard decides the results.</li>
       </ul>
@@ -172,14 +177,14 @@ export function EditionArtwork({ article, lead = false }: { article: NewsArticle
  * An edition-bound illustration takes precedence over a same-day companion dispatch's art.
  */
 export function StoryPreview({ article, feature, lead = false, people = [], sections = 0, art }: { article: NewsArticle; feature?: NewsDispatch; lead?: boolean; people?: NewsPerson[]; sections?: number; art?: ReactNode }) {
+  const publication = useContext(NewsBrandContext);
   const shown = article.sections.slice(0, sections);
   const more = article.sections.length > shown.length;
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link></h2>
     <p className="news-dek"><SportsText text={article.dek} stats={article.stats} /></p>
-    <div className="news-byline">By {NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    <NumberKey stats={article.stats} competition={article.competition} />
+    <div className="news-byline">By {publication.name} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
     {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
     {feature?.image?.src !== article.image?.src && (article.image ? <EditionArtwork article={article} lead={lead} /> : art)}
     {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={article.stats} /></div>}

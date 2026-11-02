@@ -270,9 +270,9 @@ function contestFor(ctx: Context, card: CollectionCard, entry: CollectionEntry, 
     return { handle: m.handle, name: m.name, personId: pid ?? null, tier: (pid ? ctx.tierByPerson.get(pid) : null) ?? null,
       medals: career?.medals ?? null, cardUrl: m.cardUrl ?? null, self: ownHandles.has(lowerHandle(m.handle)) };
   });
-  const teamSize = entry.members.length;
+  const teamSize = entry.members.length || null;
   // A solo entry: one account, or a team that only carries the competitor's own handle as its name.
-  const solo = teamSize <= 1 || ownHandles.has(lowerHandle(entry.teamName));
+  const solo = teamSize === 1 && roster.some(member => member.self);
   return {
     competition: slug, name, shortName: label, season: yearIn(name) ?? yearIn(slug),
     team: solo ? null : { id: entry.teamId, name: entry.teamName, size: teamSize }, solo, teamSize,
@@ -281,7 +281,7 @@ function contestFor(ctx: Context, card: CollectionCard, entry: CollectionEntry, 
     fieldSize: null as number | null, fieldSizeHint: entry.fieldSize != null ? { teams: entry.fieldSize, at: null, gapMinutes: null } : null,
     zone: entry.zone, score: entry.score, submissions: entry.submissions,
     asOf: stamp, asOfDate: stamp ? localDay(stamp, set.timeZone) : null,
-    status: entry.status === 'final' ? 'final' : entry.status === 'unavailable' ? null : 'live',
+    status: entry.status === 'final' ? 'final' : entry.status === 'unavailable' ? 'observed' : 'live',
     closesAt: KAGGLE_COMPETITIONS[entry.competition]?.closeAt ?? null,
     url: `https://www.kaggle.com/competitions/${slug}/leaderboard`, roster,
   };
@@ -398,7 +398,7 @@ function enrichOne(ctx: Context, card: CollectionCard) {
     tier, medals: kind === 'competitor' ? career?.medals ?? null : null,
     rank: kind === 'competitor' && career?.rank?.current ? { current: career.rank.current, outOf: career.rank.outOf, best: career.rank.best, asOf: career.checkedAt } : null,
     asOf, asOfDate: asOf ? localDay(asOf, set.timeZone) : null,
-    status: statuses.size ? (statuses.has('live') ? 'live' : 'final') : null,
+    status: statuses.has('live') ? 'live' : statuses.size === 1 && statuses.has('final') ? 'final' : null,
     solo: kind !== 'team' && contests.length > 0 && contests.every(c => c.solo),
     contests, pastTeams, career: kind === 'competitor' ? careerFor(ctx, card) : null,
     honors: kind === 'team' ? [] : honors, previousCards, art: artFor(ctx, card), roster,
@@ -454,7 +454,8 @@ function contestLines(c: any): Fact[] {
   if (!lead) return out;
   if (lead.peakRank && lead.rank && lead.peakRank < lead.rank) out.push(line(`Peak position #${lead.peakRank} in ${lead.shortName}.`, 'contests[0].peakRank'));
   if (lead.submissions) out.push(line(`${fmt(lead.submissions)} submissions so far in ${lead.shortName}.`, 'contests[0].submissions'));
-  out.push(line(lead.teamSize === 1 ? `Competing solo in ${lead.shortName}.` : `Teamed with ${lead.teamSize - 1} other account${lead.teamSize !== 2 ? 's' : ''} in ${lead.shortName}.`, 'contests[0].teamSize'));
+  if (lead.status === 'observed') out.push(line(`Roster observation in ${lead.shortName}; current standings at Kaggle.`, 'contests[0].status'));
+  else if (lead.teamSize != null) out.push(line(lead.teamSize === 1 ? `Competing solo in ${lead.shortName}.` : `Teamed with ${lead.teamSize - 1} other account${lead.teamSize !== 2 ? 's' : ''} in ${lead.shortName}.`, 'contests[0].teamSize'));
   return out;
 }
 

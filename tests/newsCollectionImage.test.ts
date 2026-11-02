@@ -47,7 +47,8 @@ describe('Card Cabinet PNG export', () => {
   it.each(['mark-barney', 'son-pham'])('draws %s’s permanent profile without inventing unavailable current standings', { timeout: 30_000 }, async personId => {
     const person = collection.cards.find(item => item.personId === personId)!;
     const text = drawn(await cardFaceNode(person, collection));
-    expect(person.entries).toEqual([]);
+    expect(person.entries.every(entry => entry.status === 'unavailable' && entry.rank == null && entry.score == null)).toBe(true);
+    expect(cardFaceModel(person, collection).model.status).not.toBe('final');
     expect(text).toContain(person.number);
     expect(text).not.toMatch(/RANK #|SCORE [0-9]/);
     expect(await sharp(await buildCollectionCardImage(person, collection)).metadata()).toMatchObject({ format: 'png', width: 750, height: 1050 });

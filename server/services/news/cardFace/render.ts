@@ -302,7 +302,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
     const textW = W - 2 * FL.T - 28;
     const text = vm.bare ? null : vm.bio ?? vm.facts.slice(0, 2).join(' ');   // a bare card's bio only repeats the footer handle
     let avail = tableH - 6, org: Node | null = null;
-    const heading = vm.organisation ?? (vm.bare ? 'NO STANDINGS YET' : null);
+    const heading = vm.organisation ?? (vm.bare ? 'STANDINGS AT KAGGLE' : null);
     if (heading) { org = box({ fontFamily: ff(FONT.slab), fontSize: vm.bare ? 50 : 27, color: WHITE, lineHeight: 1.05, textTransform: 'uppercase', whiteSpace: 'nowrap', marginBottom: 5 }, heading); avail -= vm.bare ? 56 : 33; }
     let bioSize = 16;
     if (text) for (const s of [23, 21, 19, 17, 16]) { bioSize = s; if ((await wrappedHeight(text, FONT.cond, 500, s, 1.22, textW)) <= avail) break; }

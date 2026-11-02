@@ -27,7 +27,7 @@ export const NEWS_HUMAN_EDITOR = {
 
 const WRITER_ROLES: Record<NewsWriter, { role: string; description: string; current: boolean }> = {
   'gpt-6.1-sol': { role: 'Editions, features and research', description: 'Writes the morning and evening editions and substantial features, develops public-source reporting, and prepares the personal briefings and daily X recap. The edition desk selects the lead stories and develops the wire with context and analysis.', current: true },
-  'gpt-6-luna': { role: 'The wire desk', description: 'Checks both competition boards every two hours, including midnight Eastern, and files short sourced reports on consequential moves that have not yet been covered.', current: true },
+  'gpt-6-luna': { role: 'The wire desk', description: 'Files short sourced reports on consequential competition moves that have not yet been covered.', current: true },
   'gpt-6-sol': { role: 'Earlier reporting', description: 'Wrote earlier editions and worked the research, briefing and social desks before their move to GPT-6.1 Sol. Those published stories keep their original writer credits.', current: false },
   'claude-sonnet-5-5': { role: 'The backup desk', description: 'Covers missed editions through the Claude Code subscription. Backup stories identify the model that wrote them and follow the same reporting rules.', current: true },
   'claude-haiku-5-5': { role: 'The backup wire desk', description: 'Files the wire when the regular wire desk is not running, through the Claude Code subscription. Its stories carry its name and follow the same reporting rules.', current: true },

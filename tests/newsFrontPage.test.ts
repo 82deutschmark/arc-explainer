@@ -218,7 +218,7 @@ test('the morning cast row links xz and Chen to their wiki-backed cards after th
   const article = index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!;
   expect(featuredPerson(article, index.people!)?.id).toBe('xz');
   const subjects = reportedPeople([article], index.people!);
-  expect(subjects.map(person => person.id)).toEqual(['xz', 'yi-chia-chen']);
+  expect(subjects.map(person => person.id)).toEqual(expect.arrayContaining(['xz', 'yi-chia-chen']));
   const html = render(NewsArticle, `/news/${article.id}`, index);
   const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
   for (const subject of subjects) {
@@ -272,4 +272,12 @@ test('every special report opens at its permanent URL with its full text and art
     if (dispatch.image) expect(html).toContain(dispatch.image.src);
     expect(html).toContain('news-dispatch-text');
   }
+});
+
+test('includes the sourced cast of the lead team, scoped to its competition', () => {
+  const index = getNewsIndex();
+  const article = index.articles.find(a => a.id === '2026-11-02-morning-arc-2')!;
+  const ids = reportedPeople([article], index.people!).map(p => p.id);
+  for (const id of ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel']) expect(ids).toContain(id);
+  expect(ids[0]).toBe('dries-smit');
 });

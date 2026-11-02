@@ -9,7 +9,7 @@
 import config from './newsBrand.json';
 
 export interface NewsBrandConfig {
-  version: number; enabled: boolean; notBefore: string; name: string; legacyName: string; logo: string; tagline: string;
+  banner?: string; version: number; enabled: boolean; notBefore: string; name: string; legacyName: string; logo: string; tagline: string;
   requiredCompetitions: string[];
   closeChecks: { competition: string; status: string; sourceUrl: string; checkedAt: string; closeAt: string }[];
 }
@@ -28,7 +28,7 @@ export function newsBrandAt(now = Date.now(), value: NewsBrandConfig = config) {
       } catch { return false; }
     }));
   return { name: ready ? value.name : value.legacyName, logo: ready ? value.logo : null,
-    tagline: ready ? value.tagline : null, goose: ready };
+    tagline: ready ? value.tagline : null, ...(ready && value.banner ? { banner: value.banner } : {}), goose: ready };
 }
 
 export const NEWS_BRAND = newsBrandAt();

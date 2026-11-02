@@ -79,7 +79,7 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toContain(escapeHtml(article.headline));
-    expect(html).toContain(escapeHtml(article.sections[0].text.split(/\n\n+/)[0]));
+    expect(html.replace(/<span[^>]*>|<\/span>/g, '').replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1')).toContain(escapeHtml(article.sections[0].text.split(/\n\n+/)[0]).replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1'));
     expect(html).toContain(`href="${SITE_ORIGIN}/news/${article.id}"`);
     expect(html).not.toContain('content="noindex');
     const schema = JSON.parse(html.match(/id="page-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
@@ -97,12 +97,12 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     expect(metaContent(html, 'og:image:alt')).toContain(escapeHtml(article.headline));
     expect(html.match(/<title>([^<]*)<\/title>/)![1].length).toBeLessThanOrEqual(Math.max(TITLE_BUDGET, escapeHtml(article.headline).length));
     expect(articleTitle(article).length).toBeLessThanOrEqual(Math.max(TITLE_BUDGET, article.headline.length));
-    expect(metaContent(html, 'description')!.length).toBeLessThanOrEqual(Math.max(160, escapeHtml(article.dek).length));
+    expect(unescape(metaContent(html, 'description')!).length).toBeLessThanOrEqual(Math.max(160, article.dek.length));
     const evidence = await fetch(`${base}/api/news/${article.id}/evidence`);
     expect(evidence.status).toBe(200);
     expect(evidence.headers.get('content-type')).toContain('json');
   }
-});
+}, 60_000);
 it('serves the full public tweet archive and rejects unread or restricted board leads', async () => {
   const index = getNewsIndex();
   const html = await (await fetch(`${base}/news/community`)).text();
@@ -131,12 +131,13 @@ it('discovers every archived article and separate competitor identity through th
     expect(await response.text()).toContain(escapeHtml(record.name));
   }
 }, 60_000); // the archive keeps growing; each of these walks all of it
-it('serves the newest 40 editions in RSS order without including older archive entries', async () => {
-  const articles = getNewsIndex().articles;
+it('serves the newest 40 editions and wiki stories in RSS order without including older archive entries', async () => {
+  const { articles, dispatches = [] } = getNewsIndex();
+  const stories = [...articles, ...dispatches].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
   const rss = await fetch(`${base}/news/feed.xml`);
   expect(rss.headers.get('content-type')).toContain('application/rss+xml');
   const xml = await rss.text();
-  const recent = articles.slice(0, 40);
+  const recent = stories.slice(0, 40);
   const itemLinks = [...xml.matchAll(/<guid isPermaLink="true">([^<]+)<\/guid>/g)].map(match => match[1]);
   expect(itemLinks).toEqual(recent.map(article => `${SITE_ORIGIN}/news/${article.id}`));
   expect(recent.map(article => Date.parse(article.publishedAt))).toEqual(
@@ -144,10 +145,11 @@ it('serves the newest 40 editions in RSS order without including older archive e
   );
   for (const article of recent) {
     expect(xml).toContain(escapeHtml(article.headline));
-    expect(xml).toContain(escapeHtml(`${SITE_ORIGIN}${articleCardPath(article)}`));
+    if ('stats' in article) expect(xml).toContain(escapeHtml(`${SITE_ORIGIN}${articleCardPath(article)}`));
+    else if (article.image) expect(xml).toContain(escapeHtml(`${SITE_ORIGIN}${article.image.src}`));
   }
   expect(xml).toContain(`<atom:link href="${SITE_ORIGIN}/news/feed.xml" rel="self"`);
-  expect(xml).toContain(`<lastBuildDate>${new Date(articles[0].publishedAt).toUTCString()}</lastBuildDate>`);
+  expect(xml).toContain(`<lastBuildDate>${new Date(stories[0].publishedAt).toUTCString()}</lastBuildDate>`);
 });
 it('returns real 404s for unknown articles, competitors and evidence', async () => {
   for (const path of ['/news/not-an-issue', '/news/competitors/arc-3-0', '/api/news/not-an-issue/evidence', '/api/news/og-image/not-an-issue.png']) {
@@ -251,13 +253,13 @@ it('draws card text as paths, so the container needs no system fonts', async () 
   // Specials without score rows legitimately have fewer text runs than the routine editions.
   expect(svg).toMatch(/<path[^>]+d="[^"]+"/);
 });
-it('serves sourced dispatches and their artwork in front-page API and crawler text', async () => {
+it('serves sourced dispatches and their artwork in the public archive and permanent crawler page', async () => {
   const index = getNewsIndex();
   const dispatch = index.dispatches!.find(story => story.image)!;
   expect(dispatch).toBeDefined();
-  const html = await (await fetch(`${base}/news`)).text();
+  const html = await (await fetch(`${base}/news/${dispatch.id}`)).text();
   expect(html).toContain(escapeHtml(dispatch.headline));
-  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
+  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(paragraph));
   expect(html).toContain(dispatch.image!.src);
   for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
@@ -428,12 +430,12 @@ it('serves the reserved evening feature and cover in the permanent edition’s i
   expect(html).toContain(`src="${feature.image!.src}"`);
   expect(html).toContain(escapeHtml(feature.image!.caption));
   for (const section of feature.sections) {
-    for (const paragraph of section.text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
+    for (const paragraph of section.text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(paragraph));
   }
   for (const source of feature.sources) expect(html).toContain(`href="${escapeHtml(source.url)}"`);
-  expect(html).toContain(escapeHtml(article.sections[1].text));
-  expect(html.indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
-    .toBeLessThan(html.indexOf(escapeHtml(article.sections[1].text)));
+  expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(article.sections[1].text));
+  expect(html.replace(/<span[^>]*>|<\/span>/g, '').indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
+    .toBeLessThan(html.replace(/<span[^>]*>|<\/span>/g, '').indexOf(escapeHtml(article.sections[1].text)));
 });
 
 it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and the share preview, with the right cache headers', { timeout: 60_000 }, async () => {

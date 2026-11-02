@@ -155,8 +155,8 @@ function puzzleColumn(puzzle: CardPuzzle): Node {
 const identityColumn = (short: boolean): Node[] => [
   kicker('What this is', { fontSize: 19 }),
   headlineBlock(NEWS_BRAND.goose ? 'The sports tabloid of the Kaggleverse.' : 'The ARC Prize 2026 leaderboards, reported daily.', short ? 30 : 50, 3, { marginTop: 10 }),
-  dek(short ? 'Early edition at 6 am, late edition at 6 pm Eastern: box scores, medal lines, movers and sourced notes on the teams.'
-    : 'Early edition at 6 am and late edition at 6 pm Eastern, with wire stories between: box scores, medal lines, the day’s movers and sourced notes on the teams, for ARC-AGI-3 and ARC-AGI-2.', short ? 20 : 26, 4, { marginTop: 12 }),
+  dek(short ? 'Competition news, box scores, meaningful moves and the people behind the teams. All times UTC.'
+    : 'Source-linked competition stories, meaningful moves, public methods and the people behind the teams. Dates and observation clocks use UTC.', short ? 20 : 26, 4, { marginTop: 12 }),
 ];
 const articleColumn = (article: NewsArticle): Node[] => [
   kicker(`${competitionName(article.competition)}  ·  ${newsDate(article.date)}`, { fontSize: 19 }),

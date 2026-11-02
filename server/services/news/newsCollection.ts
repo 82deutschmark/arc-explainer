@@ -144,6 +144,25 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const handles = new Set(person?.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
     const entryRefs = definition.kind === 'team' ? [...definition.entries]
       : registry.snapshots.filter(row => row.members.some(handle => handles.has(handle)));
+    // When the board cache is absent, retain only the latest positively observed team
+    // in each contest. This is a dated roster reference, not a standing or a transfer.
+    const membershipRefs = new Map<string, NewsPerson['memberships'][number]>();
+    if (person) {
+      const set = definition.setId ? loadSeriesFile().sets.find(row => row.id === definition.setId) : undefined;
+      const scopedIds = set?.competitionIds ?? (definition.setId ? definition.entries.map(row => row.competitionId) : undefined);
+      for (const row of person.memberships) {
+        if (row.season !== definition.season || !handles.has(row.memberHandle) || (scopedIds && !scopedIds.includes(row.competitionId))) continue;
+        const prior = membershipRefs.get(contestKey(row));
+        if (!prior || Date.parse(row.lastObservedAt) > Date.parse(prior.lastObservedAt)) membershipRefs.set(contestKey(row), row);
+      }
+      for (const row of membershipRefs.values()) {
+        if (registry.snapshots.some(snapshot => snapshot.competitionId === row.competitionId && snapshot.members.some(handle => handles.has(handle))
+          && Date.parse(snapshot.observedAt) > Date.parse(row.lastObservedAt))) continue;
+        // A snapshot or final result for this team has its own authoritative roster.
+        if (registry.snapshots.some(snapshot => teamKey(snapshot) === teamKey(row)) || final.some(result => result.season === row.season && teamKey(result) === teamKey(row))) continue;
+        if (!entryRefs.some(ref => teamKey(ref) === teamKey(row))) entryRefs.push(row);
+      }
+    }
     // An official credited roster can reconnect a former member without using today's roster.
     if (person) for (const row of final.filter(row => row.season === definition.season && row.creditedHandles.some(handle => handles.has(handle)))) {
       if (!entryRefs.some(ref => ref.competitionId === row.competitionId && ref.teamId === row.teamId)) entryRefs.push(row);
@@ -159,6 +178,10 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const honors: CollectionCard['honors'] = [];
     const entries = entryRefs.map(ref => {
       const snapshot = registry.snapshots.find(row => row.competitionId === ref.competitionId && row.teamId === ref.teamId);
+      const membership = person ? membershipRefs.get(contestKey({ ...ref, season: definition.season })) : undefined;
+      const rosterObservation = membership && teamKey(membership) === teamKey(ref) ? membership : undefined;
+      const notebook = rosterObservation && index.competitors.find(team => team.competition === ref.competition && team.teamId === ref.teamId
+        && Date.parse(team.lastObservedAt) === Date.parse(rosterObservation.lastObservedAt) && team.members.includes(rosterObservation.memberHandle));
       const result = final.find(row => row.season === definition.season && row.competitionId === ref.competitionId && row.teamId === ref.teamId
         && (!person || row.creditedHandles.some(handle => handles.has(handle))));
       if (result) {
@@ -166,17 +189,17 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         if (result.medal) honors.push({ ...credit, label: `${result.medal[0].toUpperCase()}${result.medal.slice(1)} medal`, kind: 'kaggle-medal' });
         honors.push(...result.awards.map(award => ({ ...credit, label: award.label, kind: award.kind })));
       }
-      const roster = result?.creditedHandles ?? snapshot?.members ?? [];
+      const roster = result?.creditedHandles ?? snapshot?.members ?? notebook?.members ?? [];
       return { competition: ref.competition, competitionId: ref.competitionId, teamId: ref.teamId,
-        teamName: snapshot?.teamName ?? index.competitors.find(team => team.teamId === ref.teamId && team.competition === ref.competition)?.name ?? definition.name,
-        observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
+        teamName: snapshot?.teamName ?? rosterObservation?.teamName ?? index.competitors.find(team => team.teamId === ref.teamId && team.competition === ref.competition)?.name ?? definition.name,
+        observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? rosterObservation?.lastObservedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
         score: result ? result.score : snapshot?.score ?? null, submissions: snapshot?.submissions ?? null,
         fieldSize: boardNear(board, ref.competition, snapshot?.observedAt ?? null)?.teams ?? null,
         peakRank: (() => { const peak = board?.peaks[`${ref.competition}:${ref.teamId}`]?.rank; const now = result?.rank ?? snapshot?.rank; return peak != null && now != null && peak < now ? peak : null; })(),
         zone: result ? null : zoneOf(snapshot?.score ?? null, boardNear(board, ref.competition, snapshot?.observedAt ?? null)),
-        sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard?teamId=${encodeURIComponent(ref.teamId)}`,
+        sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl ?? rosterObservation?.sourceUrl ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard?teamId=${encodeURIComponent(ref.teamId)}`,
         ...(teamCards.has(teamKey(ref)) ? { cardUrl: teamCards.get(teamKey(ref)) } : {}),
-        profileUrl: notebooks.get(teamKey(ref)) ?? result?.sourceUrl ?? snapshot?.sourceUrl
+        profileUrl: notebooks.get(teamKey(ref)) ?? result?.sourceUrl ?? snapshot?.sourceUrl ?? rosterObservation?.sourceUrl
           ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard`,
         status: result ? 'final' as const : snapshot ? 'public' as const : 'unavailable' as const,
         members: roster.map(handle => {

@@ -106,12 +106,12 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
 
   const contests: ContestVM[] = (card.contests ?? []).map((c: any) => {
     const teamName: string | null = c.team?.name ?? null, size: number | null = c.team?.size ?? null;
-    const solo = c.solo === true || !c.team || size === 1 || (!!teamName && !!handleName && teamName.toLowerCase() === handleName.toLowerCase());
+    const solo = c.solo === true || size === 1;
     const full: string = c.name ?? c.shortName ?? '';
     return {
     short: c.shortName ?? c.name, full, team: teamName, size,
     tag: String(full || c.shortName || '').replace(/\s+[-\u2013\u2014]\s+/g, ' \u00b7 '), solo,
-    entryLine: family === 'team' ? null : solo ? 'SOLO ENTRY' : teamName,
+    entryLine: family === 'team' ? null : c.status === 'observed' ? 'ROSTER OBSERVED · SEE KAGGLE' : solo ? 'SOLO ENTRY' : teamName,
     rank: hash(c.rank), peak: hash(c.peakRank), score: typeof c.score === 'number' ? String(c.score) : null,
     subs: typeof c.submissions === 'number' ? num(c.submissions) : null, status: c.status,
   }; });

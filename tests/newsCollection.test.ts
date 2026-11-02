@@ -184,6 +184,39 @@ describe('Card Cabinet identity and statistics', () => {
       firstObservedAt: checkedAt, lastObservedAt: checkedAt, sourceUrl: 'https://example.com/roster' });
   });
 
+  it('links a story subject to a dated verified roster when the board cache is absent', () => {
+    const player = person('alpha');
+    player.memberships = [{ ...entry(), season: '2026', teamName: 'Infinity', memberHandle: 'alpha',
+      firstObservedAt: checkedAt, lastObservedAt: checkedAt, sourceUrl: 'https://example.com/observed-roster', sourceTitle: 'Dated roster' }];
+    const ledger = index([player, person('beta')]);
+    ledger.competitors = [{ id: 'arc-3-100', competition: 'arc-3', teamId: '100', name: 'Infinity', aliases: [], members: ['alpha', 'beta'],
+      firstObservedAt: checkedAt, lastObservedAt: checkedAt, facts: [] }];
+    const entryResult = buildNewsCollection(registry([personCard('alpha')], []), ledger).cards[0].entries[0];
+    expect(entryResult).toMatchObject({ teamName: 'Infinity', status: 'unavailable', observedAt: checkedAt,
+      rank: null, score: null, submissions: null, sourceUrl: 'https://example.com/observed-roster' });
+    expect(entryResult.members.map(member => member.handle)).toEqual(['alpha', 'beta']);
+    ledger.competitors[0].lastObservedAt = '2026-10-02T12:00:00Z';
+    expect(buildNewsCollection(registry([personCard('alpha')], []), ledger).cards[0].entries[0].members).toEqual([]);
+  });
+
+  it('keeps only the latest observed team per contest and respects exact handles, set scope and final credit', () => {
+    const player = person('alpha');
+    const membership = (competition: NewsCompetition, teamId: string, time: string, memberHandle = 'alpha') => ({
+      ...entry(competition, teamId), season: '2026', teamName: `Team ${teamId}`, memberHandle,
+      firstObservedAt: time, lastObservedAt: time, sourceUrl: `https://example.com/${teamId}`, sourceTitle: 'Dated roster',
+    });
+    player.memberships = [membership('arc-3', '100', checkedAt), membership('arc-3', '200', '2026-10-02T12:00:00Z'),
+      membership('arc-2', '300', checkedAt), membership('arc-3', '400', '2026-10-03T12:00:00Z', 'alpha2')];
+    const scoped = { ...personCard('alpha'), setId: 'unregistered-test-set', entries: [entry('arc-3', '200')] };
+    const card = buildNewsCollection(registry([scoped], []), index([player])).cards[0];
+    expect(card.entries.map(row => row.teamId)).toEqual(['200']);
+    const current = { ...snapshot('arc-3', '500', ['alpha']), observedAt: '2026-10-04T12:00:00Z' };
+    expect(buildNewsCollection(registry([personCard('alpha')], [current]), index([player])).cards[0].entries.map(row => row.teamId))
+      .toEqual(['500', '300']);
+    const uncredited = result({ teamId: '200', creditedHandles: ['someone-else'] });
+    expect(buildNewsCollection(registry([scoped], []), index([player]), [uncredited]).cards[0].entries).toEqual([]);
+  });
+
   it('merges newer positive snapshots into team history without discarding the first observation', () => {
     const player = person('alpha');
     player.memberships = [{ ...entry(), season: '2026', teamName: 'Old name', memberHandle: 'alpha',
@@ -389,7 +422,7 @@ describe('the real permanent commissioned collection', () => {
     const card = getNewsCollection().cards.find(card => card.personId === 'mitubant')!;
     expect(card.name).toBe('NT');
     expect(card.accounts.some(account => account.label === 'mitubant')).toBe(true);
-    expect(card.entries).toEqual([]); // No fresh board source in this offline test.
+    expect(card.entries.every(entry => entry.status === 'unavailable' && entry.rank === null && entry.score === null)).toBe(true);
     expect(card.teamHistory.some(entry => entry.competition === 'arc-3' && entry.teamId === '15605182')).toBe(true);
     expect(card.teamHistory.some(entry => entry.competition === 'arc-2' && entry.teamId === '15526034')).toBe(true);
     expect(card.art?.artworkId).toBe('2026-10-29-nt-mitubant-avatar-v2');
