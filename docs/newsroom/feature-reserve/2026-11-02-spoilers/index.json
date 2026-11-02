@@ -2,8 +2,8 @@
   "updatedAt": "2026-11-02",
   "preparedBy": "Claude Opus 5.5 High",
   "commissionedBy": "mark-barney",
-  "state": "held-awaiting-editor-approval",
-  "approval": "The Boss gives the okay before any edition, X post or Discord send.",
+  "state": "published-discord",
+  "approval": "Approved by the Boss on 2 November 2026 for Discord. He does not want it on X yet; ask him before any X post.",
   "headline": "Spoilers: the twelve best games Team Turducken made",
   "links": {
     "page": "https://82deutschmark.github.io/arc3-synthetic-games/",
@@ -79,12 +79,19 @@
   "draftXPost": {
     "text": "Spoilers. The twelve best synthetic ARC-AGI-3 games from Team Turducken, with the rules written out and how each one differs from ARC’s public 25. Free to play. https://82deutschmark.github.io/arc3-synthetic-games/",
     "image": "docs/newsroom/feature-reserve/2026-11-02-spoilers/announce-image.png",
-    "state": "draft"
+    "state": "draft",
+    "note": "Not on X yet, at the Boss’s word on 2 November 2026. Ask him before posting."
   },
   "draftDiscord": "Spoilers: our twelve best ARC-AGI-3 games, rules and all. https://82deutschmark.github.io/arc3-synthetic-games/",
   "doNot": [
     "show human action numbers",
     "give games readable titles",
     "post or send without the Boss’s okay"
-  ]
+  ],
+  "discordReceipt": {
+    "channel": "#arc-3 (1487216946171609220)",
+    "messageId": "1566956109929906229",
+    "sentAt": "2026-11-02",
+    "image": "newsroom/feature-reserve/2026-11-02-spoilers/announce-image.png"
+  }
 }
