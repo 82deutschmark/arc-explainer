@@ -1410,5 +1410,50 @@
       }
     },
     "coveredBy": "2026-11-02-morning-arc-3"
+  },
+  {
+    "id": "nov02-late-infinity-leap",
+    "competition": "arc-3",
+    "createdAt": "2026-11-02T19:10:00Z",
+    "expiresAt": "2026-11-03T04:59:59Z",
+    "commissionedBy": "mark-barney",
+    "status": "pending",
+    "allowArtworkPreview": false,
+    "title": "Infinity’s overnight leap from #593 to the top ten leads the Late edition",
+    "subjectNames": [
+      "infinity",
+      "All your GPU are belong to us",
+      "The ARChitects"
+    ],
+    "teamIds": [
+      "15494354",
+      "16429297",
+      "16032816",
+      "15487522"
+    ],
+    "targetEditionId": "2026-11-02-evening-arc-3",
+    "instructions": "The Boss chose infinity as the Late lead. Claude has filed the story and an art request in /Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-11-02-late-infinity/. New art is required: infinity has no approved characters yet, so make their references first from verified sources, then commission a new scene. Existing art is reference material only."
+  },
+  {
+    "id": "nov02-late-tascj-one-entry",
+    "competition": "arc-2",
+    "createdAt": "2026-11-02T19:10:00Z",
+    "expiresAt": "2026-11-03T04:59:59Z",
+    "commissionedBy": "mark-barney",
+    "status": "pending",
+    "allowArtworkPreview": false,
+    "title": "tascj, Kaggle’s #2-ranked competitor, enters the ARC-2 top ten with one entry",
+    "subjectNames": [
+      "tascj",
+      "Daniel Franzen",
+      "Progress"
+    ],
+    "teamIds": [
+      "17204147",
+      "15607618",
+      "15494357"
+    ],
+    "targetEditionId": "2026-11-02-evening-arc-2",
+    "instructions": "Lead the ARC-2 Late edition with tascj’s single-entry debut in the top ten. Claude has filed the story and an art request in /Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-11-02-late-infinity/."
   }
 ]
