@@ -1,0 +1,64 @@
+{
+  "articleId": "2026-11-02-morning-arc-3",
+  "briefSha256": "09ab8f2d003de2331eb73ccc8837ebb7cc11d25f576cfb5f35aeb4ea353b84a5",
+  "dataAsOf": "2026-11-02T15:14:35Z",
+  "generationRecord": "2026-11-02-morning-hairpin-v1-base",
+  "headline": "Full speed ahead: NVIDIA presses the siege",
+  "historyChart": null,
+  "id": "2026-11-02-morning-arc-3-c6fd3e1682",
+  "image": {
+    "alt": "Illustration for Full speed ahead: NVIDIA presses the siege. NVARC3: rank 4, score 56.26; Team Turducken: rank 5, score 56.02.",
+    "artworkId": "2026-11-02-morning-arc-3-c6fd3e1682",
+    "caption": "Score panel: Nov 2, 2026 · 10:14 AM EST; provisional public standings.",
+    "src": "/news-images/2026-11-02-morning-arc-3-c6fd3e1682.webp"
+  },
+  "imageSha256": "149b3704fbb84e630cf81c3a9d7110be52a9a03f5e41b024b46629df127aafb3",
+  "kind": "edition-composition",
+  "layout": "story-panel-v3.1",
+  "leadGap": null,
+  "movement": null,
+  "overlayOptions": {
+    "gapPlacement": "footer-center",
+    "gapStyle": "ahead",
+    "placement": "footer",
+    "showBanner": false,
+    "showMovement": false,
+    "teamLabels": {
+      "15605182": "Team Turducken",
+      "15770880": "NVARC3"
+    }
+  },
+  "personIds": [
+    "darragh-hanley",
+    "elad-sarafian",
+    "gal-kaplun",
+    "ivan-sorokin",
+    "jean-francois-puget",
+    "keith-tyser",
+    "mark-barney",
+    "mitubant",
+    "son-pham"
+  ],
+  "rawSha256": "68fb488f4999d5a8d9e0bc694ffbb7fe02d72bd4ecad17502f01d08c60421b94",
+  "rows": [
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.26,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    }
+  ],
+  "scoreGap": "NVARC3 is 0.24 ahead of Team Turducken",
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

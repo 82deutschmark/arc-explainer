@@ -1372,5 +1372,43 @@
     ],
     "targetEditionId": "2026-11-01-evening-arc-3",
     "title": "NVARC3 jump leads the final-day edition"
+  },
+  {
+    "id": "nov02-morning-hairpin-nvidia",
+    "competition": "arc-3",
+    "createdAt": "2026-11-02T15:29:37.669084+00:00",
+    "expiresAt": "2026-11-03T04:59:59Z",
+    "commissionedBy": "mark-barney",
+    "status": "covered",
+    "title": "NVIDIA ahead of Turducken in the final-day morning edition",
+    "subjectNames": [
+      "NVARC3",
+      "Team Turducken"
+    ],
+    "targetEditionId": "2026-11-02-morning-arc-3",
+    "allowArtworkPreview": false,
+    "instructions": "Boss approved the new morning hairpin picture and explicitly requested the short NVIDIA overtake/current leaderboard article and X post with programmatic current scores and observation time. Use the new scene, current score footer, and same-run Discord image delivery before authorized X. The Duck remains held.",
+    "artworkGenerationRecord": "2026-11-02-morning-hairpin-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15770880",
+      "rivalTeamId": "15605182",
+      "requiredRanks": {
+        "15770880": 4,
+        "15605182": 5
+      },
+      "requiredPersonIds": []
+    },
+    "artworkOverlay": {
+      "placement": "footer",
+      "showMovement": false,
+      "showBanner": false,
+      "gapPlacement": "footer-center",
+      "gapStyle": "ahead",
+      "teamLabels": {
+        "15770880": "NVARC3",
+        "15605182": "Team Turducken"
+      }
+    },
+    "coveredBy": "2026-11-02-morning-arc-3"
   }
 ]

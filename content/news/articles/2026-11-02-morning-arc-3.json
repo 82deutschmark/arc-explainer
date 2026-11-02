@@ -1,0 +1,281 @@
+{
+  "baselineAt": "2026-11-01T23:02:09Z",
+  "competition": "arc-3",
+  "coverageNote": "Public leaderboard readings through 2026-11-02T15:14:35Z. Event times mark the first saved observation of a change.",
+  "dataAsOf": "2026-11-02T15:14:35Z",
+  "date": "2026-11-02",
+  "dek": "Jean-François Puget and the NVIDIA juggernaut are ahead of Turducken. Chen and Tufa still hold the heights, while a final-day surge compresses the chase below them.",
+  "discord": "Full speed ahead: NVIDIA presses the siege. NVARC3 holds fourth at 56.26, ahead of Turducken’s 56.02. Chen and Tufa hold the heights; Grigoriy and the last dance close in behind, and infinity leaps into the top ten. Morning edition: https://arc.markbarney.net/news/2026-11-02-morning-arc-3",
+  "edition": "morning",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Full speed ahead: NVIDIA presses the siege",
+  "id": "2026-11-02-morning-arc-3",
+  "image": {
+    "alt": "Illustration for Full speed ahead: NVIDIA presses the siege. NVARC3: rank 4, score 56.26; Team Turducken: rank 5, score 56.02.",
+    "artworkId": "2026-11-02-morning-arc-3-c6fd3e1682",
+    "caption": "Score panel: Nov 2, 2026 · 10:14 AM EST; provisional public standings.",
+    "src": "/news-images/2026-11-02-morning-arc-3-c6fd3e1682.webp"
+  },
+  "publishedAt": "2026-11-02T15:39:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board",
+        "person-jean-francois-puget-identity-0"
+      ],
+      "text": "Full speed ahead. NVIDIA’s juggernaut has passed Team Turducken, and the climb toward the two strongholds continues. Jean-François Puget and his NVARC3 teammates hold fourth on 56.26 this morning, with Turducken close behind on 56.02. Above them, Yi-Chia Chen and Tufa Labs still command the heights. Can they withstand the siege?"
+    },
+    {
+      "heading": "The road from eighth to fourth",
+      "sourceIds": [
+        "board",
+        "fact-15770880-0",
+        "person-jean-francois-puget-identity-0",
+        "person-ivan-sorokin-identity-0"
+      ],
+      "text": "Saturday’s NVIDIA seven were eighth on 49.89. Sunday brought the big advance: 56.15, four places gained, and the pass on Turducken. Monday’s extra 0.11 takes NVARC3 to 56.26 and stretches that narrow advantage to 0.24. The juggernaut has been climbing all weekend.\n\nPuget and Ivan Sorokin won the 2025 ARC Prize together as NVARC. Now they are part of a seven-account NVARC3 crew. The next place up the mountain belongs to xz, third on 58.59: a further 2.33 points away."
+    },
+    {
+      "heading": "The strongholds hold—for now",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Yi-Chia Chen @ Fields Model leads on 75.56; Tufa Labs follows on 70.24. Neither has added to that score overnight. Chen’s advantage is 5.32, and Tufa still has 11.65 points over xz. There is plenty of mountain between the leaders and the machines below.\n\nThe pressure is growing farther down. Grigoriy Zatravkin & co has climbed from 50.48 to 54.55, taking sixth. The last dance has improved from 51.51 to 54.52 and sits seventh, just 0.03 behind Grigoriy. Turducken’s cushion over sixth is now 1.47."
+    },
+    {
+      "heading": "A leap out of the pack",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Then there is infinity. A jump from 31.24 to 53.12 carried the team from 593rd to sixth in one board reading overnight. Grigoriy and the last dance have since moved ahead, leaving infinity eighth—but still inside the top ten after starting the night hundreds of places away.\n\nMd Boktiar Mahbub Murad reaches 47.29 and eleventh; The ARChitects rises to 47.19 and twelfth. The gold cutoff is now 41.73 at twentieth. The two strongholds may be standing still, but the field beneath them is anything but settled."
+    },
+    {
+      "sourceIds": [
+        "fact-15605182-0"
+      ],
+      "text": "Disclosure: ARC Daily Digest editor Mark Barney competes on Team Turducken."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-02T15:39:55Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-18T19:16:05.370354Z",
+      "id": "fact-15605182-0",
+      "title": "ARC-3 observed public roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15770880-0",
+      "title": "NVIDIA — 2025 NVARC competition report",
+      "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "person-jean-francois-puget-identity-0",
+      "title": "Jean-François Puget — GitHub profile linked Kaggle account",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-ivan-sorokin-identity-0",
+      "title": "NVARC — 2025 team write-up crediting sorokin and cpmpml",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 70.24,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "xz",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 58.59,
+      "scoreChange": 0.0,
+      "teamId": "15487093"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.26,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "Grigoriy Zatravkin & co",
+      "rank": 6,
+      "rankChange": 2,
+      "score": 54.55,
+      "scoreChange": 4.07,
+      "teamId": "16490178"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 54.52,
+      "scoreChange": 3.01,
+      "teamId": "16021367"
+    },
+    {
+      "name": "infinity",
+      "rank": 8,
+      "rankChange": null,
+      "score": 53.12,
+      "scoreChange": null,
+      "teamId": "15494354"
+    },
+    {
+      "name": "yktori",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 51.04,
+      "scoreChange": 0.0,
+      "teamId": "16760837"
+    },
+    {
+      "name": "mtg",
+      "rank": 10,
+      "rankChange": -1,
+      "score": 50.37,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "Md Boktiar Mahbub Murad",
+      "rank": 11,
+      "rankChange": 13,
+      "score": 47.29,
+      "scoreChange": 7.77,
+      "teamId": "15487522"
+    },
+    {
+      "name": "The ARChitects",
+      "rank": 12,
+      "rankChange": 4,
+      "score": 47.19,
+      "scoreChange": 6.16,
+      "teamId": "16032816"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 13,
+      "rankChange": -3,
+      "score": 46.82,
+      "scoreChange": 0.0,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 14,
+      "rankChange": -3,
+      "score": 45.41,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 15,
+      "rankChange": -3,
+      "score": 45.03,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "大阪公立大学 & Maciej & Natalia",
+      "rank": 16,
+      "rankChange": 11,
+      "score": 43.73,
+      "scoreChange": 4.75,
+      "teamId": "16754530"
+    },
+    {
+      "name": "All your GPU are belong to us",
+      "rank": 17,
+      "rankChange": -3,
+      "score": 42.91,
+      "scoreChange": 1.1,
+      "teamId": "16429297"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 21,
+      "rankChange": 1,
+      "score": 41.17,
+      "scoreChange": 1.23,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AquaUrsa Research",
+      "rank": 29,
+      "rankChange": -6,
+      "score": 39.69,
+      "scoreChange": 0.0,
+      "teamId": "15488763"
+    },
+    {
+      "name": "Cakpo Vital",
+      "rank": 38,
+      "rankChange": 100,
+      "score": 38.15,
+      "scoreChange": 4.38,
+      "teamId": "17084555"
+    },
+    {
+      "name": "Pushpak Teja",
+      "rank": 74,
+      "rankChange": 86,
+      "score": 35.61,
+      "scoreChange": 2.04,
+      "teamId": "17037347"
+    },
+    {
+      "name": "arc-needs-to-be-agi",
+      "rank": 76,
+      "rankChange": 92,
+      "score": 35.53,
+      "scoreChange": 2.03,
+      "teamId": "16831884"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15487093",
+    "15770880",
+    "15605182",
+    "16490178",
+    "16021367",
+    "15494354",
+    "15487522",
+    "16032816"
+  ]
+}
