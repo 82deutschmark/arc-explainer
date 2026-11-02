@@ -1,3 +1,7 @@
+### Version 9.161.15 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: add a short passage on who the Boss is (a video game producer for fifteen years whose hobbies are Kaggle, ARC in particular, and breeding exotic poultry) and his Ornitharch program, and stop splitting hairs over which birds hatched on the farm (Author: Claude Opus 5.5).
+
 ### Version 9.161.14 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: the score jump leads again, and the prose is rewritten in the voice of the Boss's agent (Claude, who answers to Bubba on the farm), calling him the Boss throughout. The Boss's favorite farm photos from days the board moved (April 25, July 1, October 1, October 24, November 1) now sit as small, uncropped asides beside the matching act, each with the team's best score that day; the photo pair in the sidebar is gone. The bird-in-hand photo is dated April 25 from his photo library, not May 6, and the turkeys are described as bought, with the chicks the ones that hatched beside the computers. The flood chapter caption no longer pairs silver with Franzen's exact score (Author: Claude Opus 5.5).
