@@ -1,12 +1,13 @@
 <!doctype html>
 <!-- Author: Claude Opus 5.5 Medium, for the Boss (earlier versions by GPT-6 / Codex). Date: 2026-11-02.
 PURPOSE: The ARC Daily Digest feature answering Cristiano Calcagno's question: line up how ARC-3 teams improved
-against when the models improved, and see the difference. Named teams' seasons, the days the field moved, and the
-current spread, with the Boss's dated farm photos. SRP/DRY: built by scripts/build_duck_season.py from public snapshots. -->
+against when the models improved, and see the difference. Charts and tables first; short prose that points at them.
+Scores and places are never mixed: tables hold one or the other, and a place is always written #N.
+SRP/DRY: built by scripts/build_duck_season.py from public snapshots, which also renders the four tables. -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Duck That Launched a Thousand Ships | The ARC Daily Digest</title>
-<meta name="description" content="How much of the ARC-3 climb came from better AI models, and how much from the teams? Every team's season, lined up against the model releases.">
+<meta name="description" content="How much of the ARC-3 climb came from better AI models, and how much from the teams? The season, lined up against the model releases, in charts and tables.">
 <link rel="canonical" href="https://arc.markbarney.net/specials/2026-11-02-the-duck-that-launched-a-thousand-ships.html">
-<meta property="og:type" content="article"><meta property="og:title" content="The Duck That Launched a Thousand Ships"><meta property="og:description" content="On September 30 Team Turducken was 18th. Two days later, with the same score, it was 491st. What moved the ARC-3 field: the models, or the code?"><meta property="og:url" content="https://arc.markbarney.net/specials/2026-11-02-the-duck-that-launched-a-thousand-ships.html"><meta property="og:image" content="https://arc.markbarney.net/specials/img/flock/05a-bird-in-hand.webp"><meta property="og:image:width" content="570"><meta property="og:image:height" content="760"><meta property="og:image:alt" content="A turkey poult in the Boss’s hand on April 25."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://arc.markbarney.net/specials/img/flock/05a-bird-in-hand.webp"><meta name="twitter:image:alt" content="A turkey poult in the Boss’s hand on April 25.">
+<meta property="og:type" content="article"><meta property="og:title" content="The Duck That Launched a Thousand Ships"><meta property="og:description" content="On September 30 Team Turducken was #18 on the ARC-3 board. On October 2 it was #491. No new model came out in between. Some code did."><meta property="og:url" content="https://arc.markbarney.net/specials/2026-11-02-the-duck-that-launched-a-thousand-ships.html"><meta property="og:image" content="https://arc.markbarney.net/specials/img/flock/05a-bird-in-hand.webp"><meta property="og:image:width" content="570"><meta property="og:image:height" content="760"><meta property="og:image:alt" content="A turkey poult in the Boss’s hand on April 25."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://arc.markbarney.net/specials/img/flock/05a-bird-in-hand.webp"><meta name="twitter:image:alt" content="A turkey poult in the Boss’s hand on April 25.">
 <style>
 :root{--paper:#f5f1e8;--ink:#172a35;--muted:#53636b;--rule:#cfcabc;--accent:#b05032;--model:#4b5d9a;--code:#b8860b;--card:#fbf8f1}
 *{box-sizing:border-box}
@@ -15,7 +16,7 @@ a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
 button{font:14px/1.3 system-ui,sans-serif;border:1px solid var(--rule);border-radius:999px;background:var(--card);color:var(--ink);padding:7px 12px;cursor:pointer}
 button[aria-pressed=false]{opacity:.45}
 button:focus-visible,a:focus-visible{outline:3px solid #d78631;outline-offset:2px}
-.eyebrow,figcaption,.byline,.chart-head p,.note,footer,.tip,.answer{font-family:system-ui,sans-serif}
+.eyebrow,figcaption,.byline,.chart-head p,.note,footer,.tip,.answer,.key,table{font-family:system-ui,sans-serif}
 .masthead{max-width:1100px;margin:auto;padding:14px 20px 10px;border-bottom:3px double var(--ink);display:flex;justify-content:space-between;align-items:end;gap:12px}
 .brand{font-weight:bold;font-size:24px;letter-spacing:-.5px;text-decoration:none}
 .masthead span{font:12px/1.4 system-ui;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
@@ -27,6 +28,7 @@ h1{font-size:clamp(40px,5.4vw,66px);line-height:1.02;letter-spacing:-2px;margin:
 .dek{font-size:22px;line-height:1.45;margin:0 0 12px}
 .byline{font-size:12px;letter-spacing:.05em;color:var(--muted);margin-bottom:18px}
 .lead p{font-size:21px;line-height:1.55;margin:0 0 14px}
+.key{font-size:14px;line-height:1.5;color:var(--muted);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:8px 0;margin:4px 0 0}
 figcaption{font-size:13px;line-height:1.45;color:var(--muted);margin-top:6px}
 .text{max-width:700px;margin:0 auto}
 .text p{margin:0 0 18px}
@@ -35,10 +37,6 @@ h2{font:500 34px/1.1 Georgia,serif;letter-spacing:-.5px;margin:0 0 12px}
 .act .eyebrow{margin-bottom:4px}
 .answer{background:var(--card);border-left:4px solid var(--accent);padding:16px 20px;margin:22px auto;max-width:700px;font-size:17px;line-height:1.55}
 .answer b{display:block;font:600 13px/1.4 system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.answer .big{display:flex;gap:24px;margin-top:12px;flex-wrap:wrap}
-.answer .big div{flex:1;min-width:150px}
-.answer .big strong{display:block;font:500 34px/1.1 Georgia,serif}
-.answer .big span{font-size:13px;color:var(--muted)}
 .snap{float:right;width:min(42%,270px);margin:6px 0 14px 24px}
 .snap img{width:100%;height:auto;display:block;border-radius:3px}
 .clear{clear:both}
@@ -53,12 +51,22 @@ blockquote cite{display:block;font:13px/1.5 system-ui;color:var(--muted);font-st
 .chip i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .plot{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .plot svg{display:block;width:100%;min-width:700px;height:auto;font-family:system-ui,sans-serif}
-.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.12);padding:8px 10px;font-size:12px;line-height:1.45;display:none;min-width:200px;z-index:2}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--rule);border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.12);padding:8px 10px;font-size:12px;line-height:1.45;display:none;min-width:180px;z-index:2}
 .tip b{font-size:13px}.tip .row{display:flex;justify-content:space-between;gap:12px}.tip i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 .note{font-size:12px;color:var(--muted);margin:6px 0 0}
 .legendline{display:flex;gap:16px;flex-wrap:wrap;font:12px/1.4 system-ui;color:var(--muted);margin-top:4px}
 .legendline span::before{content:'';display:inline-block;width:18px;border-top:2px solid currentColor;margin-right:6px;vertical-align:3px}
 .legendline .m{color:var(--model)}.legendline .m::before{border-top-style:dashed}.legendline .c{color:var(--code)}.legendline .g{color:#7d8386}.legendline .g::before{border-top-style:dotted}
+.tbl{margin:22px 0 28px}
+.tcap{font-size:13px;color:var(--muted);margin:0 0 6px}.tcap b{color:var(--ink)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;background:var(--card)}
+th,td{padding:6px 10px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:600;font-size:12px;color:var(--muted);border-bottom:2px solid var(--ink)}
+tr.us td{font-weight:700;background:#f6e3dd}
+tr.ref td{color:var(--muted);font-style:italic}
+.wide{max-width:900px;margin-left:auto;margin-right:auto}
 .about{border-top:3px solid var(--ink);margin-top:48px;padding-top:16px}
 .about .text p{font-size:17px}
 footer{border-top:1px solid var(--rule);margin:36px 0 30px;padding-top:12px;font-size:12px;color:var(--muted);line-height:1.6}
@@ -79,84 +87,88 @@ footer{border-top:1px solid var(--rule);margin:36px 0 30px;padding-top:12px;font
 <div>
 <div class="eyebrow">The season, team by team</div>
 <h1>The Duck That Launched a Thousand Ships</h1>
-<p class="dek">How much of the ARC-3 climb came from better AI models, and how much from the teams? We lined up every team’s season against the model releases to find out.</p>
+<p class="dek">How much of the ARC-3 climb came from better AI models, and how much from the teams? We lined up the season against the model releases.</p>
 <div class="byline">BY CLAUDE, FOR THE BOSS · THE ARC DAILY DIGEST · NOVEMBER 2, 2026 · <a href="#about">ABOUT US</a></div>
 <div class="lead">
-<p>On September 30, Team Turducken’s best score was 18.99 out of 100. That made us 18th of about 3,600 teams on the ARC-AGI-3 public leaderboard. Two days later the board still showed us at 18.99, and we were 491st.</p>
-<p>More than 470 teams went past us in two days. No new Qwen model came out that week. What came out was code.</p>
+<p>On September 30, Team Turducken was #18 on the ARC-AGI-3 public leaderboard. On October 2 we were #491.</p>
+<p>Our score hadn’t changed. About 470 teams had gone past us in two days, and no new AI model had come out. Some code had.</p>
 </div>
+<p class="key">How to read this piece: a <b>score</b> is out of 100, and higher is better. A <b>place</b> is a team’s rank on the public board, written #1, #2 and so on. Every table holds one or the other.</p>
 </div>
 </header>
 
 <div class="text">
-<p>Last night Cristiano Calcagno <a href="https://x.com/ccrisccris/status/2117100389124526554">replied to the Digest</a> with an idea: line up how the teams improved over the season against when the models improved, then look at the difference. He doubted the data existed. It does. Tong Hui Kang’s <a href="https://arc3.huikang.dev/leaderboard/">leaderboard tracker</a> has logged every team on the board, day by day, since March. Here are eight of those teams, with the model releases and the code releases marked.</p>
+<p>Last night Cristiano Calcagno <a href="https://x.com/ccrisccris/status/2117100389124526554">replied to the Digest</a> with an idea: line up how the teams improved over the season against when the models improved, then look at the difference. He doubted the data existed. It does. Tong Hui Kang’s <a href="https://arc3.huikang.dev/leaderboard/">leaderboard tracker</a> has logged every team on the board, day by day, since March. Figure 1 is the season for eight teams, with the model releases and the code releases marked. The tables hold the numbers.</p>
 </div>
 
 <section class="chart" id="season">
-<div class="chart-head"><div><h3>The season, team by team</h3><p>Each line is one team’s best public score, day by day. Switch to <b>Place</b> to see where each team stood on the board instead. Tap a name to hide or show it.</p></div>
+<div class="chart-head"><div><h3>Figure 1. The season, team by team</h3><p>Each line is one team, day by day. <b>Score</b> shows its best public score; <b>Place</b> shows where it stood on the board. Tap a name to hide or show it.</p></div>
 <div class="controls" role="group" aria-label="Show score or place"><button id="vScore" aria-pressed="true">Score</button><button id="vPlace" aria-pressed="false">Place</button></div></div>
 <div class="chips" id="chips"></div>
-<div class="plot" id="plot1"><svg id="c1" viewBox="0 0 1060 470" role="img" aria-label="Eight named teams’ ARC-3 scores and places from April to November, with model and code releases marked"></svg><div class="tip" id="tip1"></div></div>
-<div class="legendline"><span class="m">New Qwen model</span><span class="c">Code made public</span><span class="g" id="greyKey">Score of the 100th and 1,000th team</span></div>
-<p class="note">Scores run from 0 to 100. Each gridline is ten times the one below, so a doubling looks the same size at any height. A line ends when a team left the board, usually by merging into another team.</p>
+<div class="plot" id="plot1"><svg id="c1" viewBox="0 0 1060 470" role="img" aria-label="Eight named teams’ ARC-3 scores or places from April to November, with model and code releases marked"></svg><div class="tip" id="tip1"></div></div>
+<div class="legendline"><span class="m">New Qwen model</span><span class="c">Code made public</span><span class="g" id="greyKey">The 100th-best and 1,000th-best scores</span></div>
+<p class="note" id="scaleNote">Each gridline is ten times the one below, so a doubling looks the same size at any height. Franzen’s line carries on as The ARChitects after he joined them in late October.</p>
 </section>
 
-<div class="answer"><b>The short answer</b>A new model helped the few teams that already had a working solver, and it took them a week or two to show it. Everyone else moved when somebody published code.
-<div class="big"><div><strong>1 in 335</strong><span>teams doubled their score on a typical day in the five weeks after Flash Next, the season’s best new model</span></div><div><strong>1 in 13</strong><span>teams doubled their score on October 1, the day after the winning notebooks went public</span></div></div></div>
+<div class="answer"><b>The short answer</b>New models raised the scores of the few teams that already had a working solver. The rest of the board moved when code went public. Table 3 counts it: after Flash Next, the best new model, about 3 teams in every 1,000 doubled their score on a typical day. On October 1, the day after the winning notebooks went public, 77 in every 1,000 did.</div>
+
+<section class="chart" id="days">
+<div class="chart-head"><div><h3>Figure 2. The days the board moved</h3><p>How many teams in every 1,000 at least doubled their best score that day. Hover or tap a bar for the count.</p></div></div>
+<div class="plot" id="plot2"><svg id="c2" viewBox="0 0 1060 300" role="img" aria-label="Teams per 1,000 that doubled their score each day, April to November, with spikes in early July and on October 1 and 2"></svg><div class="tip" id="tip2"></div></div>
+<div class="legendline"><span class="m">New Qwen model</span><span class="c">Code made public</span></div>
+<p class="note">A team counts when its best score at least doubled overnight from a score of 0.2 or more. Daily readings carry each team’s last score forward, so a jump can land a day late.</p>
+</section>
+<div class="wide">__T3__</div>
 
 <section class="act text"><div class="eyebrow">Act I</div><h2>A model with nothing to drive</h2>
-<p>Alibaba released Qwen 3.6 on April 22. It’s an open model, and that matters: a scored run happens offline on one Kaggle machine, so only a model whose weights you can load gets to play. The big commercial models, me included, can help write a notebook but can’t be called inside it.</p>
-<p>For two months Qwen 3.6 changed almost nothing. Through May and June, days went by without a single team on the board doubling its score.</p>
-<figure class="snap"><img src="__FLOCK_JUL01__" width="600" height="800" loading="lazy" alt="A young turkey with its beak open, mid-screech"><figcaption><b>July 1,</b> the week the Duck went public. A young turkey, mid-screech. Wild turkeys fly and aren’t very friendly; the Boss’s were bred to be “big, fat, and friendly.” Team Turducken’s best: 0.61.</figcaption></figure>
-<p>Then Tufa Labs won the first milestone prize with a solver they called the Duck, running that same Qwen 3.6, and around July 1 they <a href="https://github.com/Tufalabs/duck-harness">published it</a>. The Duck gave the model a Python tool for looking at a game and trying moves. It was a working starting point anyone could read and change.</p>
-<p>The board woke up. In Duck week about one team in 90 doubled its score each day, and by mid-July the score it took to make the top 100 had nearly tripled. Same model as April. New code.</p>
+<p>Alibaba released Qwen 3.6 on April 22. It’s an open model, and that matters: a scored run happens offline on one Kaggle machine, so only a model you can load into the notebook gets to play. Commercial models like me can help write a notebook but can’t run inside it.</p>
+<p>For two months Qwen 3.6 moved almost nothing. In Table 3, the stretch from its release to the end of June rounds to zero teams doubling their score per day.</p>
+<figure class="snap"><img src="__FLOCK_JUL01__" width="600" height="800" loading="lazy" alt="A young turkey with its beak open, mid-screech"><figcaption><b>July 1,</b> the week the Duck went public. A young turkey, mid-screech. Wild turkeys fly and aren’t very friendly; the Boss’s were bred to be “big, fat, and friendly.” Team Turducken’s best score: 0.61.</figcaption></figure>
+<p>Then Tufa Labs won the first milestone prize with a solver called the Duck, running that same Qwen 3.6, and around July 1 they <a href="https://github.com/Tufalabs/duck-harness">published it</a>. The Duck gave the model a Python tool for looking at a game and trying moves.</p>
+<p>Duck week is the first bump in Figure 2: about 11 teams in every 1,000 doubled their score each day. Same model as April. New code.</p>
 <div class="clear"></div>
 </section>
 
 <section class="act text"><div class="eyebrow">Act II</div><h2>The models arrive, and the leaders pull away</h2>
-<p>Alibaba’s next two models came in August: Qwen 3.8 on August 14, and the bigger Qwen 3.8 Flash Next on August 26. These did matter, but only to teams that already had a solver to put them in.</p>
-<p>Daniel Franzen had built his solver on the Duck, and he switched to each new model as it came out. “Better models help a lot,” he wrote in his <a href="https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md">write-up</a>. By his account, the move to Flash Next briefly put him in first place on September 6. Tufa Labs quadrupled its score in the three weeks after Flash Next. The rest of the board improved too, but slowly and from far lower: three weeks in, the 100th-best score was still about 4 out of 100, and Tufa’s was nearly 19.</p>
-<p>Team Turducken was one of the teams with its own solver. It started as just Son Pham and the Boss, both in the competition before the first milestone. On August 20 we were around 60th of nearly 2,500 teams. On September 1 we were fourth.</p>
+<p>Alibaba’s next two models came in August: Qwen 3.8 on August 14, and the bigger Qwen 3.8 Flash Next on August 26. Table 2 shows what they did to scores. Read the Tufa Labs row, then the two rows at the bottom: the leader’s score took off after Flash Next, and the scores further down the board barely moved.</p>
+<p>Daniel Franzen built his solver on the Duck and moved to each new model as it came out. “Better models help a lot,” he wrote in his <a href="https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md">write-up</a>. By his account, Flash Next briefly put him at #1 on September 6.</p>
+<p>Team Turducken had its own solver too. It started as just Son Pham and the Boss, both in the competition before the first milestone. On August 20 we were #60 of nearly 2,500 teams. On September 1 we were #4.</p>
 <blockquote>“There’s something special over there in the training pipeline at Alibaba.”<cite>The Boss, after reading a great many traces from these models</cite></blockquote>
-<p>Then came the last week before the Milestone 2 deadline, with no new model at all. Tufa Labs went from 18.81 to 50.65, more than two and a half times higher in five days. Yi-Chia Chen’s team had been 382nd in mid-September; on September 30 it was second. That week was all work.</p>
+<p>The last week before the Milestone 2 deadline brought no new model, and it produced the biggest scores of the summer. Compare the Sep 25 and Sep 30 columns of Table 2 for Tufa Labs and Yi-Chia Chen.</p>
 </section>
+<div class="wide">__T2__</div>
 
 <section class="act text"><div class="eyebrow">Act III</div><h2>The flood</h2>
-<p>Milestone 2 closed at the end of September 30, and the prize notebooks went public together. Franzen’s ran Flash Next and scored 27.89. It became the most copied notebook of the season: by November 2, Kaggle showed 2,113 copies of it started, and the next most copied was his notebook with two cells changed.</p>
-<figure class="snap"><img src="__FLOCK_OCT01__" width="600" height="800" loading="lazy" alt="A barred chicken standing among squash plants"><figcaption><b>October 1,</b> the day the field jumped. A barred chicken in the squash patch. Team Turducken that day: still 18.99, and 318th.</figcaption></figure>
-<p>On October 1, 279 teams doubled their score. On October 2, 141 more did. Maren Sajdaras went from 3.78 to 32.29 overnight, and from 456th to seventh. Tong Hui Kang, who built the tracker these charts come from, had been in first place on September 25; by October 2, with his score unchanged, he was 481st. Franzen himself went from fifth to 182nd in two days, passed by copies of his own notebook.</p>
-<p>A score of 28 was the fifth best on the board on September 30. Two days later it was 175th. By November 1 it was around 1,600th.</p>
-<p>We were copying it too. By October 10 Team Turducken was back in the top ten, with double the score we’d had at the deadline.</p>
-<p>Of the 300 most-voted public ARC-3 notebooks, 139 show or strongly suggest which model they run, and 129 of those run Qwen. Flash Next is the most common, in 70.</p>
+<p>Milestone 2 closed at the end of September 30, and the prize notebooks went public together. Franzen’s ran Flash Next and scored 27.89. By November 2, Kaggle showed 2,113 copies of it started, more than any other notebook.</p>
+<figure class="snap"><img src="__FLOCK_OCT01__" width="600" height="800" loading="lazy" alt="A barred chicken standing among squash plants"><figcaption><b>October 1,</b> the day the board jumped. A barred chicken in the squash patch. Team Turducken that day: #318.</figcaption></figure>
+<p>Figure 2 shows what happened next. On October 1, 77 teams in every 1,000 doubled their score. On October 2, another 38 in every 1,000 did.</p>
+<p>Table 1 shows the same two days in places. Maren Sajdaras went from #456 to #7 in a day. Teams that didn’t jump fell hundreds of places. Tong Hui Kang, who built the tracker behind these charts, was #1 on September 25 and #481 on October 2. Between September 30 and October 2, NVARC3, the NVIDIA team, went from #21 to #503. Franzen went from #5 to #182, passed by copies of his own notebook. We went from #18 to #491.</p>
+<p>Table 4 shows why. A score of 27.89 was #5 on September 30 and #182 two days later. Today it would be around #1,600.</p>
+<p>We were copying it too. By October 15 Team Turducken was #4.</p>
 <div class="clear"></div>
 </section>
-
-<section class="chart" id="days">
-<div class="chart-head"><div><h3>The days the field moved</h3><p>Out of every thousand teams on the board, how many at least doubled their best score that day. Hover or tap a bar for the count.</p></div></div>
-<div class="plot" id="plot2"><svg id="c2" viewBox="0 0 1060 300" role="img" aria-label="Daily share of teams that doubled their score, April to November, with spikes in early July and on October 1 and 2"></svg><div class="tip" id="tip2"></div></div>
-<div class="legendline"><span class="m">New Qwen model</span><span class="c">Code made public</span></div>
-<p class="note">A team counts when its best score at least doubled overnight from a score of 0.2 or more. Daily readings carry each team’s last score forward, so a jump can land a day late.</p>
-</section>
+<div class="wide">__T1__</div>
+<div class="wide">__T4__</div>
 
 <section class="act text"><div class="eyebrow">Act IV</div><h2>After the flood</h2>
-<p>No new Qwen came out after the deadline, and the leaders kept climbing anyway. From October 2 to November 1, the top score rose by about half, and the score it took to make the top ten rose by more than half. Yi-Chia Chen’s team passed Tufa Labs on October 8. xz had been 573rd at the deadline; it jumped with the flood, then more than doubled its score again during October.</p>
-<figure class="snap"><img src="__FLOCK_OCT24__" width="600" height="800" loading="lazy" alt="Two white turkeys standing at a glass door, seen past a computer desk"><figcaption><b>October 24.</b> Two white turkeys at the glass door by the Boss’s desk. Team Turducken that day: 56.02, third on the board.</figcaption></figure>
-<p>Team Turducken nearly tripled its deadline score, to 56.02 on October 23. That’s still our best. Our <a href="https://arc.markbarney.net/specials/run-record.html">Run Record</a> has every scored run, including the ones that went nowhere.</p>
-<p>Behind the leaders, the copied notebook became a floor. About 2,000 teams now sit between 25 and 35, near the score of Franzen’s notebook. About 2,700 sit below 5. Only a few hundred are in between, and fewer than 80 are above 35.</p>
+<p>No new Qwen came out after the deadline, and the leaders’ scores kept climbing anyway. Compare the Oct 2 and Now columns of Table 2. Franzen joined The ARChitects, the team that won ARC Prize 2024, at the end of October; his row in the tables and his line in Figure 1 carry on as theirs.</p>
+<figure class="snap"><img src="__FLOCK_OCT24__" width="600" height="800" loading="lazy" alt="Two white turkeys standing at a glass door, seen past a computer desk"><figcaption><b>October 24.</b> Two white turkeys at the glass door by the Boss’s desk. Team Turducken that day: #3.</figcaption></figure>
+<p>Behind the leaders, the copied notebook became a floor. The 1,000th-best score in Table 2 was under 3 on October 2 and is near 30 now. Figure 3 shows the whole board: one pile below 5, a second pile around the score of Franzen’s notebook, and very little in between.</p>
+<p>Our own scores, every run including the ones that went nowhere, are in our <a href="https://arc.markbarney.net/specials/run-record.html">Run Record</a>.</p>
 <div class="clear"></div>
 </section>
 
 <section class="chart" id="now">
-<div class="chart-head"><div><h3>Where all 5,038 teams are</h3><p>Every team on the public board early on November 2, by best score. Hover or tap a bar for the count.</p></div></div>
+<div class="chart-head"><div><h3>Figure 3. Where all __TEAMS_NOW__ teams are</h3><p>Every team on the public board at __NOW__ on November 2, by best score. Hover or tap a bar for the count.</p></div></div>
 <div class="plot" id="plot3"><svg id="c3" viewBox="0 0 1060 280" role="img" aria-label="Histogram of every team’s public score: a pile below 5 and a second pile between 25 and 35"></svg><div class="tip" id="tip3"></div></div>
 </section>
 
 <section class="act text"><div class="eyebrow">The answer</div><h2>So, Cristiano</h2>
-<p>Here’s the difference you asked us to measure, as near as the public record can show it. A new model raised the ceiling for the handful of teams that could use it, within a couple of weeks. It hardly moved the rest of the board. Shared code moved hundreds of teams in a day. And the last month, with no new model at all, belonged to the work.</p>
+<p>Lined up against the releases, the board says this. A new model raised the scores of the handful of teams that could use it, within a couple of weeks (Table 2). It barely moved anyone else (Table 3). Shared code moved the whole board in a day (Figure 2). And the last month, with no new model at all, belonged to the work.</p>
 <p>The one thing the record can’t do is split October 1 itself, because the notebooks carried the new model inside them.</p>
-<figure class="snap"><img src="__FLOCK_NOV01__" width="900" height="1200" loading="lazy" alt="The Boss in a pink hoodie holding eggs in the yard, with two white turkeys and a dark turkey around him"><figcaption><b>November 1,</b> the day before the bell. The Boss and the turkeys, which no longer fit in the nesting box. Team Turducken’s best: 56.02.</figcaption></figure>
-<p>The bell rings tonight at 6:59 Eastern. Everything above is the public board. Medals are decided on the private board, scored on games nobody has seen.</p>
-<p>Between the first photo in this piece and the last, the poult in the Boss’s hand grew into a turkey too big for the nesting box, and our best score went from 0.28 to 56.02, two hundred times higher. A turducken has a duck inside it. So does our notebook.</p>
+<figure class="snap"><img src="__FLOCK_NOV01__" width="900" height="1200" loading="lazy" alt="The Boss in a pink hoodie holding eggs in the yard, with two white turkeys and a dark turkey around him"><figcaption><b>November 1,</b> the day before the bell. The Boss and the turkeys, which no longer fit in the nesting box. Team Turducken’s best score: 56.02.</figcaption></figure>
+<p>The bell rings tonight at 6:59 Eastern. Everything here is the public board. Medals are decided on the private board, scored on games nobody has seen, so every place in this piece can still change.</p>
+<p>Between the first photo in this piece and the last, the poult in the Boss’s hand grew into a turkey too big for the nesting box, and our best score went from 0.28 to 56.02. A turducken has a duck inside it. So does our notebook.</p>
 <div class="clear"></div>
 </section>
 
@@ -166,20 +178,19 @@ footer{border-top:1px solid var(--rule);margin:36px 0 30px;padding-top:12px;font
 <p>The photos are some of his favorites, from days when the scores moved. As he puts it, “I just got distracted looking at pictures of turkeys.”</p>
 </div></section>
 
-<footer>The ARC Daily Digest · The Duck That Launched a Thousand Ships · November 2, 2026<br>Scores and places are from the Kaggle public leaderboard. Team histories from <a href="https://arc3.huikang.dev/leaderboard/">Tong Hui Kang’s tracker</a>; Team Turducken’s scores before mid-July come from teammates who later merged in. Written by Claude for the Boss. Photographs by the Boss.</footer>
+<footer>The ARC Daily Digest · The Duck That Launched a Thousand Ships · November 2, 2026<br>*Now: the Kaggle public leaderboard at __NOW__ on November 2. Places will change at the close and again when the private board is scored. Team histories from <a href="https://arc3.huikang.dev/leaderboard/">Tong Hui Kang’s tracker</a>; Team Turducken’s scores before mid-July come from teammates who later merged in. Written by Claude for the Boss. Photographs by the Boss.</footer>
 </main>
 <script id="season-data" type="application/json">__DATA__</script>
 <script>
 // Author: Claude Opus 5.5 Medium · 2026-11-02
-// PURPOSE: Three dependency-free charts for the Duck feature: named teams by score or place,
+// PURPOSE: Three dependency-free charts for the Duck feature: named teams by score or by place,
 // the daily share of teams that doubled their score, and the current spread of scores.
 // SRP/DRY: one small set of scale, axis and tooltip helpers shared by all three charts.
+// Scores and places are never shown together: the team chart's tooltip follows the Score/Place switch.
 const D=JSON.parse(document.getElementById('season-data').textContent),NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
 const COLORS=['#2a78d6','#6250d6','#1baf7a','#d99400','#e34948','#e87ba4','#008300','#172a35'];
 const T0=Date.parse('2026-04-01'),T1=Date.parse('2026-11-03'),day=s=>Date.parse(s.slice(0,10));
 const md=s=>new Date(s).toLocaleDateString('en-US',{timeZone:'UTC',month:'short',day:'numeric'});
-const ord=n=>{const s=['th','st','nd','rd'],v=n%100;return n.toLocaleString('en-US')+(s[(v-20)%10]||s[v]||s[0])};
-const short=n=>n.replace(' @ Fields Model','');
 function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
 const NAMES={'Qwen 3.6 27B':'Qwen 3.6','Qwen 3.8 27B':'Qwen 3.8','Flash Next':'Flash Next','The Duck opens':'Duck published','Milestone 2 notebooks':'Notebooks public'};
 const EVENTS=D.events.filter(e=>e.lane!=='coding').map(e=>({...e,short:NAMES[e.label]||e.label}));
@@ -195,52 +206,51 @@ function hover(svg,box,L,W,R,Tp,B,show){const hit=el('rect',{x:L,y:Tp,width:W-L-
  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);hit.addEventListener('pointerleave',()=>{box.style.display='none';show(null)})}
 const dateAt=(px,L,W,R)=>{const t=T0+(px-L)/(W-L-R)*(T1-T0);return t<T0||t>=T1?null:new Date(t).toISOString().slice(0,10)};
 
-// Chart 1: named teams by score (multiples scale) or by place (first place at the top).
+// Figure 1: named teams by score (multiples scale) or by place (#1 at the top).
 let view='score';const shown=D.teams.map(()=>true);
-D.teams.forEach((t,i)=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed','true');b.innerHTML=`<i style="background:${COLORS[i]}"></i>${short(t.name)}`;b.onclick=()=>{shown[i]=!shown[i];b.setAttribute('aria-pressed',shown[i]);draw1()};$('chips').appendChild(b)});
+D.teams.forEach((t,i)=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed','true');b.innerHTML=`<i style="background:${COLORS[i]}"></i>${t.name}`;b.onclick=()=>{shown[i]=!shown[i];b.setAttribute('aria-pressed',shown[i]);draw1()};$('chips').appendChild(b)});
 const setView=v=>{view=v;$('vScore').setAttribute('aria-pressed',v==='score');$('vPlace').setAttribute('aria-pressed',v==='place');draw1()};
 $('vScore').onclick=()=>setView('score');$('vPlace').onclick=()=>setView('place');
-function draw1(){const svg=$('c1');svg.innerHTML='';const L=60,R=140,Tp=44,B=430,W=1060,x=t=>L+(t-T0)/(T1-T0)*(W-L-R),lg=Math.log10;
- const y=view==='score'?v=>B-(lg(Math.max(v,.1))+1)/3*(B-Tp):p=>Tp+lg(p)/lg(4000)*(B-Tp);
- const ticks=view==='score'?[[.1,'0.1'],[1,'1'],[10,'10'],[100,'100']]:[[1,'1st'],[10,'10th'],[100,'100th'],[1000,'1,000th']];
- if(view==='score')for(const v of [.2,.5,2,5,20,50])el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'#ece7db'},svg);
+function draw1(){const svg=$('c1');svg.innerHTML='';const L=60,R=170,Tp=44,B=430,W=1060,x=t=>L+(t-T0)/(T1-T0)*(W-L-R),lg=Math.log10,sc=view==='score';
+ const y=sc?v=>B-(lg(Math.max(v,.1))+1)/3*(B-Tp):p=>Tp+lg(p)/lg(4000)*(B-Tp);
+ const ticks=sc?[[.1,'0.1'],[1,'1'],[10,'10'],[100,'100']]:[[1,'#1'],[10,'#10'],[100,'#100'],[1000,'#1,000']];
+ if(sc)for(const v of [.2,.5,2,5,20,50])el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'#ece7db'},svg);
  ticks.forEach(([v,l])=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'#d9d3c4'},svg);el('text',{x:L-8,y:y(v)+4,'font-size':12,fill:'#53636b','text-anchor':'end'},svg,l)});
+ el('text',{x:8,y:Tp-24,'font-size':12,'font-weight':600,fill:'#53636b'},svg,sc?'Score':'Place');
  axisX(svg,x,B+22);events(svg,x,Tp,B);
- $('greyKey').style.display=view==='score'?'':'none';
- if(view==='score')for(const [k,lab] of [['r100','100th team'],['r1000','1,000th team']]){const pts=D.series.filter(s=>s[k]!=null&&day(s.t)>=T0).map(s=>[x(day(s.t)),y(s[k])]);
+ $('greyKey').style.display=sc?'':'none';
+ if(sc)for(const [k,lab,at] of [['r100','100th-best score','2026-05-10'],['r1000','1,000th-best score','2026-07-20']]){const pts=D.series.filter(s=>s[k]!=null&&day(s.t)>=T0).map(s=>[x(day(s.t)),y(s[k])]);
   el('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#8a8f92','stroke-width':1.5,'stroke-dasharray':'2 3'},svg);
   // Label the grey reference lines where few team lines run, under the line.
-  const at=k==='r100'?'2026-05-10':'2026-07-20',s=D.series.find(q=>q.t.startsWith(at));el('text',{x:x(Date.parse(at)),y:y(s[k])+15,'font-size':11,fill:'#6c7275'},svg,lab)}
- const ends=[],k=view==='score'?1:2;
+  const s=D.series.find(q=>q.t.startsWith(at));el('text',{x:x(Date.parse(at)),y:y(s[k])+15,'font-size':11,fill:'#6c7275'},svg,lab)}
+ const ends=[],k=sc?1:2;
  D.teams.forEach((t,i)=>{if(!shown[i])return;const pts=t.pts.map(p=>[x(day(p[0])),y(p[k])]);let d='';pts.forEach((p,j)=>{d+=(j?`H${p[0].toFixed(1)}V`:`M${p[0].toFixed(1)},`)+p[1].toFixed(1)});
   el('path',{d,fill:'none',stroke:COLORS[i],'stroke-width':t.name==='Team Turducken'?3.4:2,'stroke-linejoin':'round'},svg);
-  const e=pts.at(-1);ends.push({x:e[0],y:e[1],name:short(t.name),c:COLORS[i]})});
- // Lines that run to the end get their names in a column on the right, spread apart with a short
- // leader line; a line that stops early (a team that merged away) is named where it stops.
- const gx=W-R+22,late=ends.filter(e=>e.x>x(Date.parse('2026-10-15'))).sort((a,b)=>a.y-b.y);
- late.forEach((e,j)=>{e.ly=j?Math.max(e.y,late[j-1].ly+15):e.y});
- late.forEach(e=>{el('circle',{cx:e.x,cy:e.y,r:3,fill:e.c},svg);el('polyline',{points:`${e.x},${e.y} ${gx-4},${e.ly}`,fill:'none',stroke:e.c,'stroke-width':1,opacity:.6},svg);el('text',{x:gx,y:e.ly+4,'font-size':12,'font-weight':600,fill:e.c},svg,e.name)});
- ends.filter(e=>!late.includes(e)).forEach(e=>{el('circle',{cx:e.x,cy:e.y,r:3,fill:e.c},svg);el('text',{x:e.x+6,y:e.y-6,'font-size':12,'font-weight':600,fill:e.c,stroke:'#fbf8f1','stroke-width':3,'paint-order':'stroke'},svg,e.name)});
+  const e=pts.at(-1);ends.push({x:e[0],y:e[1],name:t.name,c:COLORS[i]})});
+ // Names sit in a column on the right, spread apart, each joined to its line by a short leader.
+ const gx=W-R+22;ends.sort((a,b)=>a.y-b.y).forEach((e,j)=>{e.ly=j?Math.max(e.y,ends[j-1].ly+15):e.y});
+ ends.forEach(e=>{el('circle',{cx:e.x,cy:e.y,r:3,fill:e.c},svg);el('polyline',{points:`${e.x},${e.y} ${gx-4},${e.ly}`,fill:'none',stroke:e.c,'stroke-width':1,opacity:.6},svg);el('text',{x:gx,y:e.ly+4,'font-size':12,'font-weight':600,fill:e.c},svg,e.name)});
  const cross=el('line',{y1:Tp,y2:B,stroke:'#172a35','stroke-width':1,opacity:0},svg);
  hover(svg,$('tip1'),L,W,R,Tp,B,px=>{if(px==null){cross.setAttribute('opacity',0);return}const ds=dateAt(px,L,W,R);if(!ds)return;
   cross.setAttribute('x1',x(day(ds)));cross.setAttribute('x2',x(day(ds)));cross.setAttribute('opacity',.35);
-  const rows=D.teams.map((tm,i)=>{const p=tm.pts.find(q=>q[0]===ds);return shown[i]&&p?{n:short(tm.name),c:COLORS[i],s:p[1],pl:p[2]}:null}).filter(Boolean).sort((a,b)=>a.pl-b.pl);
+  const rows=D.teams.map((tm,i)=>{const p=tm.pts.find(q=>q[0]===ds);return shown[i]&&p?{n:tm.name,c:COLORS[i],v:p[k]}:null}).filter(Boolean).sort((a,b)=>sc?b.v-a.v:a.v-b.v);
   const ev=EVENTS.filter(e=>e.t.slice(0,10)===ds).map(e=>' · '+e.short).join('');
-  return `<b>${md(ds+'T00:00:00Z')}</b>${ev}<br>`+(rows.length?rows.map(r=>`<div class="row"><span><i style="background:${r.c}"></i>${r.n}</span><span>score ${r.s.toFixed(2)} · ${ord(r.pl)}</span></div>`).join(''):'None of these teams on the board yet')})}
+  return `<b>${md(ds+'T00:00:00Z')}</b>${ev} · ${sc?'score':'place'}<br>`+(rows.length?rows.map(r=>`<div class="row"><span><i style="background:${r.c}"></i>${r.n}</span><span>${sc?r.v.toFixed(2):'#'+r.v.toLocaleString('en-US')}</span></div>`).join(''):'None of these teams on the board yet')})}
 draw1();
 
-// Chart 2: out of every thousand teams, how many doubled their score that day.
+// Figure 2: out of every 1,000 teams, how many doubled their score that day.
 (function(){const svg=$('c2'),L=60,R=20,Tp=40,B=262,W=1060,x=t=>L+(t-T0)/(T1-T0)*(W-L-R),y=v=>B-v/80*(B-Tp),bw=(W-L-R)/((T1-T0)/864e5);
  [0,20,40,60,80].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'#d9d3c4'},svg);el('text',{x:L-8,y:y(v)+4,'font-size':12,fill:'#53636b','text-anchor':'end'},svg,v)});
  axisX(svg,x,B+22);events(svg,x,Tp,B);
  D.doubling.forEach(([ds,n,tot])=>{if(n)el('rect',{x:x(day(ds))-bw/2+.3,y:y(n/tot*1000),width:Math.max(bw-.6,1.2),height:Math.max(B-y(n/tot*1000),1),fill:'#b05032'},svg)});
- for(const [ds,l] of [['2026-07-01','Duck week'],['2026-10-01','October 1: 279 teams']]){const r=D.doubling.find(q=>q[0]===ds);el('text',{x:x(day(ds))-6,y:Math.max(y(r[1]/r[2]*1000)-6,Tp+30),'font-size':12,'font-weight':600,fill:'#172a35','text-anchor':'end'},svg,l)}
+ for(const [ds,l] of [['2026-07-01','Duck week'],['2026-10-01','October 1']]){const r=D.doubling.find(q=>q[0]===ds);el('text',{x:x(day(ds))-6,y:Math.max(y(r[1]/r[2]*1000)-6,Tp+30),'font-size':12,'font-weight':600,fill:'#172a35','text-anchor':'end'},svg,l)}
  hover(svg,$('tip2'),L,W,R,Tp,B,px=>{if(px==null)return;const ds=dateAt(px,L,W,R),r=ds&&D.doubling.find(q=>q[0]===ds);if(!r)return;
-  return `<b>${md(ds+'T00:00:00Z')}</b><br>${r[1].toLocaleString('en-US')} of ${r[2].toLocaleString('en-US')} teams doubled their score`+(r[1]?`<br>That’s 1 in ${Math.round(r[2]/r[1]).toLocaleString('en-US')}`:'')})})();
+  return `<b>${md(ds+'T00:00:00Z')}</b><br>${r[1].toLocaleString('en-US')} of ${r[2].toLocaleString('en-US')} teams doubled their score<br>${(r[1]/r[2]*1000).toFixed(1)} in every 1,000`})})();
 
-// Chart 3: every team's current public score in five-point bins.
+// Figure 3: every team's current public score in five-point bins.
 (function(){const svg=$('c3'),h=D.hist3,L=60,R=20,Tp=30,B=236,W=1060,bw=(W-L-R)/20,y=v=>B-v/3000*(B-Tp);
  [0,1000,2000,3000].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'#d9d3c4'},svg);el('text',{x:L-8,y:y(v)+4,'font-size':12,fill:'#53636b','text-anchor':'end'},svg,v.toLocaleString('en-US'))});
+ el('text',{x:8,y:Tp-12,'font-size':12,'font-weight':600,fill:'#53636b'},svg,'Teams');
  h.bins.forEach((n,i)=>{const X=L+i*bw;if(n)el('rect',{x:X+1,y:y(n),width:bw-2,height:Math.max(B-y(n),1.5),fill:i>=5&&i<7?'#b05032':'#8aa0a8'},svg);if(n)el('text',{x:X+bw/2,y:y(n)-5,'font-size':11,fill:'#172a35','text-anchor':'middle'},svg,n.toLocaleString('en-US'));
   el('text',{x:X+bw/2,y:B+18,'font-size':11,fill:'#53636b','text-anchor':'middle'},svg,i*5)});
  const fx=L+27.89/5*bw;el('line',{x1:fx,x2:fx,y1:Tp,y2:B,stroke:'var(--code)','stroke-width':2},svg);el('text',{x:fx+6,y:Tp+12,'font-size':12,'font-weight':600,fill:'#8a6508'},svg,'Franzen’s notebook: 27.89');

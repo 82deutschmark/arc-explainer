@@ -1,3 +1,7 @@
+### Version 9.161.22 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: charts and tables first. Four tables: places on the board, scores, teams that doubled their score in a day, and the place a given score earned. Each holds only scores or only places, and places are always written #N. NVARC3 added to the team chart. Franzen's line continues as The ARChitects after his merge. Data refreshed to the afternoon public board. (Claude Opus 5.5 Medium)
+
 ### Version 9.161.21 · November 2, 2026
 
 - Stories lead with the reporting again. On the front page the lead story now runs headline, standfirst, byline, artwork and its opening section before the "In this story" cards; the cards are thumbnail-sized under a small label (it had been inheriting the giant headline style), and on phones they are one swipeable row instead of a stack of full-size cards. The plain page sent before the browser finishes loading puts the cards after the opening section too. (Claude Opus 5.5 High)
