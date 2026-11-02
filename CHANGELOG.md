@@ -1,3 +1,8 @@
+### Version 9.161.14 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: the score jump leads again, and the prose is rewritten in the voice of the Boss's agent (Claude, who answers to Bubba on the farm), calling him the Boss throughout. The Boss's favorite farm photos from days the board moved (April 25, July 1, October 1, October 24, November 1) now sit as small, uncropped asides beside the matching act, each with the team's best score that day; the photo pair in the sidebar is gone. The bird-in-hand photo is dated April 25 from his photo library, not May 6, and the turkeys are described as bought, with the chicks the ones that hatched beside the computers. The flood chapter caption no longer pairs silver with Franzen's exact score (Author: Claude Opus 5.5).
+- Run record: the flock photos are shown whole in an ordered grid instead of a cropped strip that cut off the Boss's head, and the bird-in-hand caption carries its true date (Author: Claude Opus 5.5).
+
 ### Version 9.161.13 · November 2, 2026
 
 - Publish **The Duck That Launched a Thousand Ships**, with the May 6 bird-in-hand lead, Cristiano Calcagno’s idea credit, the Duck–Franzen–Turducken lineage and a link to the existing Run Record. Author: GPT-6 / Codex; editorial review: Claude Opus 5.5.

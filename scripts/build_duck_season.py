@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.13
-"""Author: GPT-6 / Codex
+"""Author: GPT-6 / Codex; photo placement updated by Claude Opus 5.5
 Date: 2026-11-02
 PURPOSE: Build the Duck season feature from committed, dated public sources.
 SRP/DRY check: Pass — follows leaderboard_backfill.py's daily carry-forward reconstruction;
@@ -93,7 +93,7 @@ event('2026-04-22T00:00:00Z','Qwen 3.6 27B','model',qwen,'Developer release anno
 event('2026-07-01T00:00:00Z','The Duck opens','notebook','https://github.com/Tufalabs/duck-harness','Around July 1, following the June 30 Milestone 1 deadline. Approximate release date; Tufa won the first milestone using Qwen 3.6 27B.')
 event('2026-08-14T00:00:00Z','Qwen 3.8 27B','model',qwen,'Developer announcement: August 14. August 5 was repository creation; its initial tree contains only README.md and .gitattributes. We do not call that a weights release.')
 event('2026-08-26T00:00:00Z','Flash Next','model','https://github.com/QwenLM/Qwen3.8-Flash-Next#news','Developer release announcement: August 26; weight-upload commit also dates to August 26. August 24 metadata is not evidence of public weights.')
-event('2026-09-30T23:59:00Z','Milestone 2 notebooks','notebook',kaggle,'Kaggle deadline: September 30, 23:59 UTC. Mark Barney confirms the simultaneous notebook release firsthand. Franzen’s released submission scored 27.89 and built on the Duck. Daily score observations cannot establish within-day order.')
+event('2026-09-30T23:59:00Z','Milestone 2 notebooks','notebook',kaggle,'Kaggle deadline: September 30, 23:59 UTC. The Boss confirms the simultaneous notebook release firsthand. Franzen’s released submission scored 27.89 and built on the Duck. Daily score observations cannot establish within-day order.')
 for t,label,url,note in [
  ('2026-04-23','GPT-5.5','https://openai.com/index/introducing-gpt-5-5/','ChatGPT and Codex launch April 23; API April 24.'),
  ('2026-06-09','Fable 5','https://www.anthropic.com/news/claude-fable-5-mythos-5','Developer launch June 9; availability was interrupted June 12 and later restored.'),
@@ -125,7 +125,8 @@ assert D['census']==dict(arc3=300,arc2=150,llmAssigned=139,qwen=129,qwenNamed=75
 html=(ROOT/'article.template.html').read_text().replace('__DATA__',json.dumps(D,separators=(',',':')).replace('<','\\u003c'))
 html=html.replace('__QWEN_CHECK__',datetime.fromisoformat(manifest['checkedAt']).astimezone(timezone.utc).strftime('%H:%M'))
 # All photo bytes already exist in the public run-record gallery; never modify them.
-for token,name in [('__FLOCK_LEAD__','05a-bird-in-hand.webp'),('__FLOCK_WHITE__','08-white-tom.webp'),('__FLOCK_GROWN__','11-the-flock.webp')]:
+# The Boss's farm photos, each placed beside the act whose date it shares (dates from his photo library).
+for token,name in [('__FLOCK_APR25__','05a-bird-in-hand.webp'),('__FLOCK_JUL01__','12-jul01-young-turkey.webp'),('__FLOCK_OCT01__','13-oct01-squash-patch.webp'),('__FLOCK_OCT24__','14-oct24-door-and-desk.webp'),('__FLOCK_NOV01__','15-nov01-the-boss-and-flock.webp')]:
     photo=REPO/'client/public/specials/img/flock'/name
     assert photo.exists(), f'Missing article photograph: {name}'
     url='data:image/webp;base64,'+base64.b64encode(photo.read_bytes()).decode() if args.portable else '/specials/img/flock/'+name
