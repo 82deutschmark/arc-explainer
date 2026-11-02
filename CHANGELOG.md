@@ -1,3 +1,8 @@
+### Version 9.161.27 · November 2, 2026
+
+- Keep Daniel Franzen’s original trading-card frame and approved front illustration. Correct its full-card framing, use the earlier close-up duck illustration on the reverse without cutting it off, and show both separate faces together at the existing shareable card address. Keep the dense career table and earlier-card links. Other competitors retain their existing cards.
+- Remove the unused redesign code and public prototype files. Author: GPT-6 / Codex (reasoning effort not exposed). Card checks, frontend build, wiki integrity and desktop/phone presentation were checked; the plan records the unrelated repository type-check limitation.
+
 ### Version 9.161.26 · November 2, 2026
 
 - Polish the prepared Goose banner using the existing licensed fonts and the unchanged artwork at its natural proportions. Keep the tagline in place as a working tip-line link, with the public community invitation separate from newsroom delivery.

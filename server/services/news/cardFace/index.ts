@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Date: 02-November-2026
  * PURPOSE: The public entry points the site uses to draw a Card Cabinet card. renderCardFace() turns a CollectionCard
  *          into its 750 x 1050 front or back PNG: it checks the art address, enriches the card once (enrich.ts, cached
  *          per collection content, never per request), picks the look named by the card's set (sets.ts -> looks.ts) and
@@ -27,6 +27,7 @@ import { setDesigns, setForSeason } from './sets';
 import { lintNode, careerNames } from './lint';
 import { frontKey } from './render';
 import type { Node } from './kit';
+import { cardFrameRepair } from '../../../../shared/cardFrameRepair';
 
 export { RENDER_VERSION } from '../../../../shared/newsCollection';
 export { LOOKS, lookFor } from './looks';
@@ -81,7 +82,10 @@ export async function renderCardFace(card: CollectionCard, collection: NewsColle
   if (card.art) await assertCollectionArtPath(card.art.src);
   const { model, names } = cardFaceModel(card, collection);
   const look = lookFor(model.look);
-  const lookOpts: LookOpts = { ...opts, namesById: names };
+  const repair = cardFrameRepair(card);
+  // This approved 5:7 illustration was authored for the full card. Its smaller native resolution
+  // had sent it through the legacy contain/crop fallback, wasting the intended composition.
+  const lookOpts: LookOpts = { ...opts, namesById: names, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false }, preservePicture: true, backPicture: repair.backArtSrc } : {}) };
   if (side === 'front') return look.frontBuffer(model, lookOpts);
   // The reverse costs about a second: one in-flight render per card version, remembered for the next request.
   const key = `${look.key}|${frontKey(model, lookOpts)}`;
@@ -100,7 +104,7 @@ const BACK_MEMO_LIMIT = 60;
 export async function cardFaceNode(card: CollectionCard, collection: NewsCollection): Promise<Node> {
   if (card.art) await assertCollectionArtPath(card.art.src);
   const { model, names } = cardFaceModel(card, collection);
-  return lookFor(model.look).frontNode(model, { namesById: names });
+  return lookFor(model.look).frontNode(model, { namesById: names, ...(cardFrameRepair(card) ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false } } : {}) });
 }
 /** Banned-word problems in a card's front tree (empty when clean). Kaggle's own contest and team names are allowed. */
 export async function cardFaceLint(card: CollectionCard, collection: NewsCollection): Promise<string[]> {

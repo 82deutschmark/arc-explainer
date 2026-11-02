@@ -13,6 +13,7 @@
 import { z } from 'zod';
 import { KAGGLE_COMPETITIONS, competitionRegistered } from './kaggleCompetitions';
 import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition } from './news';
+import { cardFrameRepair } from './cardFrameRepair';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const stamp = z.string().datetime({ offset: true });
@@ -244,7 +245,8 @@ export function collectionCardDescription(card: CollectionCard): string {
 export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest ARC Prize cards.'}`;
 /** Public-content fingerprint: a corrected identity, roster or immutable artwork gets a fresh image URL. */
 export function collectionShareVersion(card: CollectionCard): string {
-  const text = JSON.stringify([RENDER_VERSION, card]);
+  const repair = cardFrameRepair(card);
+  const text = JSON.stringify(repair ? [RENDER_VERSION, card, repair.version] : [RENDER_VERSION, card]);
   let hash = 0x811c9dc5;
   for (let index = 0; index < text.length; index++) {
     hash ^= text.charCodeAt(index);

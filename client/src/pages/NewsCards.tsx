@@ -7,6 +7,8 @@
  *          its data (Kaggle profile, standings, completed competitions) and links everything we already hold
  *          for the subject: their earlier Hall of Fame cards, team cards, profile, person page and the Digest
  *          stories that name them. Competitors, sponsors and teams; never "players".
+ *          02-November-2026: selected card repairs show both original-design faces together,
+ *          with existing career records and older cards below the pair.
  * SRP/DRY check: Pass — the collection API owns identity, art, standings and career; this page only filters,
  *          lays out and links. Wording helpers live in shared/newsCollection.ts so the server HTML, the share
  *          images and this page say the same thing.
@@ -25,6 +27,8 @@ import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { NewsStatus, newsDate, useNewsCardImage } from '@/components/news/NewsDesk';
 import { CabinetShell } from '@/components/news/CabinetShell';
+import { CardPair } from '@/components/news/CardPair';
+import { cardFrameRepair } from '@shared/cardFrameRepair';
 
 type RoleFilter = 'all' | CollectionCard['role'];
 type TierFilter = 'all' | KaggleTier;
@@ -258,13 +262,14 @@ export function Detail({ card, all }: { card: CollectionCard; all: CollectionCar
       return teamCard ? [{ key: teamCard.id, kind: 'team' as const, label: teamCard.name, sub: `Team · No. ${teamCard.number}`, src: faceSrc(teamCard, 'front', 260, collectionShareVersion(teamCard)), alt: `${teamCard.name}, team card ${teamCard.number}`, href: teamCard.cardUrl }] : [];
     }) : []),
   ];
+  const paired = !!cardFrameRepair(card);
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link><span>{card.number}</span></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
-    <div className="cb-dgrid">
+    <div className={`cb-dgrid${paired ? ' is-paired' : ''}`}>
       <div className="cb-dcard">
-        {stage === 'current' || !staged ? <FlipFace card={card} width={560} priority /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
+        {stage === 'current' || !staged ? paired ? <CardPair card={card} /> : <FlipFace card={card} width={560} priority /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
         <div className="cb-actions"><CopyCardLink card={card} /><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png`} download>Front PNG ↓</a><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png?side=back`} download>Back PNG ↓</a></div>
       </div>
       <div className="cb-data">
@@ -335,7 +340,7 @@ export default function NewsCards() {
     noindex: !!cardId && !!query.data && !selected,
     image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
   });
-  return <CabinetShell>
+  return <CabinetShell cardProof={!!selected && !!cardFrameRepair(selected)}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
       ? selected ? <Detail card={selected} all={query.data.cards} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the ARC Prize cards →</Link></div></main>

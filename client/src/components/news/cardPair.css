@@ -1,0 +1,26 @@
+/*
+Author: GPT-6 / Codex (reasoning effort not exposed)
+Date: 02-November-2026
+PURPOSE: Fit two complete existing card faces on screen, with records below and accessible enlargement.
+SRP/DRY check: Pass — scope the change to selected paired card pages; keep the newspaper and card designs.
+*/
+.cb-dgrid.is-paired { display: block; }
+.is-paired .cb-dcard { position: static; }
+.is-paired .cb-actions { justify-content: center; margin: 12px 0 20px; }
+.card-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; width: min(100%, calc((100svh - 270px) * 1.42857 + 20px)); max-width: 1100px; margin: 0 auto; }
+.card-pair figure { min-width: 0; margin: 0; }
+.card-pair figcaption { display: flex; justify-content: space-between; padding-bottom: 6px; color: var(--cb-dim); font: 700 11px/1.4 var(--sans); text-transform: uppercase; letter-spacing: .1em; }
+.card-pair figcaption span { font-weight: 400; font-size: 10px; letter-spacing: 0; text-transform: none; }
+.card-pair button { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
+.card-pair button:focus-visible { outline: 3px solid #2453a6; outline-offset: 3px; }
+.card-pair img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 14px #0003; }
+.card-pair-dialog { width: min(96vw, 900px); max-width: 900px; max-height: 96svh; display: flex; flex-direction: column; gap: 8px; padding: 18px; }
+.card-pair-dialog p { font-size: 12px; }
+.card-pair-zoom { align-self: flex-start; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 12px; }
+.card-pair-scroll { overflow: auto; min-height: 0; padding: 5px; }
+.card-pair-scroll img { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(96svh - 155px); margin: 0 auto; }
+.card-pair-scroll.is-full img { width: 750px; max-width: none; max-height: none; }
+.is-card-proof .cb-bar { padding: 9px 14px; gap: 7px 20px; }
+.is-card-proof .cb-nav { flex: 1 1 600px; }
+@media (max-width: 700px) { .card-pair { width: 100%; gap: 12px; } .card-pair figcaption span { display: none; } .is-paired .cb-dcard { max-width: none; } }
+@media print { .card-pair { width: 100%; } .cb-actions { display: none; } }

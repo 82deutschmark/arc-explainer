@@ -18,8 +18,7 @@
  *          Performance: the cardboard is built once per process (a small tiled fibre texture, few colours); the
  *          miniature reuses a front buffer when the caller passes one (opts.frontBuffer) and only otherwise renders
  *          the front lazily; the PNG is palette-quantised so it stays far below 500 KB.
- *          An opt-in reverse illustration is contained whole in spare room after the career table;
- *          it never displaces career rows or relies on an automatic attention crop.
+ *          A selected framing repair contains the whole picture while preserving the existing career-row budget.
  * SRP/DRY check: Pass. Data decisions: backModel.ts; vocabulary and fonts: kit.ts; art: art.ts; the front: render.ts
  *          (imported lazily, so there is no import cycle).
  *
@@ -50,8 +49,10 @@ export interface BackOpts {
   frontBuffer?: Buffer;
   /** Output encoding of back(): png (default, palette-quantised), webp or jpeg (share previews). */
   format?: 'png' | 'webp' | 'jpeg'; quality?: number;
-  /** Independently composed comic vignette. Proof-only unless explicitly supplied by a caller. */
-  reverseArt?: { src: string; maxHeight?: number };
+  /** Contain the whole selected picture instead of automatically cropping away its subject. */
+  preservePicture?: boolean;
+  /** An existing alternate illustration selected for the reverse; never inferred from a filename. */
+  backPicture?: string;
 }
 
 const INK2 = '#15161d';
@@ -373,10 +374,15 @@ function footer(vm: VM): Node {
 // Pictures
 // ---------------------------------------------------------------------------------------------
 /** The card's real picture (never the designed placeholder) cropped to w x h around the point of interest; null when there is none. */
-async function pictureCrop(art: ArtResult, w: number, h: number): Promise<Buffer | null> {
-  const r = art.plate ?? (art.kind === 'contract' ? ZONE : null);
+async function pictureCrop(art: ArtResult, w: number, h: number, preserve = false, alternate?: string): Promise<Buffer | null> {
+  if (alternate) {
+    await assertCollectionArtPath(alternate);
+    const source = await fs.readFile(path.join(process.cwd(), 'client/public', alternate.slice(1)));
+    return sharp(source).resize(w, h, { fit: 'contain', background: STOCK }).jpeg({ quality: 90 }).toBuffer();
+  }
+  const r = preserve && art.kind === 'contract' ? { x: 0, y: 0, w: W, h: H } : art.plate ?? (art.kind === 'contract' ? ZONE : null);
   if (!r) return null;
-  return sharp(art.png).extract({ left: r.x, top: r.y, width: r.w, height: r.h }).resize(w, h, { fit: 'cover', position: sharp.strategy.attention }).jpeg({ quality: 86 }).toBuffer();
+  return sharp(art.png).extract({ left: r.x, top: r.y, width: r.w, height: r.h }).resize(w, h, preserve ? { fit: 'contain', background: STOCK } : { fit: 'cover', position: sharp.strategy.attention }).jpeg({ quality: 86 }).toBuffer();
 }
 const framed = (ink1: string, w: number, h: number, jpg: Buffer): Node =>
   box({ width: w, height: h, flexShrink: 0, position: 'relative', border: `4px solid ${INK2}`, boxShadow: `5px 5px 0 ${ink1}`, background: '#000' }, pic(jpegUri(jpg), 0, 0, w - 8, h - 8));
@@ -521,10 +527,9 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     }
 
     // Leftover height, spent in a fixed order. A strip of the card's own picture first (cover crop, the picture grows),
-    const realArt = !!(opts.reverseArt || art.plate || art.kind === 'contract');
+    const realArt = !!(art.plate || art.kind === 'contract');
     let stripH = 0, stripPlate = false;
-    const stripMax = opts.reverseArt ? clamp(opts.reverseArt.maxHeight ?? 188, 130, 220) : 340;
-    if (realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, stripMax); spend(stripH); }
+    if (realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, 340); spend(stripH); }
     // then bigger standings rows (numerals scale with the row),
     if (nS && left > 0) {
       const extra = Math.min(Math.floor(left / nS), 96 - sRow);
@@ -539,23 +544,17 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     // then, only when the card has no picture of its own and nothing else to grow, the designed plate,
     if (!stripH && left >= 260) { stripH = Math.min(left - GAP, 340); stripPlate = true; spend(stripH); }
     // then whatever picture there is takes the rest (up to a tall portrait crop),
-    if (stripH && left > 0 && !opts.reverseArt) { const grow = Math.min(left, 640 - stripH); stripH += grow; left -= grow; }
+    if (stripH && left > 0) { const grow = Math.min(left, 640 - stripH); stripH += grow; left -= grow; }
     // and last, slightly wider gaps so the footer is never stranded.
     gap = GAP + clamp(Math.floor(left / Math.max(1, count - 1)), 0, 14);
     let strip: Placed | null = null;
     if (stripH) {
       let jpg: Buffer | null;
-      if (opts.reverseArt) {
-        // The source is an authored wide composition; containing it keeps every intended feature visible.
-        // Read through the same public-art boundary as the normal renderer. A dense career never gets here.
-        await assertCollectionArtPath(opts.reverseArt.src);
-        const source = await fs.readFile(path.join(process.cwd(), 'client/public', opts.reverseArt.src.slice(1)));
-        jpg = await sharp(source).resize(COL_W - 8, stripH - 8, { fit: 'contain', background: '#101c2b' }).jpeg({ quality: 90 }).toBuffer();
-      } else if (stripPlate) {
+      if (stripPlate) {
         // the designed placeholder: full width, centred on its head and shoulders
         const ph = Math.min(H, Math.round(W * (stripH - 8) / (COL_W - 8))), top = clamp(Math.round(330 - ph / 2), 0, H - ph);
         jpg = await sharp(art.png).extract({ left: 0, top, width: W, height: ph }).resize(COL_W - 8, stripH - 8, { fit: 'fill' }).jpeg({ quality: 86 }).toBuffer();
-      } else jpg = await pictureCrop(art, COL_W - 8, stripH - 8);
+      } else jpg = await pictureCrop(art, COL_W - 8, stripH - 8, opts.preservePicture, opts.backPicture);
       if (jpg) strip = { node: framed(ink1, COL_W, stripH, jpg), h: stripH };
     }
 

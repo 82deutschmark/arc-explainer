@@ -5,6 +5,7 @@
  *          replaces the broadsheet masthead (nameplate, edition line, advertisement row) with one slim bar:
  *          the paper's name, its section links, the countdown to the close and the same disclosed VoynichLabs
  *          unit. The dark theme lives on .arc-daily.is-cabinet in newsCards.css.
+ *          Card proofs use a compact navigation bar so both complete faces fit on screen.
  * SRP/DRY check: Pass — links come from NewsNav and the sponsor unit from SponsorPlacement; the only new thing
  *          is the arrangement.
  */
@@ -17,14 +18,14 @@ import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 import './newsCards.css';
 
-export function CabinetShell({ children }: { children: ReactNode }) {
+export function CabinetShell({ children, cardProof = false }: { children: ReactNode; cardProof?: boolean }) {
   const close = theClose();
-  return <div className="arc-daily is-cabinet">
+  return <div className={`arc-daily is-cabinet${cardProof ? ' is-card-proof' : ''}`}>
     <header className="cb-bar">
       <Link href="/news" className="cb-brand">{NEWS_BRAND.logo && <img src={NEWS_BRAND.logo} alt="" width="40" style={{ height: 'auto' }} />} {NEWS_NAME}</Link>
       <NewsNav className="cb-nav" />
-      {close && <span className="cb-close">{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
-      <MastheadAd />
+      {!cardProof && close && <span className="cb-close">{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}
+      {!cardProof && <MastheadAd />}
     </header>
     {children}
     <NewsWelcome />

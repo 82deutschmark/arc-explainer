@@ -1,6 +1,6 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Date: 02-November-2026
  * PURPOSE: The LOOK REGISTRY. A "look" is the module that draws a card face (front, back, front node tree for linting).
  *          Which look draws a card is DATA: the set registry (sets.ts, content/news/series.json) names a look key per
  *          season, and this table maps that key to the functions. Next year's set is a new series.json row; it needs a
@@ -17,6 +17,9 @@ import { back } from './back';
 import type { Node } from './kit';
 
 export interface LookOpts extends RenderOpts {
+  /** Keep the original dense reverse, containing the whole picture without an unsuitable crop. */
+  preservePicture?: boolean;
+  backPicture?: string;
   /** The already rendered front (for the reverse's miniature); the look renders it itself when absent. */
   frontBuffer?: Buffer;
 }
