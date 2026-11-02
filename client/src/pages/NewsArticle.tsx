@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
  * Date: 2026-11-01
+ * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
  *          with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
@@ -28,19 +29,21 @@ export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
   const query = useNews();
   const article = query.data?.articles.find(item => item.id === articleId);
+  const dispatch = !article ? query.data?.dispatches?.find(item => item.id === articleId) : undefined;
   const feature = article ? editionFeature(article, query.data?.dispatches) : undefined;
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
-  const missing = !!query.data && !article;
+  const missing = !!query.data && !article && !dispatch;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : 'Dispatch | The ARC Daily Digest', description: article ? articleDescription(article) : undefined, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd,
-    image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : undefined,
-    article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : undefined });
+  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | The ARC Daily Digest` : 'Dispatch | The ARC Daily Digest', description: article ? articleDescription(article) : dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
+    image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : dispatch?.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : undefined,
+    article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : dispatch ? { publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
 
   return <NewsPaper date={article?.date}>
     <Link className="news-back" href="/news">← Back to the front page</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {missing && <section className="news-status"><h1 className="news-article-title">Dispatch not found</h1><p>This edition is not in the published archive.</p><Link href="/news" className="news-read">Browse published editions →</Link></section>}
+    {dispatch && <DispatchPreview dispatch={dispatch} lead people={query.data?.people} />}
     {article && <article>
       <header className="news-article-header">
         <EditionLabel article={article} />

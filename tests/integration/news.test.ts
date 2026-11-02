@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
  * Date: 2026-11-01 (own-site ARChitect portraits: GPT-6.1 Sol / Codex); 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
@@ -456,4 +457,16 @@ it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and 
   const stale = await fetch(`${base}/api/news/cards/${card.id}/share.png?v=stale`, { redirect: 'manual' });
   expect(stale.status).toBe(302);
   expect((await fetch(`${base}/api/news/cards/no-such-card/thumb.webp`)).status).toBe(404);
+});
+
+// GPT-6 / Codex, 2026-11-01: test the exact broken social link through HTTP.
+it('serves the shared CPMP special-report URL with article text and preview artwork', async () => {
+  const id = '2026-10-31-saturday-nvbanana-grandmasters';
+  const dispatch = getNewsIndex().dispatches!.find(item => item.id === id)!;
+  const response = await fetch(`${base}/news/${id}`);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain(escapeHtml(dispatch.headline));
+  expect(html).toContain(dispatch.image!.src);
+  expect(html).not.toContain('Page not found');
 });

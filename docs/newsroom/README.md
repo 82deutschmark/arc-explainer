@@ -140,3 +140,5 @@ Only verified official results supply final medals or awards; a public band does
   links and share-card images. The sitemap keeps the complete edition archive. Content checks
   must check these separately: an older article rolling out of RSS is normal, not a missing
   publication. Dispatches and wire stories remain in their existing news archives.
+
+Special reports have permanent `/news/<dispatch-id>` URLs, supported by both the reader and server preview. These links remain valid after the report leaves the front page; use them in announcements.

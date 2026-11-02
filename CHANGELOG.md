@@ -1,3 +1,8 @@
+### Version 9.161.6 · November 1, 2026
+
+- Repair already-shared special-report URLs: resolve dispatches in both the reader page and server metadata, preserving full copy, citations and illustrations. Include permanent report URLs in the sitemap and headline links. Author: GPT-6 / Codex.
+- Regression coverage passes for every special report in the reader and the exact CPMP social link through HTTP; 104 Python newsroom checks pass. Broad suite also exposed unrelated front-page fixture/provider and portrait-label failures plus an archive-walk timeout.
+
 ### Version 9.161.5 · November 1, 2026
 
 - Replace the sparse ARC-2 footer with the full public top ten in two columns: rank, score, gap to first, last observed rank/score change and its first-seen time. Keep the original art intact and reduce branding to one line. Author: GPT-6 Astra Extra high.

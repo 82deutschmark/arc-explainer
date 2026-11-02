@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
  * Date: 2026-11-01
+ * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
@@ -246,4 +247,17 @@ test('all reported subjects survive deduplication across a feature and recap, wi
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
   const sidebar = html.match(/<aside class="news-sidebar"[\s\S]*?<\/aside>/)![0];
   for (const person of people) expect(sidebar).toContain(`href="/news/people/${person.id}" class="news-subject-card"`);
+});
+
+// GPT-6 / Codex, 2026-11-01: previously shared special-report URLs must render directly.
+test('every special report opens at its permanent URL with its full text and artwork', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  for (const dispatch of index.dispatches ?? []) {
+    const html = render(NewsArticle, `/news/${dispatch.id}`, index);
+    expect(html).not.toContain('Dispatch not found');
+    expect(html).toContain(dispatch.id);
+    if (dispatch.image) expect(html).toContain(dispatch.image.src);
+    expect(html).toContain('news-dispatch-text');
+  }
 });

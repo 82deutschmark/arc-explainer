@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
  * Date: 2026-11-01
+ * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
  *          illustrated article and profile HTML plus genuine NewsArticle
@@ -216,6 +217,14 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   if (profile) { const record = competitors.find(record => record.id === profile[1]); if (record) return { status: 200, tags: competitorMeta(record, articles, people) }; }
   const article = articles.find(article => newsArticlePath(article.id) === route);
   if (article) return { status: 200, tags: newsArticleMeta(article, dispatches, people) };
+  const dispatch = dispatches.find(item => newsArticlePath(item.id) === route);
+  if (dispatch) return { status: 200, tags: completeMeta({
+    title: `${dispatch.headline} | ${NEWS_NAME}`, description: dispatch.sections[0]?.text ?? dispatch.headline,
+    url: `${SITE_ORIGIN}${route}`, type: 'article', publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition),
+    ...(dispatch.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : cardFor(articles)),
+    bodyHtml: `<main>${dispatchHtml(dispatch)}</main>`,
+  }) };
+
   return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit The ARC Daily Digest for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
 }
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);
@@ -233,6 +242,7 @@ export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
     { url: `${SITE_ORIGIN}/news/community`, lastmod: latest([...socialArchive.map(post => post.checkedAt), ...discussions.map(thread => thread.checkedAt)]) },
     { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
     ...people.map(person => ({ url: `${SITE_ORIGIN}${personPath(person.id)}`, lastmod: latest([...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)]) })),
+    ...dispatches.map(dispatch => ({ url: `${SITE_ORIGIN}${newsArticlePath(dispatch.id)}`, lastmod: dispatch.publishedAt })),
     ...articles.map(article => ({ url: `${SITE_ORIGIN}${newsArticlePath(article.id)}`, lastmod: article.publishedAt })),
     ...competitors.map(record => ({ url: `${SITE_ORIGIN}${competitorPath(record.id)}`, lastmod: record.lastObservedAt })),
   ];

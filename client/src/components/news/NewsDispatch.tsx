@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-29
+ * Date: 2026-11-01 — GPT-6 / Codex: permanent report links
  * PURPOSE: Render complete sourced dispatches and their reviewed illustrations for both
  *          the news front page and permanent editions that reserve a commissioned feature.
  * SRP/DRY check: Pass — moved the existing dispatch view intact so edition links cannot
@@ -18,7 +18,7 @@ export function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch
 export function DispatchPreview({ dispatch, lead = false, people = [], showPeople = true }: { dispatch: NewsDispatch; lead?: boolean; people?: NewsPerson[]; showPeople?: boolean }) {
   return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
     <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>{dispatch.commissionedBy ? 'Commissioned analysis' : 'From the contenders'}</span></div>
-    <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
+    <h2><a href={`/news/${dispatch.id}`}>{dispatch.headline}</a></h2>
     <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time>{dispatch.generatedBy && <> · {writerCredit(dispatch.generatedBy)}</>}</div>
     <DispatchArt dispatch={dispatch} lead={lead} />
     {dispatch.sections.map((section, index) => <section key={index}>
