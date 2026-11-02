@@ -1,3 +1,7 @@
+### Version 9.161.17 · November 2, 2026
+
+- Run record: the ARC-3 introduction says the team began as Son Pham and the Boss, and that teammates who merged in during October brought their earlier runs, so the early dots include theirs (Author: Claude Opus 5.5).
+
 ### Version 9.161.16 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: Team Turducken was near the top before the milestone notebooks went public (about 60th of 2,400 on August 20, ahead of all of today's top ten but Tufa Labs; fourth on September 1), fell hundreds of places in the flood and was back in the top ten by October 10. Ranks rebuilt from Tong Hui Kang's tracker and matched against notes written at the time (Author: Claude Opus 5.5).
