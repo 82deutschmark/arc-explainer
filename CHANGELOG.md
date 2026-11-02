@@ -1,3 +1,7 @@
+### Version 9.161.11 · November 2, 2026
+
+- Run record: add the Boss's May 6 bird-in-hand photo and date it and the May 8 photo, each with the ARC-3 team best that day (Author: Claude Opus 5.5).
+
 ### Version 9.161.10 · November 2, 2026
 
 - Add the public notebook census for the wrap-up under docs/newsroom/2026-11-02-public-notebook-census (Author: Claude Opus 5.5): models attached by the top 300 ARC-3 and top 150 ARC-2 public notebooks by votes, with its limits.

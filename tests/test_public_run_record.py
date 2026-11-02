@@ -64,7 +64,7 @@ class RealPage(unittest.TestCase):
         page = rr.PAGE.read_text()
         images = re.findall(r'<img src="(/specials/img/flock/[^"]+)" alt="([^"]+)"', page)
         self.assertEqual(len(images), page.count('<img '))
-        self.assertEqual(len(images), 11)
+        self.assertEqual(len(images), 12)
         for path, _alt in images:
             data = (ROOT / 'client/public' / path.lstrip('/')).read_bytes()
             for chunk in (b'EXIF', b'Exif', b'XMP ', b'GPS'):     # phone pictures can carry the farm's location
