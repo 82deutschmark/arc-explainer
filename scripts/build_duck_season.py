@@ -176,7 +176,7 @@ def stretch(label,a,b2):
 doubling_table=[stretch('After Qwen 3.6, before the Duck','2026-04-22','2026-06-29'),stretch('Duck week','2026-06-30','2026-07-06'),
  stretch('After Qwen 3.8','2026-08-14','2026-08-25'),stretch('After Flash Next, to the deadline','2026-08-26','2026-09-30'),
  stretch('October 1','2026-10-01','2026-10-01'),stretch('October 2','2026-10-02','2026-10-02'),stretch('Rest of October','2026-10-03','2026-10-31')]
-worth=[dict(label=lab,v=[place_in(fields['2026-09-30'],v),place_in(fields['2026-10-02'],v),place_in(now_scores,v)]) for v,lab in [(10,'10'),(20,'20'),(27.89,'27.89, Franzen’s notebook'),(40,'40'),(50,'50')]]
+worth=[dict(label=lab,v=[place_in(fields['2026-09-30'],v),place_in(fields['2026-10-02'],v),place_in(now_scores,v)]) for v,lab in [(10,'<span class="sc">10</span>'),(20,'<span class="sc">20</span>'),(27.89,'<span class="sc">27.89</span>, Franzen’s notebook'),(40,'<span class="sc">40</span>'),(50,'<span class="sc">50</span>')]]
 D['tables']=dict(places=places,scores=scores,doubling=doubling_table,worth=worth)
 NOWLABEL='Now'
 D['turduckenScore']=next(r[4] for r in b3['latest']['rows'] if str(r[1])=='15605182')
@@ -194,8 +194,8 @@ same_inputs=[r for r in c3 if r['fingerprint']==franzen_row['fingerprint']]
 D['census']=dict(arc3=len(c3),arc2=len(c2),llmAssigned=len(llm),qwen=len(qwen_rows),qwenNamed=sum(r['lineage_evidence']=='named' for r in qwen_rows),flash=len(flash),flashNamed=sum(r['lineage_evidence']=='named' for r in flash),arc2Qwen4b=sum(r['lineage']=='Qwen 3 4B' for r in c2),franzenMatches=len(same_inputs),franzenAuthors=len({r['author'] for r in same_inputs}))
 assert D['census']==dict(arc3=300,arc2=150,llmAssigned=139,qwen=129,qwenNamed=75,flash=70,flashNamed=49,arc2Qwen4b=77,franzenMatches=43,franzenAuthors=36)
 
-def f2(v): return '—' if v is None else f'{v:.2f}'
-def pl(v): return '—' if v is None else f'#{v:,}'
+def f2(v): return '—' if v is None else f'<span class="sc">{v:.2f}</span>'
+def pl(v): return '—' if v is None else f'<span class="pl">#{v:,}</span>'
 def md(ds): return datetime.fromisoformat(ds).strftime('%b %-d')
 def cls(name): return ' class="us"' if name=='Team Turducken' else (' class="ref"' if name.endswith('-best score') else '')
 def table(cap,head,rows):

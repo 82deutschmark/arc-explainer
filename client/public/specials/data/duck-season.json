@@ -9186,7 +9186,7 @@
     ],
     "worth": [
       {
-        "label": "10",
+        "label": "<span class=\"sc\">10</span>",
         "v": [
           28,
           515,
@@ -9194,7 +9194,7 @@
         ]
       },
       {
-        "label": "20",
+        "label": "<span class=\"sc\">20</span>",
         "v": [
           17,
           490,
@@ -9202,7 +9202,7 @@
         ]
       },
       {
-        "label": "27.89, Franzen\u2019s notebook",
+        "label": "<span class=\"sc\">27.89</span>, Franzen\u2019s notebook",
         "v": [
           5,
           182,
@@ -9210,7 +9210,7 @@
         ]
       },
       {
-        "label": "40",
+        "label": "<span class=\"sc\">40</span>",
         "v": [
           3,
           3,
@@ -9218,7 +9218,7 @@
         ]
       },
       {
-        "label": "50",
+        "label": "<span class=\"sc\">50</span>",
         "v": [
           2,
           2,

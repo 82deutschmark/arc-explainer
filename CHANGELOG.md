@@ -1,3 +1,7 @@
+### Version 9.161.23 · November 2, 2026
+
+- The Duck That Launched a Thousand Ships: places and scores each have their own look everywhere, in the text, the tables and the charts. Places are bold blue with a #; scores are green figures. The key under the title shows both. (Claude Opus 5.5 Medium)
+
 ### Version 9.161.22 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: charts and tables first. Four tables: places on the board, scores, teams that doubled their score in a day, and the place a given score earned. Each holds only scores or only places, and places are always written #N. NVARC3 added to the team chart. Franzen's line continues as The ARChitects after his merge. Data refreshed to the afternoon public board. (Claude Opus 5.5 Medium)
