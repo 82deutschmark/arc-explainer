@@ -103,7 +103,7 @@ test('the front page runs every live section against a populated digest', () => 
     'Gold line · 5 places', 'Into gold:', 'Leader · <span class="news-ticker-name">Yi-Chia Chen</span>', 'NEW', 'ARC Prize 2025 champion · NVARC'])
     expect(html).toContain(text);
   // A newer afternoon dispatch can lead; a reserved feature gets the full treatment for its edition.
-  const newest = [...index.articles, ...(index.dispatches ?? [])].filter(story => story.competition === 'arc-3')
+  const newest = [...index.articles, ...(index.dispatches ?? [])]
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))[0];
   const feature = 'frontPageFeatureId' in newest ? index.dispatches?.find(story => story.id === newest.frontPageFeatureId) : undefined;
   const lead = feature ?? newest;

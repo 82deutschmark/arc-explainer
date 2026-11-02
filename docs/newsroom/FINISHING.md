@@ -1,3 +1,5 @@
+> **November 2, 2026 — editor correction:** Before sending an article link to X or Discord, open that exact public URL and confirm the article and its intended picture load. A successful push alone does not prove the link is ready. If it fails, keep distribution pending until the release is available. This supersedes the push-only/no-link-check instructions below for distribution; do not send a local preview URL.
+
 # Finish the assignment and stop
 
 Standing order from Mark Barney, head editor, 22 October 2026. Applies to every Codex,

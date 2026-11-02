@@ -1,3 +1,9 @@
+### Version 9.161.31 · November 2, 2026
+
+- Publish the editor-approved ARC2 story at its promised permanent address with its original dated observations and illustration. The earlier 404 was caused by leaving the story in the filing folder.
+- Complete the existing direct-story lookup so a cached front page cannot hide a published article. Distinguish an unpublished address from a network failure, rejected publication or incompatible server response, with a working retry button.
+- Author: GPT-6 / Codex (reasoning effort not exposed), completing GPT-6.1 Sol’s pending story lookup. Validation: focused archive-route and reader-loading tests plus the production build; see docs/02-Nov-2026-publication-recovery-plan.md.
+
 ### Version 9.161.30 · November 2, 2026
 
 - Preserve the organic Goose masthead draft without a separate square inset, consolidated header styles and compatible local preview data. The user ended the session; final rendered review and Discord approval remain outstanding. See docs/newsroom/NEXT_GOOSE_SESSION.md. Author: GPT-6 / Codex (reasoning effort not exposed).
@@ -31,6 +37,11 @@
 - Prepare the approved masthead, logo and shared metadata behind the post-7-pm release gate and official closing checks. Unify published competition order across browser and initial HTML, with small cast cards after the opening. No article or social send is part of this change.
 - Author: GPT-6 / Codex (reasoning effort not exposed). Validation is recorded in docs/02-Nov-2026-goose-integration-plan.md.
 
+
+### Version 9.161.16 · November 2, 2026
+
+- Fix permanent news links relying on a cached front-page archive: editions and specials now have a shared uncached story lookup. Missing stories recheck automatically while the page is visible, with a manual retry and a distinct connection-error state. Remove the misleading “Dispatch not found” dead end. Author: GPT-6.1 Sol / Codex.
+- Require a working public article and illustration before social distribution. The morning score update adds NVIDIA’s large public-best steps and links Saturday’s existing team profile.
 ### Version 9.161.23 · November 2, 2026
 
 - The Duck That Launched a Thousand Ships: places and scores each have their own look everywhere, in the text, the tables and the charts. Places are bold blue with a #; scores are green figures. The key under the title shows both. (Claude Opus 5.5 Medium)

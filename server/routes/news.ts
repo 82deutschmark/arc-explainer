@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 2026-10-30 (2026-10-29; 08-October-2026; 10-October-2026 earlier)
+ * Date: 02-November-2026 (GPT-6 / Codex: publication and loading states; earlier GPT-6.1 Sol lookup)
  * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
  *          public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
@@ -86,6 +86,31 @@ export function mountNews(app: Express) {
   });
   app.get('/api/news', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsIndex()); } catch (error) { next(error); }
+  });
+  // Permanent links resolve both editions and specials directly, independently of the
+  // browser's cached front page. A miss is never cached across a deployment.
+  app.get('/api/news/stories/:id', (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      const { index, skipped } = loadNewsArchive();
+      const article = index.articles.find(item => item.id === req.params.id);
+      const dispatch = index.dispatches?.find(item => item.id === req.params.id);
+      if (!article && !dispatch) {
+        // A rejected publication exists: report a service failure, never call it unpublished.
+        const rejected = skipped.some(item => ['articles', 'dispatches'].some(folder => item.file === `${folder}/${req.params.id}.json`));
+        return rejected
+          ? res.status(503).json({ code: 'story-load-failed', error: 'The published story could not be loaded' })
+          : res.status(404).json({ code: 'story-not-published', error: 'No story has been published at this address' });
+      }
+      const related = index.articles.filter(item => item.id !== article?.id)
+        .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 8);
+      return res.json({
+        articles: article ? [article, ...related] : related,
+        dispatches: (index.dispatches ?? []).filter(item => item.id === dispatch?.id || item.id === article?.frontPageFeatureId),
+        competitors: index.competitors.filter(item => article?.competition === item.competition && article.teamIds.includes(item.teamId)),
+        people: index.people ?? [],
+      });
+    } catch (error) { next(error); }
   });
   // What the site is leaving out right now. The Mac Mini's desk watchdog
   // (bubba-workspace/tools/arc_daily_announce.py) reads this and raises it in Discord.

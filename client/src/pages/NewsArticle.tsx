@@ -12,6 +12,8 @@
  *          under the byline; roster names in the rail carry their faces too.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
+import { useNewsStory } from '@/hooks/useNewsStory';
+import { Button } from '@/components/ui/button';
 import { SportsText, NumberKey } from '@/components/news/SportsText';
 import { DispatchPreview } from '@/components/news/NewsDispatch';
 import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
@@ -21,29 +23,30 @@ import { SITE_ORIGIN } from '@shared/seo';
 import { competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles } from '@/components/news/NewsDesk';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
 const points = (value: number) => String(value);
 
 export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
-  const query = useNews();
+  const query = useNewsStory(articleId);
   const article = query.data?.articles.find(item => item.id === articleId);
   const dispatch = !article ? query.data?.dispatches?.find(item => item.id === articleId) : undefined;
   const feature = article ? editionFeature(article, query.data?.dispatches) : undefined;
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : dispatch ? dispatchStructuredData(dispatch, SITE_ORIGIN) : undefined, [article, dispatch]);
-  const missing = !!query.data && !article && !dispatch;
+  const missing = query.isSuccess && query.data === null;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Dispatch | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.dek ?? dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
+  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Story | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.dek ?? dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
     image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : dispatch?.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : undefined,
     article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : dispatch ? { publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
 
   return <NewsPaper date={article?.date}>
     <Link className="news-back" href="/news">← Back to the front page</Link>
-    <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
-    {missing && <section className="news-status"><h1 className="news-article-title">Dispatch not found</h1><p>This edition is not in the published archive.</p><Link href="/news" className="news-read">Browse published editions →</Link></section>}
+    <NewsStatus loading={query.isLoading} error={false} retry={() => void query.refetch()} />
+    {query.isError && !query.data && <section className="news-status" role="alert"><h1 className="news-article-title">We couldn’t load this story</h1><p>The site is temporarily unable to retrieve this article. This is a loading problem; publication status could not be checked.</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Trying…' : 'Try again'}</Button><p><Link href="/news" className="news-read">Back to the front page →</Link></p></section>}
+    {missing && !query.isError && <section className="news-status" role="status"><h1 className="news-article-title">No story has been published at this address</h1><p>The archive was checked successfully. This link may have been shared before publication, or the address may be incorrect.</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Checking…' : 'Check again'}</Button><p><Link href="/news" className="news-read">Read the latest stories →</Link></p></section>}
     {dispatch && <DispatchPreview dispatch={dispatch} lead people={query.data?.people} />}
     {article && <article>
       <header className="news-article-header">

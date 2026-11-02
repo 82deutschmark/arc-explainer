@@ -1,3 +1,5 @@
+> **November 2, 2026 — editor correction:** A new article link must open publicly with its intended article and image before distribution. Record `publicLinkReview` in the outbox. Push success alone is insufficient; follow the updated FINISHING.md. When the editor takes over the composer, leave the send to them.
+
 > **Editor handover — November 1, 2026:** Mark authorized consolidation into `/Users/macmini/GitHub/arc-explainer`. The ten Digest Codex automations are deleted; all new sends require editorial review. This supersedes old permanent-checkout, automatic-repair, automatic-publish and distribution instructions below. Use [the consolidation record](CONSOLIDATION.md). Never recreate a retired checkout or resume a job without a new explicit editor instruction.
 
 # ARC Daily Digest posts on X

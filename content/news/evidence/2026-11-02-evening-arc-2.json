@@ -1,0 +1,247 @@
+{
+  "articleId": "2026-11-02-evening-arc-2",
+  "sourceFiling": "docs/newsroom/2026-11-02-late-edition-filing/arc-2-article.json",
+  "sourceFilingSha256": "f84ccccbf9192f8304dfb5b69e9bfbcbba82e6f2d5edd480e4478f6763de936a",
+  "dataAsOf": "2026-11-02T19:15:17Z",
+  "baselineAt": "2026-11-01T22:32:07Z",
+  "publishedAt": "2026-11-02T23:23:59.661367Z",
+  "sources": [
+    {
+      "accessedAt": "2026-11-02T19:21:10Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494357-0",
+      "title": "Van-Phuc Huynh — Kaggle profile",
+      "url": "https://www.kaggle.com/hvanphucs112"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-15494357-1",
+      "title": "Trần M. Tiến — Kaggle profile",
+      "url": "https://www.kaggle.com/trnmtin"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15607618-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-11-02T19:15:00Z",
+      "id": "fact-17204147-0",
+      "title": "tascj — Kaggle profile",
+      "url": "https://www.kaggle.com/tascj0"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 87.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 83.89,
+      "scoreChange": 0.0,
+      "teamId": "15486939"
+    },
+    {
+      "name": "Domdolus Tolus",
+      "rank": 4,
+      "rankChange": 0,
+      "score": 83.47,
+      "scoreChange": 0.0,
+      "teamId": "16559402"
+    },
+    {
+      "name": "Sakayori Lab",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 81.81,
+      "scoreChange": 0.0,
+      "teamId": "16442485"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 6,
+      "rankChange": 0,
+      "score": 80.83,
+      "scoreChange": 0.0,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Ravi Teja Chilakala",
+      "rank": 7,
+      "rankChange": null,
+      "score": 80.56,
+      "scoreChange": null,
+      "teamId": "17021430"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 8,
+      "rankChange": -1,
+      "score": 78.89,
+      "scoreChange": 0.0,
+      "teamId": "16373916"
+    },
+    {
+      "name": "S & M & N & S & Y",
+      "rank": 9,
+      "rankChange": 6,
+      "score": 77.36,
+      "scoreChange": 2.22,
+      "teamId": "16797706"
+    },
+    {
+      "name": "ｶﾎｳｼｭｳｾｲ",
+      "rank": 10,
+      "rankChange": 4,
+      "score": 77.22,
+      "scoreChange": 2.08,
+      "teamId": "16297545"
+    },
+    {
+      "name": "tascj",
+      "rank": 11,
+      "rankChange": null,
+      "score": 76.81,
+      "scoreChange": null,
+      "teamId": "17204147"
+    },
+    {
+      "name": "ibyyue",
+      "rank": 17,
+      "rankChange": 14,
+      "score": 75.14,
+      "scoreChange": 5.97,
+      "teamId": "16684035"
+    },
+    {
+      "name": "Daniel Franzen",
+      "rank": 28,
+      "rankChange": 19,
+      "score": 70.97,
+      "scoreChange": 11.8,
+      "teamId": "15607618"
+    },
+    {
+      "name": "この遥かなる旅路に祝福を",
+      "rank": 32,
+      "rankChange": -4,
+      "score": 70.14,
+      "scoreChange": 0.0,
+      "teamId": "15526034"
+    },
+    {
+      "name": "rxe",
+      "rank": 41,
+      "rankChange": 5,
+      "score": 66.25,
+      "scoreChange": 7.08,
+      "teamId": "15487221"
+    },
+    {
+      "name": "ANKIT VIKAL",
+      "rank": 48,
+      "rankChange": 3,
+      "score": 60.83,
+      "scoreChange": 4.3,
+      "teamId": "17093946"
+    },
+    {
+      "name": "KaggleARC",
+      "rank": 58,
+      "rankChange": 54,
+      "score": 55.14,
+      "scoreChange": 18.2,
+      "teamId": "15962641"
+    },
+    {
+      "name": "Hack2Publish",
+      "rank": 62,
+      "rankChange": 85,
+      "score": 54.17,
+      "scoreChange": 19.59,
+      "teamId": "16260837"
+    },
+    {
+      "name": "ARC Mutants",
+      "rank": 67,
+      "rankChange": 2,
+      "score": 50.83,
+      "scoreChange": 3.75,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Hira Norm",
+      "rank": 69,
+      "rankChange": 6,
+      "score": 50.56,
+      "scoreChange": 5.7,
+      "teamId": "15596748"
+    },
+    {
+      "name": "AndreasToescher",
+      "rank": 79,
+      "rankChange": 75,
+      "score": 45.97,
+      "scoreChange": 11.94,
+      "teamId": "17102498"
+    },
+    {
+      "name": "Progress",
+      "rank": 93,
+      "rankChange": 75,
+      "score": 42.5,
+      "scoreChange": 9.03,
+      "teamId": "15494357"
+    },
+    {
+      "name": "Omar Althobaiti",
+      "rank": 108,
+      "rankChange": 34,
+      "score": 39.44,
+      "scoreChange": 4.44,
+      "teamId": "17144153"
+    },
+    {
+      "name": "Mithil A Vakde",
+      "rank": 142,
+      "rankChange": -11,
+      "score": 35.69,
+      "scoreChange": 0.0,
+      "teamId": "15486728"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 2388,
+      "rankChange": null,
+      "score": 21.67,
+      "scoreChange": null,
+      "teamId": "15507730"
+    }
+  ],
+  "publicationNote": "Published from the editor-approved filed story; source observations remain dated and public standings are provisional. No new closing observation is claimed.",
+  "artwork": {
+    "src": "/news-images/2026-11-02-tascj-cyber-one-wingbeat-v1.webp",
+    "sha256": "7fdb8750af7a59aba329a28b260ebc68590b31b70823f3c0172bff4eacb74596"
+  }
+}
