@@ -1,3 +1,7 @@
+### Version 9.161.12 · November 2, 2026
+
+- Run record: correct the Qwen 3.8 27B and Flash Next marks to when the weights were published, Aug 14 and Aug 26, not when their empty repositories were created (Author: Claude Opus 5.5).
+
 ### Version 9.161.11 · November 2, 2026
 
 - Run record: add the Boss's May 6 bird-in-hand photo and date it and the May 8 photo, each with the ARC-3 team best that day (Author: Claude Opus 5.5).

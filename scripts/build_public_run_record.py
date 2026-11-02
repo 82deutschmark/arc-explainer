@@ -29,8 +29,8 @@ BELL = '2026-11-02T23:59:00Z'
 START = '2026-03-20T00:00:00Z'
 QWEN = [
     {'t': '2026-04-21T00:00:00Z', 'short': 'Qwen 3.6', 'label': 'Qwen 3.6 27B weights public'},
-    {'t': '2026-08-05T00:00:00Z', 'short': 'Qwen 3.8', 'label': 'Qwen 3.8 27B weights public'},
-    {'t': '2026-08-24T00:00:00Z', 'short': 'Flash Next', 'label': 'Qwen 3.8 Flash Next weights public'},
+    {'t': '2026-08-14T00:00:00Z', 'short': 'Qwen 3.8', 'label': 'Qwen 3.8 27B weights public'},
+    {'t': '2026-08-26T00:00:00Z', 'short': 'Flash Next', 'label': 'Qwen 3.8 Flash Next weights public'},
 ]
 DUCK = {'t': '2026-07-01T00:00:00Z', 'short': 'Duck', 'label': "Tufa Labs' Duck harness open-sourced"}
 MILESTONE_2 = {'t': '2026-09-30T00:00:00Z', 'short': 'Milestone 2', 'label': 'Milestone 2 notebooks public'}
