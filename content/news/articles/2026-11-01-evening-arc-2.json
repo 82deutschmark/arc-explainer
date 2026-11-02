@@ -5,16 +5,16 @@
   "dataAsOf": "2026-11-02T00:56:33Z",
   "date": "2026-11-01",
   "dek": "Tufa’s lead is just 0.84 points. Ravi Teja Chilakala and Lashen Learning have reached the top ten, while much bigger jumps reshape the field below.",
-  "discord": "Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
+  "discord": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-2",
   "edition": "evening",
   "generatedBy": "gpt-6-astra-extra-high",
-  "headline": "Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten",
+  "headline": "Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten",
   "id": "2026-11-01-evening-arc-2",
   "image": {
-    "alt": "Illustration for Tufa leads Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen @ Fields Model: rank 2, score 87.22.",
-    "artworkId": "2026-11-01-evening-arc-2-01dfa19d7e",
+    "alt": "Illustration for Tufa leads Yi-Chia Chen by under a point as two new faces reach ARC-2’s top ten. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 87.22.",
+    "artworkId": "2026-11-01-evening-arc-2-2cae03a0ba",
     "caption": "Score panel: Nov 1, 2026 · 7:56 PM EST; provisional public standings.",
-    "src": "/news-images/2026-11-01-evening-arc-2-01dfa19d7e.webp"
+    "src": "/news-images/2026-11-01-evening-arc-2-2cae03a0ba.webp"
   },
   "publishedAt": "2026-11-02T00:57:44Z",
   "sections": [
@@ -30,7 +30,7 @@
       "sourceIds": [
         "board"
       ],
-      "text": "Tufa Labs holds the lead on 88.06. Yi-Chia Chen @ Fields Model is right behind on 87.22: a gap of just 0.84. Chen leads ARC-3, while Tufa has the upper hand here. Behind them, nvbanana’s 83.89 puts it third, only 0.42 ahead of Domdolus Tolus. There is precious little breathing room at either end of that leading quartet."
+      "text": "Tufa Labs holds the lead on 88.06. Yi-Chia Chen is right behind on 87.22: a gap of just 0.84. Yi-Chia Chen leads ARC-3, while Tufa has the upper hand here. Behind them, nvbanana’s 83.89 puts it third, only 0.42 ahead of Domdolus Tolus. There is precious little breathing room at either end of that leading quartet."
     },
     {
       "heading": "From deep in the field",
@@ -46,7 +46,7 @@
         "board",
         "wire-2026-11-01-1730-arc-2-smnsy-climbs-into-gold"
       ],
-      "text": "S & M & N & S & Y jumped from 33rd to 15th after gaining eight points. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just seven-tenths of a point away."
+      "text": "S & M & N & S & Y jumped from 33rd to 15th after gaining eight points. Its 75.14 now matches the scores in 13th and 14th. Below that cluster, ảc holds 16th and ARCane occupies the final public gold place, 17th, on 73.89. artificialagencylab.com is next, just 0.70 points away."
     },
     {
       "heading": "Fourteen days that changed the race",
@@ -61,7 +61,7 @@
         "board",
         "deadline"
       ],
-      "text": "Watch Tufa’s narrow lead over Chen, the new top-ten contenders and ARCane’s hold on the public gold line. Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern."
+      "text": "Watch Tufa’s narrow lead over Yi-Chia Chen, the new top-ten contenders and ARCane’s hold on the public gold line. Submissions close Monday, November 2, at 23:59 UTC—6:59 p.m. Eastern."
     }
   ],
   "sources": [
@@ -100,7 +100,7 @@
       "teamId": "16756524"
     },
     {
-      "name": "Yi-Chia Chen @ Fields Model",
+      "name": "Yi-Chia Chen",
       "rank": 2,
       "rankChange": 0,
       "score": 87.22,

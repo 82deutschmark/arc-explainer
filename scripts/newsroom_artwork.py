@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Sonnet 5.5 Medium
-# Date: 1-November-2026 (observed movement, explicit rival pairs and scene-safe overlay placement); 31-October-2026 (edition score-panel captions no longer carry the "AI-generated editorial illustration ... metaphors"
+# Date: 1-November-2026 (compact numeric score panels and observed movement); 31-October-2026 (edition score-panel captions no longer carry the "AI-generated editorial illustration ... metaphors"
 # boilerplate, per the Boss and ART_DESK.md of 29 October); 15-October-2026 (an approved scene that already ran in the contest or on X is no longer
 # offered automatically; the comic-strip rule, found in the backup desk's rehearsal)
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
@@ -336,6 +336,21 @@ def gap_words(rows):
     return f'{cents / 100:.2f} points apart'
 
 
+def panel_name(row, overlay):
+    return overlay.get('teamLabels', {}).get(row['teamId'], row['name'])
+
+
+def score_gap(rows, overlay):
+    """Numeric gaps for new panels; legacy words remain only to validate old records."""
+    if len(rows) != 2:
+        return None
+    gap = rows[0]['score'] - rows[1]['score']
+    leader, rival = (panel_name(row, overlay) for row in rows)
+    if overlay.get('gapStyle') == 'ahead':
+        return f'{leader} is {gap:.2f} ahead of {rival}'
+    return f'{leader} leads by {gap:.2f}'
+
+
 def score_chart_data(rows, item):
     """Use only archived observations, with the exact edition closing scores appended."""
     cutoff = stamp(item['articleBase']['dataAsOf'])
@@ -447,7 +462,7 @@ def plan(brief, article, root=ROOT):
         reuse = {'src': native['rawSrc'], 'recordId': assignment['artworkGenerationRecord']}
         if assignment.get('artworkHistoryChart'):
             history = score_chart_data(selected, item)
-    layout = HISTORY_LAYOUT if history else ('story-panel-v2' if overlay else OVERLAY_LAYOUT)
+    layout = HISTORY_LAYOUT if history else ('story-panel-v3.1' if overlay else OVERLAY_LAYOUT)
     # A reference update must produce a new asset even with the same brief and headline.
     key = digest({'brief': brief['sha256'], 'headline': article['headline'], 'teams': [r['teamId'] for r in selected],
                   'references': refs, 'cast': sorted(cast), 'scene': scene, 'prompt': prompt,
@@ -568,6 +583,9 @@ def draw_rank_arrow(draw, x, y, change, color):
 
 
 def draw_story_panel(draw, canvas, job, font, date_label):
+    if job['overlayOptions'].get('compact'):
+        draw_compact_panel(draw, canvas, job, font, date_label)
+        return
     x, width = 32, 590
     movement = job['movement']
     step = 94 if movement else 68
@@ -578,7 +596,7 @@ def draw_story_panel(draw, canvas, job, font, date_label):
     draw.text((x + 18, y + 13), job['competition'].replace('arc-', 'ARC-AGI-') + ' · PUBLIC STANDINGS', font=font(23, True), fill='#8b3a2a')
     for i, row in enumerate(job['rows']):
         yy = y + 47 + step * i
-        name = f"#{row['rank']}  {row['name']}"
+        name = f"#{row['rank']}  {panel_name(row, job['overlayOptions'])}"
         face = font(31, True)
         while draw.textlength(name, font=face) > width - 145 and face.size > 18:
             face = font(face.size - 1, True)
@@ -603,10 +621,52 @@ def draw_story_panel(draw, canvas, job, font, date_label):
         else:
             draw.rectangle((x + 18, yy + 43, x + width - 18, yy + 49), fill='#d5cebf')
             draw.rectangle((x + 18, yy + 43, x + 18 + (width - 36) * min(100, max(0, row['score'])) / 100, yy + 49), fill='#8b3a2a' if i == 0 else '#355970')
-    gap = gap_words(job['rows'])
-    if gap:
+    gap = score_gap(job['rows'], job['overlayOptions'])
+    if gap and job['overlayOptions'].get('gapPlacement') != 'footer-center':
         draw.text((x + 18, y + height - 72), gap, font=font(25, True), fill='#171512')
     draw.text((x + 18, y + height - 38), 'Board: ' + date_label, font=font(19), fill='#534c40')
+
+
+def draw_compact_panel(draw, canvas, job, font, date_label):
+    """Two dense rows, one gap and shared timing, below the tank's left hull."""
+    x, width, height = 24, 520, 188
+    y = canvas.height - height - 14
+    draw.rectangle((x, y, x + width, y + height), fill='#f5f0e5', outline='#171512', width=2)
+    draw.rectangle((x, y, x + width, y + 4), fill='#8b3a2a')
+    draw.text((x + 12, y + 6), job['competition'].replace('arc-', 'ARC-AGI-') + ' · PUBLIC STANDINGS', font=font(18, True), fill='#8b3a2a')
+    movement = job['movement'] or [None] * len(job['rows'])
+    for i, (row, move) in enumerate(zip(job['rows'], movement)):
+        yy = y + 30 + i * 49
+        name = f"#{row['rank']}  {panel_name(row, job['overlayOptions'])}"
+        face = font(26, True)
+        while draw.textlength(name, font=face) > width - 120 and face.size > 18:
+            face = font(face.size - 1, True)
+        if draw.textlength(name, font=face) > width - 120:
+            raise ValueError('team name cannot fit the compact panel')
+        draw.text((x + 12, yy), name, font=face, fill='#171512')
+        score = f"{row['score']:.2f}"
+        draw.text((x + width - 12 - draw.textlength(score, font=font(27, True)), yy), score, font=font(27, True), fill='#171512')
+        if move:
+            color = '#28624b' if move['rankChange'] > 0 else '#8b3a2a'
+            draw_rank_arrow(draw, x + 12, yy + 29, move['rankChange'], color)
+            points = f"{move['scoreChange']:+.2f} pts" if move['scoreChange'] else 'score unchanged'
+            line = f"{ordinal(move['rankFrom'])} to {ordinal(move['rankTo'])} ({move['rankChange']:+d} {'place' if abs(move['rankChange']) == 1 else 'places'}) · {points}"
+            draw.text((x + 35, yy + 27), line, font=font(19), fill=color)
+    gap = score_gap(job['rows'], job['overlayOptions'])
+    if gap:
+        face = font(25, True)
+        while draw.textlength(gap, font=face) > width - 24 and face.size > 18:
+            face = font(face.size - 1, True)
+        if draw.textlength(gap, font=face) > width - 24:
+            raise ValueError('gap cannot fit the compact panel')
+        draw.text((x + 12, y + 133), gap, font=face, fill='#171512')
+    times = {m['firstSeenAt'] for m in movement if m}
+    if len(times) == 1:
+        first = stamp(next(iter(times))).astimezone(ET).strftime('%b %-d %-I:%M %p %Z')
+        draw.text((x + 12, y + 164), 'First seen ' + first, font=font(15), fill='#534c40')
+    when = stamp(job['dataAsOf']).astimezone(ET).strftime('%b %-d %-I:%M %p %Z')
+    label = 'Board ' + when
+    draw.text((x + width - 12 - draw.textlength(label, font=font(15)), y + 164), label, font=font(15), fill='#534c40')
 
 
 def compose(source, brief_path, output=None, article=None, root=ROOT, generation_record=None, now=None):
@@ -690,6 +750,13 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
         brand_x = (width - brand_width) // 2
     if placement == 'footer':
         brand_y = raw.height + 32
+        if overlay.get('gapPlacement') == 'footer-center':
+            label = score_gap(job['rows'], overlay)
+            face = font(57, True)
+            while draw.textlength(label, font=face) > 570 and face.size > 30:
+                face = font(face.size - 1, True)
+            middle_x = (622 + brand_x) / 2
+            draw.text((middle_x - draw.textlength(label, font=face) / 2, raw.height + 135), label, font=face, fill='#8b3a2a')
     draw.rectangle((brand_x, brand_y, brand_x + brand_width, brand_y + 106), fill='#f5f0e5', outline='#171512', width=2)
     draw.rectangle((brand_x, brand_y + 101, brand_x + brand_width, brand_y + 106), fill='#8b3a2a')
     logo = Image.open(public_file('/favicon-32x32.png', root)).convert('RGBA').resize((64, 64), Image.Resampling.NEAREST)
@@ -717,7 +784,8 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
                  + stamp(move['firstSeenAt']).astimezone(ET).strftime('%b %-d, %Y at %-I:%M %p %Z')
                  for row, move in zip(job['rows'], job['movement']) if move]
         alt += ' ' + '; '.join(moves) + '.'
-        caption = '; '.join(moves) + '. Board checked ' + date_label + '.'
+        # Movement already has its own panel; avoid another retelling in the caption.
+        caption = 'Board checked ' + date_label + '.'
     image = {'src': src, 'alt': alt, 'caption': caption, 'artworkId': job['id']}
     report = {'version': 1, 'id': job['id'], 'kind': 'edition-composition', 'articleId': job['articleId'],
               'headline': job['headline'], 'briefSha256': job['briefSha256'], 'dataAsOf': job['dataAsOf'],
@@ -725,7 +793,7 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
               'layout': job['layout'], 'historyChart': job['historyChart'], 'generationRecord': generation_record,
               'rawSha256': generation['rawSha256'], 'imageSha256': __import__('hashlib').sha256(data).hexdigest(), 'image': image}
     if overlay:
-        report.update(overlayOptions=overlay, movement=job['movement'], scoreGap=gap_words(job['rows']))
+        report.update(overlayOptions=overlay, movement=job['movement'], scoreGap=score_gap(job['rows'], overlay))
     record_path = Path(root) / 'content/news/artwork' / (job['id'] + '.json')
     # Check both immutable destinations before writing either one.
     for path, body in [(record_path, encoded(report)), (asset, data)]:
@@ -758,7 +826,9 @@ def validate_attachment(image, article, brief, root=ROOT):
     if ((report.get('overlayOptions', {}).get('showMovement') or report.get('movement') is not None)
             and report.get('movement') != movement_data(report['rows'], item)):
         raise ValueError('illustration movement differs from edition evidence')
-    if ('overlayOptions' in report or 'scoreGap' in report) and report.get('scoreGap') != gap_words(report['rows']):
+    expected_gap = (score_gap(report['rows'], report.get('overlayOptions', {}))
+                    if report.get('layout', '').startswith('story-panel-v3') else gap_words(report['rows']))
+    if ('overlayOptions' in report or 'scoreGap' in report) and report.get('scoreGap') != expected_gap:
         raise ValueError('illustration gap differs from edition evidence')
     validate_commission_use(report, item, article, root)
     if file_sha(public_file(image['src'], root)) != report['imageSha256']:

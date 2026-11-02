@@ -2,12 +2,12 @@
   "commissionedBy": "mark-barney",
   "competition": "arc-3",
   "generatedBy": "gpt-6-astra-extra-high",
-  "headline": "Down to the Wire: NVARC3 charges past Turducken",
+  "headline": "NVARC3 charges past Turducken",
   "id": "2026-11-01-nvarc3-passes-turducken",
   "image": {
-    "alt": "Illustration for NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
-    "caption": "NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST. Board checked Nov 1, 2026 · 7:56 PM EST.",
-    "src": "/news-images/2026-11-01-evening-arc-3-e3b7fc7865.webp"
+    "alt": "Illustration for NVARC3 vaults into fourth, 0.13 ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
+    "caption": "Board checked Nov 1, 2026 · 7:56 PM EST.",
+    "src": "/news-images/2026-11-01-evening-arc-3-7b5ad85829.webp"
   },
   "publishedAt": "2026-11-01T22:33:41.914219+00:00",
   "sections": [
@@ -17,7 +17,7 @@
         "kaggle-board",
         "board-history"
       ],
-      "text": "NVARC3 has edged past Team Turducken into fourth on the ARC-AGI-3 public board. At 56.15 against 56.02, the margin is thirteen hundredths of a point. The juggernaut has its nose in front; Turducken is still right there."
+      "text": "NVARC3 has edged past Team Turducken into fourth on the ARC-AGI-3 public board. At 56.15 against 56.02, the margin is 0.13 points. The juggernaut has its nose in front; Turducken is still right there."
     },
     {
       "heading": "Six points and four places",

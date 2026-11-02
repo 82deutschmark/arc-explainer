@@ -1,0 +1,89 @@
+{
+  "articleId": "2026-11-01-evening-arc-3",
+  "briefSha256": "238424fef420b22988366765fbc642cf31fd3b465e6a3682f8cbdc576a6c6708",
+  "dataAsOf": "2026-11-02T00:56:31Z",
+  "generationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
+  "headline": "NVARC3 vaults into fourth, 0.13 ahead of Turducken",
+  "historyChart": null,
+  "id": "2026-11-01-evening-arc-3-7b5ad85829",
+  "image": {
+    "alt": "Illustration for NVARC3 vaults into fourth, 0.13 ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
+    "artworkId": "2026-11-01-evening-arc-3-7b5ad85829",
+    "caption": "Board checked Nov 1, 2026 · 7:56 PM EST.",
+    "src": "/news-images/2026-11-01-evening-arc-3-7b5ad85829.webp"
+  },
+  "imageSha256": "5a5a33d1519c443ad1a0beb0eb1b21989c6084a11c0b6f89367eb699a5b92635",
+  "kind": "edition-composition",
+  "layout": "story-panel-v3.1",
+  "leadGap": null,
+  "movement": [
+    {
+      "firstSeenAt": "2026-11-01T09:00:28Z",
+      "rankChange": 4,
+      "rankFrom": 8,
+      "rankTo": 4,
+      "scoreChange": 6.26,
+      "scoreFrom": 49.89,
+      "scoreTo": 56.15,
+      "teamId": "15770880"
+    },
+    {
+      "firstSeenAt": "2026-11-01T09:00:28Z",
+      "rankChange": -1,
+      "rankFrom": 4,
+      "rankTo": 5,
+      "scoreChange": 0.0,
+      "scoreFrom": 56.02,
+      "scoreTo": 56.02,
+      "teamId": "15605182"
+    }
+  ],
+  "overlayOptions": {
+    "brandPlacement": "top-center",
+    "compact": true,
+    "gapStyle": "ahead",
+    "placement": "corners",
+    "showBanner": false,
+    "showMovement": true,
+    "teamLabels": {
+      "15499660": "Yi-Chia Chen",
+      "15501171": "Yi-Chia Chen",
+      "15605182": "Turducken",
+      "15770880": "NVARC3",
+      "16756524": "Tufa"
+    }
+  },
+  "personIds": [
+    "darragh-hanley",
+    "elad-sarafian",
+    "gal-kaplun",
+    "ivan-sorokin",
+    "jean-francois-puget",
+    "keith-tyser",
+    "mark-barney",
+    "mitubant",
+    "son-pham"
+  ],
+  "rawSha256": "cf325eb1fda0c858b103c9fc6abe237e619d10c848c3ab372dfa9149efa7a045",
+  "rows": [
+    {
+      "name": "NVARC3",
+      "rank": 4,
+      "rankChange": null,
+      "score": 56.15,
+      "scoreChange": null,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    }
+  ],
+  "scoreGap": "NVARC3 is 0.13 ahead of Turducken",
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

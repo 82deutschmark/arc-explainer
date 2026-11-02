@@ -1,3 +1,10 @@
+### Version 9.161.4 · November 1, 2026
+
+- Compact, information-dense ARC-3 panel: both ranks and scores, observed movement, points gained, numeric gap and dated observations; clear the tank and remove the duplicate sky banner. ARC-2 carries “Tufa leads by 0.84” prominently in its footer. Author: GPT-6 Astra Extra high.
+- Use numeric gaps throughout current copy, standardize Yi-Chia Chen’s name, remove the repeated scoreboard and bar chart, retain the two-week table, and add social preview metadata for the jump cover. Preserve earlier versions and invalidate the old preview approvals.
+- At the editor’s explicit request, restore only the 30-minute leaderboard collector from this repository. Both boards collected and uploaded successfully at 01:43 UTC November 2. Editorial and social automations remain off.
+- Validation: 32 artwork tests pass; both final compositions visually checked, including the numeric wording and tank clearance.
+
 ### Version 9.161.3 · November 1, 2026
 
 - **The jump belongs on the picture** — The compositor now supports explicitly selected rival pairs below first place, observed rank/score changes, first-seen times, geometric arrows, a written score gap and scene-safe brand/footer placement. It validates movement against archived observations and accepts explicitly approved imported stock without inventing native-generation metadata. Author: GPT-6 Astra Extra high.

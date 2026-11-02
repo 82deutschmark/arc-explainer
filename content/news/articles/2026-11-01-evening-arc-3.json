@@ -4,28 +4,28 @@
   "coverageNote": "Public standings checked November 1 at 7:56 pm EST (November 2, 00:56 UTC). Two-week comparisons use the saved October 19 baseline for continuously tracked entries. Final medals follow the private evaluation.",
   "dataAsOf": "2026-11-02T00:56:31Z",
   "date": "2026-11-01",
-  "dek": "Four places gained and 6.26 points added: the juggernaut is on the move. Above the chase, Chen leads Tufa into the final day.",
-  "discord": "NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
+  "dek": "Four places gained and 6.26 points added: the juggernaut is on the move. Above the chase, Yi-Chia Chen leads Tufa into the final day.",
+  "discord": "NVARC3 vaults into fourth, 0.13 ahead of Turducken\nhttps://arc.markbarney.net/news/2026-11-01-evening-arc-3",
   "edition": "evening",
   "frontPageFeatureId": "2026-11-01-nvarc3-passes-turducken",
   "generatedBy": "gpt-6-astra-extra-high",
-  "headline": "NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken",
+  "headline": "NVARC3 vaults into fourth, 0.13 ahead of Turducken",
   "id": "2026-11-01-evening-arc-3",
   "image": {
-    "alt": "Illustration for NVARC3 vaults into fourth, thirteen hundredths ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
-    "artworkId": "2026-11-01-evening-arc-3-e3b7fc7865",
-    "caption": "NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST. Board checked Nov 1, 2026 · 7:56 PM EST.",
-    "src": "/news-images/2026-11-01-evening-arc-3-e3b7fc7865.webp"
+    "alt": "Illustration for NVARC3 vaults into fourth, 0.13 ahead of Turducken. NVARC3: rank 4, score 56.15; Team Turducken: rank 5, score 56.02. NVARC3: 8th to 4th, +6.26 points; first seen Nov 1, 2026 at 4:00 AM EST; Team Turducken: 4th to 5th, +0.00 points; first seen Nov 1, 2026 at 4:00 AM EST.",
+    "artworkId": "2026-11-01-evening-arc-3-7b5ad85829",
+    "caption": "Board checked Nov 1, 2026 · 7:56 PM EST.",
+    "src": "/news-images/2026-11-01-evening-arc-3-7b5ad85829.webp"
   },
   "publishedAt": "2026-11-02T00:57:44Z",
   "sections": [
     {
-      "heading": "Chen sets the pace",
+      "heading": "At the front",
       "sourceIds": [
         "board",
         "dispatch-2026-11-01-nvarc3-passes-turducken"
       ],
-      "text": "Yi-Chia Chen @ Fields Model enters the final day on 75.56, with Tufa Labs on 70.24. Chen’s advantage is a little over five points. The pair have opened a wide gap over the chasing pack, but there is still a full day’s worth of pressure to absorb. Across on ARC-2, their positions are reversed: Tufa is trying to hold off Chen there while chasing Chen here."
+      "text": "Yi-Chia Chen @ Fields Model enters the final day on 75.56, with Tufa Labs on 70.24. Yi-Chia Chen’s advantage is a little over five points. The pair have opened a wide gap over the chasing pack, but there is still a full day’s worth of pressure to absorb. Across on ARC-2, their positions are reversed: Tufa is trying to hold off Yi-Chia Chen there while chasing Yi-Chia Chen here."
     },
     {
       "heading": "The field keeps moving",
@@ -49,7 +49,7 @@
         "board",
         "deadline"
       ],
-      "text": "Watch Tufa’s pursuit of Chen, NVARC3’s hold on fourth and the teams around twentieth place before Monday’s 23:59 UTC deadline."
+      "text": "Watch Tufa’s pursuit of Yi-Chia Chen, NVARC3’s hold on fourth and the teams around twentieth place before Monday’s 23:59 UTC deadline."
     }
   ],
   "sources": [
@@ -86,7 +86,7 @@
   ],
   "stats": [
     {
-      "name": "Yi-Chia Chen @ Fields Model",
+      "name": "Yi-Chia Chen",
       "rank": 1,
       "rankChange": 0,
       "score": 75.56,

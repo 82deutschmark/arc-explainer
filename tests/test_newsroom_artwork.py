@@ -342,7 +342,7 @@ class ArtworkTests(unittest.TestCase):
         assignment = item['intake']['editorialAssignments'][0]
         assignment['artworkHistoryChart'] = False
         assignment['artworkConditions']['requiredRanks'] = {'1': 4, '2': 5}
-        assignment['artworkOverlay'] = {'showMovement': True, 'showBanner': True, 'brandPlacement': 'top-center'}
+        assignment['artworkOverlay'] = {'showMovement': True, 'showBanner': False, 'compact': True, 'brandPlacement': 'top-center'}
         self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
         n.write(self.path, self.brief)
         return item
@@ -354,7 +354,7 @@ class ArtworkTests(unittest.TestCase):
         self.assertEqual((first['rankFrom'], first['rankTo'], first['scoreChange']), (8, 4, 6.26))
         self.assertEqual((rival['rankChange'], rival['scoreChange']), (-1, 0))
         self.assertEqual(first['firstSeenAt'], item['evidence']['scoreHistory']['1'][-1][0])
-        self.assertEqual(report['scoreGap'], 'Thirteen hundredths of a point apart')
+        self.assertEqual(report['scoreGap'], 'Alpha leads by 0.13')
         art.validate_attachment(report['image'], self.article, self.brief, self.root)
         # Alter the claimed move without touching image bytes: the evidence check must fail.
         for mutation, error in [(lambda r: r['movement'][0].update(rankFrom=9), 'movement differs'),

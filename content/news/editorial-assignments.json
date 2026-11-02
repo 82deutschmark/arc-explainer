@@ -1308,7 +1308,15 @@
     },
     "artworkGenerationRecord": "2026-10-31-colosseum-v5-arc2-stock",
     "artworkOverlay": {
-      "placement": "footer"
+      "gapPlacement": "footer-center",
+      "placement": "footer",
+      "teamLabels": {
+        "15499660": "Yi-Chia Chen",
+        "15501171": "Yi-Chia Chen",
+        "15605182": "Turducken",
+        "15770880": "NVARC3",
+        "16756524": "Tufa"
+      }
     },
     "commissionedBy": "mark-barney",
     "competition": "arc-2",
@@ -1337,9 +1345,18 @@
     "artworkGenerationRecord": "2026-11-01-nvarc3-overtakes-turducken-v1-base",
     "artworkOverlay": {
       "brandPlacement": "top-center",
+      "compact": true,
+      "gapStyle": "ahead",
       "placement": "corners",
-      "showBanner": true,
-      "showMovement": true
+      "showBanner": false,
+      "showMovement": true,
+      "teamLabels": {
+        "15499660": "Yi-Chia Chen",
+        "15501171": "Yi-Chia Chen",
+        "15605182": "Turducken",
+        "15770880": "NVARC3",
+        "16756524": "Tufa"
+      }
     },
     "commissionedBy": "mark-barney",
     "competition": "arc-3",

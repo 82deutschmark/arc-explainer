@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.arc3.leaderboard</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>/Users/macmini/GitHub/arc-explainer/tools/leaderboard-collector/leaderboard_publish.sh</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>ARC_DAILY_EDITOR_RELEASE</key>
+		<string>approved</string>
+		<key>LEADERBOARD_DATA_DIR</key>
+		<string>/Users/macmini/GitHub/arc-explainer/.newsroom-archive/2026-11-01/checkouts/arc-daily-collector/board-history</string>
+		<key>EXPLAINER_BOARD_URL</key>
+		<string>https://arc.markbarney.net/api/kaggle/board</string>
+	</dict>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>/Users/macmini/GitHub/arc-explainer/.newsroom-local/collector/job.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/macmini/GitHub/arc-explainer/.newsroom-local/collector/job.log</string>
+</dict>
+</plist>

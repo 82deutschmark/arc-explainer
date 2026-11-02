@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T22:34:43.245290+00:00",
+  "updatedAt": "2026-11-02T01:48:25.585240+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1978,6 +1978,19 @@
           "kind": "finished-edition",
           "messageId": "1566623224031084565",
           "sharedAt": "2026-11-02T01:21:23.750000+00:00"
+        },
+        {
+          "artworkId": "2026-11-01-evening-arc-3-7b5ad85829",
+          "channelId": "1550165647911034940",
+          "confirmedAttachment": true,
+          "imageSha256": "36ef85a3b79bdbfa460b62ff3785442f8c62d571665636b8c0a3b628eef5591d",
+          "kind": "replacement-edition-preview",
+          "messageId": "1566629948578599013",
+          "sharedAt": "2026-11-02T01:48:08.238158+00:00",
+          "supersedes": [
+            "1566623224031084565",
+            "1566623286786269204"
+          ]
         }
       ],
       "selectionNote": "New native episode explicitly commissioned by Boss November 1: NVARC3 crawler ahead of Turducken chicken, leaders on separate ridges. Used for this report and explicitly reserved for the SAME report included in the evening edition, alongside separate original Night Watch cover. Not a replacement for the approved rabbit-and-spiders picture. No routine X authorization."
@@ -1995,6 +2008,19 @@
           "kind": "finished-edition",
           "messageId": "1566623286786269204",
           "sharedAt": "2026-11-02T01:21:38.467000+00:00"
+        },
+        {
+          "artworkId": "2026-11-01-evening-arc-2-2cae03a0ba",
+          "channelId": "1550165647911034940",
+          "confirmedAttachment": true,
+          "imageSha256": "83549e351d2e827d79c26b211c85bd2de96acb262996b45f801772cf0b84154a",
+          "kind": "replacement-edition-preview",
+          "messageId": "1566630008854683740",
+          "sharedAt": "2026-11-02T01:48:25.585240+00:00",
+          "supersedes": [
+            "1566623224031084565",
+            "1566623286786269204"
+          ]
         }
       ],
       "generationRecord": "2026-10-31-colosseum-v5-arc2-stock",
