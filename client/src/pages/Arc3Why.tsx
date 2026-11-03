@@ -4,11 +4,12 @@ Date: 2026-11-01
 PURPOSE: /arc3/why. The Boss's write-up on why the synthetic games exist, with the games right
          under it so a reader can go straight from the words to playing. Text in
          shared/Arc3WhyContent; games from components/arc3/SyntheticGames.
+Updated: 2026-11-02, Claude Opus 5.5 High - the picks as the dense card grid, click for rules.
 SRP/DRY check: Pass - composition only.
 */
 import { Link } from 'wouter';
 import Arc3WhyContent from '@shared/Arc3WhyContent';
-import { BoardWall, INK, PickRow, REPO_URL, WRITEUP_URL, useApprovedGames, usePicks } from '@/components/arc3/SyntheticGames';
+import { BoardWall, INK, PickGrid, REPO_URL, WRITEUP_URL, useApprovedGames, usePicks } from '@/components/arc3/SyntheticGames';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function Arc3Why() {
@@ -30,7 +31,7 @@ export default function Arc3Why() {
             <h2 className="text-[28px] font-bold tracking-[-.3px]">Play them</h2>
             <Link href="/play" className="px-5 py-2.5 text-[13px] font-semibold text-white" style={{ background: '#E53AA3' }}>Give me a game →</Link>
           </div>
-          {picks.length > 0 && <div className="grid gap-x-8 lg:grid-cols-2 mb-10">{picks.map((pick) => <PickRow key={pick.id} pick={pick} />)}</div>}
+          {picks.length > 0 && <div className="mb-8"><PickGrid picks={picks} /></div>}
           <h3 className="text-[11px] tracking-[2.5px] uppercase mb-3">Every approved game</h3>
           <BoardWall games={games} loading={isLoading} columns="grid-cols-5 sm:grid-cols-8 lg:grid-cols-12" />
           <p className="mt-8 text-[13px]" style={{ color: '#A8A5A2' }}>

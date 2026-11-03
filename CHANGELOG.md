@@ -1,3 +1,7 @@
+### Version 9.161.35 · November 2, 2026
+
+- The synthetic games are data-dense on the front page, the gallery and the why page, at the Boss's call: the twelve picks are small cards, six to a row on a laptop, all on one screen, each with its opening board, code, level count, controls and one line. A click opens the game's full write-up (what is special, the rules, how it differs from the public 25, its look) with the level strip and a play button, read live from the public repo's catalog so this site mirrors it. The big headline and lead board on the front page are replaced by one slim line. Human numbers are gone from the cards. Author: Claude Opus 5.5 High.
+
 ### Version 9.161.34 · November 2, 2026
 
 - Activate The Loose Goose after the verified official closing checks, with the approved infinity ARC3 article leading its grand reveal. Preserve the story addresses, illustrations and dated public evidence; closing is not a final-result claim.

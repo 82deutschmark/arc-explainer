@@ -4,6 +4,9 @@
  * PURPOSE: The front door. Boss, 1-Nov-2026: this page has to lead with the synthetic games, which
  *          reverses the 16-Oct note below. The games come first (lead board, published picks,
  *          the full approved wall, the why); the clock, ARC Mutants and the race follow, all kept.
+ *          2-Nov-2026, Claude Opus 5.5 High: the Boss wants the picks data-dense and at the top. The big
+ *          headline and the single lead board are gone; one slim line, then the twelve picks as a card
+ *          grid (click for rules), then the wall.
  * SRP/DRY check: Pass — games from components/arc3/SyntheticGames; race components unchanged.
  */
 /*
@@ -54,8 +57,7 @@ import { KAGGLE_COMPETITIONS, closeMs } from '@shared/kaggleCompetitions';
 import { competitionName, wirePath, type NewsWireStory } from '@shared/news';
 import OurStandingCard from '@/components/arc3/OurStandingCard';
 import {
-  BoardWall, INK, LEAD_GAME_LABEL, PickRow, REPO_URL, WHY_PATH,
-  boardImage, labelOf, playPath, useApprovedGames, usePicks,
+  BoardWall, INK, PickGrid, PicksHeader, WHY_PATH, useApprovedGames, usePicks,
 } from '@/components/arc3/SyntheticGames';
 import { ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
 import { MedalRaceChart } from '@/components/kaggleLeaderboard/MedalRaceChart';
@@ -195,75 +197,33 @@ function WireColumn() {
   );
 }
 
-/** The dark band the page opens on: what these are, one big board, the picks, every game, and why. */
+/** The dark band the page opens on: the picks first, then every approved game, then why. */
 function GamesLead() {
   const { games, isLoading, isError } = useApprovedGames();
   const picks = usePicks(games);
-  const lead = games.find((g) => labelOf(g) === LEAD_GAME_LABEL) ?? games[0];
 
   return (
     <section style={{ background: INK, color: '#F4F2F0' }}>
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-5 pt-10 sm:pt-14 pb-12">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] items-start mb-12">
-          <div>
-            <p className="text-[11px] tracking-[3px] uppercase mb-5" style={{ color: '#E53AA3', fontFamily: MONO }}>
-              Team Turducken · Synthetic ARC-AGI-3 games
-            </p>
-            <h1 className="text-[40px] sm:text-[64px] leading-[1.02] font-bold mb-6 tracking-[-1.5px]">
-              Games made the slow way, with a person in the loop.
-            </h1>
-            <div className="text-[16px] leading-[1.7] space-y-3 max-w-[58ch]" style={{ color: '#C9C6C3' }}>
-              <p>No instructions, same as ARC-AGI-3: working out the rules is the game. Coding agents build them. A person playing decides what's worth keeping.</p>
-              <p>{games.length > 0 && <>{games.length} approved games, </>}playable here with no login. Python source on the ARC engine, MIT licensed.</p>
-            </div>
-            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-[13px]">
-              <Link href="/play" className="inline-block px-6 h-[44px] leading-[44px] font-semibold tracking-[.5px]" style={{ background: '#E53AA3', color: '#fff' }}>Play a game →</Link>
-              <Link href="/arc3/gallery" className="underline">Every game</Link>
-              <Link href={WHY_PATH} className="underline">Why we made them</Link>
-              <Link href="/home" className="underline">ARC-3 resource hub</Link>
-              <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
-            </div>
-          </div>
-          {lead && (
-            <Link href={playPath(lead)} aria-label={`Play ${labelOf(lead)}`} className="group block">
-              <img src={boardImage(lead, 512)} alt={`${labelOf(lead)} opening board`} width={512} height={512} decoding="async"
-                   className="block w-full aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
-              <span className="flex items-baseline justify-between pt-2 text-[13px]" style={{ fontFamily: MONO }}>
-                <b className="text-[18px]">{labelOf(lead)}</b>
-                <span className="font-bold group-hover:underline" style={{ color: '#E53AA3' }}>PLAY →</span>
-              </span>
-            </Link>
-          )}
-        </div>
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-5 pt-3 pb-8">
+        <PicksHeader approved={games.length} />
+        {picks.length > 0
+          ? <PickGrid picks={picks} />
+          : <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" aria-hidden="true">
+              {Array.from({ length: 12 }, (_, i) => <div key={i} className="aspect-[3/4] animate-pulse" style={{ background: '#2C2B2A' }} />)}
+            </div>}
 
-        {picks.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-[11px] tracking-[2.5px] uppercase mb-3" style={{ fontFamily: MONO }}>The picks</h2>
-            <div className="grid gap-x-8 lg:grid-cols-2">
-              {picks.map((pick) => <PickRow key={pick.id} pick={pick} />)}
-            </div>
-            <p className="pt-3 text-[12px]" style={{ color: '#8E8B88', borderTop: '1px solid #2C2B2A' }}>
-              Pictures are real engine frames. Human numbers are one person's actions and levels cleared; a dash means none recorded yet.
-            </p>
-          </div>
-        )}
-
-        <h2 className="text-[11px] tracking-[2.5px] uppercase mb-3" style={{ fontFamily: MONO }}>
+        <h2 className="mt-6 text-[11px] tracking-[2.5px] uppercase mb-2" style={{ fontFamily: MONO }}>
           Every approved game
         </h2>
         {isError
           ? <p role="alert" className="text-[13px]" style={{ color: '#C9C6C3' }}>The games didn't load just now. <Link href={WHY_PATH} className="underline">Read why we made them</Link>.</p>
           : <BoardWall games={games} loading={isLoading} columns="grid-cols-5 sm:grid-cols-8 lg:grid-cols-12" phoneLimit={20} />}
-        <p className="mt-4 text-[13px] sm:hidden"><Link href="/arc3/gallery" className="underline">Every game →</Link></p>
+        <p className="mt-3 text-[13px] sm:hidden"><Link href="/arc3/gallery" className="underline">Every game →</Link></p>
 
-        <figure className="mt-12 pt-6 max-w-[780px]" style={{ borderTop: '1px solid #2C2B2A' }}>
-          <blockquote className="text-[22px] sm:text-[28px] leading-[1.25] font-bold tracking-[-.3px]">
-            “In my shop the agent makes the thing and a person playing the game is the outside check.”
-          </blockquote>
-          <figcaption className="mt-3 text-[14px]">
-            <Link href={WHY_PATH} className="underline" style={{ color: '#C9C6C3' }}>Creativity can't be interpolated: why these games exist →</Link>
-          </figcaption>
-        </figure>
+        <p className="mt-6 pt-4 text-[15px] font-bold" style={{ borderTop: '1px solid #2C2B2A' }}>
+          “In my shop the agent makes the thing and a person playing the game is the outside check.”{' '}
+          <Link href={WHY_PATH} className="font-normal text-[13px] underline" style={{ color: '#C9C6C3' }}>Why these games exist →</Link>
+        </p>
       </div>
     </section>
   );
