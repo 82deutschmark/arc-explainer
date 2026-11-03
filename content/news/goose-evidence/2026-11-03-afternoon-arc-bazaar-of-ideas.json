@@ -1,0 +1,144 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-0936660b18f160c71b44"
+    ],
+    "assets": [
+      {
+        "sha256": "0936660b18f160c71b444e26508e71b52a1b0a510798924d947d3cb2d647589b",
+        "source": "client/public/news-images/2026-11-03-arc-bazaar-v2.webp",
+        "target": "client/public/news-images/goose-0936660b18f160c71b44.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/2026-11-03-afternoon-arc-bazaar-of-ideas",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "dek": "ARC contenders are opening their notebooks, comparing scars and asking a delicious question: how fast can you go before the thinking suffers?",
+      "editorNote": "The Loose Goose sports desk · GPT-6 / Codex",
+      "generatedBy": "gpt-6-codex",
+      "headline": "The bell rings and the ideas come flying",
+      "id": "2026-11-03-afternoon-arc-bazaar-of-ideas",
+      "image": {
+        "alt": "A red-helmeted figure, a mature engineer with glasses and a fluffy cream cat exchange ideas around a table in a glowing library bazaar.",
+        "caption": "The Goose joins an imagined marketplace of ideas with Grigoriy Zatravkin, Jean-François Puget and xz. Illustration generated from the newsroom’s character references.",
+        "src": "/news-images/goose-0936660b18f160c71b44.webp"
+      },
+      "publishedAt": "2026-11-03T19:52:02+00:00",
+      "sections": [
+        {
+          "heading": "The workshop doors swing open",
+          "sourceIds": [
+            "arc3-discussion"
+          ],
+          "text": "The submissions are in, the public boards have stopped being the finish line, and Grigoriy Zatravkin has a question for the room: what actually worked?\n\nOn ARC-AGI-3, he says his biggest gains came from making the model serve answers faster. He tried changing the agent around the model, too: helpers, a “photographer” to notice interesting things, even a different colour palette. In his telling, those experiments disappeared into the noise. Attempts to teach the model did not pay off for him either. So he turned back to the machinery and invited the field to compare notes.\n\nThe answers are already a treat. Faster inference means more chances for an agent to look, think and act within its time budget. But speed has a price, and competitors are starting to tell us where they found the bill."
+        },
+        {
+          "heading": "The fast lane meets the hard puzzles",
+          "sourceIds": [
+            "arc3-discussion",
+            "debate"
+          ],
+          "text": "xz says several attempts to squeeze out more throughput hurt token efficiency. Speed looked tempting early, but the gains hit a plateau once only the harder puzzles remained. Son Pham says his team pushed kernel optimization hard, then wondered whether some of that speed had come with lower-quality tokens when later levels needed them most.\n\nThat tension is the conversation to watch: a quicker stream of answers is useful only if enough of them help the agent make progress. Grigoriy says he eventually restored some model quality later in the run, when fewer games were still active. Different teams, different trade-offs—and plenty of measurements still to compare.\n\nRavi puts the larger question to the forum: did ARC-AGI-3 become an inference-speed challenge? Michael Poluektov argues that the harness still mattered. Dipam Chakraborty says his team found Qwen Flash Next stronger than an alternative even when matching the number of generated tokens. There is more than one way to be fast, and more than one part of the machine to examine."
+        },
+        {
+          "heading": "The old champion’s new puzzle",
+          "sourceIds": [
+            "cpmp"
+          ],
+          "text": "On ARC-AGI-2, Jean-François Puget—CPMP to Kagglers—has a confession from the other side of a long campaign. His team kept improving an approach built on Qwen 3 4B, the same base model used in the previous year’s NVARC winning solution. Then, he says, it plateaued. Their strong start may have kept them looking in the same direction for too long. A full writeup is promised.\n\nJeroen Cottaar replies with a very different path: his team spent much of its time trying to post-train Qwen models for both ARC contests. He reports limited success with the 27B models and no progress on Flash; the team’s selected submissions, he says, use untrained models.\n\nThere is a lovely contest inside the contest here: the craft of teaching a smaller model against the challenge of fitting and accelerating a newer one. The private results and the full writeups will give us more to chew on."
+        },
+        {
+          "heading": "Bring the failures, too",
+          "sourceIds": [
+            "mp",
+            "pandora",
+            "xz-rl"
+          ],
+          "text": "This is the part of the season where an honest dead end can be as interesting as a shiny result. In an ARC-AGI-2 writeup, mp describes an agent that writes and checks Python, a compressed Flash-Next model and reinforcement learning aimed at repairing compression damage. The author says code and model parts will follow.\n\nOn ARC-AGI-3, Team Pandora has shared its notebook and a tour of experiments that went wrong, including unsuccessful pruning attempts. In another thread, manas joshi describes getting a reinforcement-learning loop running on limited hardware but says the team could not afford enough training iterations and had to leave images out of its training setup. Grigoriy, who says his own reinforcement-learning attempts had little effect, asks whether xz’s work improved efficiency or helped win more levels.\n\nThese are competitors’ reports, not independent replications. That is precisely why the open notebooks, questions and forthcoming explanations matter."
+        },
+        {
+          "heading": "The Goose stays at the table",
+          "sourceIds": [
+            "timeline",
+            "timeline-arc2"
+          ],
+          "text": "The ARC-AGI-2 and ARC-AGI-3 submission windows are closed, but the public boards are still provisional. The official timelines list December 4 for the winners announcements; the private results and verification remain ahead.\n\nUntil then—and beyond—the Loose Goose will be listening for the writeups, the surprises, the clever fixes and the experiments that refused to behave. The tables may be closed for submissions, but the bazaar of ideas is just opening. What will the next notebook teach the field?"
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "arc3-discussion",
+          "title": "ARC-AGI-3 post-competition discussion",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755202"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "debate",
+          "title": "ARC-AGI-3 inference debate",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755352"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "cpmp",
+          "title": "CPMP on the ARC-AGI-2 approach",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/755217"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "mp",
+          "title": "mp solution writeup",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/solution-scaling-qwen-3-8-flash-next-and-dots-3"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "pandora",
+          "title": "Team Pandora writeup",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/33-39-and-a-bag-of-scars-maxreq-tests-the-0-00-t"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:10+00:00",
+          "id": "timeline",
+          "title": "ARC-AGI-3 official timeline",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline"
+        },
+        {
+          "accessedAt": "2026-11-03T16:15:52+00:00",
+          "id": "timeline-arc2",
+          "title": "ARC-AGI-2 official timeline",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline"
+        },
+        {
+          "accessedAt": "2026-11-03T16:38:56+00:00",
+          "id": "xz-rl",
+          "title": "xz and competitors discuss reinforcement learning",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755150"
+        }
+      ]
+    },
+    "storyId": "2026-11-03-afternoon-arc-bazaar-of-ideas",
+    "storySha256": "485f34b23434305d0ac3beac09268e41275e043a81474983cd43e894aeb14c0b",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "0936660b18f160c71b444e26508e71b52a1b0a510798924d947d3cb2d647589b",
+        "source": "client/public/news-images/2026-11-03-arc-bazaar-v2.webp",
+        "target": "client/public/news-images/goose-0936660b18f160c71b44.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Compared the story with the cited competitor discussions and official timelines; names and claims are attributed. The illustration uses the recorded CPMP, xz and Grigoriy references; see art request for reviewed headset and framing limitations. Boss approved the picture and article.",
+    "reviewedAt": "2026-11-03T19:52:12+00:00",
+    "reviewedBy": "GPT-6 / Codex; art and story approved by Mark Barney",
+    "storySha256": "485f34b23434305d0ac3beac09268e41275e043a81474983cd43e894aeb14c0b"
+  }
+}
