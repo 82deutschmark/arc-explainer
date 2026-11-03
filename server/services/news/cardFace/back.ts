@@ -159,7 +159,7 @@ function header(vm: VM, ink1: string, mini: Buffer, nameFit: { size: number; lin
     box({ width: 104, flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between' },
       box({ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 96, height: 76, background: '#fff', border: `4px solid ${INK2}`, boxShadow: `4px 4px 0 ${ink1}` },
         bebas('NO.', 15, ink1, { letterSpacing: 3 }), box({ fontFamily: ff(FONT.slab), fontSize: 27, color: INK2, lineHeight: 1, marginTop: 2 }, vm.number),
-        vm.numberOf ? bebas(`OF ${num(vm.numberOf)}`, 14, '#3a3a44', { marginTop: 2 }) : null),
+        null),
       box({ height: 40, alignItems: 'center' },
         box({ flexDirection: 'column' }, bebas(vm.wordmark.toUpperCase(), 17, INK2, { letterSpacing: 1.6 }), bebas(vm.season, 17, ink1, { letterSpacing: 2, marginTop: 2 })))),
     // middle: name, type chip, and the handle on the same line as the series label (equal row height, centred)
@@ -373,7 +373,7 @@ function footer(vm: VM): Node {
 // ---------------------------------------------------------------------------------------------
 // Pictures
 // ---------------------------------------------------------------------------------------------
-/** The card's real picture (never the designed placeholder) cropped to w x h around the point of interest; null when there is none. */
+/** Fit the complete picture inside its allotted space; never cut off a face to fill the frame. */
 async function pictureCrop(art: ArtResult, w: number, h: number, preserve = false, alternate?: string): Promise<Buffer | null> {
   if (alternate) {
     await assertCollectionArtPath(alternate);
@@ -382,7 +382,7 @@ async function pictureCrop(art: ArtResult, w: number, h: number, preserve = fals
   }
   const r = preserve && art.kind === 'contract' ? { x: 0, y: 0, w: W, h: H } : art.plate ?? (art.kind === 'contract' ? ZONE : null);
   if (!r) return null;
-  return sharp(art.png).extract({ left: r.x, top: r.y, width: r.w, height: r.h }).resize(w, h, preserve ? { fit: 'contain', background: STOCK } : { fit: 'cover', position: sharp.strategy.attention }).jpeg({ quality: 86 }).toBuffer();
+  return sharp(art.png).extract({ left: r.x, top: r.y, width: r.w, height: r.h }).resize(w, h, { fit: 'contain', background: STOCK }).jpeg({ quality: 86 }).toBuffer();
 }
 const framed = (ink1: string, w: number, h: number, jpg: Buffer): Node =>
   box({ width: w, height: h, flexShrink: 0, position: 'relative', border: `4px solid ${INK2}`, boxShadow: `5px 5px 0 ${ink1}`, background: '#000' }, pic(jpegUri(jpg), 0, 0, w - 8, h - 8));

@@ -237,7 +237,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   kids.push(at(N.x, N.y, N.w, 16, { alignItems: 'center', justifyContent: 'center' }, box({ fontFamily: ff(FONT.bebas), fontSize: 14, color: T.ink, letterSpacing: 2, lineHeight: 1 }, 'NO.')));
   kids.push(at(N.x, N.y + 17, N.w, N.h - 17, { alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
     box({ fontFamily: ff(FONT.slab), fontSize: 27, color: INK, lineHeight: 1 }, vm.number),
-    vm.numberOf ? box({ fontFamily: ff(FONT.bebas), fontSize: 14, color: '#3a3a44', letterSpacing: 1.4, lineHeight: 1, marginTop: 1 }, `OF ${num(vm.numberOf)}`) : null));
+    null));
   if (vm.stamp) {
     // the one as-of date on the face: inside the burst, in the badge band, clear of the subject zone
     const S = FL.stamp, live = vm.stamp.word === 'LIVE';
@@ -288,7 +288,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
     if (abbr) kids.push(at(left, top + lift, d, d, { alignItems: 'center', justifyContent: 'center' },
       box({ fontFamily: ff(FONT.slab), fontSize: Math.round((abbr.length > 1 ? 40 : 54) * mScale), color: T.ink, lineHeight: 1, textShadow: T.ink === '#ffffff' ? '2px 2px 0 rgba(0,0,0,0.65)' : '1px 1px 0 rgba(255,255,255,0.5)', letterSpacing: abbr.length > 1 ? -1 : 0 }, abbr)));
     if (vm.family === 'team') kids.push(at(left, top, d, d, { alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
-      label('TEAM', 15, T.accent, { marginBottom: 2 }), box({ fontFamily: ff(FONT.slab), fontSize: 44, color: WHITE, lineHeight: 1 }, String(vm.teamSize ?? vm.contests[0]?.size ?? vm.roster.length))));
+      label('TEAM', 15, T.accent, { marginBottom: 2 }), box({ fontFamily: ff(FONT.slab), fontSize: 44, color: WHITE, lineHeight: 1 }, (vm.teamSize ?? vm.contests[0]?.size ?? vm.roster.length) > 0 ? String(vm.teamSize ?? vm.contests[0]?.size ?? vm.roster.length) : '—')));
     if (vm.family === 'sponsor') kids.push(at(left, top, d, d, { alignItems: 'center', justifyContent: 'center' },
       svgPic(svgDoc(60, 60, `<polygon points="${starburst(30, 31, 5, 28, 11.5)}" fill="#fff" stroke="#000" stroke-width="2.4" stroke-linejoin="round"/>`), 0, 0, 60, 60, { position: 'relative' })));
   }

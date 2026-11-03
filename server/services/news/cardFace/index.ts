@@ -85,7 +85,7 @@ export async function renderCardFace(card: CollectionCard, collection: NewsColle
   const repair = cardFrameRepair(card);
   // This approved 5:7 illustration was authored for the full card. Its smaller native resolution
   // had sent it through the legacy contain/crop fallback, wasting the intended composition.
-  const lookOpts: LookOpts = { ...opts, namesById: names, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false }, preservePicture: true, backPicture: repair.backArtSrc } : {}) };
+  const lookOpts: LookOpts = { ...opts, namesById: names, preservePicture: true, backPicture: card.art?.src, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false }, backPicture: repair.backArtSrc } : {}) };
   if (side === 'front') return look.frontBuffer(model, lookOpts);
   // The reverse costs about a second: one in-flight render per card version, remembered for the next request.
   const key = `${look.key}|${frontKey(model, lookOpts)}`;

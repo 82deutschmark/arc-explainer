@@ -190,7 +190,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 3;
+export const RENDER_VERSION = 4;
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';

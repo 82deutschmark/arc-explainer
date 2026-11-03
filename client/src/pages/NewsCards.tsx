@@ -30,6 +30,7 @@ import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair } from '@/components/news/CardPair';
 import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
+import '@/components/news/cardRelationships.css';
 
 type RoleFilter = 'all' | CollectionCard['role'];
 type TierFilter = 'all' | KaggleTier;
@@ -287,6 +288,17 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   return <main className="cb cb-detail">
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link><span>{card.number}</span></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
+    {card.kind === 'team' && roster.length > 0 && <nav className="cb-relations" aria-label="Team members">
+      <h2>Team members</h2><ul>{roster.map(member => <li key={member.handle}>
+        <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
+        <small>@{member.handle}</small>
+      </li>)}</ul><p>Last recorded competition roster. Open a name for their individual card or profile.</p>
+    </nav>}
+    {card.kind === 'person' && card.teamHistory.length > 0 && <nav className="cb-relations" aria-label="Competition teams">
+      <h2>Competition teams</h2><ul>{card.teamHistory.map(team => <li key={`${team.competitionId}-${team.teamId}`}>
+        <Go href={team.cardUrl ?? team.profileUrl}>{team.teamName} →</Go><small>{competitionName(team.competition)} · {team.season}{team.status === 'previous' ? ' · earlier team' : ''}</small>
+      </li>)}</ul>
+    </nav>}
     <div className="cb-dgrid is-paired">
       <div className="cb-dcard">
         {stage === 'current' || !staged ? <CardPair card={card} /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
@@ -311,9 +323,6 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
             <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
               <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num pl">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num pl">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num sc">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table>
           <p className="cb-note">{status === 'final' ? 'Final results' : 'Live'}{asOf ? `, as of ${asOf}` : ''}. {entries.some(entry => entry.sourceUrl) && <a href={entries.find(entry => entry.sourceUrl)!.sourceUrl}>Leaderboard ↗</a>}</p>
-        </Panel>}
-        {card.role === 'team' && !!roster.length && <Panel title="Roster">
-          <ul className="cb-list">{roster.map(member => <li key={member.handle}><Go href={member.cardUrl ?? `https://www.kaggle.com/${encodeURIComponent(member.handle)}`}>{member.name || member.handle}{member.cardUrl ? ' →' : ' ↗'}</Go></li>)}</ul>
         </Panel>}
         {card.role === 'competitor' && !!careerRows.length && <Panel title="Completed Kaggle competitions" wide>
           <table className="cb-table"><thead><tr><th scope="col">Year</th><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Finish</th><th scope="col">Medal</th></tr></thead>

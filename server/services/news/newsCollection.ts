@@ -199,8 +199,8 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       const snapshot = definition.season === registry.season ? registry.snapshots.find(row => row.competitionId === ref.competitionId && row.teamId === ref.teamId) : undefined;
       const membership = person ? membershipRefs.get(contestKey({ ...ref, season: definition.season })) : undefined;
       const rosterObservation = membership && teamKey(membership) === teamKey(ref) ? membership : undefined;
-      const notebook = rosterObservation && index.competitors.find(team => team.competition === ref.competition && team.teamId === ref.teamId
-        && Date.parse(team.lastObservedAt) === Date.parse(rosterObservation.lastObservedAt) && team.members.includes(rosterObservation.memberHandle));
+      const notebook = index.competitors.find(team => team.competition === ref.competition && team.teamId === ref.teamId
+        && (!person || (rosterObservation && Date.parse(team.lastObservedAt) === Date.parse(rosterObservation.lastObservedAt) && team.members.includes(rosterObservation.memberHandle))));
       const result = final.find(row => row.season === definition.season && row.competitionId === ref.competitionId && row.teamId === ref.teamId
         && (!person || row.creditedHandles.some(handle => handles.has(handle))));
       if (result) {
@@ -212,7 +212,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       const cardUrl = teamCard(ref, definition.season, definition.setId);
       return { competition: ref.competition, competitionId: ref.competitionId, teamId: ref.teamId,
         teamName: snapshot?.teamName ?? rosterObservation?.teamName ?? index.competitors.find(team => team.teamId === ref.teamId && team.competition === ref.competition)?.name ?? definition.name,
-        observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? rosterObservation?.lastObservedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
+        observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? rosterObservation?.lastObservedAt ?? notebook?.lastObservedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
         score: result ? result.score : snapshot?.score ?? null, submissions: snapshot?.submissions ?? null,
         fieldSize: boardNear(board, ref.competition, snapshot?.observedAt ?? null)?.teams ?? null,
         peakRank: (() => { const peak = board?.peaks[`${ref.competition}:${ref.teamId}`]?.rank; const now = result?.rank ?? snapshot?.rank; return peak != null && now != null && peak < now ? peak : null; })(),
