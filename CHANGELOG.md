@@ -1,6 +1,6 @@
 ### Version 9.161.36 · November 2, 2026
 
-- The synthetic picks carry the public catalog's called-out note: ES01 (an outbreak spread person to person) and LT03 (air strikes on a crowded city) touch what has been in the news, and no guardrail stopped either being built. It sits under the grid, edges those two cards and leads their panels, read live so the words match the public repo. Author: Claude Opus 5.5 High.
+- The synthetic picks carry the public catalog's called-out note: ES01 (an outbreak spread person to person) and LT03 (air strikes on a crowded city) touch what has been in the news, and no guardrail stopped either being built. It sits under the grid, edges those two cards and leads their panels, read live so the words match the public repo. The catalog is fetched fresh, so a change pushed there shows here at once. Author: Claude Opus 5.5 High.
 
 ### Version 9.161.35 · November 2, 2026
 

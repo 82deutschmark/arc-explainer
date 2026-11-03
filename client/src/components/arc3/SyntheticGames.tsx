@@ -107,7 +107,8 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
     staleTime: 30 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
-      const response = await fetch(`${WRITEUP_URL}catalog.json`);
+      // GitHub Pages lets browsers keep the file ten minutes; ask for a fresh one so a pushed change shows at once.
+      const response = await fetch(`${WRITEUP_URL}catalog.json`, { cache: 'no-cache' });
       if (!response.ok) throw new Error(`Catalog request failed (${response.status})`);
       return response.json();
     },
