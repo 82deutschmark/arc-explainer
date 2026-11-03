@@ -19,6 +19,8 @@ Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dens
          PickGrid: twelve small cards in two rows on a laptop, and a click opens the game's spoiler
          panel (what is special, the rules, how it differs from the public 25, its look), all read
          from the catalog's "spoiler" entry. No human numbers anywhere (Boss, 2-Nov-2026).
+         Same day: the catalog's "highlight" (ES01 and LT03: outbreak and air strikes, no guardrails
+         hit) shows under the grid, edges those two cards and leads their panels, word for word.
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
@@ -55,7 +57,7 @@ interface CatalogGame {
 }
 /** The catalog's hand-checked write-up of one game. Any field can be missing. */
 export interface Spoiler { special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
-interface Catalog { featured: string[]; games: CatalogGame[] }
+interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string } }
 
 export interface Pick {
   id: string;
@@ -63,6 +65,8 @@ export interface Pick {
   levels: number;
   inputs: string;
   spoiler: Spoiler;
+  /** The catalog's called-out note, when this game is one it names. */
+  flag?: string;
   image: string;
   levelStrip: string;
   /** A path on this site when the approved feed has the game, otherwise the lab's page for it. */
@@ -124,6 +128,7 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
         label: id.toUpperCase(),
         levels: game.levels,
         spoiler: game.spoiler ?? {},
+        flag: data.highlight?.games.includes(id) ? data.highlight.text : undefined,
         inputs: (game.inputs ?? []).map((i) => INPUTS[i]).filter(Boolean).join(' '),
         image: `${WRITEUP_URL}${game.media.play}`,
         levelStrip: `${WRITEUP_URL}${game.media.levels}`,
@@ -223,7 +228,7 @@ function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
   return (
     <button type="button" onClick={onOpen} aria-label={`${pick.label}: rules and details`}
             className="group flex flex-col justify-start items-stretch h-full w-full p-0 m-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#E53AA3]"
-            style={{ background: '#1C1B1A', border: `1px solid ${LINE}` }}>
+            style={{ background: '#1C1B1A', border: `1px solid ${pick.flag ? HOT : LINE}` }}>
       <img src={pick.image} alt="" width={256} height={256} loading="lazy" decoding="async"
            className="block w-full max-w-none h-auto aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
       <span className="block w-full px-2 pt-1.5 pb-2">
@@ -267,6 +272,7 @@ function PickPanel({ pick }: { pick: Pick }) {
         </PlayLink>
       </div>
       <div className="min-w-0 text-[13px] leading-[1.5]" style={{ color: '#D6D3D0' }}>
+        {pick.flag && <p className="mb-3 px-3 py-2 text-white" style={{ borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{pick.flag}</p>}
         {notes.special && <Part label="WHAT'S SPECIAL"><p className="text-white">{notes.special}</p></Part>}
         {notes.rules && notes.rules.length > 0 && (
           <Part label="THE RULES">
@@ -284,11 +290,13 @@ function PickPanel({ pick }: { pick: Pick }) {
 /** The published picks as a dense card grid; a click opens one game's rules and details. */
 export function PickGrid({ picks }: { picks: Pick[] }) {
   const [open, setOpen] = useState<Pick | null>(null);
+  const flag = picks.find((pick) => pick.flag)?.flag;
   return (
     <>
       <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {picks.map((pick) => <PickCard key={pick.id} pick={pick} onOpen={() => setOpen(pick)} />)}
       </div>
+      {flag && <p className="mt-2 px-3 py-2 text-[13px] leading-[1.5]" style={{ color: '#F4F2F0', borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{flag}</p>}
       <Dialog open={open !== null} onOpenChange={(next) => { if (!next) setOpen(null); }}>
         <DialogContent className="max-w-[960px] w-[calc(100vw-24px)] max-h-[calc(100vh-24px)] overflow-y-auto p-4 sm:p-5 rounded-none border-[#2C2B2A]"
                        style={{ background: INK, color: '#F4F2F0' }}>
