@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
@@ -25,6 +25,7 @@ import NewsArticle from '../client/src/pages/NewsArticle';
 import NewsWire from '../client/src/pages/NewsWire';
 import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
+import { ArticleArchive, EditionLabel } from '../client/src/components/news/NewsDesk';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsCollection } from '../server/services/news/newsCollection';
@@ -32,7 +33,7 @@ import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
 import { reportedPeople, featuredPerson, displayPortrait } from '../shared/news';
-import { newsPersonSchema } from '../server/services/news/newsStore';
+import { newsDiscussionSchema, newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
 
 // Inline sporting spans preserve readable source values and words.
@@ -69,6 +70,62 @@ function render(page: React.ComponentType, path: string, index: NewsIndex, paylo
 }
 
 afterEach(() => vi.unstubAllGlobals());
+
+test('the lead precedes social and wire in reading order with or without a market board', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  for (const marketData of [markets(index), undefined]) {
+    const html = render(() => createElement(NewsFrontPage, { index, markets: marketData }), '/news', index, marketData);
+    const lead = html.indexOf('aria-label="Lead stories"');
+    const social = html.indexOf('aria-label="From X"');
+    const wire = html.indexOf('aria-label="What&#x27;s news"');
+    expect(lead).toBeGreaterThanOrEqual(0);
+    expect(social).toBeGreaterThan(lead);
+    expect(wire).toBeGreaterThan(social);
+  }
+});
+
+test('a cross-competition report uses its editorial labels on the front page, article and archive', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const legacy = index.articles.find(article => article.id === '2026-11-02-evening-arc-3')!;
+  const article = { ...legacy, headline: 'The bell has rung', publishedAt: new Date().toISOString(),
+    competitionDisplay: 'ARC-AGI-2 & ARC-AGI-3', editionDisplay: 'Closing report', frontPageFeatureId: undefined };
+  const input = { ...index, articles: [article], dispatches: [] };
+  const expectedKicker = '<div class="news-kicker"><span>ARC-AGI-2 &amp; ARC-AGI-3</span><span>Closing report</span></div>';
+  const front = render(() => createElement(NewsFrontPage, { index: input }), '/news', input);
+  const page = render(NewsArticle, `/news/${article.id}`, input);
+  expect(front).toContain(expectedKicker);
+  expect(page).toContain(expectedKicker);
+  const archive = render(() => createElement(ArticleArchive, { articles: [article] }), '/news', input);
+  expect(archive).toContain('Closing report · ARC-AGI-2 &amp; ARC-AGI-3');
+  const oldKicker = render(() => createElement(EditionLabel, { article: legacy }), '/news', index);
+  expect(oldKicker).toContain('<span>ARC-AGI-3</span><span>Late edition</span>');
+});
+
+test('the lead renders section illustrations and standings and highlights teams from either table', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const base = index.articles.find(article => article.competition === 'arc-3')!;
+  const article = { ...base, publishedAt: new Date().toISOString(), frontPageFeatureId: undefined, stats: [], verifiedTeamNames: ['Unranked Runners'],
+    sections: [
+      { text: 'The contest has closed.', sourceIds: ['board'] },
+      { heading: 'The public field', text: 'infinity holds a ledge. Unranked Runners watch.', sourceIds: ['board'],
+        image: { src: '/news-images/2026-11-02-infinity-lightning-leap-v1.webp', alt: 'A storm and cat', caption: 'An illustrated field' },
+        standings: { caption: 'Standings fixture for the field', observedAt: '2026-11-03T00:16:20Z',
+          rows: [{ teamId: '15494354', name: 'infinity', rank: 9, score: 53.12 }] } },
+    ] };
+  const input = { ...index, articles: [article], dispatches: [] };
+  const html = render(() => createElement(NewsFrontPage, { index: input }), '/news', input);
+  expect(html).toContain('alt="A storm and cat"');
+  expect(html).toContain('Standings fixture for the field');
+  expect(html).toContain('<strong class="news-team-name">infinity</strong>');
+  expect(html).toContain('<strong class="news-team-name">Unranked Runners</strong>');
+  const paragraph = html.indexOf('infinity</strong> holds a ledge.');
+  const table = html.indexOf('Standings fixture for the field');
+  expect(paragraph).toBeGreaterThanOrEqual(0);
+  expect(table).toBeGreaterThan(paragraph);
+});
 
 test('a newer ARC2 special leads with its full reserved feature and illustration', () => {
   vi.stubGlobal('React', React);
@@ -125,6 +182,8 @@ test('without the digest the reporting still leads and the market sections stay 
 test('Kaggle threads follow the prominent X strip and the wire, with original links', () => {
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
+  // The real archived thread may have aged out of the live seven-day feed.
+  index.discussions = [newsDiscussionSchema.parse(JSON.parse(fs.readFileSync('content/news/discussions.json', 'utf8'))[0])];
   const html = render(News, '/news', index, markets(index));
   expect(html.indexOf('aria-label="From X"')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
   expect(html.indexOf('What’s news')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));

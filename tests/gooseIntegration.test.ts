@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
+ * Date: 03-November-2026
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
  * premiere gate and brand-aware share-card versions against production boundaries.
  * Fictional rows remain in tests.
@@ -43,8 +43,8 @@ it('orders the server front page by the same published competition leads', () =>
     const first = competitionStories(articles, dispatches, key)[0];
     return 'article' in first ? first.article.headline : first.dispatch.headline;
   });
-  // Escaping does not alter these article identities or canonical URLs.
-  const positions = publishedCompetitionOrder(articles, dispatches).map(key => html.indexOf(competitionStories(articles, dispatches, key)[0].id));
+  // Source links inside one lead can mention another story before its own lead.
+  const positions = publishedCompetitionOrder(articles, dispatches).map(key => html.indexOf(`data-news-lead="${competitionStories(articles, dispatches, key)[0].id}"`));
   expect(heads.length).toBeGreaterThan(0); expect(positions.every(p => p >= 0)).toBe(true);
   expect([...positions].sort((a, b) => a - b)).toEqual(positions);
 });

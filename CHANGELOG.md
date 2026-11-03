@@ -1,3 +1,9 @@
+### Version 9.162.1 · November 3, 2026
+
+- Bring the lead story ahead of the social feed and wire on phones, keeping the desktop newspaper layout. Replace floating-point tails in board differences while preserving source precision, and show closed submissions based on the current UTC deadline even when a board snapshot is stale.
+- Publish the full two-competition closing report with both dated public top-ten tables, new illustrations, current verified name changes and the private-board stakes. Use one permanent story address and the same section art and accessible tables in the front page, story and server-rendered page. The article records public observations, not final results.
+- Author: GPT-6.1 Terra / Codex (reasoning effort not exposed), with parallel editorial, factual, frontend and test review. Validation covers current and stale deadline states, score precision, responsive ordering, article/source parity, archive routes and the production build.
+
 ### Version 9.162.0 · November 3, 2026
 
 - New page /arc2/hard-set/lookalikes: one generated puzzle per kind from the October ARC-AGI-2 synthetic training set, beside the real puzzle each kind copies, grouped by how often models solve the real one. Each card has the rule in one sentence, two worked examples and a question with its answer behind a button. The findings page gains a closing section on what training on the set did: the model learned the kinds it was taught, the one finished held-out test showed no gain, and the clean comparison was cut short when the training box crashed. Linked from the hard-set page. Files: shared/arc2Lookalikes.ts, client/src/pages/Arc2HardSetLookalikes.tsx, client/src/pages/Arc2HardSetFindings.tsx, client/src/pages/Arc2HardSet.tsx, client/src/App.tsx. Author: Claude Opus 5.5 Medium.

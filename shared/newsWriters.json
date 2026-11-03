@@ -1,5 +1,6 @@
 {
   "edition": [
+    "gpt-6-codex",
     "gpt-6-sol",
     "gpt-6.1-sol",
     "claude-sonnet-5-5",

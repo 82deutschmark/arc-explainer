@@ -1,12 +1,14 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
  *          of the site. Every change compares with the snapshot saved about a day earlier; an
  *          unknown comparison prints as a blank, never as zero. When the digest is unavailable
- *          these pieces render nothing and the reporting still leads the page.
+ *          these pieces render nothing and the reporting still leads the page. Scores and
+ *          derived score differences retain the source precision without binary arithmetic tails.
+ *          Submission status follows the current UTC deadline while standings keep their save time.
  * SRP/DRY check: Pass — figures come only from the digest; names link through the existing
  *          profile, people and Kaggle helpers; faces use PersonPortrait.
  */
@@ -16,6 +18,7 @@ import { Link } from 'wouter';
 import { competitorPath, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 import { daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { formatOptionalNumber } from '@shared/utils/formatters';
 import { ARC_DISCORD_URL } from './NewsDesk';
 import { PersonPortrait } from './NewsPeople';
 
@@ -29,17 +32,29 @@ export const marketBoards = (markets?: MarketsPayload) =>
   BOARD_ORDER.map(key => markets?.boards[key]).filter((board): board is MarketBoard => !!board);
 
 const fig = (value: number) => String(value);
+/** Decimal arithmetic cannot introduce more places than either of its source values. */
+const decimalPlaces = (value: number) => {
+  const [coefficient, exponent = '0'] = String(value).split('e');
+  return Math.max(0, (coefficient.split('.')[1]?.length ?? 0) - Number(exponent));
+};
+const differencePrecision = (now: number, then: number | null) => then == null ? undefined : Math.max(decimalPlaces(now), decimalPlaces(then));
+const differenceFigure = (value: number, precision?: number) => {
+  if (precision != null && precision <= 100) return String(Number(formatOptionalNumber(value, precision)));
+  const text = String(value);
+  // For an already-derived value without its operands, remove only long binary-noise tails.
+  return /\.\d*(?:0{8,}|9{8,})\d{0,3}$/.test(text) ? String(Number(value.toPrecision(12))) : text;
+};
 const count = (value: number) => value.toLocaleString('en-US');
 const ordinal = (n: number) => `#${n.toLocaleString('en-US')}`;
 /** One 24-hour UTC clock for every reader. */
 export const clockUtc = (iso: string) => new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso)) + ' UTC';
 
 /** A signed change with a direction mark, a dash when unchanged, blank when unknown. */
-export function Change({ value, digits = 2 }: { value: number | null; digits?: number }) {
+export function Change({ value, integer = false, precision }: { value: number | null; integer?: boolean; precision?: number }) {
   if (value == null) return null;
-  if (Math.abs(value) < 0.005) return <span className="news-chg is-flat" title="Unchanged">–</span>;
-  const size = digits ? String(Number(Math.abs(value).toPrecision(15))) : count(Math.abs(value));
-  return <span className={`news-chg ${digits ? "sd" : ""} ${value > 0 ? 'is-up' : 'is-down'}`}><span aria-hidden="true">{value > 0 ? '▲' : '▼'}</span>{value > 0 ? '+' : '−'}{size}</span>;
+  const size = integer ? count(Math.abs(value)) : differenceFigure(Math.abs(value), precision);
+  if (Number(size.replaceAll(',', '')) === 0) return <span className="news-chg is-flat" title="Unchanged">–</span>;
+  return <span className={`news-chg ${integer ? "" : "sd"} ${value > 0 ? 'is-up' : 'is-down'}`}><span aria-hidden="true">{value > 0 ? '▲' : '▼'}</span>{value > 0 ? '+' : '−'}{size}</span>;
 }
 
 /** Places moved: ▲4, ▼2, NEW, a dash for no move, blank when unknown. */
@@ -62,16 +77,17 @@ function TeamName({ row, competition, links }: { row: MarketRow; competition: Ne
 
 function Quote({ label, value, then, integer = false, note }: { label: ReactNode; value: number | null; then: number | null; integer?: boolean; note?: string }) {
   if (value == null) return null;
-  return <div title={note}><dt>{label}</dt><dd><b className={integer ? undefined : 'sc'}>{integer ? count(value) : fig(value)}</b> <Change value={then == null ? null : value - then} digits={integer ? 0 : 2} /></dd></div>;
+  return <div title={note}><dt>{label}</dt><dd><b className={integer ? undefined : 'sc'}>{integer ? count(value) : fig(value)}</b> <Change value={then == null ? null : value - then} integer={integer} precision={differencePrecision(value, then)} /></dd></div>;
 }
 
 /** The terminal strip under the masthead: leader, medal lines, field and countdown for both boards. */
 export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
   const boards = marketBoards(markets);
   if (!boards.length) return null;
+  const currentUtc = new Date().toISOString();
   return <section className="news-ticker" aria-label="Both boards at a glance">
     {boards.map(board => {
-      const days = daysToClose(board);
+      const days = daysToClose({ closeAt: board.closeAt, fetched: currentUtc });
       return <dl key={board.competition}>
         <div className="news-ticker-board"><dt className="sr-only">Board</dt><dd><a href={board.boardPath}>{board.label}</a></dd></div>
         <Quote label={<>Leader · <span className="news-ticker-name">{board.leader.row.name}</span></>} value={board.lines.top.now} then={board.lines.top.then} />
@@ -79,7 +95,8 @@ export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
         <Quote label={`Silver · ${ordinal(board.lines.silver.rank)}`} value={board.lines.silver.now} then={board.lines.silver.then} />
         <Quote label={`Bronze · ${ordinal(board.lines.bronze.rank)}`} value={board.lines.bronze.now} then={board.lines.bronze.then} />
         <Quote label="Field" value={board.teams} then={board.teamsThen} integer note="Teams on the public board" />
-        {days != null && <div><dt>Close</dt><dd><b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div>}
+        {days === 0 ? <div><dt>Submissions</dt><dd><b>closed</b></dd></div>
+          : days != null ? <div><dt>Close</dt><dd><b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div> : null}
       </dl>;
     })}
     <p className="news-ticker-note">Public boards saved {clockUtc(boards[0].fetched)} · change over the past day · medals settle on the private board</p>
@@ -108,7 +125,7 @@ function BoardRow({ row, board, links, medal }: { row: MarketRow; board: MarketB
       <td className="move"><Places row={row} /></td>
       <td className="team"><TeamName row={row} competition={board.competition} links={links} /></td>
       <td className="num sc">{fig(row.score)}</td>
-      <td className="num"><Change value={marketGain(row)} /></td>
+      <td className="num"><Change value={marketGain(row)} precision={differencePrecision(row.score, row.scoreThen)} /></td>
     </tr>
     {cut && <tr className="news-agate-cut"><td colSpan={5}>Gold line · {board.medalRanks.gold} places</td></tr>}
   </>;
@@ -134,13 +151,13 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
         <h3><a href={board.boardPath}>{board.label}</a></h3>
         <div className="news-movers-grid">
           <MoverList title="Biggest gains" board={board} links={links} rows={board.gainers} empty="No supported score gains."
-            value={row => <><Change value={marketGain(row)} /> <small>to <span className="sc">{fig(row.score)}</span></small></>} />
+            value={row => <><Change value={marketGain(row)} precision={differencePrecision(row.score, row.scoreThen)} /> <small>to <span className="sc">{fig(row.score)}</span></small></>} />
           <MoverList title="Biggest climbs" board={board} links={links} rows={board.climbers} empty="No supported place gains."
             value={row => <><Places row={row} /> <small>to <span className="pl">{ordinal(row.rank)}</span></small></>} />
           <MoverList title="New on the board" board={board} links={links} rows={board.newcomers} empty="No new team reached the top 500."
             value={row => <><b className="pl">{ordinal(row.rank)}</b> <small className="sc">{fig(row.score)}</small></>} />
           <MoverList title="On the bubble" board={board} links={links} rows={board.bubble} empty="No teams below the gold line."
-            value={row => <>{gold == null ? fig(row.score) : <>−{fig(gold - row.score)}</>} <small>{ordinal(row.rank)}</small></>} />
+            value={row => <><span className={gold == null ? 'sc' : 'sd'}>{gold == null ? fig(row.score) : <>−{differenceFigure(gold - row.score, differencePrecision(gold, row.score))}</>}</span> <small>{ordinal(row.rank)}</small></>} />
         </div>
         {(!!board.intoGold.length || !!board.outOfGold.length) && <p className="news-movers-gold">
           {!!board.intoGold.length && <><strong>Into gold:</strong> {board.intoGold.map((row, index) => <span key={row.teamId}>{index ? ', ' : ''}<TeamName row={row} competition={board.competition} links={links} /> ({ordinal(row.rank)})</span>)}. </>}
@@ -179,7 +196,7 @@ export function PastWinners({ markets, people, links }: { markets?: MarketsPaylo
         <td className="team"><TeamName row={row} competition={board.competition} links={links} /> <small>{board.label}</small></td>
         <td className="num pl">#{count(row.rank)}</td>
         <td className="num sc">{fig(row.score)}</td>
-        <td className="num"><Change value={marketGain(row)} /></td>
+        <td className="num"><Change value={marketGain(row)} precision={differencePrecision(row.score, row.scoreThen)} /></td>
       </tr>))}</tbody>
     </table>
     <p className="news-muted">Honors link to the illustrated <Link href="/hall-of-fame">Hall of Fame</Link>. Teams are this year’s observed rosters; a past result belongs to its own year and team.</p>

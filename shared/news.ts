@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -34,13 +34,24 @@ export const NEWS_EDITION_WRITERS = NEWS_WRITER_IDS.edition as [string, ...strin
 export const NEWS_WIRE_WRITERS = NEWS_WRITER_IDS.wire as [string, ...string[]];
 export type NewsWriter = string;
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
-export interface NewsSection { heading?: string; text: string; sourceIds: string[]; image?: { src: string; alt: string; caption: string; layout?: "inset" } }
+export interface NewsSection {
+  heading?: string; text: string; sourceIds: string[];
+  image?: { src: string; alt: string; caption: string; layout?: "inset" };
+  standings?: { caption: string; observedAt: string; rows: { teamId: string; name: string; rank: number; score: number }[] };
+}
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
+/** Use the story's own dated tables for semantic team and score typography. */
+export function articleFigureStats(article: Pick<NewsArticle, 'sections' | 'stats'>): NewsStat[] {
+  return [...article.stats, ...article.sections.flatMap(section => (section.standings?.rows ?? []).map(row => ({ ...row, rankChange: null, scoreChange: null })))];
+}
 /** Native editorial art with an immutable, edition-bound composition record. */
 export interface NewsIllustration { src: string; alt: string; caption: string; artworkId: string }
 export interface NewsArticle {
   id: string; date: string; edition: NewsEdition; competition: NewsCompetition;
+  competitionDisplay?: string; editionDisplay?: string;
   headline: string; dek: string; sections: NewsSection[]; teamIds: string[];
+  /** Other source-verified team names, including later aliases, mentioned in this story. */
+  verifiedTeamNames?: string[];
   image?: NewsIllustration;
   sources: NewsSource[]; publishedAt: string; dataAsOf: string;
   baselineAt: string | null; generatedBy: typeof NEWS_EDITION_WRITERS[number]; stats: NewsStat[];
@@ -234,6 +245,7 @@ export const newsArticlePath = (id: string) => `/news/${id}`;
 /** The byline credit for a story's writer; the Claude Code backup is named as such. Every ID in
  *  shared/newsWriters.json has a credit here (tests/integration/news.test.ts checks it). */
 export const WRITER_CREDITS: Record<string, string> = {
+  'gpt-6-codex': 'GPT-6 / Codex',
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-astra-extra-high': 'GPT-6 Astra Extra high',
@@ -248,11 +260,12 @@ export const writerCredit = (generatedBy: NewsWriter) =>
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key]?.label ?? key;
+export const articleCompetitionLabel = (article: NewsArticle) => article.competitionDisplay ?? competitionName(article.competition);
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
 /** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
-export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? `${editionName(article.edition)} edition`
-  : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`;
+export const editionLabel = (article: NewsArticle) => article.editionDisplay ?? (article.id.endsWith('-preview') ? `${editionName(article.edition)} edition`
+  : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`);
 
 /** Newspaper dates and clocks are UTC. Date-only edition labels must not roll back a day. */
 export function newsDate(value: string, withTime = false): string {
@@ -273,7 +286,7 @@ export const newsTitle = (name: string) => `${name} | ${NEWS_NAME}`.length <= TI
 export const articleTitle = (article: NewsArticle) => newsTitle(article.headline);
 /** Dated lead-in when it fits a snippet (~160 characters), so each edition reads distinctly. */
 export function articleDescription(article: NewsArticle): string {
-  const dated = `${competitionName(article.competition)} ${editionName(article.edition).toLowerCase()} edition, ${newsDate(article.date)}: ${article.dek}`;
+  const dated = `${articleCompetitionLabel(article)} ${editionLabel(article).toLowerCase()}, ${newsDate(article.date)}: ${article.dek}`;
   return dated.length <= 160 ? dated : article.dek.length <= 160 ? article.dek : article.dek.slice(0, 157).replace(/\s+\S*$/, '') + '…';
 }
 export const competitorTitle = (record: CompetitorRecord) => newsTitle(`${record.name} — ${competitionName(record.competition)} competitor`);
@@ -343,7 +356,7 @@ export function sectionCardAlt(articles: NewsArticle[], now = Date.now()): strin
 export const articleCardPath = (article: NewsArticle) => `/api/news/og-image/${article.id}.png?v=${articleCardVersion(article)}`;
 export function articleCardAlt(article: NewsArticle): string {
   const standings = cardStandings(article);
-  return `${NEWS_NAME} front page for the ${competitionName(article.competition)} ${editionName(article.edition).toLowerCase()} edition of ${newsDate(article.date)}: “${article.headline}”${standings.length ? `, with the top ${standings.length} of the box score` : ''}.`;
+  return `${NEWS_NAME} front page for the ${articleCompetitionLabel(article)} ${editionLabel(article).toLowerCase()} of ${newsDate(article.date)}: “${article.headline}”${standings.length ? `, with the top ${standings.length} of the box score` : ''}.`;
 }
 
 /** The real masthead and standards page, shared by every newspaper story. */
@@ -361,7 +374,7 @@ export function articleStructuredData(article: NewsArticle, origin: string): Rec
     datePublished: article.publishedAt, dateModified: article.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
     image: [{ '@type': 'ImageObject', url: `${origin}${articleCardPath(article)}`, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, caption: articleCardAlt(article) },
       ...(article.image ? [{ '@type': 'ImageObject', url: `${origin}${article.image.src}`, caption: article.image.caption }] : [])],
-    articleSection: competitionName(article.competition),
+    articleSection: articleCompetitionLabel(article),
     author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news` },
     publisher: newsPublisher(origin), mainEntityOfPage: url, citation: [...new Set(article.sources.map(source => source.url))],
     isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },

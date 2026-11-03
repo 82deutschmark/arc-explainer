@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
+ * Date: 03-November-2026
  * PURPOSE: Verify direct story lookup serves both publication types and never caches misses.
  * SRP/DRY check: Pass — real routes and committed archive, no duplicate resolver.
  */
@@ -37,7 +37,7 @@ it('keeps a reserved feature with its edition', async () => {
   const edition = getNewsIndex().articles.find(item => item.frontPageFeatureId);
   expect(edition).toBeDefined();
   const result = await request(app).get(`/api/news/stories/${edition!.id}`).expect(200);
-  expect(result.body.dispatches.some(item => item.id === edition!.frontPageFeatureId)).toBe(true);
+  expect(result.body.dispatches.some((item: { id: string }) => item.id === edition!.frontPageFeatureId)).toBe(true);
 });
 
 it('reports a rejected publication as a loading failure rather than an unpublished story', async () => {

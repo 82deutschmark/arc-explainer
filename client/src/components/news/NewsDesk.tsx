@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -29,7 +29,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
@@ -39,6 +39,7 @@ import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 import { NEWS_BRAND } from '@shared/newsBrand';
 import { SportsText, NumberKey } from './SportsText';
+import { NewsArticleSectionExtras } from './NewsArticleSectionExtras';
 import { DispatchPreview } from './NewsDispatch';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -161,7 +162,7 @@ export function NewsStatus({ loading, error, retry }: { loading: boolean; error:
 }
 
 export function EditionLabel({ article }: { article: NewsArticle }) {
-  return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{editionLabel(article)}</span></div>;
+  return <div className="news-kicker"><span>{articleCompetitionLabel(article)}</span><span>{editionLabel(article)}</span></div>;
 }
 
 /** Use the edition's verified asset and caption on both its preview and permanent page. */
@@ -180,24 +181,26 @@ export function StoryPreview({ article, feature, lead = false, people = [], sect
   const publication = useContext(NewsBrandContext);
   const shown = article.sections.slice(0, sections);
   const more = article.sections.length > shown.length;
+  const figureStats = articleFigureStats(article);
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
-    <h2><Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link></h2>
-    <p className="news-dek"><SportsText text={article.dek} stats={article.stats} /></p>
+    <h2><Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={figureStats} teamNames={article.verifiedTeamNames} /></Link></h2>
+    <p className="news-dek"><SportsText text={article.dek} stats={figureStats} teamNames={article.verifiedTeamNames} /></p>
     <div className="news-byline">By {publication.name} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
+    {feature && <DispatchPreview dispatch={feature} stats={figureStats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
     {feature?.image?.src !== article.image?.src && (article.image ? <EditionArtwork article={article} lead={lead} /> : art)}
-    {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={article.stats} /></div>}
+    {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={figureStats} teamNames={article.verifiedTeamNames} /></div>}
     {!feature && <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />}
-    {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} stats={article.stats} />)}</div>}
+    {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} stats={figureStats} teamNames={article.verifiedTeamNames} />)}</div>}
     <Link href={newsArticlePath(article.id)} className="news-read">{more ? 'Continue reading, with sources and the box score →' : 'Sources and the box score →'}</Link>
   </article>;
 }
 
-function StoryBodySection({ section, stats }: { section: NewsArticle['sections'][number]; stats: NewsArticle['stats'] }) {
+function StoryBodySection({ section, stats, teamNames }: { section: NewsArticle['sections'][number]; stats: NewsArticle['stats']; teamNames?: string[] }) {
   return <section>
     {section.heading && <h3>{section.heading}</h3>}
-    <p><SportsText text={section.text} stats={stats} /></p>
+    <p><SportsText text={section.text} stats={stats} teamNames={teamNames} /></p>
+    <NewsArticleSectionExtras section={section} />
   </section>;
 }
 
@@ -216,7 +219,7 @@ export function ArticleArchive({ articles, heading = 'From the archive' }: { art
   return <section className="news-archive" aria-label={heading}>
     <h2 className="news-section-title">{heading}</h2>
     {articles.length ? <ol>{articles.map(article => <li key={article.id}>
-      <div className="news-archive-date"><time dateTime={article.publishedAt}>{newsDate(article.date)}</time><span>{editionName(article.edition)} · {competitionName(article.competition)}</span></div>
+      <div className="news-archive-date"><time dateTime={article.publishedAt}>{newsDate(article.date)}</time><span>{article.editionDisplay ?? editionName(article.edition)} · {articleCompetitionLabel(article)}</span></div>
       <Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link>
     </li>)}</ol> : <p className="news-muted">No earlier editions have been published.</p>}
   </section>;

@@ -1,0 +1,473 @@
+{
+  "id": "2026-11-03-closing-bell",
+  "date": "2026-11-03",
+  "edition": "morning",
+  "competition": "arc-3",
+  "headline": "The bell has rung. Now comes the reckoning",
+  "dek": "Submissions are closed. Chen and Tufa held the two public summits in our post-deadline snapshot, and the private boards have the final word.",
+  "image": {
+    "src": "/news-images/2026-11-03-arc3-closing-panel-v3.webp",
+    "alt": "The ARC3 public top ten face a sealed mountain gate: Chen’s rabbit pair, Tufa’s GPU spider, the NVARC3 juggernaut, xz’s cat, Turducken’s mechanical bird, Grigoriy’s quartet, a Last Dance dancer, Majkel’s fox, infinity’s storm and book cat, and yktori’s runner. The panel records the public reading at 00:16 UTC.",
+    "caption": "ARC-AGI-3 public top ten observed 3 November 2026 at 00:16:20 UTC; provisional.",
+    "artworkId": "2026-11-03-arc3-closing-panel-v3"
+  },
+  "sections": [
+    {
+      "text": "Submissions have closed for the ARC-AGI-2 and ARC-AGI-3 competitions. The deadline was 2 November at 23:59 UTC. The entry windows are shut; the crowns are still up for grabs.",
+      "sourceIds": [
+        "arc2timeline",
+        "arc3timeline"
+      ]
+    },
+    {
+      "text": "In the early post-deadline public observations below, Yi-Chia Chen @ Fields Model led the interactive board and Tufa Labs led the grid-puzzle board. Turn to the other contest and they exchange positions. In that reading, NVARC3 had forced its way onto the ARC-AGI-3 public podium, Majkel1337 had pushed into the leading pack, and infinity had a ledge to defend.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ]
+    },
+    {
+      "text": "Those are the public pictures recorded after the deadline. They are not the final results. The private evaluation can change places, medals and the entire shape of the finish. A submission window closing does not turn a public leader into a champion. Keep the champagne within reach; keep the cork in it.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board",
+        "arc2rules",
+        "arc3rules"
+      ]
+    },
+    {
+      "heading": "Names changed after this snapshot",
+      "text": "The public board continued to show the same team IDs in a later reading. At 16:11 UTC on 3 November, ARC-AGI-2’s Sakayori Lab appeared as Datatech Club and Odd Dice appeared as I have an overfitting problem. On ARC-AGI-3, infinity appeared as Van-Phuc Huynh & Tran N M Tien. Those are team display-name changes between observations; the tables and artwork retain the names printed at 00:16 UTC.",
+      "sourceIds": [
+        "arc2board",
+        "arc3board"
+      ]
+    },
+    {
+      "text": "Chen’s public ARC-AGI-3 lead was substantial in that reading. Tufa’s advantage over Chen on ARC-AGI-2 was much narrower in that observation. The dated tables below carry the figures; the sporting story is that both have put themselves in contention on both fronts. They still have to survive the reckoning that readers cannot see on these public boards.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ],
+      "heading": "Two summits, familiar faces"
+    },
+    {
+      "text": "The chasing NVIDIA entries were two distinct teams in those dated observations. On ARC-AGI-2, nvbanana listed Jean-François Puget, familiar to Kaggle as CPMP, and Darragh Hanley. Both also appeared in the broader NVARC3 roster on ARC-AGI-3, alongside Ivan Sorokin, Elad Sarafian, Gal Kaplun, Gilberto Titericz and Yeyin Zhu. A shared pair of names does not make the two lineups interchangeable.",
+      "sourceIds": [
+        "arc2board",
+        "arc3board",
+        "people-ledger",
+        "gilberto-profile"
+      ]
+    },
+    {
+      "text": "And that interactive entry has supplied a proper late flourish. At the afternoon observation used in our earlier report, NVARC3 sat behind xz. In the post-deadline reading, their order is reversed: NVIDIA’s team occupied the public podium, with xz immediately below. The public podium has changed since the afternoon reading; the final podium still belongs to the private results.",
+      "sourceIds": [
+        "arc3board",
+        "priorarc3",
+        "arc2rules",
+        "arc3rules"
+      ]
+    },
+    {
+      "text": "Public leaderboard observed 2026-11-03 at 00:16:20 UTC. Provisional standings; higher scores are better. These are separate competition scores, not a common scale.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ],
+      "heading": "ARC-AGI-3: the public top ten",
+      "standings": {
+        "caption": "ARC-AGI-3 public top ten",
+        "observedAt": "2026-11-03T00:16:20Z",
+        "rows": [
+          {
+            "teamId": "15499660",
+            "name": "Yi-Chia Chen @ Fields Model",
+            "rank": 1,
+            "score": 75.56
+          },
+          {
+            "teamId": "15486995",
+            "name": "Tufa Labs",
+            "rank": 2,
+            "score": 70.24
+          },
+          {
+            "teamId": "15770880",
+            "name": "NVARC3",
+            "rank": 3,
+            "score": 60.95
+          },
+          {
+            "teamId": "15487093",
+            "name": "xz",
+            "rank": 4,
+            "score": 58.59
+          },
+          {
+            "teamId": "15605182",
+            "name": "Team Turducken",
+            "rank": 5,
+            "score": 56.02
+          },
+          {
+            "teamId": "16490178",
+            "name": "Grigoriy Zatravkin & co",
+            "rank": 6,
+            "score": 54.55
+          },
+          {
+            "teamId": "16021367",
+            "name": "the last dance 🕺",
+            "rank": 7,
+            "score": 54.52
+          },
+          {
+            "teamId": "16958599",
+            "name": "Majkel1337",
+            "rank": 8,
+            "score": 53.96
+          },
+          {
+            "teamId": "15494354",
+            "name": "infinity",
+            "rank": 9,
+            "score": 53.12
+          },
+          {
+            "teamId": "16760837",
+            "name": "yktori",
+            "rank": 10,
+            "score": 51.04
+          }
+        ]
+      }
+    },
+    {
+      "text": "Majkel1337 appeared in both top-ten tables. In the later snapshot, its ARC-AGI-3 score and place were considerably stronger than in the earlier afternoon report. infinity, the pair of Van-Phuc Huynh and Trần M. Tiến, remained in the public top ten in that reading after the breakthrough we reported earlier. Its score is unchanged from that report; movement elsewhere has changed the place attached to the same score.",
+      "sourceIds": [
+        "arc3board",
+        "priorarc3",
+        "phuc",
+        "tien"
+      ],
+      "heading": "Lightning, a second front, and a very thin ledge"
+    },
+    {
+      "text": "That distinction matters all the way down the mountain. A team can stand still in score while the ground shifts underneath it. At the edge of this ARC-AGI-3 table, yktori was only a hundredth of a score point ahead of All your GPU are belong to us, the next entry down. That is a dated public boundary, not a medal verdict.",
+      "sourceIds": [
+        "arc3board"
+      ]
+    },
+    {
+      "text": "Team Turducken, Grigoriy Zatravkin & co and the last dance 🕺 occupied the middle of that public leading group. None gets to convert that position into a final placing. Nor should anyone below the top-ten line be written out of the story before the private board decides the finish.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board",
+        "arc2rules",
+        "arc3rules"
+      ]
+    },
+    {
+      "text": "Disclosure: Mark Barney, The Loose Goose’s editor, competes with Team Turducken in ARC-AGI-3 and ARC Mutants in ARC-AGI-2.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ]
+    },
+    {
+      "text": "Public leaderboard observed 2026-11-03 at 00:16:35 UTC. Provisional standings; higher scores are better. These are separate competition scores, not a common scale.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ],
+      "heading": "ARC-AGI-2: the public top ten",
+      "standings": {
+        "caption": "ARC-AGI-2 public top ten",
+        "observedAt": "2026-11-03T00:16:35Z",
+        "rows": [
+          {
+            "teamId": "16756524",
+            "name": "Tufa Labs",
+            "rank": 1,
+            "score": 88.06
+          },
+          {
+            "teamId": "15501171",
+            "name": "Yi-Chia Chen @ Fields Model",
+            "rank": 2,
+            "score": 87.22
+          },
+          {
+            "teamId": "15486939",
+            "name": "nvbanana",
+            "rank": 3,
+            "score": 83.89
+          },
+          {
+            "teamId": "16559402",
+            "name": "Domdolus Tolus",
+            "rank": 4,
+            "score": 83.47
+          },
+          {
+            "teamId": "16442485",
+            "name": "Sakayori Lab",
+            "rank": 5,
+            "score": 81.81
+          },
+          {
+            "teamId": "15789060",
+            "name": "rabbithole",
+            "rank": 6,
+            "score": 81.39
+          },
+          {
+            "teamId": "17021430",
+            "name": "Ravi Teja Chilakala",
+            "rank": 7,
+            "score": 80.56
+          },
+          {
+            "teamId": "16373916",
+            "name": "Majkel1337",
+            "rank": 8,
+            "score": 78.89
+          },
+          {
+            "teamId": "16797706",
+            "name": "S & M & N & S & Y",
+            "rank": 9,
+            "score": 77.36
+          },
+          {
+            "teamId": "16297545",
+            "name": "Odd Dice",
+            "rank": 10,
+            "score": 77.22
+          }
+        ]
+      },
+      "image": {
+        "src": "/news-images/2026-11-03-arc2-closing-panel-v3.webp",
+        "alt": "The ARC2 public top ten await a closed colosseum gate: Tufa’s spider, Chen’s rabbits, nvbanana’s pair, Domdolus’s crew, Majkel’s fox and five anonymous GPU geese. Green stands for Sakayori Lab, purple rabbithole, gold Ravi Teja Chilakala, blue S & M & N & S & Y, and orange Odd Dice.",
+        "caption": "ARC-AGI-2 public top ten observed 3 November 2026 at 00:16:35 UTC; provisional."
+      }
+    },
+    {
+      "text": "Behind the ARC-AGI-2 leaders, nvbanana and Domdolus Tolus head the chase, followed by Sakayori Lab and rabbithole. Ravi Teja Chilakala and Majkel1337 are followed by S & M & N & S & Y and Odd Dice in this top-ten reading. These names belong to this competition’s public order, not a final roll of honour.",
+      "sourceIds": [
+        "arc2board"
+      ],
+      "heading": "The cliff stays crowded"
+    },
+    {
+      "text": "tascj, whose arrival led our earlier ARC-AGI-2 report, sat just outside this table. The 00:16 UTC reading listed two submissions. Its earlier one-submission arrival remains part of the story’s history.",
+      "sourceIds": [
+        "arc2board",
+        "priorarc2"
+      ]
+    },
+    {
+      "text": "The distinction between an arrival and a final result is the closing-bell drama. The Goose has followed the public towers, the late climbers and the people hauling their systems uphill. The private board gets to rearrange the scenery.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ]
+    },
+    {
+      "text": "The previous main Kaggle contest was ARC Prize 2025, using ARC-AGI-2. Its official high-score awards went to NVARC, the ARChitects and MindsAI at the front. Familiar names give this season history; they do not make this year’s teams or methods identical.",
+      "sourceIds": [
+        "results2025"
+      ],
+      "heading": "Last year already supplied the warning"
+    },
+    {
+      "text": "The ARChitects’ own write-up contains a particularly sharp sting. They selected the version with the stronger public score. Another version, which they left unselected, did better on the private test. Their official runner-up finish was real; the better unselected private result was not their official final submission. A public scoreboard can help a team choose and still point it toward the weaker private performer.",
+      "sourceIds": [
+        "architects",
+        "arc2rules",
+        "arc3rules"
+      ]
+    },
+    {
+      "text": "Lonnie supplied the other kind of surprise. The author reports being deep in the public field; the organizer’s final award table puts Lonnie in the prize-winning group. A public page that looked unpromising did not prevent a strong final award.",
+      "sourceIds": [
+        "lonnie",
+        "results2025"
+      ]
+    },
+    {
+      "text": "ARC-AGI-3 has a different earlier chapter: the separate developer-preview competition in 2025, won by StochasticGoose @ Tufa Labs, with Dries Smit as lead developer and Jack Cole as adviser and reviewer. That is genuine form-book history, not a previous edition of this year’s Kaggle interactive race.",
+      "sourceIds": [
+        "preview2025"
+      ]
+    },
+    {
+      "text": "For now, these dated public tables are a record of what could be seen after the bell. They do not establish a freeze, settle a prize or promise that a public score is the score that will decide a final place. The organizer currently schedules the results announcement for 4 December 2026. That date does not establish when every private score will first become visible. Before it comes another deadline: the paper track’s own timeline currently sets 9 November 2026 at 23:59 UTC for final submissions. The organizer’s general calendar still says 8 November. Authors should work to the earlier date until that discrepancy is clarified. The research contest has its own bell to answer.",
+      "sourceIds": [
+        "calendar",
+        "papertimeline"
+      ],
+      "heading": "The next verdict belongs to the private boards"
+    },
+    {
+      "text": "ARC has taken over this corner of the Kaggleverse at the close; the wider circuit carries on. Here, though, the unresolved question is irresistible. Chen and Tufa held the public heights in the snapshot, NVIDIA had made its push, and the pack has refused to sit politely in line.",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ]
+    },
+    {
+      "text": "Good luck to every competitor, from the leading towers to the last name on the board. Who will still be holding those ledges when the private reckoning arrives?",
+      "sourceIds": [
+        "arc3board",
+        "arc2board"
+      ]
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15770880",
+    "15487093",
+    "15605182",
+    "16490178",
+    "16021367",
+    "16958599",
+    "15494354",
+    "16760837"
+  ],
+  "verifiedTeamNames": [
+    "Datatech Club",
+    "I have an overfitting problem",
+    "Van-Phuc Huynh & Tran N M Tien",
+    "All your GPU are belong to us",
+    "tascj",
+    "ARC Mutants",
+    "the ARChitects",
+    "NVARC",
+    "MindsAI",
+    "Lonnie",
+    "StochasticGoose @ Tufa Labs"
+  ],
+  "sources": [
+    {
+      "id": "arc2timeline",
+      "title": "ARC-AGI-2 competition timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline",
+      "accessedAt": "2026-11-03T00:00:45.828Z"
+    },
+    {
+      "id": "arc3timeline",
+      "title": "ARC-AGI-3 competition timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline",
+      "accessedAt": "2026-11-03T00:00:38.062Z"
+    },
+    {
+      "id": "arc2board",
+      "title": "ARC-AGI-2 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "arc3board",
+      "title": "ARC-AGI-3 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "priorarc3",
+      "title": "Earlier ARC-AGI-3 report",
+      "url": "https://arc.markbarney.net/news/2026-11-02-evening-arc-3",
+      "accessedAt": "2026-11-03T00:20:47.066895Z"
+    },
+    {
+      "id": "priorarc2",
+      "title": "Earlier ARC-AGI-2 report",
+      "url": "https://arc.markbarney.net/news/2026-11-02-evening-arc-2",
+      "accessedAt": "2026-11-02T23:40:31.611406Z"
+    },
+    {
+      "id": "phuc",
+      "title": "Van-Phuc Huynh Kaggle profile",
+      "url": "https://www.kaggle.com/hvanphucs112",
+      "accessedAt": "2026-11-02T19:15:00Z"
+    },
+    {
+      "id": "tien",
+      "title": "Trần M. Tiến Kaggle profile",
+      "url": "https://www.kaggle.com/trnmtin",
+      "accessedAt": "2026-11-02T19:15:00Z"
+    },
+    {
+      "id": "results2025",
+      "title": "ARC Prize 2025 results and analysis",
+      "url": "https://arcprize.org/blog/arc-prize-2025-results-analysis",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "architects",
+      "title": "The ARChitects’ 2025 solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "lonnie",
+      "title": "Lonnie’s 2025 competition write-up",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/arc-prize-2025-competition-writeup-5th-place",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "preview2025",
+      "title": "ARC-AGI-3 developer preview results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "calendar",
+      "title": "ARC Prize 2026 calendar",
+      "url": "https://arcprize.org/competitions/2026",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "papertimeline",
+      "title": "ARC Prize paper track timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-paper-track/overview/timeline",
+      "accessedAt": "2026-11-03T00:39:03.699700Z"
+    },
+    {
+      "id": "arc2rules",
+      "title": "ARC-AGI-2 competition rules",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/rules",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "arc3rules",
+      "title": "ARC-AGI-3 competition rules",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/rules",
+      "accessedAt": "2026-11-03T16:31:15Z"
+    },
+    {
+      "id": "people-ledger",
+      "title": "Verified accounts and competitor identities",
+      "url": "https://raw.githubusercontent.com/82deutschmark/arc-explainer/43e65c83d89127452d406a5b6c6dda3d4dac04ef/content/news/people.json",
+      "accessedAt": "2026-11-03T16:33:06.622601+00:00"
+    },
+    {
+      "id": "gilberto-profile",
+      "title": "Gilberto Titericz Junior GitHub profile",
+      "url": "https://github.com/titericz",
+      "accessedAt": "2026-11-03T16:34:12.474887+00:00"
+    }
+  ],
+  "publishedAt": "2026-11-03T16:34:12.475551+00:00",
+  "dataAsOf": "2026-11-03T00:16:20Z",
+  "baselineAt": null,
+  "generatedBy": "gpt-6-codex",
+  "stats": [],
+  "coverageNote": "Two public board snapshots observed on 3 November 2026 at 00:16 UTC. Later display-name changes are reported separately; public scores and places do not establish final results.",
+  "discord": "Submissions have closed. Two dated public boards and the wait for private results.",
+  "competitionDisplay": "ARC-AGI-2 & ARC-AGI-3",
+  "editionDisplay": "Closing report"
+}

@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the newest contest report printed in full, the other contest under it)
@@ -54,12 +54,12 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
   const links = { competitors: index.competitors, people };
   return <>
     <MarketTicker markets={markets} />
-    <AroundTheContests index={index} />
     <div className={`news-front${boards.length ? '' : ' no-board'}`}>
-      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} compact /></section>
       <section className="news-col-lead" aria-label="Lead stories">
         {competitions.map((competition, position) => <CompetitionDesk key={competition} articles={articles} dispatches={dispatches} competition={competition} lead={position === 0} people={people} />)}
       </section>
+      <AroundTheContests index={index} />
+      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} compact /></section>
       {!!boards.length && <aside className="news-col-board" aria-label="The board">
         <h2 className="news-flag"><span>The board</span><em>Day = change since a day earlier</em></h2>
         {boards.map(board => <BoardTable key={board.competition} board={board} links={links} limit={board.competition === 'arc-3' ? 25 : 20} />)}

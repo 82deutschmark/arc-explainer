@@ -1,0 +1,572 @@
+{
+  "articleId": "2026-11-03-closing-bell",
+  "publishedAt": "2026-11-03T16:34:12.475551+00:00",
+  "sourceSnapshotCapturedAt": "2026-11-03T00:29:00Z",
+  "observations": {
+    "arc-2": {
+      "dataAsOf": "2026-11-03T00:16:35Z",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+      "rows": [
+        {
+          "rank": 1,
+          "teamId": "16756524",
+          "name": "Tufa Labs",
+          "lastSubmission": "2026-11-01 13:07:47",
+          "score": 88.06,
+          "submissions": 64,
+          "members": [
+            "driessmit1",
+            "jeroencottaar",
+            "pressman1",
+            "stefano1283"
+          ]
+        },
+        {
+          "rank": 2,
+          "teamId": "15501171",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "lastSubmission": "2026-11-01 06:04:02",
+          "score": 87.22,
+          "submissions": 40,
+          "members": [
+            "threerabbits"
+          ]
+        },
+        {
+          "rank": 3,
+          "teamId": "15486939",
+          "name": "nvbanana",
+          "lastSubmission": "2026-11-01 15:38:55",
+          "score": 83.89,
+          "submissions": 158,
+          "members": [
+            "cpmpml",
+            "darraghdog"
+          ]
+        },
+        {
+          "rank": 4,
+          "teamId": "16559402",
+          "name": "Domdolus Tolus",
+          "lastSubmission": "2026-11-01 14:20:38",
+          "score": 83.47,
+          "submissions": 51,
+          "members": [
+            "alwintheodoric",
+            "billyanggara",
+            "darrenamadeusmartin",
+            "rinnnntt",
+            "yassirramadhan"
+          ]
+        },
+        {
+          "rank": 5,
+          "teamId": "16442485",
+          "name": "Sakayori Lab",
+          "lastSubmission": "2026-11-01 18:23:45",
+          "score": 81.81,
+          "submissions": 33,
+          "members": [
+            "hongori",
+            "quarkliu"
+          ]
+        },
+        {
+          "rank": 6,
+          "teamId": "15789060",
+          "name": "rabbithole",
+          "lastSubmission": "2026-11-01 16:05:02",
+          "score": 81.39,
+          "submissions": 130,
+          "members": [
+            "cookizesong",
+            "jiaxibi0220",
+            "xiezejian",
+            "yuhuake240506",
+            "zhangsongxin"
+          ]
+        },
+        {
+          "rank": 7,
+          "teamId": "17021430",
+          "name": "Ravi Teja Chilakala",
+          "lastSubmission": "2026-10-31 23:35:39",
+          "score": 80.56,
+          "submissions": 19,
+          "members": [
+            "carriem7"
+          ]
+        },
+        {
+          "rank": 8,
+          "teamId": "16373916",
+          "name": "Majkel1337",
+          "lastSubmission": "2026-10-31 23:29:42",
+          "score": 78.89,
+          "submissions": 57,
+          "members": [
+            "majkel1337"
+          ]
+        },
+        {
+          "rank": 9,
+          "teamId": "16797706",
+          "name": "S & M & N & S & Y",
+          "lastSubmission": "2026-11-01 00:00:02",
+          "score": 77.36,
+          "submissions": 86,
+          "members": [
+            "maciejsypetkowski",
+            "nataliajakowska",
+            "sggpls",
+            "shiiin9",
+            "yuritosci"
+          ]
+        },
+        {
+          "rank": 10,
+          "teamId": "16297545",
+          "name": "Odd Dice",
+          "lastSubmission": "2026-11-01 13:33:37",
+          "score": 77.22,
+          "submissions": 57,
+          "members": [
+            "nisshokuitsuki"
+          ]
+        }
+      ],
+      "additionalRows": [
+        {
+          "rank": 11,
+          "teamId": "17204147",
+          "name": "tascj",
+          "score": 76.81,
+          "submissions": 2,
+          "members": [
+            "tascj0"
+          ]
+        },
+        {
+          "rank": 68,
+          "teamId": "17023174",
+          "name": "ARC Mutants",
+          "score": 50.83,
+          "submissions": 221,
+          "members": [
+            "jcole75",
+            "markbarney",
+            "scizical",
+            "sonphamorg"
+          ]
+        }
+      ]
+    },
+    "arc-3": {
+      "dataAsOf": "2026-11-03T00:16:20Z",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "rows": [
+        {
+          "rank": 1,
+          "teamId": "15499660",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "lastSubmission": "2026-11-02 11:35:40",
+          "score": 75.56,
+          "submissions": 50,
+          "members": [
+            "threerabbits"
+          ]
+        },
+        {
+          "rank": 2,
+          "teamId": "15486995",
+          "name": "Tufa Labs",
+          "lastSubmission": "2026-11-02 12:51:42",
+          "score": 70.24,
+          "submissions": 180,
+          "members": [
+            "dlorah",
+            "driessmit1",
+            "infinitecreativity",
+            "jeroencottaar",
+            "pressman1",
+            "stefano1283"
+          ]
+        },
+        {
+          "rank": 3,
+          "teamId": "15770880",
+          "name": "NVARC3",
+          "lastSubmission": "2026-11-02 12:28:12",
+          "score": 60.95,
+          "submissions": 81,
+          "members": [
+            "cpmpml",
+            "darraghdog",
+            "eladsarafian",
+            "galkaplun",
+            "sorokin",
+            "titericz",
+            "yeyinzhu"
+          ]
+        },
+        {
+          "rank": 4,
+          "teamId": "15487093",
+          "name": "xz",
+          "lastSubmission": "2026-11-02 00:00:47",
+          "score": 58.59,
+          "submissions": 16,
+          "members": [
+            "xiaoz259"
+          ]
+        },
+        {
+          "rank": 5,
+          "teamId": "15605182",
+          "name": "Team Turducken",
+          "lastSubmission": "2026-11-02 13:22:26",
+          "score": 56.02,
+          "submissions": 218,
+          "members": [
+            "dzjiann",
+            "keithtyser",
+            "markbarney",
+            "mitubant",
+            "ngyzly",
+            "scizical",
+            "sonphamorg"
+          ]
+        },
+        {
+          "rank": 6,
+          "teamId": "16490178",
+          "name": "Grigoriy Zatravkin & co",
+          "lastSubmission": "2026-11-02 13:34:45",
+          "score": 54.55,
+          "submissions": 114,
+          "members": [
+            "aizealotwu",
+            "deepdreamer",
+            "florenciasolange",
+            "grigoriyzatravkin"
+          ]
+        },
+        {
+          "rank": 7,
+          "teamId": "16021367",
+          "name": "the last dance 🕺",
+          "lastSubmission": "2026-11-01 23:11:30",
+          "score": 54.52,
+          "submissions": 98,
+          "members": [
+            "dwellement0baser",
+            "fses91",
+            "gklambauer",
+            "lukasaichberger"
+          ]
+        },
+        {
+          "rank": 8,
+          "teamId": "16958599",
+          "name": "Majkel1337",
+          "lastSubmission": "2026-11-02 14:57:27",
+          "score": 53.96,
+          "submissions": 36,
+          "members": [
+            "majkel1337"
+          ]
+        },
+        {
+          "rank": 9,
+          "teamId": "15494354",
+          "name": "infinity",
+          "lastSubmission": "2026-11-02 13:34:12",
+          "score": 53.12,
+          "submissions": 140,
+          "members": [
+            "hvanphucs112",
+            "trnmtin"
+          ]
+        },
+        {
+          "rank": 10,
+          "teamId": "16760837",
+          "name": "yktori",
+          "lastSubmission": "2026-11-02 01:04:49",
+          "score": 51.04,
+          "submissions": 36,
+          "members": [
+            "yktori"
+          ]
+        }
+      ],
+      "additionalRows": [
+        {
+          "rank": 11,
+          "teamId": "16429297",
+          "name": "All your GPU are belong to us",
+          "score": 51.03,
+          "submissions": 22,
+          "members": [
+            "dipamc77",
+            "omprakashpy"
+          ]
+        }
+      ]
+    }
+  },
+  "laterObservation": {
+    "arc-2": {
+      "dataAsOf": "2026-11-03T16:11:06Z",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+      "rows": [
+        {
+          "rank": 1,
+          "teamId": "16756524",
+          "name": "Tufa Labs",
+          "score": 88.06
+        },
+        {
+          "rank": 2,
+          "teamId": "15501171",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "score": 87.22
+        },
+        {
+          "rank": 3,
+          "teamId": "15486939",
+          "name": "nvbanana",
+          "score": 83.89
+        },
+        {
+          "rank": 4,
+          "teamId": "16559402",
+          "name": "Domdolus Tolus",
+          "score": 83.47
+        },
+        {
+          "rank": 5,
+          "teamId": "16442485",
+          "name": "Datatech Club",
+          "score": 81.81
+        },
+        {
+          "rank": 6,
+          "teamId": "15789060",
+          "name": "rabbithole",
+          "score": 81.39
+        },
+        {
+          "rank": 7,
+          "teamId": "17021430",
+          "name": "Ravi Teja Chilakala",
+          "score": 80.56
+        },
+        {
+          "rank": 8,
+          "teamId": "16373916",
+          "name": "Majkel1337",
+          "score": 78.89
+        },
+        {
+          "rank": 9,
+          "teamId": "16797706",
+          "name": "S & M & N & S & Y",
+          "score": 77.36
+        },
+        {
+          "rank": 10,
+          "teamId": "16297545",
+          "name": "I have an overfitting problem",
+          "score": 77.22
+        }
+      ]
+    },
+    "arc-3": {
+      "dataAsOf": "2026-11-03T16:11:05Z",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "rows": [
+        {
+          "rank": 1,
+          "teamId": "15499660",
+          "name": "Yi-Chia Chen @ Fields Model",
+          "score": 75.56
+        },
+        {
+          "rank": 2,
+          "teamId": "15486995",
+          "name": "Tufa Labs",
+          "score": 70.24
+        },
+        {
+          "rank": 3,
+          "teamId": "15770880",
+          "name": "NVARC3",
+          "score": 60.95
+        },
+        {
+          "rank": 4,
+          "teamId": "15487093",
+          "name": "xz",
+          "score": 58.59
+        },
+        {
+          "rank": 5,
+          "teamId": "15605182",
+          "name": "Team Turducken",
+          "score": 56.02
+        },
+        {
+          "rank": 6,
+          "teamId": "16490178",
+          "name": "Grigoriy Zatravkin & co",
+          "score": 54.55
+        },
+        {
+          "rank": 7,
+          "teamId": "16021367",
+          "name": "the last dance 🕺",
+          "score": 54.52
+        },
+        {
+          "rank": 8,
+          "teamId": "16958599",
+          "name": "Majkel1337",
+          "score": 53.96
+        },
+        {
+          "rank": 9,
+          "teamId": "15494354",
+          "name": "Van-Phuc Huynh & Tran N M Tien",
+          "score": 53.12
+        },
+        {
+          "rank": 10,
+          "teamId": "16760837",
+          "name": "yktori",
+          "score": 51.04
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "arc2timeline",
+      "title": "ARC-AGI-2 competition timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline",
+      "accessedAt": "2026-11-03T00:00:45.828Z"
+    },
+    {
+      "id": "arc3timeline",
+      "title": "ARC-AGI-3 competition timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline",
+      "accessedAt": "2026-11-03T00:00:38.062Z"
+    },
+    {
+      "id": "arc2board",
+      "title": "ARC-AGI-2 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "arc3board",
+      "title": "ARC-AGI-3 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "priorarc3",
+      "title": "Earlier ARC-AGI-3 report",
+      "url": "https://arc.markbarney.net/news/2026-11-02-evening-arc-3",
+      "accessedAt": "2026-11-03T00:20:47.066895Z"
+    },
+    {
+      "id": "priorarc2",
+      "title": "Earlier ARC-AGI-2 report",
+      "url": "https://arc.markbarney.net/news/2026-11-02-evening-arc-2",
+      "accessedAt": "2026-11-02T23:40:31.611406Z"
+    },
+    {
+      "id": "phuc",
+      "title": "Van-Phuc Huynh Kaggle profile",
+      "url": "https://www.kaggle.com/hvanphucs112",
+      "accessedAt": "2026-11-02T19:15:00Z"
+    },
+    {
+      "id": "tien",
+      "title": "Trần M. Tiến Kaggle profile",
+      "url": "https://www.kaggle.com/trnmtin",
+      "accessedAt": "2026-11-02T19:15:00Z"
+    },
+    {
+      "id": "results2025",
+      "title": "ARC Prize 2025 results and analysis",
+      "url": "https://arcprize.org/blog/arc-prize-2025-results-analysis",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "architects",
+      "title": "The ARChitects’ 2025 solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "lonnie",
+      "title": "Lonnie’s 2025 competition write-up",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/arc-prize-2025-competition-writeup-5th-place",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "preview2025",
+      "title": "ARC-AGI-3 developer preview results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "calendar",
+      "title": "ARC Prize 2026 calendar",
+      "url": "https://arcprize.org/competitions/2026",
+      "accessedAt": "2026-11-03T16:19:27Z"
+    },
+    {
+      "id": "papertimeline",
+      "title": "ARC Prize paper track timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-paper-track/overview/timeline",
+      "accessedAt": "2026-11-03T00:39:03.699700Z"
+    },
+    {
+      "id": "arc2rules",
+      "title": "ARC-AGI-2 competition rules",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/rules",
+      "accessedAt": "2026-11-03T00:33:37.432984Z"
+    },
+    {
+      "id": "arc3rules",
+      "title": "ARC-AGI-3 competition rules",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/rules",
+      "accessedAt": "2026-11-03T16:31:15Z"
+    },
+    {
+      "id": "people-ledger",
+      "title": "Verified accounts and competitor identities",
+      "url": "https://raw.githubusercontent.com/82deutschmark/arc-explainer/43e65c83d89127452d406a5b6c6dda3d4dac04ef/content/news/people.json",
+      "accessedAt": "2026-11-03T16:33:06.622601+00:00"
+    },
+    {
+      "id": "gilberto-profile",
+      "title": "Gilberto Titericz Junior GitHub profile",
+      "url": "https://github.com/titericz",
+      "accessedAt": "2026-11-03T16:34:12.474887+00:00"
+    }
+  ],
+  "artwork": [
+    {
+      "src": "/news-images/2026-11-03-arc2-closing-panel-v3.webp",
+      "sha256": "175e6bab82961c8c7a431687a83bb24e70b1c7a924bf8e92d6162a68ce9d3455"
+    },
+    {
+      "src": "/news-images/2026-11-03-arc3-closing-panel-v3.webp",
+      "sha256": "117f804c270a2b1dd87c9fb85b904e39825cf2b32bbac3eb580b6679e7c08c1e"
+    }
+  ]
+}
