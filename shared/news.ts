@@ -30,6 +30,12 @@ export type NewsEdition = 'morning' | 'evening';
 /** Writer IDs remain stable in archived stories; scheduled editions use GPT-6.1 Sol, the wire GPT-6 Luna and
  *  the Claude Code backup desk Claude Sonnet 5.5. The one list lives in shared/newsWriters.json, which
  *  scripts/newsroom.py and scripts/newsroom_wire.py read too, so the writer tools and the site can never disagree. */
+/** Copy for a confirmed missing story, shared by the browser and server page. */
+export const NEWS_STORY_MISSING = {
+  heading: 'This story isn’t here yet',
+  description: 'We may have gotten ahead of ourselves. The story may not be published yet—check back in a few minutes, or check the address.',
+} as const;
+
 export const NEWS_EDITION_WRITERS = NEWS_WRITER_IDS.edition as [string, ...string[]];
 export const NEWS_WIRE_WRITERS = NEWS_WRITER_IDS.wire as [string, ...string[]];
 export type NewsWriter = string;

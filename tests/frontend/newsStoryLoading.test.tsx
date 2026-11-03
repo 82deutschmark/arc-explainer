@@ -38,9 +38,10 @@ it('opens a newly published edition even when the front-page cache lacks it', as
 it('recovers a missing story when the release arrives and the reader retries', async () => {
   const fetcher = vi.fn().mockResolvedValueOnce(response(404)).mockResolvedValue(response(200, archive)); vi.stubGlobal('fetch', fetcher);
   openPage();
+  expect(await screen.findByText(/We may have gotten ahead of ourselves/)).toBeVisible();
   fireEvent.click(await screen.findByRole('button', { name: 'Check again' }));
   expect(await screen.findByRole('heading', { name: story.headline })).toBeVisible();
-  expect(screen.queryByText('No story has been published at this address')).toBeNull();
+  expect(screen.queryByText('This story isn’t here yet')).toBeNull();
 });
 it('keeps loading and connection failures distinct from a missing story', async () => {
   let resolve!: (value: Response) => void;
@@ -49,7 +50,7 @@ it('keeps loading and connection failures distinct from a missing story', async 
   expect(screen.getByRole('status')).toHaveTextContent('Opening the newspaper');
   resolve(response(503));
   expect(await screen.findByRole('alert')).toHaveTextContent('publication status could not be checked');
-  expect(screen.queryByText('No story has been published at this address')).toBeNull();
+  expect(screen.queryByText('This story isn’t here yet')).toBeNull();
 });
 it('opens a special report through the same permanent-story lookup', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(200, { ...archive, articles: [], dispatches: [{ ...story, headline: 'The NVIDIA seven' }] })));
@@ -62,5 +63,5 @@ it('treats an incompatible success response as a loading failure', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(200, { articles: [], dispatches: [], competitors: [] })));
   openPage();
   expect(await screen.findByRole('alert')).toHaveTextContent('publication status could not be checked');
-  expect(screen.queryByText('No story has been published at this address')).toBeNull();
+  expect(screen.queryByText('This story isn’t here yet')).toBeNull();
 });

@@ -29,7 +29,7 @@ import { NEWS_CONTACT, NEWS_TIPS_PATH } from '../../../shared/newsContact';
 import { figuresHtml, statScores, statTeamNames } from '../../../shared/newsFigures';
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
-  type NewsArticle, type NewsDispatch, type NewsSection, type CompetitorRecord, type NewsStat, articleCompetitionLabel, articleFigureStats, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData, dispatchStructuredData, newsPublisher,
+  type NewsArticle, type NewsDispatch, type NewsSection, type CompetitorRecord, type NewsStat, articleCompetitionLabel, articleFigureStats, newsArticlePath, competitorPath, NEWS_NAME, NEWS_STORY_MISSING, articleStructuredData, dispatchStructuredData, newsPublisher,
   articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit, publishedCompetitionOrder, competitionStories,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
@@ -212,10 +212,10 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
 }
 /** A missing publication and a failed read need different status, copy and retry links. */
 function unavailableStoryMeta(route: string, failed: boolean): { tags: RouteMetaTags; status: number } {
-  const heading = failed ? 'We couldn’t load this story' : 'No story has been published at this address';
+  const heading = failed ? 'We couldn’t load this story' : NEWS_STORY_MISSING.heading;
   const description = failed
     ? 'The site is temporarily unable to retrieve this article. This is a loading problem; publication status could not be checked.'
-    : 'The archive was checked successfully. This link may have been shared before publication, or the address may be incorrect.';
+    : NEWS_STORY_MISSING.description;
   return { status: failed ? 503 : 404, tags: completeMeta({ title: `${heading} | ${NEWS_NAME}`, description,
     url: `${SITE_ORIGIN}${route}`, noindex: true,
     bodyHtml: `<main><h1>${esc(heading)}</h1><p>${esc(description)}</p><p><a href="${esc(route)}">${failed ? 'Try again' : 'Check again'}</a> · <a href="/news">Read the latest stories →</a></p></main>` }) };

@@ -21,7 +21,7 @@ import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { articleCompetitionLabel, articleFigureStats, competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { articleCompetitionLabel, articleFigureStats, competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_STORY_MISSING, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles } from '@/components/news/NewsDesk';
@@ -48,7 +48,7 @@ export default function NewsArticle() {
     <Link className="news-back" href="/news">← Back to the front page</Link>
     <NewsStatus loading={query.isLoading} error={false} retry={() => void query.refetch()} />
     {query.isError && !query.data && <section className="news-status" role="alert"><h1 className="news-article-title">We couldn’t load this story</h1><p>The site is temporarily unable to retrieve this article. This is a loading problem; publication status could not be checked.</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Trying…' : 'Try again'}</Button><p><Link href="/news" className="news-read">Back to the front page →</Link></p></section>}
-    {missing && !query.isError && <section className="news-status" role="status"><h1 className="news-article-title">No story has been published at this address</h1><p>The archive was checked successfully. This link may have been shared before publication, or the address may be incorrect.</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Checking…' : 'Check again'}</Button><p><Link href="/news" className="news-read">Read the latest stories →</Link></p></section>}
+    {missing && !query.isError && <section className="news-status" role="status"><h1 className="news-article-title">{NEWS_STORY_MISSING.heading}</h1><p>{NEWS_STORY_MISSING.description}</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Checking…' : 'Check again'}</Button><p><Link href="/news" className="news-read">Read the latest stories →</Link></p></section>}
     {dispatch && <DispatchPreview dispatch={dispatch} lead people={query.data?.people} />}
     {article && <article>
       <header className="news-article-header">

@@ -28,8 +28,8 @@ it('highlights the verified infinity team in the initial article HTML', () => {
 it('gives an unpublished address a clear 404 and working retry and front-page links', () => {
   const page = resolveNewsMeta('/news/not-yet-published')!;
   expect(page.status).toBe(404);
-  expect(page.tags.bodyHtml).toContain('No story has been published at this address');
-  expect(page.tags.bodyHtml).toContain('The archive was checked successfully.');
+  expect(page.tags.bodyHtml).toContain('This story isn’t here yet');
+  expect(page.tags.bodyHtml).toContain('We may have gotten ahead of ourselves.');
   expect(page.tags.bodyHtml).toContain('href="/news/not-yet-published"');
   expect(page.tags.bodyHtml).toContain('href="/news"');
   expect(page.tags.noindex).toBe(true);
