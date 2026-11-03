@@ -1,6 +1,14 @@
-### Version 9.161.35 · November 2, 2026
+### Version 9.161.37 · November 2, 2026
 
 - Fit complete original artwork across card fronts and backs, and connect team and person cards using recorded memberships and credited rosters across editions. Membership dates remain distinct from claims about current lineups. Author: GPT-6 / Codex.
+
+### Version 9.161.36 · November 2, 2026
+
+- The synthetic picks carry the public catalog's called-out note: ES01 (an outbreak spread person to person) and LT03 (air strikes on a crowded city) touch what has been in the news, and no guardrail stopped either being built. It sits under the grid, edges those two cards and leads their panels, read live so the words match the public repo. The catalog is fetched fresh, so a change pushed there shows here at once. Author: Claude Opus 5.5 High.
+
+### Version 9.161.35 · November 2, 2026
+
+- The synthetic games are data-dense on the front page, the gallery and the why page, at the Boss's call: the twelve picks are small cards, six to a row on a laptop, all on one screen, each with its opening board, code, level count, controls and one line. A click opens the game's full write-up (what is special, the rules, how it differs from the public 25, its look) with the level strip and a play button, read live from the public repo's catalog so this site mirrors it. The big headline and lead board on the front page are replaced by one slim line. Human numbers are gone from the cards. Author: Claude Opus 5.5 High.
 
 ### Version 9.161.34 · November 2, 2026
 

@@ -14,14 +14,22 @@ PURPOSE: The pieces every page uses to show Team Turducken's synthetic ARC-AGI-3
 
          No game names, descriptions or rules appear here. Working out the rules is the game.
          Every figure is read from a source at runtime; none is typed in.
+Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dense, a card per game
+         with the rest behind a click. PickRow (one tall row per game, human numbers) is replaced by
+         PickGrid: twelve small cards in two rows on a laptop, and a click opens the game's spoiler
+         panel (what is special, the rules, how it differs from the public 25, its look), all read
+         from the catalog's "spoiler" entry. No human numbers anywhere (Boss, 2-Nov-2026).
+         Same day: the catalog's "highlight" (ES01 and LT03: outbreak and air strikes, no guardrails
+         hit) shows under the grid, edges those two cards and leads their panels, word for word.
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { MONO } from '@/pages/arc3-community/landingTheme';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 
 export const WRITEUP_URL = 'https://82deutschmark.github.io/arc3-synthetic-games/';
 /** The write-up's home is this site. GitHub Pages is the side door, not the lead. */
@@ -45,15 +53,20 @@ interface CatalogGame {
   inputs?: number[];
   play: string;
   media: { play: string; levels: string };
+  spoiler?: Spoiler;
 }
-interface Catalog { featured: string[]; games: CatalogGame[] }
+/** The catalog's hand-checked write-up of one game. Any field can be missing. */
+export interface Spoiler { special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
+interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string } }
 
 export interface Pick {
   id: string;
   label: string;
   levels: number;
-  human: CatalogGame['human'];
   inputs: string;
+  spoiler: Spoiler;
+  /** The catalog's called-out note, when this game is one it names. */
+  flag?: string;
   image: string;
   levelStrip: string;
   /** A path on this site when the approved feed has the game, otherwise the lab's page for it. */
@@ -94,7 +107,8 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
     staleTime: 30 * 60 * 1000,
     retry: 1,
     queryFn: async () => {
-      const response = await fetch(`${WRITEUP_URL}catalog.json`);
+      // GitHub Pages lets browsers keep the file ten minutes; ask for a fresh one so a pushed change shows at once.
+      const response = await fetch(`${WRITEUP_URL}catalog.json`, { cache: 'no-cache' });
       if (!response.ok) throw new Error(`Catalog request failed (${response.status})`);
       return response.json();
     },
@@ -114,7 +128,8 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
         id,
         label: id.toUpperCase(),
         levels: game.levels,
-        human: game.human,
+        spoiler: game.spoiler ?? {},
+        flag: data.highlight?.games.includes(id) ? data.highlight.text : undefined,
         inputs: (game.inputs ?? []).map((i) => INPUTS[i]).filter(Boolean).join(' '),
         image: `${WRITEUP_URL}${game.media.play}`,
         levelStrip: `${WRITEUP_URL}${game.media.levels}`,
@@ -188,33 +203,111 @@ export function LevelStrip({ pick }: { pick: Pick }) {
   );
 }
 
-/** One published pick: board, human record, inputs, every level's opening frame. */
-export function PickRow({ pick }: { pick: Pick }) {
+/** Slim top line shared by the pages that lead with the picks: what these are, counts, links. */
+export function PicksHeader({ approved }: { approved: number }) {
   return (
-    <article className="grid grid-cols-[96px_minmax(0,1fr)] sm:grid-cols-[132px_minmax(0,1fr)] gap-3 py-3"
-             style={{ borderTop: `1px solid ${LINE}` }}>
-      <PlayLink href={pick.href} label={`Play ${pick.label}`} className="block">
-        <img src={pick.image} alt="" width={132} height={132} loading="lazy" decoding="async"
-             className="block w-full aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
-      </PlayLink>
+    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3 text-[12px]" style={{ fontFamily: MONO }}>
+      <h1 className="text-[13px] font-bold tracking-[2px] uppercase" style={{ color: '#E53AA3' }}>Team Turducken · Synthetic ARC-AGI-3 games</h1>
+      <span style={{ color: '#A8A5A2' }}>Our best picks{approved > 0 && <> of {approved} approved</>}. Click a card for the rules (spoilers). Play here, no login.</span>
+      <span className="flex flex-wrap gap-x-3">
+        <Link href="/play" className="font-bold" style={{ color: '#E53AA3' }}>PLAY →</Link>
+        <Link href="/arc3/gallery" className="underline">Every game</Link>
+        <Link href={WHY_PATH} className="underline">Why</Link>
+        <a href={REPO_URL} target="_blank" rel="noreferrer" className="underline">Source ↗</a>
+      </span>
+    </div>
+  );
+}
+
+/** The first sentence of "what is special": all a card face has room for. */
+function hook(text = ''): string {
+  return text.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text;
+}
+
+/** One small card: the opening board, the code, level count and inputs, one line. */
+function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
+  return (
+    <button type="button" onClick={onOpen} aria-label={`${pick.label}: rules and details`}
+            className="group flex flex-col justify-start items-stretch h-full w-full p-0 m-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#E53AA3]"
+            style={{ background: '#1C1B1A', border: `1px solid ${pick.flag ? HOT : LINE}` }}>
+      <img src={pick.image} alt="" width={256} height={256} loading="lazy" decoding="async"
+           className="block w-full max-w-none h-auto aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
+      <span className="block w-full px-2 pt-1.5 pb-2">
+        <span className="flex items-baseline justify-between gap-2" style={{ fontFamily: MONO }}>
+          <b className="text-[15px] text-white group-hover:text-[#E53AA3]">{pick.label}</b>
+          <span className="text-[10px] tracking-[.5px]" style={{ color: '#8E8B88' }}>{pick.levels} LV</span>
+        </span>
+        <span className="block text-[10px] leading-[1.5] truncate" style={{ color: '#8E8B88', fontFamily: MONO }}>{pick.inputs}</span>
+        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-4" style={{ color: '#C9C6C3' }}>{hook(pick.spoiler.special)}</span>
+      </span>
+    </button>
+  );
+}
+
+function Part({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-3">
+      <h3 className="mb-1 text-[10px] font-bold tracking-[1.5px]" style={{ color: HOT, fontFamily: MONO }}>{label}</h3>
+      {children}
+    </section>
+  );
+}
+
+/** Everything the catalog says about one game, opened from its card. */
+function PickPanel({ pick }: { pick: Pick }) {
+  const notes = pick.spoiler;
+  return (
+    <div className="grid gap-4 md:grid-cols-[260px_minmax(0,1fr)]">
       <div className="min-w-0">
-        <div className="flex items-baseline justify-between gap-3 mb-1">
-          <PlayLink href={pick.href} className="text-[20px] font-bold leading-none text-white hover:underline" style={{ fontFamily: MONO }}>
-            {pick.label}
-          </PlayLink>
-          <PlayLink href={pick.href} label={`Play ${pick.label}`} className="text-[11px] font-bold tracking-[1px]" style={{ color: HOT, fontFamily: MONO }}>
-            PLAY →
-          </PlayLink>
+        <PlayLink href={pick.href} label={`Play ${pick.label}`} className="block">
+          <img src={pick.image} alt={`${pick.label} opening board`} width={260} height={260}
+               className="block w-full aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
+        </PlayLink>
+        <div className="mt-2"><LevelStrip pick={pick} /></div>
+        <div className="mt-2 flex items-center justify-between gap-2 text-[11px]" style={{ color: '#8E8B88', fontFamily: MONO }}>
+          <span>{pick.levels} levels · {pick.inputs}</span>
         </div>
-        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 mb-2 text-[12px] leading-[1.45]" style={{ color: '#C9C6C3' }}>
-          <dt className="text-[10px] tracking-[1px] leading-[17px]" style={{ color: '#8E8B88', fontFamily: MONO }}>HUMAN</dt>
-          {/* A dash is the write-up's own convention: no person's play is on record yet. */}
-          <dd>{pick.human ? `${pick.human.actions} actions, ${pick.human.levels}/${pick.levels} levels` : '—'}</dd>
-          <dt className="text-[10px] tracking-[1px] leading-[17px]" style={{ color: '#8E8B88', fontFamily: MONO }}>INPUTS</dt>
-          <dd>{pick.inputs || '—'}</dd>
-        </dl>
-        <LevelStrip pick={pick} />
+        <PlayLink href={pick.href} className="mt-2 block text-center py-2 text-[13px] font-bold tracking-[1px] text-white"
+                  style={{ background: HOT, fontFamily: MONO }}>
+          PLAY {pick.label} →
+        </PlayLink>
       </div>
-    </article>
+      <div className="min-w-0 text-[13px] leading-[1.5]" style={{ color: '#D6D3D0' }}>
+        {pick.flag && <p className="mb-3 px-3 py-2 text-white" style={{ borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{pick.flag}</p>}
+        {notes.special && <Part label="WHAT'S SPECIAL"><p className="text-white">{notes.special}</p></Part>}
+        {notes.rules && notes.rules.length > 0 && (
+          <Part label="THE RULES">
+            <ul className="list-disc pl-4 space-y-1 marker:text-[#E53AA3]">{notes.rules.map((rule, i) => <li key={i}>{rule}</li>)}</ul>
+          </Part>
+        )}
+        {notes.vsPublic && <Part label="NOT IN THE PUBLIC 25"><p>{notes.vsPublic}</p></Part>}
+        {notes.look && <Part label="THE LOOK"><p>{notes.look}</p></Part>}
+        {notes.markSaid && <blockquote className="pl-3 italic" style={{ borderLeft: `3px solid ${HOT}` }}>“{notes.markSaid}” — Mark</blockquote>}
+      </div>
+    </div>
+  );
+}
+
+/** The published picks as a dense card grid; a click opens one game's rules and details. */
+export function PickGrid({ picks }: { picks: Pick[] }) {
+  const [open, setOpen] = useState<Pick | null>(null);
+  const flag = picks.find((pick) => pick.flag)?.flag;
+  return (
+    <>
+      <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        {picks.map((pick) => <PickCard key={pick.id} pick={pick} onOpen={() => setOpen(pick)} />)}
+      </div>
+      {flag && <p className="mt-2 px-3 py-2 text-[13px] leading-[1.5]" style={{ color: '#F4F2F0', borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{flag}</p>}
+      <Dialog open={open !== null} onOpenChange={(next) => { if (!next) setOpen(null); }}>
+        <DialogContent className="max-w-[960px] w-[calc(100vw-24px)] max-h-[calc(100vh-24px)] overflow-y-auto p-4 sm:p-5 rounded-none border-[#2C2B2A]"
+                       style={{ background: INK, color: '#F4F2F0' }}>
+          {open && <>
+            <DialogTitle className="text-[22px] font-bold leading-none pr-10" style={{ fontFamily: MONO }}>{open.label}</DialogTitle>
+            <DialogDescription className="sr-only">Rules, what is special and how {open.label} differs from the public 25. Spoilers.</DialogDescription>
+            <PickPanel pick={open} />
+          </>}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
