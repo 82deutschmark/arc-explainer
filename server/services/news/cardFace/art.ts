@@ -1,22 +1,9 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
- * PURPOSE: The picture pipeline for the card front. Turns whatever art a card has into ONE opaque 750 x 1050 layer
- *          (a JPEG buffer) that render.ts draws everything else over. Four cases:
- *            (a) contract 5:7 art (art.kind "contract-5x7")  -> full bleed, nothing drawn on the subject;
- *            (b) legacy art, good enough resolution          -> runs edge to edge across the picture window
- *                                                                (full width, below the badge band, down to the name
- *                                                                ribbon), never into the badge band;
- *            (c) legacy art that is tiny, low-res or an odd shape -> contained inside that window on a blurred, dimmed
- *                                                                copy of itself; a very wide picture is trimmed to a
- *                                                                1.5 aspect, sits at the top of the window and leaves a
- *                                                                free band beneath it for the layout (a team's roster);
- *            (d) no art, unreadable art, or a failed read    -> the designed placeholder (puzzle-grid bust).
- *          Painted-in text from last year's cards (wordmark, name plates, badges) is trimmed by a rule keyed on
- *          art.kind + art.bakedText, never on a file name or a card id.
- *          GUARD: art is only read after realpath() puts it under client/public or directly in the repo root (the Hall
- *          of Fame loose files), and only up to 32 MB; anything else is treated as "no art" (never throws).
- *          Registered art files are read-only; every derivative lives in memory.
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium
+ * Date: 02-November-2026
+ * PURPOSE: Fit registered original card artwork into the existing card design without cutting
+ *          off the subject. A blurred background fills unused space; original files stay untouched.
+ *          Paths are guarded and missing images use the existing placeholder.
  * SRP/DRY check: Pass. Zone numbers come from zones.ts, colours from kit.ts; the layout never touches pixels.
  *
  * CHANGELOG
@@ -58,30 +45,7 @@ export interface ArtResult {
 
 /** Window a legacy picture may fill: full width, below the badge band, down to the ribbon. */
 const WIN = PICTURE_WINDOW;
-/** Widest aspect a picture may keep in the window; wider ones are trimmed at the sides to this. */
-const WIDE_MAX = 1.5;
-/** Source smaller than this much upscale-to-cover is "tiny" and gets contained instead. */
-const MAX_COVER_SCALE = 1.7;
-/** Pictures narrower than this (width / height) are contained; they would lose too much top and bottom. */
-const MIN_COVER_ASPECT = 0.85;
 const MAX_BYTES = 32 * 1024 * 1024;
-
-type Focus = { x: number; y: number; w: number; h: number };
-/**
- * Where the picture lives inside a baked-text legacy file, as fractions of its size. Last year's cards came from a
- * few templates, so a rule per kind is enough. A focus rect only trims; it never resamples or recolours.
- */
-const BAKED_FOCUS: Record<string, Focus> = {
-  // The framed illustration inside a finished card (name header above, five stat rows below).
-  'legacy-tall-baked': { x: 0.05, y: 0.175, w: 0.9, h: 0.52 },
-  // The 2025 square template: wordmark top-left, name and rank plates along the bottom. Trimming the left third and the
-  // bottom keeps the face and armour and removes the painted "ARC Raiders" wordmark and both plates.
-  'legacy-square': { x: 0.335, y: 0, w: 0.665, h: 0.735 },
-  // Two people on a square (title above, big title below).
-  'legacy-group': { x: 0, y: 0.065, w: 1, h: 0.595 },
-  // Group on a tall framed card: the "ARC Raiders" wordmark and the "ARC 2" badge sit above the heads, the text plate below.
-  'legacy-group-tall': { x: 0, y: 0.19, w: 1, h: 0.585 },
-};
 
 // ---------------------------------------------------------------------------------------------
 // Guarded read
@@ -196,7 +160,6 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
   const art = card?.art ?? {};
   const file: string | null = override?.file ?? art.file ?? null;
   const kind: string = override?.kind ?? art.kind ?? 'none';
-  const baked = override && 'bakedText' in override ? override.bakedText : art.bakedText;
   const none = async () => ({ ...(await placeholderResult(card, T)) });
   if (!file || kind === 'none') return none();
   const read = await readArt(file);
@@ -204,60 +167,26 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
   const opts = { limitInputPixels: 80_000_000, failOn: 'none' as const };
 
   if (kind === 'contract-5x7') {
-    // Full bleed. The art is already 5:7, so cover scales without cropping a pixel.
-    const png = await jpeg(sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).resize(W, H, { fit: 'cover' }));
+    const png = await jpeg(sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).resize(W, H, { fit: 'contain', background: '#0b0c10' }));
     return { png, mime: 'image/jpeg', kind: 'contract', mode: 'full-bleed', plate: null, freeBand: null };
   }
 
-  // (b)/(c) Legacy art. Read the shape, trim painted-in text if the file is known to carry it, decode once to raw.
-  const meta = await sharp(read.buf, opts).metadata();
-  const swap = (meta.orientation ?? 1) >= 5;
-  const mw = (swap ? meta.height : meta.width) ?? 0, mh = (swap ? meta.width : meta.height) ?? 0;
-  if (!mw || !mh) return none();
-  const tall = kind === 'legacy-group' && mw / mh < 0.8;
-  const focus = baked === true ? BAKED_FOCUS[tall ? 'legacy-group-tall' : kind] : undefined;
-  let pipe = sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' });
-  let ew = mw, eh = mh;
-  if (focus) {
-    ew = Math.round(focus.w * mw); eh = Math.round(focus.h * mh);
-    pipe = pipe.extract({ left: Math.round(focus.x * mw), top: Math.round(focus.y * mh), width: ew, height: eh });
-  }
-  const { data, info } = await pipe.raw().toBuffer({ resolveWithObject: true });
+  // Preserve the complete original, including legacy compositions. The blurred background
+  // fills the frame, while the uncut original fits inside the picture window.
+  const { data, info } = await sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).raw().toBuffer({ resolveWithObject: true });
   const rawIn = { raw: { width: info.width, height: info.height, channels: info.channels } };
   const fromRaw = () => sharp(data, rawIn);
-  ew = info.width; eh = info.height;
+  const scale = Math.min(WIN.w / info.width, WIN.h / info.height, 2);
+  const lw = Math.max(1, Math.round(info.width * scale)), lh = Math.max(1, Math.round(info.height * scale));
+  const layer = await fromRaw().resize(lw, lh, { kernel: 'lanczos3' }).raw().toBuffer();
+  const left = Math.round((W - lw) / 2);
+  const room = WIN.h - lh;
+  const useBand = info.width / info.height > 1.5 && room >= 64;
+  const top = useBand ? WIN.y : Math.round(WIN.y + room / 2);
+  const freeBand: Rect | null = useBand ? { x: 0, y: top + lh, w: W, h: room } : null;
+  const mode = 'contain' as const;
 
-  // Decide how the picture sits. Measured, not guessed: aspect and how far it must be enlarged to cover the window.
-  const wideMax = override?.wideMax ?? WIDE_MAX;
-  const aspect = ew / eh, coverScale = Math.max(WIN.w / ew, WIN.h / eh);
-  const preserveWhole = art.source === 'editorial-portrait' && baked !== true;
-  const mode: 'cover' | 'contain' = !preserveWhole && aspect <= wideMax && aspect >= MIN_COVER_ASPECT && coverScale <= MAX_COVER_SCALE ? 'cover' : 'contain';
-  let layer: Buffer, lw: number, lh: number, left: number, top: number, freeBand: Rect | null = null;
-
-  if (mode === 'cover') {
-    const s = coverScale, nw = Math.ceil(ew * s), nh = Math.ceil(eh * s);
-    // keep the upper part: faces sit high, so only about a third of any vertical excess is taken from the top
-    const cropTop = Math.round((nh - WIN.h) * 0.3), cropLeft = Math.round((nw - WIN.w) / 2);
-    layer = await fromRaw().resize(nw, nh, { kernel: 'lanczos3' }).extract({ left: cropLeft, top: cropTop, width: WIN.w, height: WIN.h }).raw().toBuffer();
-    lw = WIN.w; lh = WIN.h; left = WIN.x; top = WIN.y;
-  } else {
-    // contain. A very wide picture is trimmed at the sides to WIDE_MAX, full width, at the top of the window.
-    const wide = !preserveWhole && aspect > wideMax;
-    const cw = wide ? Math.round(eh * wideMax) : ew;
-    const s = wide ? WIN.w / cw : Math.min(WIN.w / ew, WIN.h / eh, 2);
-    lw = Math.round(cw * s); lh = Math.round(eh * s);
-    let p = fromRaw();
-    if (wide) p = p.extract({ left: Math.round((ew - cw) / 2), top: 0, width: cw, height: eh });
-    layer = await p.resize(lw, lh, { kernel: 'lanczos3' }).raw().toBuffer();
-    left = Math.round((W - lw) / 2);
-    // a wide picture hugs the top of the window when the space left under it is big enough to use (a roster); else it is centred
-    const room = WIN.y + WIN.h - (WIN.y + lh);
-    const useBand = wide && room >= 64;
-    top = useBand ? WIN.y : Math.round(WIN.y + (WIN.h - lh) / 2);
-    if (useBand) freeBand = { x: 0, y: top + lh, w: W, h: room };
-  }
-
-  // The same trimmed picture, tiny, blurred, enlarged and dimmed, fills the whole card behind (no painted text can bleed through).
+  // The original picture, tiny, blurred, enlarged and dimmed, fills the whole card behind (no painted text can bleed through).
   const small = await fromRaw().resize(160, 224, { fit: 'cover' }).blur(3).raw().toBuffer({ resolveWithObject: true });
   const png = await jpeg(sharp(small.data, { raw: { width: small.info.width, height: small.info.height, channels: small.info.channels } })
     .resize(W, H, { kernel: 'cubic' }).modulate({ brightness: 0.5, saturation: 1.2 })

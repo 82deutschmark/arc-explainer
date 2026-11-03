@@ -1,3 +1,7 @@
+### Version 9.161.35 · November 2, 2026
+
+- Fit complete original artwork across card fronts and backs, and connect team and person cards using recorded memberships and credited rosters across editions. Membership dates remain distinct from claims about current lineups. Author: GPT-6 / Codex.
+
 ### Version 9.161.34 · November 2, 2026
 
 - Activate The Loose Goose after the verified official closing checks, with the approved infinity ARC3 article leading its grand reveal. Preserve the story addresses, illustrations and dated public evidence; closing is not a final-result claim.

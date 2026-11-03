@@ -43,7 +43,7 @@ const teamKey = (row: { competitionId: string; teamId: string }) => `${row.compe
 const contestKey = (row: { competitionId: string; season: string }) => `${row.season}:${row.competitionId}`;
 
 type TeamCardLookup = (row: { competitionId: string; teamId: string }, season: string, setId?: string) => string | undefined;
-function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCard: TeamCardLookup, notebooks: Map<string, string>, setId?: string): CollectionTeamHistory[] {
+function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCard: TeamCardLookup, notebooks: Map<string, string>, final: FinalCardResult[], competitors: NewsIndex['competitors'], setId?: string): CollectionTeamHistory[] {
   const handles = new Set(person.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
   const observed = new Map<string, NewsPerson['memberships'][number]>();
   const add = (row: NewsPerson['memberships'][number]) => {
@@ -63,6 +63,25 @@ function playerTeamHistory(person: NewsPerson, registry: CardRegistry, teamCard:
     teamId: row.teamId, teamName: row.teamName, memberHandle: handle,
     firstObservedAt: row.observedAt, lastObservedAt: row.observedAt,
     sourceUrl: row.sourceUrl, sourceTitle: `${competitionName(row.competition)} public roster observation`,
+  });
+  // Team notebooks can document members even when no current board is available.
+  for (const team of competitors) {
+    const competition = KAGGLE_COMPETITIONS[team.competition];
+    if (!competition?.season) continue;
+    for (const handle of team.members) if (handles.has(handle)) add({
+      competition: team.competition, competitionId: competition.slug, season: competition.season,
+      teamId: team.teamId, teamName: team.name, memberHandle: handle,
+      firstObservedAt: team.firstObservedAt, lastObservedAt: team.lastObservedAt,
+      sourceUrl: `https://www.kaggle.com/competitions/${encodeURIComponent(competition.slug)}/leaderboard?teamId=${encodeURIComponent(team.teamId)}`,
+      sourceTitle: `${competitionName(team.competition)} recorded team roster`,
+    });
+  }
+  // Official credited rosters are also positive membership evidence for the reverse link.
+  for (const result of final) for (const handle of result.creditedHandles) if (handles.has(handle)) add({
+    competition: result.competition, competitionId: result.competitionId, season: result.season,
+    teamId: result.teamId, teamName: registry.cards.find(card => card.kind === 'team' && card.season === result.season && card.entries.some(entry => teamKey(entry) === teamKey(result)))?.name ?? observed.get(`${result.season}:${teamKey(result)}`)?.teamName ?? `Team ${result.teamId}`,
+    memberHandle: handle, firstObservedAt: result.confirmedAt, lastObservedAt: result.confirmedAt,
+    sourceUrl: result.sourceUrl, sourceTitle: result.sourceTitle,
   });
   const latestMembership = new Map<string, number>();
   const latestBoard = new Map<string, number>();
@@ -150,7 +169,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     return selected ? collectionCardPath(selected.id) : undefined;
   };
   const personCard = (season: string, personId: string, setId?: string, preferSet = true) => {
-    const selected = choose(personEditions.get(`${season}:${personId}`) ?? [], setId, preferSet);
+    const selected = choose(personEditions.get(`${season}:${personId}`) ?? registry.cards.filter(card => card.kind === 'person' && card.personId === personId), setId, preferSet);
     return selected ? collectionCardPath(selected.id) : undefined;
   };
   const notebooks = new Map<string, string>(index.competitors.map(team => [`${KAGGLE_COMPETITIONS[team.competition].slug}:${team.teamId}`, competitorPath(team.id)] as const));
@@ -225,7 +244,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         members: roster.map(handle => {
           const owner = byHandle.get(handle);
           const cardUrl = owner && personCard(definition.season, owner.id, definition.setId);
-          return { handle, name: owner?.name ?? handle, ...(owner ? { personId: owner.id } : {}), ...(cardUrl ? { cardUrl } : {}) };
+          return { handle, name: owner?.name ?? observed.get(`${result.season}:${teamKey(result)}`)?.teamName ?? `Team ${result.teamId}`, ...(owner ? { personId: owner.id } : {}), ...(cardUrl ? { cardUrl } : {}) };
         }),
       };
     });
@@ -244,7 +263,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
       highlights: [...careerHonors, ...facts], accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url }))
         : [...new Set(entries.flatMap(ref => ref.members.map(member => member.handle)))].map(handle => ({ label: handle, url: `https://www.kaggle.com/${encodeURIComponent(handle)}` })),
-      entries, honors, artNotes: definition.artNotes, teamHistory: person ? playerTeamHistory(person, registry, teamCard, notebooks, definition.setId) : [],
+      entries, honors, artNotes: definition.artNotes, teamHistory: person ? playerTeamHistory(person, registry, teamCard, notebooks, final, index.competitors, definition.setId) : [],
       pastCards: pastCardsFor(person), stories: storiesFor(index, articlePeople, person, entries),
       career: person ? careers[person.id] ?? null : null,
     };

@@ -271,7 +271,14 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const earned = collectionEarnedLine(card);
   const careerRows = career ? [...career.rows].sort((a, b) => a.rank / a.fieldSize - b.rank / b.fieldSize) : [];
   const entries = card.entries.filter(entry => entry.status !== 'unavailable');
-  const roster = [...new Map(card.entries.flatMap(entry => entry.members).map(member => [member.personId ?? member.handle, member])).values()];
+  // Include independently recorded memberships as well as the roster on this edition.
+  // These are observations at different dates, not a claim that everyone competed together.
+  const roster = [...new Map([
+    ...all.filter(other => other.kind === 'person' && other.personId && other.teamHistory.some(team =>
+      team.season === card.season && card.entries.some(entry => entry.competitionId === team.competitionId && entry.teamId === team.teamId)))
+      .map(other => ({ personId: other.personId, handle: other.teamHistory.find(team => team.season === card.season && card.entries.some(entry => entry.competitionId === team.competitionId && entry.teamId === team.teamId))!.memberHandle, name: other.name, cardUrl: other.cardUrl })),
+    ...card.entries.flatMap(entry => entry.members),
+  ].map(member => [member.personId ?? member.handle, member])).values()];
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
@@ -292,10 +299,10 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
       <h2>Team members</h2><ul>{roster.map(member => <li key={member.handle}>
         <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
         <small>@{member.handle}</small>
-      </li>)}</ul><p>Last recorded competition roster. Open a name for their individual card or profile.</p>
+      </li>)}</ul><p>Recorded competition memberships may be from different dates. Open a name for their individual card or profile.</p>
     </nav>}
     {card.kind === 'person' && card.teamHistory.length > 0 && <nav className="cb-relations" aria-label="Competition teams">
-      <h2>Competition teams</h2><ul>{card.teamHistory.map(team => <li key={`${team.competitionId}-${team.teamId}`}>
+      <h2>Competition teams</h2><ul>{card.teamHistory.map(team => <li key={`${team.season}-${team.competitionId}-${team.teamId}`}>
         <Go href={team.cardUrl ?? team.profileUrl}>{team.teamName} →</Go><small>{competitionName(team.competition)} · {team.season}{team.status === 'previous' ? ' · earlier team' : ''}</small>
       </li>)}</ul>
     </nav>}
