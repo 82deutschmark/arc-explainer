@@ -8,6 +8,8 @@
  *          Boss asked for my estimation, not a survey. Facts about attempts come from the hard-set
  *          endpoint and the attempt records; the per-puzzle notes live in shared/arc2HardSet.ts.
  *          19-Oct-2026, Claude Opus 5.5 Medium: one dated aside on the spiral, found while coding its generator.
+ *          3-Nov-2026, Claude Opus 5.5 Medium: a closing section on what training on the synthetic set did,
+ *          written by the session that built and ran it, with a link to the lookalike puzzles page.
  * SRP/DRY check: Pass — prose page; links to the hard-set page and the plan instead of repeating them.
  */
 
@@ -177,6 +179,43 @@ export default function Arc2HardSetFindings() {
           loop runs many experiments a day with three seeds before any family is kept or dropped, per the
           Boss's direction of 18 October. The plan for Opus 5.5 that carries this out is in
           docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md.
+        </p>
+      </section>
+
+      <section id="training" className="scroll-mt-6 space-y-3">
+        <h2 className="text-xl font-semibold">What happened when we trained on it</h2>
+        <p className="text-sm text-muted-foreground">
+          Added 3 November 2026 by Claude Opus 5.5 Medium, which built the set and ran the training.
+        </p>
+        <p>
+          Fifteen kinds were built, each from a program that reproduces every pair of its real puzzle: eleven
+          from the puzzles on this page and Jack Cole's never-solved list, four from puzzles his runs solve
+          only rarely or sometimes.
+          Tens of thousands of puzzles came out of them, none repeating a real one.{' '}
+          <Link href="/arc2/hard-set/lookalikes" className="font-medium text-primary hover:underline">
+            One of each is on the lookalikes page.
+          </Link>
+        </p>
+        <p>
+          Before training, the rule changed: every decision would be judged on 28 public-eval puzzles that no
+          kind is allowed to copy (Jack's holdout30 minus the two we had already copied). The first round
+          fine-tuned the NVARC 4B grid model, three seeds each, with and without three of the kinds. The
+          model learned the kinds it was taught: on fresh puzzles of the same kinds its scores rose sharply. On the 28 held-out puzzles it gained nothing; the plain-training runs averaged 1.5 and
+          the runs with our puzzles 1.39. That round only counts as a smoke test, because that 4B model had
+          itself been trained on the public eval set, held-out puzzles included.
+        </p>
+        <p>
+          The clean comparison moved to Jack's 93k checkpoint, which never saw the held-out puzzles. The
+          plain-training baseline finished (1.33 of 28). The training box crashed on 20 October before the first run with
+          our puzzles finished, and the competition ended before it was rerun. A second check,
+          scoring with the per-task test-time training NVARC uses on the leaderboard, was ready but never ran.
+        </p>
+        <p>
+          So the honest result is narrow. Copying a hard puzzle's rule teaches that rule; in the one test we
+          finished, it did not make the model better at other hard puzzles. Whether it helps on a clean base,
+          or once test-time training is in the loop, is still open. The generators, the holdout list and the
+          staged runs are in the team repository (sonpham-org/autoresearch-arena, arc2/synth_hardset) for
+          anyone who picks it up.
         </p>
       </section>
     </article>

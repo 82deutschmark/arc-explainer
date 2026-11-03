@@ -1,3 +1,7 @@
+### Version 9.162.0 · November 3, 2026
+
+- New page /arc2/hard-set/lookalikes: one generated puzzle per kind from the October ARC-AGI-2 synthetic training set, beside the real puzzle each kind copies, grouped by how often models solve the real one. Each card has the rule in one sentence, two worked examples and a question with its answer behind a button. The findings page gains a closing section on what training on the set did: the model learned the kinds it was taught, the one finished held-out test showed no gain, and the clean comparison was cut short when the training box crashed. Linked from the hard-set page. Files: shared/arc2Lookalikes.ts, client/src/pages/Arc2HardSetLookalikes.tsx, client/src/pages/Arc2HardSetFindings.tsx, client/src/pages/Arc2HardSet.tsx, client/src/App.tsx. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.161.38 · November 2, 2026
 
 - Restore news pages and cards when a team roster contains a handle without a linked person. The catalog now displays that handle instead of crashing while rendering the newsroom. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).

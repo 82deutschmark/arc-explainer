@@ -8,6 +8,7 @@
  *          the database (our runs plus the Hugging Face ingests of the official harness), never from a
  *          hand-kept list. Built for the synthetic-data work in
  *          docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md.
+ *          3-Nov-2026, Claude Opus 5.5 Medium: links the lookalike puzzles page.
  * SRP/DRY check: Pass — data via useArc2HardSet, tables via Arc2HardSetTable, panel pieces reuse
  *                CompactPuzzleDisplay and AnalysisResultListCard; this page only lays them out.
  * shadcn/ui: Pass — Alert, Badge.
@@ -57,6 +58,11 @@ export default function Arc2HardSet() {
         <p className="text-sm">
           <Link href="/arc2/hard-set/findings" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
             Dr. Fable 5.1's findings: why these are hard and what the synthetic set needs <ArrowRight className="h-4 w-4" />
+          </Link>
+        </p>
+        <p className="text-sm">
+          <Link href="/arc2/hard-set/lookalikes" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+            Lookalike puzzles: one generated copy of each kind we trained on <ArrowRight className="h-4 w-4" />
           </Link>
         </p>
       </header>

@@ -25,6 +25,8 @@ PURPOSE: Registers the focused /arc2/capped cohort gallery. Client-side router f
          eval runs and their reasoning traces.
          2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
          2026-11-01 (Claude Opus 5.5): removed the Boston summit notebook routes; it was never meant to be hosted.
+         2026-11-03 (Claude Opus 5.5 Medium): /arc2/hard-set/lookalikes, one generated puzzle per kind from the
+         October ARC-2 synthetic training set.
          2026-10-16 (Claude Opus 5.5 Medium): "/" is the final-stretch front page (countdown, medal
          race, wire, our placing); the earlier landing stays at /synthetic.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
@@ -95,6 +97,7 @@ const HuggingFaceUnionAccuracy = lazy(() => import("@/pages/HuggingFaceUnionAccu
 const Arc2Capped = lazy(() => import("@/pages/Arc2Capped"));
 const Arc2HardSet = lazy(() => import("@/pages/Arc2HardSet"));
 const Arc2HardSetFindings = lazy(() => import("@/pages/Arc2HardSetFindings"));
+const Arc2HardSetLookalikes = lazy(() => import("@/pages/Arc2HardSetLookalikes"));
 const About = lazy(() => import("@/pages/About"));
 const ClaudeCodeGuide = lazy(() => import("@/pages/ClaudeCodeGuide"));
 const ARC3AgentPlayground = lazy(() => import("@/pages/ARC3AgentPlayground"));
@@ -250,6 +253,7 @@ function Router() {
         <Route path="/arc2/capped" component={Arc2Capped} />
         <Route path="/arc2/hard-set" component={Arc2HardSet} />
         <Route path="/arc2/hard-set/findings" component={Arc2HardSetFindings} />
+        <Route path="/arc2/hard-set/lookalikes" component={Arc2HardSetLookalikes} />
         <Route path="/about" component={About} />
         <Route path="/cc" component={ClaudeCodeGuide} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
