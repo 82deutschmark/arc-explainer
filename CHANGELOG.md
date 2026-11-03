@@ -1,3 +1,9 @@
+### Version 9.161.34 · November 2, 2026
+
+- Activate The Loose Goose after the verified official closing checks, with the approved infinity ARC3 article leading its grand reveal. Preserve the story addresses, illustrations and dated public evidence; closing is not a final-result claim.
+- Center the entire panoramic masthead nameplate at desktop, intermediate and phone widths. Remove the asymmetric positioning that pushed the title into the right-hand artwork, and keep the goose inside the single integrated panorama.
+- Include the publication name in immutable article and front-page image versions, so the reveal receives fresh share cards with Goose branding. Author: GPT-6 / Codex (reasoning effort not exposed), with requested parallel visual and release reviews.
+
 ### Version 9.161.33 · November 2, 2026
 
 - Highlight verified team names in article headlines and prose in bold burgundy, using the story’s dated team names and the same renderer in browser and initial HTML. Preserve source spelling, Japanese names, numeric typography and ordinary words outside verified names. The house style records this rule in the newsroom repository.

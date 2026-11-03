@@ -306,7 +306,8 @@ function shortHash(value: string): string {
 }
 /** Changes whenever anything drawn on the article's card changes, so the URL can be immutable. */
 export function articleCardVersion(article: NewsArticle): string {
-  return shortHash(JSON.stringify([NEWS_CARD_DESIGN, article.headline, article.competition, article.edition, article.date,
+  // The masthead is drawn into the image; a rebrand must receive a new immutable URL.
+  return shortHash(JSON.stringify([NEWS_CARD_DESIGN, NEWS_NAME, article.headline, article.competition, article.edition, article.date,
     cardStandings(article).map(stat => [stat.rank, stat.name, stat.score, stat.rankChange])]));
 }
 /**
@@ -330,7 +331,7 @@ export function sectionCardArticles(articles: NewsArticle[], now = Date.now()): 
 }
 /** Changes with the day and with anything the front-page card prints, so every new edition gets a new address. */
 export const sectionCardVersion = (articles: NewsArticle[], now = Date.now()): string =>
-  shortHash(JSON.stringify([NEWS_SECTION_CARD_DESIGN, easternDay(now), sectionCardArticles(articles, now).map(article => [article.id, article.headline, article.dek])]));
+  shortHash(JSON.stringify([NEWS_SECTION_CARD_DESIGN, NEWS_NAME, easternDay(now), sectionCardArticles(articles, now).map(article => [article.id, article.headline, article.dek])]));
 export const sectionCardPath = (articles: NewsArticle[], now = Date.now()): string =>
   `${NEWS_SECTION_CARD_PATH}?v=${sectionCardVersion(articles, now)}`;
 export function sectionCardAlt(articles: NewsArticle[], now = Date.now()): string {

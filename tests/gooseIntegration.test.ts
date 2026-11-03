@@ -2,10 +2,11 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed)
  * Date: 02-November-2026
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
- * premiere gate against production boundaries. Fictional rows remain in tests.
+ * premiere gate and brand-aware share-card versions against production boundaries.
+ * Fictional rows remain in tests.
  * SRP/DRY check: Pass — use the real schemas, decoder, compiler output and gate.
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import config from '../shared/newsBrand.json';
 import { newsBrandAt, type NewsBrandConfig } from '../shared/newsBrand';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
@@ -79,4 +80,25 @@ it('serves the tip line through the same metadata route', () => {
   expect(tips?.status).toBe(200);
   expect(tips?.tags.bodyHtml).toContain('Talk to me, Goose.');
   expect(tips?.tags.bodyHtml).toContain('https://x.com/82deutschmark');
+});
+
+it('gives the rebrand new article and front-page image URLs without changing the story', async () => {
+  const article = getNewsIndex().articles[0];
+  const at = Date.parse(article.publishedAt);
+  const versions = async (name: string) => {
+    vi.resetModules();
+    vi.doMock('../shared/newsBrand', () => ({ NEWS_NAME: name, NEWS_BRAND: { name, goose: name === 'The Loose Goose' } }));
+    const news = await import('../shared/news');
+    return [news.articleCardVersion(article), news.sectionCardVersion([article], at)];
+  };
+  try {
+    const digest = await versions('The ARC Daily Digest');
+    const goose = await versions('The Loose Goose');
+    expect(goose[0]).not.toBe(digest[0]);
+    expect(goose[1]).not.toBe(digest[1]);
+    expect(await versions('The Loose Goose')).toEqual(goose);
+  } finally {
+    vi.doUnmock('../shared/newsBrand');
+    vi.resetModules();
+  }
 });

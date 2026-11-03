@@ -1,7 +1,22 @@
 {
   "banner": "/brand/2026-11-02-loose-goose-organic-masthead-v3.webp",
-  "closeChecks": [],
-  "enabled": false,
+  "closeChecks": [
+    {
+      "checkedAt": "2026-11-03T00:00:38.062Z",
+      "closeAt": "2026-11-02T23:59:00Z",
+      "competition": "arc-prize-2026-arc-agi-3",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline",
+      "status": "closed"
+    },
+    {
+      "checkedAt": "2026-11-03T00:00:45.828Z",
+      "closeAt": "2026-11-02T23:59:00Z",
+      "competition": "arc-prize-2026-arc-agi-2",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline",
+      "status": "closed"
+    }
+  ],
+  "enabled": true,
   "legacyName": "The ARC Daily Digest",
   "logo": "/brand/loose-goose-logo.png",
   "name": "The Loose Goose",
