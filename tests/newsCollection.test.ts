@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
  * Date: 02-November-2026
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
@@ -62,6 +62,12 @@ function result(overrides: Partial<FinalCardResult> = {}): FinalCardResult {
 }
 
 describe('Card Cabinet identity and statistics', () => {
+  it('shows unlinked roster handles without breaking the collection', () => {
+    const data = registry([teamCard()], [snapshot('arc-3', '100', ['unknown-handle'])]);
+    const collection = buildNewsCollection(data, index());
+    expect(collection.cards[0].entries[0].members).toEqual([{ handle: 'unknown-handle', name: 'unknown-handle' }]);
+  });
+
   it('keeps a reviewed seasonal omission out of the current set without deleting the person', () => {
     const excluded = { ...registry([], []), excludedPersonIds: ['alpha'] };
     expect(buildNewsCollection(excluded, index([person('alpha')])).cards).toEqual([]);
@@ -513,7 +519,9 @@ describe('the real permanent commissioned collection', () => {
     const roster = ['alwintheodoric', 'billyanggara', 'darrenamadeusmartin', 'rinnnntt', 'yassirramadhan'];
     expect(team.entries).toHaveLength(2);
     for (const row of team.entries) {
-      expect(row.members).toEqual([]); expect(row.rank).toBeNull(); expect(row.score).toBeNull();
+      const recorded = getNewsIndex().competitors.find(c => c.id === row.competition + '-' + row.teamId);
+      expect(row.members.map(member => member.handle).sort()).toEqual([...(recorded?.members ?? [])].sort());
+      expect(row.rank).toBeNull(); expect(row.score).toBeNull();
       expect(row.sourceUrl).toContain('/leaderboard');
     }
     expect(getNewsIndex().competitors.find(c => c.id === team.entries[0].competition + '-' + team.entries[0].teamId)?.members.sort()).toEqual(roster);

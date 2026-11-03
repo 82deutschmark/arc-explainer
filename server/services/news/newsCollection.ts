@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5
  * Date: 02-November-2026
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots, linked player/team histories and explicitly official final
@@ -8,6 +8,7 @@
  * SRP/DRY check: Pass — newsStore owns identities; this projection owns collectible presentation.
  *
  * CHANGELOG
+ * 02-Nov-2026: Preserve an unlinked roster member's handle rather than referencing an out-of-scope variable.
  * 30-Oct-2026 (Claude Sonnet 5.5 Medium, review fixes): getNewsCollection() is memoised for a few seconds and on the card files' modified
  *          times (an image request no longer re-reads and re-validates every file); every card carries setKey, the fingerprint of
  *          the set-level inputs a picture depends on, so an immutable image address cannot outlive a change to the set.
@@ -244,7 +245,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         members: roster.map(handle => {
           const owner = byHandle.get(handle);
           const cardUrl = owner && personCard(definition.season, owner.id, definition.setId);
-          return { handle, name: owner?.name ?? observed.get(`${result.season}:${teamKey(result)}`)?.teamName ?? `Team ${result.teamId}`, ...(owner ? { personId: owner.id } : {}), ...(cardUrl ? { cardUrl } : {}) };
+          return { handle, name: owner?.name ?? handle, ...(owner ? { personId: owner.id } : {}), ...(cardUrl ? { cardUrl } : {}) };
         }),
       };
     });

@@ -1,3 +1,7 @@
+### Version 9.161.38 · November 2, 2026
+
+- Restore news pages and cards when a team roster contains a handle without a linked person. The catalog now displays that handle instead of crashing while rendering the newsroom. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).
+
 ### Version 9.161.37 · November 2, 2026
 
 - Fit complete original artwork across card fronts and backs, and connect team and person cards using recorded memberships and credited rosters across editions. Membership dates remain distinct from claims about current lineups. Author: GPT-6 / Codex.
