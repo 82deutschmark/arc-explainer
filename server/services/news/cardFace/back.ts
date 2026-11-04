@@ -468,16 +468,21 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), backdrop ? Promise.resolve(jpegUri(backdrop)) : cardboardUri()]);
   // Art-led reverses keep the complete image in view. The existing career table is
   // drawn over its lower edge; its row budget and omitted-count note stay truthful.
-  if (backdrop && vm.family === 'competitor' && bm.career && !bm.standings.some(row => row.rank || row.score || row.subs)) {
+  if (backdrop && vm.family === 'competitor' && bm.career && bm.standings.length <= 3) {
     const career = bm.career;
     const count = Math.min(career.rows.length, 14);
     const note = count < career.completed ? `${num(career.completed - count)} MORE CONTEST${career.completed - count === 1 ? '' : 'S'} NOT LISTED` : null;
     const height = CAREER_CHROME + count * 24 + (note ? NOTE_H : 0);
     const top = H - 30 - FOOT - 12 - height;
+    // Only show the compact standings panel when it has real measured values.
+    const measured = bm.standings.some(row => row.rank || row.score || row.subs);
+    const standingsPanel = measured ? standings(bm.standings, vm, ink1, 32) : null;
+    const standingsH = measured ? standingsHeight(bm.standings.length, 32) : 0;
     const careerPanel = careerTable(career, ink1, count, 24, note);
     return box({ width: W, height: H, position: 'relative', background: STOCK, overflow: 'hidden' },
       pic(boardSrc, 0, 0, W, H),
       at(30, 30, COL_W, HEADER_H, { background: 'rgba(255,250,235,0.88)' }, header(vm, ink1, mini, nameFit)),
+      standingsPanel ? at(30, top - standingsH - GAP, COL_W, standingsH, { background: 'rgba(255,250,235,0.88)' }, standingsPanel) : null,
       at(30, top, COL_W, height, { background: 'rgba(255,250,235,0.88)' }, careerPanel),
       at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.88)' }),
       footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));

@@ -29,6 +29,7 @@
     "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp": "ca9114052c9816d8e9a3e4aa7ffb198d36dbcdb0b12e2832b10771443313239d",
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/keith-tyser-hero-v1.webp": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
+    "/news-images/cards/2026/kontext-arc2-team-v1.webp": "ef3f49726a16ccda7ee4519d59c5d8de247f2c93d59486bd56438dd84ead3d53",
     "/news-images/cards/2026/refv00-solo-v2.webp": "02df2a5dc3c580ccd4d1ab399d7de63badbd289560455a0e8c499b91dfa79e70",
     "/news-images/cards/2026/refv00-solo-v5.webp": "609c8aa6a0b1eb262034358ec82e9c36bf14d2e9241460cfd76d02b770e67813",
     "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
@@ -11735,7 +11736,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "8fd9bbbf9e159b8591c692ac6af80b9b98209d7b3a69a5b3a0452ecc5bafd4f8",
+  "fingerprint": "d805494ad6ef3bf0fdd34e3a9c80e79340eca80dc3b124e88d31472af5420613",
   "people": [
     {
       "accounts": [
@@ -19497,7 +19498,16 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "復活の混テキスト — five-member ARC-AGI-2 team",
+          "artworkId": "2026-11-03-kontext-arc2-team-v1",
+          "commissionedAt": "2026-11-04T04:29:00.562518+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/kontext-arc2-team-v1.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-11-03-kontext-arc2-team-v1.md"
+        ],
         "entries": [
           {
             "competition": "arc-2",
@@ -19985,7 +19995,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-04T04:12:44+00:00",
+    "updatedAt": "2026-11-04T04:29:01+00:00",
     "version": 1
   },
   "results": [],

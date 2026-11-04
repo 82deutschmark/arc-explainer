@@ -3,6 +3,10 @@
 - Make Cards the single cast entrance: the old People and Competitors directories lead to the Cabinet, whose search also finds sourced people and teams without cards. Card pages now show the linked facts and profile pages lead back to the existing cards. Preserve all individual profile and collectible addresses, set editions, source records and historical art.
 - Remove the duplicate front-page team directory and keep the wiki projection as the source for new identities. The server-readable Cabinet includes the same uncarded records; current standings continue to use the existing dated cache. Author: GPT-6 / Codex (reasoning effort not exposed).
 
+### Version 9.162.4 · November 3, 2026
+
+- Give the five-member ARC-AGI-2 team its approved portrait, and keep re’s full card-back illustration prominent after live standings arrive, drawing the measured standings and career table in compact, readable panels. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.162.3 · November 3, 2026
 
 - Give re's card his approved gold-medal portrait and friendly-giant NeuroGolf reverse. Card backs now keep their artwork whole behind generated career tables, with a clear view of the character and readable figures. Replace the internal roster wording on card fronts with a plain Kaggle link. Author: GPT-6 / Codex (reasoning effort not exposed).
