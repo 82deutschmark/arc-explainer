@@ -22,7 +22,7 @@ Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dens
          Same day: the catalog's "highlight" (ES01 and LT03: outbreak and air strikes, no guardrails
          hit) shows under the grid, edges those two cards and leads their panels, word for word.
          2026-11-04: a card face shows the catalog's short teaser (the Boss's words), falling back to
-         the first sentence of "what is special".
+         the first sentence of "what is special". A renamed game is matched by its old tags too.
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
@@ -56,6 +56,8 @@ interface CatalogGame {
   play: string;
   media: { play: string; levels: string };
   spoiler?: Spoiler;
+  /** Earlier tags of a renamed game (HC01 is now ST01), so the copy that plays here is still found. */
+  was?: string[];
 }
 /** The catalog's hand-checked write-up of one game. Any field can be missing. */
 export interface Spoiler { teaser?: string; special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
@@ -125,7 +127,7 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
     return data.featured.flatMap((id) => {
       const game = data.games.find((g) => g.id === id);
       if (!game) return [];
-      const local = here.get(id);
+      const local = here.get(id) ?? (game.was ?? []).map((old) => here.get(old)).find(Boolean);
       return [{
         id,
         label: id.toUpperCase(),

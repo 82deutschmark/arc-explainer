@@ -1,3 +1,7 @@
+### Version 9.162.7 · November 4, 2026
+
+- The synthetic picks follow the public catalog's renames: HC01 is now ST01, Shadow Topple, and still plays here because a pick is matched by its old tags too. The new names (Eroding Horizons, Windy Boats, Bell Stealth, Water Flip) come in with the catalog's teasers. Author: Claude Opus 5.5 High.
+
 ### Version 9.162.6 · November 4, 2026
 
 - The synthetic picks' cards lead with each game's short teaser from the public catalog (the Boss's own for six games, the rest in his style; EH01 is Burnt Bridges), so the cards match the public repo word for word. Author: Claude Opus 5.5 High.
