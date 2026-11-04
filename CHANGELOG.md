@@ -1,3 +1,7 @@
+### Version 9.162.8 · November 4, 2026
+
+- A renamed synthetic pick is matched by its old tag first, because its new tag can belong to an unrelated game on this site: ST01 (was HC01) plays the approved game, not the outside st01 in the mirror. SE01 (was XB02) is found the same way. Author: Claude Opus 5.5 High.
+
 ### Version 9.162.7 · November 4, 2026
 
 - The synthetic picks follow the public catalog's renames: HC01 is now ST01, Shadow Topple, and still plays here because a pick is matched by its old tags too. The new names (Eroding Horizons, Windy Boats, Bell Stealth, Water Flip) come in with the catalog's teasers. Author: Claude Opus 5.5 High.

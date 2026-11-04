@@ -127,7 +127,8 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
     return data.featured.flatMap((id) => {
       const game = data.games.find((g) => g.id === id);
       if (!game) return [];
-      const local = here.get(id) ?? (game.was ?? []).map((old) => here.get(old)).find(Boolean);
+      // Old tags first: a renamed game's new tag can belong to an unrelated game here (an outside st01 sits in the mirror).
+      const local = [...(game.was ?? []), id].map((tag) => here.get(tag)).find(Boolean);
       return [{
         id,
         label: id.toUpperCase(),
