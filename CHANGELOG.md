@@ -1,3 +1,7 @@
+### Version 9.162.6 · November 4, 2026
+
+- The synthetic picks' cards lead with each game's short teaser from the public catalog (the Boss's own for six games, the rest in his style; EH01 is Burnt Bridges), so the cards match the public repo word for word. Author: Claude Opus 5.5 High.
+
 ### Version 9.162.5 · November 4, 2026
 
 - Replace the Chen feature’s rejected illustration with the rabbits teaching the field, and correct its writer credit to GPT-6.1 Terra Extra High for this and future newsroom stories. Author: GPT-6.1 Terra / Codex, extra-high reasoning.

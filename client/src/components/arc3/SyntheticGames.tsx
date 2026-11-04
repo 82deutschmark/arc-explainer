@@ -21,6 +21,8 @@ Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dens
          from the catalog's "spoiler" entry. No human numbers anywhere (Boss, 2-Nov-2026).
          Same day: the catalog's "highlight" (ES01 and LT03: outbreak and air strikes, no guardrails
          hit) shows under the grid, edges those two cards and leads their panels, word for word.
+         2026-11-04: a card face shows the catalog's short teaser (the Boss's words), falling back to
+         the first sentence of "what is special".
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
@@ -56,7 +58,7 @@ interface CatalogGame {
   spoiler?: Spoiler;
 }
 /** The catalog's hand-checked write-up of one game. Any field can be missing. */
-export interface Spoiler { special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
+export interface Spoiler { teaser?: string; special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
 interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string } }
 
 export interface Pick {
@@ -238,7 +240,7 @@ function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
           <span className="text-[10px] tracking-[.5px]" style={{ color: '#8E8B88' }}>{pick.levels} LV</span>
         </span>
         <span className="block text-[10px] leading-[1.5] truncate" style={{ color: '#8E8B88', fontFamily: MONO }}>{pick.inputs}</span>
-        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-4" style={{ color: '#C9C6C3' }}>{hook(pick.spoiler.special)}</span>
+        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-4" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
       </span>
     </button>
   );
