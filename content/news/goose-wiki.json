@@ -11754,7 +11754,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "a50444795fe4de5912e923d7676a8aa90f2ceb15fd013b744e08c5b62f6f806d",
+  "fingerprint": "938aead9bac6d4245623fcf0157dc5b15928cdb1df9d53f85265cc78b84a997f",
   "people": [
     {
       "accounts": [
@@ -17818,7 +17818,7 @@
           "url": "https://www.kaggle.com/threerabbits"
         }
       ],
-      "briefing": "Yi-Chia Chen competes on Kaggle as @threerabbits. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
+      "briefing": "Yi-Chia Chen competes on Kaggle as @threerabbits and posts on X as @YiChiaChentw. Her public ARC-AGI-3 thread confirms the connection; the Kaggle profile provides current standings.",
       "editorialPortrait": {
         "alt": "AI editorial portrait of Yi-Chia Chen’s two-rabbit avatar: a gray lop and a dark upright-eared rabbit with a white blaze.",
         "artworkId": "2026-10-29-chen-avatar-v1",
@@ -17851,6 +17851,12 @@
           "sourceTitle": "Yi-Chia Chen — Eedi third-place solution write-up",
           "sourceUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost",
           "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
+        },
+        {
+          "checkedAt": "2026-11-04T20:06:52+00:00",
+          "sourceTitle": "Yi-Chia Chen’s own ARC Prize announcement",
+          "sourceUrl": "https://x.com/YiChiaChentw/status/2118030083214688454",
+          "text": "Yi-Chia Chen posts on X as @YiChiaChentw; her own account describes her ARC Prize public-board results and Fields Model work."
         }
       ],
       "hallOfFame": [],
@@ -18048,7 +18054,7 @@
     "cards": [
       {
         "artNotes": [],
-        "description": "Yi-Chia Chen competes on Kaggle as @threerabbits. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
+        "description": "Yi-Chia Chen competes on Kaggle as @threerabbits and posts on X as @YiChiaChentw. Her public ARC-AGI-3 thread confirms the connection; the Kaggle profile provides current standings.",
         "entries": [],
         "id": "person-yi-chia-chen-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",

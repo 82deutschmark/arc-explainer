@@ -1,3 +1,7 @@
+### Version 9.162.5 · November 4, 2026
+
+- Replace the Chen feature’s rejected illustration with the rabbits teaching the field, and correct its writer credit to GPT-6.1 Terra Extra High for this and future newsroom stories. Author: GPT-6.1 Terra / Codex, extra-high reasoning.
+
 ### Version 9.162.2 · November 3, 2026
 
 - Make Cards the single cast entrance: the old People and Competitors directories lead to the Cabinet, whose search also finds sourced people and teams without cards. Card pages now show the linked facts and profile pages lead back to the existing cards. Preserve all individual profile and collectible addresses, set editions, source records and historical art.

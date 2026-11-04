@@ -1,60 +1,60 @@
 {
-  "commissionedBy": "mark-barney",
-  "competition": "arc-3",
-  "dek": "The ARC-AGI-3 public-board leader reveals a late model switch, a tireless reviewer and a question even she cannot yet answer.",
-  "editorNote": "The Loose Goose sports desk · GPT-6 / Codex",
-  "generatedBy": "gpt-6-codex",
-  "headline": "Chen opens the playbook behind the public lead",
   "id": "2026-11-04-chen-opens-the-playbook",
-  "image": {
-    "alt": "Two rabbit characters examine a glowing switch beside a branching digital puzzle path.",
-    "caption": "Chen’s rabbit characters explore an imagined strategy switch in the ARC workshop.",
-    "src": "/news-images/goose-313f4b1d73060f175982.webp"
-  },
+  "competition": "arc-3",
   "publishedAt": "2026-11-04T18:59:51+00:00",
+  "headline": "Chen opens the playbook behind the public lead",
+  "dek": "The ARC-AGI-3 public-board leader reveals a late model switch, a tireless reviewer and a question even she cannot yet answer.",
+  "generatedBy": "gpt-6.1-terra-extra-high",
+  "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra Extra High",
+  "commissionedBy": "mark-barney",
   "sections": [
     {
       "heading": "A switch in the final stretch",
+      "text": "Yi-Chia Chen has opened the door on her ARC-AGI-3 campaign, and the public-board leader had a plan for the puzzles that refused to budge. Her final submission began with one model, then switched to a version trained to tackle difficult stages for the last stretch.\n\nThat switch is one of several details in Chen’s new public overview. She describes compressing a model to fit the competition hardware, running many games at once and building an agent around it that could look back at previous screens and actions. The public leaderboard is provisional; final results remain to be verified.",
       "sourceIds": [
         "chen"
-      ],
-      "text": "Yi-Chia Chen has opened the door on her ARC-AGI-3 campaign, and the public-board leader had a plan for the puzzles that refused to budge. Her final submission began with one model, then switched to a version trained to tackle difficult stages for the last stretch.\n\nThat switch is one of several details in Chen’s new public overview. She describes compressing a model to fit the competition hardware, running many games at once and building an agent around it that could look back at previous screens and actions. The public leaderboard is provisional; final results remain to be verified."
+      ]
     },
     {
       "heading": "The question from the chasing pack",
+      "text": "Chen says the original model handled easier and medium stages more efficiently, while the reinforcement-trained version was better at getting through difficult ones but used actions less efficiently. Her final configuration ran the original for six hours and switched to the trained model for the remaining three.\n\nJeroen Cottaar wanted to know how much that final switch actually added to the score. Chen’s answer is the useful twist: she says she did not have enough controlled comparisons to quantify its contribution. She had used all the public games for training and changed several things between submissions. The strategy is her account of what she tried, not proof of how much the switch gained.",
       "sourceIds": [
         "chen"
-      ],
-      "text": "Chen says the original model handled easier and medium stages more efficiently, while the reinforcement-trained version was better at getting through difficult ones but used actions less efficiently. Her final configuration ran the original for six hours and switched to the trained model for the remaining three.\n\nJeroen Cottaar wanted to know how much that final switch actually added to the score. Chen’s answer is the useful twist: she says she did not have enough controlled comparisons to quantify its contribution. She had used all the public games for training and changed several things between submissions. The strategy is her account of what she tried, not proof of how much the switch gained."
+      ]
     },
     {
       "heading": "A reviewer waits in the wings",
+      "text": "The agent had another trick: when a player remained stuck on a stage for an extended period, a read-only reviewer could inspect its workspace and game history and offer suggestions. Chen says she saw traces where the reviewer helped a player find a breakthrough.\n\nGrigoriy Zatravkin, who describes trying similar ideas without a noticeable benefit in his own experiments, asked about the harness. Their exchange makes the contrast worth watching: two competitors can try related approaches and come away with different experiences. Neither account settles the question for everyone.",
       "sourceIds": [
         "chen"
-      ],
-      "text": "The agent had another trick: when a player remained stuck on a stage for an extended period, a read-only reviewer could inspect its workspace and game history and offer suggestions. Chen says she saw traces where the reviewer helped a player find a breakthrough.\n\nGrigoriy Zatravkin, who describes trying similar ideas without a noticeable benefit in his own experiments, asked about the harness. Their exchange makes the contrast worth watching: two competitors can try related approaches and come away with different experiences. Neither account settles the question for everyone."
+      ]
     },
     {
       "heading": "The next set of clues",
+      "text": "The submission window has closed, but the public standings are not the final verdict. Chen says a more detailed technical report, including experimental analysis, is planned for the paper track.\n\nFor now, her overview gives the field something more interesting than a mystery score: a concrete set of choices to examine, and an honest gap between a clever switch and a measured contribution. The Kaggleverse will be waiting for the next page. Good luck to all the competitors.",
       "sourceIds": [
         "chen",
         "timeline"
-      ],
-      "text": "The submission window has closed, but the public standings are not the final verdict. Chen says a more detailed technical report, including experimental analysis, is planned for the paper track.\n\nFor now, her overview gives the field something more interesting than a mystery score: a concrete set of choices to examine, and an honest gap between a clever switch and a measured contribution. The Kaggleverse will be waiting for the next page. Good luck to all the competitors."
+      ]
     }
   ],
   "sources": [
     {
-      "accessedAt": "2026-11-04T18:59:51+00:00",
       "id": "chen",
       "title": "Yi-Chia Chen: ARC-AGI-3 public leaderboard solution overview and discussion",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755795"
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755795",
+      "accessedAt": "2026-11-04T18:59:51+00:00"
     },
     {
-      "accessedAt": "2026-11-04T18:59:51+00:00",
       "id": "timeline",
       "title": "ARC Prize 2026 ARC-AGI-3 competition",
-      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3"
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+      "accessedAt": "2026-11-04T18:59:51+00:00"
     }
-  ]
+  ],
+  "image": {
+    "src": "/news-images/goose-5fec0b065251ecc697d6.webp",
+    "alt": "Two rabbits present puzzle worlds to competitors in a bright futuristic classroom.",
+    "caption": "Chen’s rabbit characters share their playbook with the field in an imagined ARC classroom."
+  }
 }
