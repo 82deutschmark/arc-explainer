@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild)
- * Date: 02-November-2026
+ * Date: 03-November-2026; 02-November-2026
  * PURPOSE: Render the real Card Cabinet pages and protect what the Boss asked for: every card we already hold for a
  *          person is shown and linked, tiers and sponsor roles are named in Kaggle's words, nobody is a "player",
  *          no internal notes reach the page, Mark has his own avatar, and team cards link their roster.
@@ -11,9 +11,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Router, Route } from 'wouter';
 import { afterEach, expect, it, vi } from 'vitest';
-import NewsCards, { Detail } from '../client/src/pages/NewsCards';
+import NewsCards, { Detail, UncardedCast } from '../client/src/pages/NewsCards';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { getNewsIndex } from '../server/services/news/newsStore';
+import { uncardedCast } from '../shared/cardCast';
 
 afterEach(() => vi.unstubAllGlobals());
 function prepare() { vi.stubGlobal('React', React); return getNewsCollection(); }
@@ -113,15 +114,17 @@ it('nobody is a player: competitors, sponsors and teams are named in Kaggle\'s w
   for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026', 'person-francois-chollet-2026']) {
     const { card, html: page } = renderDetail(id);
     // The Digest's own story headlines are quoted as they were printed; everything else is ours.
-    const html = card.stories.reduce((text, story) => text.split(story.headline).join(''), page);
+    const html = card.highlights.reduce((text, fact) => text.split(fact.text).join(''), card.stories.reduce((text, story) => text.split(story.headline).join(''), page));
     expect(html).not.toMatch(/\bplayers?\b/i);
     expect(html).not.toMatch(/provisional|observed|checked/i);
   }
 });
 
 it('a team page with no fresh roster links readers to the actual Kaggle entry', () => {
-  const { card, html } = renderDetail('team-turducken-2026');
-  expect(card.entries.every(entry => entry.rank == null && entry.score == null && !entry.members.length)).toBe(true);
+  const collection = prepare();
+  const original = collection.cards.find(item => item.id === 'team-turducken-2026')!;
+  const card = { ...original, entries: original.entries.map(entry => ({ ...entry, status: 'unavailable' as const, rank: null, score: null, members: [] })) };
+  const html = renderToStaticMarkup(createElement(Router, { ssrPath: card.cardUrl, children: createElement(Detail, { card, all: collection.cards }) }));
   for (const entry of card.entries) expect(html).toContain(entry.sourceUrl!.replaceAll('&', '&amp;'));
   expect(html).toContain('current standings at Kaggle');
 });
@@ -152,4 +155,35 @@ it('a missing shared card shows a return to the collection', () => {
   const html = renderPage('/news/cards/missing-card', '/news/cards/:cardId');
   expect(html).toContain('Card not found');
   expect(html).toContain('Browse the card catalog');
+});
+
+it('finds uncarded people and teams without duplicating issued identities', () => {
+  const collection = prepare();
+  const index = getNewsIndex();
+  const person = (index.people ?? []).find(item => !collection.cards.some(card => card.personId === item.id))!;
+  expect(person).toBeTruthy();
+  const renderCast = (needle: string, role: 'all' | 'competitor' | 'team' = 'all') => renderToStaticMarkup(createElement(Router, { ssrPath: '/news/cards', children: createElement(UncardedCast, { index, cards: collection.cards, needle, role, contest: 'all', season: 'all', filtered: false }) }));
+  expect(renderCast(person.name.toLocaleLowerCase())).toContain(`/news/people/${person.id}`);
+  const carded = collection.cards.find(card => card.personId)!;
+  expect(renderCast(carded.name.toLocaleLowerCase())).not.toContain(`/news/people/${carded.personId}`);
+  const team = uncardedCast(index, collection.cards).teams[0];
+  expect(team).toBeTruthy();
+  expect(renderCast(team.teamId, 'team')).toContain(`/news/competitors/${team.id}`);
+});
+
+it('puts linked source facts on the card without changing its issued address', () => {
+  const { card, html } = renderDetail('person-ivan-sorokin-2026');
+  expect(card.highlights.length).toBeGreaterThan(0);
+  expect(html).toContain('On the record');
+  expect(html).toContain(card.highlights[0].sourceUrl.replaceAll('&', '&amp;'));
+  expect(html).toContain('href="/news/cards"');
+});
+
+it('folds only verified solo entries into their person', () => {
+  const index = getNewsIndex();
+  const collection = prepare();
+  const entries = uncardedCast(index, collection.cards).teams;
+  const solo = index.competitors.find(team => team.members.length === 1 && (index.people ?? []).some(person => person.accounts.some(account => account.platform === 'kaggle' && account.handle.toLowerCase() === team.members[0].toLowerCase()) && person.memberships.some(member => member.competition === team.competition && member.teamId === team.teamId && member.memberHandle.toLowerCase() === team.members[0].toLowerCase())));
+  expect(solo).toBeTruthy();
+  expect(entries.some(team => team.id === solo!.id)).toBe(false);
 });

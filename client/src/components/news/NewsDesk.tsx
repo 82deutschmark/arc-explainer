@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026; 03-November-2026
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -85,8 +85,6 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
     <Link href="/news/cards">{brand.goose ? 'Cards' : 'ARC Prize Cards'}</Link>
-    <Link href="/news/competitors">Competitors</Link>
-    <Link href="/news/people">People</Link>
     <Link href="/news/community">Around the contests</Link>
     <Link href={NEWS_STAFF_PATH}>About the paper</Link>
     {brand.goose ? <a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener noreferrer">Kaggle contests ↗</a> : <>

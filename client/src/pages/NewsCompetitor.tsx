@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Date: 03-November-2026; 02-November-2026
  * PURPOSE: Competition-scoped competitor profile showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
  *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
@@ -22,9 +22,9 @@ export default function NewsCompetitor() {
   const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => article.competition === competitor.competition && article.teamIds.includes(competitor.teamId)) : [];
   usePageMeta({ title: competitor ? competitorTitle(competitor) : `Competitor profiles | ${NEWS_NAME}`, description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
   return <NewsPaper>
-    <Link href="/news/competitors" className="news-back">← All competitor profiles</Link>
+    <Link href="/news/cards" className="news-back">← All cards</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
-    {missing && <section className="news-status"><h1 className="news-article-title">No profile published yet</h1><p>The desk has not published a record for this competition team.</p><Link href="/news/competitors" className="news-read">Browse competitor profiles →</Link></section>}
+    {missing && <section className="news-status"><h1 className="news-article-title">No profile published yet</h1><p>The desk has not published a record for this competition team.</p><Link href="/news/cards" className="news-read">Browse cards →</Link></section>}
     {competitor && <>
       <header className="news-directory-header"><div className="news-kicker">{competitionName(competitor.competition)} · Competitor profile</div><h1>{competitor.name}</h1><p>Team background, members and stories from the race.</p></header>
       <div className="news-identity"><span><strong>Competition</strong><br /><code>{KAGGLE_COMPETITIONS[competitor.competition].slug}</code></span><span><strong>Kaggle team ID</strong><br />{competitor.teamId}</span><span><strong>First observed</strong><br />{newsDate(competitor.firstObservedAt)}</span><span><strong>Last observed</strong><br />{newsDate(competitor.lastObservedAt)}</span></div>

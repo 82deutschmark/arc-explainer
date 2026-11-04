@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 02-November-2026
+ * Date: 03-November-2026; 02-November-2026
  * PURPOSE: ARC Daily landing page for both Kaggle contests, laid out like a broadsheet's front
  *          page: masthead with ears, the terminal ticker, public X coverage, What's News (the wire), the lead
  *          reports run in full, the board in agate type, the past day's movers, where the past
@@ -16,7 +16,7 @@
 import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { AboutThisPaper, ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
-import { NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
+import { NewsFrontPage } from '@/components/news/NewsFrontPage';
 import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
@@ -41,7 +41,6 @@ export default function News() {
         <InsideIndex />
       </div>
       <SponsorPlacement format="banner" />
-      <NotebookColumns index={query.data} markets={markets.data} />
       <AboutThisPaper />
       <ArticleArchive articles={articles} heading="Every edition" />
     </>}

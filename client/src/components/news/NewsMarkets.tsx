@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 03-November-2026; 03-November-2026
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
@@ -209,8 +209,7 @@ const INSIDE: { href: string; title: string; text: string; external?: boolean }[
   { href: '/kaggle-leaderboard/arc-2', title: 'ARC-AGI-2 board', text: 'standings, medal race and history', external: true },
   { href: '/human-records.html', title: 'Human and AI records', text: 'action counts against AI scores', external: true },
   { href: '/arc3/games', title: 'Game guides', text: 'the 25 public ARC-AGI-3 games' },
-  { href: '/news/people', title: 'People', text: 'verified contenders and past winners' },
-  { href: '/news/competitors', title: 'Competitor profiles', text: 'team profiles and reporting' },
+  { href: '/news/cards', title: 'Cards', text: 'the competitors, teams and their stories' },
   { href: '/news/community', title: 'Around the contests', text: 'public posts and research' },
   { href: '/hall-of-fame', title: 'Hall of Fame', text: 'illustrated cards of past winners' },
   { href: ARC_DISCORD_URL, title: 'ARC Discord', text: 'the official community', external: true },

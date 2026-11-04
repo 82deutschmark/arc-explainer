@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 2026-11-01 (own-site ARChitect portraits: GPT-6.1 Sol / Codex); 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
+ * Date: 03-November-2026; 2026-11-01 (own-site ARChitect portraits: GPT-6.1 Sol / Codex); 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
@@ -35,6 +35,7 @@ import { collectionShareVersion } from '../../shared/newsCollection';
 import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
+import { NEWS_BRAND } from '../../shared/newsBrand';
 import sharp from 'sharp';
 import { articleCardPath, articleTitle, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople, NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS, WRITER_CREDITS } from '../../shared/news';
 import { ARC_COLORS_TUPLES } from '../../shared/config/colors';
@@ -79,7 +80,7 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toContain(escapeHtml(article.headline));
-    expect(html.replace(/<span[^>]*>|<\/span>/g, '').replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1')).toContain(escapeHtml(article.sections[0].text.split(/\n\n+/)[0]).replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1'));
+    expect(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '').replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1')).toContain(escapeHtml(article.sections[0].text.split(/\n\n+/)[0]).replace(/#(\d[\d,]*)/g, '$1').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1'));
     expect(html).toContain(`href="${SITE_ORIGIN}/news/${article.id}"`);
     expect(html).not.toContain('content="noindex');
     const schema = JSON.parse(html.match(/id="page-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
@@ -89,7 +90,7 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     expect(story.citation).toEqual([...new Set(article.sources.map(source => source.url))]);
     const card = `${SITE_ORIGIN}${articleCardPath(article)}`;
     expect(story.image[0]).toMatchObject({ url: card, width: 1200, height: 630 });
-    expect(story.publisher.logo.url).toBe(`${SITE_ORIGIN}/android-chrome-512x512.png`);
+    expect(story.publisher.logo.url).toBe(`${SITE_ORIGIN}${NEWS_BRAND.logo ?? "/android-chrome-512x512.png"}`);
     expect(unescape(metaContent(html, 'og:image'))).toBe(card);
     expect(unescape(metaContent(html, 'twitter:image'))).toBe(card);
     expect(metaContent(html, 'og:image:width')).toBe('1200');
@@ -259,7 +260,7 @@ it('serves sourced dispatches and their artwork in the public archive and perman
   expect(dispatch).toBeDefined();
   const html = await (await fetch(`${base}/news/${dispatch.id}`)).text();
   expect(html).toContain(escapeHtml(dispatch.headline));
-  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(paragraph));
+  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '')).toContain(escapeHtml(paragraph));
   expect(html).toContain(dispatch.image!.src);
   for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
@@ -285,10 +286,15 @@ it('publishes verified people, historical artwork and public community branches'
   const index = getNewsIndex();
   const keith = index.people!.find(person => person.id === 'keith-tyser')!;
   expect(new Set(keith.memberships.map(member => member.competition))).toEqual(new Set(['arc-2', 'arc-3']));
-  for (const route of ['/news/people', '/news/people/keith-tyser', '/news/community', '/news/staff']) {
+  for (const route of ['/news/people/keith-tyser', '/news/community', '/news/staff']) {
     const response = await fetch(`${base}${route}`);
     expect(response.status).toBe(200);
     expect(await response.text()).toContain(`href="${SITE_ORIGIN}${route}"`);
+  }
+  for (const route of ['/news/people', '/news/competitors']) {
+    const response = await fetch(`${base}${route}?ref=old`, { redirect: 'manual' });
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe('/news/cards?ref=old');
   }
   const cpmp = await (await fetch(`${base}/news/people/jean-francois-puget`)).text();
   expect(cpmp).toContain('/jfPuget3.png');
@@ -430,12 +436,12 @@ it('serves the reserved evening feature and cover in the permanent edition’s i
   expect(html).toContain(`src="${feature.image!.src}"`);
   expect(html).toContain(escapeHtml(feature.image!.caption));
   for (const section of feature.sections) {
-    for (const paragraph of section.text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(paragraph));
+    for (const paragraph of section.text.split(/\n\n+/)) expect(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '')).toContain(escapeHtml(paragraph));
   }
   for (const source of feature.sources) expect(html).toContain(`href="${escapeHtml(source.url)}"`);
-  expect(html.replace(/<span[^>]*>|<\/span>/g, '')).toContain(escapeHtml(article.sections[1].text));
-  expect(html.replace(/<span[^>]*>|<\/span>/g, '').indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
-    .toBeLessThan(html.replace(/<span[^>]*>|<\/span>/g, '').indexOf(escapeHtml(article.sections[1].text)));
+  expect(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '')).toContain(escapeHtml(article.sections[1].text));
+  expect(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '').indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
+    .toBeLessThan(html.replace(/<span[^>]*>|<\/span>|<strong[^>]*>|<\/strong>/g, '').indexOf(escapeHtml(article.sections[1].text)));
 });
 
 it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and the share preview, with the right cache headers', { timeout: 60_000 }, async () => {

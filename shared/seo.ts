@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below; GPT-6 Astra Extra high
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); existing contributors credited below; GPT-6 Astra Extra high
+ * Date: 03-November-2026
  * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -26,6 +26,7 @@ export const DEFAULT_IMAGE = `${SITE_ORIGIN}/og-preview.png`;
 export const INDEX_ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
 export const REDIRECTS: Record<string, string> = {
   '/news/how-this-is-made': NEWS_STAFF_PATH,
+  '/news/people': '/news/cards', '/news/competitors': '/news/cards',
   '/reports/arc-prize-audit-2026-10-08/audit.html': '/feedback',
   '/synthetic': '/arc3/gallery', '/human-cards': '/hall-of-fame', '/compare': '/elo',
   '/arc3/review': '/play', '/arc3/archive': '/arc3', '/arc3/archive/games': '/arc3/games',

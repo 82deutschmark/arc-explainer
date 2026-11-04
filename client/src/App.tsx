@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; existing contributors credited below
- * Date: 02-November-2026
+ * Date: 03-November-2026; 02-November-2026
  * PURPOSE: Register the Goose tip line alongside the existing newspaper, card and ARC application routes.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -71,7 +71,6 @@ const NewsStaff = lazy(() => import("@/pages/NewsStaff"));
 const NewsWire = lazy(() => import("@/pages/NewsWire"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
 const NewsCards = lazy(() => import("@/pages/NewsCards"));
-const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
 const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
 const PuzzleDiscussion = lazy(() => import("@/pages/PuzzleDiscussion"));
 const SaturnVisualSolver = lazy(() => import("@/pages/SaturnVisualSolver"));
@@ -210,9 +209,9 @@ function Router() {
         <Route path="/news" component={News} />
         <Route path="/news/cards" component={NewsCards} />
         <Route path="/news/cards/:cardId" component={NewsCards} />
-        <Route path="/news/competitors" component={NewsCompetitors} />
+        <Route path="/news/competitors" component={() => <Redirect to="/news/cards" />} />
         <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
-        <Route path="/news/people" component={NewsPeople} />
+        <Route path="/news/people" component={() => <Redirect to="/news/cards" />} />
         <Route path="/news/people/:personId" component={NewsPeople} />
         <Route path="/news/community" component={NewsCommunity} />
         <Route path="/news/how-this-is-made" component={NewsMethod} />

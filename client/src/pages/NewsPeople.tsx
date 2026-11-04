@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 03-November-2026
  * PURPOSE: People directory and durable person profiles with separate, dated competition memberships.
  *          09-Oct-2026 (Claude Opus 5.5): every card and profile leads with the person's face and
  *          their honors from the ARC Explainer Hall of Fame; each card's art appears once.
@@ -8,6 +8,8 @@
  *          Faces, honors and cards come from components/news/NewsPeople.tsx.
  */
 import { Link, useParams } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { collectionShareVersion, type NewsCollection } from '@shared/newsCollection';
 import { personPath, competitorPath, NEWS_NAME, competitionName, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { NewsPaper, NewsStatus, useNews, newsDate, useNewsCardImage } from '@/components/news/NewsDesk';
@@ -31,6 +33,12 @@ export default function NewsPeople() {
 
 function PersonProfile({ person, competitors }: { person: NewsPerson; competitors: CompetitorRecord[] }) {
   const shownArt = new Set<string>();
+  const collection = useQuery<NewsCollection>({ queryKey: ['/api/news/cards'], staleTime: 60_000, queryFn: async () => {
+    const response = await fetch('/api/news/cards');
+    if (!response.ok) throw new Error('The cards could not be loaded.');
+    return response.json() as Promise<NewsCollection>;
+  } });
+  const cards = collection.data?.cards.filter(card => card.personId === person.id) ?? [];
   return <>
     <header className="news-person-header">
       <PersonPortrait person={person} size="hero" />
@@ -43,6 +51,7 @@ function PersonProfile({ person, competitors }: { person: NewsPerson; competitor
     </header>
     <div className="news-article-grid">
       <section>
+        {!!cards.length && <><h2 className="news-section-title">Their cards</h2><div className="news-story-cards">{cards.map(card => <Link key={card.id} href={card.cardUrl} className="news-story-card"><img src={`/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card)}`} width={300} height={420} loading="lazy" alt={`${person.name}, card ${card.number}`} /><span className="news-story-card-name">{card.season} · {card.number}</span></Link>)}</div></>}
         {person.briefing && <p className="news-dek">{person.briefing}</p>}
         {!!person.facts.length && <><h2 className="news-section-title">On the record</h2><ul className="news-facts">{person.facts.map((fact, index) => <li key={index}><p>{fact.text}</p><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a><div className="news-muted">Checked {newsDate(fact.checkedAt)}</div></li>)}</ul></>}
         <h2 className="news-section-title">Observed competition teams</h2>
@@ -59,7 +68,7 @@ function PersonProfile({ person, competitors }: { person: NewsPerson; competitor
           if (card.image) shownArt.add(card.image.src);
           return <li key={card.path}><Link href={card.path}>{art && <img className="news-historical-card" src={art.src} alt={art.alt} loading="lazy" />}{card.label} →</Link><div className="news-muted"><a href={card.sourceUrl}>{card.sourceTitle} ↗</a> · checked {newsDate(card.checkedAt)}</div></li>;
         })}</ul></>}
-        <Link href="/news/people" className="news-read">All people →</Link>
+        <Link href="/news/cards" className="news-read">All cards →</Link>
       </aside>
     </div>
   </>;
