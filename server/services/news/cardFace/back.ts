@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
- * Date: 02-November-2026
+ * Date: 03-November-2026
  * PURPOSE: The REVERSE of the TOPPS card, 750 x 1050: grey cardboard in two inks (the tier colour darkened to print
  *          on grey, and near-black), like a 1987 Topps back. Exports back(card, opts) -> image buffer (png, webp or
  *          jpeg) and backNode(card, opts) -> Satori node tree. What may be printed is decided in backModel.ts; this
@@ -400,7 +400,7 @@ async function miniature(card: any, opts: BackOpts, art: ArtResult): Promise<Buf
 // ---------------------------------------------------------------------------------------------
 // Assembly with the row budget
 // ---------------------------------------------------------------------------------------------
-interface Placed { node: Node; h: number }
+interface Placed { node: Node; h: number; transparent?: boolean }
 
 async function sponsorColumn(vm: VM, bm: BackModel, art: ArtResult, ink1: string, head: Placed[]): Promise<Placed[]> {
   const out: Placed[] = [...head];
@@ -463,8 +463,28 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   const ink1 = INK1[vm.T.key] ?? INK1.none;
   const bm = backModel(vm);
 
-  const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), cardboardUri()]);
+  // Preserve the whole approved image behind the generated record; contain never trims its edges.
+  const backdrop = opts.backPicture ? await pictureCrop(art, W, H, true, opts.backPicture) : null;
+  const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), backdrop ? Promise.resolve(jpegUri(backdrop)) : cardboardUri()]);
+  // Art-led reverses keep the complete image in view. The existing career table is
+  // drawn over its lower edge; its row budget and omitted-count note stay truthful.
+  if (backdrop && vm.family === 'competitor' && bm.career && !bm.standings.some(row => row.rank || row.score || row.subs)) {
+    const career = bm.career;
+    const count = Math.min(career.rows.length, 14);
+    const note = count < career.completed ? `${num(career.completed - count)} MORE CONTEST${career.completed - count === 1 ? '' : 'S'} NOT LISTED` : null;
+    const height = CAREER_CHROME + count * 24 + (note ? NOTE_H : 0);
+    const top = H - 30 - FOOT - 12 - height;
+    const careerPanel = careerTable(career, ink1, count, 24, note);
+    return box({ width: W, height: H, position: 'relative', background: STOCK, overflow: 'hidden' },
+      pic(boardSrc, 0, 0, W, H),
+      at(30, 30, COL_W, HEADER_H, { background: 'rgba(255,250,235,0.88)' }, header(vm, ink1, mini, nameFit)),
+      at(30, top, COL_W, height, { background: 'rgba(255,250,235,0.88)' }, careerPanel),
+      at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.88)' }),
+      footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));
+  }
   const head: Placed[] = [{ node: header(vm, ink1, mini, nameFit), h: HEADER_H }];
+  // Leave the upper part of the full illustration open; career and standings remain generated below.
+  if (backdrop) head.push({ node: box({ height: 150 }), h: 150, transparent: true });
   const vit = vitalsStrip(bm.vitals, ink1);
   if (vit) head.push({ node: vit, h: VITALS_H });
 
@@ -474,8 +494,8 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     blocks = await sponsorColumn(vm, bm, art, ink1, head);
   } else {
     blocks = [...head];
-    const slabInfo = bm.facts.length ? await slabSize(bm.facts, false) : null;
-    const bio = bm.bio ? await bioBlock(bm.bio, ink1) : null;
+    const slabInfo = !backdrop && bm.facts.length ? await slabSize(bm.facts, false) : null;
+    const bio = !backdrop && bm.bio ? await bioBlock(bm.bio, ink1) : null;
     let sRow = 40;                                                     // standings row height; grows with leftover room
     const nS = bm.standings.length;
     // `left` is the height still unspent: the column minus the pinned footer, every placed block and the gaps between them.
@@ -529,7 +549,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     // Leftover height, spent in a fixed order. A strip of the card's own picture first (cover crop, the picture grows),
     const realArt = !!(art.plate || art.kind === 'contract');
     let stripH = 0, stripPlate = false;
-    if (realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, 340); spend(stripH); }
+    if (!backdrop && realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, 340); spend(stripH); }
     // then bigger standings rows (numerals scale with the row),
     if (nS && left > 0) {
       const extra = Math.min(Math.floor(left / nS), 96 - sRow);
@@ -542,7 +562,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
       if (big.h - slabInfo.h <= left) { bigSlab = true; left -= big.h - slabInfo.h; slabH = big.h; }
     }
     // then, only when the card has no picture of its own and nothing else to grow, the designed plate,
-    if (!stripH && left >= 260) { stripH = Math.min(left - GAP, 340); stripPlate = true; spend(stripH); }
+    if (!backdrop && !stripH && left >= 260) { stripH = Math.min(left - GAP, 340); stripPlate = true; spend(stripH); }
     // then whatever picture there is takes the rest (up to a tall portrait crop),
     if (stripH && left > 0) { const grow = Math.min(left, 640 - stripH); stripH += grow; left -= grow; }
     // and last, slightly wider gaps so the footer is never stranded.
@@ -570,9 +590,9 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   }
 
   for (const b of blocks) b.node.props.style.flexShrink = 0;          // a block is never squeezed into its neighbour
-  const content = box({ position: 'absolute', left: 30, top: 30, width: COL_W, height: COL_H - FOOT, flexDirection: 'column', gap }, ...blocks.map(b => b.node));
+  const content = box({ position: 'absolute', left: 30, top: 30, width: COL_W, height: COL_H - FOOT, flexDirection: 'column', gap }, ...blocks.map(b => backdrop && !b.transparent ? box({ width: COL_W, height: b.h, flexShrink: 0, flexDirection: 'column', background: 'rgba(255,250,235,0.86)' }, b.node) : b.node));
   return box({ width: W, height: H, position: 'relative', background: STOCK, overflow: 'hidden' },
-    pic(boardSrc, 0, 0, W, H), content, footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));
+    pic(boardSrc, 0, 0, W, H), content, backdrop ? at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.86)' }) : null, footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));
 }
 
 /**

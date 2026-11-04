@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 02-November-2026
+ * Date: 03-November-2026
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -28,7 +28,7 @@ export const cardDefinitionSchema = z.object({
   id, number: z.string().regex(/^[PT]\d{3,6}$/), kind: z.enum(['person', 'team']), name: z.string().min(1),
   season: z.string().regex(/^\d{4}$/), issuedAt: stamp, personId: id.optional(),
   setId: id.optional(),
-  entries: z.array(entry), art: collectionArtSchema.optional(), artNotes: z.array(z.string()),
+  entries: z.array(entry), art: collectionArtSchema.optional(), backArt: collectionArtSchema.optional(), artNotes: z.array(z.string()),
   // A shared historical team picture can remain in the archive without becoming an individual front.
   artFallback: z.literal('none').optional(),
   description: z.string().optional(), biography: z.string().min(1).max(1000).optional(),
@@ -145,7 +145,7 @@ export interface CollectionCard {
   biography?: string;
   /** What the card is: a Kaggle competitor, a competition sponsor, or a team. Nobody is a "player". */
   role: 'competitor' | 'sponsor' | 'team';
-  personId?: string; art: CollectionArt | null; description: string; highlights: CompetitorFact[];
+  personId?: string; art: CollectionArt | null; backArt?: CollectionArt; description: string; highlights: CompetitorFact[];
   accounts: { label: string; url: string }[]; entries: CollectionEntry[]; honors: CollectionHonor[]; artNotes: string[];
   teamHistory: CollectionTeamHistory[];
   /** Every earlier card we already have for them, so nothing we made stays unlinked. */
@@ -190,7 +190,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 5;
+export const RENDER_VERSION = 6;
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';

@@ -29,6 +29,8 @@
     "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp": "ca9114052c9816d8e9a3e4aa7ffb198d36dbcdb0b12e2832b10771443313239d",
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/keith-tyser-hero-v1.webp": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
+    "/news-images/cards/2026/refv00-solo-v2.webp": "02df2a5dc3c580ccd4d1ab399d7de63badbd289560455a0e8c499b91dfa79e70",
+    "/news-images/cards/2026/refv00-solo-v5.webp": "609c8aa6a0b1eb262034358ec82e9c36bf14d2e9241460cfd76d02b770e67813",
     "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
     "/news-images/people/2026-11-01-david-hartmann-own-portrait-v1.jpg": "3e626a5a0b45331e5ad19a6aeb14bf9af81af54f845930e50b7f3407d524856d",
     "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg": "d65b611c472d7d2016ea8bed9aee7a72d7e2c9b04501e5103803a1b542891624",
@@ -316,6 +318,51 @@
           "rank": 5,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "CSIRO - Image2Biomass Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+          "fieldSize": 3805,
+          "medal": null,
+          "rank": 875,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 2505,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Fake or Real: The Impostor Hunt in Texts",
+          "competitionUrl": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
+          "fieldSize": 992,
+          "medal": null,
+          "rank": 1,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
+          "fieldSize": 290,
+          "medal": null,
+          "rank": 23,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "MALLORN Astronomical Classification Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
+          "fieldSize": 893,
+          "medal": null,
+          "rank": 30,
+          "team": null,
+          "year": null
         }
       ],
       "tier": null
@@ -473,6 +520,105 @@
           "rank": 134,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "NFL Big Data Bowl 2026 - Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/nfl-big-data-bowl-2026-prediction",
+          "fieldSize": 1899,
+          "medal": null,
+          "rank": 191,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "NeurIPS 2025 - Google Code Golf Championship",
+          "competitionUrl": "https://www.kaggle.com/competitions/google-code-golf-2025",
+          "fieldSize": 1142,
+          "medal": null,
+          "rank": 349,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "The 2026 NeuroGolf Championship",
+          "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+          "fieldSize": 2963,
+          "medal": null,
+          "rank": 713,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "PhysioNet - Digitization of ECG Images",
+          "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+          "fieldSize": 1424,
+          "medal": null,
+          "rank": 1084,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 1323,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 1548,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Hull Tactical - Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+          "fieldSize": 3677,
+          "medal": null,
+          "rank": 1749,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1909,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Biohub - Cell Tracking During Development",
+          "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+          "fieldSize": 3947,
+          "medal": null,
+          "rank": 2453,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+          "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+          "fieldSize": 6807,
+          "medal": null,
+          "rank": 2742,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Agent Security - Multi-Step Tool Attacks",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+          "fieldSize": 4186,
+          "medal": null,
+          "rank": 3797,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -503,6 +649,33 @@
           "rank": 2,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 293,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jane Street Real-Time Market Data Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+          "fieldSize": 3757,
+          "medal": null,
+          "rank": 804,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1286,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -920,6 +1093,132 @@
           "rank": 265,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "Google AI Open Images - Object Detection Track",
+          "competitionUrl": "https://www.kaggle.com/competitions/google-ai-open-images-object-detection-track",
+          "fieldSize": 452,
+          "medal": null,
+          "rank": 164,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "VinBigData Chest X-ray Abnormalities Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/vinbigdata-chest-xray-abnormalities-detection",
+          "fieldSize": 1275,
+          "medal": null,
+          "rank": 165,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Coupon Purchase Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/coupon-purchase-prediction",
+          "fieldSize": 1072,
+          "medal": null,
+          "rank": 262,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Carvana Image Masking Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/carvana-image-masking-challenge",
+          "fieldSize": 734,
+          "medal": null,
+          "rank": 303,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Allstate Claims Severity",
+          "competitionUrl": "https://www.kaggle.com/competitions/allstate-claims-severity",
+          "fieldSize": 3045,
+          "medal": null,
+          "rank": 420,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "UW-Madison GI Tract Image Segmentation",
+          "competitionUrl": "https://www.kaggle.com/competitions/uw-madison-gi-tract-image-segmentation",
+          "fieldSize": 1548,
+          "medal": null,
+          "rank": 513,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Deepfake Detection Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
+          "fieldSize": 2265,
+          "medal": null,
+          "rank": 565,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Higgs Boson Machine Learning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/higgs-boson",
+          "fieldSize": 1784,
+          "medal": null,
+          "rank": 664,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Planet: Understanding the Amazon from Space",
+          "competitionUrl": "https://www.kaggle.com/competitions/planet-understanding-the-amazon-from-space",
+          "fieldSize": 936,
+          "medal": null,
+          "rank": 723,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Feedback Prize - English Language Learning",
+          "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-english-language-learning",
+          "fieldSize": 2654,
+          "medal": null,
+          "rank": 725,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Rossmann Store Sales",
+          "competitionUrl": "https://www.kaggle.com/competitions/rossmann-store-sales",
+          "fieldSize": 3298,
+          "medal": null,
+          "rank": 1032,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1154,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jigsaw - Agile Community Rules Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+          "fieldSize": 2445,
+          "medal": null,
+          "rank": 1832,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Mercari Price Suggestion Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge",
+          "fieldSize": 2380,
+          "medal": null,
+          "rank": 2105,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Grandmaster"
@@ -950,6 +1249,114 @@
           "rank": 18,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "CSIRO - Image2Biomass Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+          "fieldSize": 3805,
+          "medal": null,
+          "rank": 875,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+          "fieldSize": 3357,
+          "medal": null,
+          "rank": 1715,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1765,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 2490,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 2505,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 4900,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Fake or Real: The Impostor Hunt in Texts",
+          "competitionUrl": "https://www.kaggle.com/competitions/fake-or-real-the-impostor-hunt",
+          "fieldSize": 992,
+          "medal": null,
+          "rank": 1,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "MALLORN Astronomical Classification Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/mallorn-astronomical-classification-challenge",
+          "fieldSize": 893,
+          "medal": null,
+          "rank": 23,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AIRR-ML-25: Adaptive Immune Profiling Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/adaptive-immune-profiling-challenge-2025",
+          "fieldSize": 290,
+          "medal": null,
+          "rank": 23,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Data Analytics Competition FIND IT 2022",
+          "competitionUrl": "https://www.kaggle.com/competitions/findit2022",
+          "fieldSize": 72,
+          "medal": null,
+          "rank": 57,
+          "team": null,
+          "year": 2022
+        },
+        {
+          "competition": "SPR 2026 Mammography Report Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/spr-2026-mammography-report-classification",
+          "fieldSize": 371,
+          "medal": null,
+          "rank": 274,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Hedge fund - Time series forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/ts-forecasting",
+          "fieldSize": 982,
+          "medal": null,
+          "rank": 278,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -971,6 +1378,15 @@
           "rank": 2,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1286,
+          "team": null,
+          "year": null
         }
       ],
       "tier": null
@@ -1079,6 +1495,114 @@
           "rank": 223,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "iMet Collection 2019 - FGVC6",
+          "competitionUrl": "https://www.kaggle.com/competitions/imet-2019-fgvc6",
+          "fieldSize": 521,
+          "medal": null,
+          "rank": 369,
+          "team": null,
+          "year": 2019
+        },
+        {
+          "competition": "Recruit Restaurant Visitor Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+          "fieldSize": 2148,
+          "medal": null,
+          "rank": 381,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "TalkingData AdTracking Fraud Detection Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/talkingdata-adtracking-fraud-detection",
+          "fieldSize": 3943,
+          "medal": null,
+          "rank": 484,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Porto Seguro’s Safe Driver Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
+          "fieldSize": 5156,
+          "medal": null,
+          "rank": 583,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Indoor Location & Navigation",
+          "competitionUrl": "https://www.kaggle.com/competitions/indoor-location-navigation",
+          "fieldSize": 1170,
+          "medal": null,
+          "rank": 627,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Humpback Whale Identification",
+          "competitionUrl": "https://www.kaggle.com/competitions/humpback-whale-identification",
+          "fieldSize": 2120,
+          "medal": null,
+          "rank": 678,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jigsaw Rate Severity of Toxic Comments",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-toxic-severity-rating",
+          "fieldSize": 2301,
+          "medal": null,
+          "rank": 731,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Zillow Prize: Zillow’s Home Value Prediction (Zestimate)",
+          "competitionUrl": "https://www.kaggle.com/competitions/zillow-prize-1",
+          "fieldSize": 3770,
+          "medal": null,
+          "rank": 865,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Sberbank Russian Housing Market",
+          "competitionUrl": "https://www.kaggle.com/competitions/sberbank-russian-housing-market",
+          "fieldSize": 3264,
+          "medal": null,
+          "rank": 1211,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santander Customer Transaction Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+          "fieldSize": 8751,
+          "medal": null,
+          "rank": 2671,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Biohub - Cell Tracking During Development",
+          "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+          "fieldSize": 3947,
+          "medal": null,
+          "rank": 2873,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "MSCapital – Real Financial Market Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/ms-capital-real-financial-market-forecasting",
+          "fieldSize": 287,
+          "medal": null,
+          "rank": 81,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -1107,6 +1631,33 @@
           "fieldSize": 6807,
           "medal": "silver",
           "rank": 80,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Biohub - Cell Tracking During Development",
+          "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+          "fieldSize": 3947,
+          "medal": null,
+          "rank": 3662,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 5980,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 9034,
           "team": null,
           "year": null
         }
@@ -1188,6 +1739,114 @@
           "fieldSize": 5156,
           "medal": "bronze",
           "rank": 364,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 765,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Stanford RNA 3D Folding",
+          "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding",
+          "fieldSize": 1516,
+          "medal": null,
+          "rank": 768,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Generative Dog Images",
+          "competitionUrl": "https://www.kaggle.com/competitions/generative-dog-images",
+          "fieldSize": 927,
+          "medal": null,
+          "rank": 817,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Elo Merchant Category Recommendation",
+          "competitionUrl": "https://www.kaggle.com/competitions/elo-merchant-category-recommendation",
+          "fieldSize": 4110,
+          "medal": null,
+          "rank": 836,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NeurIPS 2024 - Predict New Medicines with BELKA",
+          "competitionUrl": "https://www.kaggle.com/competitions/leash-BELKA",
+          "fieldSize": 1950,
+          "medal": null,
+          "rank": 894,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Recruit Restaurant Visitor Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+          "fieldSize": 2148,
+          "medal": null,
+          "rank": 1119,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "TGS Salt Identification Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/tgs-salt-identification-challenge",
+          "fieldSize": 3219,
+          "medal": null,
+          "rank": 1246,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Home Credit Default Risk",
+          "competitionUrl": "https://www.kaggle.com/competitions/home-credit-default-risk",
+          "fieldSize": 7176,
+          "medal": null,
+          "rank": 1275,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa's Workshop Tour 2019",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-workshop-tour-2019",
+          "fieldSize": 1618,
+          "medal": null,
+          "rank": 1544,
+          "team": null,
+          "year": 2019
+        },
+        {
+          "competition": "Santander Customer Transaction Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+          "fieldSize": 8751,
+          "medal": null,
+          "rank": 3815,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "IEEE-CIS Fraud Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/ieee-fraud-detection",
+          "fieldSize": 6351,
+          "medal": null,
+          "rank": 4973,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Final project: predict future sales",
+          "competitionUrl": "https://www.kaggle.com/competitions/competitive-data-science-final-project",
+          "fieldSize": 1135,
+          "medal": null,
+          "rank": 647,
           "team": null,
           "year": null
         }
@@ -1360,6 +2019,42 @@
           "rank": 185,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1219,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Forecasting Sticker Sales",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e1",
+          "fieldSize": 2722,
+          "medal": null,
+          "rank": 11,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Proof Pilot",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-proof-pilot",
+          "fieldSize": 6,
+          "medal": null,
+          "rank": 3,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "KAChallenges Series 1: Classifying Math Problems",
+          "competitionUrl": "https://www.kaggle.com/competitions/classification-of-math-problems-by-kasut-academy",
+          "fieldSize": 338,
+          "medal": null,
+          "rank": 10,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -1502,6 +2197,258 @@
           "rank": 467,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "G2Net Gravitational Wave Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
+          "fieldSize": 1219,
+          "medal": null,
+          "rank": 168,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "WSDM Cup - Multilingual Chatbot Arena",
+          "competitionUrl": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
+          "fieldSize": 950,
+          "medal": null,
+          "rank": 174,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 1",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+          "fieldSize": 1161,
+          "medal": null,
+          "rank": 188,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Image Matching Challenge 2024 - Hexathlon",
+          "competitionUrl": "https://www.kaggle.com/competitions/image-matching-challenge-2024",
+          "fieldSize": 929,
+          "medal": null,
+          "rank": 217,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Jigsaw - Agile Community Rules Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+          "fieldSize": 2445,
+          "medal": null,
+          "rank": 262,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA 2024 Lumbar Spine Degenerative Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-2024-lumbar-spine-degenerative-classification",
+          "fieldSize": 1874,
+          "medal": null,
+          "rank": 264,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "LLM 20 Questions",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+          "fieldSize": 832,
+          "medal": null,
+          "rank": 271,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+          "competitionUrl": "https://www.kaggle.com/competitions/isic-2024-challenge",
+          "fieldSize": 2739,
+          "medal": null,
+          "rank": 291,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Make Data Count - Finding Data References",
+          "competitionUrl": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
+          "fieldSize": 1282,
+          "medal": null,
+          "rank": 320,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF 2024",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2024",
+          "fieldSize": 974,
+          "medal": null,
+          "rank": 366,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Eedi - Mining Misconceptions in Mathematics",
+          "competitionUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics",
+          "fieldSize": 1446,
+          "medal": null,
+          "rank": 383,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+          "fieldSize": 1514,
+          "medal": null,
+          "rank": 390,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "CIBMTR - Equity in post-HCT Survival Predictions",
+          "competitionUrl": "https://www.kaggle.com/competitions/equity-post-HCT-survival-predictions",
+          "fieldSize": 3325,
+          "medal": null,
+          "rank": 400,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "M5 Forecasting - Uncertainty",
+          "competitionUrl": "https://www.kaggle.com/competitions/m5-forecasting-uncertainty",
+          "fieldSize": 907,
+          "medal": null,
+          "rank": 430,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jane Street Real-Time Market Data Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+          "fieldSize": 3757,
+          "medal": null,
+          "rank": 474,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 550,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "The Learning Agency Lab - PII Data Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+          "fieldSize": 2048,
+          "medal": null,
+          "rank": 568,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LMSYS - Chatbot Arena Human Preference Predictions",
+          "competitionUrl": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
+          "fieldSize": 1849,
+          "medal": null,
+          "rank": 686,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "OpenVaccine: COVID-19 mRNA Vaccine Degradation Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/stanford-covid-vaccine",
+          "fieldSize": 1636,
+          "medal": null,
+          "rank": 715,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Learning Agency Lab - Automated Essay Scoring 2.0",
+          "competitionUrl": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+          "fieldSize": 2706,
+          "medal": null,
+          "rank": 860,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 869,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "HMS - Harmful Brain Activity Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification",
+          "fieldSize": 2767,
+          "medal": null,
+          "rank": 970,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "PetFinder.my - Pawpularity Contest",
+          "competitionUrl": "https://www.kaggle.com/competitions/petfinder-pawpularity-score",
+          "fieldSize": 3537,
+          "medal": null,
+          "rank": 1151,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Child Mind Institute — Problematic Internet Use",
+          "competitionUrl": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
+          "fieldSize": 3559,
+          "medal": null,
+          "rank": 1429,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Optiver - Trading at the Close",
+          "competitionUrl": "https://www.kaggle.com/competitions/optiver-trading-at-the-close",
+          "fieldSize": 4436,
+          "medal": null,
+          "rank": 1627,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Mechanisms of Action (MoA) Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/lish-moa",
+          "fieldSize": 4373,
+          "medal": null,
+          "rank": 2036,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "DRW - Crypto Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/drw-crypto-market-prediction",
+          "fieldSize": 1091,
+          "medal": null,
+          "rank": 162,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Catch Me If You Can (\"Alice\")",
+          "competitionUrl": "https://www.kaggle.com/competitions/catch-me-if-you-can-intruder-detection-through-webpage-session-tracking2",
+          "fieldSize": 5731,
+          "medal": null,
+          "rank": 3245,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -1586,6 +2533,15 @@
           "rank": 75,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "AI Village Capture the Flag @ DEFCON",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-village-ctf",
+          "fieldSize": 668,
+          "medal": null,
+          "rank": 1,
+          "team": null,
+          "year": 2022
         }
       ],
       "tier": "Grandmaster"
@@ -1760,6 +2716,24 @@
           "rank": 555,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "Drawing with LLMs",
+          "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+          "fieldSize": 1309,
+          "medal": null,
+          "rank": 135,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "FIDE & Google Efficient Chess AI Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
+          "fieldSize": 1120,
+          "medal": null,
+          "rank": 143,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -1781,6 +2755,33 @@
           "rank": 22,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "CommonLit - Evaluate Student Summaries",
+          "competitionUrl": "https://www.kaggle.com/competitions/commonlit-evaluate-student-summaries",
+          "fieldSize": 2064,
+          "medal": null,
+          "rank": 491,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 583,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+          "competitionUrl": "https://www.kaggle.com/competitions/isic-2024-challenge",
+          "fieldSize": 2739,
+          "medal": null,
+          "rank": 911,
+          "team": null,
+          "year": 2024
         }
       ],
       "tier": null
@@ -1892,6 +2893,87 @@
           "rank": 111,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "LLM 20 Questions",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+          "fieldSize": 832,
+          "medal": null,
+          "rank": 134,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Stable Diffusion - Image to Prompts",
+          "competitionUrl": "https://www.kaggle.com/competitions/stable-diffusion-image-to-prompts",
+          "fieldSize": 1231,
+          "medal": null,
+          "rank": 158,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "The Learning Agency Lab - PII Data Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+          "fieldSize": 2048,
+          "medal": null,
+          "rank": 775,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 1",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+          "fieldSize": 1161,
+          "medal": null,
+          "rank": 1005,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Deepfake Detection Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/deepfake-detection-challenge",
+          "fieldSize": 2265,
+          "medal": null,
+          "rank": 1260,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Feedback Prize - Evaluating Student Writing",
+          "competitionUrl": "https://www.kaggle.com/competitions/feedback-prize-2021",
+          "fieldSize": 2058,
+          "medal": null,
+          "rank": 1295,
+          "team": null,
+          "year": 2021
+        },
+        {
+          "competition": "LANL Earthquake Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/LANL-Earthquake-Prediction",
+          "fieldSize": 4516,
+          "medal": null,
+          "rank": 1481,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1651,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLM - Detect AI Generated Text",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+          "fieldSize": 4358,
+          "medal": null,
+          "rank": 2522,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Grandmaster"
@@ -1940,6 +3022,60 @@
           "rank": 411,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "Vesuvius Challenge - Surface Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
+          "fieldSize": 1391,
+          "medal": null,
+          "rank": 235,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "PhysioNet - Digitization of ECG Images",
+          "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+          "fieldSize": 1424,
+          "medal": null,
+          "rank": 358,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Deep Past Challenge - Translate Akkadian to English",
+          "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+          "fieldSize": 2674,
+          "medal": null,
+          "rank": 438,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 862,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CAFA 6 Protein Function Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/cafa-6-protein-function-prediction",
+          "fieldSize": 2259,
+          "medal": null,
+          "rank": 937,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 1836,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -1970,6 +3106,42 @@
           "rank": 2,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1286,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 1444,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Ubiquant Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
+          "fieldSize": 2893,
+          "medal": null,
+          "rank": 2269,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jane Street Real-Time Market Data Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting",
+          "fieldSize": 3757,
+          "medal": null,
+          "rank": 2579,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -2339,6 +3511,267 @@
           "rank": 349,
           "team": null,
           "year": 2026
+        },
+        {
+          "competition": "Google - Isolated Sign Language Recognition",
+          "competitionUrl": "https://www.kaggle.com/competitions/asl-signs",
+          "fieldSize": 1165,
+          "medal": null,
+          "rank": 353,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF 2023",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2023",
+          "fieldSize": 1189,
+          "medal": null,
+          "rank": 383,
+          "team": null,
+          "year": 2023
+        },
+        {
+          "competition": "LMSYS - Chatbot Arena Human Preference Predictions",
+          "competitionUrl": "https://www.kaggle.com/competitions/lmsys-chatbot-arena",
+          "fieldSize": 1849,
+          "medal": null,
+          "rank": 399,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Parkinson's Freezing of Gait Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/tlvmc-parkinsons-freezing-gait-prediction",
+          "fieldSize": 1379,
+          "medal": null,
+          "rank": 433,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Benetech - Making Graphs Accessible",
+          "competitionUrl": "https://www.kaggle.com/competitions/benetech-making-graphs-accessible",
+          "fieldSize": 608,
+          "medal": null,
+          "rank": 465,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 503,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "AI Agent Security - Multi-Step Tool Attacks",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+          "fieldSize": 4186,
+          "medal": null,
+          "rank": 543,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "March Machine Learning Mania 2023",
+          "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2023",
+          "fieldSize": 1033,
+          "medal": null,
+          "rank": 557,
+          "team": null,
+          "year": 2023
+        },
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 614,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Vesuvius Challenge - Ink Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
+          "fieldSize": 1249,
+          "medal": null,
+          "rank": 615,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "March Machine Learning Mania 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+          "fieldSize": 3462,
+          "medal": null,
+          "rank": 669,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 685,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Vesuvius Challenge - Surface Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-surface-detection",
+          "fieldSize": 1391,
+          "medal": null,
+          "rank": 721,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Stanford RNA 3D Folding Part 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+          "fieldSize": 1867,
+          "medal": null,
+          "rank": 985,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Hull Tactical - Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+          "fieldSize": 3677,
+          "medal": null,
+          "rank": 1100,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2024",
+          "fieldSize": 1514,
+          "medal": null,
+          "rank": 1145,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "CIBMTR - Equity in post-HCT Survival Predictions",
+          "competitionUrl": "https://www.kaggle.com/competitions/equity-post-HCT-survival-predictions",
+          "fieldSize": 3325,
+          "medal": null,
+          "rank": 1204,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+          "fieldSize": 3357,
+          "medal": null,
+          "rank": 1283,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "CMI - Detect Behavior with Sensor Data",
+          "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+          "fieldSize": 2657,
+          "medal": null,
+          "rank": 1694,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Deep Past Challenge - Translate Akkadian to English",
+          "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+          "fieldSize": 2674,
+          "medal": null,
+          "rank": 1743,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 2047,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Biohub - Cell Tracking During Development",
+          "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+          "fieldSize": 3947,
+          "medal": null,
+          "rank": 2921,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Regression with a Tabular Media Campaign Cost Dataset",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s3e11",
+          "fieldSize": 952,
+          "medal": null,
+          "rank": 21,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NeurIPS 2023 - Machine Unlearning",
+          "competitionUrl": "https://www.kaggle.com/competitions/neurips-2023-machine-unlearning",
+          "fieldSize": 1188,
+          "medal": null,
+          "rank": 207,
+          "team": null,
+          "year": 2023
+        },
+        {
+          "competition": "Autonomous Agent Prediction (Beta)",
+          "competitionUrl": "https://www.kaggle.com/competitions/autonomous-agent-prediction-beta",
+          "fieldSize": 570,
+          "medal": null,
+          "rank": 292,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Maze Crawler",
+          "competitionUrl": "https://www.kaggle.com/competitions/maze-crawler",
+          "fieldSize": 459,
+          "medal": null,
+          "rank": 377,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Binary Classification with a Tabular Kidney Stone Prediction Dataset",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s3e12",
+          "fieldSize": 1088,
+          "medal": null,
+          "rank": 478,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predicting Smartphone Addiction",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e8",
+          "fieldSize": 3531,
+          "medal": null,
+          "rank": 584,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CS 506 Midterm A1&B1",
+          "competitionUrl": "https://www.kaggle.com/competitions/cs-506-midterm-a1-b1",
+          "fieldSize": 170,
+          "medal": null,
+          "rank": 57,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -2432,6 +3865,33 @@
           "rank": 210,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "Deep Past Challenge - Translate Akkadian to English",
+          "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+          "fieldSize": 2674,
+          "medal": null,
+          "rank": 332,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Orbit Wars",
+          "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+          "fieldSize": 4729,
+          "medal": null,
+          "rank": 726,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Handwritten to Data",
+          "competitionUrl": "https://www.kaggle.com/competitions/handwritten-to-data",
+          "fieldSize": 198,
+          "medal": null,
+          "rank": 10,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -2444,7 +3904,44 @@
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/sirikilohit",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "AI Agent Security - Multi-Step Tool Attacks",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+          "fieldSize": 4186,
+          "medal": null,
+          "rank": 3333,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 3354,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Data Analytics (UE20CS312) Assignment",
+          "competitionUrl": "https://www.kaggle.com/competitions/data-analytics-ue20cs312",
+          "fieldSize": 177,
+          "medal": null,
+          "rank": 162,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "UE20CS344 NAM Assignment 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ue20cs344-nam-assignment-2",
+          "fieldSize": 394,
+          "medal": null,
+          "rank": 168,
+          "team": null,
+          "year": null
+        }
+      ],
       "tier": null
     },
     "lonnie": {
@@ -2554,6 +4051,87 @@
           "rank": 427,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "LLM 20 Questions",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+          "fieldSize": 832,
+          "medal": null,
+          "rank": 110,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LEAP - Atmospheric Physics using AI (ClimSim)",
+          "competitionUrl": "https://www.kaggle.com/competitions/leap-atmospheric-physics-ai-climsim",
+          "fieldSize": 693,
+          "medal": null,
+          "rank": 158,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Vesuvius Challenge - Ink Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/vesuvius-challenge-ink-detection",
+          "fieldSize": 1249,
+          "medal": null,
+          "rank": 172,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF 2022",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2022",
+          "fieldSize": 801,
+          "medal": null,
+          "rank": 183,
+          "team": null,
+          "year": 2022
+        },
+        {
+          "competition": "IceCube - Neutrinos in Deep Ice",
+          "competitionUrl": "https://www.kaggle.com/competitions/icecube-neutrinos-in-deep-ice",
+          "fieldSize": 812,
+          "medal": null,
+          "rank": 188,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2024",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+          "fieldSize": 1427,
+          "medal": null,
+          "rank": 190,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "USPTO - Explainable AI for Patent Professionals",
+          "competitionUrl": "https://www.kaggle.com/competitions/uspto-explainable-ai",
+          "fieldSize": 571,
+          "medal": null,
+          "rank": 194,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Google - American Sign Language Fingerspelling Recognition",
+          "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+          "fieldSize": 1314,
+          "medal": null,
+          "rank": 200,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Open Problems – Single-Cell Perturbations",
+          "competitionUrl": "https://www.kaggle.com/competitions/open-problems-single-cell-perturbations",
+          "fieldSize": 1097,
+          "medal": null,
+          "rank": 208,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -2566,7 +4144,17 @@
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/lordhansolo",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "BYU - Locating Bacterial Flagellar Motors 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/byu-locating-bacterial-flagellar-motors-2025",
+          "fieldSize": 1136,
+          "medal": null,
+          "rank": 815,
+          "team": null,
+          "year": 2025
+        }
+      ],
       "tier": null
     },
     "lukas-aichberger": {
@@ -2595,6 +4183,24 @@
           "fieldSize": 6299,
           "medal": "bronze",
           "rank": 412,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 1608,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predicting Electric Vehicle Purchases",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e9",
+          "fieldSize": 3575,
+          "medal": null,
+          "rank": 280,
           "team": null,
           "year": null
         }
@@ -2692,6 +4298,114 @@
           "rank": 308,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "Google - American Sign Language Fingerspelling Recognition",
+          "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+          "fieldSize": 1314,
+          "medal": null,
+          "rank": 136,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Village Capture the Flag @ DEFCON31",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-village-capture-the-flag-defcon31",
+          "fieldSize": 1344,
+          "medal": null,
+          "rank": 161,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2024",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+          "fieldSize": 1427,
+          "medal": null,
+          "rank": 216,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "CZII - CryoET Object Identification",
+          "competitionUrl": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+          "fieldSize": 931,
+          "medal": null,
+          "rank": 220,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLM Prompt Recovery",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+          "fieldSize": 2175,
+          "medal": null,
+          "rank": 238,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 266,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "NeurIPS 2024 - Lux AI Season 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-season-3",
+          "fieldSize": 701,
+          "medal": null,
+          "rank": 278,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Stanford RNA 3D Folding Part 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/stanford-rna-3d-folding-2",
+          "fieldSize": 1867,
+          "medal": null,
+          "rank": 282,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2023 - The Polytope Permutation Puzzle",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2023",
+          "fieldSize": 1054,
+          "medal": null,
+          "rank": 296,
+          "team": null,
+          "year": 2023
+        },
+        {
+          "competition": "Recod.ai/LUC - Scientific Image Forgery Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/recodai-luc-scientific-image-forgery-detection",
+          "fieldSize": 1564,
+          "medal": null,
+          "rank": 306,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "MABe Challenge - Social Action Recognition in Mice",
+          "competitionUrl": "https://www.kaggle.com/competitions/MABe-mouse-behavior-detection",
+          "fieldSize": 1412,
+          "medal": null,
+          "rank": 310,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "PhysioNet - Digitization of ECG Images",
+          "competitionUrl": "https://www.kaggle.com/competitions/physionet-ecg-image-digitization",
+          "fieldSize": 1424,
+          "medal": null,
+          "rank": 329,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -2742,6 +4456,15 @@
           "rank": 30,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 2203,
+          "team": null,
+          "year": 2026
         }
       ],
       "tier": "Master"
@@ -2765,7 +4488,17 @@
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/mithilavakde",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 653,
+          "team": null,
+          "year": 2025
+        }
+      ],
       "tier": null
     },
     "mitubant": {
@@ -2821,6 +4554,42 @@
           "rank": 540,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 896,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Orbit Wars",
+          "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+          "fieldSize": 4729,
+          "medal": null,
+          "rank": 1099,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CommonLit Readability Prize",
+          "competitionUrl": "https://www.kaggle.com/competitions/commonlitreadabilityprize",
+          "fieldSize": 3633,
+          "medal": null,
+          "rank": 1329,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ASHRAE - Great Energy Predictor III",
+          "competitionUrl": "https://www.kaggle.com/competitions/ashrae-energy-prediction",
+          "fieldSize": 3614,
+          "medal": null,
+          "rank": 2642,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Expert"
@@ -2863,6 +4632,24 @@
           "rank": 5,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 2505,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 5184,
+          "team": null,
+          "year": null
         }
       ],
       "tier": null
@@ -2875,7 +4662,17 @@
       "organisation": "IML JKU",
       "profileUrl": "https://www.kaggle.com/dwellement0baser",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 3254,
+          "team": null,
+          "year": null
+        }
+      ],
       "tier": null
     },
     "peter-findley": {
@@ -2893,6 +4690,51 @@
           "fieldSize": 4185,
           "medal": "bronze",
           "rank": 384,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1583,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Orbit Wars",
+          "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+          "fieldSize": 4729,
+          "medal": null,
+          "rank": 4046,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 5653,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predicting Irrigation Need (Playground Series - Season 6 Episode 4)",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e4",
+          "fieldSize": 4315,
+          "medal": null,
+          "rank": 651,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predicting Stellar Class (Playground Series - Season 6 Episode 6)",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s6e6",
+          "fieldSize": 2816,
+          "medal": null,
+          "rank": 1889,
           "team": null,
           "year": null
         }
@@ -2936,11 +4778,38 @@
           "year": null
         },
         {
+          "competition": "Rainforest Connection Species Audio Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rfcx-species-audio-detection",
+          "fieldSize": 1143,
+          "medal": null,
+          "rank": 183,
+          "team": null,
+          "year": null
+        },
+        {
           "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
           "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
           "fieldSize": 6807,
           "medal": "bronze",
           "rank": 532,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jigsaw - Agile Community Rules Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+          "fieldSize": 2445,
+          "medal": null,
+          "rank": 749,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 1500,
           "team": null,
           "year": null
         }
@@ -2991,6 +4860,114 @@
           "rank": 267,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "WSDM Cup - Multilingual Chatbot Arena",
+          "competitionUrl": "https://www.kaggle.com/competitions/wsdm-cup-multilingual-chatbot-arena",
+          "fieldSize": 950,
+          "medal": null,
+          "rank": 229,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Drawing with LLMs",
+          "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+          "fieldSize": 1309,
+          "medal": null,
+          "rank": 293,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Google Brain - Ventilator Pressure Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/ventilator-pressure-prediction",
+          "fieldSize": 2605,
+          "medal": null,
+          "rank": 298,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CZII - CryoET Object Identification",
+          "competitionUrl": "https://www.kaggle.com/competitions/czii-cryo-et-object-identification",
+          "fieldSize": 931,
+          "medal": null,
+          "rank": 361,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLMs - You Can't Please Them All",
+          "competitionUrl": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+          "fieldSize": 1692,
+          "medal": null,
+          "rank": 493,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+          "fieldSize": 3357,
+          "medal": null,
+          "rank": 503,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "BirdCLEF+ 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2025",
+          "fieldSize": 2031,
+          "medal": null,
+          "rank": 517,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Image Matching Challenge 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/image-matching-challenge-2025",
+          "fieldSize": 943,
+          "medal": null,
+          "rank": 563,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Yale/UNC-CH - Geophysical Waveform Inversion",
+          "competitionUrl": "https://www.kaggle.com/competitions/waveform-inversion",
+          "fieldSize": 1365,
+          "medal": null,
+          "rank": 594,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 835,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Child Mind Institute — Problematic Internet Use",
+          "competitionUrl": "https://www.kaggle.com/competitions/child-mind-institute-problematic-internet-use",
+          "fieldSize": 3559,
+          "medal": null,
+          "rank": 1332,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Hyperspectral Object Detection Challenge 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/hyperspectral-object-detection-challenge-2026",
+          "fieldSize": 309,
+          "medal": null,
+          "rank": 22,
+          "team": null,
+          "year": 2026
         }
       ],
       "tier": "Expert"
@@ -3046,6 +5023,33 @@
           "fieldSize": 2657,
           "medal": "bronze",
           "rank": 143,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Intracranial Aneurysm Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-intracranial-aneurysm-detection",
+          "fieldSize": 1147,
+          "medal": null,
+          "rank": 150,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predict Podcast Listening Time",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e4",
+          "fieldSize": 3310,
+          "medal": null,
+          "rank": 28,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predict Calorie Expenditure",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e5",
+          "fieldSize": 4316,
+          "medal": null,
+          "rank": 47,
           "team": null,
           "year": null
         }
@@ -3114,6 +5118,141 @@
           "rank": 294,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "CAFA 5 Protein Function Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/cafa-5-protein-function-prediction",
+          "fieldSize": 1625,
+          "medal": null,
+          "rank": 285,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "MAP - Charting Student Math Misunderstandings",
+          "competitionUrl": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+          "fieldSize": 1857,
+          "medal": null,
+          "rank": 489,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CIBMTR - Equity in post-HCT Survival Predictions",
+          "competitionUrl": "https://www.kaggle.com/competitions/equity-post-HCT-survival-predictions",
+          "fieldSize": 3325,
+          "medal": null,
+          "rank": 641,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Google - American Sign Language Fingerspelling Recognition",
+          "competitionUrl": "https://www.kaggle.com/competitions/asl-fingerspelling",
+          "fieldSize": 1314,
+          "medal": null,
+          "rank": 724,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "HuBMAP - Hacking the Human Vasculature",
+          "competitionUrl": "https://www.kaggle.com/competitions/hubmap-hacking-the-human-vasculature",
+          "fieldSize": 1021,
+          "medal": null,
+          "rank": 738,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+          "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+          "fieldSize": 6807,
+          "medal": null,
+          "rank": 772,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 1",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+          "fieldSize": 1161,
+          "medal": null,
+          "rank": 944,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLMs - You Can't Please Them All",
+          "competitionUrl": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+          "fieldSize": 1692,
+          "medal": null,
+          "rank": 1096,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Kaggle - LLM Science Exam",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggle-llm-science-exam",
+          "fieldSize": 2664,
+          "medal": null,
+          "rank": 1216,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 1320,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 2",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-2",
+          "fieldSize": 2212,
+          "medal": null,
+          "rank": 1522,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Hull Tactical - Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+          "fieldSize": 3677,
+          "medal": null,
+          "rank": 1757,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 2474,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Diabetes Prediction Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e12",
+          "fieldSize": 4206,
+          "medal": null,
+          "rank": 1765,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Binary Prediction of Poisonous Mushrooms",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s4e8",
+          "fieldSize": 2422,
+          "medal": null,
+          "rank": 1909,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -3178,7 +5317,17 @@
       "organisation": "Tufa Labs",
       "profileUrl": "https://www.kaggle.com/stefano1283",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 3887,
+          "team": null,
+          "year": null
+        }
+      ],
       "tier": null
     },
     "takeru-sato": {
@@ -3223,6 +5372,51 @@
           "fieldSize": 4729,
           "medal": "bronze",
           "rank": 393,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 484,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 3",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-progress-prize-3",
+          "fieldSize": 4138,
+          "medal": null,
+          "rank": 1237,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 1498,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 2096,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Biohub - Cell Tracking During Development",
+          "competitionUrl": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development",
+          "fieldSize": 3947,
+          "medal": null,
+          "rank": 3052,
           "team": null,
           "year": null
         }
@@ -3280,6 +5474,114 @@
           "fieldSize": 3947,
           "medal": "bronze",
           "rank": 334,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Text Normalization Challenge - English Language",
+          "competitionUrl": "https://www.kaggle.com/competitions/text-normalization-challenge-english-language",
+          "fieldSize": 260,
+          "medal": null,
+          "rank": 170,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Web Traffic Time Series Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/web-traffic-time-series-forecasting",
+          "fieldSize": 1095,
+          "medal": null,
+          "rank": 171,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Mercari Price Suggestion Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/mercari-price-suggestion-challenge",
+          "fieldSize": 2380,
+          "medal": null,
+          "rank": 264,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Cdiscount’s Image Classification Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/cdiscount-image-classification-challenge",
+          "fieldSize": 626,
+          "medal": null,
+          "rank": 429,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Recruit Restaurant Visitor Forecasting",
+          "competitionUrl": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting",
+          "fieldSize": 2148,
+          "medal": null,
+          "rank": 482,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Quora Question Pairs",
+          "competitionUrl": "https://www.kaggle.com/competitions/quora-question-pairs",
+          "fieldSize": 3295,
+          "medal": null,
+          "rank": 566,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "TensorFlow Speech Recognition Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/tensorflow-speech-recognition-challenge",
+          "fieldSize": 1313,
+          "medal": null,
+          "rank": 761,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Zillow Prize: Zillow’s Home Value Prediction (Zestimate)",
+          "competitionUrl": "https://www.kaggle.com/competitions/zillow-prize-1",
+          "fieldSize": 3770,
+          "medal": null,
+          "rank": 936,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Traveling Santa 2018 - Prime Paths",
+          "competitionUrl": "https://www.kaggle.com/competitions/traveling-santa-2018-prime-paths",
+          "fieldSize": 1866,
+          "medal": null,
+          "rank": 1073,
+          "team": null,
+          "year": 2018
+        },
+        {
+          "competition": "Mercedes-Benz Greener Manufacturing",
+          "competitionUrl": "https://www.kaggle.com/competitions/mercedes-benz-greener-manufacturing",
+          "fieldSize": 3823,
+          "medal": null,
+          "rank": 1193,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Porto Seguro’s Safe Driver Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/porto-seguro-safe-driver-prediction",
+          "fieldSize": 5156,
+          "medal": null,
+          "rank": 2120,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Santander Customer Transaction Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction",
+          "fieldSize": 8751,
+          "medal": null,
+          "rank": 3631,
           "team": null,
           "year": null
         }
@@ -3393,6 +5695,132 @@
           "rank": 120,
           "team": null,
           "year": 2025
+        },
+        {
+          "competition": "Make Data Count - Finding Data References",
+          "competitionUrl": "https://www.kaggle.com/competitions/make-data-count-finding-data-references",
+          "fieldSize": 1282,
+          "medal": null,
+          "rank": 304,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Deep Past Challenge - Translate Akkadian to English",
+          "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+          "fieldSize": 2674,
+          "medal": null,
+          "rank": 372,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 611,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Santa 2025 - Christmas Tree Packing Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/santa-2025",
+          "fieldSize": 3357,
+          "medal": null,
+          "rank": 727,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "MITSUI&CO. Commodity Prediction Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/mitsui-commodity-prediction-challenge",
+          "fieldSize": 1711,
+          "medal": null,
+          "rank": 1084,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CSIRO - Image2Biomass Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/csiro-biomass",
+          "fieldSize": 3805,
+          "medal": null,
+          "rank": 1199,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "H&M Personalized Fashion Recommendations",
+          "competitionUrl": "https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations",
+          "fieldSize": 2952,
+          "medal": null,
+          "rank": 1551,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Ubiquant Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/ubiquant-market-prediction",
+          "fieldSize": 2893,
+          "medal": null,
+          "rank": 2114,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "March Machine Learning Mania 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/march-machine-learning-mania-2026",
+          "fieldSize": 3462,
+          "medal": null,
+          "rank": 2460,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 2992,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "AI Agent Security - Multi-Step Tool Attacks",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks",
+          "fieldSize": 4186,
+          "medal": null,
+          "rank": 3470,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": null,
+          "rank": 4909,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Predicting Optimal Fertilizers",
+          "competitionUrl": "https://www.kaggle.com/competitions/playground-series-s5e6",
+          "fieldSize": 2648,
+          "medal": null,
+          "rank": 2212,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Neural Debris Removal in Streak Detection Models",
+          "competitionUrl": "https://www.kaggle.com/competitions/neural-debris-removal-in-streak-detection-models",
+          "fieldSize": 567,
+          "medal": null,
+          "rank": 314,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -3426,7 +5854,17 @@
       "organisation": "AT&T",
       "profileUrl": "https://www.kaggle.com/vineethsaivs",
       "rank": null,
-      "rows": [],
+      "rows": [
+        {
+          "competition": "Google IO Demo Competition",
+          "competitionUrl": "https://www.kaggle.com/competitions/google-io-demo-competition",
+          "fieldSize": 18,
+          "medal": null,
+          "rank": 18,
+          "team": null,
+          "year": null
+        }
+      ],
       "tier": null
     },
     "xz": {
@@ -3516,6 +5954,105 @@
           "fieldSize": 4138,
           "medal": "bronze",
           "rank": 286,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2024",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2024",
+          "fieldSize": 1427,
+          "medal": null,
+          "rank": 341,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "Hull Tactical - Market Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/hull-tactical-market-prediction",
+          "fieldSize": 3677,
+          "medal": null,
+          "rank": 402,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 602,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 1",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+          "fieldSize": 1161,
+          "medal": null,
+          "rank": 672,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "The Learning Agency Lab - PII Data Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/pii-detection-removal-from-educational-data",
+          "fieldSize": 2048,
+          "medal": null,
+          "rank": 1261,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "CMI - Detect Behavior with Sensor Data",
+          "competitionUrl": "https://www.kaggle.com/competitions/cmi-detect-behavior-with-sensor-data",
+          "fieldSize": 2657,
+          "medal": null,
+          "rank": 1384,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLM Prompt Recovery",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-prompt-recovery",
+          "fieldSize": 2175,
+          "medal": null,
+          "rank": 1522,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 1970,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLM - Detect AI Generated Text",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-detect-ai-generated-text",
+          "fieldSize": 4358,
+          "medal": null,
+          "rank": 2254,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 2315,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ROGII - Wellbore Geology Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction",
+          "fieldSize": 6125,
+          "medal": null,
+          "rank": 2806,
           "team": null,
           "year": null
         }
@@ -3622,6 +6159,105 @@
           "rank": 248,
           "team": null,
           "year": null
+        },
+        {
+          "competition": "FIDE & Google Efficient Chess AI Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
+          "fieldSize": 1120,
+          "medal": null,
+          "rank": 128,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ARC Prize 2025",
+          "competitionUrl": "https://www.kaggle.com/competitions/arc-prize-2025",
+          "fieldSize": 1455,
+          "medal": null,
+          "rank": 260,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Drawing with LLMs",
+          "competitionUrl": "https://www.kaggle.com/competitions/drawing-with-llms",
+          "fieldSize": 1309,
+          "medal": null,
+          "rank": 350,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Learning Agency Lab - Automated Essay Scoring 2.0",
+          "competitionUrl": "https://www.kaggle.com/competitions/learning-agency-lab-automated-essay-scoring-2",
+          "fieldSize": 2706,
+          "medal": null,
+          "rank": 407,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Konwinski Prize",
+          "competitionUrl": "https://www.kaggle.com/competitions/konwinski-prize",
+          "fieldSize": 617,
+          "medal": null,
+          "rank": 423,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLM 20 Questions",
+          "competitionUrl": "https://www.kaggle.com/competitions/llm-20-questions",
+          "fieldSize": 832,
+          "medal": null,
+          "rank": 614,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NeurIPS 2025 - Google Code Golf Championship",
+          "competitionUrl": "https://www.kaggle.com/competitions/google-code-golf-2025",
+          "fieldSize": 1142,
+          "medal": null,
+          "rank": 694,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "AI Mathematical Olympiad - Progress Prize 1",
+          "competitionUrl": "https://www.kaggle.com/competitions/ai-mathematical-olympiad-prize",
+          "fieldSize": 1161,
+          "medal": null,
+          "rank": 796,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "LLMs - You Can't Please Them All",
+          "competitionUrl": "https://www.kaggle.com/competitions/llms-you-cant-please-them-all",
+          "fieldSize": 1692,
+          "medal": null,
+          "rank": 1461,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "MAP - Charting Student Math Misunderstandings",
+          "competitionUrl": "https://www.kaggle.com/competitions/map-charting-student-math-misunderstandings",
+          "fieldSize": 1857,
+          "medal": null,
+          "rank": 1831,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Jigsaw - Agile Community Rules Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+          "fieldSize": 2445,
+          "medal": null,
+          "rank": 2389,
+          "team": null,
+          "year": null
         }
       ],
       "tier": "Master"
@@ -3677,6 +6313,141 @@
           "fieldSize": 4373,
           "medal": "bronze",
           "rank": 322,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "G2Net Gravitational Wave Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/g2net-gravitational-wave-detection",
+          "fieldSize": 1219,
+          "medal": null,
+          "rank": 267,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Foursquare - Location Matching",
+          "competitionUrl": "https://www.kaggle.com/competitions/foursquare-location-matching",
+          "fieldSize": 1079,
+          "medal": null,
+          "rank": 273,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "G2Net Detecting Continuous Gravitational Waves",
+          "competitionUrl": "https://www.kaggle.com/competitions/g2net-detecting-continuous-gravitational-waves",
+          "fieldSize": 936,
+          "medal": null,
+          "rank": 336,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Linking Writing Processes to Writing Quality",
+          "competitionUrl": "https://www.kaggle.com/competitions/linking-writing-processes-to-writing-quality",
+          "fieldSize": 1876,
+          "medal": null,
+          "rank": 366,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NBME - Score Clinical Patient Notes",
+          "competitionUrl": "https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes",
+          "fieldSize": 1471,
+          "medal": null,
+          "rank": 591,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Optiver Realized Volatility Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/optiver-realized-volatility-prediction",
+          "fieldSize": 3852,
+          "medal": null,
+          "rank": 723,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Lux AI",
+          "competitionUrl": "https://www.kaggle.com/competitions/lux-ai-2021",
+          "fieldSize": 1178,
+          "medal": null,
+          "rank": 1144,
+          "team": null,
+          "year": 2021
+        },
+        {
+          "competition": "Riiid Answer Correctness Prediction",
+          "competitionUrl": "https://www.kaggle.com/competitions/riiid-test-answer-prediction",
+          "fieldSize": 3406,
+          "medal": null,
+          "rank": 1213,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "ISIC 2024 - Skin Cancer Detection with 3D-TBP",
+          "competitionUrl": "https://www.kaggle.com/competitions/isic-2024-challenge",
+          "fieldSize": 2739,
+          "medal": null,
+          "rank": 1642,
+          "team": null,
+          "year": 2024
+        },
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": null,
+          "rank": 1730,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "BirdCLEF+ 2026",
+          "competitionUrl": "https://www.kaggle.com/competitions/birdclef-2026",
+          "fieldSize": 4094,
+          "medal": null,
+          "rank": 1799,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "The 2026 NeuroGolf Championship",
+          "competitionUrl": "https://www.kaggle.com/competitions/neurogolf-2026",
+          "fieldSize": 2963,
+          "medal": null,
+          "rank": 1892,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Predict Student Performance from Game Play",
+          "competitionUrl": "https://www.kaggle.com/competitions/predict-student-performance-from-game-play",
+          "fieldSize": 2051,
+          "medal": null,
+          "rank": 1937,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Orbit Wars",
+          "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+          "fieldSize": 4729,
+          "medal": null,
+          "rank": 2064,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "M5 Forecasting - Accuracy",
+          "competitionUrl": "https://www.kaggle.com/competitions/m5-forecasting-accuracy",
+          "fieldSize": 5558,
+          "medal": null,
+          "rank": 3705,
           "team": null,
           "year": null
         }
@@ -3842,6 +6613,33 @@
           "fieldSize": 4436,
           "medal": "bronze",
           "rank": 294,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "NFL Health & Safety - Helmet Assignment",
+          "competitionUrl": "https://www.kaggle.com/competitions/nfl-health-and-safety-helmet-assignment",
+          "fieldSize": 825,
+          "medal": null,
+          "rank": 103,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Foursquare - Location Matching",
+          "competitionUrl": "https://www.kaggle.com/competitions/foursquare-location-matching",
+          "fieldSize": 1079,
+          "medal": null,
+          "rank": 140,
+          "team": null,
+          "year": null
+        },
+        {
+          "competition": "Coleridge Initiative - Show US the Data",
+          "competitionUrl": "https://www.kaggle.com/competitions/coleridgeinitiative-show-us-the-data",
+          "fieldSize": 1610,
+          "medal": null,
+          "rank": 170,
           "team": null,
           "year": null
         }
@@ -8937,7 +11735,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "dee2646affb0c2e05442a0a1d6b67738ddd779a7a08b484555bde7a34a4d913d",
+  "fingerprint": "8fd9bbbf9e159b8591c692ac6af80b9b98209d7b3a69a5b3a0452ecc5bafd4f8",
   "people": [
     {
       "accounts": [
@@ -15971,7 +18769,24 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "re — two golds solo card portrait",
+          "artworkId": "2026-11-03-refv00-solo-v2",
+          "commissionedAt": "2026-11-04T04:12:43.789236+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/refv00-solo-v2.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-11-03-refv00-solo-v2.md",
+          "Reverse approved: wiki/artwork/2026-11-03-refv00-solo-v5.md"
+        ],
+        "backArt": {
+          "alt": "re as a friendly giant overlooking a miniature neural-network golf course",
+          "artworkId": "2026-11-03-refv00-solo-v5",
+          "commissionedAt": "2026-11-04T04:13:24.174343+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/refv00-solo-v5.webp"
+        },
         "description": "re competes on Kaggle as @refv00. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
         "entries": [],
         "id": "person-refv00-2026",
@@ -17170,7 +19985,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-02T23:03:02+00:00",
+    "updatedAt": "2026-11-04T04:12:44+00:00",
     "version": 1
   },
   "results": [],

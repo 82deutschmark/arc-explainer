@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
- * Date: 02-November-2026
+ * Date: 03-November-2026
  * PURPOSE: The public entry points the site uses to draw a Card Cabinet card. renderCardFace() turns a CollectionCard
  *          into its 750 x 1050 front or back PNG: it checks the art address, enriches the card once (enrich.ts, cached
  *          per collection content, never per request), picks the look named by the card's set (sets.ts -> looks.ts) and
@@ -85,10 +85,10 @@ export async function renderCardFace(card: CollectionCard, collection: NewsColle
   const repair = cardFrameRepair(card);
   // This approved 5:7 illustration was authored for the full card. Its smaller native resolution
   // had sent it through the legacy contain/crop fallback, wasting the intended composition.
-  const lookOpts: LookOpts = { ...opts, namesById: names, preservePicture: true, backPicture: card.art?.src, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false }, backPicture: repair.backArtSrc } : {}) };
+  const lookOpts: LookOpts = { ...opts, namesById: names, preservePicture: true, backPicture: card.backArt?.src ?? repair?.backArtSrc ?? card.art?.src, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false } } : {}) };
   if (side === 'front') return look.frontBuffer(model, lookOpts);
   // The reverse costs about a second: one in-flight render per card version, remembered for the next request.
-  const key = `${look.key}|${frontKey(model, lookOpts)}`;
+  const key = `${look.key}|${lookOpts.backPicture ?? ''}|${frontKey(model, lookOpts)}`;
   let hit = BACK_MEMO.get(key);
   if (hit) { BACK_MEMO.delete(key); BACK_MEMO.set(key, hit); return hit; }
   hit = look.frontBuffer(model, lookOpts).then(front => look.back(model, { ...lookOpts, frontBuffer: front }));

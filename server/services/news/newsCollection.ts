@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 02-November-2026
+ * Date: 03-November-2026
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots, linked player/team histories and explicitly official final
  * results. Never exposes desk drafts or infers a player's departure from roster absence.
@@ -258,7 +258,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const facts = person?.facts ?? index.competitors.filter(team => definition.entries.some(ref => ref.teamId === team.teamId && ref.competition === team.competition)).flatMap(team => team.facts);
     const careerHonors = person?.hallOfFame.map(honor => ({ text: honor.label, sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle, checkedAt: honor.checkedAt })) ?? [];
     return { id: definition.id, number: definition.number, kind: definition.kind, setId: definition.setId, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
-      season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art,
+      season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art, backArt: definition.backArt,
       description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
       biography: definition.biography,
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
