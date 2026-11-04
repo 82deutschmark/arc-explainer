@@ -7804,6 +7804,18 @@
           "sourceTitle": "PunkCyber — public team-identification reply to the ARC Daily Digest",
           "sourceUrl": "https://x.com/cunkpyber/status/2109599257980555583",
           "text": "PunkCyber (@cunkpyber) identifies 復活の混テキスト as their team in a public reply to the ARC Daily Digest."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "pomcho555 — two ARC competition entries and rosters",
+          "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+          "text": "Kaggle lists isakatsuyoshi, konbu17, pompom555, refv00 and tanakaai24 on the ARC-AGI-2 entry, and those five plus tk256ailab, ttyn4519 and yuto0712 on the ARC-AGI-3 entry."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "re on the competition and baseball-card inspiration",
+          "sourceUrl": "https://x.com/refv00/status/2117825025390805004",
+          "text": "re says the team found excitement and good memories in the cards, despite frustrations with competition administration."
         }
       ],
       "firstObservedAt": "2026-10-12T10:04:20Z",
@@ -10596,6 +10608,12 @@
           "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Pathfinder notebook",
           "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc-agi-3-pathfinder-v2",
           "text": "The same Kaggle account has also published “ARC-AGI-3 Pathfinder v2,” another public notebook about the contest."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "pomcho555 — two ARC competition entries and rosters",
+          "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+          "text": "Kaggle lists isakatsuyoshi, konbu17, pompom555, refv00 and tanakaai24 on the ARC-AGI-2 entry, and those five plus tk256ailab, ttyn4519 and yuto0712 on the ARC-AGI-3 entry."
         }
       ],
       "firstObservedAt": "2026-10-08T03:42:46Z",
@@ -11736,7 +11754,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "d805494ad6ef3bf0fdd34e3a9c80e79340eca80dc3b124e88d31472af5420613",
+  "fingerprint": "a50444795fe4de5912e923d7676a8aa90f2ceb15fd013b744e08c5b62f6f806d",
   "people": [
     {
       "accounts": [
@@ -14019,6 +14037,12 @@
           "sourceTitle": "ねぼすけAI — X profile",
           "sourceUrl": "https://x.com/AInebosuke",
           "text": "The X account ねぼすけAI (@AInebosuke) describes its owner as a Kaggle Master who likes LLM competitions, completed a solo advent calendar in 2023, 2024 and 2025, holds an Osaka University master's degree, and is Principal AI Engineer at Elith. The ISAKA Tsuyoshi Kaggle profile links directly to this account."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "ISAKA Tsuyoshi — Gemma agents entry and roster",
+          "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+          "text": "ISAKA’s Kaggle profile lists isakatsuyoshi, refv00 and konbu17 together on the Google Gemma 4 Developer Agent Competition entry."
         }
       ],
       "hallOfFame": [],
@@ -14923,6 +14947,18 @@
           "sourceTitle": "konbu17 — active ARC Prize 2026 competitions on Kaggle",
           "sourceUrl": "https://www.kaggle.com/konbu17/competitions",
           "text": "On October 30, 2026 the Kaggle competitions page shows konbu17 entered in both ARC Prize 2026 ARC-AGI-2 and ARC-AGI-3, each marked three days to go; no finish exists yet, and any public ARC standing is provisional until the private scoring."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "ISAKA Tsuyoshi — Gemma agents entry and roster",
+          "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+          "text": "ISAKA’s Kaggle profile lists isakatsuyoshi, refv00 and konbu17 together on the Google Gemma 4 Developer Agent Competition entry."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "pomcho555 — AI Agent Security entry and roster",
+          "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+          "text": "Kaggle lists pompom555, tanakaai24 and konbu17 with argon1215 on a silver-medal AI Agent Security entry."
         }
       ],
       "hallOfFame": [],
@@ -16324,6 +16360,12 @@
           "sourceTitle": "pomcho555 — active ARC Prize 2026 competitions on Kaggle",
           "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
           "text": "pomcho555's Kaggle profile lists both ARC Prize 2026 competitions, ARC-AGI-3 and ARC-AGI-2, as active, each showing three days to go when checked on October 30, 2026. No final result exists yet, and any public standing is provisional."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "pomcho555 — AI Agent Security entry and roster",
+          "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+          "text": "Kaggle lists pompom555, tanakaai24 and konbu17 with argon1215 on a silver-medal AI Agent Security entry."
         }
       ],
       "hallOfFame": [],
@@ -16414,6 +16456,12 @@
           "sourceTitle": "PunkCyber — public team-identification reply to the ARC Daily Digest",
           "sourceUrl": "https://x.com/cunkpyber/status/2109599257980555583",
           "text": "PunkCyber (@cunkpyber) identifies 復活の混テキスト as their team in a public reply to the ARC Daily Digest."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "pomcho555 — AI Agent Security entry and roster",
+          "sourceUrl": "https://www.kaggle.com/pompom555/competitions",
+          "text": "Kaggle lists pompom555, tanakaai24 and konbu17 with argon1215 on a silver-medal AI Agent Security entry."
         }
       ],
       "hallOfFame": [],
@@ -16516,6 +16564,18 @@
           "sourceTitle": "re - active ARC Prize 2026 entries on Kaggle",
           "sourceUrl": "https://www.kaggle.com/refv00/competitions",
           "text": "As of October 30, 2026, Kaggle lists re as active in both ARC Prize 2026 competitions, ARC-AGI-2 and ARC-AGI-3, each with three days to go. No standing is claimed here."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "ISAKA Tsuyoshi — Gemma agents entry and roster",
+          "sourceUrl": "https://www.kaggle.com/isakatsuyoshi/competitions",
+          "text": "ISAKA’s Kaggle profile lists isakatsuyoshi, refv00 and konbu17 together on the Google Gemma 4 Developer Agent Competition entry."
+        },
+        {
+          "checkedAt": "2026-11-04T04:43:14.127713+00:00",
+          "sourceTitle": "re on the competition and baseball-card inspiration",
+          "sourceUrl": "https://x.com/refv00/status/2117825025390805004",
+          "text": "re says the team found excitement and good memories in the cards, despite frustrations with competition administration."
         }
       ],
       "hallOfFame": [],

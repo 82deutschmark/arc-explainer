@@ -701,6 +701,20 @@
       "url": "https://www.kaggle.com/competitions/classification-of-math-problems-by-kasut-academy",
       "wikiId": "competitions/classification-of-math-problems-by-kasut-academy"
     },
+    "climx-main-track": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "ClimX: Extreme-aware climate model emulation",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "climx-main-track",
+      "url": "https://kaggle.com/competitions/climx-main-track",
+      "wikiId": "competitions/climx-main-track"
+    },
     "cmi-detect-behavior-with-sensor-data": {
       "closeAt": null,
       "format": "scored",
@@ -868,6 +882,20 @@
       "slug": "data-science-bowl-2019",
       "url": "https://www.kaggle.com/competitions/data-science-bowl-2019",
       "wikiId": "competitions/data-science-bowl-2019"
+    },
+    "data-sprint-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "DataSprint 2026",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "data-sprint-2026",
+      "url": "https://kaggle.com/competitions/data-sprint-2026",
+      "wikiId": "competitions/data-sprint-2026"
     },
     "deep-past-initiative-machine-translation": {
       "closeAt": null,
@@ -1079,6 +1107,20 @@
       "url": "https://www.kaggle.com/competitions/fide-google-efficiency-chess-ai-challenge",
       "wikiId": "competitions/fide-google-efficiency-chess-ai-challenge"
     },
+    "filament-segmentation-2026": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Solar Filament Segmentation Challenge 2026",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "filament-segmentation-2026",
+      "url": "https://kaggle.com/competitions/filament-segmentation-2026",
+      "wikiId": "competitions/filament-segmentation-2026"
+    },
     "findit2022": {
       "closeAt": null,
       "format": "scored",
@@ -1092,6 +1134,20 @@
       "slug": "findit2022",
       "url": "https://www.kaggle.com/competitions/findit2022",
       "wikiId": "competitions/findit2022"
+    },
+    "flag-os-open-computing-global-challenge-season-2": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "FlagOS Open Computing Global Challenge Season 2",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "flag-os-open-computing-global-challenge-season-2",
+      "url": "https://kaggle.com/competitions/flag-os-open-computing-global-challenge-season-2",
+      "wikiId": "competitions/flag-os-open-computing-global-challenge-season-2"
     },
     "foursquare-location-matching": {
       "closeAt": null,
@@ -2129,6 +2185,20 @@
       "url": "https://www.kaggle.com/competitions/maze-crawler",
       "wikiId": "competitions/maze-crawler"
     },
+    "memecoins-pump-or-dump": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "Memecoins: Pump or Dump?",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "memecoins-pump-or-dump",
+      "url": "https://kaggle.com/competitions/memecoins-pump-or-dump",
+      "wikiId": "competitions/memecoins-pump-or-dump"
+    },
     "mercari-price-suggestion-challenge": {
       "closeAt": null,
       "format": "scored",
@@ -2829,6 +2899,20 @@
       "url": "https://www.kaggle.com/competitions/quora-question-pairs",
       "wikiId": "competitions/quora-question-pairs"
     },
+    "rail-sanya-2027-problem-solving-competition": {
+      "closeAt": "2027-02-27T11:59:59Z",
+      "format": "judged",
+      "label": "RailSanya 2027 Problem-Solving Competition",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "rail-sanya-2027-problem-solving-competition",
+      "url": "https://kaggle.com/competitions/rail-sanya-2027-problem-solving-competition",
+      "wikiId": "competitions/rail-sanya-2027-problem-solving-competition"
+    },
     "recodai-luc-scientific-image-forgery-detection": {
       "closeAt": null,
       "format": "scored",
@@ -3431,6 +3515,20 @@
       "url": "https://www.kaggle.com/competitions/the-allen-ai-science-challenge",
       "wikiId": "competitions/the-allen-ai-science-challenge"
     },
+    "the-atf-effects": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "THE ATF EFFECTS",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "the-atf-effects",
+      "url": "https://kaggle.com/competitions/the-atf-effects",
+      "wikiId": "competitions/the-atf-effects"
+    },
     "the-nature-conservancy-fisheries-monitoring": {
       "closeAt": null,
       "format": "scored",
@@ -3542,6 +3640,20 @@
       "slug": "um-game-playing-strength-of-mcts-variants",
       "url": "https://www.kaggle.com/competitions/um-game-playing-strength-of-mcts-variants",
       "wikiId": "competitions/um-game-playing-strength-of-mcts-variants"
+    },
+    "umud-challenge-muscle-architecture-in-ultrasound-data": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "UMUD Challenge: Muscle Architecture in Ultrasound Data",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "umud-challenge-muscle-architecture-in-ultrasound-data",
+      "url": "https://kaggle.com/competitions/umud-challenge-muscle-architecture-in-ultrasound-data",
+      "wikiId": "competitions/umud-challenge-muscle-architecture-in-ultrasound-data"
     },
     "uspto-explainable-ai": {
       "closeAt": null,
