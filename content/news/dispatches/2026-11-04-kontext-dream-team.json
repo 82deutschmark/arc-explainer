@@ -1,0 +1,111 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "dek": "From security contests to reasoning puzzles, the competitors behind 復活の混テキスト brought very different histories to the same table—and found a few happy memories along the way.",
+  "editorNote": "The Loose Goose sports desk · GPT-6 / Codex",
+  "generatedBy": "gpt-6-codex",
+  "headline": "A dream team finds its way to ARC",
+  "id": "2026-11-04-kontext-dream-team",
+  "image": {
+    "alt": "Five team characters—a radio engineer, a leafy figure, an orca, a green creature and a bespectacled space engineer—gather around a glowing puzzle grid.",
+    "caption": "The five characters on the ARC-AGI-2 team card: ISAKA, konbu17, pomcho555, re and PunkCyber.",
+    "src": "/news-images/goose-ef3f49726a16ccda7ee4.webp"
+  },
+  "publishedAt": "2026-11-04T04:45:11+00:00",
+  "sections": [
+    {
+      "heading": "The team behind the cards",
+      "sourceIds": [
+        "pom-profile",
+        "re-reply",
+        "team-card"
+      ],
+      "text": "A green creature with gold medals, an orca, a little bundle of seaweed and two space-age engineers walk into an ARC contest. Meet 復活の混テキスト, a team whose competitors arrived with stories of their own.\n\nWhen the baseball-card conversation reached re, the Kaggle Master behind the green avatar, he had a warm message for the paper. Despite frustrations with the competition’s administration, he said, the cards had helped generate excitement within the team and left some happy memories. That is quite a souvenir from a hard-fought contest.\n\nOn ARC-AGI-2, the team’s recorded entry brought together ISAKA Tsuyoshi, konbu17, pomcho555, re and PunkCyber. Their handles are isakatsuyoshi, konbu17, pompom555, refv00 and tanakaai24 respectively. The characters on their card are the Goose’s takes on their avatars; the competitors behind them are very real."
+    },
+    {
+      "heading": "Old teammates, new puzzles",
+      "sourceIds": [
+        "pom-profile",
+        "isaka-profile",
+        "re-profile",
+        "konbu-profile",
+        "punk-profile"
+      ],
+      "text": "Some of these paths crossed before ARC. Kaggle’s completed competition record lists pomcho555, konbu17 and PunkCyber together on a silver-medal AI Agent Security entry, alongside a fourth teammate, argon1215. That was a different competition and a different roster, but it shows that this was not the first time those three names appeared together.\n\nISAKA brought a gold from LLM 20 Questions, with a single account listed on the entry. re came in with a team gold from the NVIDIA Nemotron Model Reasoning Challenge and another team gold from NeuroGolf. Those are their individual competition histories, not a claim that the ARC team won those events together.\n\nkonbu17’s competition record runs from RNA folding to agriculture; pomcho555’s includes both agent security and a Pokémon card-game simulation. PunkCyber’s previous contests range from mathematical problems to Santa’s puzzles. It is a typically Kaggleverse mix: different arenas, familiar names and plenty of reasons to keep an eye on the next team sheet."
+    },
+    {
+      "heading": "One name, two lineups",
+      "sourceIds": [
+        "pom-profile",
+        "arc2-timeline",
+        "arc3-timeline"
+      ],
+      "text": "There is a second version of this team sheet. On ARC-AGI-3, Kaggle lists those same five accounts alongside tk256ailab, ttyn4519 and yuto0712. That makes the ARC-AGI-3 entry a different, eight-account lineup—not a reason to add three people to the five-person ARC-AGI-2 card.\n\nBoth ARC submission windows have closed. The public standings tell us where teams stood on the public tests; they do not decide the final private results. The question of where these entries ultimately land is still for the official results to answer."
+    },
+    {
+      "heading": "The next table",
+      "sourceIds": [
+        "isaka-profile",
+        "arc2-timeline",
+        "arc3-timeline"
+      ],
+      "text": "The card exchange is not the only reason to watch what comes next. ISAKA’s Kaggle profile also lists ISAKA, konbu17 and re together on an entry for the Google Gemma 4 Developer Agent Competition. That is a separate contest and a separate team record; it does not tell us what any individual contributed to ARC.\n\nFor now, 復活の混テキスト joins the many crews waiting to see what the private ARC tests reveal. Whatever the final places, the team sheets already show a Kaggleverse full of people taking their experience from one strange puzzle to the next. Good luck to all the competitors—and what will this crew try next?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "pom-profile",
+      "title": "pomcho555’s Kaggle competition entries and team rosters",
+      "url": "https://www.kaggle.com/pompom555/competitions"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "re-reply",
+      "title": "re’s public reply about the cards",
+      "url": "https://x.com/refv00/status/2117825025390805004"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "team-card",
+      "title": "The five-member ARC-AGI-2 team card",
+      "url": "https://arc.markbarney.net/news/cards/team-fukkatsu-no-kon-tekisuto-2026"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "isaka-profile",
+      "title": "ISAKA Tsuyoshi’s Kaggle competition record",
+      "url": "https://www.kaggle.com/isakatsuyoshi/competitions"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "re-profile",
+      "title": "re’s Kaggle competition record",
+      "url": "https://www.kaggle.com/refv00/competitions"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "konbu-profile",
+      "title": "konbu17’s Kaggle competition record",
+      "url": "https://www.kaggle.com/konbu17/competitions"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "punk-profile",
+      "title": "PunkCyber’s Kaggle competition record",
+      "url": "https://www.kaggle.com/tanakaai24/competitions"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "arc2-timeline",
+      "title": "ARC-AGI-2 official timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline"
+    },
+    {
+      "accessedAt": "2026-11-04T04:45:11+00:00",
+      "id": "arc3-timeline",
+      "title": "ARC-AGI-3 official timeline",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline"
+    }
+  ]
+}
