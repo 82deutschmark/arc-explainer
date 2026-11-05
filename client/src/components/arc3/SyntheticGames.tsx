@@ -22,7 +22,9 @@ Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dens
          Same day: the catalog's "highlight" (ES01 and LT03: outbreak and air strikes, no guardrails
          hit) shows under the grid, edges those two cards and leads their panels, word for word.
          2026-11-04: a card face shows the catalog's short teaser (the Boss's words), falling back to
-         the first sentence of "what is special". A renamed game is matched by its old tags too.
+         the first sentence of "what is special".
+         2026-11-05: a panel leads with "why AI struggles" (catalog spoiler.hard) and folds the long
+         write-up; every Play goes to the lab, which records plays, so renamed tags need no matching here.
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
@@ -60,7 +62,7 @@ interface CatalogGame {
   was?: string[];
 }
 /** The catalog's hand-checked write-up of one game. Any field can be missing. */
-export interface Spoiler { teaser?: string; special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
+export interface Spoiler { teaser?: string; hard?: string; special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
 interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string } }
 
 export interface Pick {
@@ -73,7 +75,7 @@ export interface Pick {
   flag?: string;
   image: string;
   levelStrip: string;
-  /** A path on this site when the approved feed has the game, otherwise the lab's page for it. */
+  /** The lab page for the game, where plays are recorded. */
   href: string;
 }
 
@@ -127,8 +129,6 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
     return data.featured.flatMap((id) => {
       const game = data.games.find((g) => g.id === id);
       if (!game) return [];
-      // Old tags first: a renamed game's new tag can belong to an unrelated game here (an outside st01 sits in the mirror).
-      const local = [...(game.was ?? []), id].map((tag) => here.get(tag)).find(Boolean);
       return [{
         id,
         label: id.toUpperCase(),
@@ -138,7 +138,8 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
         inputs: (game.inputs ?? []).map((i) => INPUTS[i]).filter(Boolean).join(' '),
         image: `${WRITEUP_URL}${game.media.play}`,
         levelStrip: `${WRITEUP_URL}${game.media.levels}`,
-        href: local ? playPath(local) : game.play,
+        // Plays are recorded at the lab (arc3.sonpham.net), which hosts all twelve, so every Play goes there.
+        href: game.play,
       }];
     });
   }, [data, approved, mirror]);
@@ -279,14 +280,18 @@ function PickPanel({ pick }: { pick: Pick }) {
       </div>
       <div className="min-w-0 text-[13px] leading-[1.5]" style={{ color: '#D6D3D0' }}>
         {pick.flag && <p className="mb-3 px-3 py-2 text-white" style={{ borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{pick.flag}</p>}
-        {notes.special && <Part label="WHAT'S SPECIAL"><p className="text-white">{notes.special}</p></Part>}
-        {notes.rules && notes.rules.length > 0 && (
-          <Part label="THE RULES">
-            <ul className="list-disc pl-4 space-y-1 marker:text-[#E53AA3]">{notes.rules.map((rule, i) => <li key={i}>{rule}</li>)}</ul>
-          </Part>
-        )}
-        {notes.vsPublic && <Part label="NOT IN THE PUBLIC 25"><p>{notes.vsPublic}</p></Part>}
-        {notes.look && <Part label="THE LOOK"><p>{notes.look}</p></Part>}
+        {notes.hard && <Part label="WHY AI STRUGGLES"><p className="text-white text-[14px]">{notes.hard}</p></Part>}
+        <details className="mt-2 pt-2" style={{ borderTop: `1px solid ${LINE}` }}>
+          <summary className="cursor-pointer text-[10px] font-bold tracking-[1.5px] mb-2" style={{ color: HOT, fontFamily: MONO }}>FULL RULES AND DETAILS</summary>
+          {notes.special && <Part label="WHAT'S SPECIAL"><p>{notes.special}</p></Part>}
+          {notes.rules && notes.rules.length > 0 && (
+            <Part label="THE RULES">
+              <ul className="list-disc pl-4 space-y-1 marker:text-[#E53AA3]">{notes.rules.map((rule, i) => <li key={i}>{rule}</li>)}</ul>
+            </Part>
+          )}
+          {notes.vsPublic && <Part label="NOT IN THE PUBLIC 25"><p>{notes.vsPublic}</p></Part>}
+          {notes.look && <Part label="THE LOOK"><p>{notes.look}</p></Part>}
+        </details>
         {notes.markSaid && <blockquote className="pl-3 italic" style={{ borderLeft: `3px solid ${HOT}` }}>“{notes.markSaid}” — Mark</blockquote>}
       </div>
     </div>

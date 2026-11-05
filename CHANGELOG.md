@@ -1,3 +1,7 @@
+### Version 9.162.10 · November 5, 2026
+
+- The synthetic picks' panels lead with "why AI struggles", plain gamer talk from the public catalog, and fold the long rules under "full rules and details". Every Play link on the picks now goes to the lab (arc3.sonpham.net), which records plays and hosts all twelve games, instead of this site's own player. Author: Claude Opus 5.5.
+
 ### Version 9.162.9 · November 4, 2026
 
 - Review pass on the synthetic picks: a card shows its whole teaser (up to six lines, not four), and the details panel's picture is smaller on a phone so the rules start sooner. Author: Claude Sonnet 5.5.
