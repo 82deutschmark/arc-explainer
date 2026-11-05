@@ -114,7 +114,6 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[], peopl
   return completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles), title: competitorTitle(record), description,
     url: `${SITE_ORIGIN}${competitorPath(record.id)}`, bodyHtml: `<main><h1>${esc(record.name)}</h1><p>${esc(description)}</p>
     <p>Competition: ${esc(competitionName(record.competition))}. Team ID: ${esc(record.teamId)}.</p>
-    <p>First observed by the newspaper: ${timeTag(record.firstObservedAt, false)}. Last checked: ${timeTag(record.lastObservedAt, false)}. Observation dates are not competition join dates.</p>
     <h2>Public team roster</h2>${rosterHtml(record, people)}
     ${record.aliases.length ? `<h2>Observed names</h2><p>${record.aliases.map(esc).join(', ')}</p>` : ''}
     <h2>What is on the record</h2>${record.facts.length ? record.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a> (checked ${timeTag(fact.checkedAt, false)})</p>`).join('') : '<p>No sourced background notes have been added yet.</p>'}

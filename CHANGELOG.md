@@ -1,3 +1,7 @@
+### Version 9.162.14 · November 5, 2026
+
+- Team profile pages no longer show "first observed" and "last observed" dates (they only recorded when our intake last saw the team on the public board, which means nothing once a contest closes). A team's approved picture now shows on its page: Sakayori Lab gets the whale scene of its two authors fitting the whale in. Author: Claude Sonnet 5.5 Medium.
+
 ### Version 9.162.13 · November 5, 2026
 
 - Cards: the invented card numbers (P001 / T001 style) are gone from the data model, the card pages, the catalog table and sort, alt text, search, share images and the server HTML. Nothing assigns them any more; a card is its card ID, and people and teams are tracked by their real Kaggle handle and team ID. The Cabinet sorts by name. Author: Claude Sonnet 5.5 Medium.

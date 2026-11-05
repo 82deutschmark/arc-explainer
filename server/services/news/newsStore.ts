@@ -66,6 +66,7 @@ export const competitorSchema = z.object({
   briefing: text.optional(),
   aliases: z.array(z.string()), members: z.array(z.string()), firstObservedAt: stamp, lastObservedAt: stamp,
   facts: z.array(z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp })),
+  art: z.object({ src: z.string().regex(/^\/news-images\/[A-Za-z0-9_\/.-]+\.(?:webp|png|jpe?g)$/), alt: text, caption: text }).optional(),
 }).refine(record => record.id === `${record.competition}-${record.teamId}`, 'Competitor IDs must include competition');
 export const NEWS_DIRECTORY = path.join(process.cwd(), 'content/news');
 const factSchema = z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict();

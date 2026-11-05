@@ -20,6 +20,9 @@
 .cp-skeleton { display: block; width: 100%; aspect-ratio: 5 / 7; border-radius: 12px; background: var(--paper-edge); border: 1px solid var(--hair); }
 .cp-card-name { display: block; margin-top: 12px; font: 700 15px/1.3 var(--serif); }
 .cp-card-plain { width: 150px; }
+.cp-figure { margin: 26px 0 0; }
+.cp-figure img { display: block; width: 100%; height: auto; border: 3px solid var(--ink); box-shadow: 0 10px 22px rgba(23, 21, 18, .25); }
+.cp-figure figcaption { margin-top: 8px; font: italic 14px/1.5 var(--serif); color: var(--ink-2); }
 .cp-main { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(220px, 1fr); gap: 40px; padding-top: 26px; }
 .cp-facts { margin: 0; padding: 0; list-style: none; }
 .cp-facts li { margin: 0 0 22px; padding-left: 18px; border-left: 4px solid var(--accent); }

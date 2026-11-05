@@ -7,7 +7,9 @@
  *          observed identity dates show without routine clock times.
  *          05-Nov-2026 (Claude Sonnet 5.5 Medium, Boss: "the layout is awful"): redesigned. The roster's real cards lead the page,
  *          the sourced facts read as editorial text, and the raw identifiers (team ID, observation dates, the internal
- *          competition alias) move to a small fact sheet. All data and links are unchanged.
+ *          competition alias) move to a small fact sheet. Observation dates are not shown: they only record when our
+ *          intake last saw the team on the public board, which means nothing once a contest has closed. The team's
+ *          approved picture (competitor.art) shows under the hero. All data and links are unchanged.
  * SRP/DRY check: Pass — identity and claims come from shared NewsIndex records only; layout is competitorProfile.css.
  */
 import { TeamRosterCards } from '@/components/news/NewsPeople';
@@ -44,13 +46,13 @@ export default function NewsCompetitor() {
         </div>
         {!!competitor.members.length && <TeamRosterCards team={competitor} people={query.data?.people} />}
       </header>
+      {competitor.art && <figure className="cp-figure"><img src={competitor.art.src} alt={competitor.art.alt} loading="lazy" decoding="async" /><figcaption>{competitor.art.caption}</figcaption></figure>}
       <div className="cp-main">
         <section><h2 className="news-section-title">On the record</h2>
           {competitor.facts.length ? <ul className="cp-facts">{competitor.facts.map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><div className="cp-source"><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a> · checked {newsDate(fact.checkedAt)}</div></li>)}</ul> : <p className="news-muted">No sourced background facts have been added yet.</p>}
         </section>
         <aside className="cp-aside" aria-label="Team details"><h2>Team details</h2>
-          <dl><dt>Kaggle team ID</dt><dd>{competitor.teamId}</dd><dt>First observed</dt><dd>{newsDate(competitor.firstObservedAt)}</dd><dt>Last observed</dt><dd>{newsDate(competitor.lastObservedAt)}</dd></dl>
-          <p>These observations describe this competition team. First observed is the first saved observation, not a claim about when the team entered.</p></aside>
+          <dl><dt>Kaggle team ID</dt><dd>{competitor.teamId}</dd></dl></aside>
       </div>
       <div className="cp-paper"><ArticleArchive articles={articles} heading="In the paper" /></div>
     </>}

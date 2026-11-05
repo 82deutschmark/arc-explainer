@@ -71,6 +71,8 @@ export interface CompetitorRecord {
   aliases: string[]; members: string[]; firstObservedAt: string; lastObservedAt: string;
   facts: CompetitorFact[];
   briefing?: string;
+  /** An approved team picture shown on the profile page (set from the wiki entry's featureArt). */
+  art?: { src: string; alt: string; caption: string };
 }
 export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;

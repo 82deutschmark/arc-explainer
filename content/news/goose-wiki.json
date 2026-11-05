@@ -109,7 +109,8 @@
     "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp": "613f9a14934faa1eabfaf6e7f8b6bb01e207ff13f2bd22e0888010f5d923f8e6",
     "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp": "d59122a80960c65907dcb60cf0ffcc4c451048652bdaa05170fc8f9af51e52bf",
     "/news-images/references/2026-10-29-xz-kaggle-cat-v1.webp": "75f131d82d2d3f21b54c0d22550c797974eb9cdbd08b29282299b2bac8321d68",
-    "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp": "be0ffb53d096b9bbaf92bd769eff0ba238356cc1fd29a1aca9ac11b820eec17f"
+    "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp": "be0ffb53d096b9bbaf92bd769eff0ba238356cc1fd29a1aca9ac11b820eec17f",
+    "/news-images/whale-feature-lab-v1.webp": "654ae6ca1812a89d511755b6c07c08525f1049daf88e2567b5c6ad063da33324"
   },
   "careers": {
     "alijs": {
@@ -7713,6 +7714,11 @@
         "Arcnights",
         "arc-2-16442485"
       ],
+      "art": {
+        "alt": "Two explorer-archaeologists, one with auburn hair in a sailor collar at a brass lever, one with long grey hair holding a glowing device, fit a giant glowing digital whale made of puzzle-grid squares into a small glass chamber inside a golden observatory hall.",
+        "caption": "Fitting the whale in: the two authors as the Goose pictures them, squeezing a giant model into a small chamber. An illustration of the write-up's idea, not the actual hardware.",
+        "src": "/news-images/whale-feature-lab-v1.webp"
+      },
       "briefing": "Sakayori Lab in ARC Prize 2026 — ARC-AGI-2; roster last observed 2026-11-02T00:56:33Z.",
       "competition": "arc-2",
       "facts": [
@@ -11889,7 +11895,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "1e0a240378debadebe9428c3f9d94564370486e4f7f92e696e13e5be7c88b0ea",
+  "fingerprint": "903a371633e898a17c2ef812225031c698a68f6a3a498d9918afc2220d6d9c09",
   "people": [
     {
       "accounts": [
