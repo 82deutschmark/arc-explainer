@@ -11895,7 +11895,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "903a371633e898a17c2ef812225031c698a68f6a3a498d9918afc2220d6d9c09",
+  "fingerprint": "a7d74400fbe60e33056b965fc0eddcd510222ad0de69ca4db529594ac455f812",
   "people": [
     {
       "accounts": [
@@ -20281,6 +20281,13 @@
         "artNotes": [
           "Approval and scene conditions: wiki/artwork/mutian-hong-explorer-v1.md"
         ],
+        "backArt": {
+          "alt": "Fit the whale — digital laboratory",
+          "artworkId": "whale-feature-lab-v1",
+          "commissionedAt": "2026-11-05T20:09:36+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/whale-feature-lab-v1.webp"
+        },
         "description": "Mutian Hong competes on Kaggle as hongori, a Competitions Master who won the Deep Past Challenge and placed third in RSNA Knee Abnormality Detection. With Bushi Liu he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up. His profile calls him founder of the DataTech Club at ShanghaiTech.",
         "entries": [],
         "id": "person-mutian-hong-arc-2-2026",
@@ -20303,6 +20310,13 @@
         "artNotes": [
           "Approval and scene conditions: wiki/artwork/bushi-liu-explorer-v1.md"
         ],
+        "backArt": {
+          "alt": "Fit the whale — digital laboratory",
+          "artworkId": "whale-feature-lab-v1",
+          "commissionedAt": "2026-11-05T20:09:37+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/whale-feature-lab-v1.webp"
+        },
         "description": "Bushi Liu competes on Kaggle as quarkliu. With Mutian Hong he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up, under the byline DataTech Club, ShanghaiTech University. His profile describes him as an undergraduate at ShanghaiTech University.",
         "entries": [],
         "id": "person-bushi-liu-arc-2-2026",
@@ -20322,7 +20336,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-05T21:00:00+00:00",
+    "updatedAt": "2026-11-05T20:09:37+00:00",
     "version": 1
   },
   "results": [],

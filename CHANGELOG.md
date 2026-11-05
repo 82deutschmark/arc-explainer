@@ -1,3 +1,7 @@
+### Version 9.162.15 · November 5, 2026
+
+- Card backs, redone from the Boss's notes: much bigger type; no web address or copyright line; each career row's medal coin now sits in the left margin (no separate medal column); a second picture (a team or action scene) fills the space above the record sheet and is cropped toward its subjects so it is actually seen. Mutian Hong's and Bushi Liu's backs use the whale scene. Team profile pages show "first seen" again (the last-seen date stays gone). Author: Claude Sonnet 5.5 Medium.
+
 ### Version 9.162.14 · November 5, 2026
 
 - Team profile pages no longer show "first observed" and "last observed" dates (they only recorded when our intake last saw the team on the public board, which means nothing once a contest closes). A team's approved picture now shows on its page: Sakayori Lab gets the whale scene of its two authors fitting the whale in. Author: Claude Sonnet 5.5 Medium.

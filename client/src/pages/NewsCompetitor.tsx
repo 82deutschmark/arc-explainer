@@ -7,8 +7,8 @@
  *          observed identity dates show without routine clock times.
  *          05-Nov-2026 (Claude Sonnet 5.5 Medium, Boss: "the layout is awful"): redesigned. The roster's real cards lead the page,
  *          the sourced facts read as editorial text, and the raw identifiers (team ID, observation dates, the internal
- *          competition alias) move to a small fact sheet. Observation dates are not shown: they only record when our
- *          intake last saw the team on the public board, which means nothing once a contest has closed. The team's
+ *          competition alias) move to a small fact sheet. The first-seen date stays; the last-seen date is gone (it only recorded when
+ *          our intake last saw the team on the public board, which means nothing once a contest has closed). The team's
  *          approved picture (competitor.art) shows under the hero. All data and links are unchanged.
  * SRP/DRY check: Pass — identity and claims come from shared NewsIndex records only; layout is competitorProfile.css.
  */
@@ -52,7 +52,7 @@ export default function NewsCompetitor() {
           {competitor.facts.length ? <ul className="cp-facts">{competitor.facts.map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><div className="cp-source"><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a> · checked {newsDate(fact.checkedAt)}</div></li>)}</ul> : <p className="news-muted">No sourced background facts have been added yet.</p>}
         </section>
         <aside className="cp-aside" aria-label="Team details"><h2>Team details</h2>
-          <dl><dt>Kaggle team ID</dt><dd>{competitor.teamId}</dd></dl></aside>
+          <dl><dt>Kaggle team ID</dt><dd>{competitor.teamId}</dd><dt>First seen</dt><dd>{newsDate(competitor.firstObservedAt)}</dd></dl></aside>
       </div>
       <div className="cp-paper"><ArticleArchive articles={articles} heading="In the paper" /></div>
     </>}

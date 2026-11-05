@@ -463,23 +463,14 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   // Competitors get the ledger reverse (Boss rule, 5 Nov 2026): a record sheet over the SECOND picture, or a blank designed
   // backdrop when there is none. Never a repeat of the front.
   if (vm.family === 'competitor') {
-    let backdrop: Buffer | null = null;
+    let second: Buffer | null = null;
     if (opts.backPicture) {
       try {
         await assertCollectionArtPath(opts.backPicture);
-        const source = await fs.readFile(path.join(process.cwd(), 'client/public', opts.backPicture.slice(1)));
-        // The whole second picture stays in view. A 5:7 picture fills the card exactly; any other shape sits on a blurred copy of itself.
-        const meta = await sharp(source).metadata();
-        const exact = !!meta.width && !!meta.height && Math.abs(meta.width / meta.height - W / H) < 0.005;
-        if (exact) backdrop = await sharp(source).resize(W, H, { fit: 'contain', background: STOCK }).jpeg({ quality: 90 }).toBuffer();
-        else {
-          const fill = await sharp(source).rotate().resize(W, H, { fit: 'cover' }).blur(24).modulate({ brightness: 0.6 }).jpeg({ quality: 80 }).toBuffer();
-          const whole = await sharp(source).rotate().resize(W, H, { fit: 'inside' }).toBuffer();
-          backdrop = await sharp(fill).composite([{ input: whole, gravity: 'centre' }]).jpeg({ quality: 90 }).toBuffer();
-        }
-      } catch { backdrop = null; }          // a missing second picture means the blank design, not a failed card
+        second = await fs.readFile(path.join(process.cwd(), 'client/public', opts.backPicture.slice(1)));
+      } catch { second = null; }          // a missing second picture means the blank design, not a failed card
     }
-    return ledgerNode({ vm, bm, backdrop, blank: await blankBackdrop(vm) });
+    return ledgerNode({ vm, bm, second, blank: await blankBackdrop(vm) });
   }
 
   // Preserve the whole approved image behind the generated record; contain never trims its edges.
