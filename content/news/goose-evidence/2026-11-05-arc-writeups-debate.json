@@ -2,13 +2,13 @@
   "package": {
     "artworkRecords": [
       "artwork/2026-11-05-arc-solutions-conversation",
-      "artwork/asset-8dd4fa9d0399725ce356"
+      "artwork/asset-44ee58aa5d70c6957dc3"
     ],
     "assets": [
       {
-        "sha256": "8dd4fa9d0399725ce356e86d8cf667dce4524161b37090a64795e12ed3bf9ac8",
-        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v2.webp",
-        "target": "client/public/news-images/goose-8dd4fa9d0399725ce356.webp"
+        "sha256": "44ee58aa5d70c6957dc3b820035c41ebd8f1beda1dfd736f7ae67a4c952712bb",
+        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v3.webp",
+        "target": "client/public/news-images/goose-44ee58aa5d70c6957dc3.webp"
       }
     ],
     "canonicalUrl": "https://arc.markbarney.net/news/2026-11-05-arc-writeups-debate",
@@ -21,9 +21,9 @@
       "headline": "ARC teams open the engine room",
       "id": "2026-11-05-arc-writeups-debate",
       "image": {
-        "alt": "A cream retriever and black-and-white husky join a red-helmeted figure in a glowing puzzle workshop.",
+        "alt": "A retriever and husky representing Darren, and a red-helmeted Grigoriy, examine puzzle devices; panels name their separate teams, authors and reported model details.",
         "caption": "The Goose’s characters for Darren Amadeus Martin and Grigoriy Zatravkin consider different approaches to ARC puzzles.",
-        "src": "/news-images/goose-8dd4fa9d0399725ce356.webp"
+        "src": "/news-images/goose-44ee58aa5d70c6957dc3.webp"
       },
       "publishedAt": "2026-11-05T21:31:15+00:00",
       "sections": [
@@ -122,27 +122,27 @@
       ]
     },
     "storyId": "2026-11-05-arc-writeups-debate",
-    "storySha256": "1320e4dd74fd32405180739d35c9ad0762b23bda2c1f96a615d935be217f4148",
+    "storySha256": "0665425ee5cf6133c564aea888b953cb96e7aceaf103db3594ab304f1c980d4d",
     "version": 1
   },
   "review": {
     "assets": [
       {
-        "sha256": "8dd4fa9d0399725ce356e86d8cf667dce4524161b37090a64795e12ed3bf9ac8",
-        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v2.webp",
-        "target": "client/public/news-images/goose-8dd4fa9d0399725ce356.webp"
+        "sha256": "44ee58aa5d70c6957dc3b820035c41ebd8f1beda1dfd736f7ae67a4c952712bb",
+        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v3.webp",
+        "target": "client/public/news-images/goose-44ee58aa5d70c6957dc3.webp"
       }
     ],
     "checks": [
-      "facts",
-      "identity-and-roster",
-      "art-reuse",
       "art-continuity",
-      "copy"
+      "art-reuse",
+      "copy",
+      "facts",
+      "identity-and-roster"
     ],
-    "notes": "Read the actual Domdolus, Zatravkin and mp write-ups and public replies, the two competition timelines, and the active discussion including Csaky, Chen, Son Pham and CPMP. Differentiated authors’ reports and impressions from established results. Compared the finished post-processed scene with both character references and the source-bound author names and performance claims. Initial generated image rejected for clipped extremities; second image and final team panels inspected. Positions remain provisional. Prior Goose coverage is acknowledged. Source content is also in the article for accessibility.",
-    "reviewedAt": "2026-11-05T21:35:29+00:00",
+    "notes": "Article copy retains its earlier factual and identity review. The Boss approved the improved programmed overlay for the roundup; its date was removed as requested. The original scene, distinct team labels, source-bound facts, catalog-linked authors and corrected full-size and phone-size composition were inspected. Earlier rejected art and original review remain in Git history.",
+    "reviewedAt": "2026-11-05T23:22:00+00:00",
     "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
-    "storySha256": "1320e4dd74fd32405180739d35c9ad0762b23bda2c1f96a615d935be217f4148"
+    "storySha256": "0665425ee5cf6133c564aea888b953cb96e7aceaf103db3594ab304f1c980d4d"
   }
 }
