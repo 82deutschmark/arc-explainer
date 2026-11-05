@@ -85,7 +85,8 @@ export async function renderCardFace(card: CollectionCard, collection: NewsColle
   const repair = cardFrameRepair(card);
   // This approved 5:7 illustration was authored for the full card. Its smaller native resolution
   // had sent it through the legacy contain/crop fallback, wasting the intended composition.
-  const lookOpts: LookOpts = { ...opts, namesById: names, preservePicture: true, backPicture: card.backArt?.src ?? repair?.backArtSrc ?? card.art?.src, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false } } : {}) };
+  // The back never repeats the front's art: it shows a second picture or a blank design (Boss rule, 5 Nov 2026).
+  const lookOpts: LookOpts = { ...opts, namesById: names, preservePicture: true, backPicture: card.backArt?.src ?? repair?.backArtSrc, ...(repair ? { artOverride: { file: model.art.file, kind: 'contract-5x7', bakedText: false } } : {}) };
   if (side === 'front') return look.frontBuffer(model, lookOpts);
   // The reverse costs about a second: one in-flight render per card version, remembered for the next request.
   const key = `${look.key}|${lookOpts.backPicture ?? ''}|${frontKey(model, lookOpts)}`;

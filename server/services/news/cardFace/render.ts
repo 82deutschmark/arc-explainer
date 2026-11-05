@@ -19,6 +19,7 @@
  * SRP/DRY check: Pass. Reuses box()/at()/pic() and the fonts from kit.ts, fit and measure helpers from kit.ts.
  *
  * CHANGELOG
+ * 05-Nov-2026 v6 (Claude Sonnet 5.5 Medium): portrait front for competitors with a real picture: edge to edge, name ribbon and tier line only (Boss rule).
  * 30-Oct-2026 v1 (Claude Sonnet 5.5 Medium): front first version.
  * 30-Oct-2026 v2 (Claude Sonnet 5.5 Medium): four review rounds on the design pass.
  * 30-Oct-2026 v3 (Claude Sonnet 5.5 Medium): production, judges' fixes: stamp moved into the badge band beside the number box and
@@ -79,12 +80,18 @@ export const FL = {
   medal: { cx: 98, cy: 762, r: 62 },        // base radius; a recipe's scale grows it
 };
 
+/**
+ * Portrait front (the Boss's rule, 5 November 2026): a competitor's front is a big close-up picture with no plate and
+ * minimal text: the badges, the name ribbon and the tier line. The record, club and trivia live on the back.
+ */
+export const PORTRAIT_LAYOUT = { ribbon: { ...FL.ribbon, y: 912 }, sub: { y: 976, h: 42 }, scrim: 300 };
+
 /** Coin for the medal strip (gold / silver / bronze), 36 px. */
 const coinSvg = (c: string) => svgDoc(36, 36, `<circle cx="18" cy="18" r="16.5" fill="${c}" stroke="#000" stroke-width="2.4"/><circle cx="18" cy="18" r="11.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"/><path d="M9 11 A12 12 0 0 1 20 6" stroke="#fff" stroke-opacity=".8" stroke-width="2.4" fill="none" stroke-linecap="round"/>`);
 
 /** Everything drawn under the text: scrims, badge-band header, top badges, ribbon, sub strip and panel. One transparent SVG. */
-function furnitureSvg(vm: VM, art: ArtResult): string {
-  const T = vm.T, r = FL.ribbon, p = FL.panel;
+function furnitureSvg(vm: VM, art: ArtResult, portrait = false): string {
+  const T = vm.T, r = portrait ? PORTRAIT_LAYOUT.ribbon : FL.ribbon, p = FL.panel;
   const defs = `${halftone('ht', T.main, 0.16, 7, 1.5)}${halftone('hd', '#000', 0.30, 5, 1.25)}
     <linearGradient id="scrimT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
     <linearGradient id="scrimB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></linearGradient>
@@ -103,7 +110,8 @@ function furnitureSvg(vm: VM, art: ArtResult): string {
   } else {
     s += `<rect x="${FL.T}" y="${FL.T}" width="${inner}" height="110" fill="url(#scrimT)"/>`;
   }
-  s += `<rect x="${FL.T}" y="${r.y - 110}" width="${inner}" height="110" fill="url(#scrimB)"/>`;
+  const scrimH = portrait ? PORTRAIT_LAYOUT.scrim : 110;
+  s += `<rect x="${FL.T}" y="${r.y - scrimH}" width="${inner}" height="${scrimH + (portrait ? FL.T + 4 : 0)}" fill="url(#scrimB)"/>`;
   // set logo (round) and pennant
   const L = FL.logo, P = FL.pennant;
   const pen = `M${P.x} ${P.y}H${P.x + P.w}L${P.x + P.w - 20} ${P.y + P.h / 2}L${P.x + P.w} ${P.y + P.h}H${P.x}Z`;
@@ -116,9 +124,9 @@ function furnitureSvg(vm: VM, art: ArtResult): string {
   const rb = `M${r.x0} ${r.y}H${r.x1 - 24}L${r.x1} ${r.y + r.h / 2}L${r.x1 - 24} ${r.y + r.h}H${r.x0}Z`;
   s += `<path d="${rb}" transform="translate(5 6)" fill="#000" opacity=".6"/><path d="${rb}" fill="url(#rib)" stroke="#000" stroke-width="4" stroke-linejoin="round"/><path d="${rr(r.x0 + 6, r.y + 5, r.x1 - r.x0 - 40, r.h - 10, 3)}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.6"/>`;
   // sub strip and the stats panel
-  const sb = FL.sub;
-  s += `<rect x="${FL.T}" y="${sb.y}" width="${inner}" height="${sb.h}" fill="#07080d"/><rect x="${FL.T}" y="${sb.y + sb.h - 3}" width="${inner}" height="3" fill="${T.main}"/>`;
-  s += `<rect x="${FL.T}" y="${p.y}" width="${inner}" height="${p.b - p.y}" fill="url(#pan)" opacity=".97"/><rect x="${FL.T}" y="${p.y}" width="${inner}" height="${p.b - p.y}" fill="url(#ht)"/>`;
+  const sb = portrait ? PORTRAIT_LAYOUT.sub : FL.sub;
+  s += `<rect x="${FL.T}" y="${sb.y}" width="${inner}" height="${sb.h}" fill="#07080d" ${portrait ? 'opacity=".86"' : ''}/><rect x="${FL.T}" y="${sb.y + sb.h - 3}" width="${inner}" height="3" fill="${T.main}"/>`;
+  if (!portrait) s += `<rect x="${FL.T}" y="${p.y}" width="${inner}" height="${p.b - p.y}" fill="url(#pan)" opacity=".97"/><rect x="${FL.T}" y="${p.y}" width="${inner}" height="${p.b - p.y}" fill="url(#ht)"/>`;
   return svgDoc(W, H, s, defs);
 }
 
@@ -202,8 +210,12 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   const vm = viewModel(card, opts);
   const T = vm.T;
   // a team's wide picture is trimmed less so the blurred band under it can carry the roster; everyone else's grows
-  const art = await artLayer(card, T, { ...opts.artOverride, wideMax: opts.artOverride?.wideMax ?? (vm.family === 'team' ? 1.7 : 1.3) });
+  const art = await artLayer(card, T, { ...opts.artOverride, wideMax: opts.artOverride?.wideMax ?? (vm.family === 'team' ? 1.7 : 1.3), coverPortrait: vm.family === 'competitor' });
+  // A competitor with a real portrait gets the minimal full-bleed front; placeholders, teams and sponsors keep the data-rich front.
+  const portrait = vm.family === 'competitor' && art.kind === 'contract';
+  const RIB = portrait ? PORTRAIT_LAYOUT.ribbon : FL.ribbon, SUB = portrait ? PORTRAIT_LAYOUT.sub : FL.sub;
   const M = { ...FL.medal }, mScale = T.medal.scale, mR = Math.round(M.r * mScale);
+  if (portrait) M.cy = RIB.y + 36;
   M.cy -= Math.round((mScale - 1) * 30); // a grown medallion rises so its foot stays clear of the stats table
   const nameX = vm.hasBadge ? M.cx + mR + 10 : 50;
   const nameW = 696 - nameX;
@@ -212,7 +224,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
 
   const kids: Node[] = [];
   kids.push(pic(`data:${art.mime};base64,${art.png.toString('base64')}`, 0, 0, W, H));
-  kids.push(svgPic(furnitureSvg(vm, art), 0, 0, W, H));
+  kids.push(svgPic(furnitureSvg(vm, art, portrait), 0, 0, W, H));
   kids.push(svgPic(frameSvg(T, W, H, 1), 0, 0, W, H));
 
   // ---- top badges: season logo, series pennant, stamp, number ----
@@ -254,7 +266,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   if (art.freeBand && vm.family === 'team' && vm.roster.length) kids.push(rosterBand(vm, art.freeBand, M.cy - mR - 6));
 
   // ---- ribbon: the name, one line or two, each line unbroken ----
-  kids.push(at(nameX, FL.ribbon.y, nameW, FL.ribbon.h, { alignItems: 'center' },
+  kids.push(at(nameX, RIB.y, nameW, RIB.h, { alignItems: 'center' },
     box({ flexDirection: 'column', fontFamily: ff(FONT.slab), fontSize: fit.size, color: T.ink, lineHeight: fit.lines.length === 2 ? 1.04 : 1, letterSpacing: 0.4,
       ...(T.ink === '#ffffff' ? { textShadow: `2px 2px 0 ${T.deep}` } : { textShadow: `1px 1px 0 ${alpha('#ffffff', 0.35)}` }),
       // the CJK fallback face is a regular weight and washes out on a coloured ribbon: thicken it with a same-colour stroke
@@ -266,7 +278,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   const tierColour = mix(T.main, T.light, 0.35);
   const bestTier = vm.family === 'team' ? vm.roster.map(r => r.tier).filter(Boolean).sort((a, b) => TIER_LADDER.indexOf(b!) - TIER_LADDER.indexOf(a!))[0] : null;
   const dot = () => label('·', 22, T.main, { margin: '0 9px' });
-  kids.push(at(subLeft, FL.sub.y, 724 - subLeft - 14, FL.sub.h - 3, { alignItems: 'center', justifyContent: 'space-between' },
+  kids.push(at(subLeft, SUB.y, 724 - subLeft - 14, SUB.h - 3, { alignItems: 'center', justifyContent: 'space-between' },
     box({ alignItems: 'center' },
       label(vm.typeLabel, 19, WHITE, { letterSpacing: 2 }),
       vm.tierWord ? dot() : null,
@@ -275,8 +287,8 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
       vm.family === 'team' && vm.sizeLabel ? label(vm.sizeLabel, 19, T.light, { letterSpacing: 2 }) : null,
       vm.family === 'sponsor' && vm.role ? dot() : null,
       vm.family === 'sponsor' && vm.role ? label(vm.role.toUpperCase(), 19, T.light, { letterSpacing: 2 }) : null),
-    vm.overall ? box({ alignItems: 'baseline' }, label('KAGGLE RANK', 16, T.light, { opacity: 0.85, marginRight: 6 }), box({ fontFamily: ff(FONT.mono), fontWeight: 700, fontSize: 17, color: WHITE }, vm.overall.rank), vm.overall.outOf ? box({ fontFamily: ff(FONT.mono), fontWeight: 500, fontSize: 12.5, color: T.light, marginLeft: 6 }, `OF ${vm.overall.outOf}`) : null)
-      : bestTier ? box({ alignItems: 'baseline' }, label('BEST TIER', 16, T.light, { opacity: 0.85, marginRight: 8 }), label(bestTier.toUpperCase(), 24, mix(TIERS[bestTier].main, TIERS[bestTier].light, 0.35), { letterSpacing: 1.6 })) : null));
+    !portrait && vm.overall ? box({ alignItems: 'baseline' }, label('KAGGLE RANK', 16, T.light, { opacity: 0.85, marginRight: 6 }), box({ fontFamily: ff(FONT.mono), fontWeight: 700, fontSize: 17, color: WHITE }, vm.overall.rank), vm.overall.outOf ? box({ fontFamily: ff(FONT.mono), fontWeight: 500, fontSize: 12.5, color: T.light, marginLeft: 6 }, `OF ${vm.overall.outOf}`) : null)
+      : !portrait && bestTier ? box({ alignItems: 'baseline' }, label('BEST TIER', 16, T.light, { opacity: 0.85, marginRight: 8 }), label(bestTier.toUpperCase(), 24, mix(TIERS[bestTier].main, TIERS[bestTier].light, 0.35), { letterSpacing: 1.6 })) : null));
 
   // ---- tier / team / sponsor medallion (grows with the recipe; the ladder meter is part of the drawing) ----
   if (vm.hasBadge) {
@@ -293,9 +305,10 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
       svgPic(svgDoc(60, 60, `<polygon points="${starburst(30, 31, 5, 28, 11.5)}" fill="#fff" stroke="#000" stroke-width="2.4" stroke-linejoin="round"/>`), 0, 0, 60, 60, { position: 'relative' })));
   }
 
-  // ---- stats panel ----
+  // ---- stats panel (not on the portrait front) ----
   const panelTop = FL.panel.y + 2, tableH = FL.strip.y - panelTop - 2;
-  if (vm.contests.length) {
+  if (portrait) { /* the record is on the back */ }
+  else if (vm.contests.length) {
     kids.push(...await contestTable(vm, panelTop, tableH));
   } else {
     // no standings (a sponsor): the panel is one dense block, organisation in slab type and the bio sized to fill it
@@ -331,7 +344,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
     vm.honour ? { l1: vm.honour.toUpperCase(), l2: bf ? `BEST FINISH ${bf.place}` : null, gold: true }
     : vm.family === 'sponsor' && vm.sharedWith.length ? { l1: `PICTURED WITH ${vm.sharedWith.join(' · ').toUpperCase()}`, l2: null, gold: false }
     : vm.family === 'competitor' && bf ? { l1: `BEST FINISH ${bf.place}`, l2: bf.competition, gold: false } : null;
-  if (note && vm.family !== 'team') {
+  if (!portrait && note && vm.family !== 'team') {
     const used = vm.medals ? 240 : 0;
     const nw = W - 2 * FL.T - 28 - used;
     const nf = await fitName(note.l1, FONT.bebas, 400, nw - 48, note.l2 ? 26 : 40, { max: note.l2 ? 24 : 27, min: 16, twoLineMax: 20, twoLineMin: 15 });
@@ -341,10 +354,10 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
         box({ fontFamily: ff(FONT.bebas), fontSize: nf.size, color: note.gold ? '#ffd24a' : WHITE, letterSpacing: 1, lineHeight: 1.04 }, note.l1),
         note.l2 ? nowrap({ marginTop: 2, fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 14, color: T.light, overflow: 'hidden', textOverflow: 'ellipsis', width: nw - 52 }, note.l2) : null)));
   }
-  kids.push(at(FL.T + 14, FL.strip.y, W - 2 * FL.T - 28, FL.strip.h, { alignItems: 'center', justifyContent: 'space-between', borderTop: `2px solid ${alpha(T.main, 0.8)}` }, ...stripKids));
+  if (!portrait) kids.push(at(FL.T + 14, FL.strip.y, W - 2 * FL.T - 28, FL.strip.h, { alignItems: 'center', justifyContent: 'space-between', borderTop: `2px solid ${alpha(T.main, 0.8)}` }, ...stripKids));
 
   // ---- footer: handle on its platform, publisher. Clear of the corner pieces. ----
-  kids.push(at(92, FL.foot.y, W - 184, FL.foot.h, { alignItems: 'center', justifyContent: 'space-between' },
+  if (!portrait) kids.push(at(92, FL.foot.y, W - 184, FL.foot.h, { alignItems: 'center', justifyContent: 'space-between' },
     vm.handleLine ? nowrap({ fontFamily: ff(FONT.mono), fontWeight: 700, fontSize: 14, color: T.light }, vm.handleLine) : box({}),
     vm.publisher ? label(vm.publisher.toUpperCase(), 15, WHITE, { opacity: 0.8, letterSpacing: 2 }) : null));
 

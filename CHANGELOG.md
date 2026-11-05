@@ -1,3 +1,7 @@
+### Version 9.162.11 · November 5, 2026
+
+- Cards, all of them: a competitor's front is now a big edge-to-edge portrait with only the badges, name and tier (no framed plate, no blurred side bands, no stats or club blurb). The back is a ledger record sheet laid over the card's second picture, or over a blank designed backdrop when there is none, and never a repeat of the front. The career record takes as much room as it can, so a long career fills the card; club, location and trivia sit under it on the same sheet, and the address and copyright are printed on the sheet at a readable size. Approved 5:7 art of any normal size (1000 wide and up) now counts as full-card art. Card images refresh (render version 8). Author: Claude Sonnet 5.5 Medium.
+
 ### Version 9.162.10 · November 5, 2026
 
 - The synthetic picks' panels lead with "why AI struggles", plain gamer talk from the public catalog, and fold the long rules under "full rules and details". Every Play link on the picks now goes to the lab (arc3.sonpham.net), which records plays and hosts all twelve games, instead of this site's own player. Author: Claude Opus 5.5.

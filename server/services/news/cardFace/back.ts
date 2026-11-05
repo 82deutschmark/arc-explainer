@@ -23,6 +23,7 @@
  *          (imported lazily, so there is no import cycle).
  *
  * CHANGELOG
+ * 05-Nov-2026 v5 (Claude Sonnet 5.5 Medium): competitors delegate to ledgerBack.ts (record sheet over the second picture or a blank design); a team's picture strip is only a second picture, never the front's art.
  * 30-Oct-2026 v4 (Claude Sonnet 5.5 Medium, review fixes): a card with no standings, medals or career gets a NO STANDINGS YET panel
  *          instead of a bare full-size silhouette; the roster total row reads KNOWN MEMBERS when only some members have a medal record.
  * 30-Oct-2026 v3 (Claude Sonnet 5.5 Medium): production port. Handle gets a gap and lines up with the series label;
@@ -41,6 +42,7 @@ import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, frameSvg, starburst,
 import { viewModel, num, type VM, type CareerRowVM, type MedalsVM } from './model';
 import { backModel, type BackModel, type StandingRow, type RosterRow, type MateGroup, type VitalCell } from './backModel';
 import { artLayer, assertCollectionArtPath, W, H, ZONE, type ArtResult } from './art';
+import { ledgerNode, blankBackdrop } from './ledgerBack';
 
 export interface BackOpts {
   namesById?: Record<string, string>; tierOverride?: string | null;
@@ -463,6 +465,28 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   const ink1 = INK1[vm.T.key] ?? INK1.none;
   const bm = backModel(vm);
 
+  // Competitors get the ledger reverse (Boss rule, 5 Nov 2026): a record sheet over the SECOND picture, or a blank designed
+  // backdrop when there is none. Never a repeat of the front.
+  if (vm.family === 'competitor') {
+    let backdrop: Buffer | null = null;
+    if (opts.backPicture) {
+      try {
+        await assertCollectionArtPath(opts.backPicture);
+        const source = await fs.readFile(path.join(process.cwd(), 'client/public', opts.backPicture.slice(1)));
+        // The whole second picture stays in view. A 5:7 picture fills the card exactly; any other shape sits on a blurred copy of itself.
+        const meta = await sharp(source).metadata();
+        const exact = !!meta.width && !!meta.height && Math.abs(meta.width / meta.height - W / H) < 0.005;
+        if (exact) backdrop = await sharp(source).resize(W, H, { fit: 'contain', background: STOCK }).jpeg({ quality: 90 }).toBuffer();
+        else {
+          const fill = await sharp(source).rotate().resize(W, H, { fit: 'cover' }).blur(24).modulate({ brightness: 0.6 }).jpeg({ quality: 80 }).toBuffer();
+          const whole = await sharp(source).rotate().resize(W, H, { fit: 'inside' }).toBuffer();
+          backdrop = await sharp(fill).composite([{ input: whole, gravity: 'centre' }]).jpeg({ quality: 90 }).toBuffer();
+        }
+      } catch { backdrop = null; }          // a missing second picture means the blank design, not a failed card
+    }
+    return ledgerNode({ vm, bm, backdrop, blank: await blankBackdrop(vm) });
+  }
+
   // Preserve the whole approved image behind the generated record; contain never trims its edges.
   const backdrop = opts.backPicture ? await pictureCrop(art, W, H, true, opts.backPicture) : null;
   const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), backdrop ? Promise.resolve(jpegUri(backdrop)) : cardboardUri()]);
@@ -552,7 +576,8 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     }
 
     // Leftover height, spent in a fixed order. A strip of the card's own picture first (cover crop, the picture grows),
-    const realArt = !!(art.plate || art.kind === 'contract');
+    // a picture strip only for a SECOND picture; the front's own art is never repeated on the back
+    const realArt = !!(opts.backPicture && (art.plate || art.kind === 'contract'));
     let stripH = 0, stripPlate = false;
     if (!backdrop && realArt && left >= 130 + GAP) { stripH = Math.min(left - GAP, 340); spend(stripH); }
     // then bigger standings rows (numerals scale with the row),

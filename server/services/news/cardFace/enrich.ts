@@ -52,7 +52,7 @@ const COLOURS = ['gold', 'silver', 'bronze'] as const;
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const YEAR_RE = /(?<![0-9])(20[1-3][0-9])(?![0-9])/;
 /** Pixels a clean contract picture must measure (5:7, at least 1500 x 2100). */
-const CONTRACT = { ratio: 5 / 7, tolerance: 0.005, minW: 1500, minH: 2100 };
+const CONTRACT = { ratio: 5 / 7, tolerance: 0.005, minW: 1000, minH: 1400 };   // 05-Nov-2026: 1060 x 1484 approved art was being shrunk into a plate
 
 type Medals = { gold: number; silver: number; bronze: number };
 export interface CareerExtra { completedCount?: number; joinedMonth?: string; displayName?: string }

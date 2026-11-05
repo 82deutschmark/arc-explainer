@@ -25,9 +25,16 @@ it('keeps both selected pictures and the complete career on re’s art-led card'
   expect(background.type).toBe('img');
   const image = Buffer.from(background.props.src.split(',')[1], 'base64');
   expect(await sharp(image).metadata()).toMatchObject({ width: 750, height: 1050 });
+  // 05-Nov-2026 (ledger reverse): the whole second picture is kept, never cropped; a picture that is not 5:7 sits on a blurred copy of itself.
+  // Its middle band must still match the uncropped picture, so the subject is intact.
   const source = await readFile('client/public' + card.backArt!.src);
-  const uncropped = await sharp(source).resize(750, 1050, { fit: 'contain', background: '#c9c5b8' }).jpeg({ quality: 90 }).toBuffer();
-  expect(image.equals(uncropped)).toBe(true);
+  const whole = await sharp(source).resize(750, 1050, { fit: 'inside' }).toBuffer();
+  const wm = await sharp(whole).metadata();
+  const probe = { left: Math.floor((750 - wm.width!) / 2) + 40, top: Math.floor((1050 - wm.height!) / 2) + 40, width: 60, height: 60 };
+  const a = await sharp(image).extract(probe).raw().toBuffer();
+  const b = await sharp(whole).extract({ left: 40, top: 40, width: 60, height: 60 }).raw().toBuffer();
+  let diff = 0; for (let i = 0; i < a.length; i++) diff += Math.abs(a[i] - b[i]);
+  expect(diff / a.length).toBeLessThan(12);
   const words = textOf(node).join(' ');
   expect(words).toContain('NeuroGolf');
   expect(words).toContain('Nemotron');
@@ -49,9 +56,16 @@ it('keeps live standings and the career table over the complete reverse illustra
   expect(words).toContain('NeuroGolf');
   expect(words).toContain('8 CONTESTS');
   const image = Buffer.from(node.props.children[0].props.src.split(',')[1], 'base64');
+  // 05-Nov-2026 (ledger reverse): the whole second picture is kept, never cropped; a picture that is not 5:7 sits on a blurred copy of itself.
+  // Its middle band must still match the uncropped picture, so the subject is intact.
   const source = await readFile('client/public' + card.backArt!.src);
-  const uncropped = await sharp(source).resize(750, 1050, { fit: 'contain', background: '#c9c5b8' }).jpeg({ quality: 90 }).toBuffer();
-  expect(image.equals(uncropped)).toBe(true);
+  const whole = await sharp(source).resize(750, 1050, { fit: 'inside' }).toBuffer();
+  const wm = await sharp(whole).metadata();
+  const probe = { left: Math.floor((750 - wm.width!) / 2) + 40, top: Math.floor((1050 - wm.height!) / 2) + 40, width: 60, height: 60 };
+  const a = await sharp(image).extract(probe).raw().toBuffer();
+  const b = await sharp(whole).extract({ left: 40, top: 40, width: 60, height: 60 }).raw().toBuffer();
+  let diff = 0; for (let i = 0; i < a.length; i++) diff += Math.abs(a[i] - b[i]);
+  expect(diff / a.length).toBeLessThan(12);
 }, 30_000);
 
 it('uses the approved five-member picture for the separate ARC-AGI-2 team card', () => {

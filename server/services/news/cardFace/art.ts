@@ -7,6 +7,7 @@
  * SRP/DRY check: Pass. Zone numbers come from zones.ts, colours from kit.ts; the layout never touches pixels.
  *
  * CHANGELOG
+ * 05-Nov-2026 v5 (Claude Sonnet 5.5 Medium): coverPortrait option: portrait and square pictures fill the card edge to edge (the Boss's front rule).
  * 30-Oct-2026 v1 (Claude Sonnet 5.5 Medium): first version.
  * 30-Oct-2026 v2 (Claude Sonnet 5.5 Medium): focus rules per art.kind (framed card, square, group, tall group), blurred
  *          backdrop taken from the trimmed extract, head-and-shoulders placeholder, unreadable art falls back to it.
@@ -144,6 +145,8 @@ export interface ArtOverride {
   file?: string; kind?: string; bakedText?: boolean | null;
   /** widest aspect a legacy picture keeps before its sides are trimmed (default 1.5; a team card passes its own so the free band fits a roster) */
   wideMax?: number;
+  /** A portrait or square picture (width / height up to 1.05) fills the whole card, cover-cropped toward the face, with no plate and no blurred margins. */
+  coverPortrait?: boolean;
 }
 
 /** Art with a guard: any failure falls back to the designed placeholder instead of failing the card. */
@@ -166,6 +169,14 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
   if (!read) return none();
   const opts = { limitInputPixels: 80_000_000, failOn: 'none' as const };
 
+  if (override?.coverPortrait && kind !== 'contract-5x7') {
+    // The front is a big close-up: a portrait or square picture runs edge to edge. Wide pictures keep the contained layout below.
+    const meta = await sharp(read.buf, opts).metadata();
+    if (meta.width && meta.height && meta.width / meta.height <= 1.05) {
+      const png = await jpeg(sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).resize(W, H, { fit: 'cover', position: sharp.strategy.attention }));
+      return { png, mime: 'image/jpeg', kind: 'contract', mode: 'full-bleed', plate: null, freeBand: null };
+    }
+  }
   if (kind === 'contract-5x7') {
     const png = await jpeg(sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).resize(W, H, { fit: 'contain', background: '#0b0c10' }));
     return { png, mime: 'image/jpeg', kind: 'contract', mode: 'full-bleed', plate: null, freeBand: null };
