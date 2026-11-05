@@ -1,0 +1,148 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/2026-11-05-arc-solutions-conversation",
+      "artwork/asset-8dd4fa9d0399725ce356"
+    ],
+    "assets": [
+      {
+        "sha256": "8dd4fa9d0399725ce356e86d8cf667dce4524161b37090a64795e12ed3bf9ac8",
+        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v2.webp",
+        "target": "client/public/news-images/goose-8dd4fa9d0399725ce356.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/2026-11-05-arc-writeups-debate",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "dek": "Competitors are comparing the machines behind their solutions—and asking what the next contest should reward.",
+      "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra Extra High",
+      "generatedBy": "gpt-6.1-terra-extra-high",
+      "headline": "ARC teams open the engine room",
+      "id": "2026-11-05-arc-writeups-debate",
+      "image": {
+        "alt": "A cream retriever and black-and-white husky join a red-helmeted figure in a glowing puzzle workshop.",
+        "caption": "The Goose’s characters for Darren Amadeus Martin and Grigoriy Zatravkin consider different approaches to ARC puzzles.",
+        "src": "/news-images/goose-8dd4fa9d0399725ce356.webp"
+      },
+      "publishedAt": "2026-11-05T21:31:15+00:00",
+      "sections": [
+        {
+          "heading": "The questions behind the solutions",
+          "sourceIds": [
+            "debate",
+            "grigoriy",
+            "domdolus",
+            "earlier"
+          ],
+          "text": "A newly published set of ARC solution write-ups has competitors swapping notes on the machinery behind their agents—and asking what their own rivals did differently.\n\nDomdolus Tolus describes compressing a large model and giving it a Python workspace for puzzle-solving. Grigoriy Zatravkin’s ARC-AGI-3 team reports switching from a faster, reduced model to a fuller one during a run. Yi-Chia Chen says infrastructure improvements bought more useful thinking time than the reinforcement-learning experiments she tried.\n\nThe conversations extend the speed-versus-quality debate the Goose reported after the bell: competitors are now publishing the systems and asking one another where those trade-offs worked. These are accounts of their own experiments, not independently reproduced results."
+        },
+        {
+          "heading": "Fast first, careful later",
+          "sourceIds": [
+            "grigoriy"
+          ],
+          "text": "Zatravkin and his coauthors describe an agent that began many games at once with a reduced version of Qwen Flash-Next. Later in the run, it restored the model’s removed experts and continued with fewer simultaneous games. The idea was to use speed while many games were making progress, then give harder remaining games a fuller model.\n\nThe team says an earlier attempt at a much more aggressive cut doubled throughput while barely moving the public result. A later submission with its live switch achieved its best public score. Those submissions differed in more than the switch, so the board alone cannot isolate its contribution. The authors also describe rolling back other shortcuts when their agent’s behaviour deteriorated, even where a numerical quality check looked reassuring."
+        },
+        {
+          "heading": "A squeeze with a Python lifeline",
+          "sourceIds": [
+            "domdolus"
+          ],
+          "text": "In ARC-AGI-2, Domdolus Tolus took a different route: a heavily compressed Flash-Next model paired with a live Python workspace. The team says the agent saw the puzzles as images and could test a proposed transformation against the examples before submitting. It also describes shortening the model’s working memory and packing its cache to support many concurrent tasks.\n\nThe write-up gives an unusually candid budget, too: the team estimates roughly US$350 in Claude and Google Colab spending. It says the five contributors paid from their own pockets. In the replies, Chen praised the use of the compressed model and asked about its memory method and speculative decoding. Bushi Liu, whose own team wrote about fitting DeepSeek into the same contest hardware, asked whether image input was the crucial ingredient; his team had not observed the same advantage."
+        },
+        {
+          "heading": "Another team buys more attempts",
+          "sourceIds": [
+            "mp"
+          ],
+          "text": "The ARC-AGI-2 write-up by the Kaggle account mp, which the Goose previously reported, treats the twelve-hour limit as a budget for generating useful tokens. The author describes pruning and compressing Flash-Next, then using reinforcement learning to repair some of the damage, while several independent attempts wrote and checked Python programs.\n\nThe write-up reports local tests and a public-board submission separately. That distinction matters: neither the team’s local evaluation nor a public-board score is a final private result. mp says the release’s code and model parts will follow; readers should check the original write-up for their availability."
+        },
+        {
+          "heading": "What should the next contest measure?",
+          "sourceIds": [
+            "debate",
+            "future",
+            "grigoriy",
+            "arc2-timeline",
+            "arc3-timeline"
+          ],
+          "text": "Sergei Makarov opened a public discussion about whether ARC-AGI-3 had rewarded inference throughput and whether its successor should change the incentives. CPMP argued that efficient code has long been an advantage in Kaggle. Son Pham called efficiency and quality a trade-off to manage, while noting that some improvements can help both.\n\nChen agreed that the concern was worth considering. She suggested that a fixed model could put more weight on harness design, while a fixed token budget might encourage models that use their tokens better. But she also cautioned that either restriction could narrow the search and miss a promising approach that does not use a large language model at all.\n\nIn a separate 5 November discussion, Richard Csaky proposed fewer public examples, less frequent submissions and prizes tied to releasing solutions. Son Pham welcomed the idea and argued for valuing breakthroughs. Zatravkin said milestone sharing had helped the community improve, but worried that it also reduced the variety of approaches. These are competitors’ proposals and impressions, not announced ARC rules.\n\nThere is a useful tension in these accounts: more attempts can help, but an acceleration that damages the model or leaves it unable to use its tools may cost more than it gains. The teams are still asking which trade-offs survive a different test set.\n\nARC’s official timetable lists the winners announcement for 4 December 2026. Until the private evaluation and eligibility checks are complete, the public places remain provisional. The write-ups have opened the workshop doors; the next question is which ideas hold up when the final results arrive."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "domdolus",
+          "title": "Domdolus Tolus: Qwen 3.8 Flash Next is All you Need",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/Domdolus-Tolus-Solution"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "grigoriy",
+          "title": "Grigoriy Zatravkin and coauthors: let the model tell you where the compute goes",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/6th-public-54-55-let-the-model-tell-you-where-t"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "mp",
+          "title": "mp: Scaling Qwen 3.8 Flash-Next and Dots-3 Note",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/solution-scaling-qwen-3-8-flash-next-and-dots-3"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "debate",
+          "title": "Sergei Makarov and competitors discuss throughput incentives",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755466"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "arc2-timeline",
+          "title": "ARC-AGI-2 official timeline",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/timeline"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "arc3-timeline",
+          "title": "ARC-AGI-3 official timeline",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "future",
+          "title": "Richard Csaky and competitors discuss general solutions and milestone prizes",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/756107"
+        },
+        {
+          "accessedAt": "2026-11-05T21:31:15+00:00",
+          "id": "earlier",
+          "title": "The Loose Goose: The bell rings and the ideas come flying",
+          "url": "https://arc.markbarney.net/news/2026-11-03-afternoon-arc-bazaar-of-ideas"
+        }
+      ]
+    },
+    "storyId": "2026-11-05-arc-writeups-debate",
+    "storySha256": "1320e4dd74fd32405180739d35c9ad0762b23bda2c1f96a615d935be217f4148",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "8dd4fa9d0399725ce356e86d8cf667dce4524161b37090a64795e12ed3bf9ac8",
+        "source": "client/public/news-images/2026-11-05-arc-writeups-debate-v2.webp",
+        "target": "client/public/news-images/goose-8dd4fa9d0399725ce356.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Read the actual Domdolus, Zatravkin and mp write-ups and public replies, the two competition timelines, and the active discussion including Csaky, Chen, Son Pham and CPMP. Differentiated authors’ reports and impressions from established results. Compared the finished post-processed scene with both character references and the source-bound author names and performance claims. Initial generated image rejected for clipped extremities; second image and final team panels inspected. Positions remain provisional. Prior Goose coverage is acknowledged. Source content is also in the article for accessibility.",
+    "reviewedAt": "2026-11-05T21:35:29+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
+    "storySha256": "1320e4dd74fd32405180739d35c9ad0762b23bda2c1f96a615d935be217f4148"
+  }
+}
