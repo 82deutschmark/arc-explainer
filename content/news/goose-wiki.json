@@ -25,12 +25,14 @@
     "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp": "72e1f19c4f2ecc247aa8565d4db8eb967c8261c1d22b546bcdc731c1a5fa2c5b",
     "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
     "/news-images/cards/2026/2026-11-04-david-sarrat-gemma-v1.webp": "1c6b5d87866ea4eb8434e03331f29bc63c5c89f99f7e2737311970924c88cda7",
+    "/news-images/cards/2026/bushi-liu-explorer-v1.webp": "abb64d26b7d999f63f68b2696aab09248503d7950289589dcdd849947c55e378",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
     "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp": "ca9114052c9816d8e9a3e4aa7ffb198d36dbcdb0b12e2832b10771443313239d",
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/keith-tyser-hero-v1.webp": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
     "/news-images/cards/2026/kontext-arc2-team-v1.webp": "ef3f49726a16ccda7ee4519d59c5d8de247f2c93d59486bd56438dd84ead3d53",
+    "/news-images/cards/2026/mutian-hong-explorer-v1.webp": "da13c40f186f3ee468f06ce87f03c34c0560c9f6b035decb0d91e8e695c3b294",
     "/news-images/cards/2026/refv00-solo-v2.webp": "02df2a5dc3c580ccd4d1ab399d7de63badbd289560455a0e8c499b91dfa79e70",
     "/news-images/cards/2026/refv00-solo-v5.webp": "609c8aa6a0b1eb262034358ec82e9c36bf14d2e9241460cfd76d02b770e67813",
     "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
@@ -397,6 +399,45 @@
           "rank": 5,
           "team": null,
           "year": null
+        }
+      ],
+      "tier": null
+    },
+    "bushi-liu": {
+      "checkedAt": "2026-11-05T18:07:11+00:00",
+      "joinedYear": null,
+      "location": null,
+      "medals": null,
+      "organisation": "ShanghaiTech University",
+      "profileUrl": "https://www.kaggle.com/quarkliu",
+      "rank": null,
+      "rows": [
+        {
+          "competition": "NVIDIA Nemotron Model Reasoning Challenge",
+          "competitionUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge",
+          "fieldSize": 4185,
+          "medal": "silver",
+          "rank": 198,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Orbit Wars",
+          "competitionUrl": "https://www.kaggle.com/competitions/orbit-wars",
+          "fieldSize": 4729,
+          "medal": null,
+          "rank": 933,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": null,
+          "rank": 1305,
+          "team": null,
+          "year": 2026
         }
       ],
       "tier": null
@@ -4695,6 +4736,54 @@
       ],
       "tier": null
     },
+    "mutian-hong": {
+      "checkedAt": "2026-11-05T18:07:11+00:00",
+      "joinedYear": null,
+      "location": null,
+      "medals": null,
+      "organisation": "DataTech Club, ShanghaiTech",
+      "profileUrl": "https://www.kaggle.com/hongori",
+      "rank": null,
+      "rows": [
+        {
+          "competition": "Deep Past Challenge - Translate Akkadian to English",
+          "competitionUrl": "https://www.kaggle.com/competitions/deep-past-initiative-machine-translation",
+          "fieldSize": 2674,
+          "medal": "gold",
+          "rank": 1,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": "gold",
+          "rank": 3,
+          "team": null,
+          "year": 2026
+        },
+        {
+          "competition": "Jigsaw - Agile Community Rules Classification",
+          "competitionUrl": "https://www.kaggle.com/competitions/jigsaw-agile-community-rules",
+          "fieldSize": 2445,
+          "medal": "bronze",
+          "rank": 211,
+          "team": null,
+          "year": 2025
+        },
+        {
+          "competition": "Bengali.AI Speech Recognition",
+          "competitionUrl": "https://www.kaggle.com/competitions/bengaliai-speech",
+          "fieldSize": 744,
+          "medal": "silver",
+          "rank": 22,
+          "team": null,
+          "year": 2023
+        }
+      ],
+      "tier": "Master"
+    },
     "mykyta-ielanskyi": {
       "checkedAt": "2026-10-30T13:18:08Z",
       "joinedYear": 2020,
@@ -7627,7 +7716,14 @@
       ],
       "briefing": "Sakayori Lab in ARC Prize 2026 — ARC-AGI-2; roster last observed 2026-11-02T00:56:33Z.",
       "competition": "arc-2",
-      "facts": [],
+      "facts": [
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Fit the Whale In — Kaggle solution write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4",
+          "text": "The Kaggle solution write-up “[Public 5th] Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2” is bylined Bushi Liu and Mutian Hong, DataTech Club, ShanghaiTech University, and appears on the Kaggle profiles of quarkliu and hongori."
+        }
+      ],
       "firstObservedAt": "2026-10-13T21:42:57Z",
       "id": "arc-2-16442485",
       "lastObservedAt": "2026-11-02T00:56:33Z",
@@ -11794,7 +11890,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "dd38daccd8a18077cf8f1603096d1e7cdc252e187500bfacd3dd7a100a9576f2",
+  "fingerprint": "fa0fb7e7da1ac95b9a92671f1f2b1f8f6b14300b5b39e89f02b26d20b4096f32",
   "people": [
     {
       "accounts": [
@@ -12121,6 +12217,49 @@
       "id": "bo-liu",
       "memberships": [],
       "name": "Bo Liu"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "handle": "quarkliu",
+          "platform": "kaggle",
+          "sourceTitle": "Bushi Liu — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/quarkliu",
+          "url": "https://www.kaggle.com/quarkliu"
+        }
+      ],
+      "briefing": "Bushi Liu competes on Kaggle as quarkliu. With Mutian Hong he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up, under the byline DataTech Club, ShanghaiTech University. His profile describes him as an undergraduate at ShanghaiTech University.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Bushi Liu — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/quarkliu",
+          "text": "The Kaggle profile names quarkliu as Bushi Liu, an undergraduate at ShanghaiTech University."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Fit the Whale In — Kaggle solution write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4",
+          "text": "Bushi Liu and Mutian Hong are the bylined authors of the public-fifth ARC-AGI-2 solution write-up “Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2”, credited to DataTech Club, ShanghaiTech University."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Bushi Liu — Nemotron silver medal certificate",
+          "sourceUrl": "https://www.kaggle.com/certification/competitions/quarkliu/nvidia-nemotron-model-reasoning-challenge",
+          "text": "Kaggle certificate: Bushi Liu placed 198th of 4,185 teams in the NVIDIA Nemotron Model Reasoning Challenge, Competition Silver Medalist, awarded 15 June 2026."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Fit the Whale In — Kaggle solution write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4",
+          "text": "The Kaggle solution write-up “[Public 5th] Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2” is bylined Bushi Liu and Mutian Hong, DataTech Club, ShanghaiTech University, and appears on the Kaggle profiles of quarkliu and hongori."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "bushi-liu",
+      "memberships": [],
+      "name": "Bushi Liu"
     },
     {
       "accounts": [
@@ -16135,6 +16274,55 @@
         "sourceUrl": "https://www.kaggle.com/yassirramadhan",
         "src": "/news-images/people/muhammad-yassir-ramadhan.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "handle": "hongori",
+          "platform": "kaggle",
+          "sourceTitle": "Mutian Hong — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/hongori",
+          "url": "https://www.kaggle.com/hongori"
+        }
+      ],
+      "briefing": "Mutian Hong competes on Kaggle as hongori, a Competitions Master who won the Deep Past Challenge and placed third in RSNA Knee Abnormality Detection. With Bushi Liu he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up. His profile calls him founder of the DataTech Club at ShanghaiTech.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Mutian Hong — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/hongori",
+          "text": "The Kaggle profile names hongori as Mutian Hong, Competitions Master, founder of DataTech Club in ShanghaiTech and a student at Westlake University."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Fit the Whale In — Kaggle solution write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4",
+          "text": "Bushi Liu and Mutian Hong are the bylined authors of the public-fifth ARC-AGI-2 solution write-up “Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2”, credited to DataTech Club, ShanghaiTech University."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Mutian Hong — Deep Past gold medal certificate",
+          "sourceUrl": "https://www.kaggle.com/certification/competitions/hongori/deep-past-initiative-machine-translation",
+          "text": "Kaggle certificate: Mutian Hong placed 1st of 2,674 teams in the Deep Past Challenge - Translate Akkadian to English, Competition Gold Medalist, awarded 23 March 2026."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Mutian Hong — RSNA Knee gold medal certificate",
+          "sourceUrl": "https://www.kaggle.com/certification/competitions/hongori/rsna-knee-abnormality-detection",
+          "text": "Kaggle certificate: Mutian Hong placed 3rd of 6,299 teams in RSNA Knee Abnormality Detection, Competition Gold Medalist, awarded 22 October 2026."
+        },
+        {
+          "checkedAt": "2026-11-05T18:07:11+00:00",
+          "sourceTitle": "Fit the Whale In — Kaggle solution write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4",
+          "text": "The Kaggle solution write-up “[Public 5th] Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2” is bylined Bushi Liu and Mutian Hong, DataTech Club, ShanghaiTech University, and appears on the Kaggle profiles of quarkliu and hongori."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "mutian-hong",
+      "memberships": [],
+      "name": "Mutian Hong"
     },
     {
       "accounts": [
@@ -20203,6 +20391,52 @@
         "personId": "david-sarrat-gonzalez",
         "season": "2026",
         "setId": "gemma-4-developer-agent-2026"
+      },
+      {
+        "art": {
+          "alt": "Mutian Hong — explorer portrait",
+          "artworkId": "mutian-hong-explorer-v1",
+          "commissionedAt": "2026-11-05T18:31:13+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/mutian-hong-explorer-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/mutian-hong-explorer-v1.md"
+        ],
+        "description": "Mutian Hong competes on Kaggle as hongori, a Competitions Master who won the Deep Past Challenge and placed third in RSNA Knee Abnormality Detection. With Bushi Liu he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up. His profile calls him founder of the DataTech Club at ShanghaiTech.",
+        "entries": [],
+        "id": "person-mutian-hong-arc-2-2026",
+        "issuedAt": "2026-11-05T18:08:21+00:00",
+        "kind": "person",
+        "name": "Mutian Hong",
+        "number": "P094",
+        "personId": "mutian-hong",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Bushi Liu — explorer portrait",
+          "artworkId": "bushi-liu-explorer-v1",
+          "commissionedAt": "2026-11-05T18:31:13+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/bushi-liu-explorer-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/bushi-liu-explorer-v1.md"
+        ],
+        "description": "Bushi Liu competes on Kaggle as quarkliu. With Mutian Hong he wrote “Fit the Whale In”, the public-fifth ARC-AGI-2 write-up, under the byline DataTech Club, ShanghaiTech University. His profile describes him as an undergraduate at ShanghaiTech University.",
+        "entries": [],
+        "id": "person-bushi-liu-arc-2-2026",
+        "issuedAt": "2026-11-05T18:08:22+00:00",
+        "kind": "person",
+        "name": "Bushi Liu",
+        "number": "P095",
+        "personId": "bushi-liu",
+        "season": "2026",
+        "setId": "arc-2-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -20212,7 +20446,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-05T04:08:35+00:00",
+    "updatedAt": "2026-11-05T19:07:06+00:00",
     "version": 1
   },
   "results": [],
@@ -20255,6 +20489,18 @@
         "publisher": "The Loose Goose",
         "season": "2026",
         "setName": "Google — Gemma 4 Developer Agent Competition 2026",
+        "timeZone": "UTC"
+      },
+      {
+        "competitionIds": [
+          "arc-prize-2026-arc-agi-2"
+        ],
+        "id": "arc-2-2026",
+        "look": "topps86",
+        "name": "ARC Prize 2026 — ARC-AGI-2",
+        "publisher": "The Loose Goose",
+        "season": "2026",
+        "setName": "ARC Prize 2026 — ARC-AGI-2 2026",
         "timeZone": "UTC"
       }
     ],
