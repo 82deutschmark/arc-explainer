@@ -24,6 +24,7 @@
     "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2.webp": "2165b99acfbb53dd7a6cd683396d54f48fd3bc3c0f52e46d0fed48591c5e9a69",
     "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp": "72e1f19c4f2ecc247aa8565d4db8eb967c8261c1d22b546bcdc731c1a5fa2c5b",
     "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
+    "/news-images/cards/2026/2026-11-04-david-sarrat-gemma-v1.webp": "1c6b5d87866ea4eb8434e03331f29bc63c5c89f99f7e2737311970924c88cda7",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
     "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp": "ca9114052c9816d8e9a3e4aa7ffb198d36dbcdb0b12e2832b10771443313239d",
@@ -1391,6 +1392,45 @@
         }
       ],
       "tier": null
+    },
+    "david-sarrat-gonzalez": {
+      "checkedAt": "2026-11-05T04:09:20+00:00",
+      "joinedYear": 2018,
+      "location": "Barcelona, Catalonia, Spain",
+      "medals": null,
+      "organisation": "Barcelona Institute for Global Health",
+      "profileUrl": "https://www.kaggle.com/davidsarrat",
+      "rank": null,
+      "rows": [
+        {
+          "competition": "Kaggriculture",
+          "competitionUrl": "https://www.kaggle.com/competitions/kaggriculture",
+          "fieldSize": 10148,
+          "medal": "silver",
+          "rank": 35,
+          "team": "Attention Is All You Seed",
+          "year": 2026
+        },
+        {
+          "competition": "RSNA Knee Abnormality Detection",
+          "competitionUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection",
+          "fieldSize": 6299,
+          "medal": "silver",
+          "rank": 56,
+          "team": "Attention Is All You Knee",
+          "year": 2026
+        },
+        {
+          "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
+          "competitionUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle",
+          "fieldSize": 6807,
+          "medal": "silver",
+          "rank": 244,
+          "team": "A Tinkaton Is All You Need",
+          "year": 2026
+        }
+      ],
+      "tier": "Expert"
     },
     "dawid-kopiczko": {
       "checkedAt": "2026-10-30T12:59:34Z",
@@ -11754,7 +11794,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "938aead9bac6d4245623fcf0157dc5b15928cdb1df9d53f85265cc78b84a997f",
+  "fingerprint": "dd38daccd8a18077cf8f1603096d1e7cdc252e187500bfacd3dd7a100a9576f2",
   "people": [
     {
       "accounts": [
@@ -12763,6 +12803,63 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-05T03:52:23+00:00",
+          "handle": "davidsarrat",
+          "platform": "kaggle",
+          "sourceTitle": "David Sarrat González — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/davidsarrat",
+          "url": "https://www.kaggle.com/davidsarrat"
+        },
+        {
+          "checkedAt": "2026-11-05T03:52:23+00:00",
+          "handle": "davidsarrat",
+          "platform": "x",
+          "sourceTitle": "X account linked from David’s Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/davidsarrat",
+          "url": "https://x.com/davidsarrat"
+        }
+      ],
+      "briefing": "David Sarrat González is a Kaggle competitor and biomedical data scientist. His profile identifies him as a PhD candidate in bioinformatics and links to his X account, @davidsarrat.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-05T03:52:23+00:00",
+          "sourceTitle": "David Sarrat González — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/davidsarrat",
+          "text": "His Kaggle profile identifies him as a PhD candidate in bioinformatics and a biomedical data scientist at the Barcelona Institute for Global Health."
+        },
+        {
+          "checkedAt": "2026-11-05T03:53:57+00:00",
+          "sourceTitle": "Attention Is All You Seed — final Kaggle leaderboard",
+          "sourceUrl": "https://www.kaggle.com/competitions/kaggriculture/leaderboard",
+          "text": "Kaggle’s final kaggriculture leaderboard lists Attention Is All You Seed as a silver-medal team with davidsarrat, zongzishuang, coolinlai, pseree, aurax7."
+        },
+        {
+          "checkedAt": "2026-11-05T03:53:57+00:00",
+          "sourceTitle": "A Tinkaton Is All You Need — final Kaggle leaderboard",
+          "sourceUrl": "https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/leaderboard",
+          "text": "Kaggle’s final pokemon-tcg-ai-battle leaderboard lists A Tinkaton Is All You Need as a silver-medal team with davidsarrat, zongzishuang, yajuansheng, coolinlai, aurax7."
+        },
+        {
+          "checkedAt": "2026-11-05T03:53:57+00:00",
+          "sourceTitle": "Attention Is All You Knee — final Kaggle leaderboard",
+          "sourceUrl": "https://www.kaggle.com/competitions/rsna-knee-abnormality-detection/leaderboard",
+          "text": "Kaggle’s final rsna-knee-abnormality-detection leaderboard lists Attention Is All You Knee as a silver-medal team with aleksanderhan, davidsarrat, zongzishuang, coolinlai, aurax7."
+        },
+        {
+          "checkedAt": "2026-11-05T03:53:03+00:00",
+          "sourceTitle": "Gemma 4 Developer Agent — Kaggle leaderboard",
+          "sourceUrl": "https://www.kaggle.com/competitions/gemma-4-developer-agent/leaderboard",
+          "text": "Kaggle’s Gemma 4 public leaderboard listed team 吃白饭的大肥鱼 with davidsarrat, iztanmaymohan, coolinlai and deepios on 5 November 2026 UTC. The team name is Chinese; it can be translated loosely as “the big fat fish who freeloads”."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "david-sarrat-gonzalez",
+      "memberships": [],
+      "name": "David Sarrat González"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-14T10:07:47.955742+00:00",
           "handle": "dawkopi",
           "platform": "kaggle",
@@ -12829,6 +12926,37 @@
         }
       ],
       "name": "Dawid Kopiczko"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-05T03:52:02+00:00",
+          "handle": "deepios",
+          "platform": "kaggle",
+          "sourceTitle": "醇久 — Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/deepios",
+          "url": "https://www.kaggle.com/deepios"
+        }
+      ],
+      "briefing": "醇久 competes on Kaggle as deepios. The profile records a Kaggriculture gold and an RSNA Knee Abnormality Detection silver.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-05T03:52:02+00:00",
+          "sourceTitle": "醇久 — Kaggle competition history",
+          "sourceUrl": "https://www.kaggle.com/deepios/competitions",
+          "text": "Kaggle lists deepios on a Kaggriculture gold-medal team and an RSNA Knee Abnormality Detection silver-medal entry."
+        },
+        {
+          "checkedAt": "2026-11-05T03:53:03+00:00",
+          "sourceTitle": "Gemma 4 Developer Agent — Kaggle leaderboard",
+          "sourceUrl": "https://www.kaggle.com/competitions/gemma-4-developer-agent/leaderboard",
+          "text": "Kaggle’s Gemma 4 public leaderboard listed team 吃白饭的大肥鱼 with davidsarrat, iztanmaymohan, coolinlai and deepios on 5 November 2026 UTC. The team name is Chinese; it can be translated loosely as “the big fat fish who freeloads”."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "deepios",
+      "memberships": [],
+      "name": "醇久"
     },
     {
       "accounts": [
@@ -20052,6 +20180,29 @@
         "personId": "jerome-sieber",
         "season": "2026",
         "setId": "kaggleverse-2026"
+      },
+      {
+        "art": {
+          "alt": "David Sarrat González — Gemma space-western portrait",
+          "artworkId": "asset-1c6b5d87866ea4eb8434",
+          "commissionedAt": "2026-11-05T04:08:27+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/2026-11-04-david-sarrat-gemma-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-1c6b5d87866ea4eb8434.md"
+        ],
+        "description": "David Sarrat González is a Kaggle competitor and biomedical data scientist. His profile identifies him as a PhD candidate in bioinformatics and links to his X account, @davidsarrat.",
+        "entries": [],
+        "id": "person-david-sarrat-gonzalez-gemma-4-developer-agent-2026",
+        "issuedAt": "2026-11-05T04:08:27+00:00",
+        "kind": "person",
+        "name": "David Sarrat González",
+        "number": "P093",
+        "personId": "david-sarrat-gonzalez",
+        "season": "2026",
+        "setId": "gemma-4-developer-agent-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -20061,7 +20212,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-04T04:29:01+00:00",
+    "updatedAt": "2026-11-05T04:08:35+00:00",
     "version": 1
   },
   "results": [],
@@ -20092,6 +20243,18 @@
         "publisher": "The Loose Goose",
         "season": "2026",
         "setName": "Kaggleverse 2026",
+        "timeZone": "UTC"
+      },
+      {
+        "competitionIds": [
+          "gemma-4-developer-agent"
+        ],
+        "id": "gemma-4-developer-agent-2026",
+        "look": "topps86",
+        "name": "Google — Gemma 4 Developer Agent Competition",
+        "publisher": "The Loose Goose",
+        "season": "2026",
+        "setName": "Google — Gemma 4 Developer Agent Competition 2026",
         "timeZone": "UTC"
       }
     ],
