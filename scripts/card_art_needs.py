@@ -56,7 +56,7 @@ def reference(person: dict) -> str:
 def main() -> None:
     needs_photo, needs_hunt, has_2025, has_2026, teams = [], [], [], [], []
     for card in CARDS:
-        number, name = card["number"], card["name"]
+        number, name = card.get("number", card["id"]), card["name"]
         if card["kind"] == "team":
             members = sorted({e["teamId"] for e in card["entries"]})
             line = f"| {number} | {name} | {'2026 art exists: `' + card['art']['src'] + '`' if card.get('art') else '**no art yet**'} | teams {', '.join(members)} |"

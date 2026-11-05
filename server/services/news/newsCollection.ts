@@ -257,7 +257,7 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
       ?? (editorial ? { src: editorial.src, alt: editorial.alt, credit: editorial.sourceTitle, artworkId: editorial.artworkId } : null));
     const facts = person?.facts ?? index.competitors.filter(team => definition.entries.some(ref => ref.teamId === team.teamId && ref.competition === team.competition)).flatMap(team => team.facts);
     const careerHonors = person?.hallOfFame.map(honor => ({ text: honor.label, sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle, checkedAt: honor.checkedAt })) ?? [];
-    return { id: definition.id, number: definition.number, kind: definition.kind, setId: definition.setId, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
+    return { id: definition.id, kind: definition.kind, setId: definition.setId, role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
       season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art, backArt: definition.backArt,
       description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
       biography: definition.biography,
@@ -288,7 +288,7 @@ function setKeyOf(directory: string, cards: CollectionCard[]): string {
   const tiers: Record<string, number> = {};
   for (const card of cards) if (card.career?.tier) tiers[card.career.tier] = (tiers[card.career.tier] ?? 0) + 1;
   const kinds: Record<string, number> = {};
-  for (const card of cards) kinds[card.number[0]] = (kinds[card.number[0]] ?? 0) + 1;
+  for (const card of cards) kinds[card.kind] = (kinds[card.kind] ?? 0) + 1;
   const extrasDir = path.join(directory, 'evidence', 'kaggle-careers');
   const extras = fs.existsSync(extrasDir) ? fs.readdirSync(extrasDir).sort().map(f => `${f}:${statStamp(path.join(extrasDir, f))}`) : [];
   const series = loadWikiInputs(directory)?.series ?? (fs.existsSync(path.join(directory, 'series.json')) ? fs.readFileSync(path.join(directory, 'series.json'), 'utf8') : '');

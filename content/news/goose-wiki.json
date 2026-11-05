@@ -11889,7 +11889,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "b5052486f221343b9f161a739da470b249ac7344678740448e9f5916a2377bf6",
+  "fingerprint": "1e0a240378debadebe9428c3f9d94564370486e4f7f92e696e13e5be7c88b0ea",
   "people": [
     {
       "accounts": [
@@ -18375,7 +18375,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Yi-Chia Chen",
-        "number": "P001",
         "personId": "yi-chia-chen",
         "season": "2026"
       },
@@ -18394,7 +18393,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Jean-François Puget (CPMP)",
-        "number": "P002",
         "personId": "jean-francois-puget",
         "season": "2026"
       },
@@ -18413,7 +18411,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Ivan Sorokin",
-        "number": "P003",
         "personId": "ivan-sorokin",
         "season": "2026"
       },
@@ -18425,7 +18422,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Jack Cole",
-        "number": "P004",
         "personId": "jack-cole",
         "season": "2026"
       },
@@ -18437,7 +18433,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Mithil A Vakde",
-        "number": "P005",
         "personId": "mithil-a-vakde",
         "season": "2026"
       },
@@ -18456,7 +18451,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Keith Tyser",
-        "number": "P006",
         "personId": "keith-tyser",
         "season": "2026"
       },
@@ -18477,7 +18471,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Dries Smit",
-        "number": "P007",
         "personId": "dries-smit",
         "season": "2026"
       },
@@ -18496,7 +18489,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Jeroen Cottaar",
-        "number": "P008",
         "personId": "jeroen-cottaar",
         "season": "2026"
       },
@@ -18516,7 +18508,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Jan Disselhoff",
-        "number": "P009",
         "personId": "jan-disselhoff",
         "season": "2026"
       },
@@ -18539,7 +18530,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "David Hartmann",
-        "number": "P010",
         "personId": "david-hartmann",
         "season": "2026"
       },
@@ -18562,7 +18552,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Daniel Franzen",
-        "number": "P011",
         "personId": "daniel-franzen",
         "season": "2026"
       },
@@ -18583,7 +18572,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Isaiah Pressman",
-        "number": "P014",
         "personId": "isaiahp",
         "season": "2026"
       },
@@ -18595,7 +18583,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Lonnie",
-        "number": "P015",
         "personId": "lonnie",
         "season": "2026"
       },
@@ -18607,7 +18594,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "alijs",
-        "number": "P016",
         "personId": "alijs",
         "season": "2026"
       },
@@ -18619,7 +18605,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "gromml",
-        "number": "P017",
         "personId": "gromml",
         "season": "2026"
       },
@@ -18636,7 +18621,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Mark Barney",
-        "number": "P018",
         "personId": "mark-barney",
         "season": "2026"
       },
@@ -18653,7 +18637,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Son Pham",
-        "number": "P019",
         "personId": "son-pham",
         "season": "2026"
       },
@@ -18665,7 +18648,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Peter Findley",
-        "number": "P020",
         "personId": "peter-findley",
         "season": "2026"
       },
@@ -18684,7 +18666,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "PunkCyber",
-        "number": "P021",
         "personId": "punkcyber",
         "season": "2026"
       },
@@ -18696,7 +18677,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "fshindo",
-        "number": "P022",
         "personId": "fshindo",
         "season": "2026"
       },
@@ -18708,7 +18688,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Lord Han Solo",
-        "number": "P023",
         "personId": "lord-han-solo",
         "season": "2026"
       },
@@ -18720,7 +18699,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Lohit Siriki",
-        "number": "P024",
         "personId": "lohit-siriki",
         "season": "2026"
       },
@@ -18732,7 +18710,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Takuma Mori",
-        "number": "P025",
         "personId": "takuma-mori",
         "season": "2026"
       },
@@ -18751,7 +18728,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Darragh Hanley",
-        "number": "P026",
         "personId": "darragh-hanley",
         "season": "2026"
       },
@@ -18763,7 +18739,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Elad Sarafian",
-        "number": "P027",
         "personId": "elad-sarafian",
         "season": "2026"
       },
@@ -18782,7 +18757,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Gal Kaplun",
-        "number": "P028",
         "personId": "gal-kaplun",
         "season": "2026"
       },
@@ -18794,7 +18768,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Yeyin Zhu",
-        "number": "P029",
         "personId": "yeyin-zhu",
         "season": "2026"
       },
@@ -18815,7 +18788,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Stefano Viel",
-        "number": "P030",
         "personId": "stefano-viel",
         "season": "2026"
       },
@@ -18827,7 +18799,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Reki",
-        "number": "P031",
         "personId": "reki",
         "season": "2026"
       },
@@ -18839,7 +18810,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Md Boktiar Mahbub Murad",
-        "number": "P032",
         "personId": "md-boktiar-mahbub-murad",
         "season": "2026"
       },
@@ -18851,7 +18821,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "イツ (Itsu)",
-        "number": "P033",
         "personId": "itsu",
         "season": "2026"
       },
@@ -18863,7 +18832,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Richard Csaky",
-        "number": "P034",
         "personId": "richard-csaky",
         "season": "2026"
       },
@@ -18882,7 +18850,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Florian Sestak",
-        "number": "P035",
         "personId": "fses91",
         "season": "2026"
       },
@@ -18901,7 +18868,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Lukas Aichberger",
-        "number": "P036",
         "personId": "lukas-aichberger",
         "season": "2026"
       },
@@ -18913,7 +18879,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Vineeth Sai Varikuntla",
-        "number": "P037",
         "personId": "vineeth-sai-varikuntla",
         "season": "2026"
       },
@@ -18925,7 +18890,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Dawid Kopiczko",
-        "number": "P038",
         "personId": "dawid-kopiczko",
         "season": "2026"
       },
@@ -18937,7 +18901,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Matt Mazur",
-        "number": "P039",
         "personId": "matt-mazur",
         "season": "2026"
       },
@@ -18949,7 +18912,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Geremie Yeo",
-        "number": "P040",
         "personId": "geremie-yeo",
         "season": "2026"
       },
@@ -18961,7 +18923,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Grigoriy Zatravkin",
-        "number": "P041",
         "personId": "grigoriy-zatravkin",
         "season": "2026"
       },
@@ -18973,7 +18934,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Sebastian Brodehl",
-        "number": "P042",
         "personId": "sebastian-brodehl",
         "season": "2026"
       },
@@ -18995,7 +18955,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Darren Amadeus Martin",
-        "number": "P043",
         "personId": "darren-amadeus-martin",
         "season": "2026"
       },
@@ -19007,7 +18966,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "xz",
-        "number": "P044",
         "personId": "xz",
         "season": "2026"
       },
@@ -19026,7 +18984,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Mykyta Ielanskyi",
-        "number": "P045",
         "personId": "mykyta-ielanskyi",
         "season": "2026"
       },
@@ -19038,7 +18995,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "gklambauer",
-        "number": "P046",
         "personId": "gklambauer",
         "season": "2026"
       },
@@ -19050,7 +19006,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Alwin Theodoric",
-        "number": "P047",
         "personId": "alwin-theodoric",
         "season": "2026"
       },
@@ -19062,7 +19017,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Billy Anggara",
-        "number": "P048",
         "personId": "billy-anggara",
         "season": "2026"
       },
@@ -19074,7 +19028,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Tri Ardian Rinalda",
-        "number": "P049",
         "personId": "tri-ardian-rinalda",
         "season": "2026"
       },
@@ -19086,7 +19039,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Muhammad Yassir Ramadhan",
-        "number": "P050",
         "personId": "muhammad-yassir-ramadhan",
         "season": "2026"
       },
@@ -19105,7 +19057,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "ISAKA Tsuyoshi",
-        "number": "P051",
         "personId": "isaka-tsuyoshi",
         "season": "2026"
       },
@@ -19117,7 +19068,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "konbu17",
-        "number": "P052",
         "personId": "konbu17",
         "season": "2026"
       },
@@ -19129,7 +19079,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "pomcho555",
-        "number": "P053",
         "personId": "pompom555",
         "season": "2026"
       },
@@ -19158,7 +19107,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "re",
-        "number": "P054",
         "personId": "refv00",
         "season": "2026"
       },
@@ -19170,7 +19118,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Takeru Sato",
-        "number": "P055",
         "personId": "takeru-sato",
         "season": "2026"
       },
@@ -19182,7 +19129,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Teppei Fukutomi",
-        "number": "P056",
         "personId": "teppei-fukutomi",
         "season": "2026"
       },
@@ -19194,7 +19140,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "yuto083",
-        "number": "P057",
         "personId": "yuto0712",
         "season": "2026"
       },
@@ -19206,7 +19151,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "common-people",
-        "number": "P058",
         "personId": "common-people",
         "season": "2026"
       },
@@ -19218,7 +19162,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Dongming Sheng",
-        "number": "P059",
         "personId": "dongming-sheng",
         "season": "2026"
       },
@@ -19230,7 +19173,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Florencia Solange",
-        "number": "P060",
         "personId": "florencia-solange",
         "season": "2026"
       },
@@ -19251,7 +19193,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Michał Gromadzki",
-        "number": "P061",
         "personId": "michal-gromadzki",
         "season": "2026"
       },
@@ -19272,7 +19213,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "yktori",
-        "number": "P062",
         "personId": "yktori",
         "season": "2026"
       },
@@ -19293,7 +19233,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "Michael",
-        "number": "P063",
         "personId": "michaeltgao",
         "season": "2026"
       },
@@ -19314,7 +19253,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "AquaUrsa Research",
-        "number": "P064",
         "personId": "aquaursa-research",
         "season": "2026"
       },
@@ -19326,7 +19264,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "person",
         "name": "chev",
-        "number": "P065",
         "personId": "cmechevalier",
         "season": "2026"
       },
@@ -19360,7 +19297,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Yi-Chia Chen",
-        "number": "T001",
         "season": "2026"
       },
       {
@@ -19393,7 +19329,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Tufa Labs",
-        "number": "T002",
         "season": "2026"
       },
       {
@@ -19421,7 +19356,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "xz",
-        "number": "T003",
         "season": "2026"
       },
       {
@@ -19450,7 +19384,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "The Last Dance",
-        "number": "T004",
         "season": "2026"
       },
       {
@@ -19477,7 +19410,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "yktori — Silver Comet",
-        "number": "T005",
         "season": "2026"
       },
       {
@@ -19509,7 +19441,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "mtg / Michael — Two-board Rook",
-        "number": "T006",
         "season": "2026"
       },
       {
@@ -19537,7 +19468,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Grigoriy Zatravkin & co — quartet",
-        "number": "T007",
         "season": "2026"
       },
       {
@@ -19565,7 +19495,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "復活の混テキスト — eight-avatar ensemble",
-        "number": "T008",
         "season": "2026"
       },
       {
@@ -19593,7 +19522,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Artificial Agency Lab — Richard and Côme",
-        "number": "T009",
         "season": "2026"
       },
       {
@@ -19625,7 +19553,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Majkel1337 — copper fox",
-        "number": "T010",
         "season": "2026"
       },
       {
@@ -19657,7 +19584,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "AquaUrsa Research — aqua polar bear",
-        "number": "T011",
         "season": "2026"
       },
       {
@@ -19685,7 +19611,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "nvbanana — ARC2 duo artwork",
-        "number": "T012",
         "season": "2026"
       },
       {
@@ -19719,7 +19644,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Domdolus Tolus",
-        "number": "T013",
         "season": "2026"
       },
       {
@@ -19745,7 +19669,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Team Turducken",
-        "number": "T014",
         "season": "2026"
       },
       {
@@ -19770,7 +19693,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "The ARChitects",
-        "number": "T015",
         "season": "2026"
       },
       {
@@ -19797,7 +19719,6 @@
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "ARC Mutants",
-        "number": "T016",
         "season": "2026"
       },
       {
@@ -19825,7 +19746,6 @@
         "issuedAt": "2026-10-30T02:38:40.181Z",
         "kind": "person",
         "name": "NT",
-        "number": "P066",
         "personId": "mitubant",
         "season": "2026"
       },
@@ -19842,7 +19762,6 @@
         "issuedAt": "2026-10-30T13:00:00.000Z",
         "kind": "team",
         "name": "NVARC3",
-        "number": "T017",
         "season": "2026"
       },
       {
@@ -19858,7 +19777,6 @@
         "issuedAt": "2026-10-30T13:00:00.000Z",
         "kind": "team",
         "name": "この遥かなる旅路に祝福を",
-        "number": "T018",
         "season": "2026"
       },
       {
@@ -19883,7 +19801,6 @@
         "issuedAt": "2026-10-30T13:00:00.000Z",
         "kind": "team",
         "name": "復活の混テキスト",
-        "number": "T019",
         "season": "2026"
       },
       {
@@ -19904,7 +19821,6 @@
         "issuedAt": "2026-10-30T17:00:18.943Z",
         "kind": "person",
         "name": "Yegor",
-        "number": "P067",
         "personId": "mistyotter-ai",
         "season": "2026"
       },
@@ -19931,7 +19847,6 @@
         "issuedAt": "2026-10-31T17:24:05Z",
         "kind": "person",
         "name": "Chan Kha Vu",
-        "number": "P068",
         "personId": "chan-kha-vu",
         "season": "2026"
       },
@@ -19949,7 +19864,6 @@
         "issuedAt": "2026-10-31T17:24:05Z",
         "kind": "team",
         "name": "V | A | M",
-        "number": "T020",
         "season": "2026"
       },
       {
@@ -19961,7 +19875,6 @@
         "issuedAt": "2026-11-02T22:10:44+00:00",
         "kind": "person",
         "name": "Gilberto Titericz (Giba)",
-        "number": "P069",
         "personId": "gilberto-titericz",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -19984,7 +19897,6 @@
         "issuedAt": "2026-11-02T22:10:44+00:00",
         "kind": "person",
         "name": "Harold Bessis",
-        "number": "P070",
         "personId": "dlorah",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20007,7 +19919,6 @@
         "issuedAt": "2026-11-02T22:10:44+00:00",
         "kind": "person",
         "name": "Michal Tešnar",
-        "number": "P071",
         "personId": "infinitecreativity",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20021,7 +19932,6 @@
         "issuedAt": "2026-11-02T22:11:27+00:00",
         "kind": "person",
         "name": "Bo Liu",
-        "number": "P072",
         "personId": "bo-liu",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20035,7 +19945,6 @@
         "issuedAt": "2026-11-02T22:11:27+00:00",
         "kind": "person",
         "name": "Chris Deotte",
-        "number": "P073",
         "personId": "chris-deotte",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20049,7 +19958,6 @@
         "issuedAt": "2026-11-02T22:11:28+00:00",
         "kind": "person",
         "name": "Christof Henkel",
-        "number": "P074",
         "personId": "christof-henkel",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20063,7 +19971,6 @@
         "issuedAt": "2026-11-02T22:11:28+00:00",
         "kind": "person",
         "name": "David Austin",
-        "number": "P075",
         "personId": "david-austin",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20077,7 +19984,6 @@
         "issuedAt": "2026-11-02T22:11:29+00:00",
         "kind": "person",
         "name": "Dmitry Gordeev",
-        "number": "P076",
         "personId": "dmitry-gordeev",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20091,7 +19997,6 @@
         "issuedAt": "2026-11-02T22:11:29+00:00",
         "kind": "person",
         "name": "Eduardo Rocha de Andrade",
-        "number": "P077",
         "personId": "eduardo-rocha-de-andrade",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20105,7 +20010,6 @@
         "issuedAt": "2026-11-02T22:11:29+00:00",
         "kind": "person",
         "name": "Eugene Khvedchenia",
-        "number": "P078",
         "personId": "eugene-khvedchenia",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20119,7 +20023,6 @@
         "issuedAt": "2026-11-02T22:11:30+00:00",
         "kind": "person",
         "name": "Jiwei Liu",
-        "number": "P079",
         "personId": "jiwei-liu",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20133,7 +20036,6 @@
         "issuedAt": "2026-11-02T22:11:30+00:00",
         "kind": "person",
         "name": "Kazuki Onodera",
-        "number": "P080",
         "personId": "kazuki-onodera",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20147,7 +20049,6 @@
         "issuedAt": "2026-11-02T22:11:30+00:00",
         "kind": "person",
         "name": "Raja Biswas",
-        "number": "P081",
         "personId": "raja-biswas",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20161,7 +20062,6 @@
         "issuedAt": "2026-11-02T22:11:31+00:00",
         "kind": "person",
         "name": "Ryan Chesler",
-        "number": "P082",
         "personId": "ryan-chesler",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20175,7 +20075,6 @@
         "issuedAt": "2026-11-02T22:11:31+00:00",
         "kind": "person",
         "name": "Simon Jegou",
-        "number": "P083",
         "personId": "simon-jegou",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20189,7 +20088,6 @@
         "issuedAt": "2026-11-02T22:11:32+00:00",
         "kind": "person",
         "name": "Théo Viel",
-        "number": "P084",
         "personId": "theo-viel",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20203,7 +20101,6 @@
         "issuedAt": "2026-11-02T22:11:32+00:00",
         "kind": "person",
         "name": "Yauhen Babakhin",
-        "number": "P085",
         "personId": "yauhen-babakhin",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20217,7 +20114,6 @@
         "issuedAt": "2026-11-02T22:11:32+00:00",
         "kind": "person",
         "name": "Yiheng Wang",
-        "number": "P086",
         "personId": "yiheng-wang",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20231,7 +20127,6 @@
         "issuedAt": "2026-11-02T22:11:33+00:00",
         "kind": "person",
         "name": "Youhan Lee",
-        "number": "P087",
         "personId": "youhan-lee",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20254,7 +20149,6 @@
         "issuedAt": "2026-11-02T22:15:08+00:00",
         "kind": "person",
         "name": "Van-Phuc Huynh",
-        "number": "P088",
         "personId": "van-phuc-huynh",
         "season": "2026",
         "setId": "2026"
@@ -20277,7 +20171,6 @@
         "issuedAt": "2026-11-02T22:15:09+00:00",
         "kind": "person",
         "name": "Trần M. Tiến",
-        "number": "P089",
         "personId": "tran-m-tien",
         "season": "2026",
         "setId": "2026"
@@ -20300,7 +20193,6 @@
         "issuedAt": "2026-11-02T22:15:10+00:00",
         "kind": "person",
         "name": "tascj",
-        "number": "P090",
         "personId": "tascj",
         "season": "2026",
         "setId": "2026"
@@ -20323,7 +20215,6 @@
         "issuedAt": "2026-11-02T22:27:18+00:00",
         "kind": "person",
         "name": "Mohamed Osman",
-        "number": "P091",
         "personId": "mohamed-osman",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20346,7 +20237,6 @@
         "issuedAt": "2026-11-02T22:27:20+00:00",
         "kind": "person",
         "name": "Jerome Sieber",
-        "number": "P092",
         "personId": "jerome-sieber",
         "season": "2026",
         "setId": "kaggleverse-2026"
@@ -20369,7 +20259,6 @@
         "issuedAt": "2026-11-05T04:08:27+00:00",
         "kind": "person",
         "name": "David Sarrat González",
-        "number": "P093",
         "personId": "david-sarrat-gonzalez",
         "season": "2026",
         "setId": "gemma-4-developer-agent-2026"
@@ -20392,7 +20281,6 @@
         "issuedAt": "2026-11-05T18:08:21+00:00",
         "kind": "person",
         "name": "Mutian Hong",
-        "number": "P094",
         "personId": "mutian-hong",
         "season": "2026",
         "setId": "arc-2-2026"
@@ -20415,7 +20303,6 @@
         "issuedAt": "2026-11-05T18:08:22+00:00",
         "kind": "person",
         "name": "Bushi Liu",
-        "number": "P095",
         "personId": "bushi-liu",
         "season": "2026",
         "setId": "arc-2-2026"
@@ -20429,7 +20316,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-05T19:55:00+00:00",
+    "updatedAt": "2026-11-05T21:00:00+00:00",
     "version": 1
   },
   "results": [],

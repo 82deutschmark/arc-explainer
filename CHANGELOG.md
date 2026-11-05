@@ -1,3 +1,7 @@
+### Version 9.162.13 · November 5, 2026
+
+- Cards: the invented card numbers (P001 / T001 style) are gone from the data model, the card pages, the catalog table and sort, alt text, search, share images and the server HTML. Nothing assigns them any more; a card is its card ID, and people and teams are tracked by their real Kaggle handle and team ID. The Cabinet sorts by name. Author: Claude Sonnet 5.5 Medium.
+
 ### Version 9.162.12 · November 5, 2026
 
 - Cards: no card number and no tier medallion (the "M" disc, the team-size disc) on any card face or share image; the pennant widens and the stamp moves to the right. François Chollet's card is removed: the set holds only competitors and teams. The team profile page (for example Sakayori Lab) is redesigned: the roster's real cards lead the page, facts read as editorial text, and the raw team ID and observation dates become a small fact sheet. Author: Claude Sonnet 5.5 Medium.

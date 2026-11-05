@@ -12,7 +12,6 @@
       "personId": "yi-chia-chen",
       "entries": [],
       "artNotes": [],
-      "number": "P001",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -23,7 +22,6 @@
       "personId": "jean-francois-puget",
       "entries": [],
       "artNotes": [],
-      "number": "P002",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -41,7 +39,6 @@
       "personId": "ivan-sorokin",
       "entries": [],
       "artNotes": [],
-      "number": "P003",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -59,7 +56,6 @@
       "personId": "jack-cole",
       "entries": [],
       "artNotes": [],
-      "number": "P004",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -70,7 +66,6 @@
       "personId": "mithil-a-vakde",
       "entries": [],
       "artNotes": [],
-      "number": "P005",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -81,7 +76,6 @@
       "personId": "keith-tyser",
       "entries": [],
       "artNotes": [],
-      "number": "P006",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -99,7 +93,6 @@
       "personId": "dries-smit",
       "entries": [],
       "artNotes": [],
-      "number": "P007",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -110,7 +103,6 @@
       "personId": "jeroen-cottaar",
       "entries": [],
       "artNotes": [],
-      "number": "P008",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -128,7 +120,6 @@
       "personId": "jan-disselhoff",
       "entries": [],
       "artNotes": [],
-      "number": "P009",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "artFallback": "none",
@@ -150,7 +141,6 @@
         "Editor-approved solo adaptation of the established fox avatar from the 2026 ARChitects scene; not a human likeness.",
         "Keep the historical team card separate. Rejected generated human portraits must not be used as this person’s character reference."
       ],
-      "number": "P010",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "artFallback": "none",
@@ -172,7 +162,6 @@
         "Editor-approved solo adaptation of the established duck avatar from the 2026 ARChitects scene; not a human likeness.",
         "Keep the historical team card separate. Rejected generated human portraits must not be used as this person’s character reference."
       ],
-      "number": "P011",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "artFallback": "none",
@@ -185,29 +174,12 @@
       }
     },
     {
-      "id": "person-francois-chollet-2026",
-      "kind": "person",
-      "name": "François Chollet",
-      "personId": "francois-chollet",
-      "entries": [],
-      "art": {
-        "src": "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp",
-        "alt": "François Chollet as an ARC Hall of Fame cyberpunk rendering: a glowing gauntlet reaching out among floating ARC puzzle grids",
-        "credit": "The Boss's parody book-cover art for Deep Learning with Python, cropped to the figure"
-      },
-      "artNotes": [],
-      "number": "P012",
-      "issuedAt": "2026-10-30T00:23:50.049Z",
-      "season": "2026"
-    },
-    {
       "id": "person-isaiahp-2026",
       "kind": "person",
       "name": "Isaiah Pressman",
       "personId": "isaiahp",
       "entries": [],
       "artNotes": [],
-      "number": "P014",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -218,7 +190,6 @@
       "personId": "lonnie",
       "entries": [],
       "artNotes": [],
-      "number": "P015",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -229,7 +200,6 @@
       "personId": "alijs",
       "entries": [],
       "artNotes": [],
-      "number": "P016",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -240,7 +210,6 @@
       "personId": "gromml",
       "entries": [],
       "artNotes": [],
-      "number": "P017",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -256,7 +225,6 @@
         "credit": "Mark Barney's own ARC Hall of Fame rendering (his avatar)"
       },
       "artNotes": [],
-      "number": "P018",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -272,7 +240,6 @@
         "credit": "Son Pham's own ARC Hall of Fame rendering (his Kaggle picture)"
       },
       "artNotes": [],
-      "number": "P019",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -283,7 +250,6 @@
       "personId": "peter-findley",
       "entries": [],
       "artNotes": [],
-      "number": "P020",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -294,7 +260,6 @@
       "personId": "punkcyber",
       "entries": [],
       "artNotes": [],
-      "number": "P021",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -312,7 +277,6 @@
       "personId": "fshindo",
       "entries": [],
       "artNotes": [],
-      "number": "P022",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -323,7 +287,6 @@
       "personId": "lord-han-solo",
       "entries": [],
       "artNotes": [],
-      "number": "P023",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -334,7 +297,6 @@
       "personId": "lohit-siriki",
       "entries": [],
       "artNotes": [],
-      "number": "P024",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -345,7 +307,6 @@
       "personId": "takuma-mori",
       "entries": [],
       "artNotes": [],
-      "number": "P025",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -356,7 +317,6 @@
       "personId": "darragh-hanley",
       "entries": [],
       "artNotes": [],
-      "number": "P026",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -374,7 +334,6 @@
       "personId": "elad-sarafian",
       "entries": [],
       "artNotes": [],
-      "number": "P027",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -385,7 +344,6 @@
       "personId": "gal-kaplun",
       "entries": [],
       "artNotes": [],
-      "number": "P028",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -403,7 +361,6 @@
       "personId": "yeyin-zhu",
       "entries": [],
       "artNotes": [],
-      "number": "P029",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -414,7 +371,6 @@
       "personId": "stefano-viel",
       "entries": [],
       "artNotes": [],
-      "number": "P030",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -425,7 +381,6 @@
       "personId": "reki",
       "entries": [],
       "artNotes": [],
-      "number": "P031",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -436,7 +391,6 @@
       "personId": "md-boktiar-mahbub-murad",
       "entries": [],
       "artNotes": [],
-      "number": "P032",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -447,7 +401,6 @@
       "personId": "itsu",
       "entries": [],
       "artNotes": [],
-      "number": "P033",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -458,7 +411,6 @@
       "personId": "richard-csaky",
       "entries": [],
       "artNotes": [],
-      "number": "P034",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -469,7 +421,6 @@
       "personId": "fses91",
       "entries": [],
       "artNotes": [],
-      "number": "P035",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -487,7 +438,6 @@
       "personId": "lukas-aichberger",
       "entries": [],
       "artNotes": [],
-      "number": "P036",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -505,7 +455,6 @@
       "personId": "vineeth-sai-varikuntla",
       "entries": [],
       "artNotes": [],
-      "number": "P037",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -516,7 +465,6 @@
       "personId": "dawid-kopiczko",
       "entries": [],
       "artNotes": [],
-      "number": "P038",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -527,7 +475,6 @@
       "personId": "matt-mazur",
       "entries": [],
       "artNotes": [],
-      "number": "P039",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -538,7 +485,6 @@
       "personId": "geremie-yeo",
       "entries": [],
       "artNotes": [],
-      "number": "P040",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -549,7 +495,6 @@
       "personId": "grigoriy-zatravkin",
       "entries": [],
       "artNotes": [],
-      "number": "P041",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -560,7 +505,6 @@
       "personId": "sebastian-brodehl",
       "entries": [],
       "artNotes": [],
-      "number": "P042",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -574,7 +518,6 @@
         "Two dogs together represent Darren’s one account. Dedicated individual illustration; no human face invented and no crop from the team picture.",
         "Both own-avatar dogs and their established Domdolus Tolus harness designs are preserved; original photograph and full team artwork remain saved."
       ],
-      "number": "P043",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -592,7 +535,6 @@
       "personId": "xz",
       "entries": [],
       "artNotes": [],
-      "number": "P044",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -603,7 +545,6 @@
       "personId": "mykyta-ielanskyi",
       "entries": [],
       "artNotes": [],
-      "number": "P045",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -621,7 +562,6 @@
       "personId": "gklambauer",
       "entries": [],
       "artNotes": [],
-      "number": "P046",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -632,7 +572,6 @@
       "personId": "alwin-theodoric",
       "entries": [],
       "artNotes": [],
-      "number": "P047",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -643,7 +582,6 @@
       "personId": "billy-anggara",
       "entries": [],
       "artNotes": [],
-      "number": "P048",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -654,7 +592,6 @@
       "personId": "tri-ardian-rinalda",
       "entries": [],
       "artNotes": [],
-      "number": "P049",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -665,7 +602,6 @@
       "personId": "muhammad-yassir-ramadhan",
       "entries": [],
       "artNotes": [],
-      "number": "P050",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -676,7 +612,6 @@
       "personId": "isaka-tsuyoshi",
       "entries": [],
       "artNotes": [],
-      "number": "P051",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -694,7 +629,6 @@
       "personId": "konbu17",
       "entries": [],
       "artNotes": [],
-      "number": "P052",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -705,7 +639,6 @@
       "personId": "pompom555",
       "entries": [],
       "artNotes": [],
-      "number": "P053",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -716,7 +649,6 @@
       "personId": "refv00",
       "entries": [],
       "artNotes": [],
-      "number": "P054",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -727,7 +659,6 @@
       "personId": "takeru-sato",
       "entries": [],
       "artNotes": [],
-      "number": "P055",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -738,7 +669,6 @@
       "personId": "teppei-fukutomi",
       "entries": [],
       "artNotes": [],
-      "number": "P056",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -749,7 +679,6 @@
       "personId": "yuto0712",
       "entries": [],
       "artNotes": [],
-      "number": "P057",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -760,7 +689,6 @@
       "personId": "common-people",
       "entries": [],
       "artNotes": [],
-      "number": "P058",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -771,7 +699,6 @@
       "personId": "dongming-sheng",
       "entries": [],
       "artNotes": [],
-      "number": "P059",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -782,7 +709,6 @@
       "personId": "florencia-solange",
       "entries": [],
       "artNotes": [],
-      "number": "P060",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -795,7 +721,6 @@
       "artNotes": [
         "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
       ],
-      "number": "P061",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -815,7 +740,6 @@
       "artNotes": [
         "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
       ],
-      "number": "P062",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -835,7 +759,6 @@
       "artNotes": [
         "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
       ],
-      "number": "P063",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -855,7 +778,6 @@
       "artNotes": [
         "Original newspaper mascot for this account; not an owner-selected avatar or a human likeness."
       ],
-      "number": "P064",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026",
       "art": {
@@ -873,7 +795,6 @@
       "personId": "cmechevalier",
       "entries": [],
       "artNotes": [],
-      "number": "P065",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -906,7 +827,6 @@
         "Always exactly two recognizable bunnies; the owner photo governs anatomy and markings. Giant scale is a scene choice."
       ],
       "description": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
-      "number": "T001",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -939,7 +859,6 @@
         "Use the approved clean native citadel interior, which contains no rank, score, observation date or headline. Card names, dated statistics and honors are drawn separately; preserve the original image unchanged."
       ],
       "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
-      "number": "T002",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -967,7 +886,6 @@
         "This card uses the clean frozen owner-avatar photograph, not the giant scoring-hall composition with its historical scoreboard. No cyber-vest is present in this source photograph; future illustrated character details remain separate."
       ],
       "description": "xz’s cream-faced blue-eyed fluffy Kaggle cat, introduced as a giant cyber-vest newcomer.",
-      "number": "T003",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -996,7 +914,6 @@
         "Recheck all four exact roster handles before using the complete team."
       ],
       "description": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
-      "number": "T004",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1023,7 +940,6 @@
         "The generic Kaggle goose is not a personal identity. Preserve this as the newspaper’s fictional Silver Comet, not an owner-selected avatar."
       ],
       "description": "Original fictional account mascot: opaque mirrored silver helmet, orange visor, cobalt/silver racer suit, ARC-grid panels and pixel scarf. No real human face.",
-      "number": "T005",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1055,7 +971,6 @@
         "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
       ],
       "description": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
-      "number": "T006",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1083,7 +998,6 @@
         "Dated four-account roster: grigoriyzatravkin, aizealotwu, deepdreamer, florenciasolange. Refresh exact current roster before a new team scene."
       ],
       "description": "Left-to-right: red opaque-helmet Grigoriy stand-in; gold library-headed mascot for aizealotwu; dark-blue-haired anime owner-avatar adaptation for deepdreamer; violet opaque-helmet Florencia stand-in.",
-      "number": "T007",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1111,7 +1025,6 @@
         "Owner-selected cartoons and mascot graphics are account avatars, not verified human appearances. Refresh all eight exact roster handles before later team scenes."
       ],
       "description": "Upper row, left-to-right: isakatsuyoshi cup-holder; konbu17 seaweed; pompom555 orca; refv00 green dinosaur. Lower row: tanakaai24 glasses/scarf/book; tk256ailab opaque stairway explorer; ttyn4519 white/navy/red/yellow robot; yuto0712 blue whale.",
-      "number": "T008",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1139,7 +1052,6 @@
         "The exact cmechevalier-to-Côme account mapping remains unresolved. This team illustration credits the independently documented lab members, not an inferred account mapping."
       ],
       "description": "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
-      "number": "T009",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1171,7 +1083,6 @@
         "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
       ],
       "description": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
-      "number": "T010",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1203,7 +1114,6 @@
         "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
       ],
       "description": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
-      "number": "T011",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1231,7 +1141,6 @@
         "Exactly two characters and a tiny banana ornament. This is ARC2 team 15486939, not NVARC3 or the full NVIDIA staff. No NVIDIA article has been commissioned; preserve artwork only."
       ],
       "description": "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
-      "number": "T012",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1265,7 +1174,6 @@
         "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
       ],
       "description": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
-      "number": "T013",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1291,7 +1199,6 @@
         "Seven ARC3 competitor characters and exactly two Yorkies. NT / mitubant is the yellow bird at upper right; Keith is the separate black-capped yellow mascot.",
         "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
       ],
-      "number": "T014",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1316,7 +1223,6 @@
       "artNotes": [
         "David fox, Jan cat, Daniel duck and Sebastian mouse. Clean artwork; no old scoreboard."
       ],
-      "number": "T015",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
@@ -1343,13 +1249,11 @@
         "The approved native academy illustration includes intrinsic ARC MUTANTS / ARC-AGI-2 title lettering. It contains no baked rank, score, observation date or honor; all card statistics are drawn separately. No existing title-free four-person source was found, and the original pixels remain unchanged.",
         "Boss reaffirmed the academy image on 29 October 2026 as the retained base for future X-Men-inspired episodes: Jack in the Professor Charles Xavier mentor role, Mark the GPU brawler, Son the visor-equipped energy specialist and Ronen the opaque-helmet grid-shield architect. Preserve their established faces, roles and the original image when making new versions."
       ],
-      "number": "T016",
       "issuedAt": "2026-10-30T00:23:50.049Z",
       "season": "2026"
     },
     {
       "id": "person-mitubant-2026",
-      "number": "P066",
       "kind": "person",
       "name": "NT",
       "personId": "mitubant",
@@ -1388,7 +1292,6 @@
         }
       ],
       "artNotes": [],
-      "number": "T017",
       "issuedAt": "2026-10-30T13:00:00.000Z",
       "season": "2026"
     },
@@ -1404,7 +1307,6 @@
         }
       ],
       "artNotes": [],
-      "number": "T018",
       "issuedAt": "2026-10-30T13:00:00.000Z",
       "season": "2026"
     },
@@ -1420,13 +1322,11 @@
         }
       ],
       "artNotes": [],
-      "number": "T019",
       "issuedAt": "2026-10-30T13:00:00.000Z",
       "season": "2026"
     },
     {
       "id": "person-mistyotter-ai-2026",
-      "number": "P067",
       "kind": "person",
       "name": "Yegor",
       "personId": "mistyotter-ai",
@@ -1448,7 +1348,6 @@
     },
     {
       "id": "person-chan-kha-vu-2026",
-      "number": "P068",
       "kind": "person",
       "name": "Chan Kha Vu",
       "season": "2026",
@@ -1474,7 +1373,6 @@
     },
     {
       "id": "team-v-a-m-arc2-2026",
-      "number": "T020",
       "kind": "team",
       "name": "V | A | M",
       "season": "2026",
@@ -2372,6 +2270,7 @@
     }
   ],
   "excludedPersonIds": [
-    "mike-knoop"
+    "mike-knoop",
+    "francois-chollet"
   ]
 }

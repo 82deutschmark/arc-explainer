@@ -7,7 +7,7 @@
  *
  *          CONTRACT with model.ts / render.ts / back.ts (do not change one side alone). Fields read by the renderer:
  *            kind competitor|sponsor|team, tier, name, handle{name,platform}, kaggleDisplayName, role, organisation,
- *            location, joinedYear, medals{gold,silver,bronze}|null, rank{current,outOf,best}|null, number, numberOf,
+ *            location, joinedYear, medals{gold,silver,bronze}|null, rank{current,outOf,best}|null,
  *            series{name,publisher,set,season}, status live|final|null, asOfDate YYYY-MM-DD, urlAbsolute, bio, facts[{text}],
  *            honors[{label}], pastTeams[{team}], roster[{handle,name,tier,medals,cardUrl}], art{file,kind,bakedText,
  *            sharedWith}, career{rows[{competition,rank,fieldSize,medal,team,year}],bestFinish,completedListed,complete},
@@ -188,7 +188,7 @@ function scanContractFiles(publicDir: string, season: string): Map<string, strin
 interface Context {
   opts: Required<Pick<EnrichOptions, 'publicDir' | 'discoverContractArt'>>;
   origin: string; wiki: boolean; extras: Record<string, CareerExtra>; careers: Record<string, CollectionCareer>; board: BoardHistory | null;
-  cardsById: Map<string, CollectionCard>; numberOf: Map<string, number>;
+  cardsById: Map<string, CollectionCard>;
   tierByPerson: Map<string, string | null>; personByHandle: Map<string, string>;
   sharedArt: Map<string, string[]>; titleBySlug: Map<string, string>; tierCounts: Record<string, number>;
   contractFiles: Map<string, Map<string, string[]>>;
@@ -212,8 +212,6 @@ function buildContext(collection: NewsCollection, opts: EnrichOptions): Context 
     tierByPerson.set(card.personId, careers[card.personId]?.tier ?? named);
   }
   for (const [pid, career] of Object.entries(careers)) if (!tierByPerson.has(pid)) tierByPerson.set(pid, career.tier);
-  const numberOf = new Map<string, number>();
-  for (const card of cards) numberOf.set(card.number[0], (numberOf.get(card.number[0]) ?? 0) + 1);
   const sharedArt = new Map<string, string[]>();
   for (const card of cards) for (const past of card.pastCards) if (past.imageSrc) {
     const ids = sharedArt.get(past.imageSrc) ?? sharedArt.set(past.imageSrc, []).get(past.imageSrc)!;
@@ -226,7 +224,7 @@ function buildContext(collection: NewsCollection, opts: EnrichOptions): Context 
   const origin = opts.origin ?? SITE_ORIGIN;
   return { opts: { publicDir: opts.publicDir ?? path.join(root, 'client/public'), discoverContractArt: !!opts.discoverContractArt },
     origin, wiki: !!wiki, extras: opts.extras ?? (wiki ? {} : loadCareerExtras(root)), careers, board: opts.board === undefined ? (wiki ? null : loadBoard(root)) : opts.board,
-    cardsById: new Map(cards.map(c => [c.id, c])), numberOf, tierByPerson, personByHandle, sharedArt, titleBySlug, tierCounts, contractFiles: new Map() };
+    cardsById: new Map(cards.map(c => [c.id, c])), tierByPerson, personByHandle, sharedArt, titleBySlug, tierCounts, contractFiles: new Map() };
 }
 function contextFor(collection: NewsCollection, opts?: EnrichOptions): Context {
   if (opts && Object.keys(opts).length) return buildContext(collection, opts);
@@ -389,7 +387,7 @@ function enrichOne(ctx: Context, card: CollectionCard) {
   }
 
   const out: any = {
-    id: card.id, number: card.number, numberOf: ctx.numberOf.get(card.number[0]) ?? 0, url: card.cardUrl, urlAbsolute: ctx.origin + card.cardUrl,
+    id: card.id, url: card.cardUrl, urlAbsolute: ctx.origin + card.cardUrl,
     series: { name: set.name, publisher: set.publisher, set: set.setName, season: card.season }, look: set.look,
     kind, name: kind === 'team' ? teamTitle(card.name, card.entries.map(e => e.teamName)) : card.name, handle, kaggleDisplayName: kind === 'competitor' ? extra.displayName ?? null : null,
     role: kind === 'sponsor' ? card.pastCards[0]?.label ?? null : null,

@@ -487,7 +487,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), backdrop ? Promise.resolve(jpegUri(backdrop)) : cardboardUri()]);
   // Art-led reverses keep the complete image in view. The existing career table is
   // drawn over its lower edge; its row budget and omitted-count note stay truthful.
-  if (backdrop && vm.family === 'competitor' && bm.career && bm.standings.length <= 3) {
+  if (backdrop && (vm.family as string) === 'competitor' && bm.career && bm.standings.length <= 3) {
     const career = bm.career;
     const count = Math.min(career.rows.length, 14);
     const note = count < career.completed ? `${num(career.completed - count)} MORE CONTEST${career.completed - count === 1 ? '' : 'S'} NOT LISTED` : null;
@@ -530,7 +530,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     let table: Placed | null = null;        // career table or roster table
     let mates: Placed | null = null, tick: Placed | null = null;
     let tableRowH = 21;
-    if (vm.family === 'competitor' && bm.career) {
+    if ((vm.family as string) === 'competitor' && bm.career) {
       const cb = bm.career, k0 = Math.min(cb.rows.length, 14);
       const reserve = CAREER_CHROME + NOTE_H + k0 * 21 + GAP;
       const mH = bm.mates.length ? await teammatesHeight(bm.mates) : 0;

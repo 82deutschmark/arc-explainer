@@ -23,7 +23,7 @@ import { getNewsCollection } from '../server/services/news/newsCollection';
 const collection = getNewsCollection();
 const drawn = (node: unknown) => textOf(node).join('\n');
 const card = (overrides: Partial<CollectionCard> = {}): CollectionCard => ({
-  ...collection.cards.find(item => item.id === 'team-turducken-2026')!, id: 'export-test', number: 'T001', name: 'The Test Contenders',
+  ...collection.cards.find(item => item.id === 'team-turducken-2026')!, id: 'export-test', name: 'The Test Contenders',
   cardUrl: '/news/cards/export-test', art: null, ...overrides,
 });
 
@@ -49,7 +49,7 @@ describe('Card Cabinet PNG export', () => {
     const text = drawn(await cardFaceNode(person, collection));
     expect(person.entries.every(entry => entry.status === 'unavailable' && entry.rank == null && entry.score == null)).toBe(true);
     expect(cardFaceModel(person, collection).model.status).not.toBe('final');
-    expect(text).toContain(person.number);
+    expect(text).not.toMatch(/\b[PT]\d{3}\b/);   // no invented card numbers on the face
     expect(text).not.toMatch(/RANK #|SCORE [0-9]/);
     expect(await sharp(await buildCollectionCardImage(person, collection)).metadata()).toMatchObject({ format: 'png', width: 750, height: 1050 });
   });

@@ -58,7 +58,7 @@ it('keeps Tufa identities and the verified account avatar on their own cards', (
 it('names each of a person’s competition editions in the card shelf', () => {
   const collection = prepare();
   const person = collection.cards.find(card => card.id === 'person-jean-francois-puget-2026')!;
-  const other = { ...person, id: 'fixture-second-edition', cardUrl: '/news/cards/fixture-second-edition', setId: 'fixture-set', number: 'P999' };
+  const other = { ...person, id: 'fixture-second-edition', cardUrl: '/news/cards/fixture-second-edition', setId: 'fixture-set' };
   const sets = [...(collection.sets ?? []), { id: 'fixture-set', name: 'Fixture Competition 2026', season: '2026', competitionIds: [] }];
   const html = renderToStaticMarkup(createElement(Router, { ssrPath: person.cardUrl, children: createElement(Detail, { card: person, all: [person, other], sets }) }));
   expect(html).toContain('Fixture Competition 2026');

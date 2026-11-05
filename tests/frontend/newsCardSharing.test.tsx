@@ -14,7 +14,7 @@ import type { CollectionCard } from '../../shared/newsCollection';
 import { SITE_ORIGIN } from '../../shared/seo';
 
 const card: CollectionCard = {
-  id: 'person-mark-barney-2026', number: 'P018', kind: 'person', name: 'Mark Barney',
+  id: 'person-mark-barney-2026', kind: 'person', name: 'Mark Barney',
   season: '2026', personId: 'mark-barney', cardUrl: '/news/cards/person-mark-barney-2026',
   profileUrl: '/news/people/mark-barney', art: null, description: '', highlights: [],
   accounts: [], entries: [], honors: [], artNotes: [], teamHistory: [], role: 'competitor', pastCards: [], stories: [], career: null,

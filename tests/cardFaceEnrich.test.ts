@@ -29,7 +29,7 @@ const BOOKKEEPING_RE = new RegExp(`\\b(${['pub' + 'lic', 'sou' + 'rce', 'ba' + '
 /** Every string a layout may print for a card (the view model plus the lines it draws from). */
 function printed(c: any): string[] {
   const vm = viewModel(c);
-  const out: (string | null | undefined)[] = [vm.name, vm.handle, vm.typeLabel, vm.tierLine, vm.number, vm.wordmark, vm.publisher, vm.season, vm.stamp?.word, vm.stamp?.date,
+  const out: (string | null | undefined)[] = [vm.name, vm.handle, vm.typeLabel, vm.tierLine, vm.wordmark, vm.publisher, vm.season, vm.stamp?.word, vm.stamp?.date,
     vm.honour, vm.bestFinish, vm.bio, vm.organisation, vm.location, vm.kaggleName, vm.role, ...vm.facts, ...vm.pastTeams, ...vm.sharedWith,
     ...vm.contests.flatMap(x => [x.short, x.full, x.team, x.rank, x.peak, x.score, x.subs]),
     ...vm.roster.map(r => r.name), ...(vm.career?.rows ?? []).flatMap(r => [r.name, r.team, r.place, r.of])];
@@ -40,16 +40,12 @@ describe('card face adapter over the real collection', () => {
   it('enriches every card into one of the three kinds, with consistent serial numbers', () => {
     expect(cards).toHaveLength(collection.cards.length);
     expect(cards.length).toBeGreaterThan(0);
-    const perLetter = new Map<string, number>();
-    for (const card of collection.cards) perLetter.set(card.number[0], (perLetter.get(card.number[0]) ?? 0) + 1);
     for (const [i, c] of cards.entries()) {
       const source = collection.cards[i];
       expect(c.id).toBe(source.id);
       expect(['competitor', 'sponsor', 'team']).toContain(c.kind);
       expect(c.kind).toBe(source.kind === 'team' ? 'team' : source.role);
-      expect(c.number).toBe(source.number);
-      expect(c.numberOf).toBe(perLetter.get(source.number[0]));
-      expect(c.number.startsWith(c.kind === 'team' ? 'T' : 'P')).toBe(true);
+      expect((c as any).number).toBeUndefined();   // Boss, 5 Nov 2026: cards carry no invented numbers
     }
   });
 

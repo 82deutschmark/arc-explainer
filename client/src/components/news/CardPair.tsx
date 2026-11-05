@@ -20,7 +20,7 @@ export function CardPair({ card }: { card: CollectionCard }) {
       {(['front', 'back'] as const).map(face => <figure key={face}>
         <figcaption>{face === 'front' ? 'Front' : 'Back'} <span>Enlarge ↗</span></figcaption>
         <button type="button" aria-label={`Enlarge ${face} of ${card.name}’s card`} onClick={() => { setFullSize(false); setSide(face); }}>
-          <img src={preview(face)} alt={`${card.name}, card ${card.number}, ${face}`} width="560" height="784" decoding="async" />
+          <img src={preview(face)} alt={`${card.name}, card ${face}`} width="560" height="784" decoding="async" />
         </button>
       </figure>)}
     </section>

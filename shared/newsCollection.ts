@@ -25,7 +25,7 @@ export const collectionArtSchema = z.object({
   alt: z.string().min(1), credit: z.string().min(1), artworkId: id.optional(), commissionedAt: stamp.optional(),
 }).strict();
 export const cardDefinitionSchema = z.object({
-  id, number: z.string().regex(/^[PT]\d{3,6}$/), kind: z.enum(['person', 'team']), name: z.string().min(1),
+  id, kind: z.enum(['person', 'team']), name: z.string().min(1),
   season: z.string().regex(/^\d{4}$/), issuedAt: stamp, personId: id.optional(),
   setId: id.optional(),
   entries: z.array(entry), art: collectionArtSchema.optional(), backArt: collectionArtSchema.optional(), artNotes: z.array(z.string()),
@@ -44,7 +44,7 @@ export const cardRegistrySchema = z.object({
 }).strict().superRefine((registry, context) => {
   if (registry.cards.some(card => card.personId && registry.excludedPersonIds?.includes(card.personId)))
     context.addIssue({ code: 'custom', message: 'Excluded person cannot have a current card' });
-  for (const field of ['id', 'number'] as const) if (new Set(registry.cards.map(card => card[field])).size !== registry.cards.length)
+  for (const field of ['id'] as const) if (new Set(registry.cards.map(card => card[field])).size !== registry.cards.length)
     context.addIssue({ code: 'custom', message: `Duplicate card ${field}` });
   // Card issue years and competition slugs are independent: contests can span
   // years, and a person can hold cards linked to several verified competitions.
@@ -139,7 +139,7 @@ export interface CollectionStory {
   id: string; kind: 'edition' | 'wire'; headline: string; url: string; publishedAt: string; competition: NewsCompetition;
 }
 export interface CollectionCard {
-  id: string; number: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
+  id: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
   setId?: string;
   /** Authored wiki card copy, separate from the newsroom briefing. */
   biography?: string;
@@ -244,7 +244,7 @@ export function collectionCardDescription(card: CollectionCard): string {
   const career = (card.highlights[0]?.text ?? card.description).replace(/\s+/g, ' ').trim();
   return `${card.name}’s ${card.season} card. ${parts.length > 1 ? `${parts.join('; ')}.` : career}`;
 }
-export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest ARC Prize cards.'}`;
+export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest ARC Prize cards.'}`;
 /** Public-content fingerprint: a corrected identity, roster or immutable artwork gets a fresh image URL. */
 export function collectionShareVersion(card: CollectionCard): string {
   const repair = cardFrameRepair(card);

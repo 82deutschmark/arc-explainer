@@ -52,7 +52,7 @@ export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]
     <h2 className="news-story-people-label">In this story</h2>
     {!!withCard.length && <div className="news-story-cards">{withCard.map(({ person, card }) => <Link key={card!.id} href={card!.cardUrl} className="news-story-card">
       <img src={`/api/news/cards/${encodeURIComponent(card!.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card!)}`} width={300} height={420} loading="lazy"
-        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card ${card!.number}`} /><span className="news-story-card-name">{person.name}</span>
+        alt={`${person.name}, ${collectionRoleLabel(card!).toLowerCase()} card`} /><span className="news-story-card-name">{person.name}</span>
     </Link>)}</div>}
     {!!without.length && <div className="news-story-people-grid">{without.map(({ person }) => {
       const team = [...person.memberships].reverse().find(member => member.competition === competition);

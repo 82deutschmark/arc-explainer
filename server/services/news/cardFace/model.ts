@@ -55,7 +55,7 @@ export interface VM {
   showPeak: boolean;
   /** team size as printed: "7 ACCOUNTS", "1 ACCOUNT" */
   sizeLabel: string | null;
-  number: string; numberOf: number | null; wordmark: string; publisher: string | null; season: string;
+  wordmark: string; publisher: string | null; season: string;
   stamp: { word: 'LIVE' | 'PUBLIC' | 'FINAL'; date: string } | null;
   contests: ContestVM[]; medals: MedalsVM | null;
   overall: { rank: string; outOf: string | null; best: string | null } | null;
@@ -144,7 +144,6 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     career = { rows, completed: card.career.completedListed ?? rows.length, shown: rows.length, complete: !!card.career.complete, best: bestFinish };
   }
   const sharedWith = (card.art?.sharedWith ?? []).map((id: string) => opts.namesById?.[id]).filter(Boolean) as string[];
-  const number: string = card.number ?? '';
   const teamSize: number | null = (card.roster?.length || card.contests?.[0]?.team?.size) ?? null;
   const bare = family === 'competitor' && !contests.length && !card.medals && !card.rank && !tierName && !card.career?.rows?.length && !(card.honors?.length);
   return {
@@ -155,7 +154,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     handleLine: handleName ? `@${handleName}${platformLabel(card.handle?.platform) ? ` on ${platformLabel(card.handle?.platform)}` : ''}` : null,
     showPeak: status === 'LIVE',
     sizeLabel: family === 'team' && teamSize ? `${teamSize} ${teamSize === 1 ? 'ACCOUNT' : 'ACCOUNTS'}` : null, teamSize: family === 'team' ? teamSize : null, bare,
-    number, numberOf: nz(card.numberOf), wordmark: card.series?.name ?? card.series?.set ?? '', publisher: card.series?.publisher ?? null, season: String(card.series?.season ?? ''),
+    wordmark: card.series?.name ?? card.series?.set ?? '', publisher: card.series?.publisher ?? null, season: String(card.series?.season ?? ''),
     stamp, contests, medals: family === 'competitor' ? medalsOf(card.medals) : null,
     overall: card.rank?.current ? { rank: hash(card.rank.current)!, outOf: card.rank.outOf ? num(card.rank.outOf) : null, best: hash(card.rank.best) } : null,
     honour, bestFinish, bestFinishParts: bf && bf.rank && bf.fieldSize ? { place: `${ord(bf.rank)} OF ${num(bf.fieldSize)}`, competition: bf.competition } : null, bio: card.bio ?? null, facts: (card.facts ?? []).map((x: any) => x.text),

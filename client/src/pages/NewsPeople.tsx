@@ -51,7 +51,7 @@ function PersonProfile({ person, competitors }: { person: NewsPerson; competitor
     </header>
     <div className="news-article-grid">
       <section>
-        {!!cards.length && <><h2 className="news-section-title">Their cards</h2><div className="news-story-cards">{cards.map(card => <Link key={card.id} href={card.cardUrl} className="news-story-card"><img src={`/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card)}`} width={300} height={420} loading="lazy" alt={`${person.name}, card ${card.number}`} /><span className="news-story-card-name">{card.season} · {card.number}</span></Link>)}</div></>}
+        {!!cards.length && <><h2 className="news-section-title">Their cards</h2><div className="news-story-cards">{cards.map(card => <Link key={card.id} href={card.cardUrl} className="news-story-card"><img src={`/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=front&w=300&v=${collectionShareVersion(card)}`} width={300} height={420} loading="lazy" alt={`${person.name}, card`} /><span className="news-story-card-name">{card.season}</span></Link>)}</div></>}
         {person.briefing && <p className="news-dek">{person.briefing}</p>}
         {!!person.facts.length && <><h2 className="news-section-title">On the record</h2><ul className="news-facts">{person.facts.map((fact, index) => <li key={index}><p>{fact.text}</p><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a><div className="news-muted">Checked {newsDate(fact.checkedAt)}</div></li>)}</ul></>}
         <h2 className="news-section-title">Observed competition teams</h2>

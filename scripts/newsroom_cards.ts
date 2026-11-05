@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-11-01
- * PURPOSE: Maintain stable collectible numbers and dated board snapshots; import explicitly
+ * PURPOSE: Maintain stable card identities (no invented numbers) and dated board snapshots; import explicitly
  * official results idempotently without changing clean art, identities or earlier result revisions.
  * Explicit seasonal omissions survive refresh; historical people and results stay in their ledgers.
  * SRP/DRY check: Pass — uses the existing news ledgers, curated art registry and shared schemas.
@@ -42,9 +42,8 @@ if (command === 'import-results') {
   const registry: CardRegistry = fs.existsSync(path.join(NEWS_DIRECTORY, 'cards.json')) ? cardRegistrySchema.parse(read('cards.json'))
     : { version: 1, season: '2026', commissionedBy: 'Mark Barney', commissionedAt: now, updatedAt: now, cards: [], snapshots: [] };
   const visuals = read('visual-identities.json');
-  const nextNumber = (kind: 'person' | 'team') => `${kind === 'person' ? 'P' : 'T'}${String(1 + Math.max(0, ...registry.cards.filter(card => card.kind === kind).map(card => Number(card.number.slice(1))))).padStart(3, '0')}`;
-  const add = (card: Omit<CardDefinition, 'number' | 'issuedAt' | 'season'>) => {
-    if (!registry.cards.some(old => old.id === card.id)) registry.cards.push({ ...card, number: nextNumber(card.kind), issuedAt: now, season: registry.season });
+  const add = (card: Omit<CardDefinition, 'issuedAt' | 'season'>) => {
+    if (!registry.cards.some(old => old.id === card.id)) registry.cards.push({ ...card, issuedAt: now, season: registry.season });
   };
   for (const person of (index.people ?? []).filter(person => !registry.excludedPersonIds?.includes(person.id))) add({ id: `person-${person.id}-2026`, kind: 'person', name: person.name, personId: person.id, entries: [], artNotes: [] });
   for (const subject of visuals.subjects.filter((item: any) => item.status === 'ready' && item.teamIds)) {
@@ -90,7 +89,7 @@ if (command === 'import-results') {
   cardRegistrySchema.parse(registry);
   save('cards.json', registry);
   if (!fs.existsSync(path.join(NEWS_DIRECTORY, 'card-results.json'))) save('card-results.json', []);
-  console.log(`Card Cabinet: ${registry.cards.length} numbered cards; ${registry.snapshots.length} dated team snapshots.`);
+  console.log(`Card Cabinet: ${registry.cards.length} cards; ${registry.snapshots.length} dated team snapshots.`);
 } else if (command !== 'check') throw Error('Commands: refresh, import-results <file>, check');
 const collection = getNewsCollection();
 console.log(`Validated ${collection.cards.filter(card => card.kind === 'person').length} individuals and ${collection.cards.filter(card => card.kind === 'team').length} team cards.`);

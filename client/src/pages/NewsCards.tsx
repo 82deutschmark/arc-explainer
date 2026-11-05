@@ -36,7 +36,7 @@ import '@/components/news/cardRelationships.css';
 
 type RoleFilter = 'all' | CollectionCard['role'];
 type TierFilter = 'all' | KaggleTier;
-type SortKey = 'number' | 'rank' | 'tier' | 'medals';
+type SortKey = 'name' | 'rank' | 'tier' | 'medals';
 type View = 'binder' | 'sheet';
 
 const tierRank = (card: CollectionCard) => card.career?.tier ? KAGGLE_TIERS.indexOf(card.career.tier) : -1;
@@ -73,8 +73,8 @@ function FlipFace({ card, width, priority = false, openHref }: { card: Collectio
   const flip = () => { setSeenBack(true); setSide(side === 'front' ? 'back' : 'front'); };
   return <div className={`cb-face tone-${toneOf(card)}${side === 'back' ? ' is-back' : ''}`}>
     <div className="cb-face-inner">
-      <img className="cb-front" src={faceSrc(card, 'front', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, ${collectionRoleLabel(card).toLowerCase()} card ${card.number}, front`} loading={priority ? 'eager' : 'lazy'} decoding="async" />
-      {seenBack && <img className="cb-reverse" src={faceSrc(card, 'back', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, card ${card.number}, back: the career record`} decoding="async" />}
+      <img className="cb-front" src={faceSrc(card, 'front', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, ${collectionRoleLabel(card).toLowerCase()} card, front`} loading={priority ? 'eager' : 'lazy'} decoding="async" />
+      {seenBack && <img className="cb-reverse" src={faceSrc(card, 'back', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, back: the career record`} decoding="async" />}
     </div>
     {openHref && <Link href={openHref} className="cb-open-card" aria-label={`Open ${card.name} ${catalogSubjectLabel(card).toLowerCase()}`} />}
     <button type="button" className="cb-flip" onClick={flip} aria-pressed={side === 'back'} aria-label={`Turn the ${card.name} card over to see the ${side === 'front' ? 'back' : 'front'}`}>{side === 'front' ? 'Back ↻' : 'Front ↻'}</button>
@@ -86,7 +86,7 @@ export function Tile({ card, index, contest = 'all' }: { card: CollectionCard; i
   return <article className={`cb-tile tone-${toneOf(card)}`} id={`card-${card.id}`}>
     <FlipFace card={card} width={300} priority={index < 6} openHref={card.cardUrl} />
     <div className="cb-caption">
-      <div className="cb-caption-top"><span className="cb-no">{card.number} · {catalogSubjectLabel(card)}</span><TierBadge card={card} /></div>
+      <div className="cb-caption-top"><span className="cb-no">{catalogSubjectLabel(card)}</span><TierBadge card={card} /></div>
       <h2><Link href={card.cardUrl}>{card.name}</Link></h2>
       {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionEarnedLine(card) ?? ''}</p>}
     </div>
@@ -104,12 +104,11 @@ function Sheet({ cards, sort, setSort, contest }: { cards: CollectionCard[]; sor
   const head = (key: SortKey, label: string) => <th scope="col"><button type="button" onClick={() => setSort(key)} disabled={key === 'rank' && contest === 'all'} aria-pressed={sort === key}>{label}{sort === key ? ' ▾' : ''}</button></th>;
   return <div className="cb-sheet-wrap"><table className="cb-sheet">
     <caption className="sr-only">Every card in the Cabinet, with role, tier, standing and medals</caption>
-    <thead><tr>{head('number', 'No.')}<th scope="col">Card</th>{head('tier', 'Tier')}<th scope="col">Contest</th><th scope="col">Team</th>{head('rank', 'Rank')}<th scope="col">Score</th>{head('medals', 'G · S · B')}</tr></thead>
+    <thead><tr><th scope="col">Card</th>{head('tier', 'Tier')}<th scope="col">Contest</th><th scope="col">Team</th>{head('rank', 'Rank')}<th scope="col">Score</th>{head('medals', 'G · S · B')}</tr></thead>
     <tbody>{cards.map(card => {
       const lead = catalogEntry(card, contest);
       const more = card.entries.filter(entry => contest === 'all' && entry !== lead && entry.status !== 'unavailable');
       return <tr key={card.id} className={`tone-${toneOf(card)}`}>
-        <td className="cb-no">{card.number}</td>
         <th scope="row"><Link href={card.cardUrl}>{card.name}</Link></th>
         <td><TierBadge card={card} /></td>
         <td>{lead ? competitionName(lead.competition) : '—'}{more.map(entry => <small key={entry.competitionId}>{competitionName(entry.competition)}</small>)}</td>
@@ -174,7 +173,7 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
   const [tier, setTier] = useState<TierFilter>('all');
   const [contest, setContest] = useState('all');
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortKey>('number');
+  const [sort, setSort] = useState<SortKey>('name');
   const [view, setView] = useState<View>('binder');
   const [set, setSet] = useState<'current' | 'archive'>('current');
   const [season, setSeason] = useState('all');
@@ -196,11 +195,11 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     if (tier !== 'all' && card.career?.tier !== tier) return false;
     if (contest !== 'all' && !catalogCompetitions(card, collection.sets).some(entry => entry.id === contest)) return false;
     if (!needle) return true;
-    const words = [card.name, card.number, collectionRoleLabel(card), ...card.accounts.map(account => account.label),
+    const words = [card.name, collectionRoleLabel(card), ...card.accounts.map(account => account.label),
       ...card.entries.flatMap(entry => [entry.teamName, ...entry.members.flatMap(member => [member.name, member.handle])]), ...card.teamHistory.map(team => team.teamName)];
     return words.join(' ').toLocaleLowerCase().includes(needle);
   }).sort((a, b) => {
-    const byNumber = a.number.localeCompare(b.number, 'en', { numeric: true });
+    const byNumber = a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });   // sorted by name: cards carry no invented numbers
     if (sort === 'rank' && contest !== 'all') {
       const rank = (card: CollectionCard) => catalogEntry(card, contest)?.rank ?? Infinity;
       return rank(a) - rank(b) || byNumber;
@@ -233,10 +232,10 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
       <label className="cb-search"><span className="sr-only">Find a card</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a name, team or Kaggle handle" /></label>
       <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{chip(role, setRole, 'competitor', 'People', counts.competitors)}{chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
       <div className="cb-chips" role="group" aria-label="Individual Kaggle tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
-      {contests.length > 1 && <div className="cb-chips" role="group" aria-label="Competition">{chip(contest, (value: string) => { setContest(value); if (sort === 'rank') setSort('number'); }, 'all', 'Any contest')}{contests.map(row => chip(contest, setContest, row.id, row.label))}</div>}
+      {contests.length > 1 && <div className="cb-chips" role="group" aria-label="Competition">{chip(contest, (value: string) => { setContest(value); if (sort === 'rank') setSort('name'); }, 'all', 'Any contest')}{contests.map(row => chip(contest, setContest, row.id, row.label))}</div>}
       <label className="cb-sort"><span>Card set</span><select value={edition} onChange={event => setEdition(event.target.value)}><option value="all">All sets</option>{collection.sets?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
       <label className="cb-sort"><span>Season</span><select value={season} onChange={event => setSeason(event.target.value)}><option value="all">All seasons</option>{seasons.map(year => <option key={year} value={year}>{year}</option>)}</select></label>
-      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="number">Card number</option><option value="rank" disabled={contest === 'all'}>Place in selected contest</option><option value="tier">Kaggle tier</option><option value="medals">Medals</option></select></label>
+      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="name">Name</option><option value="rank" disabled={contest === 'all'}>Place in selected contest</option><option value="tier">Kaggle tier</option><option value="medals">Medals</option></select></label>
       <div className="cb-chips cb-view" role="group" aria-label="View">{chip(view, setView, 'binder', 'Binder')}{chip(view, setView, 'sheet', 'Checklist')}</div>
       <p className="cb-shown" role="status" aria-live="polite">{shown.length} card matches · {shown.length ? page * CATALOG_PAGE_SIZE + 1 : 0}–{Math.min((page + 1) * CATALOG_PAGE_SIZE, shown.length)} shown</p>
     </form>
@@ -307,18 +306,18 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
-    { key: 'current', kind: 'current', label: catalogSet(card, sets)?.name ?? card.season, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'} · No. ${card.number}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
+    { key: 'current', kind: 'current', label: catalogSet(card, sets)?.name ?? card.season, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
     ...all.filter(other => card.kind === 'person' && other.kind === 'person' && other.personId === card.personId && other.id !== card.id)
-      .map(other => ({ key: other.id, kind: 'edition' as const, label: catalogSet(other, sets)?.name ?? other.season, sub: `Edition · No. ${other.number}`, src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card ${other.number}`, href: other.cardUrl })),
+      .map(other => ({ key: other.id, kind: 'edition' as const, label: catalogSet(other, sets)?.name ?? other.season, sub: 'Edition', src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card`, href: other.cardUrl })),
     ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);
-      return teamCard ? [{ key: teamCard.id, kind: 'team' as const, label: teamCard.name, sub: `Team · No. ${teamCard.number}`, src: faceSrc(teamCard, 'front', 260, collectionShareVersion(teamCard)), alt: `${teamCard.name}, team card ${teamCard.number}`, href: teamCard.cardUrl }] : [];
+      return teamCard ? [{ key: teamCard.id, kind: 'team' as const, label: teamCard.name, sub: 'Team', src: faceSrc(teamCard, 'front', 260, collectionShareVersion(teamCard)), alt: `${teamCard.name}, team card`, href: teamCard.cardUrl }] : [];
     }) : []),
   ];
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
-    <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link><span>{card.number}</span></nav>
+    <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
     <div className="cb-dgrid is-paired">
       <div className="cb-dcard">

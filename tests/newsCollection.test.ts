@@ -29,7 +29,7 @@ function entry(competition: NewsCompetition = 'arc-3', teamId = '100') {
   return { competition, competitionId: KAGGLE_COMPETITIONS[competition].slug, teamId };
 }
 function teamCard(competition: NewsCompetition = 'arc-3', teamId = '100'): CardDefinition {
-  return { id: `team-${competition}-${teamId}`, number: 'T001', kind: 'team', name: 'Same team name',
+  return { id: `team-${competition}-${teamId}`, kind: 'team', name: 'Same team name',
     season: '2026', issuedAt: checkedAt, entries: [entry(competition, teamId)], artNotes: [] };
 }
 function person(id: string, handle = id): NewsPerson {
@@ -37,8 +37,8 @@ function person(id: string, handle = id): NewsPerson {
     url: `https://www.kaggle.com/${handle}`, sourceUrl: `https://www.kaggle.com/${handle}`,
     sourceTitle: 'Own public account', checkedAt }], facts: [], memberships: [], hallOfFame: [] };
 }
-function personCard(id: string, number = 'P001'): CardDefinition {
-  return { id: `person-${id}`, personId: id, kind: 'person', number, name: `Verified ${id}`,
+function personCard(id: string): CardDefinition {
+  return { id: `person-${id}`, personId: id, kind: 'person', name: `Verified ${id}`,
     season: '2026', issuedAt: checkedAt, entries: [], artNotes: [] };
 }
 function snapshot(competition: NewsCompetition = 'arc-3', teamId = '100', members = ['current']): CardSnapshot {
@@ -90,8 +90,8 @@ describe('Card Cabinet identity and statistics', () => {
   });
 
   it('keeps identical names and even identical numeric IDs separate across competitions', () => {
-    const arc3 = { ...teamCard(), number: 'T001' };
-    const arc2 = { ...teamCard('arc-2'), number: 'T002' };
+    const arc3 = { ...teamCard() };
+    const arc2 = { ...teamCard('arc-2') };
     const rows = [snapshot('arc-3', '100', ['alpha']),
       { ...snapshot('arc-2', '100', ['beta']), rank: 9, score: 77 }];
     const cards = buildNewsCollection(registry([arc3, arc2, personCard('alpha')], rows), index([person('alpha'), person('beta')])).cards;
@@ -111,7 +111,7 @@ describe('Card Cabinet identity and statistics', () => {
 
   it('links players and team cards by exact contest identity and verified roster handles', () => {
     const arc3 = teamCard();
-    const arc2 = { ...teamCard('arc-2'), number: 'T002' };
+    const arc2 = { ...teamCard('arc-2') };
     const collection = buildNewsCollection(registry([arc3, arc2, personCard('alpha')], [
       snapshot('arc-3', '100', ['alpha', 'unresolved']), snapshot('arc-2', '100', ['beta']),
     ]), index([person('alpha'), person('beta')]));
@@ -131,14 +131,14 @@ describe('Card Cabinet identity and statistics', () => {
   it('links a roster to the person edition in the same set', () => {
     const team = { ...teamCard(), setId: 'arc-three' };
     const older = { ...personCard('alpha'), id: 'alpha-arc-three', setId: 'arc-three' };
-    const newer = { ...personCard('alpha', 'P002'), id: 'alpha-arc-two', setId: 'arc-two', issuedAt: '2026-10-02T12:00:00Z' };
+    const newer = { ...personCard('alpha'), id: 'alpha-arc-two', setId: 'arc-two', issuedAt: '2026-10-02T12:00:00Z' };
     const collection = buildNewsCollection(registry([team, older, newer], [snapshot('arc-3', '100', ['alpha'])]), index([person('alpha')]));
     expect(collection.cards[0].entries[0].members[0].cardUrl).toBe(collectionCardPath(older.id));
   });
 
   it('links a person to their team card from the same set', () => {
     const older = { ...teamCard(), id: 'team-legacy', setId: 'legacy-set' };
-    const newer = { ...teamCard(), id: 'team-specific', number: 'T002', setId: 'arc3-set', issuedAt: '2026-10-02T12:00:00Z' };
+    const newer = { ...teamCard(), id: 'team-specific', setId: 'arc3-set', issuedAt: '2026-10-02T12:00:00Z' };
     const player = { ...personCard('alpha'), id: 'alpha-legacy', setId: 'legacy-set' };
     const sets = [{ id: 'legacy-set', name: 'Legacy', season: '2026', competitionIds: [entry().competitionId] }];
     const collection = buildNewsCollection(registry([older, newer, player], [snapshot('arc-3', '100', ['alpha'])]), index([person('alpha')]), [], {}, null, null, sets);
@@ -148,8 +148,8 @@ describe('Card Cabinet identity and statistics', () => {
 
   it('keeps a competition edition’s live and final results inside that set', () => {
     const arc3 = { ...personCard('alpha'), id: 'alpha-arc3', setId: 'arc3-set' };
-    const arc2 = { ...personCard('alpha', 'P002'), id: 'alpha-arc2', setId: 'arc2-set' };
-    const general = { ...personCard('alpha', 'P003'), id: 'alpha-general', setId: 'general-set' };
+    const arc2 = { ...personCard('alpha'), id: 'alpha-arc2', setId: 'arc2-set' };
+    const general = { ...personCard('alpha'), id: 'alpha-general', setId: 'general-set' };
     const sets = [
       { id: 'arc3-set', name: 'ARC3', season: '2026', competitionIds: [entry('arc-3').competitionId] },
       { id: 'arc2-set', name: 'ARC2', season: '2026', competitionIds: [entry('arc-2').competitionId] },
@@ -183,8 +183,8 @@ describe('Card Cabinet identity and statistics', () => {
       membership('arc-2', '300', '2026-10-02T08:45:00Z'),
       membership('arc-3', '100', '2026-10-02T10:00:00+02:00'),
     ];
-    const latest = { ...teamCard('arc-3', '200'), number: 'T001' };
-    const otherContest = { ...teamCard('arc-2', '300'), number: 'T002' };
+    const latest = { ...teamCard('arc-3', '200') };
+    const otherContest = { ...teamCard('arc-2', '300') };
     const card = buildNewsCollection(registry([personCard('alpha'), latest, otherContest], []), index([player])).cards[0];
     expect(card.teamHistory.map(row => [row.competition, row.teamId, row.status])).toEqual([
       ['arc-2', '300', 'last-observed'], ['arc-3', '200', 'last-observed'], ['arc-3', '100', 'previous'],
@@ -305,9 +305,8 @@ describe('Card Cabinet identity and statistics', () => {
     expect(() => buildNewsCollection(registry([personCard('missing')], []), index())).toThrow(/verified person/i);
   });
 
-  it('rejects duplicate card identities/numbers, duplicate snapshots and mismatched contest keys', () => {
+  it('rejects duplicate card identities, duplicate snapshots and mismatched contest keys', () => {
     expect(cardRegistrySchema.safeParse(registry([teamCard(), teamCard()])).success).toBe(false);
-    expect(cardRegistrySchema.safeParse(registry([teamCard(), { ...teamCard('arc-2'), id: 'different' }])).success).toBe(false);
     expect(cardRegistrySchema.safeParse(registry([teamCard()], [snapshot(), snapshot()])).success).toBe(false);
     expect(cardRegistrySchema.safeParse(registry([teamCard()], [{ ...snapshot(), competitionId: KAGGLE_COMPETITIONS['arc-2'].slug }])).success).toBe(false);
   });
@@ -334,7 +333,7 @@ describe('official final results and recipient credit', () => {
   });
 
   it('credits the official roster, reconnecting a former member without honoring a newcomer', () => {
-    const cards = [teamCard(), personCard('former'), personCard('newcomer', 'P002')];
+    const cards = [teamCard(), personCard('former'), personCard('newcomer')];
     const rows = [snapshot('arc-3', '100', ['newcomer'])];
     const official = result({ creditedHandles: ['former', 'unresolved'] });
     const collection = buildNewsCollection(registry(cards, rows), index([person('former'), person('newcomer')]), [official]);
@@ -480,7 +479,7 @@ describe('the real permanent commissioned collection', () => {
     expect(individuals.some(card => card.personId === 'mike-knoop')).toBe(false);
     expect(individuals.length).toBeGreaterThanOrEqual(65);
     expect(teams.length).toBeGreaterThanOrEqual(16);
-    expect(new Set(collection.cards.map(card => card.number)).size).toBe(collection.cards.length);
+    expect(new Set(collection.cards.map(card => card.id)).size).toBe(collection.cards.length);
     const commissioned = [
       ['yktori-team', 'yktori'], ['mtg-team', 'mtg'], ['grigoriy-team', 'grigoriy'],
       ['kontext-team', 'japanese-ensemble'], ['artificial-agency-team', 'artificial-agency'],
@@ -500,9 +499,8 @@ describe('the real permanent commissioned collection', () => {
 
   it('keeps all three ARChitect individual fronts separate from the historical team card', () => {
     const collection = getNewsCollection();
-    for (const [personId, number] of [['jan-disselhoff', 'P009'], ['david-hartmann', 'P010'], ['daniel-franzen', 'P011']]) {
+    for (const personId of ['jan-disselhoff', 'david-hartmann', 'daniel-franzen']) {
       const card = collection.cards.find(card => card.personId === personId)!;
-      expect(card.number).toBe(number);
       expect(card.art?.src).not.toBe('/ARChitechts.png');
       expect(card.pastCards.some(past => past.imageSrc === '/ARChitechts.png')).toBe(true);
     }
