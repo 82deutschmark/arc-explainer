@@ -1,3 +1,7 @@
+### Version 9.162.9 · November 4, 2026
+
+- Review pass on the synthetic picks: a card shows its whole teaser (up to six lines, not four), and the details panel's picture is smaller on a phone so the rules start sooner. Author: Claude Sonnet 5.5.
+
 ### Version 9.162.8 · November 4, 2026
 
 - A renamed synthetic pick is matched by its old tag first, because its new tag can belong to an unrelated game on this site: ST01 (was HC01) plays the approved game, not the outside st01 in the mirror. SE01 (was XB02) is found the same way. Author: Claude Opus 5.5 High.

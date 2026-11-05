@@ -243,7 +243,7 @@ function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
           <span className="text-[10px] tracking-[.5px]" style={{ color: '#8E8B88' }}>{pick.levels} LV</span>
         </span>
         <span className="block text-[10px] leading-[1.5] truncate" style={{ color: '#8E8B88', fontFamily: MONO }}>{pick.inputs}</span>
-        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-4" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
+        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-6" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
       </span>
     </button>
   );
@@ -266,7 +266,7 @@ function PickPanel({ pick }: { pick: Pick }) {
       <div className="min-w-0">
         <PlayLink href={pick.href} label={`Play ${pick.label}`} className="block">
           <img src={pick.image} alt={`${pick.label} opening board`} width={260} height={260}
-               className="block w-full aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
+               className="block w-full max-w-[180px] md:max-w-none aspect-square" style={{ imageRendering: 'pixelated', background: '#000' }} />
         </PlayLink>
         <div className="mt-2"><LevelStrip pick={pick} /></div>
         <div className="mt-2 flex items-center justify-between gap-2 text-[11px]" style={{ color: '#8E8B88', fontFamily: MONO }}>
