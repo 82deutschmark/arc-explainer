@@ -103,15 +103,13 @@ it('Mark has his own avatar on his card', () => {
   expect(mark.art?.src).toBe('/news-images/people/mark-barney-instagram-original.jpg');
 });
 
-it('nobody is a player: competitors, sponsors and teams are named in Kaggle\'s words', () => {
+it('nobody is a player: competitors and teams are named in Kaggle\'s words, and the set holds only competitors and teams', () => {
   const cards = prepare().cards;
   expect(cards.some(card => card.id === 'person-mike-knoop-2026')).toBe(false); // Current editorial omission.
-  expect(cards.find(card => card.id === 'person-francois-chollet-2026')!.role).toBe('sponsor');
+  expect(cards.some(card => card.id === 'person-francois-chollet-2026')).toBe(false); // Boss, 5 Nov 2026: not a competitor or a team.
+  expect(cards.every(card => card.role !== 'sponsor')).toBe(true);
   expect(cards.filter(card => card.kind === 'team').every(card => card.role === 'team')).toBe(true);
-  const sponsor = renderDetail('person-francois-chollet-2026').html;
-  expect(sponsor).toContain('Competition sponsor');
-  expect(sponsor).not.toContain('Kaggle profile');
-  for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026', 'person-francois-chollet-2026']) {
+  for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026']) {
     const { card, html: page } = renderDetail(id);
     // The Digest's own story headlines are quoted as they were printed; everything else is ours.
     const html = card.highlights.reduce((text, fact) => text.split(fact.text).join(''), card.stories.reduce((text, story) => text.split(story.headline).join(''), page));
@@ -133,7 +131,7 @@ it('the Cabinet page is a binder and a checklist with every tier named, starting
   const html = renderPage('/news/cards', '/news/cards');
   expect(html).toContain('ARC Prize');
   for (const tier of ['Grandmaster', 'Master', 'Expert']) expect(html).toContain(tier);
-  expect(html).toContain('Competition sponsor');
+  expect(html).not.toContain('Competition sponsor');   // Boss, 5 Nov 2026: the set holds only competitors and teams
   // 30-Oct-2026 (Claude Sonnet 5.5 Medium): the redesigned Cabinet list no longer links the Hall of Fame itself (only each card's page
   // does, under "Everything else"). The link is checked on a card page; whether the list should link it too is for the page's owner.
   expect(renderPage('/news/cards/person-jean-francois-puget-2026', '/news/cards/:cardId')).toContain('href="/hall-of-fame"');

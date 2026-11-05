@@ -101,7 +101,7 @@ export async function buildCollectionShareNode(card: CollectionCard, collection:
       // Wordmark strip: series and season from the set registry, then the card number.
       box({ justifyContent: 'space-between', alignItems: 'center', height: 42, flexShrink: 0 },
         text(`${vm.wordmark} ${vm.season}`.trim().toUpperCase(), clip({ fontFamily: ff(FONT.bebas), fontSize: 36, letterSpacing: 2, color: ink1, maxWidth: INNER_W * 0.7 })),
-        vm.number ? box({ border: `3px solid ${INK}`, background: PAPER_LIGHT, padding: '2px 12px', fontFamily: ff(FONT.slab), fontSize: 26 }, vm.number) : null),
+        null),   // no card number on the share face (Boss, 5 Nov 2026)
       box({ flexDirection: 'column', marginTop: 8, flexShrink: 0 },
         ...nameFit.lines.map(line => text(line, { fontFamily: ff(FONT.slab), fontSize: nameFit.size, lineHeight: 1.02, color: INK }))),
       box({ marginTop: 10, flexShrink: 0, background: vm.T.main, color: vm.T.ink, border: `3px solid ${INK}`, padding: '2px 16px', alignItems: 'center', justifyContent: 'space-between', height: 58, fontFamily: ff(FONT.bebas), fontSize: 42, letterSpacing: 3 },

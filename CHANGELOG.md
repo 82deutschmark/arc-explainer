@@ -1,3 +1,7 @@
+### Version 9.162.12 · November 5, 2026
+
+- Cards: no card number and no tier medallion (the "M" disc, the team-size disc) on any card face or share image; the pennant widens and the stamp moves to the right. François Chollet's card is removed: the set holds only competitors and teams. The team profile page (for example Sakayori Lab) is redesigned: the roster's real cards lead the page, facts read as editorial text, and the raw team ID and observation dates become a small fact sheet. Author: Claude Sonnet 5.5 Medium.
+
 ### Version 9.162.11 · November 5, 2026
 
 - Cards, all of them: a competitor's front is now a big edge-to-edge portrait with only the badges, name and tier (no framed plate, no blurred side bands, no stats or club blurb). The back is a ledger record sheet laid over the card's second picture, or over a blank designed backdrop when there is none, and never a repeat of the front. The career record takes as much room as it can, so a long career fills the card; club, location and trivia sit under it on the same sheet, and the address and copyright are printed on the sheet at a readable size. Approved 5:7 art of any normal size (1000 wide and up) now counts as full-card art. Card images refresh (render version 8). Author: Claude Sonnet 5.5 Medium.

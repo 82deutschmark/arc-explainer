@@ -14,6 +14,7 @@
  *          Does not import back.ts (which delegates here), so there is no cycle.
  *
  * CHANGELOG
+ * 05-Nov-2026 v2 (Claude Sonnet 5.5 Medium): no card number and no tier medallion (Boss); the blank backdrop carries the initials.
  * 05-Nov-2026 v1 (Claude Sonnet 5.5 Medium): first version.
  */
 import sharp from 'sharp';
@@ -76,13 +77,11 @@ export interface LedgerInput { vm: VM; bm: BackModel; backdrop: Buffer | null; b
 
 /** Headline strip: number box, name, type and tier chips, handle. Solid paper, clearly a label stuck on the picture. */
 async function header(vm: VM, ink1: string): Promise<Node> {
-  const nameW = COL - 104 - 28;
+  const nameW = COL - 40;
   const fit = await fitNameLines(vm.name.toUpperCase(), FONT.slab, 400, nameW, 58, { max: 40, min: 24, twoLineMax: 28, twoLineMin: 18 });
   const platform = vm.handlePlatform ? (vm.handlePlatform === 'x' ? 'X' : vm.handlePlatform[0].toUpperCase() + vm.handlePlatform.slice(1)) : '';
-  return box({ width: COL, height: HEADER_H, background: PAPER, border: `3px solid ${INK}`, boxShadow: '6px 6px 0 rgba(0,0,0,0.5)', padding: '10px 14px', alignItems: 'center' },
-    box({ width: 90, height: 82, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', border: `4px solid ${INK}`, boxShadow: `4px 4px 0 ${ink1}`, flexShrink: 0 },
-      bebas('NO.', 16, ink1, { letterSpacing: 3 }), box({ fontFamily: ff(FONT.slab), fontSize: 29, color: INK, lineHeight: 1, marginTop: 3 }, vm.number)),
-    box({ flexGrow: 1, flexDirection: 'column', justifyContent: 'center', paddingLeft: 16, minWidth: 0 },
+  return box({ width: COL, height: HEADER_H, background: PAPER, border: `3px solid ${INK}`, boxShadow: '6px 6px 0 rgba(0,0,0,0.5)', padding: '10px 18px', alignItems: 'center' },
+    box({ flexGrow: 1, flexDirection: 'column', justifyContent: 'center', paddingLeft: 6, minWidth: 0 },
       ...fit.lines.map(l => box({ fontFamily: ff(FONT.slab), fontSize: fit.size, color: INK, lineHeight: 1.04, whiteSpace: 'nowrap' }, l)),
       box({ marginTop: 8, alignItems: 'center' },
         box({ background: ink1, padding: '3px 10px 2px 10px', border: `2px solid ${INK}` }, bebas(vm.typeLabel, 19, '#fff', { letterSpacing: 2.4 })),
@@ -185,16 +184,11 @@ export async function ledgerNode({ vm, bm, backdrop, blank }: LedgerInput): Prom
   // No second picture: the blank design carries one big faint tier medallion in the free space, so it reads as a design, not a hole.
   const freeTop = MARGIN + HEADER_H + 12, freeH = sheetTop - 28 - freeTop;
   const medD = Math.min(380, freeH - 20), mx = Math.round((W - medD) / 2), my = Math.round(freeTop + (freeH - medD) / 2);
-  const T = vm.T, abbr = vm.T.abbr ?? '';
-  const emblem = !hasArt && vm.hasBadge && medD >= 160 ? [
-    svgPic(medallionSvg(T, medD), mx, my, medD, medD, { opacity: 0.5 }),
-    abbr ? at(mx, my - 6, medD, medD, { alignItems: 'center', justifyContent: 'center', opacity: 0.5 },
-      box({ fontFamily: ff(FONT.slab), fontSize: Math.round(medD * (abbr.length > 1 ? 0.36 : 0.5)), color: T.ink, lineHeight: 1 }, abbr)) : null,
-  ] : (!hasArt && !vm.hasBadge && medD >= 160 ? [
-    // no tier medallion (an unranked competitor): the blank design carries the initials instead
+    const initials = vm.name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => Array.from(w)[0]).join('').toUpperCase();
+  const emblem = !hasArt && medD >= 160 && initials ? [
     at(0, my, W, medD, { alignItems: 'center', justifyContent: 'center', opacity: 0.3 },
-      box({ fontFamily: ff(FONT.slab), fontSize: Math.round(medD * 0.5), color: T.light, lineHeight: 1, letterSpacing: 4 }, Array.from(vm.name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => Array.from(w)[0]).join('').toUpperCase()).join(''))),
-  ] : []);
+      box({ fontFamily: ff(FONT.slab), fontSize: Math.round(medD * 0.5), color: vm.T.light, lineHeight: 1, letterSpacing: 4 }, initials)),
+  ] : [];
   return box({ width: W, height: H, position: 'relative', background: '#000', overflow: 'hidden' },
     pic(jpegUri(hasArt ? backdrop! : blank), 0, 0, W, H),
     ...emblem,

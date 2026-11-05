@@ -148,7 +148,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
   const teamSize: number | null = (card.roster?.length || card.contests?.[0]?.team?.size) ?? null;
   const bare = family === 'competitor' && !contests.length && !card.medals && !card.rank && !tierName && !card.career?.rows?.length && !(card.honors?.length);
   return {
-    card, family, T, tierName, hasBadge: family === 'competitor' && !!tierName || family === 'sponsor' || family === 'team',
+    card, family, T, tierName, hasBadge: false,   // 05-Nov-2026 (Boss): no tier medallion (the "M" / team-size disc) on any card face; tier shows in the border colour and the tier word
     name: printableName(card.name, card.handle?.name), handle: card.handle?.name ? `@${card.handle.name}` : null, handlePlatform: card.handle?.platform ?? null,
     typeLabel: family === 'competitor' ? (bare ? 'PROFILE' : 'COMPETITOR') : family === 'sponsor' ? 'COMPETITION SPONSOR' : 'TEAM',
     tierLine: tierName ? `KAGGLE ${tierName.toUpperCase()}` : null, tierWord: tierStyle ? tierStyle.label.toUpperCase() : null,

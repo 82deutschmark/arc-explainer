@@ -19,6 +19,7 @@
  * SRP/DRY check: Pass. Reuses box()/at()/pic() and the fonts from kit.ts, fit and measure helpers from kit.ts.
  *
  * CHANGELOG
+ * 05-Nov-2026 v7 (Claude Sonnet 5.5 Medium): no card number box and no tier medallion on any front (Boss); the pennant widens and the stamp moves right.
  * 05-Nov-2026 v6 (Claude Sonnet 5.5 Medium): portrait front for competitors with a real picture: edge to edge, name ribbon and tier line only (Boss rule).
  * 30-Oct-2026 v1 (Claude Sonnet 5.5 Medium): front first version.
  * 30-Oct-2026 v2 (Claude Sonnet 5.5 Medium): four review rounds on the design pass.
@@ -69,10 +70,9 @@ const WHITE = '#ffffff';
 export const FL = {
   T: BORDER,                                // border thickness
   logo: { cx: 102, cy: 64, r: 33 },         // round set logo, top-left (inside the badge band)
-  pennant: { x: 134, y: 40, w: 226, h: 48 },
-  stamp: { x: 466, y: 28, s: 88 },          // LIVE / FINAL burst, in the band beside the number box
-  numBox: { x: 572, y: 34, w: 100, h: 64 },
-  ribbon: { y: 726, h: 64, x0: 26, x1: 724 },
+  pennant: { x: 134, y: 40, w: 330, h: 48 },   // wider since the number box left the band (Boss, 5 Nov 2026)
+  stamp: { x: 616, y: 28, s: 88 },          // LIVE / FINAL burst, in the band beside the number box
+    ribbon: { y: 726, h: 64, x0: 26, x1: 724 },
   sub: { y: 790, h: 36 },
   panel: { y: 826, b: 1024 },
   strip: { y: 934, h: 44 },
@@ -117,9 +117,6 @@ function furnitureSvg(vm: VM, art: ArtResult, portrait = false): string {
   const pen = `M${P.x} ${P.y}H${P.x + P.w}L${P.x + P.w - 20} ${P.y + P.h / 2}L${P.x + P.w} ${P.y + P.h}H${P.x}Z`;
   s += `<path d="${pen}" transform="translate(4 5)" fill="#000" opacity=".55"/><path d="${pen}" fill="${T.deep}" stroke="#000" stroke-width="3" stroke-linejoin="round"/><path d="${pen}" fill="url(#hd)"/><path d="${rr(P.x + 5, P.y + 5, P.w - 34, P.h - 10, 2)}" fill="none" stroke="${T.main}" stroke-width="1.8"/>`;
   s += `<circle cx="${L.cx + 3}" cy="${L.cy + 4}" r="${L.r}" fill="#000" opacity=".55"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r}" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r - 5}" fill="${T.main}" stroke="#000" stroke-width="2"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r - 9}" fill="none" stroke="${T.ink}" stroke-opacity=".7" stroke-width="1.5" stroke-dasharray="3 3"/>`;
-  // number box
-  const N = FL.numBox;
-  s += `<rect x="${N.x + 4}" y="${N.y + 5}" width="${N.w}" height="${N.h}" fill="#000" opacity=".55"/><rect x="${N.x}" y="${N.y}" width="${N.w}" height="${N.h}" fill="#fff" stroke="#000" stroke-width="3.2"/><rect x="${N.x}" y="${N.y}" width="${N.w}" height="16" fill="${T.main}" stroke="#000" stroke-width="3.2"/>`;
   // the name ribbon: pennant shape pointing right, hard shadow, outline and inner white keyline
   const rb = `M${r.x0} ${r.y}H${r.x1 - 24}L${r.x1} ${r.y + r.h / 2}L${r.x1 - 24} ${r.y + r.h}H${r.x0}Z`;
   s += `<path d="${rb}" transform="translate(5 6)" fill="#000" opacity=".6"/><path d="${rb}" fill="url(#rib)" stroke="#000" stroke-width="4" stroke-linejoin="round"/><path d="${rr(r.x0 + 6, r.y + 5, r.x1 - r.x0 - 40, r.h - 10, 3)}" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.6"/>`;
@@ -235,7 +232,7 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   // The ARC Prize mark (white blocky name with a magenta and a yellow cell after the first word) is drawn for the ARC Prize set;
   // any other series name falls through to the plain Bebas wordmark below.
   const arcMark = wm === 'ARC PRIZE';
-  const wmSize = (await textWidth(wm, FONT.bebas, 400, 28, 1.6)) <= 160 ? 28 : 22;
+  const wmSize = (await textWidth(wm, FONT.bebas, 400, 28, 1.6)) <= 285 ? 28 : 22;
   if (arcMark) kids.push(at(FL.pennant.x + 14, FL.pennant.y, FL.pennant.w - 44, FL.pennant.h, { alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' },
     box({ alignItems: 'center' },
       nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, 'ARC'),
@@ -245,11 +242,6 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   else kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center' },
     nowrap({ fontFamily: ff(FONT.bebas), fontSize: wmSize, color: WHITE, letterSpacing: 1.6, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, wm),
     vm.publisher ? nowrap({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 10.5, color: T.light, letterSpacing: 0.8, marginTop: 2 }, vm.publisher.toUpperCase()) : null));
-  const N = FL.numBox;
-  kids.push(at(N.x, N.y, N.w, 16, { alignItems: 'center', justifyContent: 'center' }, box({ fontFamily: ff(FONT.bebas), fontSize: 14, color: T.ink, letterSpacing: 2, lineHeight: 1 }, 'NO.')));
-  kids.push(at(N.x, N.y + 17, N.w, N.h - 17, { alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
-    box({ fontFamily: ff(FONT.slab), fontSize: 27, color: INK, lineHeight: 1 }, vm.number),
-    null));
   if (vm.stamp) {
     // the one as-of date on the face: inside the burst, in the badge band, clear of the subject zone
     const S = FL.stamp, live = vm.stamp.word === 'LIVE';

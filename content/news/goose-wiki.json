@@ -28,7 +28,6 @@
     "/news-images/cards/2026/bushi-liu-explorer-v1.webp": "abb64d26b7d999f63f68b2696aab09248503d7950289589dcdd849947c55e378",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
-    "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp": "ca9114052c9816d8e9a3e4aa7ffb198d36dbcdb0b12e2832b10771443313239d",
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/keith-tyser-hero-v1.webp": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
     "/news-images/cards/2026/kontext-arc2-team-v1.webp": "ef3f49726a16ccda7ee4519d59c5d8de247f2c93d59486bd56438dd84ead3d53",
@@ -11890,7 +11889,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "fa0fb7e7da1ac95b9a92671f1f2b1f8f6b14300b5b39e89f02b26d20b4096f32",
+  "fingerprint": "b5052486f221343b9f161a739da470b249ac7344678740448e9f5916a2377bf6",
   "people": [
     {
       "accounts": [
@@ -18569,23 +18568,6 @@
       },
       {
         "art": {
-          "alt": "François Chollet as an ARC Hall of Fame cyberpunk rendering: a glowing gauntlet reaching out among floating ARC puzzle grids",
-          "credit": "The Boss's parody book-cover art for Deep Learning with Python, cropped to the figure",
-          "src": "/news-images/cards/2026/francois-chollet-ad-crop-v1.webp"
-        },
-        "artNotes": [],
-        "description": "The ARC Explainer Hall of Fame describes François Chollet, creator of Keras, as the person who defined the ARC-AGI benchmark in 2019 to measure general intelligence.",
-        "entries": [],
-        "id": "person-francois-chollet-2026",
-        "issuedAt": "2026-10-30T00:23:50.049Z",
-        "kind": "person",
-        "name": "François Chollet",
-        "number": "P012",
-        "personId": "francois-chollet",
-        "season": "2026"
-      },
-      {
-        "art": {
           "alt": "Isaiah Pressman’s Canada goose Kaggle avatar",
           "artworkId": "character-isaiahp",
           "commissionedAt": "2026-11-02T23:03:02+00:00",
@@ -20442,11 +20424,12 @@
     "commissionedAt": "2026-10-30T00:23:50.049Z",
     "commissionedBy": "Mark Barney",
     "excludedPersonIds": [
-      "mike-knoop"
+      "mike-knoop",
+      "francois-chollet"
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-05T19:07:06+00:00",
+    "updatedAt": "2026-11-05T19:55:00+00:00",
     "version": 1
   },
   "results": [],
@@ -20505,24 +20488,6 @@
       }
     ],
     "sponsors": {
-      "francois-chollet": {
-        "bio": "Creator of Keras and of the ARC-AGI benchmark, the test of general intelligence this whole competition is built on.",
-        "facts": [
-          {
-            "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
-            "text": "Creator of Keras."
-          },
-          {
-            "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
-            "text": "Defined the ARC-AGI benchmark in 2019 to measure general intelligence."
-          },
-          {
-            "sourceUrl": "https://github.com/fchollet/ARC-AGI",
-            "text": "The ARC-AGI repository is hosted under his own fchollet GitHub account."
-          }
-        ],
-        "organisation": "ARC Prize Foundation"
-      },
       "mike-knoop": {
         "bio": "Mike Knoop co-founded Zapier, then launched the ARC Prize in 2024 with François Chollet to speed progress toward artificial general intelligence.",
         "facts": [

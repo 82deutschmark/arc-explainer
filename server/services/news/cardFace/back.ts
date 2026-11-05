@@ -157,23 +157,18 @@ const platformWord = (p: string | null) => (p === 'x' ? 'X' : p ? p[0].toUpperCa
 function header(vm: VM, ink1: string, mini: Buffer, nameFit: { size: number; lines: string[] }): Node {
   const platform = platformWord(vm.handlePlatform);
   return box({ height: HEADER_H, alignItems: 'stretch', flexShrink: 0 },
-    // left: Topps number box, then the series label pinned to the bottom edge of the header
-    box({ width: 104, flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between' },
-      box({ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 96, height: 76, background: '#fff', border: `4px solid ${INK2}`, boxShadow: `4px 4px 0 ${ink1}` },
-        bebas('NO.', 15, ink1, { letterSpacing: 3 }), box({ fontFamily: ff(FONT.slab), fontSize: 27, color: INK2, lineHeight: 1, marginTop: 2 }, vm.number),
-        null),
-      box({ height: 40, alignItems: 'center' },
-        box({ flexDirection: 'column' }, bebas(vm.wordmark.toUpperCase(), 17, INK2, { letterSpacing: 1.6 }), bebas(vm.season, 17, ink1, { letterSpacing: 2, marginTop: 2 })))),
     // middle: name, type chip, and the handle on the same line as the series label (equal row height, centred)
-    box({ flexGrow: 1, flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 12, paddingRight: 8, minWidth: 0 },
+    box({ flexGrow: 1, flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 0, paddingRight: 8, minWidth: 0 },
       box({ flexDirection: 'column' },
-        ...nameFit.lines.map(line => box({ fontFamily: ff(FONT.slab), fontSize: nameFit.size, color: INK2, lineHeight: 1.04, textTransform: 'uppercase', ...clip({ width: COL_W - 104 - 110 - 20 }) }, line)),
+        ...nameFit.lines.map(line => box({ fontFamily: ff(FONT.slab), fontSize: nameFit.size, color: INK2, lineHeight: 1.04, textTransform: 'uppercase', ...clip({ width: COL_W - 110 - 20 }) }, line)),
         box({ marginTop: 6, alignItems: 'center' },
           box({ background: ink1, padding: '3px 10px 2px 10px', border: `2px solid ${INK2}` }, bebas(vm.typeLabel, 20, '#fff', { letterSpacing: 2.4 })),
           vm.tierLine ? bebas(vm.tierLine, 22, ink1, { marginLeft: 10, letterSpacing: 2.4 }) : null,
           vm.family === 'sponsor' && vm.role ? bebas(vm.role.toUpperCase(), 22, ink1, { marginLeft: 10, letterSpacing: 2.2 }) : null)),
       box({ height: 40, alignItems: 'center' },
-        vm.handle ? box({ alignItems: 'baseline' }, mono(vm.handle, 17, INK2, 700), platform ? mono(`on ${platform}`, 14, '#4a4a55', 500, { marginLeft: 8 }) : null) : null)),
+        box({ alignItems: 'center', justifyContent: 'space-between' },
+          vm.handle ? box({ alignItems: 'baseline' }, mono(vm.handle, 17, INK2, 700), platform ? mono(`on ${platform}`, 14, '#4a4a55', 500, { marginLeft: 8 }) : null) : box({}),
+          bebas(`${vm.wordmark.toUpperCase()} ${vm.season}`, 17, ink1, { letterSpacing: 1.8 })))),
     // right: miniature of the front
     box({ width: 110, justifyContent: 'flex-end', alignItems: 'flex-start' },
       box({ width: MINI.w + 6, height: MINI.h + 6, border: `3px solid ${INK2}`, boxShadow: `4px 4px 0 ${ink1}`, background: '#000', position: 'relative' }, pic(jpegUri(mini), 0, 0, MINI.w, MINI.h))));
@@ -452,7 +447,7 @@ function sponsorBio(text: string, ink1: string, size: number, h: number | null):
  * or a slash (never mid-word), else one shrunk line for a long unbroken name. Each returned line is drawn nowrap.
  */
 async function fitNameSafe(name: string): Promise<{ size: number; lines: string[] }> {
-  return fitNameLines(name.toUpperCase(), FONT.slab, 400, COL_W - 104 - 110 - 20, 56, { max: 38, min: 24, twoLineMax: 26, twoLineMin: 18 });
+  return fitNameLines(name.toUpperCase(), FONT.slab, 400, COL_W - 110 - 20, 56, { max: 38, min: 24, twoLineMax: 26, twoLineMin: 18 });
 }
 
 export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node> {

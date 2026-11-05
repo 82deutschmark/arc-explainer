@@ -49,8 +49,8 @@ describe('whole set', () => {
     }
   });
 
-  it('draws a 1200 x 630 share preview for a competitor, a sponsor and a team, with clean wording', { timeout: 60_000 }, async () => {
-    for (const id of ['person-ivan-sorokin-2026', 'person-francois-chollet-2026', 'team-turducken-2026']) {
+  it('draws a 1200 x 630 share preview for a competitor and a team, with clean wording', { timeout: 60_000 }, async () => {
+    for (const id of ['person-ivan-sorokin-2026', 'team-turducken-2026']) {
       const card = cardById(id);
       expect(await sharp(await buildCollectionShareImage(card, collection)).metadata(), id).toMatchObject({ format: 'png', width: 1200, height: 630 });
       expect(lintNode(await buildCollectionShareNode(card, collection, null), careerNames(cardFaceModel(card, collection).model)), id).toEqual([]);

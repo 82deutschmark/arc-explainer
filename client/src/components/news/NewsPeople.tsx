@@ -90,6 +90,35 @@ export function TeamPeople({ team, people = [] }: { team: CompetitorRecord; peop
   })}</ul><p className="news-muted">Roster observed {newsDate(team.lastObservedAt)}.</p></div>;
 }
 
+/**
+ * A team's roster as a spread of real cards (the hero of a team profile): each verified person's card front, large, with the
+ * name beneath and a link to the card page. A person with no card yet gets their portrait tile; an unmatched Kaggle handle
+ * gets a plain profile link. Reads the same cabinet query as StoryPeopleCards.
+ */
+export function TeamRosterCards({ team, people = [] }: { team: CompetitorRecord; people?: NewsPerson[] }) {
+  const cabinet = useQuery<NewsCollection>({
+    queryKey: ['/api/news/cards'], staleTime: 60_000,
+    queryFn: async () => {
+      const response = await fetch('/api/news/cards');
+      if (!response.ok) throw new Error('The cards could not be loaded.');
+      return response.json() as Promise<NewsCollection>;
+    },
+  });
+  const known = peopleForTeam(people, team);
+  return <ul className="cp-roster" aria-label={`${team.name} roster`}>{team.members.map(handle => {
+    const person = known.find(item => item.accounts.some(account => account.platform === 'kaggle' && account.handle === handle));
+    const card = person && cabinet.data?.cards.find(item => item.kind === 'person' && item.personId === person.id);
+    // while the card list loads, hold the card's place so the page does not jump or flash a plain tile
+    if (person && cabinet.isLoading) return <li key={handle}><span className="cp-card" aria-hidden="true"><span className="cp-skeleton" /><span className="cp-card-name">{person.name}</span></span></li>;
+    if (card && person) return <li key={handle}><Link href={card.cardUrl} className="cp-card">
+      <img src={`/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=front&w=420&v=${collectionShareVersion(card)}`} width={420} height={588} loading="lazy" alt={`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card, front`} />
+      <span className="cp-card-name">{person.name}</span></Link></li>;
+    return <li key={handle}>{person
+      ? <Link href={personPath(person.id)} className="cp-card cp-card-plain"><PersonPortrait person={person} size="card" decorative /><span className="cp-card-name">{person.name}</span></Link>
+      : <a href={`https://www.kaggle.com/${encodeURIComponent(handle)}`} className="cp-card cp-card-plain"><span className="cp-card-name">{handle} ↗</span></a>}</li>;
+  })}</ul>;
+}
+
 /** Faces of the verified people on a team, for notebook cards. */
 export function TeamFaces({ team, people = [] }: { team: CompetitorRecord; people?: NewsPerson[] }) {
   return <StoryFaces people={peopleForTeam(people, team)} max={4} label={`People on ${team.name}`} competition={team.competition} showLabel={false} />;
