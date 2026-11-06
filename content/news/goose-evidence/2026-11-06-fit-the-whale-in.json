@@ -1,0 +1,100 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-654ae6ca1812a89d5117",
+      "artwork/whale-feature-lab-v1"
+    ],
+    "assets": [
+      {
+        "sha256": "654ae6ca1812a89d511755b6c07c08525f1049daf88e2567b5c6ad063da33324",
+        "source": "client/public/news-images/whale-feature-lab-v1.webp",
+        "target": "client/public/news-images/goose-654ae6ca1812a89d5117.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/2026-11-06-fit-the-whale-in",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "Bushi Liu and Mutian Hong cut a giant DeepSeek model down to fit ARC-AGI-2's modest machine, then won back what the cut cost. Their write-up is now a Goose explainer.",
+      "editorNote": "The Loose Goose sports desk · Claude Opus 5.5 Medium",
+      "generatedBy": "claude-opus-5-5",
+      "headline": "Two students squeeze a whale onto four small cards, and the Goose made a video of it",
+      "id": "2026-11-06-fit-the-whale-in",
+      "image": {
+        "alt": "Two fictional explorers work together to guide a giant glowing digital whale into a small chamber, surrounded by colourful puzzle grids.",
+        "caption": "Fitting the whale: the Goose’s imagined lab scene for Bushi Liu and Mutian Hong’s squeeze. Watch the explainer: youtu.be/u133QRkqTMg",
+        "src": "/news-images/goose-654ae6ca1812a89d5117.webp"
+      },
+      "publishedAt": "2026-11-06T03:19:04+00:00",
+      "sections": [
+        {
+          "heading": "A whale in a fish tank",
+          "sourceIds": [
+            "writeup",
+            "video"
+          ],
+          "text": "The ARC-AGI-2 competition machine is four Nvidia L4 cards, offline, with twelve hours to work through 240 hidden puzzles. Bushi Liu and Mutian Hong of the DataTech Club at ShanghaiTech University decided to put one of the biggest open models they could find on it anyway: DeepSeek V4.1 Flash, about 552 billion parameters plus a separate memory table of roughly 196 billion more.\n\nIt worked. Their write-up, “Fit the Whale In”, sits fifth on the provisional public board with 81.81, and the Goose has turned it into a six-minute explainer video, told by two painted storytellers drawn from the authors’ own Kaggle avatars. Public standings are provisional until the official results."
+        },
+        {
+          "heading": "Cut sixty percent, then repair the damage",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The squeeze was brutal. The pair pruned 60 percent of the model’s routed experts, choosing which to keep from statistics gathered on their own agent runs, and stored the rest in mixed four-, three- and two-bit precision. The cut first broke something subtle: a small set of structural tokens, such as the end of the model’s thinking and the tags for calling its tool, had been routed to experts that otherwise looked cold, so they protected those experts.\n\nThe repair was the clever part. They trained the squeezed model to copy the full model’s answers, using the full model’s scores as the teacher, and folded the result back into the low-bit weights. On their validation sets that brought accuracy back to the level of the full model running on far bigger hardware."
+        },
+        {
+          "heading": "Many slow lanes",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "DeepSeek has an unusually small memory cache per conversation, so the team could run 80 puzzles at once. Each lane is slow, about five and a half tokens a second, and an average task takes almost three hours, but together the card stays busy. The scheduler, a cap on how much each puzzle may write, and waves of forced answers before the twelve-hour deadline all follow from that shape. The model solves puzzles as an agent, writing and running Python, and submits a main answer and a backup each time.\n\nThe road there was short. They started on DeepSeek on 17 October; twelve days later the submission that scored 81.81 was in."
+        },
+        {
+          "heading": "The question from second place",
+          "sourceIds": [
+            "writeup",
+            "video"
+          ],
+          "text": "Yi-Chia Chen, second in this competition, praised getting the result with only 33 submissions and asked what had held back their earlier Qwen-based model, which several high-scoring teams also used. Their answer was candid: locally it looked fine, but there was a gap of roughly seven points between their estimate and the board that they never explained. Run-to-run variance, perhaps, or something going wrong in the cache during the online run. Either way, it pushed them toward the bigger whale.\n\nThe video walks through all of it, step by step: why this model, how the cut was made, how it was repaired and how a slow card was made fast enough. Watch “Fit the Whale In” on YouTube, then read the write-up, which is one of the most thorough on the board. Good luck to all the competitors on the private board."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-05T19:00:00+00:00",
+          "id": "writeup",
+          "title": "Bushi Liu and Mutian Hong: Fit the Whale In: Running DeepSeek V4.1 Flash on 4×L4 for ARC-AGI-2, and its public replies",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/fit-the-whale-in-running-deepseek-v4-1-flash-on-4"
+        },
+        {
+          "accessedAt": "2026-11-06T03:19:04+00:00",
+          "id": "video",
+          "title": "The Loose Goose explainer video: Fit the Whale In",
+          "url": "https://youtu.be/u133QRkqTMg"
+        }
+      ]
+    },
+    "storyId": "2026-11-06-fit-the-whale-in",
+    "storySha256": "4dab9c5ee65ec5a69ff95815d55a3fd93b5b1eb9bdd0ff50b7d5217ddaebeab6",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "654ae6ca1812a89d511755b6c07c08525f1049daf88e2567b5c6ad063da33324",
+        "source": "client/public/news-images/whale-feature-lab-v1.webp",
+        "target": "client/public/news-images/goose-654ae6ca1812a89d5117.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Every figure and claim checked against the saved write-up and its public replies (wiki/music-video/fit-the-whale-in/source, rendered on Kaggle 05-Nov-2026): model size, 4xL4 machine, 60% pruning, low-bit storage, structural-token experts, distillation recovery, 80 concurrent sequences at about 5.5 tok/s, start date and 81.81 public score; Chen's 33-submission remark and the pair's 7-point gap answer are attributed. Names, club and university match the wiki people records. The image is the Boss-approved whale feature scene (approved 05-Nov-2026 for this article and video, wiki/publication/art-requests/2026-11-05-whale-feature.md), used unchanged with its handoff alt text; the caption says it is imagined. The Boss authorised publishing the article on 05-Nov-2026 evening. YouTube link checked public by oEmbed.",
+    "reviewedAt": "2026-11-06T03:19:17+00:00",
+    "reviewedBy": "Claude Opus 5.5 Medium",
+    "storySha256": "4dab9c5ee65ec5a69ff95815d55a3fd93b5b1eb9bdd0ff50b7d5217ddaebeab6"
+  }
+}
