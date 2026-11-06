@@ -709,6 +709,8 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.
 
-![Team Turducken family portrait: Thank you for an amazing competition! — Team Turducken](05-family-white-thankyou-v2.png)
+![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
+
+*Thank you for an amazing competition! — Team Turducken*
 
 This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.

@@ -1,3 +1,7 @@
+### Version 9.162.30 · November 6, 2026
+
+- Restore the exact original family portrait texture in the Turducken closing figure rather than a smoother generated redraw. Preserve the thank-you as native text below the untouched image, synchronize Markdown/notes/ZIP, and retain all prose, charts, settings and SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-original-texture.md`.
+
 ### Version 9.162.29 · November 6, 2026
 
 - Explain the real American turducken dish and its chicken/duck/turkey nesting before the article’s engineering metaphor, making the title accessible to international readers. Synchronize Markdown, source notes and portable ZIP; preserve charts, artwork and SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-dish-explainer.md`.

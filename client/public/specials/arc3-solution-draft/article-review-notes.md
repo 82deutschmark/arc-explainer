@@ -50,3 +50,10 @@ Only the closing artwork, its alt text and synchronized package changed. The ele
 ## Turducken explained for international readers · 6 November 2026
 
 The Boss requested a brief definition of the real American dish before the title metaphor. Added the deboned chicken-inside-duck-inside-turkey explanation, the blended name, and the corresponding harness/notebook/optimization layers. Definition and name checked against https://en.wikipedia.org/wiki/Turducken on 6 November 2026; the source associates the dish with Louisiana. No claim that all Americans eat it. All charts, settings, artwork, links and SEO remain unchanged.
+
+
+## Original portrait texture restored · 6 November 2026
+
+Son requested recovery of the original texture. The closing illustration now uses `05-family-white-original-texture-v3.png`, a byte-for-byte copy of his supplied `05-family-white-v1.png` attachment. This supersedes the smoother generated v2. No resampling, re-encoding, sharpening or further image generation was used: the original engraved linework, fabric, metal and fur detail are preserved exactly. The same thank-you text is rendered separately as native HTML/Markdown, so adding the wording cannot degrade the image. This is restoration of the supplied artwork, not a newly generated variation. Imagegen skill was consulted; no image edit/generation prompt or tool call was needed because the original bitmap is unchanged.
+
+Scope: closing figure and its caption only; article prose/order, all eleven charts/data, other illustrations and SEO unchanged.
