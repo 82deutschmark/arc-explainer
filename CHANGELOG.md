@@ -1,3 +1,7 @@
+### Version 9.162.23 · November 6, 2026
+
+- Restore Son’s newly supplied original Claude article and all eleven original data charts as static SVG/PNG exports; remove animation/video and Claude runtime. Preserve exact section names, four corner-only illustrations, settings tables and feedback. Replace older reconstructed measurements with original best-package and later-run data; synchronize Markdown, provenance notes and download package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-original-static.md`.
+
 ### Version 9.162.22 · November 6, 2026
 
 - Restore Son’s original section names and place local/Kaggle harness evidence under Harness Iteration. Add a clearly labeled reconstruction from Claude’s archived harness manifest, retaining missing measurements and workload limits; synchronize article and package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-original-sections.md`.

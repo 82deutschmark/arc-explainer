@@ -1,0 +1,927 @@
+
+
+Son Pham · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
+Stuffing the Turducken: 110 games, one GPU, and the day speed stopped paying
+
+
+Hey everyone! Before anything else: thank you. This has truly been a wild ride, from 7.36 on 21 September to 56.02 on 23 October, with about 1,950 full runs on GCP in between.
+Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.
+Why a turducken? Somewhere in October we realized what this competition had turned into. Everyone gets the same card, the same 9 hours and the same 110 games, and once a strong public notebook exists, the race becomes a stuffing contest: how much can you fit inside one bird? That's our entry in the picture. Tufa Labs' harness is the chicken in the middle, Daniel's Milestone 2 notebook is the duck around it, and the turkey is everything we stuffed in around them: 8-bit weights, fused and tiled kernels, a 4-bit history cache, the host CPU and RAM, and 32 games decoding at once instead of 10. It worked, right up until we stuffed in too much. The last part of this post is about that.
+Here's our write-up, in three parts: the harness, the inference optimizations, and the RL that didn't work, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
+TL;DR
+Base: Daniel Franzen's public notebook from 1 October, plus our changes.
+Harness: notes memory, goal first, checked play, temperature 0.5, and a lot of work on trimming and swapping 110 conversations through one card.
+Inference: whole-run speed 605 → 2,150 tokens per second on the same RTX PRO 6000 (our first vLLM stack did 296), 10 → 32 games decoding at once. Per 1,000 tokens: decode 1,138 → 330 ms, prefill 259 → 74 ms, overhead 255 → 61 ms.
+RL: eight attempts, none beat the base model on Kaggle.
+The biggest lesson: we didn't notice when token quality started to matter. After 56.02, every faster build we shipped scored lower.
+
+The setup
+From 1 October we built on Daniel Franzen's public Milestone 2 notebook: Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, his SGLang fork with MTP drafting, and his harness, built around Tufa Labs' harness. We ported our own ideas into it.
+The scored run is 110 games on one RTX PRO 6000 (96 GB). Our 56.02 run took 9 h 13 m. Every game is an agent that thinks for a thousand-plus tokens per move, so the card's tokens per second turns straight into moves, and moves turn into levels. Even if you have an intelligent system, running it more efficiently means you have more of that intelligence.
+One rule came before any change: is it exact or lossy? An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. Hold on to that rule, because the biggest lesson at the end is about the times we bent it.
+
+The box: one RTX PRO 6000, 110 games, 9 hours
+The 56.02 configuration, read from its server startup log.
+
+
+RTX PRO 6000 · 96 GB
+34 games admitted · 32 decoding at once
+
+32 lanes decode together; 2 admitted games run python while they wait
+
+
+
+weights 46.2draft 6.2history 24.5Mamba 10.1buffers 8.0 GiB
+decode step35.1 msaccepted per pass3.25 tokensexperts read per step~20 GB
+
+
+Host RAM · ~177 GB
+pinned memory outside the card
+per-layer embedding table~94 GB in BF16, looked up per token
+copy of the card's history cache24 GB, write-through
+the restpython sandboxes, page cache
+
+
+
+games110 live · 34 admitted · 32 decoding
+clock9 h (our 56.02 run took 9 h 13 m)
+experts kept341 of 512 per layer, 4-bit (Intel W4A16)
+dense layersint8 weights (one scale per 128 inputs), 8-bit activations above 64 rows
+drafterMTP · 4 draft tokens · per-game verify depth
+history cacheNVFP4 · 3.80M tokens · 140k window, a trim keeps 52k
+speed2,150 tok/s over a whole run on our board
+bottleneckmemory bandwidth and games at once
+
+best public 56.02
+Every optimization below is a trade inside this box: free memory to run more games, or make each step cheaper.
+
+Part 1. The harness
+1.1 What the model sees
+The base is Daniel Franzen's harness: the model plays by writing python that calls the game, and sees each frame as a 512 px image (the 64×64 grid at 8x, 256 image tokens). On top of it, the 56.02 harness has:
+
+Notes memory: one markdown notes text per game, kept by the harness, so it survives tool timeouts and history trims.
+Goal first: on a level's first turn, the model writes what "solved" looks like into its notes before it acts.
+Checked play: run_checked([(move, expect), ...]) plays moves and stops at the first one that doesn't do what was expected; check_rule(rule) tests a candidate rule against every recorded move of the level.
+Sampling: temperature 0.5 (0.8 → 0.6 → 0.5 over the competition), top-p 0.95, top-k 20.
+Context management: trim, swap and wipe, below. It's the part of the harness that touches everything else.
+
+1.2 Trimming and swapping the context
+Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:
+
+Trimming and swapping, animated
+Left: one game's context fills up a turn at a time; when the next turn won't fit, the earliest turns are cut away and the game keeps going. Right: all 32 lanes on one beat. At some trims a waiting game from the queue takes the lane; two admitted games wait in the ninth column while they run python; host RAM keeps a copy of what the card caches.
+
+Turn sizes, growth and swap timing are illustrative. The 140k window, ~52k kept after a trim, 32 lanes, 34 admitted games, the 3.80M-token cache and the 24 GB host tier are the 56.02 settings.
+
+
+Trim, swap, wipe: how 110 conversations share one card
+The three things that can happen to a game's history.
+
+Trimwhen the prompt hits 140k
+Keep the system prompt, the notes and the last 52k. The prompt no longer matches the cache, so the kept 52k is read again from scratch.
+~340 trims per run, ~46k tokens each: half of all prompt tokens, 8% of the clock
+Swapright after a trim
+The priority queue can give the slot to one of the 76 waiting games; the trimmed game rejoins the queue. Host RAM keeps a write-through copy of the card's cache.
+34 slots for 110 games; with the RAM copy, games losing their history: 9 → 0
+Wipeafter 120k tokens stuck on one level
+The model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board.
+at most 3 per level
+
+What survives all three: the notes, shown again after every trim and at every new level.
+Trim counts from the 56.02 board twin's server log: prompt reads of 20k+ tokens that started from an empty cache, two runs.
+
+
+Trim. When a game's prompt hits the 140k window, the harness keeps the system prompt, the notes and the last 52k tokens. The front of the prompt changed, so the server's cache no longer matches and the kept 52k is read again. A 56.02 board run does about 340 trims of about 46k tokens each: half of all prompt tokens, but only 8% of the clock.
+Swap. 34 games hold a slot at a time; the other 76 wait in a priority queue. A game gives up its slot only right after a trim, the one moment it costs nothing because its cache is useless anyway. The queue then picks who plays next: a new game, or one coming back to re-read its kept history.
+Copy. Host RAM keeps a 24 GB write-through copy of everything the card caches. If the card has to evict a game's history, it comes back over PCIe instead of being re-read.
+Wipe (fresh eyes). When a level eats 120k generated tokens without a clear, the model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board. At most 3 times per level.
+
+What survives every move is the notes: they are shown again after each trim and at each new level, as head + tail once they pass 6,000 characters.
+So at any moment 34 games are being played and 76 are paused in the queue. Why not keep all 110 going, with their histories in host RAM? Two reasons. A game only leaves its slot right after a trim, when its old cache no longer matches its next prompt, so there is nothing worth keeping: it re-reads the kept 52k either way. And the RAM was already spoken for: of about 177 GB, the model's per-layer embedding table takes about 94 GB, while all 110 histories would be 6 to 15 million tokens, roughly 40 to 100 GB in our cache format. The leaders went the other way: all 110 games at once, every history in host RAM, and a compressed embedding table to make room. More on that in Part 4.
+What we tuned, and what it bought:
+
+
+
+Change
+What it does
+Result
+
+
+
+
+Window 128k → 140k
+Fewer spare Mamba state slots (212 → 180) pay for a bigger window
+re-reading history 12% → 8% of the run
+
+
+Keep 58k → 52k
+Less history to re-read after each trim
+the board's best line on 22 Oct (64.4, 4 runs)
+
+
+Host-RAM copy (24 GB)
+Write-through copy of the card's cache
+games losing their cached history 9 → 0; prompt reading 23% → 15% of the clock
+
+
+Verbatim history
+Store the model's answer byte for byte, so the next prompt extends what the server cached
+answer reused 38% → 95-100% of turns; +8% tokens per second
+
+
+34 games over 32 lanes
+Two extra games fill the lanes left idle by games running python
++4.7 on our 75-game board
+
+
+
+And what didn't work:
+
+
+
+Idea
+What it does
+Result
+
+
+
+
+Rolling summary
+Summarize old history instead of cutting it
+22% slower, no score gain
+
+
+Summary when the window fills
+One summary when the window fills, instead of a trim
+Kaggle 41.97 → 37.56
+
+
+Splice
+After a trim, rebuild the cache from the old one instead of re-reading (lossy)
+tied on the board, lost on Kaggle 3 times out of 3
+
+
+Restart stuck levels
+Reset a level after T minutes without progress
+lost at every T from 20 to 90 min, in a replay of our real runs
+
+
+Trim gate
+A trimmed game keeps its slot unless a waiting game is overdue
+tie
+
+
+
+The single best context fix was a one-character bug:
+
+One blank line broke the cache on every turn
+The harness stored the model's answer with its blank lines squeezed. The next prompt then stopped matching what the server had cached right at that answer, so everything after it was read again.
+reused from cachefirst mismatch: re-read every turn
+turn Nas cached
+system prompttoolsearlier turnsreasoninganswer … \n\n · 271 … 
+turn N+1as re-sent
+system prompttoolsearlier turnsreasoninganswer … \n · 198 …new turn
+
+after keeping history verbatim · 10 Oct · 32 games · 2 runs each
+previous answer reused38% → 95-100%of turns
+turn-content tokens read3.4M → 2.0Mper run
+whole-run speed1,674 → 1,807tok/s (+8%)
+
+A blank line is one token (271); a single newline is another (198). One character was enough to throw away the cache for the rest of every prompt.
+
+1.3 How we tested harness ideas
+Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. Score Climb: 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.
+The loop: idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.
+Board noise, from 8 identical controls: one standard deviation is 1.9 points. Two runs only see effects of about 4 points, and four runs see about 3. Most harness ideas are smaller than that. That's the honest truth of this competition: most harness ideas drowned in noise, and the ones that didn't were big.
+1.4 What worked and what didn't
+
+Our board liked 12 of these ideas. Kaggle liked 3 of them.
+Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.
+Board said better12ideasKaggle agreed3of those 12Kaggle went down9of those 12
+Our boardKaggleBoard said better, Kaggle said worseBoard noise, 1 SDKaggle, same package twice
+-12-9-6-30+3+6+9Notes memory, relaxed acceptance off+8.8Mamba 180, 140k window, temperature 0.5+5.4Speed stack (the 56.02)+3.2Notes head + tail, OOM fixes+1.7Goal first-1.5RL LoRA merged at load-1.7Expert-kernel rounding, keep-alive, gate-2.3Same package, resubmitted-3.4Relaxed acceptance 0.7, new drafter-3.5Vocab trim-3.8Summary when the window fills-4.4Predict before acting (2nd try)-4.6Splice + vocab trim-5.3Second RL LoRA-8.1Splice + keep-alive-8.7Lean turns + vocab trim-9.6Predict before acting-11.4
+Board deltas compare board runs of the idea and its base (1 to 6 runs each, 50 games unless the tooltip says otherwise). Kaggle deltas are single public scores.
+
+Every idea in the chart, in one line each:
+
+
+
+Idea
+What it is
+Board
+Kaggle
+
+
+
+
+Notes memory, relaxed acceptance off
+A notes file per game that survives trims; draft tokens back to exact acceptance
++2.8
++8.8
+
+
+Mamba 180, 140k window, temperature 0.5
+A bigger window paid for by fewer Mamba slots; sampling temperature 0.6 → 0.5
++4.3
++5.4
+
+
+Speed stack (the 56.02)
+Per-game verify depth, 4 draft steps, 3 guaranteed experts, 52k keep, 34 games over 32 lanes
+−1.0
++3.2
+
+
+Notes head + tail, OOM fixes
+Long notes shown as their start and end; a memory crash in big prompt reads fixed
++1.3
++1.7
+
+
+Goal first
+Write what "solved" looks like before the first move of a level
++2.9
+−1.5
+
+
+RL LoRA merged at load
+An RL-trained adapter merged into the weights at startup (Part 3)
+n/a
+−1.7
+
+
+Expert-kernel rounding, keep-alive, gate
+A faster 4-bit expert kernel with slightly different rounding, the scorecard keep-alive, and a fair-share game gate
++0.2
+−2.3
+
+
+Same package, resubmitted
+Nothing changed: this is Kaggle's own noise
+n/a
+−3.4
+
+
+Relaxed acceptance 0.7, new drafter
+Accept draft tokens more often than exact rejection sampling would
++5.0
+−3.5
+
+
+Vocab trim
+Cut the output layer to the 35,840 tokens we had seen the model use
+−0.2
+−3.8
+
+
+Summary when the window fills
+Summarize the history once when it fills, instead of trimming
++0.7
+−4.4
+
+
+Predict before acting
+The model writes what it expects each move to do, and a strict check stops the batch at the first wrong guess
++0.7, +2.3
+−11.5, −4.6
+
+
+Splice
+After a trim, rebuild the cache from the old one instead of re-reading
++2.6, +0.4
+−8.7, −5.3
+
+
+Lean turns + vocab trim
+Shorter turn messages (the rules shown once, not every turn), plus the vocab trim
++1.9
+−9.6
+
+
+
+Read the two columns together. Nearly everything that lost on Kaggle looked fine or better on our board. That's the lesson of Part 4.
+Ideas that only ran on the board:
+
+
+
+Idea
+What it does
+Board result
+
+
+
+
+Animation feed
+Show every frame of an in-game animation, not just the last one
++7.5 on a 10-game animation subset, no gain on all 25
+
+
+Game memory variants
+Key-value memory, a per-level curator, a cross-game curator
+all within noise of plain notes
+
+
+Shared notes across games
+One cheatsheet shared by all games
+no gain: notes turned out 92% game-specific
+
+
+Level protocol for levels 5+
+Fixed dead-end, reset and review steps on the hard levels
++0.85 over 2 runs (inside noise)
+
+
+State-repeat guard
+Stop a loop after the board returns to the same state 3 times
+tie
+
+
+Thinking caps
+Cap thinking at 8k, 4k or 2k tokens per turn
+tie
+
+
+Live coach
+A frontier model coaches the player on hard games
+no clear win in 113 tries
+
+
+Symbolic rule finder
+A program watches moves and proposes rules
+no gain
+
+
+4x the clock
+540-minute runs instead of 132
+58 → 64 only
+
+
+
+What the traces told us:
+
+Uncleared levels, not efficiency. Across six board runs of the 56.02 config, about 31 points were lost to levels never cleared and about 7 to move efficiency. Cleared levels 5+ already used 0.65x the human moves (median).
+Stuck means stuck. About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.
+Loops are common. 35% of moves in our best board run returned the board to an earlier state.
+
+Part 2. The inference optimizations
+2.1 The timeline
+
+Whole-run tokens per second, one RTX PRO 6000
+Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle.
+05001,0001,5002,0002,50029622 Sep7 games6051 Oct10 games6483 Oct10 games9926 Oct12 games1,87311 Oct32 games1,93418 Oct32 games2,15023 Oct32 games56.022,4411 Nov32 games
+22 Sep: our first stack (vLLM, no drafting). From 1 Oct: Daniel Franzen's notebook plus our changes, on our 25 to 75-game offline board.
+Show the numbersStagetok/sGames at once22 Sep · vLLM, no drafting29671 Oct · Daniel's notebook605103 Oct · RAM cache tier648106 Oct · 8-bit, exact kernels9921211 Oct · 32 games, expert cut1,8733218 Oct · 52.82 config1,9343223 Oct · 56.02 config2,150321 Nov · after 56.022,44132
+
+Every second of a run, the GPU is doing one of three things:
+
+Decode: writing tokens. A small draft head guesses 3 to 4 tokens ahead for each game, and the big model checks every guess, for every running game, in one pass.
+Prefill: reading prompts. Either the new content of a turn (the new frame, the tool output), or re-reading history the cache lost.
+Overhead: everything else. A fixed cost for every prompt read, CPU stalls, and lanes sitting empty.
+
+Here's the same 1,000 tokens at each stage, and how long the card needed for them. Shorter is better.
+
+Decode, per 1,000 tokens1,138 → 330 ms71% less
+Prefill, per 1,000 tokens259 → 74 ms72% less
+Overhead, per 1,000 tokens255 → 61 ms76% less
+
+
+Milliseconds of wall clock per 1,000 generated tokens
+Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log.
+DecodePrefill: new turn contentPrefill: re-reading lost historyOverhead: fixed cost per read, stallsOverhead: idle lanes
+04008001,2001,600 ms1 Oct  ·  Daniel Franzen's notebook, as publishedSGLang fork, MTP drafting, 10 games, 8-bit history cache1,1381,653 ms605 tok/s · 10 games3 Oct  ·  + host-RAM cache tier, tuned drafterparked games keep their history; accepted tokens 2.69 → 2.891,0871,543 ms648 tok/s · 10 games6 Oct  ·  + 8-bit dense weights, exact kernels12 games; fused kernels; image hashing moved off the scheduler7611,009 ms992 tok/s · 12 games11 Oct  ·  + 32 games, a third of the experts cut4-bit history cache, big-batch kernels, lost-history fix385534 ms1,873 tok/s · 32 games18 Oct  ·  52.82 configMamba 180 slots, 140k window, 24 GB RAM tier364517 ms1,934 tok/s · 32 games23 Oct  ·  56.02 configper-game verify depth, 4 draft steps, 3 guaranteed experts, 52k keep330465 ms2,150 tok/s · 32 games1 Nov  ·  After 56.02, not shippedsplice, Lean turns, vocab trim; 75-game board331410 ms2,441 tok/s · 32 games
+How it's measured: SGLang logs a decode line every 40 steps. Intervals with no prompt read give the pure step time at that lane count. Time beyond that in other intervals is prompt reading, shared out per read by a cost model (per read, per new token, per cached token). Idle lanes are decode time with fewer games running than the server allows. Our board has 25 to 75 games, so lanes empty out as games get won; Kaggle's 110 games keep them fuller.
+Show the numbersStageDecodeNew turnRe-readPer read + stallsIdle lanesTotal mstok/sGamesAccepted/passStep msRuns1 Oct · Daniel Franzen's notebook, as published1,1381481121031521,653605102.6932.3daniel-base a + b3 Oct · + host-RAM cache tier, tuned drafter1,087142971031141,543648102.8932.7hicache aft06 a6 Oct · + 8-bit dense weights, exact kernels761848655231,009992123.0628.3bint8v2l12 c + e11 Oct · + 32 games, a third of the experts cut385386337125341,873323.0537.8sc2l32ship a + b18 Oct · 52.82 config364374635365171,934323.0536.652.82 twin a + b23 Oct · 56.02 config330363833294652,150323.2535.156.02 twin a + b1 Nov · After 56.02, not shipped33125173254102,441323.2134.0cmb32 a + b
+
+The rest of this part takes the three buckets one at a time. Each opens with where it started (left) and where it ended (right); every step in between is one measured build. Numbers in the tables are before → after, measured in the server or in kernel benches on the same card. Code names are ours, so ask about any of them in the comments. Most of this kernel work was done by Claude agents in parallel threads, each with one job and a ledger, with me reviewing and deciding what ships.
+2.2 Decode: 1,138 → 330 ms per 1,000 tokens
+
+Decode, build by build
+Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right).
+03006009001,200 ms1,138−51−326−377−21−343301 Octstart: Daniel'snotebook3 Octtuned drafter6 Oct8-bit weights,exact kernels, 12games11 Oct32 games: expertscut, 4-bit cache,big-batch kernels18 OctMamba 180, 140kwindow23 Octper-game verifydepth, 4 draftsteps, 3 experts23 Octthe 56.02 config
+Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Show the numbersBuildms per 1,000 tokensChange1 Oct · Daniel's notebook1,138.03 Oct · tuned drafter1,086.9-51.16 Oct · 8-bit weights, exact kernels, 12 games761.3-325.611 Oct · 32 games: experts cut, 4-bit cache, big-batch kernels384.5-376.818 Oct · Mamba 180, 140k window363.8-20.723 Oct · per-game verify depth, 4 draft steps, 3 experts330.0-33.8
+
+Decode is memory-bound. At 12 games, one step reads about 20 GB of expert weights (166 distinct experts per layer) at 92% of the card's 1.54 TB/s. So clever kernels on the experts hit a wall fast. The two big levers are: read fewer bytes, and serve more games per read.
+
+One decode step at 12 games: 27.8 ms
+GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step.
+Experts15.8 ms8-bit dense layers + output head3.3 msDraft chain and gaps2.7 msAttention + indexer1.85 msHyper-connection mix1.6 msExpert routing0.7 msLinear attention0.7 msHyper-connection combine0.6 ms16-bit leftovers0.57 ms
+At 31 games the step was 41.6 ms, with the experts at 18.0 ms: already at the weight-read floor.
+Show the numbersPart of the stepmsshareExperts15.8057%8-bit dense layers + output head3.3012%Draft chain and gaps2.7010%Attention + indexer1.857%Hyper-connection mix1.606%Expert routing0.703%Linear attention0.703%Hyper-connection combine0.602%16-bit leftovers0.572%
+
+
+More games per step is almost free
+Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games.
+Measured step timeIf each game added the same time as at 13
+0306090 ms13202428324048games decoding at oncemeasuredlinearshipped: 32
+32 games take 38.5 ms per step against 24.0 ms for 13: 2.5x the games for 1.6x the time. We shipped 32, not 48: past 32 the history cache per game got too small and the board score dropped.
+Show the numbersGamesMeasured step msLinear ms1324.024.02030.236.92433.444.32836.551.73238.559.14047.373.84852.588.6
+
+More games per step needs memory: every gigabyte we freed went to the history cache, and the cache decides how many games can decode at once.
+
+Where the 95 GiB of the card went
+From each build's startup log. Right: tokens of history the cache holds, and games running at once.
+Model weightsDraft model + its cacheHistory cacheMamba statesBuffers, graphs, headroom
+02040608095 GiB22 Sep  ·  vLLM76.013.8984k tokens7 games3 Oct  ·  SGLang + drafter69.811.61.01M tokens10 games11 Oct  ·  a fifth of experts cut54.317.82.76M tokens24 games11 Oct  ·  a third of experts cut46.222.43.47M tokens32 games17 Oct  ·  56.02 config46.224.53.80M tokens32 games
+22 Sep is vLLM's own memory note (weights and activations together). The 56.02 run uses the 17 Oct split.
+Show the numbersBuildWeightsDraft + cacheHistory cacheMambaBuffers + headroomHistory tokensGames22 Sep · vLLM76.000.0013.760.005.21984k73 Oct · SGLang + drafter69.854.7511.583.405.391.01M1011 Oct · a fifth of experts cut54.295.1917.769.588.152.76M2411 Oct · a third of experts cut46.215.8922.3611.818.703.47M3217 Oct · 56.02 config46.216.1924.4810.058.043.80M32
+
+Fit more games on the card
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+Expert cut
+Remove the least-used third of the experts from the card (512 → 341 per layer)
+weights 66 → 46.2 GiB
+lossy
+
+
+4-bit history cache
+Keys and values in NVFP4 (the draft model keeps FP8)
+1.01M → 3.80M tokens, with the cut
+lossy
+
+
+Free the 16-bit output head (khfree)
+Serve the head from its int8 copy and free the 16-bit one before the cache is sized
++0.57 GiB
+exact
+
+
+Deduplicate shared tensors (kdupe)
+The draft and main models held separate copies of the same tensors
++2.04 GB
+exact
+
+
+180 Mamba slots
+Fewer spare linear-attention state slots (~55 MB each)
+cache 3.47M → 3.80M tokens
+exact
+
+
+Peak memory log (kmempeak)
+Log the real memory peak so the cache can be sized to the edge
+lowest headroom 1.9 GiB
+exact
+
+
+
+Cheaper steps: dense layers and the output head
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+8-bit dense weights (kw8)
+Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed)
+step 29.1 → 27.0 ms
+lossy
+
+
+8-bit activations (kw8a8)
+Int8 inputs to the dense layers once a step has more than 64 rows
+-3.5 ms per step at 192 rows
+lossy
+
+
+Int8 kernels by row count (kw8m, kw8x, kw8x3)
+Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding
+at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms
+exact
+
+
+Small 16-bit multiplies (kfast)
+A faster kernel for the few dense multiplies left in 16-bit
+9.76 → 9.12 ms per step
+lossy
+
+
+Hyper-connection glue (khc, kglue, kglue2, kgate8, kbig3)
+The model's layer-mixing steps fused into fewer kernels
+kernels per step 2,575 → 2,131; -1.2 ms per step
+exact
+
+
+Output head (klgf, klmh3, klmh4)
+The int8 head in one launch, writing the final logits directly
+1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows
+exact
+
+
+
+Experts and routing
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+Batch-aware routing, 3 guaranteed experts
+Steer tokens to experts the batch already reads; each token keeps its own top 3 (was 4)
++5% speed
+lossy
+
+
+One-kernel reroute (kbafuse, kbafuse2)
+The reroute and the cut-expert remap in one kernel per layer
+68-73 → 33-49 µs per layer
+exact
+
+
+One-kernel routing (kroute)
+Expert selection in one kernel instead of four
+22.3 → 6.9 µs per layer
+exact
+
+
+16-row expert blocks (kmoebm16)
+Smaller blocks when each expert gets only a few rows
+696 → 623 µs per layer at 184 rows
+lossy
+
+
+
+Attention
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+Attention indexer (kidx, kidxv)
+Load each block of keys once per game instead of once per draft token
+98 → 61 µs per layer
+exact
+
+
+4-bit attention (kpf44, kpf44b, kqsort)
+Prefetch the next block, split keys 8 ways, read keys in order
+237 → 228 µs; 277 → 265 µs
+exact / rounding
+
+
+Linear attention (kgdn, kconv, kfuse, kvdtrim)
+Read inputs in place, a one-tile conv, skip state writes for empty slots
+8.5 → 4.1 µs per conv call; +7.5% with kfast
+exact
+
+
+
+More tokens per pass: speculative decoding
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+MTP drafting
+From Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass, with exact rejection sampling
+1 → 2.69 tokens per pass
+exact
+
+
+Our drafters
+Draft heads fine-tuned on our own games, run in int8
+2.69 → 3.05 per pass
+exact
+
+
+Faster draft sampling (kdsamp)
+Pick the top candidates first instead of scanning the whole draft vocabulary
+126 → 13 µs per draft step
+exact
+
+
+Per-game verify depth (kvd)
+Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most)
++5%
+lossy
+
+
+4 draft steps
+One more guess per pass
+3.05 → 3.25 per pass, with kvd
+lossy
+
+
+Draft extend on one row (kdext)
+After a verify, the draft model updates only the row it keeps
++5.2%
+lossy
+
+
+
+Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.
+2.3 Prefill: 259 → 74 ms per 1,000 tokens
+
+Prefill, build by build
+Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right.
+0100200300 ms259−21−69−69−18−9741 Octstart: Daniel'snotebook3 Octhost-RAM tier6 Oct8-bit weights,fasterprompt-readexperts11 Octverbatim history,prompt kernels18 Oct140k window, RAMtier, pinnedcheckpoints23 Oct52k keep, fusedprompt glue23 Octthe 56.02 config
+Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Show the numbersBuildms per 1,000 tokensChange1 Oct · Daniel's notebook259.33 Oct · host-RAM tier238.5-20.86 Oct · 8-bit weights, faster prompt-read experts169.8-68.711 Oct · verbatim history, prompt kernels100.4-69.418 Oct · 140k window, RAM tier, pinned checkpoints82.8-17.623 Oct · 52k keep, fused prompt glue73.9-8.9
+
+Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for about 23% of the run, and about 45% of all prompt tokens were re-reads: history the cache had already seen and then lost. The biggest prefill wins were about not losing history (Part 1); the rest were kernels.
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+Host-RAM copy (khost44)
+A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe
+games losing their history 9 → 0; +7.5% tok/s
+exact
+
+
+Lost-history fix
+A bug that made 48-lane runs re-read whole histories
+re-reads 32% → 11% of GPU time
+exact
+
+
+Verbatim history
+Keep the model's answer byte for byte (Part 1)
++8% tok/s
+harness
+
+
+Window and trim
+140k window, 52k keep (Part 1)
+re-reads 12% → 8% of the run
+harness
+
+
+Pin side-request checkpoints (kpinbranch)
+A summary or review call no longer forces the next turn to re-read its history
+1,787 → 2,160 tok/s
+exact
+
+
+Image embeddings in RAM (kvlmhost)
+Keep image embeddings in RAM instead of re-encoding them after a trim
+454 RAM hits vs 1,172 first encodes by minute 8
+exact
+
+
+Prompt attention (kqsapf, kqsapf2, kmqa)
+Better tiles for long prompt reads
+6.06 → 4.95 ms per call
+exact
+
+
+No q/k/v copy (kqkvz)
+Pass inputs as a view instead of copying them
+412 → 171 µs per layer
+exact
+
+
+Fused prompt glue (kglu)
+Small copies folded into the prefill kernels
+356 → 206 µs at 8,192 rows
+exact
+
+
+Prompt-read experts (kprefill)
+A better expert-kernel layout for prompt reads
+-19% at 1k tokens, -7% at 8k
+lossy
+
+
+CUDA graphs, no host syncs (kpgraph, kpfsync, kprsync)
+Small reads were waiting on Python; replay recorded graphs instead
+small read 175 → 113 ms
+exact / rounding
+
+
+Image encoder attention (fa4)
+FlashAttention-4 for the vision encoder
+366 → 87 µs per layer
+lossy
+
+
+Memory-light embedding conv (kpleconv)
+Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle
+800 → 281 MB per 8k read
+exact
+
+
+
+2.4 Overhead: 255 → 61 ms per 1,000 tokens
+
+Overhead, build by build
+Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens.
+0100200300 ms255−38−140−29+22−9611 Octstart: Daniel'snotebook3 Octharness changes:fewer idle lanes6 Octimage hash offthe scheduler,zero-copyhand-off11 Octprompt-read CUDAgraphs, 32 games18 Octlonger boardruns: more idlelanes23 Oct34 games over 32lanes23 Octthe 56.02 config
+Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Show the numbersBuildms per 1,000 tokensChange1 Oct · Daniel's notebook255.23 Oct · harness changes: fewer idle lanes217.2-38.06 Oct · image hash off the scheduler, zero-copy hand-off77.7-139.511 Oct · prompt-read CUDA graphs, 32 games48.9-28.818 Oct · longer board runs: more idle lanes70.7+21.823 Oct · 34 games over 32 lanes61.4-9.3
+
+The best find here was invisible in per-step profiles: for every new request, the scheduler loop SHA-256-hashed about 300 MB of image pixels while every lane waited. 4.2% of the whole run. Only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our board runs out of games near the end, Kaggle's 110 games mostly don't.
+
+
+
+Change
+What it does
+Measured
+
+
+
+
+
+Image hash off the scheduler
+Hash images in the tokenizer process, not the scheduler loop
+205 → 8.5 ms stall per image request
+exact
+
+
+Zero-copy image hand-off (kshm)
+Hand image data over without cloning it
+59 → 2.5 ms per request
+exact
+
+
+Overlapped launches (kpdl)
+Each small kernel starts while the last one finishes
+~0.23 µs per kernel
+exact
+
+
+34 games over 32 lanes
+Two extra games fill lanes left idle by games running python
++4.7 on our 75-game board
+harness
+
+
+Startup DNS fix (kdnsfix)
+Skip a DNS lookup that Kaggle's offline box never answers
+torch init 12.85 s → ~0
+exact
+
+
+Scorecard keep-alive (after 56.02)
+Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00)
+a 46-minute load played normally
+harness
+
+
+
+2.5 What didn't make it
+Of 191 named speed changes, 69 shipped in some build, 71 were dropped, and 51 were parked or never left the test bench. The ones worth knowing about:
+
+Relaxed draft acceptance (accept draft tokens more often than exact sampling would): +5.0 on the board at 0.7, but its Kaggle package dropped 41.97 → 38.45, and 0.5 lost 9 board points. Banned after that.
+Overlapping prompt reads with decode: 3 to 5% slower, and out of memory by minute 17-22.
+Mixing prefill into decode batches: worth at most ~1%, because every prefill chunk re-reads all the experts.
+Splice (rebuild the cache after a trim): tied on the board, lost on Kaggle three times out of three.
+Vocab trim (cut the output layer to the tokens we use): lost on Kaggle all three times. About one reply in five wants a token the trim removed, mostly names the model coins for game objects.
+3-bit experts: +5% tokens per second and 8.2 GB freed, but the board went 66.2 → 58.7.
+8-bit Mamba states: +11% history cache and a board tie, but in our final stack the model thought 35% less per move (Part 4).
+
+Part 3. RL: what we tried, and why none of it shipped
+We spent real money and a lot of weekends on RL and other fine-tunes. None of it beat the base model on Kaggle.
+
+
+
+Attempt
+When
+What
+Result
+
+
+
+
+RL v1 on "burst" moments
+1-4 Oct
+LoRA rounds on moments where the harness was sometimes brilliant
+hard games 5.8 → 9.5 levels per run, but held-out games 16.8 → 14.6
+
+
+RL v3, tree rollouts
+13-15 Oct
+Branch games from saved states, reward the branches that clear
+~$333 overnight; the one model scored equalled the base (59.98)
+
+
+Evolution strategies
+16-17 Oct
+Random LoRA-shaped weight nudges, keep the best each round
+best nudge 25.8 vs base 24.9, inside the noise
+
+
+RL LoRAs, merged at load
+19-21 Oct
+Keith's RL adapters on our int8 stack
+Kaggle 52.82 → 51.12 and → 44.68; our int8 layers kept only 22% of an adapter's change
+
+
+RL5
+25-26 Oct
+Three waves of the same recipe
+learned to think half as long (median reply 2,657 → 1,401 tokens); 51.5 → 29.5
+
+
+GRPO on the log harness
+28 Oct
+An adapter trained on the harness we submitted on 25 Oct
+board 61.85 → 58.24
+
+
+Correctors (distillation)
+24 Oct, 1-2 Nov
+LoRAs that pull a cut or 3-bit model back toward the full model
+KL down 16-23% offline, but thinking 17-45% longer per move; board -9
+
+
+2-bit distillation
+Keith's write-up
+A night on eight B300s to train the 2-bit model back toward 4-bit
+~6,000 training tokens/s against 24-85k planned; no 2-bit weight changed in the layers checked
+
+
+Think-less fine-tunes
+23 Oct
+Two public Flash-Next fine-tunes that claim shorter thinking
+board 33.5 and 40.3 vs 64.2
+
+
+
+
+Move the thinking length, and the score drops
+Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.
+Training run or lossy speed change, against its own controlBoard noise (1 SD)
+-25-20-15-10-50+5-60%-40%-20%0%+20%+40%+60%change in thinking per movescore change (points)board noise, 1 SD8-bit Mamba states3-bit + 8-bit states, 194k window3-bit + corrector LoRA3-bit + corrector, medium effortRL5
+Tokens per move = generated tokens / moves over the whole run (RL5: median reply length). Each point against its own control: 8-bit states vs the 22-Oct control (50 games), the 3-bit arms vs plain 3-bit (75 games), RL5 vs the base model (32-game set).
+Show the numbersChangeThinking per moveScore changeNumbers8-bit Mamba states-19.3%-0.5961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.73-bit + 8-bit states, 194k window-36.9%-5.9639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.03-bit + corrector LoRA+45%-8.81,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.03-bit + corrector, medium effort+50.8%-8.61,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0RL5-47.3%-22.0median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5
+
+Why it didn't work for us: the base model was already good at the games, and every training run we did changed how long the model thinks before it changed how well. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. 1st place saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.
+Part 4. What we learnt
+4.1 The climb, and what it was telling us
+
+Where speed stopped helping
+Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.
+Best so farDidn't beat the best
+010203040506021 Sep1 Oct11 Oct21 Oct1 Novpublic scoreMamba 180, 140k window, T 0.5notes head + tailnotes memory, exact acceptancea third of experts cut, 28 → 32 games20 games, fresh eyesRAM tier, 8-bit weights, 13 gamesFranzen's public notebookT 0.6, tuned drafterSGLang + expert pruning56.02+11% tok/s, 34 games admittedafter 56.02: nothing beat it
+22-Oct's 0.00 was a 66-minute model load: the competition closed the scorecard after 15 idle minutes. Kaggle loads were slow (30 to 40 minutes) on 24 to 26 Oct, so those three scores are partly the load.
+Show the numbersDatePublic scoreWhat changed2026-09-217.36First Flash-Next notebook (vLLM)2026-09-225.60Prompt deletions2026-09-236.17Same notebook as 22 Sep, resubmitted2026-09-246.74Same notebook again2026-09-256.47Compact prompt v52026-09-264.83Compact v5 resubmitted2026-09-278.23Moved to SGLang2026-09-2812.21SGLang + expert pruning2026-09-2915.68Pruning + temperature 0.8 + tuned drafter2026-09-3018.99More pruning, temperature 0.62026-10-018.14Different expert set (336)2026-10-023.93Our harness + Franzen's tool fixes (Combo A)2026-10-0328.94Daniel Franzen's notebook + our drafter + animation feed2026-10-0427.794-bit cache, 13 games2026-10-0531.63Host-RAM cache tier + fused 8-bit attention2026-10-0633.748-bit dense weights2026-10-0731.1116-bit line, 11 games2026-10-0835.458-bit v3, 13 games2026-10-0935.328-bit v3 resubmitted2026-10-1039.2420 games, 8/4-bit cache, fresh eyes when stuck2026-10-1141.69A third of the experts cut, 28 games2026-10-1241.9732 games, 8-bit activations2026-10-1337.56Summary when the window fills2026-10-1438.45Relaxed acceptance 0.7 + cache pinning2026-10-1547.25Notes memory + exact acceptance + new drafter2026-10-1648.92Notes head + tail, OOM fixes2026-10-1747.45Goal first2026-10-1852.82Mamba 180, 140k window, temperature 0.52026-10-1941.37Predict before acting2026-10-2051.12RL LoRA merged at load2026-10-2144.68Second RL LoRA2026-10-220.00Speed stack: model load took 66 min, scorecard closed2026-10-2356.02Speed stack: per-game verify depth, 4 draft steps, 34 over 322026-10-2447.33+ splice + keep-alive2026-10-2545.49+ splice v3 + game log2026-10-2649.34Splice v3 stack alone2026-10-2853.70Expert-kernel rounding + keep-alive + game gate2026-10-2949.07+ predict before acting2026-10-3050.3453.70 package resubmitted2026-10-3146.41Lean turns + vocab trim2026-11-0148.3753.70 + splice + vocab trim2026-11-0249.8853.70 + vocab trim
+
+Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed: SGLang, expert pruning, 8-bit weights, more games at once. Then the harness took it from 41.97 to 52.82 (notes memory, goal first, a bigger window, temperature 0.5), and one last speed push made it 56.02. After that, nothing beat it: nine submissions over the last ten days, all lower.
+Looking back at this chart, here's what we should have done:
+
+Change strategy when the curve flattens. The signs were there. On 9 October, 4x the clock only took the board from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the 31 points we lost to levels the model never cleared, not in the speed.
+Price every speed trick in quality, not just tokens. Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits. 4.2 is about this.
+Don't be too ambitious with correction and RL. 3-bit experts already gave +5% tokens per second and 8 GB of memory, for about 7 points on the board. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big correction push into 2-bit: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. The smaller gap was the better bet.
+
+4.2 The biggest lesson: we didn't notice when token quality started to matter
+In turducken terms: we kept stuffing after the bird was full. For most of October, more tokens meant more score, and that trained us to treat every token as the same token. Somewhere between 52.82 and 56.02 that stopped being true, and we didn't notice. After 56.02, every faster build we shipped scored lower on Kaggle: splice (47.33, 48.37), Lean turns with vocab trim (46.41), vocab trim alone (49.88).
+Our board couldn't see it. In the board-vs-Kaggle chart in Part 1, nearly every lossy change was flat or up on the board and down on Kaggle: each loss was smaller than the board's noise, and Kaggle's 110 games over 9 hours compounded it. When we went back to the logs afterwards, the signs were there: the final 3-bit stack thought 35% less per move and ended 2 to 5 times as many turns without a tool call, and one reply in five wanted a token the vocab trim had removed. Nothing in our gate was looking for that.
+What we'd do differently:
+
+Measure quality per token directly for every lossy change: KL against the full model on recorded replies, plus a behaviour check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run board can't.
+Watch the tokens-to-score curve. When more tokens stop buying score, stop buying tokens with quality.
+Treat thinking length as a vital sign. If a change moves tokens per move by more than ~10% either way, assume it hurts until it proves otherwise.
+
+4.3 The rest
+
+Count games, not just speed. 1st place (and 6th) ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.
+Measure the whole run, not a step. Our biggest overhead win was invisible in per-step profiles, and prompt reading (~23% of the run) was invisible in SGLang's own throughput line.
+Memory is throughput. On a memory-bound decoder, freed gigabytes become lanes and history, and lanes are almost free per step.
+Know your noise before you read a result. SD 1.9 on our board; ±3.4 on Kaggle for the same package. A one-point "win" is a coin flip.
+Treat the prefix cache as a contract. One squeezed blank line cost us 8% of our speed.
+Build the dumb safety nets. A slow model load gave us a 0.00. A keep-alive fixed it.
+
+Thanks again
+Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again.
+This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.
+

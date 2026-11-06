@@ -1,0 +1,866 @@
+{
+  "TIME": [
+    {
+      "d": "1 Oct",
+      "n": "Daniel Franzen's notebook, as published",
+      "s": "SGLang fork, MTP drafting, 10 games, 8-bit history cache",
+      "tok": 605,
+      "lanes": 10,
+      "acc": 2.69,
+      "step": 32.3,
+      "p": {
+        "decode": 1138,
+        "fresh": 147.5,
+        "reread": 111.8,
+        "perread": 103,
+        "idle": 152.2
+      },
+      "runs": "daniel-base a + b"
+    },
+    {
+      "d": "3 Oct",
+      "n": "+ host-RAM cache tier, tuned drafter",
+      "s": "parked games keep their history; accepted tokens 2.69 → 2.89",
+      "tok": 648,
+      "lanes": 10,
+      "acc": 2.89,
+      "step": 32.7,
+      "p": {
+        "decode": 1086.9,
+        "fresh": 141.8,
+        "reread": 96.7,
+        "perread": 103.4,
+        "idle": 113.8
+      },
+      "runs": "hicache aft06 a"
+    },
+    {
+      "d": "6 Oct",
+      "n": "+ 8-bit dense weights, exact kernels",
+      "s": "12 games; fused kernels; image hashing moved off the scheduler",
+      "tok": 992,
+      "lanes": 12,
+      "acc": 3.06,
+      "step": 28.3,
+      "p": {
+        "decode": 761.3,
+        "fresh": 83.6,
+        "reread": 86.2,
+        "perread": 54.8,
+        "idle": 22.9
+      },
+      "runs": "bint8v2l12 c + e"
+    },
+    {
+      "d": "11 Oct",
+      "n": "+ 32 games, a third of the experts cut",
+      "s": "4-bit history cache, big-batch kernels, lost-history fix",
+      "tok": 1873,
+      "lanes": 32,
+      "acc": 3.05,
+      "step": 37.8,
+      "p": {
+        "decode": 384.5,
+        "fresh": 37.9,
+        "reread": 62.5,
+        "perread": 36.8,
+        "idle": 12.1
+      },
+      "runs": "sc2l32ship a + b"
+    },
+    {
+      "d": "18 Oct",
+      "n": "52.82 config",
+      "s": "Mamba 180 slots, 140k window, 24 GB RAM tier",
+      "tok": 1934,
+      "lanes": 32,
+      "acc": 3.05,
+      "step": 36.6,
+      "p": {
+        "decode": 363.8,
+        "fresh": 37.1,
+        "reread": 45.7,
+        "perread": 34.6,
+        "idle": 36.1
+      },
+      "runs": "52.82 twin a + b"
+    },
+    {
+      "d": "23 Oct",
+      "n": "56.02 config",
+      "s": "per-game verify depth, 4 draft steps, 3 guaranteed experts, 52k keep",
+      "tok": 2150,
+      "lanes": 32,
+      "acc": 3.25,
+      "step": 35.1,
+      "p": {
+        "decode": 330,
+        "fresh": 36,
+        "reread": 37.9,
+        "perread": 32.7,
+        "idle": 28.7
+      },
+      "runs": "56.02 twin a + b",
+      "star": true
+    },
+    {
+      "d": "1 Nov",
+      "n": "After 56.02, not shipped",
+      "s": "splice, Lean turns, vocab trim; 75-game board",
+      "tok": 2441,
+      "lanes": 32,
+      "acc": 3.21,
+      "step": 34,
+      "p": {
+        "decode": 331.4,
+        "fresh": 24.5,
+        "reread": 17.3,
+        "perread": 32,
+        "idle": 4.6
+      },
+      "runs": "cmb32 a + b",
+      "ghost": true
+    }
+  ],
+  "LADDER": [
+    {
+      "d": "22 Sep",
+      "n": "vLLM, no drafting",
+      "tok": 296,
+      "lanes": 7
+    },
+    {
+      "d": "1 Oct",
+      "n": "Daniel's notebook",
+      "tok": 605,
+      "lanes": 10
+    },
+    {
+      "d": "3 Oct",
+      "n": "RAM cache tier",
+      "tok": 648,
+      "lanes": 10
+    },
+    {
+      "d": "6 Oct",
+      "n": "8-bit, exact kernels",
+      "tok": 992,
+      "lanes": 12
+    },
+    {
+      "d": "11 Oct",
+      "n": "32 games, expert cut",
+      "tok": 1873,
+      "lanes": 32
+    },
+    {
+      "d": "18 Oct",
+      "n": "52.82 config",
+      "tok": 1934,
+      "lanes": 32
+    },
+    {
+      "d": "23 Oct",
+      "n": "56.02 config",
+      "tok": 2150,
+      "lanes": 32,
+      "star": true
+    },
+    {
+      "d": "1 Nov",
+      "n": "after 56.02",
+      "tok": 2441,
+      "lanes": 32,
+      "ghost": true
+    }
+  ],
+  "STEP": [
+    [
+      "Experts",
+      15.8
+    ],
+    [
+      "8-bit dense layers + output head",
+      3.3
+    ],
+    [
+      "Draft chain and gaps",
+      2.7
+    ],
+    [
+      "Attention + indexer",
+      1.85
+    ],
+    [
+      "Hyper-connection mix",
+      1.6
+    ],
+    [
+      "Expert routing",
+      0.7
+    ],
+    [
+      "Linear attention",
+      0.7
+    ],
+    [
+      "Hyper-connection combine",
+      0.6
+    ],
+    [
+      "16-bit leftovers",
+      0.57
+    ]
+  ],
+  "LANES": [
+    [
+      13,
+      24
+    ],
+    [
+      20,
+      30.2
+    ],
+    [
+      24,
+      33.4
+    ],
+    [
+      28,
+      36.5
+    ],
+    [
+      32,
+      38.5
+    ],
+    [
+      40,
+      47.3
+    ],
+    [
+      48,
+      52.5
+    ]
+  ],
+  "MEM": [
+    {
+      "d": "22 Sep",
+      "n": "vLLM",
+      "p": [
+        76,
+        0,
+        13.76,
+        0,
+        5.21
+      ],
+      "kv": "984k",
+      "lanes": 7
+    },
+    {
+      "d": "3 Oct",
+      "n": "SGLang + drafter",
+      "p": [
+        69.85,
+        4.75,
+        11.58,
+        3.4,
+        5.39
+      ],
+      "kv": "1.01M",
+      "lanes": 10
+    },
+    {
+      "d": "11 Oct",
+      "n": "a fifth of experts cut",
+      "p": [
+        54.29,
+        5.19,
+        17.76,
+        9.58,
+        8.15
+      ],
+      "kv": "2.76M",
+      "lanes": 24
+    },
+    {
+      "d": "11 Oct",
+      "n": "a third of experts cut",
+      "p": [
+        46.21,
+        5.89,
+        22.36,
+        11.81,
+        8.7
+      ],
+      "kv": "3.47M",
+      "lanes": 32
+    },
+    {
+      "d": "17 Oct",
+      "n": "56.02 config",
+      "p": [
+        46.21,
+        6.19,
+        24.48,
+        10.05,
+        8.04
+      ],
+      "kv": "3.80M",
+      "lanes": 32,
+      "star": true
+    }
+  ],
+  "KAGGLE": [
+    [
+      "2026-09-21",
+      7.36,
+      "b",
+      "First Flash-Next notebook (vLLM)"
+    ],
+    [
+      "2026-09-22",
+      5.6,
+      "h",
+      "Prompt deletions"
+    ],
+    [
+      "2026-09-23",
+      6.17,
+      "x",
+      "Same notebook as 22 Sep, resubmitted"
+    ],
+    [
+      "2026-09-24",
+      6.74,
+      "x",
+      "Same notebook again"
+    ],
+    [
+      "2026-09-25",
+      6.47,
+      "h",
+      "Compact prompt v5"
+    ],
+    [
+      "2026-09-26",
+      4.83,
+      "x",
+      "Compact v5 resubmitted"
+    ],
+    [
+      "2026-09-27",
+      8.23,
+      "i",
+      "Moved to SGLang"
+    ],
+    [
+      "2026-09-28",
+      12.21,
+      "i",
+      "SGLang + expert pruning"
+    ],
+    [
+      "2026-09-29",
+      15.68,
+      "b",
+      "Pruning + temperature 0.8 + tuned drafter"
+    ],
+    [
+      "2026-09-30",
+      18.99,
+      "b",
+      "More pruning, temperature 0.6"
+    ],
+    [
+      "2026-10-01",
+      8.14,
+      "i",
+      "Different expert set (336)"
+    ],
+    [
+      "2026-10-02",
+      3.93,
+      "h",
+      "Our harness + Franzen's tool fixes (Combo A)"
+    ],
+    [
+      "2026-10-03",
+      28.94,
+      "b",
+      "Daniel Franzen's notebook + our drafter + animation feed"
+    ],
+    [
+      "2026-10-04",
+      27.79,
+      "b",
+      "4-bit cache, 13 games"
+    ],
+    [
+      "2026-10-05",
+      31.63,
+      "i",
+      "Host-RAM cache tier + fused 8-bit attention"
+    ],
+    [
+      "2026-10-06",
+      33.74,
+      "i",
+      "8-bit dense weights"
+    ],
+    [
+      "2026-10-07",
+      31.11,
+      "i",
+      "16-bit line, 11 games"
+    ],
+    [
+      "2026-10-08",
+      35.45,
+      "i",
+      "8-bit v3, 13 games"
+    ],
+    [
+      "2026-10-09",
+      35.32,
+      "x",
+      "8-bit v3 resubmitted"
+    ],
+    [
+      "2026-10-10",
+      39.24,
+      "b",
+      "20 games, 8/4-bit cache, fresh eyes when stuck"
+    ],
+    [
+      "2026-10-11",
+      41.69,
+      "i",
+      "A third of the experts cut, 28 games"
+    ],
+    [
+      "2026-10-12",
+      41.97,
+      "i",
+      "32 games, 8-bit activations"
+    ],
+    [
+      "2026-10-13",
+      37.56,
+      "h",
+      "Summary when the window fills"
+    ],
+    [
+      "2026-10-14",
+      38.45,
+      "i",
+      "Relaxed acceptance 0.7 + cache pinning"
+    ],
+    [
+      "2026-10-15",
+      47.25,
+      "b",
+      "Notes memory + exact acceptance + new drafter"
+    ],
+    [
+      "2026-10-16",
+      48.92,
+      "b",
+      "Notes head + tail, OOM fixes"
+    ],
+    [
+      "2026-10-17",
+      47.45,
+      "h",
+      "Goal first"
+    ],
+    [
+      "2026-10-18",
+      52.82,
+      "b",
+      "Mamba 180, 140k window, temperature 0.5"
+    ],
+    [
+      "2026-10-19",
+      41.37,
+      "h",
+      "Predict before acting"
+    ],
+    [
+      "2026-10-20",
+      51.12,
+      "h",
+      "RL LoRA merged at load"
+    ],
+    [
+      "2026-10-21",
+      44.68,
+      "h",
+      "Second RL LoRA"
+    ],
+    [
+      "2026-10-22",
+      0,
+      "x",
+      "Speed stack: model load took 66 min, scorecard closed"
+    ],
+    [
+      "2026-10-23",
+      56.02,
+      "i",
+      "Speed stack: per-game verify depth, 4 draft steps, 34 over 32"
+    ],
+    [
+      "2026-10-24",
+      47.33,
+      "i",
+      "+ splice + keep-alive"
+    ],
+    [
+      "2026-10-25",
+      45.49,
+      "b",
+      "+ splice v3 + game log"
+    ],
+    [
+      "2026-10-26",
+      49.34,
+      "i",
+      "Splice v3 stack alone"
+    ],
+    [
+      "2026-10-28",
+      53.7,
+      "i",
+      "Expert-kernel rounding + keep-alive + game gate"
+    ],
+    [
+      "2026-10-29",
+      49.07,
+      "h",
+      "+ predict before acting"
+    ],
+    [
+      "2026-10-30",
+      50.34,
+      "x",
+      "53.70 package resubmitted"
+    ],
+    [
+      "2026-10-31",
+      46.41,
+      "b",
+      "Lean turns + vocab trim"
+    ],
+    [
+      "2026-11-01",
+      48.37,
+      "i",
+      "53.70 + splice + vocab trim"
+    ],
+    [
+      "2026-11-02",
+      49.88,
+      "i",
+      "53.70 + vocab trim"
+    ]
+  ],
+  "THINK": [
+    [
+      "8-bit Mamba states",
+      -19.3,
+      -0.5,
+      "961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.7"
+    ],
+    [
+      "3-bit + 8-bit states, 194k window",
+      -36.9,
+      -5.9,
+      "639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.0"
+    ],
+    [
+      "3-bit + corrector LoRA",
+      45,
+      -8.8,
+      "1,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.0"
+    ],
+    [
+      "3-bit + corrector, medium effort",
+      50.8,
+      -8.6,
+      "1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0"
+    ],
+    [
+      "RL5",
+      -47.3,
+      -22,
+      "median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5"
+    ]
+  ],
+  "WF": {
+    "decode": {
+      "c": "--c-decode",
+      "max": 1200,
+      "ticks": [
+        0,
+        300,
+        600,
+        900,
+        1200
+      ],
+      "steps": [
+        [
+          "1 Oct",
+          "Daniel's notebook",
+          1138
+        ],
+        [
+          "3 Oct",
+          "tuned drafter",
+          1086.9
+        ],
+        [
+          "6 Oct",
+          "8-bit weights, exact kernels, 12 games",
+          761.3
+        ],
+        [
+          "11 Oct",
+          "32 games: experts cut, 4-bit cache, big-batch kernels",
+          384.5
+        ],
+        [
+          "18 Oct",
+          "Mamba 180, 140k window",
+          363.8
+        ],
+        [
+          "23 Oct",
+          "per-game verify depth, 4 draft steps, 3 experts",
+          330
+        ]
+      ]
+    },
+    "prefill": {
+      "c": "--c-new",
+      "max": 300,
+      "ticks": [
+        0,
+        100,
+        200,
+        300
+      ],
+      "steps": [
+        [
+          "1 Oct",
+          "Daniel's notebook",
+          259.3
+        ],
+        [
+          "3 Oct",
+          "host-RAM tier",
+          238.5
+        ],
+        [
+          "6 Oct",
+          "8-bit weights, faster prompt-read experts",
+          169.8
+        ],
+        [
+          "11 Oct",
+          "verbatim history, prompt kernels",
+          100.4
+        ],
+        [
+          "18 Oct",
+          "140k window, RAM tier, pinned checkpoints",
+          82.8
+        ],
+        [
+          "23 Oct",
+          "52k keep, fused prompt glue",
+          73.9
+        ]
+      ]
+    },
+    "overhead": {
+      "c": "--c-perread",
+      "max": 300,
+      "ticks": [
+        0,
+        100,
+        200,
+        300
+      ],
+      "steps": [
+        [
+          "1 Oct",
+          "Daniel's notebook",
+          255.2
+        ],
+        [
+          "3 Oct",
+          "harness changes: fewer idle lanes",
+          217.2
+        ],
+        [
+          "6 Oct",
+          "image hash off the scheduler, zero-copy hand-off",
+          77.7
+        ],
+        [
+          "11 Oct",
+          "prompt-read CUDA graphs, 32 games",
+          48.9
+        ],
+        [
+          "18 Oct",
+          "longer board runs: more idle lanes",
+          70.7
+        ],
+        [
+          "23 Oct",
+          "34 games over 32 lanes",
+          61.4
+        ]
+      ]
+    }
+  },
+  "DELTA2": [
+    [
+      "Notes memory, relaxed acceptance off",
+      2.75,
+      8.8,
+      "60.8 vs 58.1 (4 vs 2 runs)",
+      "38.45 → 47.25",
+      true
+    ],
+    [
+      "Mamba 180, 140k window, temperature 0.5",
+      4.3,
+      5.37,
+      "32-game set 54.7 vs 50.4",
+      "47.45 → 52.82",
+      true
+    ],
+    [
+      "Speed stack (the 56.02)",
+      -1,
+      3.2,
+      "62.1 vs 63.1",
+      "52.82 → 56.02",
+      true
+    ],
+    [
+      "Notes head + tail, OOM fixes",
+      1.3,
+      1.67,
+      "62.1 vs 60.8 (3 vs 4 runs)",
+      "47.25 → 48.92",
+      true
+    ],
+    [
+      "Goal first",
+      2.9,
+      -1.47,
+      "one run, 65.0 vs 62.1",
+      "48.92 → 47.45",
+      true
+    ],
+    [
+      "RL LoRA merged at load",
+      null,
+      -1.7,
+      "no matching board test",
+      "52.82 → 51.12",
+      false
+    ],
+    [
+      "Expert-kernel rounding, keep-alive, gate",
+      0.2,
+      -2.32,
+      "62.9 vs 62.7",
+      "56.02 → 53.70",
+      false
+    ],
+    [
+      "Same package, resubmitted",
+      null,
+      -3.36,
+      "board noise: SD 1.9",
+      "53.70 → 50.34",
+      null
+    ],
+    [
+      "Relaxed acceptance 0.7, new drafter",
+      5,
+      -3.52,
+      "49.75 vs 44.8",
+      "41.97 → 38.45",
+      false
+    ],
+    [
+      "Vocab trim",
+      -0.2,
+      -3.82,
+      "66.1 vs 66.2 (4 vs 6 runs)",
+      "53.70 → 49.88",
+      false
+    ],
+    [
+      "Summary when the window fills",
+      0.65,
+      -4.41,
+      "45.5 vs 44.8",
+      "41.97 → 37.56",
+      false
+    ],
+    [
+      "Predict before acting (2nd try)",
+      2.3,
+      -4.63,
+      "63.9 vs 61.7",
+      "53.70 → 49.07",
+      false
+    ],
+    [
+      "Splice + vocab trim",
+      0.4,
+      -5.33,
+      "64.6 vs 64.2",
+      "53.70 → 48.37",
+      false
+    ],
+    [
+      "Second RL LoRA",
+      null,
+      -8.14,
+      "no matching board test",
+      "52.82 → 44.68",
+      false
+    ],
+    [
+      "Splice + keep-alive",
+      2.6,
+      -8.69,
+      "64.7 vs 62.1",
+      "56.02 → 47.33",
+      false
+    ],
+    [
+      "Lean turns + vocab trim",
+      1.9,
+      -9.61,
+      "66.1 vs 64.2",
+      "56.02 → 46.41",
+      false
+    ],
+    [
+      "Predict before acting",
+      0.7,
+      -11.45,
+      "copycats 60.2 vs 59.5",
+      "52.82 → 41.37",
+      false
+    ]
+  ]
+}

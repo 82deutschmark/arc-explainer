@@ -1,100 +1,1163 @@
 <!doctype html>
-<!--
-Author: GPT-6.1 Sol
-Date: 06-November-2026
-PURPOSE: Publish the requested ARC-3 article as a standalone review reading page, reusing the existing specials static-serving path and unchanged rounded-corner artwork. No application or feed changes.
-SRP/DRY check: Pass — static specials publishing pattern verified; one article, no duplicated application functionality.
--->
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Restore Son’s original article with static original charts. SRP/DRY check: Pass — original renderer reused offline. -->
+<html lang="en"><head><!-- frame-runtime --><!-- /frame-runtime -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title>Stuffing the Turducken</title>
-<meta name="robots" content="noindex"><meta name="description" content="Stuffing the Turducken — review draft: the October 18 ARC-AGI-3 harness, cache-aware inference and subsequent reinforcement-learning experiments.">
-<style>
-*{box-sizing:border-box}body{margin:0;background:#faf8f2;color:#252923;font:20px/1.7 Georgia,serif}main{max-width:900px;margin:auto;padding:28px 32px 64px}nav,.eyebrow,aside,figcaption,footer{font:15px/1.55 system-ui,sans-serif}nav{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-bottom:1px solid #c9cbbf;padding-bottom:18px}a{color:#285942;text-underline-offset:3px}h1{font-size:clamp(35px,5vw,54px);line-height:1.12;letter-spacing:-1px;margin:14px 0 24px}h2{font-size:31px;line-height:1.25;margin-top:52px}h3{font-size:24px;line-height:1.35;margin-top:32px}.eyebrow{color:#53664c;letter-spacing:1.5px;text-transform:uppercase;margin-top:32px}aside{border-left:4px solid #a77e32;background:#eee9d9;padding:16px 20px;margin:26px 0}aside p{margin:0}figure{margin:30px -20px}img{display:block;width:100%;height:auto}figcaption{color:#596150;margin-top:12px;padding:0 20px}footer{border-top:1px solid #c9cbbf;margin-top:44px;padding-top:18px}p{margin:20px 0}li{margin:6px 0}@media(max-width:600px){main{padding:20px 20px 42px}body{font-size:18px}h2{font-size:27px}figure{margin:26px 0}figcaption{padding:0}aside{padding:12px 15px}}
-code{font-size:13px;overflow-wrap:anywhere}.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;min-width:600px;width:100%;font:14px/1.5 system-ui,sans-serif}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #c9cbbf}th{background:#eee9d9}td:nth-child(2){width:30%}.table-scroll{border:1px solid #c9cbbf}th{font-weight:700}caption{text-align:left} </style></head><body><main>
-<nav><a href="/">ARC Explainer</a><a href="arc3-solution-draft/article-draft.md" download>Download the Markdown draft</a></nav>
-<header><p class="eyebrow">ARC-AGI-3 · Review draft · November 6, 2026</p><h1>Stuffing the Turducken</h1></header>
-<aside><p><strong>Review draft.</strong> Covers the October 18 submission setup and subsequent training experiments. <a href="#review-notes">Editorial checks</a> remain separate from the article.</p></aside>
-<p>First, thank you to the organizers for an amazing competition—and for the generous free RTX compute that let us pursue so many experiments. Having that hardware available made this project possible, including the ideas that failed.</p>
-<p>An ARC-AGI-3 agent has to learn what a game is asking while it plays. Every frame is evidence; every action spends time testing a hypothesis. A useful solver therefore needs more than a model that can reason about pictures. It needs a harness that turns reasoning into experiments, an inference stack that leaves time to run them, and a way to carry discoveries forward when the conversation fills up.</p>
-<p>That is our turducken: the playing policy sits inside a tool-using harness, which runs inside a carefully fitted serving system. We worked on all three layers, then explored reinforcement learning to improve the policy itself. The connections mattered as much as the individual pieces. A faster model can try more ideas, but repeatedly rereading a rewritten conversation wastes that advantage. Training can improve a policy, but only if the model being trained behaves like the one being served.</p>
-<p>Here we describe the October 18 submission harness and inference configuration, followed by the reinforcement-learning experiments that developed alongside and after it.</p>
-<h2>Harness Iteration</h2>
-<figure><a href="arc3-solution-draft/01-harness-garage-v2-corners-only.png"><img src="arc3-solution-draft/01-harness-garage-v2-corners-only.png" alt="The game-playing harness" loading="lazy"></a></figure>
-<p>We built on Daniel Franzen&#x27;s notebook and agent framework. The model receives a game frame and writes Python in a sandbox to inspect the frame and take actions. This lets it organize a sequence of moves as a small experiment: identify an uncertainty, choose an action that distinguishes possible explanations, and use the resulting frame to update its model of the game.</p>
-<p>The harness had to address two familiar failures: analysis without action, and confident action toward the wrong goal. Our working habits were:</p>
-<ul><li>Identify the objective before committing to a long plan.</li><li>Probe unfamiliar mechanics with small, discriminating experiments.</li><li>Batch actions once their effects are understood.</li><li>At a level transition, carry forward the rules but reconsider the plan for the new board.</li></ul>
-<p>That loop produces a growing record of frames, code, observations and reasoning. Keeping it useful became both a memory problem and a serving problem.</p>
-<h3>Make room without rebuilding the conversation every turn</h3>
-<p>The selected setup is easier to reproduce as a settings sheet:</p>
-<div class="table-scroll" role="region" aria-label="Configuration settings" tabindex="0"><table><thead><tr><th>Context and memory setting</th><th>Value</th><th>Role</th></tr></thead><tbody><tr><td>Context window</td><td>143,360 tokens</td><td>Total rendered request plus output allowance</td></tr><tr><td>Maximum output per ordinary request</td><td>12,288 tokens</td><td>Reserved generation budget</td></tr><tr><td>Additional input margin</td><td>512 tokens</td><td>Safety margin beyond output reserve</td></tr><tr><td>Nominal input budget</td><td>130,560 tokens</td><td>Window minus output allowance and margin</td></tr><tr><td>Trim target</td><td>Approximately 58,000 tokens</td><td>Whole-block cut, not a hard exact retained size</td></tr><tr><td>Persistent notes cap</td><td>40,000 characters</td><td>Separate from token-budgeted history</td></tr><tr><td>Notes display</td><td>Head and tail</td><td>Keep early rules and recent discoveries</td></tr><tr><td>Sampling temperature</td><td>0.5</td><td>Selected October 18 harness</td></tr></tbody></table></div>
-<p>The temperature-0.5 configuration used a <strong>143,360-token context window</strong> and allowed up to <strong>12,288 output tokens per ordinary model request</strong>. The harness reserved that output allowance plus <strong>512 tokens</strong> of margin, leaving a nominal <strong>130,560-token input budget</strong>. It estimated the rendered request length, so the effective boundary depended on the request rather than token arithmetic alone.</p>
-<p>Once the history exceeded the budget, we cut it substantially, targeting approximately <strong>58,000 retained tokens</strong>. Whole message blocks and the latest interaction determined the exact retained length. The large gap between the input budget and the retention target was deliberate: it left room for several turns of growth before the next cut.</p>
-<p>This mattered because the server could reuse computation for an unchanged conversation prefix. Its key-value cache holds attention state from tokens already processed; the model also has recurrent state that must be preserved to resume a cached path. Rewriting old messages, even with equivalent reasoning or tidier formatting, can change the rendered token sequence and break that reuse. We therefore preserved generated history as faithfully as possible.</p>
-<p>Trimming just enough to squeeze in the next request would keep changing the prefix. A larger, less frequent cut let subsequent requests append to stable history. Each cut still caused recomputation of the affected prefix, and contention or eviction could remove cached state between requests. The aim was to reduce avoidable cache churn, not to depend on permanent residency.</p>
-<p>Serving was sized for that workload:</p>
-<ul><li><strong>32 concurrent request lanes</strong> to batch generation.</li><li><strong>180 Mamba state slots</strong> for recurrent state.</li><li><strong>24 GB of host-memory cache</strong> to extend state capacity beyond the GPU.</li></ul>
-<div class="table-scroll" role="region" aria-label="Configuration settings" tabindex="0"><table><thead><tr><th>Serving setting</th><th>Selected value</th><th>Purpose / trade-off</th></tr></thead><tbody><tr><td>Accelerator</td><td>One 96 GB RTX PRO 6000</td><td>Model, active state and concurrent requests share memory</td></tr><tr><td>Concurrent lanes</td><td>32</td><td>Selected setup, not a universal optimum</td></tr><tr><td>Recurrent state slots</td><td>180</td><td>Capacity for Mamba states</td></tr><tr><td>Host cache tier</td><td>24 GB</td><td>Extends reusable state beyond GPU memory</td></tr><tr><td>Routed expert pool</td><td>341 of 512 per layer</td><td>Frees memory at the cost of model capacity</td></tr><tr><td>Routed expert weights</td><td>Four-bit</td><td>Higher-precision tensors remain elsewhere</td></tr><tr><td>Selected attention cache</td><td>Four-bit</td><td>Capacity versus token-quality trade-off</td></tr></tbody></table></div>
-<p>Attention state, recurrent state and conversation management had to work together; retaining one while repeatedly discarding another would leave part of the benefit unrealized.</p>
-<h3>Keep discoveries somewhere a context cut cannot erase</h3>
-<p>Conversation history records how the agent reached an idea. Explicit notes record what it needs next. We gave those two jobs separate homes.</p>
-<p>The harness maintained a persistent Markdown-style notes object outside the temporary Python sandbox. Notes writes streamed back to the harness, allowing already-recorded discoveries to survive a tool timeout. Retained helper functions also spared the agent from rebuilding useful code on every call.</p>
-<p>The notes store was capped at <strong>40,000 characters</strong>. When its displayed form needed shortening, the selected head-and-tail mode kept both the beginning and the end: early rules and recent findings could remain visible together. The harness could present the notes again after a context cut or level transition, restoring discovered mechanics, failed approaches and the current plan without restoring the whole conversation.</p>
-<p>We also made room for abandoning a bad line of thought. After a prolonged stall, a “fresh eyes” mechanism asked the agent to write a handover note, cleared the conversation, and prompted a fresh look at competing explanations. This deliberately traded cache reuse for a chance to escape an unproductive trajectory. Preserving state is useful only while that state is helping.</p>
-<h3>When the local score stopped predicting Kaggle</h3>
-<figure><a href="arc3-solution-draft/charts/harness-local-kaggle.png"><img src="arc3-solution-draft/charts/harness-local-kaggle.png" alt="Harness changes compared on local evaluation and Kaggle; goal-first improves the local mean while Kaggle falls" loading="lazy"></a><figcaption>Reconstructed from Claude Opus 5.5’s October 17 harness manifest, not the original draft graphic. Score Climb 2 used 25 official and 25 copycat games, 200 minutes and 32 lanes. Local means were 61.1 for Seal + notes head/tail, approximately 62.4 after goal-first prompting, and 61.5 with M180 serving; the first two Kaggle scores were 48.92 and 47.45. M180 had not been submitted in this snapshot. The goal-first local runs were reported at minute 194. These are different evaluation sets, not calibrated scores or a controlled cumulative ablation; the local run spread was roughly ±2 points.</figcaption></figure>
 
-<p>One of our most important observations was also one of the least satisfying: an improvement on our local evaluation did not reliably produce an improvement on Kaggle. We could make the serving system faster, or raise our internal game score, without knowing whether that change would help on the hidden games. These were three different measurements:</p>
-<ul><li><strong>Throughput:</strong> how much reasoning and play fit into the time budget.</li><li><strong>Local game score:</strong> whether the agent improved on the games and settings in our evaluation.</li><li><strong>Kaggle score:</strong> whether that improvement transferred to the competition’s hidden games.</li></ul>
-<p>We tried building our own games to create a separate evaluation set. The aim was to test unfamiliar mechanics rather than keep tuning against the same familiar tasks. The <a href="https://arc.markbarney.net/arc3/games">authored game collection on ARC Explainer</a> is part of that effort and is available to explore.</p>
-<p>Making playable games was not the same as making a useful measuring stick. Ultimately, we did not establish a custom evaluation set whose improvements correlated well enough with Kaggle to guide our decisions confidently. We should not confuse that failure with a lack of interesting games: the missing piece was predictive evaluation. Local results remained useful for diagnosis, but they could not settle which stack would generalize best.</p>
-<h2>Inference Optimization</h2>
-<figure><a href="arc3-solution-draft/02-inference-v1-corners-only.png"><img src="arc3-solution-draft/02-inference-v1-corners-only.png" alt="The inference stack" loading="lazy"></a></figure>
-<p>The next layer was inference. The serving stack ran a quantized Flash-Next model on a single <strong>96 GB RTX PRO 6000</strong>, using Daniel&#x27;s SGLang fork and additional serving patches. The question was how to fit the model, reusable state and concurrent work into the available memory while leaving enough throughput for the agent to explore.</p>
-<p>The routed experts used four-bit weights, and routing was restricted to <strong>341 of the original 512 experts per layer</strong>. Reducing the active expert pool freed memory for the rest of the workload at the cost of model capacity. Memory layout, fused operations and kernel tiling were further parts of the same fit. The selected build also used a four-bit attention-cache configuration, with other precision choices elsewhere in the model.</p>
-<p>Speculative decoding addressed generation speed. A separately trained multi-token-prediction drafter proposed tokens for the target model to verify. What mattered was how much progress the target accepted per verification step. The drafter and target were therefore a pair: changing the target weights could change acceptance and erase a speed advantage measured against the previous model.</p>
-<p>Together, faster generation and less repeated prefill left more wall-clock time for game experiments. That made serving efficiency valuable to the playing agent, while keeping the evaluation questions distinct. Throughput measures how quickly it can try; game evaluations measure whether the attempts work. An internal game score and a Kaggle leaderboard score answer different questions again.</p>
-<h3>What the measurements actually showed</h3>
-<figure><img src="arc3-solution-draft/charts/speed-score.png" alt="Throughput and game score across archived serving configurations"><figcaption>Throughput and game score across archived serving configurations</figcaption></figure>
-<p>The October 11 Score Climb 2 summary makes the trade-off concrete. The 48-lane arm generated more tokens per second, yet scored worse than either 28-lane arm. It also removed more experts and changed context length, so this is <strong>not</strong> evidence that lanes alone caused the loss. It is evidence that optimizing throughput without preserving the playing policy can lose the thing we actually care about. The baseline throughput bar uses the midpoint of its recorded range; its whisker shows that range, not statistical uncertainty.</p>
-<figure><img src="arc3-solution-draft/charts/lane-ladder.png" alt="The archived concurrency ladder"><figcaption>The archived concurrency ladder</figcaption></figure>
-<p>A separate 75-game ladder favored 32 lanes over 24 and 28, with two runs per arm. Its scores are not on the same evaluation suite as Score Climb 2. Together, these measurements argue for testing the <strong>whole configuration</strong>, not treating a throughput gain as a predicted game-score gain.</p>
-<ul><li><strong>What these charts support:</strong> measured speed/score trade-offs within named archived workloads.</li><li><strong>What they do not establish:</strong> a local-to-Kaggle conversion, a clean lane-only ablation, or a final submission result.</li><li><strong>What is missing:</strong> comparable uncertainty estimates and a matched local/Kaggle series. We do not draw a correlation graph without those paired observations.</li></ul>
-<p><a href="arc3-solution-draft/charts/chart-data.json">Download the plotted data</a> · <a href="arc3-solution-draft/charts/README.md">Chart sources and reproduction notes</a></p>
-<h3>Storage, decode and prompt-reading costs</h3>
-<figure><a href="arc3-solution-draft/charts/engineering-evidence/archived-evidence.svg"><img src="arc3-solution-draft/charts/engineering-evidence/archived-evidence.png" alt="Archived storage, decode, prefill and full-game-clock measurements"></a><figcaption>Recovered archived engineering measurements; separate workloads, not a cumulative ablation.</figcaption></figure>
-<p>These recovered October measurements show where individual serving improvements helped—and why they are not one cumulative speedup curve:</p>
-<ul><li><strong>Cache storage:</strong> the twelve target attention layers used 12,288 bytes/token in FP8, 9,624 with eight-bit keys/four-bit values, and 6,912 with four-bit keys/values. This excludes the draft cache, recurrent state and allocator overhead; it is not total GPU memory. Lower precision can change the playing policy.</li><li><strong>Decode:</strong> two runs per arm yielded descriptive mean iteration times of 29.10 ms for the BF16 control and 26.99 ms for INT8 dense weights. The four samples per arm were taken at minutes ten and twenty—not four independent runs, and not latency per accepted token.</li><li><strong>Prefill:</strong> graph v3 recorded 161–204 ms versus 196–221 ms for control on 1,500–1,900-token reads. These are observed ranges across different read lengths, not confidence intervals or a matched-length speedup.</li><li><strong>Full game clock:</strong> FP8 and K8V4 configurations delivered roughly 1,022–1,042 generated tokens/second over a 132-minute game clock. Lanes and host-cache settings changed together; boot inclusion is not established. This is not a cache-only ablation.</li></ul>
-<p>All panels use archived summaries for an RTX PRO 6000 96 GB and the Flash-Next/SGLang stack. They are separate workloads, not newly reproduced benchmarks or evidence of a particular final Kaggle result. The earlier request for swapping latency and a cumulative boot-inclusive throughput curve remains unanswered by these sources.</p>
-<p><a href="arc3-solution-draft/charts/engineering-evidence/evidence.json">Download the source data</a> · <a href="arc3-solution-draft/charts/engineering-evidence/archived-evidence.svg">Scalable figure</a> · <a href="arc3-solution-draft/charts/engineering-evidence/render.py">Reproduction script</a></p>
-<h3>The optimization inventory</h3>
-<p>We accumulated <strong>102 named kernel-work directories</strong>. That is an inventory of attempts, revisions and measurement tools—not 102 independent improvements, and certainly not 102 changes to enable together. Some replace earlier versions; others were abandoned. Grouping the complete inventory makes the reusable ideas easier to find:</p>
-<div class="table-scroll" role="region" aria-label="Complete optimization inventory" tabindex="0"><table><thead><tr><th scope="col">Category</th><th scope="col">Named sets and variants</th><th scope="col">What to reuse—and what to watch</th></tr></thead><tbody><tr><td>Dense weights and matrix multiplication</td><td><code>kfast</code>, <code>kfast128</code>, <code>kfp8</code>, <code>kintn</code>, <code>kw4d</code>, <code>kw8</code>, <code>kw8L</code>, <code>kw8a8</code>, <code>kw8a8b</code>, <code>kw8b</code>, <code>kw8bf</code>, <code>kw8m</code>, <code>kw8x</code>, <code>kw8x2</code>, <code>kw8x3</code>, <code>kgemm256</code></td><td>Small-batch kernels, precision screens, split-row tactics and activation quantization. INT8 with per-128-input scales was preferable to FP8 in our screen; W8A8 traded precision for speed. Several entries are probes or ablation variants, not shipped improvements.</td></tr><tr><td>Expert routing and capacity</td><td><code>kchop</code>, <code>kchopp</code>, <code>kexp3</code>, <code>ktopk</code>, <code>kbafuse</code>, <code>kbafuse2</code>, <code>kroute</code>, <code>kmerge</code>, <code>kmoebm16</code>, <code>kmoefill</code>, <code>kmskip</code></td><td>Mask or physically remove experts, test fewer experts per token, fuse rerouting/remapping, and tune MoE blocks. Exact routing glue and lossy capacity reductions must be evaluated separately; reducing the batch-aware expert count lost score.</td></tr><tr><td>Attention cache and sparse attention</td><td><code>kkv44</code>, <code>kkv44b</code>, <code>kkv44c</code>, <code>kkv44d</code>, <code>kkv84</code>, <code>kkv84f</code>, <code>kkv84f2</code>, <code>kkv84f3</code>, <code>kkv84f4</code>, <code>kkv84r</code>, <code>kq8</code>, <code>kq8cfg</code>, <code>kq8cfg84</code>, <code>kq8r</code>, <code>kqsak</code>, <code>kqsapf</code></td><td>Four/eight-bit key-value formats, fused unpack-and-attend kernels, launch configurations, ring variants, sparse-pick screens and prefill tactics. Quantization creates room for lanes but can weaken token quality; a faster unpack kernel does not remove that trade-off.</td></tr><tr><td>Attention indexing</td><td><code>kidx</code>, <code>kidxr</code>, <code>kmqa</code>, <code>kmqa2</code></td><td>Reuse key tiles across verification rows and split prefill scoring over the key range. Later variants merge earlier patches; they are not independent additive wins.</td></tr><tr><td>Hyperconnection mixing and launch glue</td><td><code>khc</code>, <code>kglue</code>, <code>kglue1005</code>, <code>kglue2</code>, <code>khcpf</code>, <code>khcpf2</code>, <code>kbig</code>, <code>kbig2</code>, <code>kbig3</code>, <code>kgate8</code>, <code>kpdl</code>, <code>kpdl128</code>, <code>ktrim</code></td><td>Fuse mixing, normalization and gates; overlap an early gate; extend tactics beyond 128 rows; reduce launch overhead. Includes a frozen snapshot and unsuccessful early-start/prefetch and single-launch variants.</td></tr><tr><td>Linear-attention state and convolution</td><td><code>kconv</code>, <code>kgdn</code>, <code>kqkvz</code>, <code>kfuse</code>, <code>kfuse8</code></td><td>Avoid redundant copies, read strided query/key/value views directly, and fuse or omit redundant work. The full Gated DeltaNet rewrite ultimately ran into the memory-bandwidth floor.</td></tr><tr><td>Vocabulary heads and sampling</td><td><code>kdflnext</code>, <code>kdhead8</code>, <code>kdhead8b</code>, <code>kdraft8</code>, <code>kdsamp</code>, <code>klgf</code>, <code>klmh</code>, <code>klmh3</code>, <code>ktsamp</code>, <code>ktsamp2</code></td><td>Draft-head INT8, compressed target heads, chunk reuse, and top-k-first sampling probes. Draft-only quantization changes proposals; exact target verification is a different guarantee from target-model quantization.</td></tr><tr><td>Weight placement and pool sizing</td><td><code>kdupe</code>, <code>kdupe8h</code>, <code>kembhost</code>, <code>kembw8</code>, <code>khfree</code>, <code>khfree2</code>, <code>khfree3</code>, <code>khost44</code></td><td>Host embeddings, merged patch variants, freeing redundant head weights before cache sizing, and a host tier for four-bit attention/recurrent state. Freeing memory after pool sizing was too late to buy cache capacity.</td></tr><tr><td>Recurrent-cache retention</td><td><code>kanchor</code>, <code>kmamba</code>, <code>kkeep</code>, <code>kkeep2</code>, <code>kmsoft</code>, <code>ktail</code></td><td>Diagnose missing answer-end states; protect or save recurrent state and shared prefixes. Soft protection and newest-tail protection passed local checks but failed to deliver in-server; the keep-slot fix addressed skipped saves under lazy speculative execution.</td></tr><tr><td>Prefill scheduling and overlap</td><td><code>kpdmux</code>, <code>kpdmuxk</code>, <code>kpdmuxk2</code>, <code>kpdmuxm</code>, <code>kpdshare</code>, <code>kpfsync</code>, <code>kpgraph</code>, <code>kprefill</code>, <code>kprio</code>, <code>kmix</code></td><td>Prefill graphs, host-sync removal, split-GPU prefill/decode overlap, stream priority and scratch isolation. Graphing the router at padded row counts could change expert selection; overlap could slow competing kernels enough to lose overall.</td></tr><tr><td>Request handoff and measurement</td><td><code>kshm</code>, <code>kprof</code></td><td>Zero-copy multimodal handoff and whole-request profiling. Profiling is tooling, not a model optimization; CPU-side stalls can be invisible in decode-only timings.</td></tr><tr><td>Speculative acceptance experiments</td><td><code>krelax</code></td><td>Relaxed acceptance traded target-distribution fidelity for throughput. Treat it as an answer-changing experiment, not an exact speculative-decoding acceleration.</td></tr></tbody></table></div>
-<p>The portable recipe is more useful than blindly copying a patch chain:</p>
-<ul><li><strong>Profile the whole game workload.</strong> Separate generation, prompt reading, image handling and cache re-reads; a decode-only benchmark misses several of the largest stalls.</li><li><strong>Optimize exact operations first.</strong> Remove copies, redundant work and launch gaps before spending model quality for throughput. Check equality at every relevant row count, including graph replay.</li><li><strong>For lossy changes, measure both drift and play.</strong> A small numerical error is a screening result, not evidence of improved game solving.</li><li><strong>Re-sweep concurrency and context together.</strong> More lanes change batch shapes and cache pressure; a faster kernel can move the best operating point.</li><li><strong>Respect patch order.</strong> Several variants replace entire files. They are alternatives or revisions, not a menu of independent switches.</li></ul>
-<p>The <a href="https://github.com/sonpham-org/arc3-speed">serving-work repository</a> contains the named sets and the kernel ledger. It is access-controlled at the time of this draft; the table above is the self-contained inventory, not a claim that every reader can download the implementation.</p>
-<h2>RL</h2>
-<figure><a href="arc3-solution-draft/03-rl-v1-corners-only.png"><img src="arc3-solution-draft/03-rl-v1-corners-only.png" alt="The reinforcement-learning pipeline" loading="lazy"></a></figure>
-<p>Once the harness could collect useful play, saved game states and trajectories gave us a starting point for training. A saved moment let us branch into several continuations from the same situation and compare their outcomes, without replaying everything that led there.</p>
-<p>Earlier experiments included supervised learning on efficient wins, expert iteration over alternative continuations, and a lightweight per-turn coach. Later work moved toward on-policy ReST-GRPO-style training: collect attempts from the current model, score them, update the model, and collect again. The loop connected the training examples to the policy currently making the decisions.</p>
-<p>Procedural level generation supplied additional situations. A generator preserved a game&#x27;s mechanics while changing the instance, and provided a solution that could be replayed through the actual engine. That gave us fresh boards and action baselines instead of relying entirely on a fixed set of hand-authored levels.</p>
-<p>The serving decisions followed us into the trainer. It needed the same expert-routing masks as the deployed model; long trajectories required memory-efficient attention and packed expert weights. We also had to keep two training targets straight. Improving the playing policy changes decisions. Improving the speculative drafter can make those decisions arrive faster. Either could help the overall system, but they required different measurements.</p>
-<p>The evidence was mixed. The October 18 review recorded earlier weight-training attempts that tied or lost against the base model; the later RL v4 record reported gains on its internal evaluation suites. Those results came from different experiments and measurement settings, so they do not establish the final Kaggle contribution of reinforcement learning. Harness behavior and serving efficiency were already part of the documented submission stack; reinforcement learning remained an experimental track.</p>
-<h3>Training progress was real on the internal suite—not a leaderboard promise</h3>
-<figure><img src="arc3-solution-draft/charts/rl-all16.png" alt="Internal evaluation across selected reinforcement-learning checkpoints"><figcaption>Internal evaluation across selected reinforcement-learning checkpoints</figcaption></figure>
-<p>The October 19 snapshot records improvement from 3.04 to 4.72 on the held-out All-16 suite, but the seven-way model soup scored below the five-way soup on this particular metric. The bars are selected checkpoint categories, <strong>not chronological training steps</strong>. These are internal scores on seven hard official games and nine copycats, not Kaggle leaderboard scores; the plot does not show that the trained checkpoint improved the submitted system. No variance estimates were recorded in this summary.</p><h2>When speed no longer matters</h2>
-<figure><a href="arc3-solution-draft/04-speed-plateau-v1-corners-only.png"><img src="arc3-solution-draft/04-speed-plateau-v1-corners-only.png" alt="The Turducken tries to fly beyond its 56.02 score plateau" loading="lazy"></a><figcaption>More speed, but still a score plateau: the illustration supplied by Son for this retrospective.</figcaption></figure>
-<p>Speed matters while an agent is running out of time to pursue useful ideas. It matters much less when the extra tokens repeat a mistaken explanation or pursue the wrong objective. Our harder question became: when are we short of tokens, and when are we short of better tokens?</p>
-<p>Several technically appealing approaches did not pan out:</p>
-<ul><li><strong>More aggressive compression and expert reduction.</strong> These bought memory and throughput, but could take away the reasoning capacity we were trying to exploit. In the recorded lane experiments, the faster 48-lane, half-chopped configuration scored worse locally than the less aggressively chopped stack.</li><li><strong>Smarter cache protection.</strong> Protecting a seemingly useful recurrent state looked sensible and passed unit tests, yet could preserve the stale state while the next turn’s needed state was evicted. A plausible cache policy was not enough; the full request lifecycle mattered.</li><li><strong>Prefill/decode overlap.</strong> Running them together sounded like free utilization. In practice, shared resources, scratch buffers and kernels sized for the full GPU made overlap difficult, and contention could erase the benefit.</li><li><strong>Rewriting work already at its bandwidth floor.</strong> The linear-attention kernel experiments showed how much engineering can produce little gain when data movement, rather than arithmetic, sets the limit.</li></ul>
-<p>Our regrets are about how we chose experiments, not just which kernels we finished:</p>
-<ol><li><strong>Gauge when token quality actually matters.</strong> We needed a better way to distinguish a game that would benefit from more exploration from one that needed a stronger next inference. Tokens per second alone could not tell us that.</li><li><strong>Ablate backward, not only build forward.</strong> We should have systematically withdrawn optimizations to ask which precision or capacity could be restored in exchange for fewer, better tokens. Some numerical screens and local comparisons were not a substitute for that end-to-end study.</li><li><strong>Be less ambitious about recovery.</strong> Restarting a stalled trajectory, writing a handover and preserving notes are useful mechanisms, but they do not ensure that an agent can recover from a wrong model of the game. We put too much hope in rescuing bad trajectories instead of preventing them or recognizing when to stop investing in them.</li></ol>
-<p>There was also a trap in having a clear objective. Once we were optimizing a particular operating point, evidence against nearby changes narrowed what we were willing to try. We observed lower performance when moving beyond 32 lanes, so we never tried the more radical idea of running <strong>110 lanes at once</strong>. That does not mean 110 would have worked: it remains untested, and fitting that workload would have required different trade-offs. The regret is that we let a local trend stand in for an experiment on a different regime.</p>
-<h3>What held the layers together</h3>
-<p>The most useful distinction was between <strong>what the agent knows</strong>, <strong>what it is currently doing</strong>, and <strong>what the server has cached</strong>. Notes preserve selected knowledge. Recent history preserves the trajectory. Cached state saves computation for an exact rendered prefix. Calling all three “memory” makes it easy to fix the wrong problem.</p>
-<p>Our design followed that distinction: preserve history while it is productive, cut it deliberately when it fills up, restore important discoveries from notes, and restart the reasoning when it stalls. Fit the serving stack around that behavior, then evaluate training in the same environment. Stuffing the pieces together was not enough; they had to leave room for one another to work.</p>
-<p>It has been an honor to compete with everyone. Thank you to the organizers and to the other teams for making this such a generous, challenging and memorable competition.</p>
-<h2>References</h2>
-<ul><li><a href="https://www.kaggle.com/code/dfranzen/arc-agi-3-milestone-2-solution">Daniel Franzen&#x27;s ARC-AGI-3 milestone notebook</a></li><li><a href="https://arc3.sonpham.net/">Game catalog and project viewer</a></li></ul>
-<aside id="review-notes"><p><strong>Editorial checks before final publication.</strong> Final November configuration, team attribution, final result and the intended ARC-CODE link still need confirmation. The unchanged harness artwork says “keep 52k”; the documented setup retains about 58,000 tokens. The inference artwork says 34 lanes rather than the documented 32, and its FP8 label does not describe every component: the selected attention cache is four-bit. <a href="arc3-solution-draft/article-review-notes.md">Source and verification notes</a>.</p></aside>
-<footer>Prepared for review on ARC Explainer. Illustrations retain the original transparent rounded corners, without added frames or padding. <a href="#">Back to top</a></footer>
-</main></body></html>
+
+
+<style>
+/* Plan: Keith's engineering-blog look on white (Son, 5-Nov): bold sans headings, monospace data and captions, figures on
+   light panels with thin borders, green UI accent; chart hues from the validated data-viz palette. One light theme on
+   purpose (the Kaggle post is white), so there are no dark blocks. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --panel: #f7f8f6;
+  --ink: #15171a;
+  --ink-2: #4c5258;
+  --muted: #858b91;
+  --line: #e3e6e1;
+  --accent: #2b8a3e;
+  --accent-soft: #edf6ef;
+  --display: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  /* chart roles (validated: blue, orange, aqua, violet adjacent; yellow follows aqua in the memory bar) */
+  --c-decode: #2a78d6;
+  --c-new: #eb6834;
+  --c-reread: #1baf7a;
+  --c-perread: #6250d6;
+  --c-yellow: #eda100;
+  --c-violet: #6250d6;
+  --c-hatch: #8f959a;
+  --c-grid: #e8ebe6;
+  --c-ontext: #ffffff;
+  --c-blue-soft: #e7f0fb;
+  --c-orange-soft: #fdeee6;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--bg); }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 var(--body); }
+main { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
+.prose { max-width: 680px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; line-height: 1.2; letter-spacing: -0.015em; }
+h1 { font-size: 2.2rem; margin: 6px 0 14px; }
+h2 { font-size: 1.55rem; margin: 60px 0 10px; }
+h3 { font-size: 1.12rem; margin: 32px 0 8px; }
+p { margin: 0 0 14px; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.kicker { font: 0.8rem var(--mono); color: var(--muted); margin-bottom: 18px; }
+.byline { font: 0.82rem var(--mono); color: var(--muted); margin-bottom: 26px; }
+.byline b { color: var(--ink-2); font-weight: 500; }
+ul, ol { margin: 0 0 14px; padding-left: 22px; }
+li { margin: 5px 0; }
+strong { font-weight: 600; }
+code { font: 0.84em var(--mono); background: var(--panel); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }
+.tldr { border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--panel); border-radius: 8px; padding: 16px 20px 6px; margin: 22px 0 8px; }
+.tldr h3 { margin: 0 0 6px; font: 600 0.78rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0 8px; }
+.tile { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 12px 14px; border-top: 3px solid var(--line); }
+.tile .k { font: 0.72rem var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.tile .v { font: 600 1.35rem/1.3 var(--mono); font-variant-numeric: tabular-nums; margin-top: 4px; letter-spacing: -0.02em; }
+.tile .s { font: 0.78rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tile.decode { border-top-color: var(--c-decode); }
+.tile.prefill { border-top-color: var(--c-new); }
+.tile.overhead { border-top-color: var(--c-perread); }
+figure { margin: 24px 0 30px; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 20px 20px 14px; }
+figure .ft { font: 700 1.04rem/1.3 var(--display); margin: 0 0 3px; text-wrap: balance; letter-spacing: -0.01em; }
+figure .fs { font-size: 0.86rem; color: var(--ink-2); margin: 0 0 10px; }
+figcaption { font: italic 0.78rem/1.55 var(--mono); color: var(--muted); margin-top: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 0.76rem var(--mono); color: var(--ink-2); margin: 4px 0 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legend i.hatch { background: repeating-linear-gradient(45deg, var(--c-hatch) 0 1.5px, transparent 1.5px 4px); border: 1px solid var(--c-hatch); }
+.legend i.ring { border: 2px solid var(--muted); background: transparent; border-radius: 50%; }
+.legend i.dot { border-radius: 50%; }
+.chart { width: 100%; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+details { margin-top: 8px; font-size: 0.84rem; }
+summary { cursor: pointer; color: var(--ink-2); font: 0.78rem var(--mono); }
+.tablewrap { overflow-x: auto; margin: 10px 0 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--ink-2); font: 600 0.72rem var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+td.n, th.n { text-align: right; padding-right: 0; padding-left: 10px; white-space: nowrap; font-family: var(--mono); font-size: 0.8rem; }
+.opt { margin: 14px 0 20px; }
+.opt table td:first-child { font-weight: 600; min-width: 150px; }
+.opt table td:nth-child(3) { font: 0.8rem/1.5 var(--mono); color: var(--ink); }
+.tag { display: inline-block; font: 600 0.68rem var(--mono); padding: 1px 7px; border-radius: 99px; border: 1.2px solid; white-space: nowrap; }
+.tag.exact { color: #13795b; border-color: #1baf7a; background: #e9f7f0; }
+.tag.lossy { color: #b8461a; border-color: #eb6834; background: var(--c-orange-soft); }
+.tag.harness { color: #4b3cb8; border-color: #6250d6; background: #efedfb; }
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 0.93rem; }
+.loop { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0 18px; font: 0.8rem var(--mono); }
+.loop span { border: 1px solid var(--accent); background: var(--accent-soft); color: #1f6b30; border-radius: 99px; padding: 3px 11px; }
+.loop b { color: var(--muted); font-weight: 400; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: 0.76rem/1.5 var(--mono); max-width: 300px; box-shadow: 0 6px 18px rgba(20,30,20,0.12); display: none; }
+#tip b { font-weight: 600; }
+.closing { color: var(--ink-2); font-size: 0.92rem; }
+/* the box (hardware diagram) */
+.boxgrid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 14px; margin: 6px 0 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.card .ch { font: 600 0.95rem var(--mono); }
+.card .ch span { color: var(--muted); font-weight: 400; }
+.card .cs { font: 0.74rem var(--mono); color: var(--ink-2); margin: 2px 0 12px; }
+.lanes { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px 6px; margin-bottom: 6px; }
+.lanes i { height: 7px; border-radius: 2px; background: var(--c-decode); display: block; }
+.lanes i.wait { background: transparent; border: 1.2px dashed var(--c-decode); height: 7px; }
+.lanes-note { font: 0.7rem var(--mono); color: var(--muted); margin-bottom: 12px; }
+.membar { display: flex; height: 20px; border-radius: 3px 5px 5px 3px; overflow: hidden; gap: 2px; margin-bottom: 6px; }
+.membar span { display: block; height: 100%; }
+.membar .hatch { background: repeating-linear-gradient(45deg, var(--c-hatch) 0 1.5px, var(--surface) 1.5px 5px); }
+.memleg { display: flex; flex-wrap: wrap; gap: 3px 12px; font: 0.7rem var(--mono); color: var(--ink-2); }
+.memleg i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+.memleg i.hatch { background: repeating-linear-gradient(45deg, var(--c-hatch) 0 1.2px, transparent 1.2px 3px); border: 1px solid var(--c-hatch); }
+.stepfacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); font: 0.7rem var(--mono); color: var(--muted); }
+.stepfacts b { display: block; font-size: 1rem; font-weight: 600; color: var(--ink); }
+.rambox { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 9px 11px; margin-bottom: 8px; font: 0.78rem/1.35 var(--mono); }
+.rambox b { display: block; font-weight: 600; font-size: 0.86rem; }
+.rambox.tier { border-color: var(--c-reread); background: #eef9f4; }
+.stats { display: grid; grid-template-columns: max-content 1fr; gap: 0 18px; margin: 4px 0 0; font: 0.8rem/1.5 var(--mono); }
+.stats dt { color: var(--muted); padding: 5px 0; border-top: 1px solid var(--line); }
+.stats dd { margin: 0; padding: 5px 0; border-top: 1px solid var(--line); color: var(--ink); }
+.stats dd.warn { color: #b8461a; }
+.badge { display: inline-block; margin-top: 12px; font: 0.8rem var(--mono); color: var(--c-decode); border: 1.2px solid var(--c-decode); background: var(--c-blue-soft); border-radius: 99px; padding: 3px 12px; }
+.badge b { font-size: 1.05rem; font-weight: 600; }
+/* the cache diagram (verbatim history) */
+.tokrow { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; margin: 8px 0; }
+.tokrow .lbl { font: 0.74rem/1.3 var(--mono); color: var(--ink-2); text-align: right; }
+.toks { display: flex; gap: 4px; align-items: stretch; flex-wrap: nowrap; }
+.toks span { font: 0.7rem/1.2 var(--mono); padding: 7px 8px; border-radius: 4px; border: 1.2px solid var(--c-decode); background: var(--c-blue-soft); color: #174f93; white-space: nowrap; }
+.toks span.grow { flex: 1; text-align: center; }
+.toks span.bad { border-color: var(--c-new); background: var(--c-orange-soft); color: #a33d12; }
+.toks span.tk { font-weight: 600; }
+.toks span.new { border-style: dashed; border-color: var(--muted); background: transparent; color: var(--muted); }
+.brk { display: grid; grid-template-columns: 96px 1fr; gap: 10px; font: 0.7rem var(--mono); }
+.brk div { display: flex; gap: 4px; }
+.brk .ok { color: var(--c-decode); border-top: 1.5px solid var(--c-decode); padding-top: 3px; text-align: center; }
+.brk .no { color: var(--c-new); border-top: 1.5px solid var(--c-new); padding-top: 3px; text-align: center; }
+.after { margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.after .k { font: 0.68rem var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; grid-column: 1 / -1; margin-bottom: -4px; }
+.after .m { font: 0.74rem var(--mono); color: var(--ink-2); }
+.after .m b { display: block; font: 600 1.15rem/1.35 var(--mono); color: var(--ink); letter-spacing: -0.02em; }
+.after .m b em { font-style: normal; color: var(--c-decode); }
+@media (max-width: 640px) {
+  main { padding: 26px 16px 60px; }
+  h1 { font-size: 1.65rem; }
+  .tiles, .boxgrid, .after { grid-template-columns: 1fr; }
+  figure { padding: 14px 12px 10px; }
+  .tokrow, .brk { grid-template-columns: 1fr; }
+  .tokrow .lbl { text-align: left; }
+  .brk > span { display: none; }
+  .toks { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+main > p, main > ul, main > ol, main > h2, main > h3, main > .tldr { max-width: 680px; }
+main > h2 { margin-top: 64px; }
+main > h2 + h3 { margin-top: 18px; }
+main > .tablewrap { margin: 12px 0 22px; }
+.ctxbar { display: flex; gap: 2px; height: 34px; margin: 10px 0 4px; font: 0.7rem/1.2 var(--mono); }
+.ctxbar .seg { display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 6px; border-radius: 3px; overflow: hidden; white-space: nowrap; }
+.ctxbar .sys { background: #e4e7e2; color: var(--ink-2); }
+.ctxbar .notes { background: #efedfb; color: #4b3cb8; border: 1.2px solid var(--c-perread); }
+.ctxbar .old { background: repeating-linear-gradient(45deg, #d5d9d3 0 1.5px, var(--surface) 1.5px 6px); color: var(--muted); border: 1px solid #d5d9d3; }
+.ctxbar .keep { background: var(--c-orange-soft); color: #a33d12; border: 1.2px solid var(--c-new); }
+.ctxruler { display: flex; justify-content: space-between; font: 0.68rem var(--mono); color: var(--muted); border-top: 1px solid var(--line); padding-top: 3px; margin-bottom: 14px; }
+.ctx3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.ccard { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 0.84rem; }
+.ccard p { margin: 6px 0 10px; color: var(--ink-2); line-height: 1.5; }
+.ccard .ct { font: 700 1rem var(--display); }
+.ccard .cw { font: 0.7rem var(--mono); color: var(--muted); }
+.ccard .cn { font: 0.74rem/1.5 var(--mono); color: var(--ink); border-top: 1px dashed var(--line); padding-top: 8px; }
+.ccard .cn b { font-weight: 600; font-size: 0.86rem; }
+.ccard.trim { border-top-color: var(--c-new); }
+.ccard.park { border-top-color: var(--c-reread); }
+.ccard.wipe { border-top-color: var(--c-perread); }
+.d2tiles { margin: 10px 0 12px; }
+.d2tiles .tile.flip { border-top-color: var(--c-new); }
+.d2tiles .tile.flip .v { color: var(--c-new); }
+.d2tiles .tile .v { font-size: 1.7rem; }
+.ctxfoot { margin-top: 12px; font: 0.78rem var(--mono); color: var(--ink-2); }
+@media (max-width: 640px) { .ctx3 { grid-template-columns: 1fr; } .ctxbar .seg { font-size: 0.6rem; padding: 0 3px; } }
+/* PNG export for the Kaggle post: #export-<figure id> shows one figure alone at a fixed width */
+html.export body { background: #ffffff; }
+html.export main { max-width: none; width: 1000px; padding: 0; margin: 0; }
+html.export main > *:not(.export-on) { display: none !important; }
+html.export figure.export-on { display: block !important; margin: 0; border: none; border-radius: 0; padding: 26px 30px 20px; }
+html.export figure.export-on details { display: none; }
+
+/* ---- turducken workshop theme (overrides the v2 tokens above) ---- */
+:root {
+  --bg: #f6e9da; --surface: #fffaf4; --panel: #fbf1e6;
+  --ink: #2a1a12; --ink-2: #5a3d2e; --muted: #8f6f5c; --line: #e6cdb6;
+  --accent: #b04f1d; --accent-soft: #f8e1d1;
+  --display: "Bitter", Georgia, "Times New Roman", serif;
+  --c-decode: #4d56b8; --c-new: #c4561f; --c-reread: #d6970e; --c-perread: #9c5a8e; --c-violet: #9c5a8e; --c-yellow: #6f8a2e;
+  --c-hatch: #a08672; --c-grid: #efdecb; --c-ontext: #ffffff; --c-blue-soft: #e5e6f5; --c-orange-soft: #f6d6c1;
+  --rivet: #c9a183;
+}
+h1, h2, h3, figure .ft { letter-spacing: 0; }
+h1 { color: #3a2117; }
+main > h2 { border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+figure.hero { margin: 4px 0 26px; padding: 0; border: 1.5px solid #d9b89a; border-radius: 14px; overflow: hidden; background: var(--surface); }
+figure.hero img { display: block; width: 100%; height: auto; }
+/* figures as riveted copper plates: a rust top rail, warm border, two rivets */
+figure { position: relative; border: 1.5px solid #e0c2a6; border-top: 4px solid var(--c-new); }
+figure::before, figure::after { content: ""; position: absolute; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--rivet); }
+figure::before { left: 9px; } figure::after { right: 9px; }
+figure.hero::before, figure.hero::after { display: none; }
+.tile, .ccard, .card { border-color: #e6cdb6; }
+.tldr { border-color: #e0c2a6; border-left: 4px solid var(--c-new); }
+/* tags look like the plaques in the picture */
+.tag { border-radius: 4px; border-width: 1.5px; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.62rem; padding: 2px 6px; }
+.tag.exact { color: #4f6420; border-color: #6f8a2e; background: #eef2df; }
+.tag.lossy { color: #96390f; border-color: #c4561f; background: #f6d6c1; }
+.tag.harness { color: #74365f; border-color: #9c5a8e; background: #f4e4ee; }
+.loop span { border-color: var(--accent); background: var(--accent-soft); color: #8a3a12; }
+.rambox.tier { border-color: var(--c-reread); background: #fbefd6; }
+.toks span { color: #343c8c; }
+.toks span.bad { color: #96390f; }
+.ctxbar .sys { background: #efe0d0; }
+.ctxbar .notes { background: #f4e4ee; color: #74365f; }
+.ctxbar .old { background: repeating-linear-gradient(45deg, #e3cdb8 0 1.5px, var(--surface) 1.5px 6px); border-color: #e3cdb8; }
+.ctxbar .keep { color: #96390f; }
+html.export body { background: var(--panel); }
+html.export figure.export-on { border: none; }
+html.export figure.export-on::before, html.export figure.export-on::after { display: none; }
+</style>
+<style>*{animation:none!important;transition:none!important;scroll-behavior:auto!important}svg,img{max-width:100%;height:auto} .chart{overflow:visible}.chart img{display:block;width:100%}details{margin:12px 0} .table-wrap{overflow-x:auto}figure.hero{padding:0;border:0;background:none}figure.hero img{border-radius:0}body{font-family:system-ui,sans-serif}h1,h2,h3{font-family:Georgia,serif}nav{font-size:14px;margin-bottom:18px}</style></head>
+<body>
+<main><nav><a href="/">ARC Explainer</a> · <a href="arc3-solution-draft/article-draft.md" download="">Markdown</a> · <a href="arc3-solution-draft/charts/original/source-data.json" download="">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts, no animation. Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
+
+<div class="byline"><b>Son Pham</b> · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02</div>
+<h1>Stuffing the Turducken</h1>
+
+
+<p>Hey everyone! Before anything else: thank you—and thank you to the organizers for the generous free RTX compute. This has truly been a wild ride, from 7.36 on 21 September to 56.02 on 23 October, with about 1,950 full runs on GCP in between.</p>
+<p>Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.</p>
+<p><strong>Why a turducken?</strong> Somewhere in October we realized what this competition had turned into. Everyone gets the same card, the same 9 hours and the same 110 games, and once a strong public notebook exists, the race becomes a stuffing contest: how much can you fit inside one bird? That's our entry in the picture. Tufa Labs' harness is the chicken in the middle, Daniel's Milestone 2 notebook is the duck around it, and the turkey is everything we stuffed in around them: 8-bit weights, fused and tiled kernels, a 4-bit history cache, the host CPU and RAM, and 32 games decoding at once instead of 10. It worked, right up until we stuffed in too much. The last part of this post is about that.</p>
+<p>Here's our write-up, in three parts: <strong>the harness</strong>, <strong>the inference optimizations</strong>, and <strong>the RL that didn't work</strong>, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.</p>
+<div class="tldr"><h3>TL;DR</h3><ul>
+<li><strong>Base:</strong> Daniel Franzen's public notebook from 1 October, plus our changes.</li>
+<li><strong>Harness:</strong> notes memory, goal first, checked play, temperature 0.5, and a lot of work on trimming and swapping 110 conversations through one card.</li>
+<li><strong>Inference:</strong> whole-run speed 605 → 2,150 tokens per second on the same RTX PRO 6000 (our first vLLM stack did 296), 10 → 32 games decoding at once. Per 1,000 tokens: decode 1,138 → 330 ms, prefill 259 → 74 ms, overhead 255 → 61 ms.</li>
+<li><strong>RL:</strong> eight attempts, none beat the base model on Kaggle.</li>
+<li><strong>The biggest lesson:</strong> we didn't notice when token quality started to matter. After 56.02, every faster build we shipped scored lower.</li>
+</ul></div>
+<h3>The setup</h3>
+<p>From 1 October we built on Daniel Franzen's public Milestone 2 notebook: Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, his SGLang fork with MTP drafting, and his harness, built around Tufa Labs' harness. We ported our own ideas into it.</p>
+<p>The scored run is 110 games on one RTX PRO 6000 (96 GB). Our 56.02 run took 9 h 13 m. Every game is an agent that thinks for a thousand-plus tokens per move, so the card's tokens per second turns straight into moves, and moves turn into levels. Even if you have an intelligent system, running it more efficiently means you have more of that intelligence.</p>
+<p>One rule came before any change: <strong>is it exact or lossy?</strong> An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. Hold on to that rule, because the biggest lesson at the end is about the times we bent it.</p>
+<figure id="fig-box">
+<div class="ft">The box: one RTX PRO 6000, 110 games, 9 hours</div>
+<div class="fs">The 56.02 configuration, read from its server startup log.</div>
+<div class="boxgrid">
+<div class="card">
+<div class="ch">RTX PRO 6000 <span>· 96 GB</span></div>
+<div class="cs">34 games admitted · 32 decoding at once</div>
+<div class="lanes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="wait"></i><i class="wait"></i></div>
+<div class="lanes-note">32 lanes decode together; 2 admitted games run python while they wait</div>
+<div class="membar" role="img" aria-label="Card memory: weights 46.2, draft 6.2, history cache 24.5, Mamba states 10.1, buffers 8.0 GiB">
+<span style="flex:46.21;background:var(--c-decode)"></span><span style="flex:6.19;background:var(--c-new)"></span><span style="flex:24.48;background:var(--c-reread)"></span><span style="flex:10.05;background:var(--c-yellow)"></span><span class="hatch" style="flex:8.04"></span>
+</div>
+<div class="memleg"><span><i style="background:var(--c-decode)"></i>weights 46.2</span><span><i style="background:var(--c-new)"></i>draft 6.2</span><span><i style="background:var(--c-reread)"></i>history 24.5</span><span><i style="background:var(--c-yellow)"></i>Mamba 10.1</span><span><i class="hatch"></i>buffers 8.0 GiB</span></div>
+<div class="stepfacts"><span>decode step<b>35.1 ms</b></span><span>accepted per pass<b>3.25 tokens</b></span><span>experts read per step<b>~20 GB</b></span></div>
+</div>
+<div class="card">
+<div class="ch">Host RAM <span>· ~177 GB</span></div>
+<div class="cs">pinned memory outside the card</div>
+<div class="rambox"><b>per-layer embedding table</b>~94 GB in BF16, looked up per token</div>
+<div class="rambox tier"><b>copy of the card's history cache</b>24 GB, write-through</div>
+<div class="rambox"><b>the rest</b>python sandboxes, page cache</div>
+</div>
+</div>
+<dl class="stats">
+<dt>games</dt><dd>110 live · 34 admitted · 32 decoding</dd>
+<dt>clock</dt><dd>9 h (our 56.02 run took 9 h 13 m)</dd>
+<dt>experts kept</dt><dd>341 of 512 per layer, 4-bit (Intel W4A16)</dd>
+<dt>dense layers</dt><dd>int8 weights (one scale per 128 inputs), 8-bit activations above 64 rows</dd>
+<dt>drafter</dt><dd>MTP · 4 draft tokens · per-game verify depth</dd>
+<dt>history cache</dt><dd>NVFP4 · 3.80M tokens · 140k window, a trim keeps 52k</dd>
+<dt>speed</dt><dd>2,150 tok/s over a whole run on our board</dd>
+<dt>bottleneck</dt><dd class="warn">memory bandwidth and games at once</dd>
+</dl>
+<div class="badge">best public <b>56.02</b></div>
+<figcaption>Every optimization below is a trade inside this box: free memory to run more games, or make each step cheaper.</figcaption>
+</figure><div class="table-wrap"><table><thead><tr><th>56.02 setup</th><th>Value</th></tr></thead><tbody><tr><td>Context window</td><td>140k tokens (original draft’s rounded label)</td></tr><tr><td>History kept after trim</td><td>Approximately 52k tokens</td></tr><tr><td>Games admitted / decoding</td><td>34 / 32</td></tr><tr><td>History cache</td><td>NVFP4 · 3.80M tokens</td></tr><tr><td>Host cache copy</td><td>24 GB</td></tr><tr><td>Temperature / top-p / top-k</td><td>0.5 / 0.95 / 20</td></tr><tr><td>Experts kept</td><td>341 of 512 per layer</td></tr><tr><td>Drafter</td><td>MTP · 4 draft steps · per-game verify depth</td></tr></tbody></table></div>
+<h2>Harness Iteration</h2><figure class="hero"><img src="arc3-solution-draft/01-harness-garage-v2-corners-only.png" alt="The game-playing harness" loading="lazy"></figure>
+<h3>1.1 What the model sees</h3>
+<p>The base is Daniel Franzen's harness: the model plays by writing python that calls the game, and sees each frame as a 512 px image (the 64×64 grid at 8x, 256 image tokens). On top of it, the 56.02 harness has:</p>
+<ul>
+<li><strong>Notes memory:</strong> one markdown <code>notes</code> text per game, kept by the harness, so it survives tool timeouts and history trims.</li>
+<li><strong>Goal first:</strong> on a level's first turn, the model writes what "solved" looks like into its notes before it acts.</li>
+<li><strong>Checked play:</strong> <code>run_checked([(move, expect), ...])</code> plays moves and stops at the first one that doesn't do what was expected; <code>check_rule(rule)</code> tests a candidate rule against every recorded move of the level.</li>
+<li><strong>Sampling:</strong> temperature 0.5 (0.8 → 0.6 → 0.5 over the competition), top-p 0.95, top-k 20.</li>
+<li><strong>Context management:</strong> trim, swap and wipe, below. It's the part of the harness that touches everything else.</li>
+</ul>
+<h3>1.2 Trimming and swapping the context</h3>
+<p>Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:</p>
+
+<figure id="fig-context">
+<div class="ft">Trim, swap, wipe: how 110 conversations share one card</div>
+<div class="fs">The three things that can happen to a game's history.</div>
+<div class="ctx3">
+<div class="ccard trim"><div class="ct">Trim</div><div class="cw">when the prompt hits 140k</div>
+<p>Keep the system prompt, the notes and the last 52k. The prompt no longer matches the cache, so the kept 52k is read again from scratch.</p>
+<div class="cn"><b>~340</b> trims per run, <b>~46k</b> tokens each: half of all prompt tokens, <b>8%</b> of the clock</div></div>
+<div class="ccard park"><div class="ct">Swap</div><div class="cw">right after a trim</div>
+<p>The priority queue can give the slot to one of the 76 waiting games; the trimmed game rejoins the queue. Host RAM keeps a write-through copy of the card's cache.</p>
+<div class="cn"><b>34</b> slots for <b>110</b> games; with the RAM copy, games losing their history: <b>9 → 0</b></div></div>
+<div class="ccard wipe"><div class="ct">Wipe</div><div class="cw">after 120k tokens stuck on one level</div>
+<p>The model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board.</p>
+<div class="cn">at most <b>3</b> per level</div></div>
+</div>
+<div class="ctxfoot">What survives all three: <b>the notes</b>, shown again after every trim and at every new level.</div>
+<figcaption>Trim counts from the 56.02 board twin's server log: prompt reads of 20k+ tokens that started from an empty cache, two runs.</figcaption>
+</figure>
+<ul>
+<li><strong>Trim.</strong> When a game's prompt hits the 140k window, the harness keeps the system prompt, the notes and the last 52k tokens. The front of the prompt changed, so the server's cache no longer matches and the kept 52k is read again. A 56.02 board run does about 340 trims of about 46k tokens each: half of all prompt tokens, but only 8% of the clock.</li>
+<li><strong>Swap.</strong> 34 games hold a slot at a time; the other 76 wait in a priority queue. A game gives up its slot only right after a trim, the one moment it costs nothing because its cache is useless anyway. The queue then picks who plays next: a new game, or one coming back to re-read its kept history.</li>
+<li><strong>Copy.</strong> Host RAM keeps a 24 GB write-through copy of everything the card caches. If the card has to evict a game's history, it comes back over PCIe instead of being re-read.</li>
+<li><strong>Wipe (fresh eyes).</strong> When a level eats 120k generated tokens without a clear, the model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board. At most 3 times per level.</li>
+</ul>
+<p>What survives every move is the notes: they are shown again after each trim and at each new level, as head + tail once they pass 6,000 characters.</p>
+<p>So at any moment 34 games are being played and 76 are paused in the queue. Why not keep all 110 going, with their histories in host RAM? Two reasons. A game only leaves its slot right after a trim, when its old cache no longer matches its next prompt, so there is nothing worth keeping: it re-reads the kept 52k either way. And the RAM was already spoken for: of about 177 GB, the model's per-layer embedding table takes about 94 GB, while all 110 histories would be 6 to 15 million tokens, roughly 40 to 100 GB in our cache format. The leaders went the other way: all 110 games at once, every history in host RAM, and a compressed embedding table to make room. More on that in Part 4.</p>
+<p>What we tuned, and what it bought:</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Window 128k → 140k</td>
+<td>Fewer spare Mamba state slots (212 → 180) pay for a bigger window</td>
+<td>re-reading history 12% → 8% of the run</td>
+</tr>
+<tr>
+<td>Keep 58k → 52k</td>
+<td>Less history to re-read after each trim</td>
+<td>the board's best line on 22 Oct (64.4, 4 runs)</td>
+</tr>
+<tr>
+<td>Host-RAM copy (24 GB)</td>
+<td>Write-through copy of the card's cache</td>
+<td>games losing their cached history 9 → 0; prompt reading 23% → 15% of the clock</td>
+</tr>
+<tr>
+<td>Verbatim history</td>
+<td>Store the model's answer byte for byte, so the next prompt extends what the server cached</td>
+<td>answer reused 38% → 95-100% of turns; +8% tokens per second</td>
+</tr>
+<tr>
+<td>34 games over 32 lanes</td>
+<td>Two extra games fill the lanes left idle by games running python</td>
+<td>+4.7 on our 75-game board</td>
+</tr>
+</tbody>
+</table></div>
+<p>And what didn't work:</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>What it does</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rolling summary</td>
+<td>Summarize old history instead of cutting it</td>
+<td>22% slower, no score gain</td>
+</tr>
+<tr>
+<td>Summary when the window fills</td>
+<td>One summary when the window fills, instead of a trim</td>
+<td>Kaggle 41.97 → 37.56</td>
+</tr>
+<tr>
+<td>Splice</td>
+<td>After a trim, rebuild the cache from the old one instead of re-reading (lossy)</td>
+<td>tied on the board, lost on Kaggle 3 times out of 3</td>
+</tr>
+<tr>
+<td>Restart stuck levels</td>
+<td>Reset a level after T minutes without progress</td>
+<td>lost at every T from 20 to 90 min, in a replay of our real runs</td>
+</tr>
+<tr>
+<td>Trim gate</td>
+<td>A trimmed game keeps its slot unless a waiting game is overdue</td>
+<td>tie</td>
+</tr>
+</tbody>
+</table></div>
+<p>The single best context fix was a one-character bug:</p>
+<figure id="fig-verbatim">
+<div class="ft">One blank line broke the cache on every turn</div>
+<div class="fs">The harness stored the model's answer with its blank lines squeezed. The next prompt then stopped matching what the server had cached right at that answer, so everything after it was read again.</div>
+<div class="brk"><span></span><div><span class="ok" style="flex:8">reused from cache</span><span class="no" style="flex:5">first mismatch: re-read every turn</span></div></div>
+<div class="tokrow"><div class="lbl">turn N<br>as cached</div>
+<div class="toks"><span class="grow" style="flex:2">system prompt</span><span class="grow" style="flex:1">tools</span><span class="grow" style="flex:3">earlier turns</span><span class="grow" style="flex:2">reasoning</span><span class="grow tk" style="flex:3">answer … <b>\n\n</b> · 271 …</span><span class="grow new" style="flex:2">&nbsp;</span></div></div>
+<div class="tokrow"><div class="lbl">turn N+1<br>as re-sent</div>
+<div class="toks"><span class="grow" style="flex:2">system prompt</span><span class="grow" style="flex:1">tools</span><span class="grow" style="flex:3">earlier turns</span><span class="grow" style="flex:2">reasoning</span><span class="grow bad tk" style="flex:3">answer … <b>\n</b> · 198 …</span><span class="grow new" style="flex:2">new turn</span></div></div>
+<div class="after">
+<div class="k">after keeping history verbatim · 10 Oct · 32 games · 2 runs each</div>
+<div class="m">previous answer reused<b>38% → <em>95-100%</em></b>of turns</div>
+<div class="m">turn-content tokens read<b>3.4M → <em>2.0M</em></b>per run</div>
+<div class="m">whole-run speed<b>1,674 → <em>1,807</em></b>tok/s (+8%)</div>
+</div>
+<figcaption>A blank line is one token (271); a single newline is another (198). One character was enough to throw away the cache for the rest of every prompt.</figcaption>
+</figure>
+<h3>1.3 How we tested harness ideas</h3>
+<p>Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. <strong>Score Climb:</strong> 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.</p><p>Our custom-game effort also produced <a href="https://arc.markbarney.net/arc3/games">Mark’s authored game collection</a>. A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.</p>
+<p>The loop: <strong>idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.</strong></p>
+<p>Board noise, from 8 identical controls: one standard deviation is 1.9 points. Two runs only see effects of about 4 points, and four runs see about 3. Most harness ideas are smaller than that. That's the honest truth of this competition: <strong>most harness ideas drowned in noise</strong>, and the ones that didn't were big.</p>
+<h3>1.4 What worked and what didn't</h3>
+<figure id="fig-delta2">
+<div class="ft">Our board liked 12 of these ideas. Kaggle liked 3 of them.</div>
+<div class="fs">Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.</div>
+<div class="tiles d2tiles"><div class="tile"><div class="k">Board said better</div><div class="v" id="d2-up">12</div><div class="s">ideas</div></div><div class="tile"><div class="k">Kaggle agreed</div><div class="v" id="d2-agree">3</div><div class="s">of those 12</div></div><div class="tile flip"><div class="k">Kaggle went down</div><div class="v" id="d2-flip">9</div><div class="s">of those 12</div></div></div>
+<div class="legend" id="legend-delta2"><span><i style="background: var(--c-decode);" class="dot"></i>Our board</span><span><i class="ring" style="border-color: var(--c-new);"></i>Kaggle</span><span><i style="background: var(--c-orange-soft);"></i>Board said better, Kaggle said worse</span><span><i style="background: var(--c-blue-soft);"></i>Board noise, 1 SD</span><span><i style="background: var(--c-grid);"></i>Kaggle, same package twice</span></div>
+<div class="chart" id="chart-delta2"><a href="arc3-solution-draft/charts/original/delta2.svg"><img src="arc3-solution-draft/charts/original/delta2.png" alt="Our board liked 12 of these ideas. Kaggle liked 3 of them." loading="lazy"></a></div>
+<figcaption>Board deltas compare board runs of the idea and its base (1 to 6 runs each, 50 games unless the tooltip says otherwise). Kaggle deltas are single public scores.</figcaption>
+</figure>
+<p>Every idea in the chart, in one line each:</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>What it is</th>
+<th>Board</th>
+<th>Kaggle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notes memory, relaxed acceptance off</td>
+<td>A notes file per game that survives trims; draft tokens back to exact acceptance</td>
+<td>+2.8</td>
+<td>+8.8</td>
+</tr>
+<tr>
+<td>Mamba 180, 140k window, temperature 0.5</td>
+<td>A bigger window paid for by fewer Mamba slots; sampling temperature 0.6 → 0.5</td>
+<td>+4.3</td>
+<td>+5.4</td>
+</tr>
+<tr>
+<td>Speed stack (the 56.02)</td>
+<td>Per-game verify depth, 4 draft steps, 3 guaranteed experts, 52k keep, 34 games over 32 lanes</td>
+<td>−1.0</td>
+<td>+3.2</td>
+</tr>
+<tr>
+<td>Notes head + tail, OOM fixes</td>
+<td>Long notes shown as their start and end; a memory crash in big prompt reads fixed</td>
+<td>+1.3</td>
+<td>+1.7</td>
+</tr>
+<tr>
+<td>Goal first</td>
+<td>Write what "solved" looks like before the first move of a level</td>
+<td>+2.9</td>
+<td>−1.5</td>
+</tr>
+<tr>
+<td>RL LoRA merged at load</td>
+<td>An RL-trained adapter merged into the weights at startup (Part 3)</td>
+<td>n/a</td>
+<td>−1.7</td>
+</tr>
+<tr>
+<td>Expert-kernel rounding, keep-alive, gate</td>
+<td>A faster 4-bit expert kernel with slightly different rounding, the scorecard keep-alive, and a fair-share game gate</td>
+<td>+0.2</td>
+<td>−2.3</td>
+</tr>
+<tr>
+<td>Same package, resubmitted</td>
+<td>Nothing changed: this is Kaggle's own noise</td>
+<td>n/a</td>
+<td>−3.4</td>
+</tr>
+<tr>
+<td>Relaxed acceptance 0.7, new drafter</td>
+<td>Accept draft tokens more often than exact rejection sampling would</td>
+<td>+5.0</td>
+<td>−3.5</td>
+</tr>
+<tr>
+<td>Vocab trim</td>
+<td>Cut the output layer to the 35,840 tokens we had seen the model use</td>
+<td>−0.2</td>
+<td>−3.8</td>
+</tr>
+<tr>
+<td>Summary when the window fills</td>
+<td>Summarize the history once when it fills, instead of trimming</td>
+<td>+0.7</td>
+<td>−4.4</td>
+</tr>
+<tr>
+<td>Predict before acting</td>
+<td>The model writes what it expects each move to do, and a strict check stops the batch at the first wrong guess</td>
+<td>+0.7, +2.3</td>
+<td>−11.5, −4.6</td>
+</tr>
+<tr>
+<td>Splice</td>
+<td>After a trim, rebuild the cache from the old one instead of re-reading</td>
+<td>+2.6, +0.4</td>
+<td>−8.7, −5.3</td>
+</tr>
+<tr>
+<td>Lean turns + vocab trim</td>
+<td>Shorter turn messages (the rules shown once, not every turn), plus the vocab trim</td>
+<td>+1.9</td>
+<td>−9.6</td>
+</tr>
+</tbody>
+</table></div>
+<p>Read the two columns together. Nearly everything that lost on Kaggle looked fine or better on our board. That's the lesson of Part 4.</p>
+<p>Ideas that only ran on the board:</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>What it does</th>
+<th>Board result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animation feed</td>
+<td>Show every frame of an in-game animation, not just the last one</td>
+<td>+7.5 on a 10-game animation subset, no gain on all 25</td>
+</tr>
+<tr>
+<td>Game memory variants</td>
+<td>Key-value memory, a per-level curator, a cross-game curator</td>
+<td>all within noise of plain notes</td>
+</tr>
+<tr>
+<td>Shared notes across games</td>
+<td>One cheatsheet shared by all games</td>
+<td>no gain: notes turned out 92% game-specific</td>
+</tr>
+<tr>
+<td>Level protocol for levels 5+</td>
+<td>Fixed dead-end, reset and review steps on the hard levels</td>
+<td>+0.85 over 2 runs (inside noise)</td>
+</tr>
+<tr>
+<td>State-repeat guard</td>
+<td>Stop a loop after the board returns to the same state 3 times</td>
+<td>tie</td>
+</tr>
+<tr>
+<td>Thinking caps</td>
+<td>Cap thinking at 8k, 4k or 2k tokens per turn</td>
+<td>tie</td>
+</tr>
+<tr>
+<td>Live coach</td>
+<td>A frontier model coaches the player on hard games</td>
+<td>no clear win in 113 tries</td>
+</tr>
+<tr>
+<td>Symbolic rule finder</td>
+<td>A program watches moves and proposes rules</td>
+<td>no gain</td>
+</tr>
+<tr>
+<td>4x the clock</td>
+<td>540-minute runs instead of 132</td>
+<td>58 → 64 only</td>
+</tr>
+</tbody>
+</table></div>
+<p>What the traces told us:</p>
+<ul>
+<li><strong>Uncleared levels, not efficiency.</strong> Across six board runs of the 56.02 config, about 31 points were lost to levels never cleared and about 7 to move efficiency. Cleared levels 5+ already used 0.65x the human moves (median).</li>
+<li><strong>Stuck means stuck.</strong> About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.</li>
+<li><strong>Loops are common.</strong> 35% of moves in our best board run returned the board to an earlier state.</li>
+</ul>
+<h2>Inference Optimization</h2><figure class="hero"><img src="arc3-solution-draft/02-inference-v1-corners-only.png" alt="The inference stack" loading="lazy"></figure>
+<h3>2.1 The timeline</h3>
+<figure id="fig-ladder">
+<div class="ft">Whole-run tokens per second, one RTX PRO 6000</div>
+<div class="fs">Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle.</div>
+<div class="chart" id="chart-ladder"><a href="arc3-solution-draft/charts/original/ladder.svg"><img src="arc3-solution-draft/charts/original/ladder.png" alt="Whole-run tokens per second, one RTX PRO 6000" loading="lazy"></a></div>
+<figcaption>22 Sep: our first stack (vLLM, no drafting). From 1 Oct: Daniel Franzen's notebook plus our changes, on our 25 to 75-game offline board.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-ladder"><table><thead><tr><th>Stage</th><th class="n">tok/s</th><th class="n">Games at once</th></tr></thead><tbody><tr><td>22 Sep · vLLM, no drafting</td><td class="n">296</td><td class="n">7</td></tr><tr><td>1 Oct · Daniel's notebook</td><td class="n">605</td><td class="n">10</td></tr><tr><td>3 Oct · RAM cache tier</td><td class="n">648</td><td class="n">10</td></tr><tr><td>6 Oct · 8-bit, exact kernels</td><td class="n">992</td><td class="n">12</td></tr><tr><td>11 Oct · 32 games, expert cut</td><td class="n">1,873</td><td class="n">32</td></tr><tr><td>18 Oct · 52.82 config</td><td class="n">1,934</td><td class="n">32</td></tr><tr><td>23 Oct · 56.02 config</td><td class="n">2,150</td><td class="n">32</td></tr><tr><td>1 Nov · after 56.02</td><td class="n">2,441</td><td class="n">32</td></tr></tbody></table></div></details>
+</figure>
+<p>Every second of a run, the GPU is doing one of three things:</p>
+<ul>
+<li><strong>Decode:</strong> writing tokens. A small draft head guesses 3 to 4 tokens ahead for each game, and the big model checks every guess, for every running game, in one pass.</li>
+<li><strong>Prefill:</strong> reading prompts. Either the new content of a turn (the new frame, the tool output), or re-reading history the cache lost.</li>
+<li><strong>Overhead:</strong> everything else. A fixed cost for every prompt read, CPU stalls, and lanes sitting empty.</li>
+</ul>
+<p>Here's the same 1,000 tokens at each stage, and how long the card needed for them. Shorter is better.</p>
+<div class="tiles">
+<div class="tile decode"><div class="k">Decode, per 1,000 tokens</div><div class="v">1,138 → 330 ms</div><div class="s">71% less</div></div>
+<div class="tile prefill"><div class="k">Prefill, per 1,000 tokens</div><div class="v">259 → 74 ms</div><div class="s">72% less</div></div>
+<div class="tile overhead"><div class="k">Overhead, per 1,000 tokens</div><div class="v">255 → 61 ms</div><div class="s">76% less</div></div>
+</div>
+<figure id="fig-time">
+<div class="ft">Milliseconds of wall clock per 1,000 generated tokens</div>
+<div class="fs">Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log.</div>
+<div class="legend" id="legend-time"><span><i style="background: var(--c-decode);"></i>Decode</span><span><i style="background: var(--c-new);"></i>Prefill: new turn content</span><span><i style="background: var(--c-reread);"></i>Prefill: re-reading lost history</span><span><i style="background: var(--c-perread);"></i>Overhead: fixed cost per read, stalls</span><span><i class="hatch"></i>Overhead: idle lanes</span></div>
+<div class="chart" id="chart-time"><a href="arc3-solution-draft/charts/original/time.svg"><img src="arc3-solution-draft/charts/original/time.png" alt="Milliseconds of wall clock per 1,000 generated tokens" loading="lazy"></a></div>
+<figcaption>How it's measured: SGLang logs a decode line every 40 steps. Intervals with no prompt read give the pure step time at that lane count. Time beyond that in other intervals is prompt reading, shared out per read by a cost model (per read, per new token, per cached token). Idle lanes are decode time with fewer games running than the server allows. Our board has 25 to 75 games, so lanes empty out as games get won; Kaggle's 110 games keep them fuller.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-time"><table><thead><tr><th>Stage</th><th class="n">Decode</th><th class="n">New turn</th><th class="n">Re-read</th><th class="n">Per read + stalls</th><th class="n">Idle lanes</th><th class="n">Total ms</th><th class="n">tok/s</th><th class="n">Games</th><th class="n">Accepted/pass</th><th class="n">Step ms</th><th class="n">Runs</th></tr></thead><tbody><tr><td>1 Oct · Daniel Franzen's notebook, as published</td><td class="n">1,138</td><td class="n">148</td><td class="n">112</td><td class="n">103</td><td class="n">152</td><td class="n">1,653</td><td class="n">605</td><td class="n">10</td><td class="n">2.69</td><td class="n">32.3</td><td class="n">daniel-base a + b</td></tr><tr><td>3 Oct · + host-RAM cache tier, tuned drafter</td><td class="n">1,087</td><td class="n">142</td><td class="n">97</td><td class="n">103</td><td class="n">114</td><td class="n">1,543</td><td class="n">648</td><td class="n">10</td><td class="n">2.89</td><td class="n">32.7</td><td class="n">hicache aft06 a</td></tr><tr><td>6 Oct · + 8-bit dense weights, exact kernels</td><td class="n">761</td><td class="n">84</td><td class="n">86</td><td class="n">55</td><td class="n">23</td><td class="n">1,009</td><td class="n">992</td><td class="n">12</td><td class="n">3.06</td><td class="n">28.3</td><td class="n">bint8v2l12 c + e</td></tr><tr><td>11 Oct · + 32 games, a third of the experts cut</td><td class="n">385</td><td class="n">38</td><td class="n">63</td><td class="n">37</td><td class="n">12</td><td class="n">534</td><td class="n">1,873</td><td class="n">32</td><td class="n">3.05</td><td class="n">37.8</td><td class="n">sc2l32ship a + b</td></tr><tr><td>18 Oct · 52.82 config</td><td class="n">364</td><td class="n">37</td><td class="n">46</td><td class="n">35</td><td class="n">36</td><td class="n">517</td><td class="n">1,934</td><td class="n">32</td><td class="n">3.05</td><td class="n">36.6</td><td class="n">52.82 twin a + b</td></tr><tr><td>23 Oct · 56.02 config</td><td class="n">330</td><td class="n">36</td><td class="n">38</td><td class="n">33</td><td class="n">29</td><td class="n">465</td><td class="n">2,150</td><td class="n">32</td><td class="n">3.25</td><td class="n">35.1</td><td class="n">56.02 twin a + b</td></tr><tr><td>1 Nov · After 56.02, not shipped</td><td class="n">331</td><td class="n">25</td><td class="n">17</td><td class="n">32</td><td class="n">5</td><td class="n">410</td><td class="n">2,441</td><td class="n">32</td><td class="n">3.21</td><td class="n">34.0</td><td class="n">cmb32 a + b</td></tr></tbody></table></div></details>
+</figure>
+<p>The rest of this part takes the three buckets one at a time. Each opens with where it started (left) and where it ended (right); every step in between is one measured build. Numbers in the tables are before → after, measured in the server or in kernel benches on the same card. Code names are ours, so ask about any of them in the comments. Most of this kernel work was done by Claude agents in parallel threads, each with one job and a ledger, with me reviewing and deciding what ships.</p>
+<h3>2.2 Decode: 1,138 → 330 ms per 1,000 tokens</h3>
+<figure id="fig-wf-decode">
+<div class="ft">Decode, build by build</div>
+<div class="fs">Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right).</div>
+<div class="chart" id="chart-wf-decode"><a href="arc3-solution-draft/charts/original/wf-decode.svg"><img src="arc3-solution-draft/charts/original/wf-decode.png" alt="Decode, build by build" loading="lazy"></a></div>
+<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-decode"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">1,138.0</td><td class="n"></td></tr><tr><td>3 Oct · tuned drafter</td><td class="n">1,086.9</td><td class="n">-51.1</td></tr><tr><td>6 Oct · 8-bit weights, exact kernels, 12 games</td><td class="n">761.3</td><td class="n">-325.6</td></tr><tr><td>11 Oct · 32 games: experts cut, 4-bit cache, big-batch kernels</td><td class="n">384.5</td><td class="n">-376.8</td></tr><tr><td>18 Oct · Mamba 180, 140k window</td><td class="n">363.8</td><td class="n">-20.7</td></tr><tr><td>23 Oct · per-game verify depth, 4 draft steps, 3 experts</td><td class="n">330.0</td><td class="n">-33.8</td></tr></tbody></table></div></details>
+</figure>
+<p>Decode is memory-bound. At 12 games, one step reads about <strong>20 GB of expert weights</strong> (166 distinct experts per layer) at 92% of the card's 1.54 TB/s. So clever kernels on the experts hit a wall fast. The two big levers are: <strong>read fewer bytes</strong>, and <strong>serve more games per read</strong>.</p>
+<figure id="fig-step">
+<div class="ft">One decode step at 12 games: 27.8 ms</div>
+<div class="fs">GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step.</div>
+<div class="chart" id="chart-step"><a href="arc3-solution-draft/charts/original/step.svg"><img src="arc3-solution-draft/charts/original/step.png" alt="One decode step at 12 games: 27.8 ms" loading="lazy"></a></div>
+<figcaption>At 31 games the step was 41.6 ms, with the experts at 18.0 ms: already at the weight-read floor.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-step"><table><thead><tr><th>Part of the step</th><th class="n">ms</th><th class="n">share</th></tr></thead><tbody><tr><td>Experts</td><td class="n">15.80</td><td class="n">57%</td></tr><tr><td>8-bit dense layers + output head</td><td class="n">3.30</td><td class="n">12%</td></tr><tr><td>Draft chain and gaps</td><td class="n">2.70</td><td class="n">10%</td></tr><tr><td>Attention + indexer</td><td class="n">1.85</td><td class="n">7%</td></tr><tr><td>Hyper-connection mix</td><td class="n">1.60</td><td class="n">6%</td></tr><tr><td>Expert routing</td><td class="n">0.70</td><td class="n">3%</td></tr><tr><td>Linear attention</td><td class="n">0.70</td><td class="n">3%</td></tr><tr><td>Hyper-connection combine</td><td class="n">0.60</td><td class="n">2%</td></tr><tr><td>16-bit leftovers</td><td class="n">0.57</td><td class="n">2%</td></tr></tbody></table></div></details>
+</figure>
+<figure id="fig-lanes">
+<div class="ft">More games per step is almost free</div>
+<div class="fs">Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games.</div>
+<div class="legend" id="legend-lanes"><span><i style="background: var(--c-decode);"></i>Measured step time</span><span><i style="background: transparent; border-top: 2px dashed var(--muted); height: 0px; border-radius: 0;"></i>If each game added the same time as at 13</span></div>
+<div class="chart" id="chart-lanes"><a href="arc3-solution-draft/charts/original/lanes.svg"><img src="arc3-solution-draft/charts/original/lanes.png" alt="More games per step is almost free" loading="lazy"></a></div>
+<figcaption>32 games take 38.5 ms per step against 24.0 ms for 13: 2.5x the games for 1.6x the time. We shipped 32, not 48: past 32 the history cache per game got too small and the board score dropped.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-lanes"><table><thead><tr><th>Games</th><th class="n">Measured step ms</th><th class="n">Linear ms</th></tr></thead><tbody><tr><td>13</td><td class="n">24.0</td><td class="n">24.0</td></tr><tr><td>20</td><td class="n">30.2</td><td class="n">36.9</td></tr><tr><td>24</td><td class="n">33.4</td><td class="n">44.3</td></tr><tr><td>28</td><td class="n">36.5</td><td class="n">51.7</td></tr><tr><td>32</td><td class="n">38.5</td><td class="n">59.1</td></tr><tr><td>40</td><td class="n">47.3</td><td class="n">73.8</td></tr><tr><td>48</td><td class="n">52.5</td><td class="n">88.6</td></tr></tbody></table></div></details>
+</figure>
+<p>More games per step needs memory: every gigabyte we freed went to the history cache, and the cache decides how many games can decode at once.</p>
+<figure id="fig-memory">
+<div class="ft">Where the 95 GiB of the card went</div>
+<div class="fs">From each build's startup log. Right: tokens of history the cache holds, and games running at once.</div>
+<div class="legend" id="legend-memory"><span><i style="background: var(--c-decode);"></i>Model weights</span><span><i style="background: var(--c-new);"></i>Draft model + its cache</span><span><i style="background: var(--c-reread);"></i>History cache</span><span><i style="background: var(--c-yellow);"></i>Mamba states</span><span><i class="hatch"></i>Buffers, graphs, headroom</span></div>
+<div class="chart" id="chart-memory"><a href="arc3-solution-draft/charts/original/memory.svg"><img src="arc3-solution-draft/charts/original/memory.png" alt="Where the 95 GiB of the card went" loading="lazy"></a></div>
+<figcaption>22 Sep is vLLM's own memory note (weights and activations together). The 56.02 run uses the 17 Oct split.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-memory"><table><thead><tr><th>Build</th><th class="n">Weights</th><th class="n">Draft + cache</th><th class="n">History cache</th><th class="n">Mamba</th><th class="n">Buffers + headroom</th><th class="n">History tokens</th><th class="n">Games</th></tr></thead><tbody><tr><td>22 Sep · vLLM</td><td class="n">76.00</td><td class="n">0.00</td><td class="n">13.76</td><td class="n">0.00</td><td class="n">5.21</td><td class="n">984k</td><td class="n">7</td></tr><tr><td>3 Oct · SGLang + drafter</td><td class="n">69.85</td><td class="n">4.75</td><td class="n">11.58</td><td class="n">3.40</td><td class="n">5.39</td><td class="n">1.01M</td><td class="n">10</td></tr><tr><td>11 Oct · a fifth of experts cut</td><td class="n">54.29</td><td class="n">5.19</td><td class="n">17.76</td><td class="n">9.58</td><td class="n">8.15</td><td class="n">2.76M</td><td class="n">24</td></tr><tr><td>11 Oct · a third of experts cut</td><td class="n">46.21</td><td class="n">5.89</td><td class="n">22.36</td><td class="n">11.81</td><td class="n">8.70</td><td class="n">3.47M</td><td class="n">32</td></tr><tr><td>17 Oct · 56.02 config</td><td class="n">46.21</td><td class="n">6.19</td><td class="n">24.48</td><td class="n">10.05</td><td class="n">8.04</td><td class="n">3.80M</td><td class="n">32</td></tr></tbody></table></div></details>
+</figure>
+<p><strong>Fit more games on the card</strong></p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expert cut</td>
+<td>Remove the least-used third of the experts from the card (512 → 341 per layer)</td>
+<td>weights 66 → 46.2 GiB</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>4-bit history cache</td>
+<td>Keys and values in NVFP4 (the draft model keeps FP8)</td>
+<td>1.01M → 3.80M tokens, with the cut</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>Free the 16-bit output head (<code>khfree</code>)</td>
+<td>Serve the head from its int8 copy and free the 16-bit one before the cache is sized</td>
+<td>+0.57 GiB</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Deduplicate shared tensors (<code>kdupe</code>)</td>
+<td>The draft and main models held separate copies of the same tensors</td>
+<td>+2.04 GB</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>180 Mamba slots</td>
+<td>Fewer spare linear-attention state slots (~55 MB each)</td>
+<td>cache 3.47M → 3.80M tokens</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Peak memory log (<code>kmempeak</code>)</td>
+<td>Log the real memory peak so the cache can be sized to the edge</td>
+<td>lowest headroom 1.9 GiB</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Cheaper steps: dense layers and the output head</strong></p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8-bit dense weights (<code>kw8</code>)</td>
+<td>Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed)</td>
+<td>step 29.1 → 27.0 ms</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>8-bit activations (<code>kw8a8</code>)</td>
+<td>Int8 inputs to the dense layers once a step has more than 64 rows</td>
+<td>-3.5 ms per step at 192 rows</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>Int8 kernels by row count (<code>kw8m</code>, <code>kw8x</code>, <code>kw8x3</code>)</td>
+<td>Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding</td>
+<td>at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Small 16-bit multiplies (<code>kfast</code>)</td>
+<td>A faster kernel for the few dense multiplies left in 16-bit</td>
+<td>9.76 → 9.12 ms per step</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>Hyper-connection glue (<code>khc</code>, <code>kglue</code>, <code>kglue2</code>, <code>kgate8</code>, <code>kbig3</code>)</td>
+<td>The model's layer-mixing steps fused into fewer kernels</td>
+<td>kernels per step 2,575 → 2,131; -1.2 ms per step</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Output head (<code>klgf</code>, <code>klmh3</code>, <code>klmh4</code>)</td>
+<td>The int8 head in one launch, writing the final logits directly</td>
+<td>1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Experts and routing</strong></p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Batch-aware routing, 3 guaranteed experts</td>
+<td>Steer tokens to experts the batch already reads; each token keeps its own top 3 (was 4)</td>
+<td>+5% speed</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>One-kernel reroute (<code>kbafuse</code>, <code>kbafuse2</code>)</td>
+<td>The reroute and the cut-expert remap in one kernel per layer</td>
+<td>68-73 → 33-49 µs per layer</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>One-kernel routing (<code>kroute</code>)</td>
+<td>Expert selection in one kernel instead of four</td>
+<td>22.3 → 6.9 µs per layer</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>16-row expert blocks (<code>kmoebm16</code>)</td>
+<td>Smaller blocks when each expert gets only a few rows</td>
+<td>696 → 623 µs per layer at 184 rows</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Attention</strong></p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Attention indexer (<code>kidx</code>, <code>kidxv</code>)</td>
+<td>Load each block of keys once per game instead of once per draft token</td>
+<td>98 → 61 µs per layer</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>4-bit attention (<code>kpf44</code>, <code>kpf44b</code>, <code>kqsort</code>)</td>
+<td>Prefetch the next block, split keys 8 ways, read keys in order</td>
+<td>237 → 228 µs; 277 → 265 µs</td>
+<td><span class="tag exact">exact / rounding</span></td>
+</tr>
+<tr>
+<td>Linear attention (<code>kgdn</code>, <code>kconv</code>, <code>kfuse</code>, <code>kvdtrim</code>)</td>
+<td>Read inputs in place, a one-tile conv, skip state writes for empty slots</td>
+<td>8.5 → 4.1 µs per conv call; +7.5% with <code>kfast</code></td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>More tokens per pass: speculative decoding</strong></p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MTP drafting</td>
+<td>From Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass, with exact rejection sampling</td>
+<td>1 → 2.69 tokens per pass</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Our drafters</td>
+<td>Draft heads fine-tuned on our own games, run in int8</td>
+<td>2.69 → 3.05 per pass</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Faster draft sampling (<code>kdsamp</code>)</td>
+<td>Pick the top candidates first instead of scanning the whole draft vocabulary</td>
+<td>126 → 13 µs per draft step</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Per-game verify depth (<code>kvd</code>)</td>
+<td>Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most)</td>
+<td>+5%</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>4 draft steps</td>
+<td>One more guess per pass</td>
+<td>3.05 → 3.25 per pass, with <code>kvd</code></td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>Draft extend on one row (<code>kdext</code>)</td>
+<td>After a verify, the draft model updates only the row it keeps</td>
+<td>+5.2%</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+</tbody>
+</table></div>
+<p>Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.</p>
+<h3>2.3 Prefill: 259 → 74 ms per 1,000 tokens</h3>
+<figure id="fig-wf-prefill">
+<div class="ft">Prefill, build by build</div>
+<div class="fs">Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right.</div>
+<div class="chart" id="chart-wf-prefill"><a href="arc3-solution-draft/charts/original/wf-prefill.svg"><img src="arc3-solution-draft/charts/original/wf-prefill.png" alt="Prefill, build by build" loading="lazy"></a></div>
+<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-prefill"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">259.3</td><td class="n"></td></tr><tr><td>3 Oct · host-RAM tier</td><td class="n">238.5</td><td class="n">-20.8</td></tr><tr><td>6 Oct · 8-bit weights, faster prompt-read experts</td><td class="n">169.8</td><td class="n">-68.7</td></tr><tr><td>11 Oct · verbatim history, prompt kernels</td><td class="n">100.4</td><td class="n">-69.4</td></tr><tr><td>18 Oct · 140k window, RAM tier, pinned checkpoints</td><td class="n">82.8</td><td class="n">-17.6</td></tr><tr><td>23 Oct · 52k keep, fused prompt glue</td><td class="n">73.9</td><td class="n">-8.9</td></tr></tbody></table></div></details>
+</figure>
+<p>Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for about 23% of the run, and about 45% of all prompt tokens were <strong>re-reads</strong>: history the cache had already seen and then lost. The biggest prefill wins were about not losing history (Part 1); the rest were kernels.</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host-RAM copy (<code>khost44</code>)</td>
+<td>A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe</td>
+<td>games losing their history 9 → 0; +7.5% tok/s</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Lost-history fix</td>
+<td>A bug that made 48-lane runs re-read whole histories</td>
+<td>re-reads 32% → 11% of GPU time</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Verbatim history</td>
+<td>Keep the model's answer byte for byte (Part 1)</td>
+<td>+8% tok/s</td>
+<td><span class="tag harness">harness</span></td>
+</tr>
+<tr>
+<td>Window and trim</td>
+<td>140k window, 52k keep (Part 1)</td>
+<td>re-reads 12% → 8% of the run</td>
+<td><span class="tag harness">harness</span></td>
+</tr>
+<tr>
+<td>Pin side-request checkpoints (<code>kpinbranch</code>)</td>
+<td>A summary or review call no longer forces the next turn to re-read its history</td>
+<td>1,787 → 2,160 tok/s</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Image embeddings in RAM (<code>kvlmhost</code>)</td>
+<td>Keep image embeddings in RAM instead of re-encoding them after a trim</td>
+<td>454 RAM hits vs 1,172 first encodes by minute 8</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Prompt attention (<code>kqsapf</code>, <code>kqsapf2</code>, <code>kmqa</code>)</td>
+<td>Better tiles for long prompt reads</td>
+<td>6.06 → 4.95 ms per call</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>No q/k/v copy (<code>kqkvz</code>)</td>
+<td>Pass inputs as a view instead of copying them</td>
+<td>412 → 171 µs per layer</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Fused prompt glue (<code>kglu</code>)</td>
+<td>Small copies folded into the prefill kernels</td>
+<td>356 → 206 µs at 8,192 rows</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Prompt-read experts (<code>kprefill</code>)</td>
+<td>A better expert-kernel layout for prompt reads</td>
+<td>-19% at 1k tokens, -7% at 8k</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>CUDA graphs, no host syncs (<code>kpgraph</code>, <code>kpfsync</code>, <code>kprsync</code>)</td>
+<td>Small reads were waiting on Python; replay recorded graphs instead</td>
+<td>small read 175 → 113 ms</td>
+<td><span class="tag exact">exact / rounding</span></td>
+</tr>
+<tr>
+<td>Image encoder attention (<code>fa4</code>)</td>
+<td>FlashAttention-4 for the vision encoder</td>
+<td>366 → 87 µs per layer</td>
+<td><span class="tag lossy">lossy</span></td>
+</tr>
+<tr>
+<td>Memory-light embedding conv (<code>kpleconv</code>)</td>
+<td>Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle</td>
+<td>800 → 281 MB per 8k read</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+</tbody>
+</table></div>
+<h3>2.4 Overhead: 255 → 61 ms per 1,000 tokens</h3>
+<figure id="fig-wf-overhead">
+<div class="ft">Overhead, build by build</div>
+<div class="fs">Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens.</div>
+<div class="chart" id="chart-wf-overhead"><a href="arc3-solution-draft/charts/original/wf-overhead.svg"><img src="arc3-solution-draft/charts/original/wf-overhead.png" alt="Overhead, build by build" loading="lazy"></a></div>
+<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-overhead"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">255.2</td><td class="n"></td></tr><tr><td>3 Oct · harness changes: fewer idle lanes</td><td class="n">217.2</td><td class="n">-38.0</td></tr><tr><td>6 Oct · image hash off the scheduler, zero-copy hand-off</td><td class="n">77.7</td><td class="n">-139.5</td></tr><tr><td>11 Oct · prompt-read CUDA graphs, 32 games</td><td class="n">48.9</td><td class="n">-28.8</td></tr><tr><td>18 Oct · longer board runs: more idle lanes</td><td class="n">70.7</td><td class="n">+21.8</td></tr><tr><td>23 Oct · 34 games over 32 lanes</td><td class="n">61.4</td><td class="n">-9.3</td></tr></tbody></table></div></details>
+</figure>
+<p>The best find here was invisible in per-step profiles: for every new request, the scheduler loop SHA-256-hashed about 300 MB of image pixels while <em>every</em> lane waited. 4.2% of the whole run. Only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our board runs out of games near the end, Kaggle's 110 games mostly don't.</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>What it does</th>
+<th>Measured</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image hash off the scheduler</td>
+<td>Hash images in the tokenizer process, not the scheduler loop</td>
+<td>205 → 8.5 ms stall per image request</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Zero-copy image hand-off (<code>kshm</code>)</td>
+<td>Hand image data over without cloning it</td>
+<td>59 → 2.5 ms per request</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Overlapped launches (<code>kpdl</code>)</td>
+<td>Each small kernel starts while the last one finishes</td>
+<td>~0.23 µs per kernel</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>34 games over 32 lanes</td>
+<td>Two extra games fill lanes left idle by games running python</td>
+<td>+4.7 on our 75-game board</td>
+<td><span class="tag harness">harness</span></td>
+</tr>
+<tr>
+<td>Startup DNS fix (<code>kdnsfix</code>)</td>
+<td>Skip a DNS lookup that Kaggle's offline box never answers</td>
+<td>torch init 12.85 s → ~0</td>
+<td><span class="tag exact">exact</span></td>
+</tr>
+<tr>
+<td>Scorecard keep-alive (after 56.02)</td>
+<td>Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00)</td>
+<td>a 46-minute load played normally</td>
+<td><span class="tag harness">harness</span></td>
+</tr>
+</tbody>
+</table></div>
+<h3>2.5 What didn't make it</h3>
+<p>Of 191 named speed changes, 69 shipped in some build, 71 were dropped, and 51 were parked or never left the test bench. The ones worth knowing about:</p>
+<ul>
+<li><strong>Relaxed draft acceptance</strong> (accept draft tokens more often than exact sampling would): +5.0 on the board at 0.7, but its Kaggle package dropped 41.97 → 38.45, and 0.5 lost 9 board points. Banned after that.</li>
+<li><strong>Overlapping prompt reads with decode:</strong> 3 to 5% slower, and out of memory by minute 17-22.</li>
+<li><strong>Mixing prefill into decode batches:</strong> worth at most ~1%, because every prefill chunk re-reads all the experts.</li>
+<li><strong>Splice</strong> (rebuild the cache after a trim): tied on the board, lost on Kaggle three times out of three.</li>
+<li><strong>Vocab trim</strong> (cut the output layer to the tokens we use): lost on Kaggle all three times. About one reply in five wants a token the trim removed, mostly names the model coins for game objects.</li>
+<li><strong>3-bit experts:</strong> +5% tokens per second and 8.2 GB freed, but the board went 66.2 → 58.7.</li>
+<li><strong>8-bit Mamba states:</strong> +11% history cache and a board tie, but in our final stack the model thought 35% less per move (Part 4).</li>
+</ul>
+<h2>RL</h2><figure class="hero"><img src="arc3-solution-draft/03-rl-v1-corners-only.png" alt="The reinforcement-learning pipeline" loading="lazy"></figure>
+<p>We spent real money and a lot of weekends on RL and other fine-tunes. None of it beat the base model on Kaggle.</p>
+<div class="tablewrap opt"><table>
+<thead>
+<tr>
+<th>Attempt</th>
+<th>When</th>
+<th>What</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RL v1 on "burst" moments</td>
+<td>1-4 Oct</td>
+<td>LoRA rounds on moments where the harness was sometimes brilliant</td>
+<td>hard games 5.8 → 9.5 levels per run, but held-out games 16.8 → 14.6</td>
+</tr>
+<tr>
+<td>RL v3, tree rollouts</td>
+<td>13-15 Oct</td>
+<td>Branch games from saved states, reward the branches that clear</td>
+<td>~$333 overnight; the one model scored equalled the base (59.98)</td>
+</tr>
+<tr>
+<td>Evolution strategies</td>
+<td>16-17 Oct</td>
+<td>Random LoRA-shaped weight nudges, keep the best each round</td>
+<td>best nudge 25.8 vs base 24.9, inside the noise</td>
+</tr>
+<tr>
+<td>RL LoRAs, merged at load</td>
+<td>19-21 Oct</td>
+<td>Keith's RL adapters on our int8 stack</td>
+<td>Kaggle 52.82 → 51.12 and → 44.68; our int8 layers kept only 22% of an adapter's change</td>
+</tr>
+<tr>
+<td>RL5</td>
+<td>25-26 Oct</td>
+<td>Three waves of the same recipe</td>
+<td>learned to think half as long (median reply 2,657 → 1,401 tokens); 51.5 → 29.5</td>
+</tr>
+<tr>
+<td>GRPO on the log harness</td>
+<td>28 Oct</td>
+<td>An adapter trained on the harness we submitted on 25 Oct</td>
+<td>board 61.85 → 58.24</td>
+</tr>
+<tr>
+<td>Correctors (distillation)</td>
+<td>24 Oct, 1-2 Nov</td>
+<td>LoRAs that pull a cut or 3-bit model back toward the full model</td>
+<td>KL down 16-23% offline, but thinking 17-45% longer per move; board -9</td>
+</tr>
+<tr>
+<td>2-bit distillation</td>
+<td>Keith's write-up</td>
+<td>A night on eight B300s to train the 2-bit model back toward 4-bit</td>
+<td>~6,000 training tokens/s against 24-85k planned; no 2-bit weight changed in the layers checked</td>
+</tr>
+<tr>
+<td>Think-less fine-tunes</td>
+<td>23 Oct</td>
+<td>Two public Flash-Next fine-tunes that claim shorter thinking</td>
+<td>board 33.5 and 40.3 vs 64.2</td>
+</tr>
+</tbody>
+</table></div>
+<figure id="fig-think">
+<div class="ft">Move the thinking length, and the score drops</div>
+<div class="fs">Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.</div>
+<div class="legend" id="legend-think"><span><i style="background: var(--c-new);" class="dot"></i>Training run or lossy speed change, against its own control</span><span><i style="background: var(--c-grid);"></i>Board noise (1 SD)</span></div>
+<div class="chart" id="chart-think"><a href="arc3-solution-draft/charts/original/think.svg"><img src="arc3-solution-draft/charts/original/think.png" alt="Move the thinking length, and the score drops" loading="lazy"></a></div>
+<figcaption>Tokens per move = generated tokens / moves over the whole run (RL5: median reply length). Each point against its own control: 8-bit states vs the 22-Oct control (50 games), the 3-bit arms vs plain 3-bit (75 games), RL5 vs the base model (32-game set).</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-think"><table><thead><tr><th>Change</th><th class="n">Thinking per move</th><th class="n">Score change</th><th class="n">Numbers</th></tr></thead><tbody><tr><td>8-bit Mamba states</td><td class="n">-19.3%</td><td class="n">-0.5</td><td class="n">961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.7</td></tr><tr><td>3-bit + 8-bit states, 194k window</td><td class="n">-36.9%</td><td class="n">-5.9</td><td class="n">639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector LoRA</td><td class="n">+45%</td><td class="n">-8.8</td><td class="n">1,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector, medium effort</td><td class="n">+50.8%</td><td class="n">-8.6</td><td class="n">1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0</td></tr><tr><td>RL5</td><td class="n">-47.3%</td><td class="n">-22.0</td><td class="n">median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5</td></tr></tbody></table></div></details>
+</figure>
+<p>Why it didn't work for us: the base model was already good at the games, and every training run we did changed <strong>how long the model thinks</strong> before it changed <strong>how well</strong>. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. 1st place saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.</p>
+<h2>When speed no longer matters</h2><figure class="hero"><img src="arc3-solution-draft/04-speed-plateau-v1-corners-only.png" alt="The Turducken tries to fly beyond its 56.02 plateau" loading="lazy"></figure>
+<h3>4.1 The climb, and what it was telling us</h3>
+<figure id="fig-kaggle">
+<div class="ft">Where speed stopped helping</div>
+<div class="fs">Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.</div>
+<div class="legend" id="legend-kaggle"><span><i style="background: var(--c-decode);" class="dot"></i>Best so far</span><span><i class="ring"></i>Didn't beat the best</span></div>
+<div class="chart" id="chart-kaggle"><a href="arc3-solution-draft/charts/original/kaggle.svg"><img src="arc3-solution-draft/charts/original/kaggle.png" alt="Where speed stopped helping" loading="lazy"></a></div>
+<figcaption>22-Oct's 0.00 was a 66-minute model load: the competition closed the scorecard after 15 idle minutes. Kaggle loads were slow (30 to 40 minutes) on 24 to 26 Oct, so those three scores are partly the load.</figcaption>
+<details><summary>Show the numbers</summary><div class="tablewrap" id="table-kaggle"><table><thead><tr><th>Date</th><th class="n">Public score</th><th class="n" style="text-align: left; white-space: normal;">What changed</th></tr></thead><tbody><tr><td>2026-09-21</td><td class="n">7.36</td><td class="n" style="text-align: left; white-space: normal;">First Flash-Next notebook (vLLM)</td></tr><tr><td>2026-09-22</td><td class="n">5.60</td><td class="n" style="text-align: left; white-space: normal;">Prompt deletions</td></tr><tr><td>2026-09-23</td><td class="n">6.17</td><td class="n" style="text-align: left; white-space: normal;">Same notebook as 22 Sep, resubmitted</td></tr><tr><td>2026-09-24</td><td class="n">6.74</td><td class="n" style="text-align: left; white-space: normal;">Same notebook again</td></tr><tr><td>2026-09-25</td><td class="n">6.47</td><td class="n" style="text-align: left; white-space: normal;">Compact prompt v5</td></tr><tr><td>2026-09-26</td><td class="n">4.83</td><td class="n" style="text-align: left; white-space: normal;">Compact v5 resubmitted</td></tr><tr><td>2026-09-27</td><td class="n">8.23</td><td class="n" style="text-align: left; white-space: normal;">Moved to SGLang</td></tr><tr><td>2026-09-28</td><td class="n">12.21</td><td class="n" style="text-align: left; white-space: normal;">SGLang + expert pruning</td></tr><tr><td>2026-09-29</td><td class="n">15.68</td><td class="n" style="text-align: left; white-space: normal;">Pruning + temperature 0.8 + tuned drafter</td></tr><tr><td>2026-09-30</td><td class="n">18.99</td><td class="n" style="text-align: left; white-space: normal;">More pruning, temperature 0.6</td></tr><tr><td>2026-10-01</td><td class="n">8.14</td><td class="n" style="text-align: left; white-space: normal;">Different expert set (336)</td></tr><tr><td>2026-10-02</td><td class="n">3.93</td><td class="n" style="text-align: left; white-space: normal;">Our harness + Franzen's tool fixes (Combo A)</td></tr><tr><td>2026-10-03</td><td class="n">28.94</td><td class="n" style="text-align: left; white-space: normal;">Daniel Franzen's notebook + our drafter + animation feed</td></tr><tr><td>2026-10-04</td><td class="n">27.79</td><td class="n" style="text-align: left; white-space: normal;">4-bit cache, 13 games</td></tr><tr><td>2026-10-05</td><td class="n">31.63</td><td class="n" style="text-align: left; white-space: normal;">Host-RAM cache tier + fused 8-bit attention</td></tr><tr><td>2026-10-06</td><td class="n">33.74</td><td class="n" style="text-align: left; white-space: normal;">8-bit dense weights</td></tr><tr><td>2026-10-07</td><td class="n">31.11</td><td class="n" style="text-align: left; white-space: normal;">16-bit line, 11 games</td></tr><tr><td>2026-10-08</td><td class="n">35.45</td><td class="n" style="text-align: left; white-space: normal;">8-bit v3, 13 games</td></tr><tr><td>2026-10-09</td><td class="n">35.32</td><td class="n" style="text-align: left; white-space: normal;">8-bit v3 resubmitted</td></tr><tr><td>2026-10-10</td><td class="n">39.24</td><td class="n" style="text-align: left; white-space: normal;">20 games, 8/4-bit cache, fresh eyes when stuck</td></tr><tr><td>2026-10-11</td><td class="n">41.69</td><td class="n" style="text-align: left; white-space: normal;">A third of the experts cut, 28 games</td></tr><tr><td>2026-10-12</td><td class="n">41.97</td><td class="n" style="text-align: left; white-space: normal;">32 games, 8-bit activations</td></tr><tr><td>2026-10-13</td><td class="n">37.56</td><td class="n" style="text-align: left; white-space: normal;">Summary when the window fills</td></tr><tr><td>2026-10-14</td><td class="n">38.45</td><td class="n" style="text-align: left; white-space: normal;">Relaxed acceptance 0.7 + cache pinning</td></tr><tr><td>2026-10-15</td><td class="n">47.25</td><td class="n" style="text-align: left; white-space: normal;">Notes memory + exact acceptance + new drafter</td></tr><tr><td>2026-10-16</td><td class="n">48.92</td><td class="n" style="text-align: left; white-space: normal;">Notes head + tail, OOM fixes</td></tr><tr><td>2026-10-17</td><td class="n">47.45</td><td class="n" style="text-align: left; white-space: normal;">Goal first</td></tr><tr><td>2026-10-18</td><td class="n">52.82</td><td class="n" style="text-align: left; white-space: normal;">Mamba 180, 140k window, temperature 0.5</td></tr><tr><td>2026-10-19</td><td class="n">41.37</td><td class="n" style="text-align: left; white-space: normal;">Predict before acting</td></tr><tr><td>2026-10-20</td><td class="n">51.12</td><td class="n" style="text-align: left; white-space: normal;">RL LoRA merged at load</td></tr><tr><td>2026-10-21</td><td class="n">44.68</td><td class="n" style="text-align: left; white-space: normal;">Second RL LoRA</td></tr><tr><td>2026-10-22</td><td class="n">0.00</td><td class="n" style="text-align: left; white-space: normal;">Speed stack: model load took 66 min, scorecard closed</td></tr><tr><td>2026-10-23</td><td class="n">56.02</td><td class="n" style="text-align: left; white-space: normal;">Speed stack: per-game verify depth, 4 draft steps, 34 over 32</td></tr><tr><td>2026-10-24</td><td class="n">47.33</td><td class="n" style="text-align: left; white-space: normal;">+ splice + keep-alive</td></tr><tr><td>2026-10-25</td><td class="n">45.49</td><td class="n" style="text-align: left; white-space: normal;">+ splice v3 + game log</td></tr><tr><td>2026-10-26</td><td class="n">49.34</td><td class="n" style="text-align: left; white-space: normal;">Splice v3 stack alone</td></tr><tr><td>2026-10-28</td><td class="n">53.70</td><td class="n" style="text-align: left; white-space: normal;">Expert-kernel rounding + keep-alive + game gate</td></tr><tr><td>2026-10-29</td><td class="n">49.07</td><td class="n" style="text-align: left; white-space: normal;">+ predict before acting</td></tr><tr><td>2026-10-30</td><td class="n">50.34</td><td class="n" style="text-align: left; white-space: normal;">53.70 package resubmitted</td></tr><tr><td>2026-10-31</td><td class="n">46.41</td><td class="n" style="text-align: left; white-space: normal;">Lean turns + vocab trim</td></tr><tr><td>2026-11-01</td><td class="n">48.37</td><td class="n" style="text-align: left; white-space: normal;">53.70 + splice + vocab trim</td></tr><tr><td>2026-11-02</td><td class="n">49.88</td><td class="n" style="text-align: left; white-space: normal;">53.70 + vocab trim</td></tr></tbody></table></div></details>
+</figure>
+<p>Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed: SGLang, expert pruning, 8-bit weights, more games at once. Then the harness took it from 41.97 to 52.82 (notes memory, goal first, a bigger window, temperature 0.5), and one last speed push made it 56.02. After that, nothing beat it: nine submissions over the last ten days, all lower.</p>
+<p>Looking back at this chart, here's what we should have done:</p>
+<ol>
+<li><strong>Change strategy when the curve flattens.</strong> The signs were there. On 9 October, 4x the clock only took the board from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the 31 points we lost to levels the model never cleared, not in the speed.</li>
+<li><strong>Price every speed trick in quality, not just tokens.</strong> Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits. 4.2 is about this.</li>
+<li><strong>Don't be too ambitious with correction and RL.</strong> 3-bit experts already gave +5% tokens per second and 8 GB of memory, for about 7 points on the board. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big correction push into 2-bit: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. The smaller gap was the better bet.</li>
+</ol>
+<h3>4.2 The biggest lesson: we didn't notice when token quality started to matter</h3>
+<p>In turducken terms: we kept stuffing after the bird was full. For most of October, more tokens meant more score, and that trained us to treat every token as the same token. Somewhere between 52.82 and 56.02 that stopped being true, and we didn't notice. After 56.02, <strong>every faster build we shipped scored lower on Kaggle</strong>: splice (47.33, 48.37), Lean turns with vocab trim (46.41), vocab trim alone (49.88).</p>
+<p>Our board couldn't see it. In the board-vs-Kaggle chart in Part 1, nearly every lossy change was flat or up on the board and down on Kaggle: each loss was smaller than the board's noise, and Kaggle's 110 games over 9 hours compounded it. When we went back to the logs afterwards, the signs were there: the final 3-bit stack thought 35% less per move and ended 2 to 5 times as many turns without a tool call, and one reply in five wanted a token the vocab trim had removed. Nothing in our gate was looking for that.</p>
+<p>What we'd do differently:</p>
+<ol>
+<li><strong>Measure quality per token directly</strong> for every lossy change: KL against the full model on recorded replies, plus a behaviour check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run board can't.</li>
+<li><strong>Watch the tokens-to-score curve.</strong> When more tokens stop buying score, stop buying tokens with quality.</li>
+<li><strong>Treat thinking length as a vital sign.</strong> If a change moves tokens per move by more than ~10% either way, assume it hurts until it proves otherwise.</li>
+</ol>
+<p>We should also have ablated backward: withdraw optimizations one at a time to see which capacity or precision was worth restoring for fewer, better tokens. And our objective narrowed our search. Because nearby tests beyond 32 lanes scored worse, we never tried the radical 110-lane regime ourselves. That remained an untested alternative for our stack, not a demonstrated failure.</p><h3>4.3 The rest</h3>
+<ol>
+<li><strong>Count games, not just speed.</strong> 1st place (and 6th) ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.</li>
+<li><strong>Measure the whole run, not a step.</strong> Our biggest overhead win was invisible in per-step profiles, and prompt reading (~23% of the run) was invisible in SGLang's own throughput line.</li>
+<li><strong>Memory is throughput.</strong> On a memory-bound decoder, freed gigabytes become lanes and history, and lanes are almost free per step.</li>
+<li><strong>Know your noise before you read a result.</strong> SD 1.9 on our board; ±3.4 on Kaggle for the same package. A one-point "win" is a coin flip.</li>
+<li><strong>Treat the prefix cache as a contract.</strong> One squeezed blank line cost us 8% of our speed.</li>
+<li><strong>Build the dumb safety nets.</strong> A slow model load gave us a 0.00. A keep-alive fixed it.</li>
+</ol>
+<h3>Thanks again</h3>
+<p>Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.</p>
+<p><em>This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.</em></p>
+
+</main>
+
+
+
+
+
+</body></html>
