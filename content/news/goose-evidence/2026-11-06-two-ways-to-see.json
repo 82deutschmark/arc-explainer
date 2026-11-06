@@ -1,13 +1,13 @@
 {
   "package": {
     "artworkRecords": [
-      "artwork/asset-e6dd75fbd638d83200dc"
+      "artwork/asset-1620f1e7e0b012909e29"
     ],
     "assets": [
       {
-        "sha256": "e6dd75fbd638d83200dcd2a004cd24059ccdd914e190598dd7913976ac48de84",
-        "source": "client/public/news-images/2026-11-06-two-ways-v2.webp",
-        "target": "client/public/news-images/goose-e6dd75fbd638d83200dc.webp"
+        "sha256": "1620f1e7e0b012909e29cdfc7a70090a6509a568aacfbd4961cb27049abb6240",
+        "source": "client/public/news-images/2026-11-06-two-ways-v5.webp",
+        "target": "client/public/news-images/goose-1620f1e7e0b012909e29.webp"
       }
     ],
     "canonicalUrl": "https://arc.markbarney.net/news/2026-11-06-two-ways-to-see",
@@ -20,9 +20,9 @@
       "headline": "Two ways to see the same puzzle",
       "id": "2026-11-06-two-ways-to-see",
       "image": {
-        "alt": "Five established team characters work around two coloured puzzle paths that meet at a shared answer.",
+        "alt": "Five team characters work around two coloured puzzle routes that meet at a shared answer; a nameplate reads S & M & N & S & Y, team, public leaderboard, ninth.",
         "caption": "The Goose’s characters for S & M & N & S & Y examine two routes through the grids.",
-        "src": "/news-images/goose-e6dd75fbd638d83200dc.webp"
+        "src": "/news-images/goose-1620f1e7e0b012909e29.webp"
       },
       "publishedAt": "2026-11-06T19:31:14.128504+00:00",
       "sections": [
@@ -65,15 +65,15 @@
       ]
     },
     "storyId": "2026-11-06-two-ways-to-see",
-    "storySha256": "e61315a6273f5f41f9b4b8105ac98337626a87deb9648e419b356fb29f2b130d",
+    "storySha256": "8f91b3d9aa120ed96d31992d8a2c87766f7fac88df6a8c1615b9aa28697d93c4",
     "version": 1
   },
   "review": {
     "assets": [
       {
-        "sha256": "e6dd75fbd638d83200dcd2a004cd24059ccdd914e190598dd7913976ac48de84",
-        "source": "client/public/news-images/2026-11-06-two-ways-v2.webp",
-        "target": "client/public/news-images/goose-e6dd75fbd638d83200dc.webp"
+        "sha256": "1620f1e7e0b012909e29cdfc7a70090a6509a568aacfbd4961cb27049abb6240",
+        "source": "client/public/news-images/2026-11-06-two-ways-v5.webp",
+        "target": "client/public/news-images/goose-1620f1e7e0b012909e29.webp"
       }
     ],
     "checks": [
@@ -83,9 +83,9 @@
       "art-continuity",
       "copy"
     ],
-    "notes": "Read the actual Kaggle write-up and visible replies in the in-app browser, checked the public board and named authors against the dated wiki. Compared the clean scene against its reviewed character reference and checked the finished programmed panel at full and phone size. Public places remain provisional; author-reported experiments are attributed. Corrected wording after phone preview showed an unrelated competitor card triggered by an ordinary word; rechecked the revised opening against the write-up.",
-    "reviewedAt": "2026-11-06T19:39:38.133795+00:00",
-    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
-    "storySha256": "e61315a6273f5f41f9b4b8105ac98337626a87deb9648e419b356fb29f2b130d"
+    "notes": "Read the actual Kaggle write-up and visible replies in the in-app browser, checked the public board and named authors against the dated wiki. Compared the clean scene against its reviewed character reference and checked the finished programmed panel at full and phone size. Public places remain provisional; author-reported experiments are attributed. Corrected wording after phone preview showed an unrelated competitor card triggered by an ordinary word; rechecked the revised opening against the write-up. 6 November, art re-review by Claude Sonnet 5.5 Medium after the Boss rejected the first bottom-bar panel: the finished image is now the clean scene with an overlay drawn inside the frame (five name tags under their own characters and one team plaque). Every name was matched to the card registry by code; the clean scene and the story's facts are unchanged from the review above. Viewed at full size and at phone width; no cast member is covered. 6 November, second art re-review by Claude Sonnet 5.5 Medium: the Boss rejected the brass plaque and name tags as well and asked for just the name and public leaderboard place. The finished image is now the clean scene with one nameplate (team name, public leaderboard, ninth). The name matches the team card and the place is matched word for word to the story by code; story facts unchanged. Viewed at full size and at phone width. 6 November, third art re-review by Claude Sonnet 5.5 Medium: the Boss could not tell what the bare name on the plate was, so the nameplate now carries a small line saying what it is (Team, or Kaggle user and their team) beside Public leaderboard and the place. Kind and names come from the registry cards and the place is matched word for word to the story by code; story facts unchanged. Viewed at full size and at phone width.",
+    "reviewedAt": "2026-11-06T20:16:55+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed) for the story checks; Claude Sonnet 5.5 Medium for the replaced overlay",
+    "storySha256": "8f91b3d9aa120ed96d31992d8a2c87766f7fac88df6a8c1615b9aa28697d93c4"
   }
 }

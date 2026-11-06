@@ -1,13 +1,13 @@
 {
   "package": {
     "artworkRecords": [
-      "artwork/asset-33f74dabc4b4197b1acd"
+      "artwork/asset-13198b771d090ce1c98e"
     ],
     "assets": [
       {
-        "sha256": "33f74dabc4b4197b1acda9856b2edfe8ea0876106a53efca9fe1c01b980a2f52",
-        "source": "client/public/news-images/2026-11-06-mp-clock-v2.webp",
-        "target": "client/public/news-images/goose-33f74dabc4b4197b1acd.webp"
+        "sha256": "13198b771d090ce1c98ede0d927d5ff39d0073dce021762e1267a8faca3727ca",
+        "source": "client/public/news-images/2026-11-06-mp-clock-v5.webp",
+        "target": "client/public/news-images/goose-13198b771d090ce1c98e.webp"
       }
     ],
     "canonicalUrl": "https://arc.markbarney.net/news/2026-11-06-mp-clock",
@@ -20,9 +20,9 @@
       "headline": "The puzzle solver racing the clock",
       "id": "2026-11-06-mp-clock",
       "image": {
-        "alt": "mp’s tabby character watches glowing puzzle attempts in a workshop with a large unnumbered clock.",
+        "alt": "mp’s tabby character watches glowing puzzle attempts in a workshop with a large unnumbered clock; a nameplate reads mp, Kaggle user, team okiek, public leaderboard, fifteenth.",
         "caption": "The Goose’s character for mp works through several ARC puzzles against the clock.",
-        "src": "/news-images/goose-33f74dabc4b4197b1acd.webp"
+        "src": "/news-images/goose-13198b771d090ce1c98e.webp"
       },
       "publishedAt": "2026-11-06T19:31:14.128504+00:00",
       "sections": [
@@ -66,15 +66,15 @@
       ]
     },
     "storyId": "2026-11-06-mp-clock",
-    "storySha256": "625f0634581d24052255947bb3d81f3c13408767adf263f730ea05d1e4a1e025",
+    "storySha256": "978f56efe8253eb61bab3aa139e8d2e9e894673f209d2d955ca05b011ef45cff",
     "version": 1
   },
   "review": {
     "assets": [
       {
-        "sha256": "33f74dabc4b4197b1acda9856b2edfe8ea0876106a53efca9fe1c01b980a2f52",
-        "source": "client/public/news-images/2026-11-06-mp-clock-v2.webp",
-        "target": "client/public/news-images/goose-33f74dabc4b4197b1acd.webp"
+        "sha256": "13198b771d090ce1c98ede0d927d5ff39d0073dce021762e1267a8faca3727ca",
+        "source": "client/public/news-images/2026-11-06-mp-clock-v5.webp",
+        "target": "client/public/news-images/goose-13198b771d090ce1c98e.webp"
       }
     ],
     "checks": [
@@ -84,9 +84,9 @@
       "art-continuity",
       "copy"
     ],
-    "notes": "Read the actual Kaggle write-up and visible replies in the in-app browser, checked the public board and named authors against the dated wiki. Compared the clean scene against its reviewed character reference and checked the finished programmed panel at full and phone size. Public places remain provisional; author-reported experiments are attributed.",
-    "reviewedAt": "2026-11-06T19:32:58.150890+00:00",
-    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
-    "storySha256": "625f0634581d24052255947bb3d81f3c13408767adf263f730ea05d1e4a1e025"
+    "notes": "Read the actual Kaggle write-up and visible replies in the in-app browser, checked the public board and named authors against the dated wiki. Compared the clean scene against its reviewed character reference and checked the finished programmed panel at full and phone size. Public places remain provisional; author-reported experiments are attributed. 6 November, art re-review by Claude Sonnet 5.5 Medium after the Boss rejected the first bottom-bar panel: the finished image is now the clean scene with one plaque drawn inside the frame in the cloud void. The three method phrases were matched word for word to the story by code and the names to the card registry; the clean scene and the story's facts are unchanged from the review above. Viewed at full size and at phone width; the cat and its props are untouched. 6 November, second art re-review by Claude Sonnet 5.5 Medium: the Boss rejected the brass plaque as well and asked for just the name and public leaderboard place. The finished image is now the clean scene with one nameplate (mp, okiek, public leaderboard, fifteenth). Names match the registry cards and the place is matched word for word to the story by code; story facts unchanged. Viewed at full size and at phone width. 6 November, third art re-review by Claude Sonnet 5.5 Medium: the Boss could not tell what the bare name on the plate was, so the nameplate now carries a small line saying what it is (Team, or Kaggle user and their team) beside Public leaderboard and the place. Kind and names come from the registry cards and the place is matched word for word to the story by code; story facts unchanged. Viewed at full size and at phone width.",
+    "reviewedAt": "2026-11-06T20:16:55+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed) for the story checks; Claude Sonnet 5.5 Medium for the replaced overlay",
+    "storySha256": "978f56efe8253eb61bab3aa139e8d2e9e894673f209d2d955ca05b011ef45cff"
   }
 }
