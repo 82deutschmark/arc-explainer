@@ -12,7 +12,6 @@
     "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a",
     "/news-images/2026-10-19-tufa-citadel-v5-base.webp": "926a097348ab04e3f0a1e2e3945febb97647070120522b373907f95fb223bb72",
     "/news-images/2026-10-26-architects-dream-team-base.png": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
-    "/news-images/2026-10-29-turducken-nt-corrected-v2.webp": "d22e979493e82db5388c25aca95ebc7d49287063eb41aa6b7b1bd9bed0668406",
     "/news-images/2026-11-02-infinity-lightning-leap-v1.webp": "c2324aaa8bbd199bbef47ca209d5aa8b2b445b8f17fb7c66ffc72ab3e3511c3c",
     "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
     "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
@@ -66,7 +65,6 @@
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/jiaxibi0220-goose-v1.webp": "bedcad0a0e67619f30e1882fbd79f2fb481fd4ca3ed0cc454bc56c3c2545288a",
     "/news-images/cards/2026/k0mbat-goose-v1.webp": "42bdd058402ddc3f204037e86c81a5bf3568eb104438cc2d8bdb3f8968d152a2",
-    "/news-images/cards/2026/keith-tyser-hero-v1.webp": "75d49f8a982c794f3df7b35eae34d5d1f63096a7450e809a9ff840970b355678",
     "/news-images/cards/2026/khailashsanthakumar-comic-v1.webp": "d7db3ac567674015015d35103895b2560dc9dc1c0b7661307da15759e930a6c8",
     "/news-images/cards/2026/kibuna-comic-v1.webp": "a725880b5e2b963336d4d3c22d8732d31851e93698ad769f1d05de43100e1ff0",
     "/news-images/cards/2026/konbu17-seaweed-v1.webp": "9bd7c95110225b1eef787b8c43587628dd00941509cdc8bd78296d00e1d9f98e",
@@ -101,7 +99,7 @@
     "/news-images/cards/2026/rikitomo0526-comic-v1.webp": "88dad2c146763b998b05f1d59f593852135850eb81c46530182ed25e1ce48eb1",
     "/news-images/cards/2026/rohanajwani-comic-v1.webp": "d505bd05485bd2d29197f79ba40840963bd98596ef50f75d15a4f16cc56c98a3",
     "/news-images/cards/2026/romainfabre-comic-v1.webp": "a49a41bd22814550f0659bd3b156f4e694760e4e660b548b26cc102911607c33",
-    "/news-images/cards/2026/ronen-dunlea-goose-v1.webp": "db2231cd05b141368d9ec17c9faca8083cb570c27af104597e7574195db00fe2",
+    "/news-images/cards/2026/ronen-herminator-v1.webp": "6c2f00ee94d05ff8cbbc913e2692653ce42c24249f8e86bf439e867b57d4e84e",
     "/news-images/cards/2026/sebastian-brodehl-mouse-v1.webp": "d9478aa5ff1183f5bddc08953e28a13c78d8e2c9aa7292b351ebf5dddb493521",
     "/news-images/cards/2026/sergey-bryansky-comic-v1.webp": "7502767397277919ee41a0f06bfda06d44ae3b5d63a514de5d9162696180cafb",
     "/news-images/cards/2026/shiiin9-goose-v1.webp": "2a694c064f2fc9fd69e99c6d0b407104eb567f8cc4edffa24b9e2b2f8b73f120",
@@ -112,6 +110,7 @@
     "/news-images/cards/2026/thanhhau097a-comic-v1.webp": "80c8ee6b050f8bb4c77e1e83e5538ae26b500cbb0a1f963a7f911d6539d3fc6b",
     "/news-images/cards/2026/thomasferraz-comic-v1.webp": "153a00a01b9e69dd8ba7a8b573300dd792b816f570cd5fe73855d53b6025d071",
     "/news-images/cards/2026/tri-rinalda-goose-v1.webp": "881629095bb32adcad4c79b363fbbf710773d02906cd3bd0826eb2a22581878e",
+    "/news-images/cards/2026/turducken-team-v3.webp": "056436fb7dcd0cfc818a92d8642e3c6c600f22441027adb3f831184af365d1b5",
     "/news-images/cards/2026/unk-team-v1.webp": "ab3c9d69a2359b41b5ae0150f857e9fd8c8aa4a126772a0a761abfaff1cefe7f",
     "/news-images/cards/2026/vam-team-v1.webp": "7d2597121f3eb03514d4fdd7435511adaf55e63e17e36532aa7e6d1b66a61cc5",
     "/news-images/cards/2026/vineethsaivs-comic-v1.webp": "f1b668687d495df0ae0e01e7dc5d622c1213e9532ef5d7b0fa30a353480beece",
@@ -10012,6 +10011,11 @@
         "Son & Mark & Ronen",
         "arc-3-15605182"
       ],
+      "art": {
+        "alt": "The seven Team Turducken characters with two Yorkshire terriers, working around a graphics card and ARC grids.",
+        "caption": "Team Turducken’s seven ARC-3 characters.",
+        "src": "/news-images/cards/2026/turducken-team-v3.webp"
+      },
       "briefing": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham.",
       "competition": "arc-3",
       "facts": [
@@ -11989,7 +11993,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "af973f10053c6ee397ea4cbf2a0ddb63b7ced492dbefc6572eae422a89a33fdd",
+  "fingerprint": "3fee933b73e0a6bcd835f79b96650084064de6f1108be5da997342b9f3354bf5",
   "people": [
     {
       "accounts": [
@@ -20332,13 +20336,15 @@
       },
       {
         "art": {
-          "alt": "Keith Tyser as his fish mascot in a cap and gold-trimmed jacket in the glowing citadel",
-          "artworkId": "2026-10-30-keith-tyser-hero-v1",
-          "commissionedAt": "2026-10-30T18:24:17.551Z",
-          "credit": "Commissioned ARC Daily character illustration",
-          "src": "/news-images/cards/2026/keith-tyser-hero-v1.webp"
+          "alt": "keith-tyser.webp",
+          "artworkId": "asset-572ee4749a2a5205c717",
+          "commissionedAt": "2026-11-06T21:22:12+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/keith-tyser.webp"
         },
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-572ee4749a2a5205c717.md"
+        ],
         "description": "Keith Tyser competes on Kaggle as @keithtyser. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
         "entries": [],
         "id": "person-keith-tyser-2026",
@@ -21765,15 +21771,14 @@
       },
       {
         "art": {
-          "alt": "The complete Turducken crew aboard the mechanical airship, with NT’s corrected yellow-bird character and exactly two Yorkies.",
-          "artworkId": "2026-10-29-turducken-nt-corrected-v2",
-          "commissionedAt": "2026-10-30T03:52:09.683Z",
-          "credit": "Commissioned Turducken team artwork with NT’s own-avatar identity correction",
-          "src": "/news-images/2026-10-29-turducken-nt-corrected-v2.webp"
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:51+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
         },
         "artNotes": [
-          "Seven ARC3 competitor characters and exactly two Yorkies. NT / mitubant is the yellow bird at upper right; Keith is the separate black-capped yellow mascot.",
-          "The October18 original remains archived. Its banana-kitten assignment to NT was incorrect; use this corrected crew reference."
+          "Approval and scene conditions: wiki/artwork/turducken-team-v3.md"
         ],
         "entries": [
           {
@@ -22468,8 +22473,21 @@
         "artNotes": [
           "Approval and scene conditions: wiki/artwork/2026-10-30-dz-retro-space-v1.md"
         ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:54+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
         "description": "Slow∞Loop competes on Kaggle as dzjiann and is part of the dated Team Turducken ARC-3 roster.",
-        "entries": [],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
         "id": "person-dzjiann-arc-3-2026",
         "issuedAt": "2026-11-05T23:35:25+00:00",
         "kind": "person",
@@ -22490,8 +22508,21 @@
         "artNotes": [
           "Approval and scene conditions: wiki/artwork/cho-royou-cat-v1.md"
         ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:54+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
         "description": "Cho Royou competes on Kaggle as ngyzly and appears on the dated Team Turducken ARC-3 roster.",
-        "entries": [],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
         "id": "person-cho-royou-arc-3-2026",
         "issuedAt": "2026-11-05T23:37:26+00:00",
         "kind": "person",
@@ -22502,18 +22533,31 @@
       },
       {
         "art": {
-          "alt": "Ronen Dunlea — ARC goose character",
-          "artworkId": "ronen-dunlea-goose-v1",
-          "commissionedAt": "2026-11-05T23:39:11+00:00",
+          "alt": "Ronen — Herminator ARC-3 character",
+          "artworkId": "ronen-herminator-v1",
+          "commissionedAt": "2026-11-06T21:25:11+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
-          "src": "/news-images/cards/2026/ronen-dunlea-goose-v1.webp"
+          "src": "/news-images/cards/2026/ronen-herminator-v1.webp"
         },
         "artFallback": "none",
         "artNotes": [
-          "Approval and scene conditions: wiki/artwork/ronen-dunlea-goose-v1.md"
+          "Approval and scene conditions: wiki/artwork/ronen-herminator-v1.md"
         ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:53+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
         "description": "Ronen Dunlea competes on Kaggle as scizical and appears on the dated Team Turducken ARC-3 roster.",
-        "entries": [],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
         "id": "person-ronen-dunlea-arc-3-2026",
         "issuedAt": "2026-11-05T23:37:27+00:00",
         "kind": "person",
@@ -24490,6 +24534,174 @@
         "name": "NVARC3",
         "season": "2026",
         "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "keith-tyser.webp",
+          "artworkId": "asset-572ee4749a2a5205c717",
+          "commissionedAt": "2026-11-06T21:22:11+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/keith-tyser.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-572ee4749a2a5205c717.md"
+        ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:52+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
+        "description": "Keith Tyser competes on Kaggle as @keithtyser. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
+        "id": "person-keith-tyser-arc-3-2026",
+        "issuedAt": "2026-11-06T21:18:26+00:00",
+        "kind": "person",
+        "name": "Keith Tyser",
+        "personId": "keith-tyser",
+        "season": "2026",
+        "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "mark-barney-instagram-original.jpg",
+          "artworkId": "asset-3f1688f636950e2de364",
+          "commissionedAt": "2026-11-06T21:21:09+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/mark-barney-instagram-original.jpg"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-3f1688f636950e2de364.md"
+        ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:52+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
+        "description": "RSNA Knee Abnormality Detection — bronze medal; 412th of 6,299 teams with Son Pham.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
+        "id": "person-mark-barney-arc-3-2026",
+        "issuedAt": "2026-11-06T21:18:27+00:00",
+        "kind": "person",
+        "name": "Mark Barney",
+        "personId": "mark-barney",
+        "season": "2026",
+        "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "son-pham-kaggle-original.jpeg",
+          "artworkId": "asset-0e05b062c2481b4c3785",
+          "commissionedAt": "2026-11-06T21:21:10+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/son-pham-kaggle-original.jpeg"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-0e05b062c2481b4c3785.md"
+        ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:52+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
+        "description": "Kaggle Competitions Expert — one silver and one bronze competition medal.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
+        "id": "person-son-pham-arc-3-2026",
+        "issuedAt": "2026-11-06T21:18:27+00:00",
+        "kind": "person",
+        "name": "Son Pham",
+        "personId": "son-pham",
+        "season": "2026",
+        "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "2026-10-29-nt-mitubant-avatar-v2",
+          "artworkId": "2026-10-29-nt-mitubant-avatar-v2",
+          "commissionedAt": "2026-11-06T21:21:10+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/people/nt-mitubant-avatar-v2.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/2026-10-29-nt-mitubant-avatar-v2.md"
+        ],
+        "backArt": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:53+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
+        "description": "NT competes as mitubant with Team Turducken in ARC-AGI-3.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
+        "id": "person-mitubant-arc-3-2026",
+        "issuedAt": "2026-11-06T21:18:28+00:00",
+        "kind": "person",
+        "name": "NT",
+        "personId": "mitubant",
+        "season": "2026",
+        "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "Team Turducken — seven ARC-3 characters",
+          "artworkId": "turducken-team-v3",
+          "commissionedAt": "2026-11-06T21:27:51+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/turducken-team-v3.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/turducken-team-v3.md"
+        ],
+        "biography": "21 Sep: Son and Mark begin; apprentice Ronen joins. 17 Oct: Keith proposes merging ARC Slayers (NT, Cho and Slow∞Loop). 18 Oct: Turducken forms; announced 19 Oct.",
+        "description": "Seven-account ARC3 crew: dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical and Son Pham.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "15605182"
+          }
+        ],
+        "id": "team-arc-prize-2026-arc-agi-3--15605182-arc-3-2026",
+        "issuedAt": "2026-11-06T21:18:28+00:00",
+        "kind": "team",
+        "name": "Team Turducken",
+        "season": "2026",
+        "setId": "arc-3-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -24500,7 +24712,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-06T04:08:50+00:00",
+    "updatedAt": "2026-11-06T21:27:54+00:00",
     "version": 1
   },
   "results": [],

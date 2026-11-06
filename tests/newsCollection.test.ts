@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
- * Date: 02-November-2026
+ * Date: 06-November-2026
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
  *          NT's ARC3 card preference preserves his separate verified ARC2 membership.
@@ -458,6 +458,23 @@ describe('official-result importer in an isolated collection', () => {
 });
 
 describe('the real permanent commissioned collection', () => {
+  it('keeps the seven Turducken teammates together with their art in the ARC-3 set', () => {
+    const cards = getNewsCollection().cards;
+    for (const person of ['keith-tyser', 'mark-barney', 'son-pham', 'mitubant', 'ronen-dunlea', 'cho-royou', 'dzjiann']) {
+      const card = cards.find(item => item.id === `person-${person}-arc-3-2026`);
+      expect(card, person).toBeDefined();
+      expect(card!.setId).toBe('arc-3-2026');
+      expect(card!.art?.src).toBeTruthy();
+      expect(fs.existsSync(path.join('client/public', card!.art!.src))).toBe(true);
+      expect(card!.backArt?.artworkId).toBe('turducken-team-v3');
+    }
+    expect(cards.find(card => card.id === 'person-ronen-dunlea-arc-3-2026')!.art?.artworkId)
+      .toBe('ronen-herminator-v1');
+    const team = cards.find(card => card.id === 'team-arc-prize-2026-arc-agi-3--15605182-arc-3-2026');
+    expect(team?.art?.artworkId).toBe('turducken-team-v3');
+    expect(team?.biography).toContain('ARC Slayers');
+  });
+
   it('leads NT’s individual avatar card with Turducken while preserving his separate ARC2 team', () => {
     const card = getNewsCollection().cards.find(card => card.personId === 'mitubant')!;
     expect(card.name).toBe('NT');
@@ -474,7 +491,11 @@ describe('the real permanent commissioned collection', () => {
     const individuals = collection.cards.filter(card => card.kind === 'person');
     const teams = collection.cards.filter(card => card.kind === 'team');
     const savedRegistry = cardRegistrySchema.parse(JSON.parse(fs.readFileSync('content/news/cards.json', 'utf8')));
-    expect(individuals).toHaveLength(people.filter(person => !savedRegistry.excludedPersonIds?.includes(person.id)).length);
+    // Profiles may exist before a card is issued, and people may have several editions.
+    // Every non-excluded historical person card must still resolve by its permanent ID.
+    const issued = savedRegistry.cards.filter(card => card.kind === 'person'
+      && !savedRegistry.excludedPersonIds?.includes(card.personId!));
+    for (const card of issued) expect(individuals.some(item => item.id === card.id), card.id).toBe(true);
     expect(people.some(person => person.id === 'mike-knoop')).toBe(true);
     expect(individuals.some(card => card.personId === 'mike-knoop')).toBe(false);
     expect(individuals.length).toBeGreaterThanOrEqual(65);
@@ -489,6 +510,14 @@ describe('the real permanent commissioned collection', () => {
     for (const [subject, asset] of commissioned) {
       const card = collection.cards.find(item => item.id === `team-${subject}-2026`);
       expect(card, subject).toBeDefined();
+      if (subject === 'artificial-agency-team') {
+        // The wiki replaced the old four-person commission after its cast was corrected.
+        expect(card!.art?.artworkId).toBe('artificial-agency-team-arc3-v2');
+        const wiki = JSON.parse(fs.readFileSync('content/news/goose-wiki.json', 'utf8'));
+        const bytes = fs.readFileSync(path.join('client/public', card!.art!.src));
+        expect(createHash('sha256').update(bytes).digest('hex')).toBe(wiki.assetDigests[card!.art!.src]);
+        continue;
+      }
       expect(card!.art?.artworkId).toBe(`2026-10-29-${asset}-avatar-v1-base`);
       const artwork = JSON.parse(fs.readFileSync(path.join('content/news/artwork', `${card!.art!.artworkId}.json`), 'utf8'));
       expect(artwork.rawSrc).toBe(card!.art!.src);

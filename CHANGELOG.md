@@ -1,3 +1,7 @@
+### Version 9.162.33 · November 6, 2026
+
+- Sync all seven Team Turducken ARC-AGI-3 cards, Ronen’s Herminator portrait, the corrected team picture and merger history from The Loose Goose. Preserve older card addresses and update the collection checks for competition editions and reviewed artwork. Author: GPT-6 / Codex (reasoning effort not exposed). Plan: `docs/plans/2026-11-06-turducken-card-sync.md`.
+
 ### Version 9.162.32 · November 6, 2026
 
 - Correct Turducken’s synthetic-game links to the dedicated `82deutschmark/arc3-synthetic-games` repository, distinguish the gallery and historical copycat evaluation, and expand harness engineering with clearly labeled team-branch provenance. Add an assistant source handoff; preserve chart data/artwork/settings and synchronize Markdown, notes and ZIP. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-harness-sources.md`.
