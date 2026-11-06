@@ -90,7 +90,7 @@ Every optimization below is a trade inside this box: free memory to run more gam
 
 Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.
 
-Our custom-game effort also produced [Mark’s authored game collection](https://arc.markbarney.net/arc3/games). A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
+For more synthetic games to explore, see [Mark’s authored game collection](https://arc.markbarney.net/arc3/gallery), with [source in the ARC Explainer repository](https://github.com/82deutschmark/arc-explainer/tree/main/server/data/arc3-games). A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
 
 The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
 
@@ -261,7 +261,7 @@ What the traces told us:
 
 **A local improvement was not necessarily a Kaggle improvement.** Our board liked 12 of the ideas above; Kaggle agreed with only 3 of those and went down on the other 9. A promising local delta was a reason to investigate, not proof that the submission had improved.
 
-We tried to close that gap with synthetic games, including the copycats and [Mark’s authored game set](https://arc.markbarney.net/arc3/games). The copycats showed promise on a small retrospective sample, but we ultimately did not build an evaluation set that correlated reliably enough with Kaggle to guide our decisions. Apparently xz@ made better use of synthetic games and beat us; that is our impression, not a measured comparison of their evaluation set with ours.
+We tried to close that gap with synthetic games, including the copycats. The copycats showed promise on a small retrospective sample, but we ultimately did not build an evaluation set that correlated reliably enough with Kaggle to guide our decisions. [Mark’s authored game collection](https://arc.markbarney.net/arc3/gallery) offers more synthetic games to explore. Apparently xz@ made better use of synthetic games and beat us; that is our impression, not a measured comparison of their evaluation set with ours.
 
 ## Inference Optimization
 

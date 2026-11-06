@@ -1,3 +1,7 @@
+### Version 9.162.26 · November 6, 2026
+
+- Correct Turducken’s authored-game links to the actual gallery and ARC Explainer game-source directory, replacing official-guide targets and unsupported evaluation-set attribution. Audit article destinations and synchronize downloadable Markdown, notes and ZIP; preserve measurements, charts and artwork. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-game-links.md`.
+
 ### Version 9.162.25 · November 6, 2026
 
 - Apply Son’s final Turducken editorial feedback: restore the original crew-stuffing introduction artwork, simplify its premise, explain measurement before harness improvements, and close that section with the synthetic-evaluation/local-versus-Kaggle gap. Add a matching white-background thank-you illustration; retain all eleven static PDF-style charts, original data, exact section names and existing art. Synchronize Markdown, review notes and portable package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-final-editorial.md`.

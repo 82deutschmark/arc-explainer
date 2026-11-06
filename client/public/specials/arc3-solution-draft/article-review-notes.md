@@ -32,3 +32,7 @@ All eleven PDF-style chart asset files and their underlying measurement arrays a
 
 
 Closing artwork: `05-closing-crew-white.png` is a newly generated white-background variant of the original `00-stuffing-turducken.png`, created with the built-in image-generation tool, not a recovered original. Prompt: preserve the distinctive crew, nested mechanical birds, engineering components and warm amber hand-inked style; remove the workshop scenery and isolate the group on pure white, fully visible; no new text, border or panels. The original introduction artwork remains unchanged.
+
+## Games-collection links corrected, 6 November 2026
+
+The Boss supplied https://arc.markbarney.net/arc3/gallery as the intended authored-game collection. The previous `/arc3/games` target is the official-game guides page, not the authored gallery. Verified the gallery route in `client/src/App.tsx` and `CommunityGallery.tsx`, the repository remote `82deutschmark/arc-explainer`, and its authored sources under `server/data/arc3-games`; gallery and source-directory URLs both returned HTTP 200. Corrected both article links and added the direct source-directory link. Removed unsupported wording that attributed the gallery to the same measured copycat evaluation effort or treated it as a validated predictive benchmark. Original copycat measurements remain unchanged. Audited all outbound article links and relative image/download targets; preserved chart/data/artwork bytes. No Kaggle calls.
