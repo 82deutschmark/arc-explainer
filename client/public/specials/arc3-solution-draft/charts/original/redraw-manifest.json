@@ -1,0 +1,19 @@
+{
+  "reference": "Son\u2019s supplied stuffing-the-turducken.pdf, 06-November-2026",
+  "charts": [
+    "delta2",
+    "ladder",
+    "time",
+    "wf-decode",
+    "step",
+    "lanes",
+    "memory",
+    "wf-prefill",
+    "wf-overhead",
+    "think",
+    "kaggle"
+  ],
+  "source_data_sha256": "58f98e87eac49c73e8f038bc2c02d44b463ca6bf561c4a7120d25d3b109d9f7c",
+  "format": "Full vector panels with outlined Bitter, Inter and JetBrains Mono typography; 2400px PNGs",
+  "animation": false
+}

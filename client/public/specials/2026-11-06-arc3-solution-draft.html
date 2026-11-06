@@ -1,12 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Restore Son’s original article with static original charts. SRP/DRY check: Pass — original renderer reused offline. -->
 <html lang="en"><head><!-- frame-runtime --><!-- /frame-runtime -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="noindex" name="robots"/>
 <title>Stuffing the Turducken</title>
-
-
-
 <style>
 /* Plan: Keith's engineering-blog look on white (Son, 5-Nov): bold sans headings, monospace data and captions, figures on
    light panels with thin borders, green UI accent; chart hues from the validated data-viz palette. One light theme on
@@ -230,14 +228,18 @@ html.export body { background: var(--panel); }
 html.export figure.export-on { border: none; }
 html.export figure.export-on::before, html.export figure.export-on::after { display: none; }
 </style>
-<style>*{animation:none!important;transition:none!important;scroll-behavior:auto!important}svg,img{max-width:100%;height:auto} .chart{overflow:visible}.chart img{display:block;width:100%}details{margin:12px 0} .table-wrap{overflow-x:auto}figure.hero{padding:0;border:0;background:none}figure.hero img{border-radius:0}body{font-family:system-ui,sans-serif}h1,h2,h3{font-family:Georgia,serif}nav{font-size:14px;margin-bottom:18px}</style></head>
+<style>*{animation:none!important;transition:none!important;scroll-behavior:auto!important}svg,img{max-width:100%;height:auto} .chart{overflow:visible}.chart img{display:block;width:100%}details{margin:12px 0} .table-wrap{overflow-x:auto}figure.hero{padding:0;border:0;background:none}figure.hero img{border-radius:0}body{font-family:system-ui,sans-serif}h1,h2,h3{font-family:Georgia,serif}nav{font-size:14px;margin-bottom:18px}</style><style>/* Son's PDF-style full vector panels; numerical tables remain HTML. */
+.redrawn-figure{padding:0;border:0;background:transparent;overflow:hidden;border-radius:0}
+.redrawn-figure .chart{overflow-x:auto;padding:0 0 4px;scrollbar-color:#c99b77 #fbf1e6}
+.redrawn-figure .chart picture{display:block;min-width:720px}
+.redrawn-figure .chart img{width:100%;max-width:none;height:auto}
+.chart-download{font-size:12px;margin:6px 0 10px;color:#8f6f5c}
+@media print{.redrawn-figure .chart{overflow:visible}.redrawn-figure .chart picture{min-width:0}.chart-download{display:none}}
+</style></head>
 <body>
-<main><nav><a href="/">ARC Explainer</a> · <a href="arc3-solution-draft/article-draft.md" download="">Markdown</a> · <a href="arc3-solution-draft/charts/original/source-data.json" download="">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts, no animation. Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
-
+<main><nav><a href="/">ARC Explainer</a> · <a download="" href="arc3-solution-draft/article-draft.md">Markdown</a> · <a download="" href="arc3-solution-draft/charts/original/source-data.json">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts, no animation. Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
 <div class="byline"><b>Son Pham</b> · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02</div>
 <h1>Stuffing the Turducken</h1>
-
-
 <p>Hey everyone! Before anything else: thank you—and thank you to the organizers for the generous free RTX compute. This has truly been a wild ride, from 7.36 on 21 September to 56.02 on 23 October, with about 1,950 full runs on GCP in between.</p>
 <p>Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.</p>
 <p><strong>Why a turducken?</strong> Somewhere in October we realized what this competition had turned into. Everyone gets the same card, the same 9 hours and the same 110 games, and once a strong public notebook exists, the race becomes a stuffing contest: how much can you fit inside one bird? That's our entry in the picture. Tufa Labs' harness is the chicken in the middle, Daniel's Milestone 2 notebook is the duck around it, and the turkey is everything we stuffed in around them: 8-bit weights, fused and tiled kernels, a 4-bit history cache, the host CPU and RAM, and 32 games decoding at once instead of 10. It worked, right up until we stuffed in too much. The last part of this post is about that.</p>
@@ -260,9 +262,9 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <div class="card">
 <div class="ch">RTX PRO 6000 <span>· 96 GB</span></div>
 <div class="cs">34 games admitted · 32 decoding at once</div>
-<div class="lanes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="wait"></i><i class="wait"></i></div>
+<div aria-hidden="true" class="lanes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="wait"></i><i class="wait"></i></div>
 <div class="lanes-note">32 lanes decode together; 2 admitted games run python while they wait</div>
-<div class="membar" role="img" aria-label="Card memory: weights 46.2, draft 6.2, history cache 24.5, Mamba states 10.1, buffers 8.0 GiB">
+<div aria-label="Card memory: weights 46.2, draft 6.2, history cache 24.5, Mamba states 10.1, buffers 8.0 GiB" class="membar" role="img">
 <span style="flex:46.21;background:var(--c-decode)"></span><span style="flex:6.19;background:var(--c-new)"></span><span style="flex:24.48;background:var(--c-reread)"></span><span style="flex:10.05;background:var(--c-yellow)"></span><span class="hatch" style="flex:8.04"></span>
 </div>
 <div class="memleg"><span><i style="background:var(--c-decode)"></i>weights 46.2</span><span><i style="background:var(--c-new)"></i>draft 6.2</span><span><i style="background:var(--c-reread)"></i>history 24.5</span><span><i style="background:var(--c-yellow)"></i>Mamba 10.1</span><span><i class="hatch"></i>buffers 8.0 GiB</span></div>
@@ -289,7 +291,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <div class="badge">best public <b>56.02</b></div>
 <figcaption>Every optimization below is a trade inside this box: free memory to run more games, or make each step cheaper.</figcaption>
 </figure><div class="table-wrap"><table><thead><tr><th>56.02 setup</th><th>Value</th></tr></thead><tbody><tr><td>Context window</td><td>140k tokens (original draft’s rounded label)</td></tr><tr><td>History kept after trim</td><td>Approximately 52k tokens</td></tr><tr><td>Games admitted / decoding</td><td>34 / 32</td></tr><tr><td>History cache</td><td>NVFP4 · 3.80M tokens</td></tr><tr><td>Host cache copy</td><td>24 GB</td></tr><tr><td>Temperature / top-p / top-k</td><td>0.5 / 0.95 / 20</td></tr><tr><td>Experts kept</td><td>341 of 512 per layer</td></tr><tr><td>Drafter</td><td>MTP · 4 draft steps · per-game verify depth</td></tr></tbody></table></div>
-<h2>Harness Iteration</h2><figure class="hero"><img src="arc3-solution-draft/01-harness-garage-v2-corners-only.png" alt="The game-playing harness" loading="lazy"></figure>
+<h2>Harness Iteration</h2><figure class="hero"><img alt="The game-playing harness" loading="lazy" src="arc3-solution-draft/01-harness-garage-v2-corners-only.png"/></figure>
 <h3>1.1 What the model sees</h3>
 <p>The base is Daniel Franzen's harness: the model plays by writing python that calls the game, and sees each frame as a 512 px image (the 64×64 grid at 8x, 256 image tokens). On top of it, the 56.02 harness has:</p>
 <ul>
@@ -301,7 +303,6 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </ul>
 <h3>1.2 Trimming and swapping the context</h3>
 <p>Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:</p>
-
 <figure id="fig-context">
 <div class="ft">Trim, swap, wipe: how 110 conversations share one card</div>
 <div class="fs">The three things that can happen to a game's history.</div>
@@ -406,9 +407,9 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <div class="ft">One blank line broke the cache on every turn</div>
 <div class="fs">The harness stored the model's answer with its blank lines squeezed. The next prompt then stopped matching what the server had cached right at that answer, so everything after it was read again.</div>
 <div class="brk"><span></span><div><span class="ok" style="flex:8">reused from cache</span><span class="no" style="flex:5">first mismatch: re-read every turn</span></div></div>
-<div class="tokrow"><div class="lbl">turn N<br>as cached</div>
-<div class="toks"><span class="grow" style="flex:2">system prompt</span><span class="grow" style="flex:1">tools</span><span class="grow" style="flex:3">earlier turns</span><span class="grow" style="flex:2">reasoning</span><span class="grow tk" style="flex:3">answer … <b>\n\n</b> · 271 …</span><span class="grow new" style="flex:2">&nbsp;</span></div></div>
-<div class="tokrow"><div class="lbl">turn N+1<br>as re-sent</div>
+<div class="tokrow"><div class="lbl">turn N<br/>as cached</div>
+<div class="toks"><span class="grow" style="flex:2">system prompt</span><span class="grow" style="flex:1">tools</span><span class="grow" style="flex:3">earlier turns</span><span class="grow" style="flex:2">reasoning</span><span class="grow tk" style="flex:3">answer … <b>\n\n</b> · 271 …</span><span class="grow new" style="flex:2"> </span></div></div>
+<div class="tokrow"><div class="lbl">turn N+1<br/>as re-sent</div>
 <div class="toks"><span class="grow" style="flex:2">system prompt</span><span class="grow" style="flex:1">tools</span><span class="grow" style="flex:3">earlier turns</span><span class="grow" style="flex:2">reasoning</span><span class="grow bad tk" style="flex:3">answer … <b>\n</b> · 198 …</span><span class="grow new" style="flex:2">new turn</span></div></div>
 <div class="after">
 <div class="k">after keeping history verbatim · 10 Oct · 32 games · 2 runs each</div>
@@ -423,13 +424,13 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <p>The loop: <strong>idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.</strong></p>
 <p>Board noise, from 8 identical controls: one standard deviation is 1.9 points. Two runs only see effects of about 4 points, and four runs see about 3. Most harness ideas are smaller than that. That's the honest truth of this competition: <strong>most harness ideas drowned in noise</strong>, and the ones that didn't were big.</p>
 <h3>1.4 What worked and what didn't</h3>
-<figure id="fig-delta2">
-<div class="ft">Our board liked 12 of these ideas. Kaggle liked 3 of them.</div>
-<div class="fs">Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.</div>
-<div class="tiles d2tiles"><div class="tile"><div class="k">Board said better</div><div class="v" id="d2-up">12</div><div class="s">ideas</div></div><div class="tile"><div class="k">Kaggle agreed</div><div class="v" id="d2-agree">3</div><div class="s">of those 12</div></div><div class="tile flip"><div class="k">Kaggle went down</div><div class="v" id="d2-flip">9</div><div class="s">of those 12</div></div></div>
-<div class="legend" id="legend-delta2"><span><i style="background: var(--c-decode);" class="dot"></i>Our board</span><span><i class="ring" style="border-color: var(--c-new);"></i>Kaggle</span><span><i style="background: var(--c-orange-soft);"></i>Board said better, Kaggle said worse</span><span><i style="background: var(--c-blue-soft);"></i>Board noise, 1 SD</span><span><i style="background: var(--c-grid);"></i>Kaggle, same package twice</span></div>
-<div class="chart" id="chart-delta2"><a href="arc3-solution-draft/charts/original/delta2.svg"><img src="arc3-solution-draft/charts/original/delta2.png" alt="Our board liked 12 of these ideas. Kaggle liked 3 of them." loading="lazy"></a></div>
-<figcaption>Board deltas compare board runs of the idea and its base (1 to 6 runs each, 50 games unless the tooltip says otherwise). Kaggle deltas are single public scores.</figcaption>
+<figure class="redrawn-figure" id="fig-delta2">
+
+
+
+
+<div aria-label="Our board liked 12 of these ideas. Kaggle liked 3 of them.; scroll horizontally on narrow screens" class="chart" id="chart-delta2" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/delta2.svg"><picture><source srcset="arc3-solution-draft/charts/original/delta2.svg" type="image/svg+xml"/><img alt="Our board liked 12 of these ideas. Kaggle liked 3 of them.. Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse." height="928" loading="lazy" src="arc3-solution-draft/charts/original/delta2.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/delta2.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/delta2.png">high-resolution PNG</a></p>
+
 </figure>
 <p>Every idea in the chart, in one line each:</p>
 <div class="tablewrap opt"><table>
@@ -592,13 +593,13 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li><strong>Stuck means stuck.</strong> About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.</li>
 <li><strong>Loops are common.</strong> 35% of moves in our best board run returned the board to an earlier state.</li>
 </ul>
-<h2>Inference Optimization</h2><figure class="hero"><img src="arc3-solution-draft/02-inference-v1-corners-only.png" alt="The inference stack" loading="lazy"></figure>
+<h2>Inference Optimization</h2><figure class="hero"><img alt="The inference stack" loading="lazy" src="arc3-solution-draft/02-inference-v1-corners-only.png"/></figure>
 <h3>2.1 The timeline</h3>
-<figure id="fig-ladder">
-<div class="ft">Whole-run tokens per second, one RTX PRO 6000</div>
-<div class="fs">Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle.</div>
-<div class="chart" id="chart-ladder"><a href="arc3-solution-draft/charts/original/ladder.svg"><img src="arc3-solution-draft/charts/original/ladder.png" alt="Whole-run tokens per second, one RTX PRO 6000" loading="lazy"></a></div>
-<figcaption>22 Sep: our first stack (vLLM, no drafting). From 1 Oct: Daniel Franzen's notebook plus our changes, on our 25 to 75-game offline board.</figcaption>
+<figure class="redrawn-figure" id="fig-ladder">
+
+
+<div aria-label="Whole-run tokens per second, one RTX PRO 6000; scroll horizontally on narrow screens" class="chart" id="chart-ladder" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/ladder.svg"><picture><source srcset="arc3-solution-draft/charts/original/ladder.svg" type="image/svg+xml"/><img alt="Whole-run tokens per second, one RTX PRO 6000. Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle." height="504" loading="lazy" src="arc3-solution-draft/charts/original/ladder.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/ladder.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/ladder.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-ladder"><table><thead><tr><th>Stage</th><th class="n">tok/s</th><th class="n">Games at once</th></tr></thead><tbody><tr><td>22 Sep · vLLM, no drafting</td><td class="n">296</td><td class="n">7</td></tr><tr><td>1 Oct · Daniel's notebook</td><td class="n">605</td><td class="n">10</td></tr><tr><td>3 Oct · RAM cache tier</td><td class="n">648</td><td class="n">10</td></tr><tr><td>6 Oct · 8-bit, exact kernels</td><td class="n">992</td><td class="n">12</td></tr><tr><td>11 Oct · 32 games, expert cut</td><td class="n">1,873</td><td class="n">32</td></tr><tr><td>18 Oct · 52.82 config</td><td class="n">1,934</td><td class="n">32</td></tr><tr><td>23 Oct · 56.02 config</td><td class="n">2,150</td><td class="n">32</td></tr><tr><td>1 Nov · after 56.02</td><td class="n">2,441</td><td class="n">32</td></tr></tbody></table></div></details>
 </figure>
 <p>Every second of a run, the GPU is doing one of three things:</p>
@@ -613,46 +614,46 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <div class="tile prefill"><div class="k">Prefill, per 1,000 tokens</div><div class="v">259 → 74 ms</div><div class="s">72% less</div></div>
 <div class="tile overhead"><div class="k">Overhead, per 1,000 tokens</div><div class="v">255 → 61 ms</div><div class="s">76% less</div></div>
 </div>
-<figure id="fig-time">
-<div class="ft">Milliseconds of wall clock per 1,000 generated tokens</div>
-<div class="fs">Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log.</div>
-<div class="legend" id="legend-time"><span><i style="background: var(--c-decode);"></i>Decode</span><span><i style="background: var(--c-new);"></i>Prefill: new turn content</span><span><i style="background: var(--c-reread);"></i>Prefill: re-reading lost history</span><span><i style="background: var(--c-perread);"></i>Overhead: fixed cost per read, stalls</span><span><i class="hatch"></i>Overhead: idle lanes</span></div>
-<div class="chart" id="chart-time"><a href="arc3-solution-draft/charts/original/time.svg"><img src="arc3-solution-draft/charts/original/time.png" alt="Milliseconds of wall clock per 1,000 generated tokens" loading="lazy"></a></div>
-<figcaption>How it's measured: SGLang logs a decode line every 40 steps. Intervals with no prompt read give the pure step time at that lane count. Time beyond that in other intervals is prompt reading, shared out per read by a cost model (per read, per new token, per cached token). Idle lanes are decode time with fewer games running than the server allows. Our board has 25 to 75 games, so lanes empty out as games get won; Kaggle's 110 games keep them fuller.</figcaption>
+<figure class="redrawn-figure" id="fig-time">
+
+
+
+<div aria-label="Milliseconds of wall clock per 1,000 generated tokens; scroll horizontally on narrow screens" class="chart" id="chart-time" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/time.svg"><picture><source srcset="arc3-solution-draft/charts/original/time.svg" type="image/svg+xml"/><img alt="Milliseconds of wall clock per 1,000 generated tokens. Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log." height="833" loading="lazy" src="arc3-solution-draft/charts/original/time.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/time.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/time.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-time"><table><thead><tr><th>Stage</th><th class="n">Decode</th><th class="n">New turn</th><th class="n">Re-read</th><th class="n">Per read + stalls</th><th class="n">Idle lanes</th><th class="n">Total ms</th><th class="n">tok/s</th><th class="n">Games</th><th class="n">Accepted/pass</th><th class="n">Step ms</th><th class="n">Runs</th></tr></thead><tbody><tr><td>1 Oct · Daniel Franzen's notebook, as published</td><td class="n">1,138</td><td class="n">148</td><td class="n">112</td><td class="n">103</td><td class="n">152</td><td class="n">1,653</td><td class="n">605</td><td class="n">10</td><td class="n">2.69</td><td class="n">32.3</td><td class="n">daniel-base a + b</td></tr><tr><td>3 Oct · + host-RAM cache tier, tuned drafter</td><td class="n">1,087</td><td class="n">142</td><td class="n">97</td><td class="n">103</td><td class="n">114</td><td class="n">1,543</td><td class="n">648</td><td class="n">10</td><td class="n">2.89</td><td class="n">32.7</td><td class="n">hicache aft06 a</td></tr><tr><td>6 Oct · + 8-bit dense weights, exact kernels</td><td class="n">761</td><td class="n">84</td><td class="n">86</td><td class="n">55</td><td class="n">23</td><td class="n">1,009</td><td class="n">992</td><td class="n">12</td><td class="n">3.06</td><td class="n">28.3</td><td class="n">bint8v2l12 c + e</td></tr><tr><td>11 Oct · + 32 games, a third of the experts cut</td><td class="n">385</td><td class="n">38</td><td class="n">63</td><td class="n">37</td><td class="n">12</td><td class="n">534</td><td class="n">1,873</td><td class="n">32</td><td class="n">3.05</td><td class="n">37.8</td><td class="n">sc2l32ship a + b</td></tr><tr><td>18 Oct · 52.82 config</td><td class="n">364</td><td class="n">37</td><td class="n">46</td><td class="n">35</td><td class="n">36</td><td class="n">517</td><td class="n">1,934</td><td class="n">32</td><td class="n">3.05</td><td class="n">36.6</td><td class="n">52.82 twin a + b</td></tr><tr><td>23 Oct · 56.02 config</td><td class="n">330</td><td class="n">36</td><td class="n">38</td><td class="n">33</td><td class="n">29</td><td class="n">465</td><td class="n">2,150</td><td class="n">32</td><td class="n">3.25</td><td class="n">35.1</td><td class="n">56.02 twin a + b</td></tr><tr><td>1 Nov · After 56.02, not shipped</td><td class="n">331</td><td class="n">25</td><td class="n">17</td><td class="n">32</td><td class="n">5</td><td class="n">410</td><td class="n">2,441</td><td class="n">32</td><td class="n">3.21</td><td class="n">34.0</td><td class="n">cmb32 a + b</td></tr></tbody></table></div></details>
 </figure>
 <p>The rest of this part takes the three buckets one at a time. Each opens with where it started (left) and where it ended (right); every step in between is one measured build. Numbers in the tables are before → after, measured in the server or in kernel benches on the same card. Code names are ours, so ask about any of them in the comments. Most of this kernel work was done by Claude agents in parallel threads, each with one job and a ledger, with me reviewing and deciding what ships.</p>
 <h3>2.2 Decode: 1,138 → 330 ms per 1,000 tokens</h3>
-<figure id="fig-wf-decode">
-<div class="ft">Decode, build by build</div>
-<div class="fs">Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right).</div>
-<div class="chart" id="chart-wf-decode"><a href="arc3-solution-draft/charts/original/wf-decode.svg"><img src="arc3-solution-draft/charts/original/wf-decode.png" alt="Decode, build by build" loading="lazy"></a></div>
-<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<figure class="redrawn-figure" id="fig-wf-decode">
+
+
+<div aria-label="Decode, build by build; scroll horizontally on narrow screens" class="chart" id="chart-wf-decode" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/wf-decode.svg"><picture><source srcset="arc3-solution-draft/charts/original/wf-decode.svg" type="image/svg+xml"/><img alt="Decode, build by build. Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right)." height="598" loading="lazy" src="arc3-solution-draft/charts/original/wf-decode.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/wf-decode.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/wf-decode.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-decode"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">1,138.0</td><td class="n"></td></tr><tr><td>3 Oct · tuned drafter</td><td class="n">1,086.9</td><td class="n">-51.1</td></tr><tr><td>6 Oct · 8-bit weights, exact kernels, 12 games</td><td class="n">761.3</td><td class="n">-325.6</td></tr><tr><td>11 Oct · 32 games: experts cut, 4-bit cache, big-batch kernels</td><td class="n">384.5</td><td class="n">-376.8</td></tr><tr><td>18 Oct · Mamba 180, 140k window</td><td class="n">363.8</td><td class="n">-20.7</td></tr><tr><td>23 Oct · per-game verify depth, 4 draft steps, 3 experts</td><td class="n">330.0</td><td class="n">-33.8</td></tr></tbody></table></div></details>
 </figure>
 <p>Decode is memory-bound. At 12 games, one step reads about <strong>20 GB of expert weights</strong> (166 distinct experts per layer) at 92% of the card's 1.54 TB/s. So clever kernels on the experts hit a wall fast. The two big levers are: <strong>read fewer bytes</strong>, and <strong>serve more games per read</strong>.</p>
-<figure id="fig-step">
-<div class="ft">One decode step at 12 games: 27.8 ms</div>
-<div class="fs">GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step.</div>
-<div class="chart" id="chart-step"><a href="arc3-solution-draft/charts/original/step.svg"><img src="arc3-solution-draft/charts/original/step.png" alt="One decode step at 12 games: 27.8 ms" loading="lazy"></a></div>
-<figcaption>At 31 games the step was 41.6 ms, with the experts at 18.0 ms: already at the weight-read floor.</figcaption>
+<figure class="redrawn-figure" id="fig-step">
+
+
+<div aria-label="One decode step at 12 games: 27.8 ms; scroll horizontally on narrow screens" class="chart" id="chart-step" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/step.svg"><picture><source srcset="arc3-solution-draft/charts/original/step.svg" type="image/svg+xml"/><img alt="One decode step at 12 games: 27.8 ms. GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step." height="427" loading="lazy" src="arc3-solution-draft/charts/original/step.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/step.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/step.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-step"><table><thead><tr><th>Part of the step</th><th class="n">ms</th><th class="n">share</th></tr></thead><tbody><tr><td>Experts</td><td class="n">15.80</td><td class="n">57%</td></tr><tr><td>8-bit dense layers + output head</td><td class="n">3.30</td><td class="n">12%</td></tr><tr><td>Draft chain and gaps</td><td class="n">2.70</td><td class="n">10%</td></tr><tr><td>Attention + indexer</td><td class="n">1.85</td><td class="n">7%</td></tr><tr><td>Hyper-connection mix</td><td class="n">1.60</td><td class="n">6%</td></tr><tr><td>Expert routing</td><td class="n">0.70</td><td class="n">3%</td></tr><tr><td>Linear attention</td><td class="n">0.70</td><td class="n">3%</td></tr><tr><td>Hyper-connection combine</td><td class="n">0.60</td><td class="n">2%</td></tr><tr><td>16-bit leftovers</td><td class="n">0.57</td><td class="n">2%</td></tr></tbody></table></div></details>
 </figure>
-<figure id="fig-lanes">
-<div class="ft">More games per step is almost free</div>
-<div class="fs">Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games.</div>
-<div class="legend" id="legend-lanes"><span><i style="background: var(--c-decode);"></i>Measured step time</span><span><i style="background: transparent; border-top: 2px dashed var(--muted); height: 0px; border-radius: 0;"></i>If each game added the same time as at 13</span></div>
-<div class="chart" id="chart-lanes"><a href="arc3-solution-draft/charts/original/lanes.svg"><img src="arc3-solution-draft/charts/original/lanes.png" alt="More games per step is almost free" loading="lazy"></a></div>
-<figcaption>32 games take 38.5 ms per step against 24.0 ms for 13: 2.5x the games for 1.6x the time. We shipped 32, not 48: past 32 the history cache per game got too small and the board score dropped.</figcaption>
+<figure class="redrawn-figure" id="fig-lanes">
+
+
+
+<div aria-label="More games per step is almost free; scroll horizontally on narrow screens" class="chart" id="chart-lanes" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/lanes.svg"><picture><source srcset="arc3-solution-draft/charts/original/lanes.svg" type="image/svg+xml"/><img alt="More games per step is almost free. Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games." height="511" loading="lazy" src="arc3-solution-draft/charts/original/lanes.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/lanes.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/lanes.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-lanes"><table><thead><tr><th>Games</th><th class="n">Measured step ms</th><th class="n">Linear ms</th></tr></thead><tbody><tr><td>13</td><td class="n">24.0</td><td class="n">24.0</td></tr><tr><td>20</td><td class="n">30.2</td><td class="n">36.9</td></tr><tr><td>24</td><td class="n">33.4</td><td class="n">44.3</td></tr><tr><td>28</td><td class="n">36.5</td><td class="n">51.7</td></tr><tr><td>32</td><td class="n">38.5</td><td class="n">59.1</td></tr><tr><td>40</td><td class="n">47.3</td><td class="n">73.8</td></tr><tr><td>48</td><td class="n">52.5</td><td class="n">88.6</td></tr></tbody></table></div></details>
 </figure>
 <p>More games per step needs memory: every gigabyte we freed went to the history cache, and the cache decides how many games can decode at once.</p>
-<figure id="fig-memory">
-<div class="ft">Where the 95 GiB of the card went</div>
-<div class="fs">From each build's startup log. Right: tokens of history the cache holds, and games running at once.</div>
-<div class="legend" id="legend-memory"><span><i style="background: var(--c-decode);"></i>Model weights</span><span><i style="background: var(--c-new);"></i>Draft model + its cache</span><span><i style="background: var(--c-reread);"></i>History cache</span><span><i style="background: var(--c-yellow);"></i>Mamba states</span><span><i class="hatch"></i>Buffers, graphs, headroom</span></div>
-<div class="chart" id="chart-memory"><a href="arc3-solution-draft/charts/original/memory.svg"><img src="arc3-solution-draft/charts/original/memory.png" alt="Where the 95 GiB of the card went" loading="lazy"></a></div>
-<figcaption>22 Sep is vLLM's own memory note (weights and activations together). The 56.02 run uses the 17 Oct split.</figcaption>
+<figure class="redrawn-figure" id="fig-memory">
+
+
+
+<div aria-label="Where the 95 GiB of the card went; scroll horizontally on narrow screens" class="chart" id="chart-memory" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/memory.svg"><picture><source srcset="arc3-solution-draft/charts/original/memory.svg" type="image/svg+xml"/><img alt="Where the 95 GiB of the card went. From each build's startup log. Right: tokens of history the cache holds, and games running at once." height="535" loading="lazy" src="arc3-solution-draft/charts/original/memory.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/memory.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/memory.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-memory"><table><thead><tr><th>Build</th><th class="n">Weights</th><th class="n">Draft + cache</th><th class="n">History cache</th><th class="n">Mamba</th><th class="n">Buffers + headroom</th><th class="n">History tokens</th><th class="n">Games</th></tr></thead><tbody><tr><td>22 Sep · vLLM</td><td class="n">76.00</td><td class="n">0.00</td><td class="n">13.76</td><td class="n">0.00</td><td class="n">5.21</td><td class="n">984k</td><td class="n">7</td></tr><tr><td>3 Oct · SGLang + drafter</td><td class="n">69.85</td><td class="n">4.75</td><td class="n">11.58</td><td class="n">3.40</td><td class="n">5.39</td><td class="n">1.01M</td><td class="n">10</td></tr><tr><td>11 Oct · a fifth of experts cut</td><td class="n">54.29</td><td class="n">5.19</td><td class="n">17.76</td><td class="n">9.58</td><td class="n">8.15</td><td class="n">2.76M</td><td class="n">24</td></tr><tr><td>11 Oct · a third of experts cut</td><td class="n">46.21</td><td class="n">5.89</td><td class="n">22.36</td><td class="n">11.81</td><td class="n">8.70</td><td class="n">3.47M</td><td class="n">32</td></tr><tr><td>17 Oct · 56.02 config</td><td class="n">46.21</td><td class="n">6.19</td><td class="n">24.48</td><td class="n">10.05</td><td class="n">8.04</td><td class="n">3.80M</td><td class="n">32</td></tr></tbody></table></div></details>
 </figure>
 <p><strong>Fit more games on the card</strong></p>
@@ -872,11 +873,11 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </table></div>
 <p>Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.</p>
 <h3>2.3 Prefill: 259 → 74 ms per 1,000 tokens</h3>
-<figure id="fig-wf-prefill">
-<div class="ft">Prefill, build by build</div>
-<div class="fs">Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right.</div>
-<div class="chart" id="chart-wf-prefill"><a href="arc3-solution-draft/charts/original/wf-prefill.svg"><img src="arc3-solution-draft/charts/original/wf-prefill.png" alt="Prefill, build by build" loading="lazy"></a></div>
-<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<figure class="redrawn-figure" id="fig-wf-prefill">
+
+
+<div aria-label="Prefill, build by build; scroll horizontally on narrow screens" class="chart" id="chart-wf-prefill" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/wf-prefill.svg"><picture><source srcset="arc3-solution-draft/charts/original/wf-prefill.svg" type="image/svg+xml"/><img alt="Prefill, build by build. Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right." height="573" loading="lazy" src="arc3-solution-draft/charts/original/wf-prefill.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/wf-prefill.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/wf-prefill.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-prefill"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">259.3</td><td class="n"></td></tr><tr><td>3 Oct · host-RAM tier</td><td class="n">238.5</td><td class="n">-20.8</td></tr><tr><td>6 Oct · 8-bit weights, faster prompt-read experts</td><td class="n">169.8</td><td class="n">-68.7</td></tr><tr><td>11 Oct · verbatim history, prompt kernels</td><td class="n">100.4</td><td class="n">-69.4</td></tr><tr><td>18 Oct · 140k window, RAM tier, pinned checkpoints</td><td class="n">82.8</td><td class="n">-17.6</td></tr><tr><td>23 Oct · 52k keep, fused prompt glue</td><td class="n">73.9</td><td class="n">-8.9</td></tr></tbody></table></div></details>
 </figure>
 <p>Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for about 23% of the run, and about 45% of all prompt tokens were <strong>re-reads</strong>: history the cache had already seen and then lost. The biggest prefill wins were about not losing history (Part 1); the rest were kernels.</p>
@@ -971,11 +972,11 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </tbody>
 </table></div>
 <h3>2.4 Overhead: 255 → 61 ms per 1,000 tokens</h3>
-<figure id="fig-wf-overhead">
-<div class="ft">Overhead, build by build</div>
-<div class="fs">Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens.</div>
-<div class="chart" id="chart-wf-overhead"><a href="arc3-solution-draft/charts/original/wf-overhead.svg"><img src="arc3-solution-draft/charts/original/wf-overhead.png" alt="Overhead, build by build" loading="lazy"></a></div>
-<figcaption>Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.</figcaption>
+<figure class="redrawn-figure" id="fig-wf-overhead">
+
+
+<div aria-label="Overhead, build by build; scroll horizontally on narrow screens" class="chart" id="chart-wf-overhead" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/wf-overhead.svg"><picture><source srcset="arc3-solution-draft/charts/original/wf-overhead.svg" type="image/svg+xml"/><img alt="Overhead, build by build. Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens." height="573" loading="lazy" src="arc3-solution-draft/charts/original/wf-overhead.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/wf-overhead.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/wf-overhead.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-wf-overhead"><table><thead><tr><th>Build</th><th class="n">ms per 1,000 tokens</th><th class="n">Change</th></tr></thead><tbody><tr><td>1 Oct · Daniel's notebook</td><td class="n">255.2</td><td class="n"></td></tr><tr><td>3 Oct · harness changes: fewer idle lanes</td><td class="n">217.2</td><td class="n">-38.0</td></tr><tr><td>6 Oct · image hash off the scheduler, zero-copy hand-off</td><td class="n">77.7</td><td class="n">-139.5</td></tr><tr><td>11 Oct · prompt-read CUDA graphs, 32 games</td><td class="n">48.9</td><td class="n">-28.8</td></tr><tr><td>18 Oct · longer board runs: more idle lanes</td><td class="n">70.7</td><td class="n">+21.8</td></tr><tr><td>23 Oct · 34 games over 32 lanes</td><td class="n">61.4</td><td class="n">-9.3</td></tr></tbody></table></div></details>
 </figure>
 <p>The best find here was invisible in per-step profiles: for every new request, the scheduler loop SHA-256-hashed about 300 MB of image pixels while <em>every</em> lane waited. 4.2% of the whole run. Only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our board runs out of games near the end, Kaggle's 110 games mostly don't.</p>
@@ -1038,7 +1039,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li><strong>3-bit experts:</strong> +5% tokens per second and 8.2 GB freed, but the board went 66.2 → 58.7.</li>
 <li><strong>8-bit Mamba states:</strong> +11% history cache and a board tie, but in our final stack the model thought 35% less per move (Part 4).</li>
 </ul>
-<h2>RL</h2><figure class="hero"><img src="arc3-solution-draft/03-rl-v1-corners-only.png" alt="The reinforcement-learning pipeline" loading="lazy"></figure>
+<h2>RL</h2><figure class="hero"><img alt="The reinforcement-learning pipeline" loading="lazy" src="arc3-solution-draft/03-rl-v1-corners-only.png"/></figure>
 <p>We spent real money and a lot of weekends on RL and other fine-tunes. None of it beat the base model on Kaggle.</p>
 <div class="tablewrap opt"><table>
 <thead>
@@ -1106,23 +1107,23 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </tr>
 </tbody>
 </table></div>
-<figure id="fig-think">
-<div class="ft">Move the thinking length, and the score drops</div>
-<div class="fs">Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.</div>
-<div class="legend" id="legend-think"><span><i style="background: var(--c-new);" class="dot"></i>Training run or lossy speed change, against its own control</span><span><i style="background: var(--c-grid);"></i>Board noise (1 SD)</span></div>
-<div class="chart" id="chart-think"><a href="arc3-solution-draft/charts/original/think.svg"><img src="arc3-solution-draft/charts/original/think.png" alt="Move the thinking length, and the score drops" loading="lazy"></a></div>
-<figcaption>Tokens per move = generated tokens / moves over the whole run (RL5: median reply length). Each point against its own control: 8-bit states vs the 22-Oct control (50 games), the 3-bit arms vs plain 3-bit (75 games), RL5 vs the base model (32-game set).</figcaption>
+<figure class="redrawn-figure" id="fig-think">
+
+
+
+<div aria-label="Move the thinking length, and the score drops; scroll horizontally on narrow screens" class="chart" id="chart-think" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/think.svg"><picture><source srcset="arc3-solution-draft/charts/original/think.svg" type="image/svg+xml"/><img alt="Move the thinking length, and the score drops. Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise." height="613" loading="lazy" src="arc3-solution-draft/charts/original/think.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/think.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/think.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-think"><table><thead><tr><th>Change</th><th class="n">Thinking per move</th><th class="n">Score change</th><th class="n">Numbers</th></tr></thead><tbody><tr><td>8-bit Mamba states</td><td class="n">-19.3%</td><td class="n">-0.5</td><td class="n">961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.7</td></tr><tr><td>3-bit + 8-bit states, 194k window</td><td class="n">-36.9%</td><td class="n">-5.9</td><td class="n">639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector LoRA</td><td class="n">+45%</td><td class="n">-8.8</td><td class="n">1,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector, medium effort</td><td class="n">+50.8%</td><td class="n">-8.6</td><td class="n">1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0</td></tr><tr><td>RL5</td><td class="n">-47.3%</td><td class="n">-22.0</td><td class="n">median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5</td></tr></tbody></table></div></details>
 </figure>
 <p>Why it didn't work for us: the base model was already good at the games, and every training run we did changed <strong>how long the model thinks</strong> before it changed <strong>how well</strong>. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. 1st place saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.</p>
-<h2>When speed no longer matters</h2><figure class="hero"><img src="arc3-solution-draft/04-speed-plateau-v1-corners-only.png" alt="The Turducken tries to fly beyond its 56.02 plateau" loading="lazy"></figure>
+<h2>When speed no longer matters</h2><figure class="hero"><img alt="The Turducken tries to fly beyond its 56.02 plateau" loading="lazy" src="arc3-solution-draft/04-speed-plateau-v1-corners-only.png"/></figure>
 <h3>4.1 The climb, and what it was telling us</h3>
-<figure id="fig-kaggle">
-<div class="ft">Where speed stopped helping</div>
-<div class="fs">Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.</div>
-<div class="legend" id="legend-kaggle"><span><i style="background: var(--c-decode);" class="dot"></i>Best so far</span><span><i class="ring"></i>Didn't beat the best</span></div>
-<div class="chart" id="chart-kaggle"><a href="arc3-solution-draft/charts/original/kaggle.svg"><img src="arc3-solution-draft/charts/original/kaggle.png" alt="Where speed stopped helping" loading="lazy"></a></div>
-<figcaption>22-Oct's 0.00 was a 66-minute model load: the competition closed the scorecard after 15 idle minutes. Kaggle loads were slow (30 to 40 minutes) on 24 to 26 Oct, so those three scores are partly the load.</figcaption>
+<figure class="redrawn-figure" id="fig-kaggle">
+
+
+
+<div aria-label="Where speed stopped helping; scroll horizontally on narrow screens" class="chart" id="chart-kaggle" role="region" tabindex="0"><a href="arc3-solution-draft/charts/original/kaggle.svg"><picture><source srcset="arc3-solution-draft/charts/original/kaggle.svg" type="image/svg+xml"/><img alt="Where speed stopped helping. Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best." height="671" loading="lazy" src="arc3-solution-draft/charts/original/kaggle.png" width="960"/></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/original/kaggle.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/original/kaggle.png">high-resolution PNG</a></p>
+
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-kaggle"><table><thead><tr><th>Date</th><th class="n">Public score</th><th class="n" style="text-align: left; white-space: normal;">What changed</th></tr></thead><tbody><tr><td>2026-09-21</td><td class="n">7.36</td><td class="n" style="text-align: left; white-space: normal;">First Flash-Next notebook (vLLM)</td></tr><tr><td>2026-09-22</td><td class="n">5.60</td><td class="n" style="text-align: left; white-space: normal;">Prompt deletions</td></tr><tr><td>2026-09-23</td><td class="n">6.17</td><td class="n" style="text-align: left; white-space: normal;">Same notebook as 22 Sep, resubmitted</td></tr><tr><td>2026-09-24</td><td class="n">6.74</td><td class="n" style="text-align: left; white-space: normal;">Same notebook again</td></tr><tr><td>2026-09-25</td><td class="n">6.47</td><td class="n" style="text-align: left; white-space: normal;">Compact prompt v5</td></tr><tr><td>2026-09-26</td><td class="n">4.83</td><td class="n" style="text-align: left; white-space: normal;">Compact v5 resubmitted</td></tr><tr><td>2026-09-27</td><td class="n">8.23</td><td class="n" style="text-align: left; white-space: normal;">Moved to SGLang</td></tr><tr><td>2026-09-28</td><td class="n">12.21</td><td class="n" style="text-align: left; white-space: normal;">SGLang + expert pruning</td></tr><tr><td>2026-09-29</td><td class="n">15.68</td><td class="n" style="text-align: left; white-space: normal;">Pruning + temperature 0.8 + tuned drafter</td></tr><tr><td>2026-09-30</td><td class="n">18.99</td><td class="n" style="text-align: left; white-space: normal;">More pruning, temperature 0.6</td></tr><tr><td>2026-10-01</td><td class="n">8.14</td><td class="n" style="text-align: left; white-space: normal;">Different expert set (336)</td></tr><tr><td>2026-10-02</td><td class="n">3.93</td><td class="n" style="text-align: left; white-space: normal;">Our harness + Franzen's tool fixes (Combo A)</td></tr><tr><td>2026-10-03</td><td class="n">28.94</td><td class="n" style="text-align: left; white-space: normal;">Daniel Franzen's notebook + our drafter + animation feed</td></tr><tr><td>2026-10-04</td><td class="n">27.79</td><td class="n" style="text-align: left; white-space: normal;">4-bit cache, 13 games</td></tr><tr><td>2026-10-05</td><td class="n">31.63</td><td class="n" style="text-align: left; white-space: normal;">Host-RAM cache tier + fused 8-bit attention</td></tr><tr><td>2026-10-06</td><td class="n">33.74</td><td class="n" style="text-align: left; white-space: normal;">8-bit dense weights</td></tr><tr><td>2026-10-07</td><td class="n">31.11</td><td class="n" style="text-align: left; white-space: normal;">16-bit line, 11 games</td></tr><tr><td>2026-10-08</td><td class="n">35.45</td><td class="n" style="text-align: left; white-space: normal;">8-bit v3, 13 games</td></tr><tr><td>2026-10-09</td><td class="n">35.32</td><td class="n" style="text-align: left; white-space: normal;">8-bit v3 resubmitted</td></tr><tr><td>2026-10-10</td><td class="n">39.24</td><td class="n" style="text-align: left; white-space: normal;">20 games, 8/4-bit cache, fresh eyes when stuck</td></tr><tr><td>2026-10-11</td><td class="n">41.69</td><td class="n" style="text-align: left; white-space: normal;">A third of the experts cut, 28 games</td></tr><tr><td>2026-10-12</td><td class="n">41.97</td><td class="n" style="text-align: left; white-space: normal;">32 games, 8-bit activations</td></tr><tr><td>2026-10-13</td><td class="n">37.56</td><td class="n" style="text-align: left; white-space: normal;">Summary when the window fills</td></tr><tr><td>2026-10-14</td><td class="n">38.45</td><td class="n" style="text-align: left; white-space: normal;">Relaxed acceptance 0.7 + cache pinning</td></tr><tr><td>2026-10-15</td><td class="n">47.25</td><td class="n" style="text-align: left; white-space: normal;">Notes memory + exact acceptance + new drafter</td></tr><tr><td>2026-10-16</td><td class="n">48.92</td><td class="n" style="text-align: left; white-space: normal;">Notes head + tail, OOM fixes</td></tr><tr><td>2026-10-17</td><td class="n">47.45</td><td class="n" style="text-align: left; white-space: normal;">Goal first</td></tr><tr><td>2026-10-18</td><td class="n">52.82</td><td class="n" style="text-align: left; white-space: normal;">Mamba 180, 140k window, temperature 0.5</td></tr><tr><td>2026-10-19</td><td class="n">41.37</td><td class="n" style="text-align: left; white-space: normal;">Predict before acting</td></tr><tr><td>2026-10-20</td><td class="n">51.12</td><td class="n" style="text-align: left; white-space: normal;">RL LoRA merged at load</td></tr><tr><td>2026-10-21</td><td class="n">44.68</td><td class="n" style="text-align: left; white-space: normal;">Second RL LoRA</td></tr><tr><td>2026-10-22</td><td class="n">0.00</td><td class="n" style="text-align: left; white-space: normal;">Speed stack: model load took 66 min, scorecard closed</td></tr><tr><td>2026-10-23</td><td class="n">56.02</td><td class="n" style="text-align: left; white-space: normal;">Speed stack: per-game verify depth, 4 draft steps, 34 over 32</td></tr><tr><td>2026-10-24</td><td class="n">47.33</td><td class="n" style="text-align: left; white-space: normal;">+ splice + keep-alive</td></tr><tr><td>2026-10-25</td><td class="n">45.49</td><td class="n" style="text-align: left; white-space: normal;">+ splice v3 + game log</td></tr><tr><td>2026-10-26</td><td class="n">49.34</td><td class="n" style="text-align: left; white-space: normal;">Splice v3 stack alone</td></tr><tr><td>2026-10-28</td><td class="n">53.70</td><td class="n" style="text-align: left; white-space: normal;">Expert-kernel rounding + keep-alive + game gate</td></tr><tr><td>2026-10-29</td><td class="n">49.07</td><td class="n" style="text-align: left; white-space: normal;">+ predict before acting</td></tr><tr><td>2026-10-30</td><td class="n">50.34</td><td class="n" style="text-align: left; white-space: normal;">53.70 package resubmitted</td></tr><tr><td>2026-10-31</td><td class="n">46.41</td><td class="n" style="text-align: left; white-space: normal;">Lean turns + vocab trim</td></tr><tr><td>2026-11-01</td><td class="n">48.37</td><td class="n" style="text-align: left; white-space: normal;">53.70 + splice + vocab trim</td></tr><tr><td>2026-11-02</td><td class="n">49.88</td><td class="n" style="text-align: left; white-space: normal;">53.70 + vocab trim</td></tr></tbody></table></div></details>
 </figure>
 <p>Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed: SGLang, expert pruning, 8-bit weights, more games at once. Then the harness took it from 41.97 to 52.82 (notes memory, goal first, a bigger window, temperature 0.5), and one last speed push made it 56.02. After that, nothing beat it: nine submissions over the last ten days, all lower.</p>
@@ -1153,11 +1154,5 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <h3>Thanks again</h3>
 <p>Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.</p>
 <p><em>This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.</em></p>
-
 </main>
-
-
-
-
-
 </body></html>

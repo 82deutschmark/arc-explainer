@@ -9,3 +9,10 @@ These are archived observations, not current runs or final submission results. N
 chart-data.json contains exactly the plotted aggregates. generate_charts.py reproduces all PNGs with matplotlib. Private serving implementation is not copied; only the aggregate measurements requested for the article are exported.
 
 Harness comparison: harness-local-kaggle.png is reconstructed from the adjacent Claude-authored harness-source-manifest.md (October 17), not a recovered original draft chart. Data are in chart-data.json; missing Kaggle results are intentionally absent.
+
+
+## PDF-reference redraw (current figures)
+
+`original/*.svg` and `.png` now contain full static vector figure compositions matching Son’s supplied PDF style: original measured plot marks plus integrated title, subtitle, legends, summary cards and caveats. SVG type is outlined for consistent typography, with 2400px PNG companions. These are vector redraws, not PDF screenshots. Data are unchanged; `original/redraw-manifest.json` records the source hash and eleven figures. The older charts above remain archived alternatives, not the current original-article figures.
+
+Canonical regeneration: `python3.13 charts/redraw_pdf_panels.py` from the report root. It first runs the preserved `static_original.cjs` against the locally archived original HTML, then composes final vector panels and synchronizes the page, Markdown and ZIP. Requires Python 3.13 fontTools/BeautifulSoup and installed JS DOM/Sharp dependencies as recorded in the scripts. `fonts/` contains the original SIL-OFL typefaces and licenses. Raw Claude runtime HTML is deliberately not distributed.

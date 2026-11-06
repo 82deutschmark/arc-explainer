@@ -204,37 +204,13 @@ Board noise, from 8 identical controls: one standard deviation is 1.9 points. Tw
 
 ### 1.4 What worked and what didn't
 
-Our board liked 12 of these ideas. Kaggle liked 3 of them.
-
-Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.
-
-Board said better
-
-12
-
-ideas
-
-Kaggle agreed
-
-3
-
-of those 12
-
-Kaggle went down
-
-9
-
-of those 12
-
-Our boardKaggleBoard said better, Kaggle said worseBoard noise, 1 SDKaggle, same package twice
-
 [
 
-![Our board liked 12 of these ideas. Kaggle liked 3 of them.](charts/original/delta2.png)
+![Our board liked 12 of these ideas. Kaggle liked 3 of them.. Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.](charts/original/delta2.png)
 
 ](charts/original/delta2.svg)
 
-Board deltas compare board runs of the idea and its base (1 to 6 runs each, 50 games unless the tooltip says otherwise). Kaggle deltas are single public scores.
+Open or download: [vector SVG](charts/original/delta2.svg) · [high-resolution PNG](charts/original/delta2.png)
 
 Every idea in the chart, in one line each:
 
@@ -285,17 +261,13 @@ What the traces told us:
 
 ### 2.1 The timeline
 
-Whole-run tokens per second, one RTX PRO 6000
-
-Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle.
-
 [
 
-![Whole-run tokens per second, one RTX PRO 6000](charts/original/ladder.png)
+![Whole-run tokens per second, one RTX PRO 6000. Generated tokens divided by wall-clock play time, from each run's server log. Hatched: measured after 56.02 and never beat it on Kaggle.](charts/original/ladder.png)
 
 ](charts/original/ladder.svg)
 
-22 Sep: our first stack (vLLM, no drafting). From 1 Oct: Daniel Franzen's notebook plus our changes, on our 25 to 75-game offline board.
+Open or download: [vector SVG](charts/original/ladder.svg) · [high-resolution PNG](charts/original/ladder.png)
 
 **Chart data**
 
@@ -338,19 +310,13 @@ Overhead, per 1,000 tokens
 
 76% less
 
-Milliseconds of wall clock per 1,000 generated tokens
-
-Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log.
-
-DecodePrefill: new turn contentPrefill: re-reading lost historyOverhead: fixed cost per read, stallsOverhead: idle lanes
-
 [
 
-![Milliseconds of wall clock per 1,000 generated tokens](charts/original/time.png)
+![Milliseconds of wall clock per 1,000 generated tokens. Each bar is one real 2 to 4-hour run (two runs averaged where we had two), split from its SGLang server log.](charts/original/time.png)
 
 ](charts/original/time.svg)
 
-How it's measured: SGLang logs a decode line every 40 steps. Intervals with no prompt read give the pure step time at that lane count. Time beyond that in other intervals is prompt reading, shared out per read by a cost model (per read, per new token, per cached token). Idle lanes are decode time with fewer games running than the server allows. Our board has 25 to 75 games, so lanes empty out as games get won; Kaggle's 110 games keep them fuller.
+Open or download: [vector SVG](charts/original/time.svg) · [high-resolution PNG](charts/original/time.png)
 
 **Chart data**
 
@@ -368,17 +334,13 @@ The rest of this part takes the three buckets one at a time. Each opens with whe
 
 ### 2.2 Decode: 1,138 → 330 ms per 1,000 tokens
 
-Decode, build by build
-
-Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right).
-
 [
 
-![Decode, build by build](charts/original/wf-decode.png)
+![Decode, build by build. Milliseconds of decode per 1,000 generated tokens: where we started (left), what each measured build cut, and where the 56.02 config ended up (right).](charts/original/wf-decode.png)
 
 ](charts/original/wf-decode.svg)
 
-Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Open or download: [vector SVG](charts/original/wf-decode.svg) · [high-resolution PNG](charts/original/wf-decode.png)
 
 **Chart data**
 
@@ -393,17 +355,13 @@ Each step is the difference between two measured builds (whole-run server-log sp
 
 Decode is memory-bound. At 12 games, one step reads about **20 GB of expert weights** (166 distinct experts per layer) at 92% of the card's 1.54 TB/s. So clever kernels on the experts hit a wall fast. The two big levers are: **read fewer bytes**, and **serve more games per read**.
 
-One decode step at 12 games: 27.8 ms
-
-GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step.
-
 [
 
-![One decode step at 12 games: 27.8 ms](charts/original/step.png)
+![One decode step at 12 games: 27.8 ms. GPU profile of the 8-bit build on 7 Oct. The experts are more than half the step.](charts/original/step.png)
 
 ](charts/original/step.svg)
 
-At 31 games the step was 41.6 ms, with the experts at 18.0 ms: already at the weight-read floor.
+Open or download: [vector SVG](charts/original/step.svg) · [high-resolution PNG](charts/original/step.png)
 
 **Chart data**
 
@@ -419,19 +377,13 @@ At 31 games the step was 41.6 ms, with the experts at 18.0 ms: already at the we
 | Hyper-connection combine | 0.60 | 2% |
 | 16-bit leftovers | 0.57 | 2% |
 
-More games per step is almost free
-
-Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games.
-
-Measured step timeIf each game added the same time as at 13
-
 [
 
-![More games per step is almost free](charts/original/lanes.png)
+![More games per step is almost free. Decode step time against games running at once (11 Oct ladder). The dashed line is what it would cost if every game added the same time as at 13 games.](charts/original/lanes.png)
 
 ](charts/original/lanes.svg)
 
-32 games take 38.5 ms per step against 24.0 ms for 13: 2.5x the games for 1.6x the time. We shipped 32, not 48: past 32 the history cache per game got too small and the board score dropped.
+Open or download: [vector SVG](charts/original/lanes.svg) · [high-resolution PNG](charts/original/lanes.png)
 
 **Chart data**
 
@@ -447,19 +399,13 @@ Measured step timeIf each game added the same time as at 13
 
 More games per step needs memory: every gigabyte we freed went to the history cache, and the cache decides how many games can decode at once.
 
-Where the 95 GiB of the card went
-
-From each build's startup log. Right: tokens of history the cache holds, and games running at once.
-
-Model weightsDraft model + its cacheHistory cacheMamba statesBuffers, graphs, headroom
-
 [
 
-![Where the 95 GiB of the card went](charts/original/memory.png)
+![Where the 95 GiB of the card went. From each build's startup log. Right: tokens of history the cache holds, and games running at once.](charts/original/memory.png)
 
 ](charts/original/memory.svg)
 
-22 Sep is vLLM's own memory note (weights and activations together). The 56.02 run uses the 17 Oct split.
+Open or download: [vector SVG](charts/original/memory.svg) · [high-resolution PNG](charts/original/memory.png)
 
 **Chart data**
 
@@ -477,38 +423,38 @@ Model weightsDraft model + its cacheHistory cacheMamba statesBuffers, graphs, he
 | --- | --- | --- | --- |
 | Expert cut | Remove the least-used third of the experts from the card (512 → 341 per layer) | weights 66 → 46.2 GiB | lossy |
 | 4-bit history cache | Keys and values in NVFP4 (the draft model keeps FP8) | 1.01M → 3.80M tokens, with the cut | lossy |
-| Free the 16-bit output head (khfree) | Serve the head from its int8 copy and free the 16-bit one before the cache is sized | +0.57 GiB | exact |
-| Deduplicate shared tensors (kdupe) | The draft and main models held separate copies of the same tensors | +2.04 GB | exact |
+| Free the 16-bit output head ( khfree ) | Serve the head from its int8 copy and free the 16-bit one before the cache is sized | +0.57 GiB | exact |
+| Deduplicate shared tensors ( kdupe ) | The draft and main models held separate copies of the same tensors | +2.04 GB | exact |
 | 180 Mamba slots | Fewer spare linear-attention state slots (~55 MB each) | cache 3.47M → 3.80M tokens | exact |
-| Peak memory log (kmempeak) | Log the real memory peak so the cache can be sized to the edge | lowest headroom 1.9 GiB | exact |
+| Peak memory log ( kmempeak ) | Log the real memory peak so the cache can be sized to the edge | lowest headroom 1.9 GiB | exact |
 
 **Cheaper steps: dense layers and the output head**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| 8-bit dense weights (kw8) | Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed) | step 29.1 → 27.0 ms | lossy |
-| 8-bit activations (kw8a8) | Int8 inputs to the dense layers once a step has more than 64 rows | -3.5 ms per step at 192 rows | lossy |
-| Int8 kernels by row count (kw8m, kw8x, kw8x3) | Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding | at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms | exact |
-| Small 16-bit multiplies (kfast) | A faster kernel for the few dense multiplies left in 16-bit | 9.76 → 9.12 ms per step | lossy |
-| Hyper-connection glue (khc, kglue, kglue2, kgate8, kbig3) | The model's layer-mixing steps fused into fewer kernels | kernels per step 2,575 → 2,131; -1.2 ms per step | exact |
-| Output head (klgf, klmh3, klmh4) | The int8 head in one launch, writing the final logits directly | 1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows | exact |
+| 8-bit dense weights ( kw8 ) | Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed) | step 29.1 → 27.0 ms | lossy |
+| 8-bit activations ( kw8a8 ) | Int8 inputs to the dense layers once a step has more than 64 rows | -3.5 ms per step at 192 rows | lossy |
+| Int8 kernels by row count ( kw8m , kw8x , kw8x3 ) | Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding | at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms | exact |
+| Small 16-bit multiplies ( kfast ) | A faster kernel for the few dense multiplies left in 16-bit | 9.76 → 9.12 ms per step | lossy |
+| Hyper-connection glue ( khc , kglue , kglue2 , kgate8 , kbig3 ) | The model's layer-mixing steps fused into fewer kernels | kernels per step 2,575 → 2,131; -1.2 ms per step | exact |
+| Output head ( klgf , klmh3 , klmh4 ) | The int8 head in one launch, writing the final logits directly | 1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows | exact |
 
 **Experts and routing**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
 | Batch-aware routing, 3 guaranteed experts | Steer tokens to experts the batch already reads; each token keeps its own top 3 (was 4) | +5% speed | lossy |
-| One-kernel reroute (kbafuse, kbafuse2) | The reroute and the cut-expert remap in one kernel per layer | 68-73 → 33-49 µs per layer | exact |
-| One-kernel routing (kroute) | Expert selection in one kernel instead of four | 22.3 → 6.9 µs per layer | exact |
-| 16-row expert blocks (kmoebm16) | Smaller blocks when each expert gets only a few rows | 696 → 623 µs per layer at 184 rows | lossy |
+| One-kernel reroute ( kbafuse , kbafuse2 ) | The reroute and the cut-expert remap in one kernel per layer | 68-73 → 33-49 µs per layer | exact |
+| One-kernel routing ( kroute ) | Expert selection in one kernel instead of four | 22.3 → 6.9 µs per layer | exact |
+| 16-row expert blocks ( kmoebm16 ) | Smaller blocks when each expert gets only a few rows | 696 → 623 µs per layer at 184 rows | lossy |
 
 **Attention**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| Attention indexer (kidx, kidxv) | Load each block of keys once per game instead of once per draft token | 98 → 61 µs per layer | exact |
-| 4-bit attention (kpf44, kpf44b, kqsort) | Prefetch the next block, split keys 8 ways, read keys in order | 237 → 228 µs; 277 → 265 µs | exact / rounding |
-| Linear attention (kgdn, kconv, kfuse, kvdtrim) | Read inputs in place, a one-tile conv, skip state writes for empty slots | 8.5 → 4.1 µs per conv call; +7.5% with kfast | exact |
+| Attention indexer ( kidx , kidxv ) | Load each block of keys once per game instead of once per draft token | 98 → 61 µs per layer | exact |
+| 4-bit attention ( kpf44 , kpf44b , kqsort ) | Prefetch the next block, split keys 8 ways, read keys in order | 237 → 228 µs; 277 → 265 µs | exact / rounding |
+| Linear attention ( kgdn , kconv , kfuse , kvdtrim ) | Read inputs in place, a one-tile conv, skip state writes for empty slots | 8.5 → 4.1 µs per conv call; +7.5% with kfast | exact |
 
 **More tokens per pass: speculative decoding**
 
@@ -516,26 +462,22 @@ Model weightsDraft model + its cacheHistory cacheMamba statesBuffers, graphs, he
 | --- | --- | --- | --- |
 | MTP drafting | From Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass, with exact rejection sampling | 1 → 2.69 tokens per pass | exact |
 | Our drafters | Draft heads fine-tuned on our own games, run in int8 | 2.69 → 3.05 per pass | exact |
-| Faster draft sampling (kdsamp) | Pick the top candidates first instead of scanning the whole draft vocabulary | 126 → 13 µs per draft step | exact |
-| Per-game verify depth (kvd) | Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most) | +5% | lossy |
+| Faster draft sampling ( kdsamp ) | Pick the top candidates first instead of scanning the whole draft vocabulary | 126 → 13 µs per draft step | exact |
+| Per-game verify depth ( kvd ) | Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most) | +5% | lossy |
 | 4 draft steps | One more guess per pass | 3.05 → 3.25 per pass, with kvd | lossy |
-| Draft extend on one row (kdext) | After a verify, the draft model updates only the row it keeps | +5.2% | lossy |
+| Draft extend on one row ( kdext ) | After a verify, the draft model updates only the row it keeps | +5.2% | lossy |
 
 Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.
 
 ### 2.3 Prefill: 259 → 74 ms per 1,000 tokens
 
-Prefill, build by build
-
-Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right.
-
 [
 
-![Prefill, build by build](charts/original/wf-prefill.png)
+![Prefill, build by build. Milliseconds of prompt reading per 1,000 generated tokens, start on the left, the 56.02 config on the right.](charts/original/wf-prefill.png)
 
 ](charts/original/wf-prefill.svg)
 
-Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Open or download: [vector SVG](charts/original/wf-prefill.svg) · [high-resolution PNG](charts/original/wf-prefill.png)
 
 **Chart data**
 
@@ -552,33 +494,29 @@ Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for a
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| Host-RAM copy (khost44) | A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe | games losing their history 9 → 0; +7.5% tok/s | exact |
+| Host-RAM copy ( khost44 ) | A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe | games losing their history 9 → 0; +7.5% tok/s | exact |
 | Lost-history fix | A bug that made 48-lane runs re-read whole histories | re-reads 32% → 11% of GPU time | exact |
 | Verbatim history | Keep the model's answer byte for byte (Part 1) | +8% tok/s | harness |
 | Window and trim | 140k window, 52k keep (Part 1) | re-reads 12% → 8% of the run | harness |
-| Pin side-request checkpoints (kpinbranch) | A summary or review call no longer forces the next turn to re-read its history | 1,787 → 2,160 tok/s | exact |
-| Image embeddings in RAM (kvlmhost) | Keep image embeddings in RAM instead of re-encoding them after a trim | 454 RAM hits vs 1,172 first encodes by minute 8 | exact |
-| Prompt attention (kqsapf, kqsapf2, kmqa) | Better tiles for long prompt reads | 6.06 → 4.95 ms per call | exact |
-| No q/k/v copy (kqkvz) | Pass inputs as a view instead of copying them | 412 → 171 µs per layer | exact |
-| Fused prompt glue (kglu) | Small copies folded into the prefill kernels | 356 → 206 µs at 8,192 rows | exact |
-| Prompt-read experts (kprefill) | A better expert-kernel layout for prompt reads | -19% at 1k tokens, -7% at 8k | lossy |
-| CUDA graphs, no host syncs (kpgraph, kpfsync, kprsync) | Small reads were waiting on Python; replay recorded graphs instead | small read 175 → 113 ms | exact / rounding |
-| Image encoder attention (fa4) | FlashAttention-4 for the vision encoder | 366 → 87 µs per layer | lossy |
-| Memory-light embedding conv (kpleconv) | Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle | 800 → 281 MB per 8k read | exact |
+| Pin side-request checkpoints ( kpinbranch ) | A summary or review call no longer forces the next turn to re-read its history | 1,787 → 2,160 tok/s | exact |
+| Image embeddings in RAM ( kvlmhost ) | Keep image embeddings in RAM instead of re-encoding them after a trim | 454 RAM hits vs 1,172 first encodes by minute 8 | exact |
+| Prompt attention ( kqsapf , kqsapf2 , kmqa ) | Better tiles for long prompt reads | 6.06 → 4.95 ms per call | exact |
+| No q/k/v copy ( kqkvz ) | Pass inputs as a view instead of copying them | 412 → 171 µs per layer | exact |
+| Fused prompt glue ( kglu ) | Small copies folded into the prefill kernels | 356 → 206 µs at 8,192 rows | exact |
+| Prompt-read experts ( kprefill ) | A better expert-kernel layout for prompt reads | -19% at 1k tokens, -7% at 8k | lossy |
+| CUDA graphs, no host syncs ( kpgraph , kpfsync , kprsync ) | Small reads were waiting on Python; replay recorded graphs instead | small read 175 → 113 ms | exact / rounding |
+| Image encoder attention ( fa4 ) | FlashAttention-4 for the vision encoder | 366 → 87 µs per layer | lossy |
+| Memory-light embedding conv ( kpleconv ) | Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle | 800 → 281 MB per 8k read | exact |
 
 ### 2.4 Overhead: 255 → 61 ms per 1,000 tokens
 
-Overhead, build by build
-
-Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens.
-
 [
 
-![Overhead, build by build](charts/original/wf-overhead.png)
+![Overhead, build by build. Milliseconds of overhead (fixed cost per prompt read, stalls, idle lanes) per 1,000 generated tokens.](charts/original/wf-overhead.png)
 
 ](charts/original/wf-overhead.svg)
 
-Each step is the difference between two measured builds (whole-run server-log splits, as in 2.1). Most builds carried several changes; the tables list them.
+Open or download: [vector SVG](charts/original/wf-overhead.svg) · [high-resolution PNG](charts/original/wf-overhead.png)
 
 **Chart data**
 
@@ -596,10 +534,10 @@ The best find here was invisible in per-step profiles: for every new request, th
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
 | Image hash off the scheduler | Hash images in the tokenizer process, not the scheduler loop | 205 → 8.5 ms stall per image request | exact |
-| Zero-copy image hand-off (kshm) | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
-| Overlapped launches (kpdl) | Each small kernel starts while the last one finishes | ~0.23 µs per kernel | exact |
+| Zero-copy image hand-off ( kshm ) | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
+| Overlapped launches ( kpdl ) | Each small kernel starts while the last one finishes | ~0.23 µs per kernel | exact |
 | 34 games over 32 lanes | Two extra games fill lanes left idle by games running python | +4.7 on our 75-game board | harness |
-| Startup DNS fix (kdnsfix) | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → ~0 | exact |
+| Startup DNS fix ( kdnsfix ) | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → ~0 | exact |
 | Scorecard keep-alive (after 56.02) | Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00) | a 46-minute load played normally | harness |
 
 ### 2.5 What didn't make it
@@ -638,19 +576,13 @@ We spent real money and a lot of weekends on RL and other fine-tunes. None of it
 | 2-bit distillation | Keith's write-up | A night on eight B300s to train the 2-bit model back toward 4-bit | ~6,000 training tokens/s against 24-85k planned; no 2-bit weight changed in the layers checked |
 | Think-less fine-tunes | 23 Oct | Two public Flash-Next fine-tunes that claim shorter thinking | board 33.5 and 40.3 vs 64.2 |
 
-Move the thinking length, and the score drops
-
-Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.
-
-Training run or lossy speed change, against its own controlBoard noise (1 SD)
-
 [
 
-![Move the thinking length, and the score drops](charts/original/think.png)
+![Move the thinking length, and the score drops. Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.](charts/original/think.png)
 
 ](charts/original/think.svg)
 
-Tokens per move = generated tokens / moves over the whole run (RL5: median reply length). Each point against its own control: 8-bit states vs the 22-Oct control (50 games), the 3-bit arms vs plain 3-bit (75 games), RL5 vs the base model (32-game set).
+Open or download: [vector SVG](charts/original/think.svg) · [high-resolution PNG](charts/original/think.png)
 
 **Chart data**
 
@@ -670,19 +602,13 @@ Why it didn't work for us: the base model was already good at the games, and eve
 
 ### 4.1 The climb, and what it was telling us
 
-Where speed stopped helping
-
-Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.
-
-Best so farDidn't beat the best
-
 [
 
-![Where speed stopped helping](charts/original/kaggle.png)
+![Where speed stopped helping. Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.](charts/original/kaggle.png)
 
 ](charts/original/kaggle.svg)
 
-22-Oct's 0.00 was a 66-minute model load: the competition closed the scorecard after 15 idle minutes. Kaggle loads were slow (30 to 40 minutes) on 24 to 26 Oct, so those three scores are partly the load.
+Open or download: [vector SVG](charts/original/kaggle.svg) · [high-resolution PNG](charts/original/kaggle.png)
 
 **Chart data**
 
