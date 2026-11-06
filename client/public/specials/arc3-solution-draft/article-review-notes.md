@@ -61,3 +61,12 @@ Scope: closing figure and its caption only; article prose/order, all eleven char
 ## First image: forwarded texture-restored v10
 
 Son supplied the forwarded `turducken-corrected-v10-texture.png` (Discord attachment 1568354730449699027). Downloaded unchanged from its media proxy and visually inspected. Published as `00-turducken-texture-v10.png` in the introduction, using existing rounded-only CSS, with no generation, crop or recompression. Closing original family portrait, caption, all prose/charts/settings and DZ01 SEO unchanged. SHA-256: f5ef72ab71954022e9fc69f21a91bc88fa35c74ecbca6aa871d031b3f5f59733.
+
+
+## Synthetic source correction and harness engineering · 6 November 2026
+
+The Boss identified a separate repository in his account. Verified `82deutschmark/arc3-synthetic-games` via GitHub and its README; corrected both article references and linked its browse page and EVALUATION.md. Gallery, historical copycat board and current authored holdout collection are explicitly distinguished. Removed the misleading ARC Explainer source-directory link as the synthetic repository destination.
+
+Expanded the scored-harness explanation and added a separate team-branch discussion from the preserved 18 October merge overview: C5m sandbox recovery, GUIDE/WORKING memory lifecycle, host-facts and frame inspection. The subsection explicitly does not claim these proposed integrations all shipped in 56.02; no new benchmark numbers or combined gains added. Current generic tool_agent.py is not treated as the archived scored package. Exact handoff is committed in `docs/2026-11-06-turducken-assistant-handoff.md`.
+
+Original chart/data/artwork and settings unchanged. Markdown and ZIP synchronized.

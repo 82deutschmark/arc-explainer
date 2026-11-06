@@ -90,7 +90,7 @@ Every optimization below is a trade inside this box: free memory to run more gam
 
 Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.
 
-For more synthetic games to explore, see [Mark’s authored game collection](https://arc.markbarney.net/arc3/gallery), with [source in the ARC Explainer repository](https://github.com/82deutschmark/arc-explainer/tree/main/server/data/arc3-games). A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
+The separate public [ARC-3 Synthetic Games repository](https://github.com/82deutschmark/arc3-synthetic-games) contains runnable authored games, including DZ01, with a [curated browse page](https://82deutschmark.github.io/arc3-synthetic-games/) and an [evaluation guide](https://github.com/82deutschmark/arc3-synthetic-games/blob/main/EVALUATION.md). These are not the historical one-per-public-game copycats measured above. Keep game source and spoiler pages out of the playing agent’s environment if using them as holdouts. The [ARC Explainer gallery](https://arc.markbarney.net/arc3/gallery) is a separate browsing destination, not the synthetic-games source repository. A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
 
 The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
 
@@ -109,6 +109,24 @@ The base is Daniel Franzen's harness: the model plays by writing python that cal
 - **Sampling:** temperature 0.5 (0.8 → 0.6 → 0.5 over the competition), top-p 0.95, top-k 20.
 
 - **Context management:** trim, swap and wipe, below. It's the part of the harness that touches everything else.
+
+#### Engineering the conditions for learning
+
+The harness was more than a prompt around a faster model. It controlled what the player could observe, what survived an interrupted tool call, which experiments it could execute, and how a long game resumed after its conversation was cut. The changes above form a loop: record a hypothesis in notes, act through Python, compare the result with the expectation, and carry useful evidence forward instead of rediscovering it after every trim.
+
+In the scored configuration, notes were owned by the harness rather than left only in the disposable conversation. Long notes were shown as a head and tail, so the opening rules and latest discoveries could both remain visible. Checked play made a batch stop at the first unexpected move; rule checking tested an explanation against recorded moves rather than trusting a plausible story. Fresh-eyes handovers, cache-compatible verbatim history and slot scheduling then made this loop survive the full clock. These are distinct jobs: memory protects discoveries, execution checks protect experiments, and scheduling protects opportunities to think.
+
+#### Team branches: execution reliability, memory and observation
+
+The team also engineered alternatives, not all of which entered the 56.02 package. Our [18 October architecture comparison and merge plan](https://github.com/Autoresearch-Arena/arc-3/blob/main/harnesses/MERGE-OVERVIEW-KEITH-DZJ-1018.md) (team repository, access required) records the following work:
+
+- **Recoverable Python execution.** Keith’s C5m sandbox excluded host-side game-action time from the Python deadline, returned retained functions, output and a bounded persistent store on a soft timeout, and bounded memory so runaway search could fail cleanly. The point was to avoid losing a game’s accumulated tooling because one snippet ran too long.
+
+- **Memory with a lifecycle.** The dzj branch split durable game rules into GUIDE and current-level hypotheses into WORKING, with targeted edits and a structured pre-trim handoff. Level-specific scratch work could be cleared without erasing rules learned earlier.
+
+- **Grounded observations.** That branch supplied parent-verified action counts and board-change facts, coordinate overlays, and an inspect tool for archived frames and death differences. A proposed action and an action that actually ran were no longer the same kind of evidence.
+
+That document ranks candidates to test and merge; it is not a receipt that every candidate shipped. The branches used different serving stacks, game sets and settings. Their local results cannot be added to the 56.02 score, and the paired local/Kaggle chart below remains the check on claims of improvement. Harness engineering helped make experiments dependable; it did not make an appealing idea a demonstrated win.
 
 ### 1.3 Trimming and swapping the context
 
@@ -261,7 +279,7 @@ What the traces told us:
 
 **A local improvement was not necessarily a Kaggle improvement.** Our board liked 12 of the ideas above; Kaggle agreed with only 3 of those and went down on the other 9. A promising local delta was a reason to investigate, not proof that the submission had improved.
 
-We tried to close that gap with synthetic games, including the copycats. The copycats showed promise on a small retrospective sample, but we ultimately did not build an evaluation set that correlated reliably enough with Kaggle to guide our decisions. [Mark’s authored game collection](https://arc.markbarney.net/arc3/gallery) offers more synthetic games to explore. Apparently xz@ made better use of synthetic games and beat us; that is our impression, not a measured comparison of their evaluation set with ours.
+We tried to close that gap with synthetic games, including the copycats. The copycats showed promise on a small retrospective sample, but we ultimately did not build an evaluation set that correlated reliably enough with Kaggle to guide our decisions. The separate [synthetic-games repository](https://github.com/82deutschmark/arc3-synthetic-games) makes authored games available for further testing; its existence is not evidence that it was the measured board above. Apparently xz@ made better use of synthetic games and beat us; that is our impression, not a measured comparison of their evaluation set with ours.
 
 ## Inference Optimization
 

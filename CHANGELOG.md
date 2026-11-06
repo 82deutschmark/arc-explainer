@@ -1,3 +1,7 @@
+### Version 9.162.32 · November 6, 2026
+
+- Correct Turducken’s synthetic-game links to the dedicated `82deutschmark/arc3-synthetic-games` repository, distinguish the gallery and historical copycat evaluation, and expand harness engineering with clearly labeled team-branch provenance. Add an assistant source handoff; preserve chart data/artwork/settings and synchronize Markdown, notes and ZIP. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-harness-sources.md`.
+
 ### Version 9.162.31 · November 6, 2026
 
 - Use Son’s exact forwarded texture-restored v10 artwork as the Turducken article’s first image, retaining original pixels and existing corner styling. Synchronize Markdown, provenance notes and ZIP without changing the closing portrait, prose, charts or SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-first-image.md`.
