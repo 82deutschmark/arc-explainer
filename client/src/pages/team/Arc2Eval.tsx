@@ -20,6 +20,9 @@
  *            and the full reasoning with find (ReasoningView).
  *          The selected output is kept in the address (?o=7b5033c1_0, replaced not pushed, as the
  *          runs list keeps its filters) so a link opens it, through sign-in too.
+ *          2026-10-21 (Claude Opus 5.5), the runs API: the header also shows the run's kind,
+ *          author, env switches, machine and links; a speed / kernel / profile run shows its
+ *          arms side by side (components/teamEvals/ArmsView.tsx) instead of the outputs.
  * SRP/DRY check: Pass - one-run view. Data in components/teamEvals/teamEvalsApi.ts, filters and
  *          grid checks in evalStats.ts, grids in EvalGrid.tsx (the site's TinyGrid), reasoning in
  *          ReasoningView.tsx, chips in Chips.tsx; sign-in, palette, primitives and the notes
@@ -39,6 +42,7 @@ import {
   SHOW_OPTIONS, count, duration, gridShape, referenceSplit, shapeText, showCounts, signed, visibleRows, wrongCells,
   type EvalShow, type EvalSort,
 } from '@/components/teamEvals/evalStats';
+import { ArmsView, RunLinks } from '@/components/teamEvals/ArmsView';
 import { Chips } from '@/components/teamEvals/Chips';
 import { EvalGrid } from '@/components/teamEvals/EvalGrid';
 import { ReasoningView } from '@/components/teamEvals/ReasoningView';
@@ -69,18 +73,27 @@ function RunHeader({ run }: { run: EvalRunDocument }) {
   const box = run.box;
   const cost = num(box?.costUsd);
   const hours = num(box?.hours);
+  const outputs = run.rows?.length ?? 0;
   return (
     <div className="px-2 py-2 mb-2 grid gap-1" style={{ border: `1px solid ${T.rule}`, background: T.panel }}>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <span className="text-[18px] font-bold" style={{ color: T.amber }}>{run.title ?? run.key}</span>
         <span style={{ color: T.dim }}>{run.key}</span>
+        <span style={{ color: T.dim }}>{String(run.kind ?? 'accuracy').toUpperCase()}</span>
         <span style={{ color: T.dim }}>CREATED {utcStamp(run.createdAt)}</span>
+        {run.author && <span style={{ color: T.dim }}>BY {run.author}</span>}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <span style={{ color: T.amber }}>MODEL</span>
         {typeof run.model?.name === 'string' && <span className="font-bold">{run.model.name}</span>}
         <Chips record={run.model} skip={['name']} />
       </div>
+      {run.env && Object.keys(run.env).length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span style={{ color: T.amber }}>ENV</span>
+          <Chips record={run.env} />
+        </div>
+      )}
       {run.client && (
         <div className="flex flex-wrap items-center gap-2">
           <span style={{ color: T.amber }}>CLIENT</span>
@@ -92,15 +105,18 @@ function RunHeader({ run }: { run: EvalRunDocument }) {
         {run.panel && (
           <span>
             <span style={{ color: T.amber }}>PANEL </span>{run.panel.name ?? '—'}
-            <span style={{ color: T.dim }}> · {num(run.panel.outputs) ?? run.rows.length} outputs{run.panel.note ? ` · ${run.panel.note}` : ''}</span>
+            <span style={{ color: T.dim }}> · {num(run.panel.outputs) ?? outputs} outputs{run.panel.note ? ` · ${run.panel.note}` : ''}</span>
           </span>
         )}
         {box && (
           <span>
             <span style={{ color: T.amber }}>BOX </span>{box.job ?? '—'}
-            <span style={{ color: T.dim }}>{cost != null ? ` · $${cost.toFixed(2)}` : ''}{hours != null ? ` · ${hours.toFixed(1)}h` : ''}</span>
+            <span style={{ color: T.dim }}>
+              {typeof box.machine === 'string' ? ` · ${box.machine}` : ''}{cost != null ? ` · $${cost.toFixed(2)}` : ''}{hours != null ? ` · ${hours.toFixed(1)}h` : ''}
+            </span>
           </span>
         )}
+        <RunLinks links={run.links} />
       </div>
     </div>
   );
@@ -108,8 +124,9 @@ function RunHeader({ run }: { run: EvalRunDocument }) {
 
 /** The reference systems' scores on this panel, and where this run differs output by output. */
 function ReferencePane({ run }: { run: EvalRunDocument }) {
-  const ours = num(run.summary?.solved) ?? run.rows.filter((r) => r.correct).length;
-  const split = referenceSplit(run.rows);
+  const rows = run.rows ?? [];
+  const ours = num(run.summary?.solved) ?? rows.filter((r) => r.correct).length;
+  const split = referenceSplit(rows);
   const refs = Array.isArray(run.reference) ? run.reference : [];
   if (!refs.length && !split.compared) return null;
   return (
@@ -118,7 +135,7 @@ function ReferencePane({ run }: { run: EvalRunDocument }) {
         <tbody>
           <tr>
             <td className="px-2 py-[2px] font-bold" style={{ color: T.amber }}>THIS RUN</td>
-            <td className="px-2 text-right font-bold">{ours}/{num(run.summary?.outputs) ?? run.rows.length}</td>
+            <td className="px-2 text-right font-bold">{ours}/{num(run.summary?.outputs) ?? rows.length}</td>
             <td className="px-2" />
           </tr>
           {refs.map((ref, i) => (
@@ -284,15 +301,30 @@ export default function Arc2Eval() {
   const outputs = num(s.outputs) ?? rows.length;
   const tokS = num(s.genTokS);
   const tokenSort = () => setSort((v) => (v === 'tokens-desc' ? 'tokens-asc' : 'tokens-desc'));
+  const kind = String(run.kind ?? 'accuracy');
+
+  const nav = (
+    <div className="flex flex-wrap items-center gap-x-3 mb-2 pb-1" style={{ borderBottom: `1px solid ${T.amber}` }}>
+      <Link href="/team/arc2-evals" className="hover:underline" style={{ color: T.link }}>[◂ ALL EVAL RUNS]</Link>
+      <Link href="/team/arc2-runs" className="hover:underline" style={{ color: T.link }}>[KAGGLE RUNS]</Link>
+      <span className="ml-auto" style={{ color: T.dim }}>ARC-AGI-2 · {kind.toUpperCase()} RUN {run.key}</span>
+    </div>
+  );
+
+  // Speed, kernel and profile runs have arms to compare, not outputs to read.
+  if (kind !== 'accuracy') {
+    return (
+      <Screen>
+        {nav}
+        <RunHeader run={run} />
+        <ArmsView run={run} />
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
-      {/* ── nav ──────────────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-x-3 mb-2 pb-1" style={{ borderBottom: `1px solid ${T.amber}` }}>
-        <Link href="/team/arc2-evals" className="hover:underline" style={{ color: T.link }}>[◂ ALL EVAL RUNS]</Link>
-        <Link href="/team/arc2-runs" className="hover:underline" style={{ color: T.link }}>[KAGGLE RUNS]</Link>
-        <span className="ml-auto" style={{ color: T.dim }}>ARC-AGI-2 · EVAL RUN {run.key}</span>
-      </div>
+      {nav}
 
       <RunHeader run={run} />
 

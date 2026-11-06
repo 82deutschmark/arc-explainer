@@ -9,6 +9,9 @@
  *          solved (large), answers parsed, finishes on stop against the token cap, near misses,
  *          generation speed, and the reference systems' scores on the same panel. Click a run for
  *          its outputs and their reasoning traces. Unlisted and noindex, like the runs record.
+ *          2026-10-21 (Claude Opus 5.5), the runs API: speed, kernel and profile runs follow in
+ *          a second table: when, the run and its model chips, its kind, each arm with its
+ *          headline metric (best in green, failed arms in red), the verdict and the box cost.
  * SRP/DRY check: Pass - list view only. Data in components/teamEvals/teamEvalsApi.ts, chips in
  *          Chips.tsx; sign-in, session and logout reuse teamRunsApi.ts, the palette and
  *          primitives teamRuns/terminal.tsx, exactly as Arc2Runs.tsx does.
@@ -21,8 +24,78 @@ import { Screen, T, stamp } from '@/components/teamRuns/terminal';
 import { useArc2Evals, type EvalRunIndex, type EvalSummary } from '@/components/teamEvals/teamEvalsApi';
 import { Chips } from '@/components/teamEvals/Chips';
 import { count } from '@/components/teamEvals/evalStats';
+import { armRan, bestIndex, headlineMetric, metricInfo, metricText } from '@/components/teamEvals/armStats';
 
 const num = (value: unknown): number | null => (typeof value === 'number' && Number.isFinite(value) ? value : null);
+
+/** Each arm's headline metric, side by side; the best arm that ran in green, failed arms in red. */
+function ArmsCell({ run }: { run: EvalRunIndex }) {
+  const arms = (run.arms ?? []).filter((arm) => typeof arm.name === 'string');
+  const metric = headlineMetric(arms, run.headline);
+  const info = metric ? metricInfo(metric) : null;
+  const values = arms.map((arm) => (metric ? num(arm.metrics?.[metric]) : null));
+  const best = info ? bestIndex(values, arms, info.better) : null;
+  return (
+    <div className="text-[12px]">
+      {info && <span style={{ color: T.dim }}>{info.label}{info.unit ? ` (${info.unit})` : ''}: </span>}
+      {arms.map((arm, i) => (
+        <span key={arm.name} className="whitespace-nowrap mr-3">
+          <span style={{ color: armRan(arm) ? T.dim : T.down }}>{arm.name} </span>
+          {armRan(arm)
+            ? <span style={{ color: i === best ? T.up : T.text, fontWeight: i === best ? 700 : 400 }}>{metricText(values[i])}</span>
+            : <span style={{ color: T.down }}>{String(arm.status)}</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Speed, kernel and profile runs: arms compared side by side rather than a panel scored. */
+function ArmRunsTable({ runs, open }: { runs: EvalRunIndex[]; open: (key: string) => void }) {
+  return (
+    <div style={{ border: `1px solid ${T.rule}` }} className="overflow-x-auto">
+      <table className="w-full tabular-nums" style={{ tableLayout: 'fixed', minWidth: 1100 }}>
+        <colgroup>
+          <col style={{ width: 92 }} /><col style={{ width: 380 }} /><col style={{ width: 64 }} /><col /><col style={{ width: 70 }} />
+        </colgroup>
+        <thead className="sticky top-0" style={{ background: T.panel, color: T.amber }}>
+          <tr className="text-left text-[11px]">
+            <th className="px-2 py-[3px] font-normal">CREATED UTC</th>
+            <th className="px-2 font-normal">RUN · MODEL</th>
+            <th className="px-2 font-normal">KIND</th>
+            <th className="px-2 font-normal">ARMS · VERDICT</th>
+            <th className="px-2 font-normal text-right">BOX $</th>
+          </tr>
+        </thead>
+        <tbody>
+          {runs.map((run) => (
+            <tr key={run.key} onClick={() => open(run.key)} className="cursor-pointer align-top"
+                style={{ borderTop: `1px solid ${T.rule}` }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = T.hover; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = ''; }}>
+              <td className="px-2 py-1 whitespace-nowrap" style={{ color: T.dim }}>{stamp(run.createdAt ?? run.updatedAt)}</td>
+              <td className="px-2 py-1">
+                <div className="truncate font-bold" title={run.title ?? run.key}>{run.title ?? run.key}</div>
+                <div className="truncate text-[11px]" style={{ color: T.dim }}>
+                  {typeof run.model?.name === 'string' ? `${run.model.name} · ` : ''}{run.key}{run.author ? ` · ${run.author}` : ''}
+                </div>
+                <div className="mt-0.5"><Chips record={run.model} skip={['name']} /></div>
+              </td>
+              <td className="px-2 py-1 uppercase text-[11px]">{run.kind}</td>
+              <td className="px-2 py-1">
+                <ArmsCell run={run} />
+                {typeof run.verdict === 'string' && run.verdict && (
+                  <div className="truncate text-[12px] mt-0.5" title={run.verdict}>{run.verdict}</div>
+                )}
+              </td>
+              <td className="px-2 py-1 text-right">{num(run.box?.costUsd) == null ? '—' : num(run.box?.costUsd)!.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 function Solved({ run }: { run: EvalRunIndex }) {
   const solved = num(run.summary?.solved);
@@ -48,9 +121,11 @@ export default function Arc2Evals() {
     return <Screen><div style={{ color: T.down }}>ERROR: {evals.error.message}</div></Screen>;
   }
 
-  const runs = evals.data?.runs ?? [];
+  const all = evals.data?.runs ?? [];
+  const runs = all.filter((run) => (run.kind ?? 'accuracy') === 'accuracy');
+  const armRuns = all.filter((run) => run.kind && run.kind !== 'accuracy');
   const open = (key: string) => navigate(`/team/arc2-evals/${encodeURIComponent(key)}`);
-  const lastPublish = runs.reduce((a, r) => (r.updatedAt > a ? r.updatedAt : a), '');
+  const lastPublish = all.reduce((a, r) => (r.updatedAt > a ? r.updatedAt : a), '');
 
   return (
     <Screen>
@@ -67,7 +142,9 @@ export default function Arc2Evals() {
       </div>
 
       {runs.length === 0 ? (
-        <div style={{ color: T.dim }}>NO EVAL RUNS PUBLISHED YET. THE EVAL BOX PUBLISHES EACH RUN WHEN ITS PANEL FINISHES.</div>
+        <div style={{ color: T.dim }}>
+          {all.length === 0 ? 'NO RUNS PUBLISHED YET. EACH BOX JOB PUBLISHES ITS RUN WHEN IT FINISHES.' : 'NO ACCURACY RUNS PUBLISHED YET.'}
+        </div>
       ) : (
         <div style={{ border: `1px solid ${T.rule}` }} className="overflow-x-auto">
           <table className="w-full tabular-nums" style={{ tableLayout: 'fixed', minWidth: 1100 }}>
@@ -137,6 +214,16 @@ export default function Arc2Evals() {
         SOLVED = outputs answered exactly right · PARSED = a grid could be read from the answer · STOP/LEN = finished on its own
         / hit the token cap · NEAR = near misses, as the eval box counts them · reference = other systems' scores on the same outputs
       </div>
+
+      {armRuns.length > 0 && (
+        <>
+          <div className="mt-4 mb-1 pb-1 flex flex-wrap gap-x-4" style={{ borderBottom: `1px solid ${T.amber}` }}>
+            <span className="font-bold" style={{ color: T.amber }}>SPEED · KERNEL · PROFILE RUNS</span>
+            <span style={{ color: T.dim }}>ARMS SIDE BY SIDE · CLICK FOR EVERY METRIC AND THE PROFILE</span>
+          </div>
+          <ArmRunsTable runs={armRuns} open={open} />
+        </>
+      )}
     </Screen>
   );
 }
