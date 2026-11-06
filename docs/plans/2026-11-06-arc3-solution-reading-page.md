@@ -13,3 +13,6 @@ The Boss requested pushing the delivered article to ARC Explainer to read it. Pu
 
 ## Title correction — 6 November 2026
 Son explicitly requested the original title, “Stuffing the Turducken.” Update only the reading-page title, heading and description plus both Markdown copies and the packaged article. Preserve the URL, article body, review notes and images. Verify the exact title and scoped diff, then commit and push this authorized correction.
+
+## Editorial pass — 6 November 2026
+The Boss requested a writing pass on the posted draft. Revise the introduction and transitions around the nested harness, inference and training system; preserve technical values and source links. Consolidate review caveats outside article prose while keeping the training/submission distinction explicit. Synchronize canonical Markdown, download, HTML and delivery ZIP; preserve unchanged artwork and back up prior artifacts outside the repo. Validate those copies and the scoped diff, push the authorized draft revision, and make one bounded public check.

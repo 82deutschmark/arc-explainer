@@ -1,3 +1,7 @@
+### Version 9.162.18 · November 6, 2026
+
+- Give “Stuffing the Turducken” an editorial pass: connect harness, serving and training through a coherent narrative, preserve verified settings and training-evaluation limits, and move publication checks out of article prose. Synchronize the reading page and Markdown download; retain unchanged rounded-corner artwork and add downloadable source-review notes. Plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.162.17 · November 6, 2026
 
 - Restore Son’s requested article title, “Stuffing the Turducken,” in the ARC-3 review page’s browser title, heading and description and its Markdown download. URL, body and rounded-corner images remain unchanged. Files: `client/public/specials/2026-11-06-arc3-solution-draft.html`, `client/public/specials/arc3-solution-draft/article-draft.md`; plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.

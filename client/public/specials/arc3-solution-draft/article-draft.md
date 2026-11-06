@@ -1,75 +1,76 @@
 # Stuffing the Turducken
 
-Our approach combined three lines of work: a tool-using game harness, a faster inference stack, and experiments in reinforcement learning. The practical lesson was that these are not independent. A model that takes longer to generate each attempt explores less; a harness that repeatedly discards its cached context spends its budget rereading; and a training recipe that differs from the served model can optimize the wrong behavior.
+An ARC-AGI-3 agent has to learn what a game is asking while it plays. Every frame is evidence; every action spends time testing a hypothesis. A useful solver therefore needs more than a model that can reason about pictures. It needs a harness that turns reasoning into experiments, an inference stack that leaves time to run them, and a way to carry discoveries forward when the conversation fills up.
 
-This write-up covers the October 18 submission harness and the subsequent reinforcement-learning experiments.
+That is our turducken: the playing policy sits inside a tool-using harness, which runs inside a carefully fitted serving system. We worked on all three layers, then explored reinforcement learning to improve the policy itself. The connections mattered as much as the individual pieces. A faster model can try more ideas, but repeatedly rereading a rewritten conversation wastes that advantage. Training can improve a policy, but only if the model being trained behaves like the one being served.
 
-## 1. Harness: observe, test, act, and remember
+Here we describe the October 18 submission harness and inference configuration, followed by the reinforcement-learning experiments that developed alongside and after it.
+
+## Turning observations into experiments
 
 ![The game-playing harness](corners-only/01-harness-garage-v2-corners-only.png)
 
-We built on Daniel Franzen's notebook and agent framework. The model observes the game frame and writes Python against a sandbox to inspect it and take actions. The important unit is not a single button press but an experiment: identify an uncertainty, choose an action that distinguishes plausible explanations, and update the working model from the resulting frame.
+We built on Daniel Franzen's notebook and agent framework. The model receives a game frame and writes Python in a sandbox to inspect the frame and take actions. This lets it organize a sequence of moves as a small experiment: identify an uncertainty, choose an action that distinguishes possible explanations, and use the resulting frame to update its model of the game.
 
-Two failure modes motivated the harness changes. First, the agent could do substantial analysis without moving. Second, it could move repeatedly while pursuing the wrong idea of the goal. We therefore emphasized identifying the goal, probing uncertain mechanics with small experiments, and batching actions only after their effects were understood. On a new level, the agent should preserve useful knowledge of the game's rules without assuming that the previous level's local plan still applies.
+The harness had to address two familiar failures. Sometimes the agent analyzed the board at length without moving. Sometimes it moved confidently while pursuing the wrong goal. We emphasized identifying the objective, probing unfamiliar mechanics with small tests, and batching actions once their effects were understood. A level transition called for the same discipline: carry forward the game's rules, but reconsider the plan for the new board.
 
-### Context length and request limits
+That loop produces a growing record of frames, code, observations and reasoning. Keeping it useful became both a memory problem and a serving problem.
 
-In the documented temperature-0.5 configuration, the context window was **143,360 tokens**, with a **12,288-token maximum output per ordinary model request**. The harness reserved that output allowance and a further **512 tokens** when estimating the input budget. This gives a nominal input budget of **130,560 tokens**; it is not a promise that the server will accept exactly that many tokens, because the harness uses an estimate of the rendered request.
+### Make room without rebuilding the conversation every turn
 
-When that budget was exceeded, we made a substantial cut, targeting approximately **58,000 retained tokens**, rather than deleting just enough history to fit the next request. Whole message blocks and the latest interaction impose granularity on the actual retained length. The distinction matters: the window is not the same as the input allowance, and the retained-history target is not the maximum response length.
+The temperature-0.5 configuration used a **143,360-token context window** and allowed up to **12,288 output tokens per ordinary model request**. The harness reserved that output allowance plus **512 tokens** of margin, leaving a nominal **130,560-token input budget**. It estimated the rendered request length, so the effective boundary depended on the request rather than token arithmetic alone.
 
-### Keeping the cache useful
+Once the history exceeded the budget, we cut it substantially, targeting approximately **58,000 retained tokens**. Whole message blocks and the latest interaction determined the exact retained length. The large gap between the input budget and the retention target was deliberate: it left room for several turns of growth before the next cut.
 
-The key-value cache stores intermediate model computation for a prefix that has already been processed. Our goal was to make successive requests extend that prefix, rather than rewrite it.
+This mattered because the server could reuse computation for an unchanged conversation prefix. Its key-value cache holds attention state from tokens already processed; the model also has recurrent state that must be preserved to resume a cached path. Rewriting old messages, even with equivalent reasoning or tidier formatting, can change the rendered token sequence and break that reuse. We therefore preserved generated history as faithfully as possible.
 
-We retained the model's generated history as faithfully as possible. Small changes to old reasoning, formatting, or chat-template rendering can turn an apparently similar conversation into a different token sequence. Preserving history verbatim avoids unnecessary work caused by our own transformations.
+Trimming just enough to squeeze in the next request would keep changing the prefix. A larger, less frequent cut let subsequent requests append to stable history. Each cut still caused recomputation of the affected prefix, and contention or eviction could remove cached state between requests. The aim was to reduce avoidable cache churn, not to depend on permanent residency.
 
-We also used a large gap between the trim threshold and the retained-history target. If the harness trims a little on every turn, the prefix changes on every turn. Cutting down once leaves room for multiple append-only turns before another cut is needed. A cut still invalidates the affected prefix; this strategy reduces the frequency of that event rather than making it free.
+Serving was sized for that workload: **32 concurrent request lanes**, **180 Mamba state slots**, and a **24 GB host-memory cache tier**. Attention state, recurrent state and conversation management had to work together; retaining one while repeatedly discarding another would leave part of the benefit unrealized.
 
-Finally, serving and scheduling were cache-aware. The configuration combined **32 concurrent request lanes**, **180 Mamba state slots**, and a **24 GB host-memory cache tier**. Because the model has recurrent state as well as attention state, preserving only attention keys and values is not enough. The server must also manage the recurrent state needed to resume a cached path.
+### Keep discoveries somewhere a context cut cannot erase
 
-None of this guarantees that a prefix stays resident. Eviction, contention, history trimming, and deliberate restarts can still cause recomputation. The objective was stable, reusable prefixes under the actual workload—not an assertion of permanent cache residency.
+Conversation history records how the agent reached an idea. Explicit notes record what it needs next. We gave those two jobs separate homes.
 
-### Per-game memory
+The harness maintained a persistent Markdown-style notes object outside the temporary Python sandbox. Notes writes streamed back to the harness, allowing already-recorded discoveries to survive a tool timeout. Retained helper functions also spared the agent from rebuilding useful code on every call.
 
-We separated conversational history from explicit game notes. The selected memory mode used a persistent Markdown-style notes object owned by the harness, rather than relying on ordinary variables or files inside each temporary Python sandbox. Writes were streamed back to the harness so that already-recorded notes could survive a tool timeout. Retained helper functions also reduced the need to rebuild useful code on every call.
+The notes store was capped at **40,000 characters**. When its displayed form needed shortening, the selected head-and-tail mode kept both the beginning and the end: early rules and recent findings could remain visible together. The harness could present the notes again after a context cut or level transition, restoring discovered mechanics, failed approaches and the current plan without restoring the whole conversation.
 
-The notes store was bounded at **40,000 characters**. The selected head-and-tail presentation kept the beginning and end visible when the displayed notes were shortened, rather than assuming the beginning alone contained the useful information. Notes could be shown again after a context cut or level transition. This gave the agent a place to retain discovered rules, unsuccessful approaches, and the current plan even when the full conversation no longer fit.
+We also made room for abandoning a bad line of thought. After a prolonged stall, a “fresh eyes” mechanism asked the agent to write a handover note, cleared the conversation, and prompted a fresh look at competing explanations. This deliberately traded cache reuse for a chance to escape an unproductive trajectory. Preserving state is useful only while that state is helping.
 
-We also used a “fresh eyes” mechanism for prolonged stalls: write a handover note, clear the conversation, and ask the model to reconsider competing explanations. That intentionally sacrifices the old conversation's cache reuse. It is a recovery mechanism for an unproductive trajectory, not a cache optimization.
-
-## 2. Inference: more useful attempts within the same budget
+## Fitting more play into the time budget
 
 ![The inference stack](corners-only/02-inference-v1-corners-only.png)
 
-The serving stack used a quantized Flash-Next model on a single **96 GB RTX PRO 6000**, with Daniel's SGLang fork and additional serving patches. The routed experts used four-bit weights. We restricted routing to **341 of the original 512 experts per layer**, freeing memory for the rest of the workload. This is a capacity–throughput trade-off, not a claim that removing experts improves reasoning.
+The next layer was inference. The serving stack ran a quantized Flash-Next model on a single **96 GB RTX PRO 6000**, using Daniel's SGLang fork and additional serving patches. The question was how to fit the model, reusable state and concurrent work into the available memory while leaving enough throughput for the agent to explore.
 
-We used a separately trained multi-token-prediction drafter for speculative decoding. The drafter proposes tokens; the target model verifies them. The practical metric is accepted progress per verification step, not the drafter's standalone quality. A change to the target weights can change acceptance, so a drafter trained against the old target should not be assumed to retain its speed advantage.
+The routed experts used four-bit weights, and routing was restricted to **341 of the original 512 experts per layer**. Reducing the active expert pool freed memory for the rest of the workload at the cost of model capacity. Memory layout, fused operations and kernel tiling were further parts of the same fit. The selected build also used a four-bit attention-cache configuration, with other precision choices elsewhere in the model.
 
-Memory layout, quantized cache formats, fused operations, and kernel tiling were part of the same optimization problem. The documented build used a four-bit attention-cache configuration, alongside other precision choices for different model components.
+Speculative decoding addressed generation speed. A separately trained multi-token-prediction drafter proposed tokens for the target model to verify. What mattered was how much progress the target accepted per verification step. The drafter and target were therefore a pair: changing the target weights could change acceptance and erase a speed advantage measured against the previous model.
 
-The reason to optimize this stack was straightforward: under a fixed wall-clock allowance, avoiding repeated prefill and generating tokens faster creates room for more experiments. It does not prove that the model's next experiment is better. We kept serving speed, internal game scores, and Kaggle leaderboard scores separate when evaluating changes.
+Together, faster generation and less repeated prefill left more wall-clock time for game experiments. That made serving efficiency valuable to the playing agent, while keeping the evaluation questions distinct. Throughput measures how quickly it can try; game evaluations measure whether the attempts work. An internal game score and a Kaggle leaderboard score answer different questions again.
 
-## 3. Reinforcement learning: learn from play, test beyond the training trajectory
+## Training the policy that actually plays
 
 ![The reinforcement-learning pipeline](corners-only/03-rl-v1-corners-only.png)
 
-Our training work used saved game states and model trajectories. A saved moment lets us replay the same starting situation, branch into multiple attempts, and compare what happens next without paying to rediscover the entire prefix of the game. Earlier experiments included supervised learning on efficient wins, expert iteration over alternative continuations, and a lightweight per-turn coach. Later work moved toward on-policy ReST-GRPO-style training: collect attempts from the current model, score them, update the model, and collect again.
+Once the harness could collect useful play, saved game states and trajectories gave us a starting point for training. A saved moment let us branch into several continuations from the same situation and compare their outcomes, without replaying everything that led there.
 
-The game pipeline included procedural level generation. A generated level preserved a game's mechanics while changing the instance, and came with a solution that could be replayed through the actual engine. This provided fresh training situations and action baselines, rather than depending only on a fixed collection of hand-authored boards.
+Earlier experiments included supervised learning on efficient wins, expert iteration over alternative continuations, and a lightweight per-turn coach. Later work moved toward on-policy ReST-GRPO-style training: collect attempts from the current model, score them, update the model, and collect again. The loop connected the training examples to the policy currently making the decisions.
 
-Training fidelity was a central constraint. The trainer needed the same expert-routing masks as the server. Long trajectories required memory-efficient attention and packed expert weights. We also had to distinguish improving the playing policy from improving the speculative drafter: better drafting makes inference faster without necessarily making decisions better.
+Procedural level generation supplied additional situations. A generator preserved a game's mechanics while changing the instance, and provided a solution that could be replayed through the actual engine. That gave us fresh boards and action baselines instead of relying entirely on a fixed set of hand-authored levels.
 
-The results were not uniformly positive. The October 18 review recorded several earlier weight-training attempts that tied or lost against the base model. The subsequent RL v4 record reported improvements on its internal evaluation suites. Those are different experiments and different measurement settings; neither should be presented as a controlled estimate of the final Kaggle contribution. The defensible conclusion is that reinforcement learning was an active experimental track, while harness behavior and serving efficiency were already integral to the documented submission stack.
+The serving decisions followed us into the trainer. It needed the same expert-routing masks as the deployed model; long trajectories required memory-efficient attention and packed expert weights. We also had to keep two training targets straight. Improving the playing policy changes decisions. Improving the speculative drafter can make those decisions arrive faster. Either could help the overall system, but they required different measurements.
 
-## 4. What we would emphasize
+The evidence was mixed. The October 18 review recorded earlier weight-training attempts that tied or lost against the base model; the later RL v4 record reported gains on its internal evaluation suites. Those results came from different experiments and measurement settings, so they do not establish the final Kaggle contribution of reinforcement learning. Harness behavior and serving efficiency were already part of the documented submission stack; reinforcement learning remained an experimental track.
 
-The most useful engineering distinction was between **what the agent knows**, **what it is currently doing**, and **what the server has cached**. Notes preserve selected knowledge; recent history preserves the trajectory; the cache saves computation for an exact rendered prefix. Treating them as one kind of “memory” obscures both reasoning failures and performance failures.
+## What held the layers together
 
-Our approach was to preserve useful history until a deliberate cut, give the agent explicit persistent notes, intervene when it remained stuck, and make the serving stack fast enough to support more attempts. Training then had to be judged in that same environment, not against an easier approximation of it.
+The most useful distinction was between **what the agent knows**, **what it is currently doing**, and **what the server has cached**. Notes preserve selected knowledge. Recent history preserves the trajectory. Cached state saves computation for an exact rendered prefix. Calling all three “memory” makes it easy to fix the wrong problem.
+
+Our design followed that distinction: preserve history while it is productive, cut it deliberately when it fills up, restore important discoveries from notes, and restart the reasoning when it stalls. Fit the serving stack around that behavior, then evaluate training in the same environment. Stuffing the pieces together was not enough; they had to leave room for one another to work.
 
 ## References
 
 - [Daniel Franzen's ARC-AGI-3 milestone notebook](https://www.kaggle.com/code/dfranzen/arc-agi-3-milestone-2-solution)
 - [Game catalog and project viewer](https://arc3.sonpham.net/)
-
