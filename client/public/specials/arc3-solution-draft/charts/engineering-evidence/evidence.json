@@ -1,0 +1,72 @@
+{
+  "status": "Transcribed archived source-summary measurements; not raw-log reanalysis or newly reproduced evidence",
+  "source_revision": "ec146d600013ec70abeac8571aa485e60618eaa6",
+  "hardware": "one NVIDIA RTX PRO 6000 96 GB, sm_120",
+  "model": "Flash-Next / Qwen3.8 Flash-Next family, SGLang fork",
+  "storage": {
+    "bytes_per_token": [
+      12288,
+      9624,
+      6912
+    ],
+    "scope": "12 target QSA layers, K/V payload plus scale/placeholder bytes; excludes draft cache, index keys, recurrent state and allocator overhead",
+    "source": "https://github.com/sonpham-org/arc3-speed/blob/ec146d600013ec70abeac8571aa485e60618eaa6/kernels/kkv84/README.md"
+  },
+  "decode": {
+    "unit": "wall ms/decode iteration",
+    "control": [
+      28.36,
+      28.62,
+      30.1,
+      29.32
+    ],
+    "int8": [
+      27.57,
+      26.82,
+      27.23,
+      26.34
+    ],
+    "control_runs": [
+      "daniel-bench-kw8ctlb-1006",
+      "daniel-bench-kw8ctlc-1006"
+    ],
+    "int8_runs": [
+      "daniel-bench-kw8c-1006",
+      "daniel-bench-kw8d-1006"
+    ],
+    "samples": "two values per run at minutes 10/20; 10 lanes, 11 games, 8-bit KV, 32 GB host tier",
+    "source": "https://github.com/sonpham-org/arc3-speed/blob/ec146d600013ec70abeac8571aa485e60618eaa6/kernels/kw8/README.md"
+  },
+  "prefill": {
+    "unit": "wall ms/prefill",
+    "control": [
+      196,
+      221
+    ],
+    "graph_v3": [
+      161,
+      204
+    ],
+    "run": "daniel-bench-kpgra-1007; control v2pa-1007",
+    "scope": "1500-1900 token reads, 12 lanes; observed ranges, not confidence intervals",
+    "source": "https://github.com/sonpham-org/arc3-speed/blob/ec146d600013ec70abeac8571aa485e60618eaa6/kernels/kpgraph/README.md"
+  },
+  "full_clock": {
+    "source_unit": "thousand generated tokens/minute",
+    "fp8": [
+      61.3,
+      61.8
+    ],
+    "k8v4": [
+      61.4,
+      62.5
+    ],
+    "scope": "132-minute scored GCP game clock; FP8 13 lanes/14 games + host tier vs K8V4 14 lanes/15 games, no host tier; boot-inclusive denominator not established",
+    "run_identity_gap": "Source table labels scored arms a/b (1006) and K8V4 a/b; no complete per-run log URLs recorded here. K8V4 notebook f236d2679691; do not substitute short-bench run IDs.",
+    "source": "https://github.com/sonpham-org/arc3-speed/blob/ec146d600013ec70abeac8571aa485e60618eaa6/kernels/kkv84/README.md"
+  },
+  "missing": [
+    "matched swapping/offload latency and byte-volume measurements",
+    "boot-inclusive cumulative full-run TPS ablation with pinned run IDs, timestamps and same workload"
+  ]
+}

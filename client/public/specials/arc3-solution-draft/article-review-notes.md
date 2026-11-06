@@ -37,3 +37,9 @@ Organizer thanks, evaluation mismatch, failed custom-eval correlation, recovery 
 ## Settings tables and charts — 6 November 2026
 
 Added context/trim and serving settings tables plus three archived measured charts. Full aggregate data, reproducible plotting script and source/workload caveats accompany the PNGs in charts/. No local/Kaggle correlation is asserted; no new experiments or Kaggle requests. Existing illustration discrepancies remain disclosed.
+
+## Recovered engineering visualization — 6 November 2026
+
+Recovered the November 4 four-panel engineering figure from the existing arc-3 worktree (`.claude/worktrees/arc3-game-defects-e13202/docs/lab-notes/engineering-figures`). Original figure, SVG, source JSON and renderer preserved under charts/engineering-evidence/. Values independently cross-checked here against current arc3-speed kernels/kkv84, kw8 and kpgraph READMEs. Article distinguishes storage accounting, decode-iteration samples, variable-length prefill ranges and full-game-clock throughput; these are not a cumulative ablation, boot-inclusive throughput or final submission result. This recovery does not establish that these notes are the Claude-authored draft Son referenced.
+
+Fourth illustration recovered directly from Son's reattachment in #arc3 on 6 November 2026. Added to “When speed no longer matters.” Original preserved, only antialiased alpha clipping applied; original dimensions and every RGB pixel verified unchanged. The 56.02 label belongs to the supplied artwork, not a newly established final-stack result.

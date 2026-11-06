@@ -102,6 +102,21 @@ A separate 75-game ladder favored 32 lanes over 24 and 28, with two runs per arm
 
 [Download the plotted data](charts/chart-data.json) · [Chart sources and reproduction notes](charts/README.md)
 
+### Storage, decode and prompt-reading costs
+
+![Archived storage, decode, prefill and full-game-clock measurements](charts/engineering-evidence/archived-evidence.png)
+
+These recovered October measurements show where individual serving improvements helped—and why they are not one cumulative speedup curve:
+
+- **Cache storage:** the twelve target attention layers used 12,288 bytes/token in FP8, 9,624 with eight-bit keys/four-bit values, and 6,912 with four-bit keys/values. This excludes the draft cache, recurrent state and allocator overhead; it is not total GPU memory. Lower precision can change the playing policy.
+- **Decode:** two runs per arm yielded descriptive mean iteration times of 29.10 ms for the BF16 control and 26.99 ms for INT8 dense weights. The four samples per arm were taken at minutes ten and twenty—not four independent runs, and not latency per accepted token.
+- **Prefill:** graph v3 recorded 161–204 ms versus 196–221 ms for control on 1,500–1,900-token reads. These are observed ranges across different read lengths, not confidence intervals or a matched-length speedup.
+- **Full game clock:** FP8 and K8V4 configurations delivered roughly 1,022–1,042 generated tokens/second over a 132-minute game clock. Lanes and host-cache settings changed together; boot inclusion is not established. This is not a cache-only ablation.
+
+All panels use archived summaries for an RTX PRO 6000 96 GB and the Flash-Next/SGLang stack. They are separate workloads, not newly reproduced benchmarks or evidence of a particular final Kaggle result. The earlier request for swapping latency and a cumulative boot-inclusive throughput curve remains unanswered by these sources.
+
+[Download the source data](charts/engineering-evidence/evidence.json) · [Scalable figure](charts/engineering-evidence/archived-evidence.svg) · [Reproduction script](charts/engineering-evidence/render.py)
+
 ### The optimization inventory
 
 We accumulated **102 named kernel-work directories**. That is an inventory of attempts, revisions and measurement tools—not 102 independent improvements, and certainly not 102 changes to enable together. Some replace earlier versions; others were abandoned. Grouping the complete inventory makes the reusable ideas easier to find:
@@ -164,6 +179,9 @@ The evidence was mixed. The October 18 review recorded earlier weight-training a
 The October 19 snapshot records improvement from 3.04 to 4.72 on the held-out All-16 suite, but the seven-way model soup scored below the five-way soup on this particular metric. The bars are selected checkpoint categories, **not chronological training steps**. These are internal scores on seven hard official games and nine copycats, not Kaggle leaderboard scores; the plot does not show that the trained checkpoint improved the submitted system. No variance estimates were recorded in this summary.
 
 ## When speed no longer matters
+
+![The Turducken tries to fly beyond its 56.02 score plateau](corners-only/04-speed-plateau-v1-corners-only.png)
+
 
 Speed matters while an agent is running out of time to pursue useful ideas. It matters much less when the extra tokens repeat a mistaken explanation or pursue the wrong objective. Our harder question became: when are we short of tokens, and when are we short of better tokens?
 
