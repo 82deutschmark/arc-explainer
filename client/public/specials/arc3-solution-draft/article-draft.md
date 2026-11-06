@@ -8,7 +8,7 @@ Hey everyone! Before anything else: thank you—and thank you to the organizers 
 
 Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.
 
-**Why a turducken?** Somewhere in October we realized what this competition had turned into: stuffing as much engineering into the Turducken as possible.
+**Why a turducken?** A turducken is a real American dish: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs’ harness is the chicken, Daniel Franzen’s notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much engineering into the Turducken as possible.
 
 ![Team Turducken stuffing engineering into the mechanical turkey](00-stuffing-turducken.png)
 

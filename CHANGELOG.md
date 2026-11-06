@@ -1,3 +1,7 @@
+### Version 9.162.29 · November 6, 2026
+
+- Explain the real American turducken dish and its chicken/duck/turkey nesting before the article’s engineering metaphor, making the title accessible to international readers. Synchronize Markdown, source notes and portable ZIP; preserve charts, artwork and SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-dish-explainer.md`.
+
 ### Version 9.162.28 · November 6, 2026
 
 - Correct the Turducken closing artwork to Son’s supplied family portrait, regenerated on white with integrated competition thanks and the Team Turducken signature. Replace the earlier stuffing-art variant only at the closing figure; preserve charts/data, other illustrations and DZ01 sharing metadata. Synchronize Markdown, provenance notes and portable ZIP. Author: GPT-6.1 Sol / Codex. Plan: `docs/plans/2026-11-06-turducken-family-thanks.md`.

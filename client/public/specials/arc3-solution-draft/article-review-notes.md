@@ -45,3 +45,8 @@ Son identified the correct reference as `05-family-white-v1.png` (Discord attach
 Prompt: regenerate the exact supplied family ensemble and composition, preserving each character, both Yorkshire terriers, copper mechanical turkey/duck/chicken, outfits, warm hand-inked storybook style and pure white backdrop. Keep every character fully visible; no flying ship, scenery, clouds or new characters. Add elegant dark-brown lettering below their feet, not covering characters: “Thank you for an amazing competition!” and smaller “— Team Turducken”.
 
 Only the closing artwork, its alt text and synchronized package changed. The eleven charts/data, section names, prose, settings, other illustrations and DZ01 sharing image remain unchanged.
+
+
+## Turducken explained for international readers · 6 November 2026
+
+The Boss requested a brief definition of the real American dish before the title metaphor. Added the deboned chicken-inside-duck-inside-turkey explanation, the blended name, and the corresponding harness/notebook/optimization layers. Definition and name checked against https://en.wikipedia.org/wiki/Turducken on 6 November 2026; the source associates the dish with Louisiana. No claim that all Americans eat it. All charts, settings, artwork, links and SEO remain unchanged.
