@@ -1,0 +1,83 @@
+{
+  "speed_score": {
+    "labels": [
+      "20 lanes\nK8V4",
+      "28 lanes\nship",
+      "28 lanes\nW8A8",
+      "48 lanes\nhalf experts"
+    ],
+    "tokens_per_second": [
+      1366.5,
+      1740,
+      1803,
+      1922
+    ],
+    "score": [
+      46.2,
+      47.3,
+      48.8,
+      36.9
+    ],
+    "baseline_range": [
+      1353,
+      1380
+    ],
+    "runs": [
+      1,
+      4,
+      4,
+      null
+    ]
+  },
+  "lane_ladder": {
+    "lanes": [
+      24,
+      28,
+      32
+    ],
+    "score": [
+      34.5,
+      35.9,
+      39.1
+    ],
+    "runs_per_arm": 2
+  },
+  "rl_all16": [
+    {
+      "x": "R1 Base",
+      "sub": "12 clears",
+      "y": 3.04,
+      "label": "Round 1 Baseline (12 clears, 6.0 lv/pass)"
+    },
+    {
+      "x": "R3 ReST",
+      "sub": "13 clears",
+      "y": 3.83,
+      "label": "Round 3 ReST-GRPO (13 clears, 6.5 lv/pass)"
+    },
+    {
+      "x": "R6b Run07",
+      "sub": "14 clears",
+      "y": 3.92,
+      "label": "Round 6b Run07 Soup-5 Fine-Tune (14 clears, 7.0 lv/pass)"
+    },
+    {
+      "x": "R5 Soup5",
+      "sub": "16 clears",
+      "y": 4.43,
+      "label": "Round 5 5-Way Model Soup (16 clears, 8.0 lv/pass)"
+    },
+    {
+      "x": "R7b Soup7",
+      "sub": "6/7 H7 \u2605",
+      "y": 3.83,
+      "label": "Round 7b 7-Way Soup (16 clears, 6/7 Official Hard-7 solved simultaneously!)"
+    },
+    {
+      "x": "R7c Run09 \u2605",
+      "sub": "18 clears!",
+      "y": 4.72,
+      "label": "Round 7c Pure Cycle-5 ReST-GRPO Champion (18 clears, 9.0 lv/pass, 4.79 Hard-14!)"
+    }
+  ]
+}

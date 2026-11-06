@@ -1,3 +1,7 @@
+### Version 9.162.20 · November 6, 2026
+
+- Make the Turducken setup scannable with context/trim and serving tables; add three archived-data charts covering throughput versus game score, the concurrency ladder, and internal training checkpoints. Export plotted aggregates, reproduction script and workload caveats for Kaggle reuse. Preserve existing illustration pixels and complete optimization inventory. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-tables-charts.md`.
+
 ### Version 9.162.19 · November 6, 2026
 
 - Revise “Stuffing the Turducken” from Son’s full editorial feedback: organizer and competitor thanks, a complete categorized inventory of 102 serving-work sets (including variants and unsuccessful attempts), local/Kaggle evaluation mismatch, authored-game evaluation lessons, technical dead ends and token-quality/ablation/recovery regrets. Explicitly label the 110-lane regime untested. Synchronize review page, Markdown and source notes; keep original transparent-corner artwork. Plan: `docs/plans/2026-11-06-turducken-feedback.md`. Author: GPT-6.1 Sol.

@@ -25,6 +25,19 @@ That loop produces a growing record of frames, code, observations and reasoning.
 
 ### Make room without rebuilding the conversation every turn
 
+The selected setup is easier to reproduce as a settings sheet:
+
+| Context and memory setting | Value | Role |
+|---|---|---|
+| Context window | 143,360 tokens | Total rendered request plus output allowance |
+| Maximum output per ordinary request | 12,288 tokens | Reserved generation budget |
+| Additional input margin | 512 tokens | Safety margin beyond output reserve |
+| Nominal input budget | 130,560 tokens | Window minus output allowance and margin |
+| Trim target | Approximately 58,000 tokens | Whole-block cut, not a hard exact retained size |
+| Persistent notes cap | 40,000 characters | Separate from token-budgeted history |
+| Notes display | Head and tail | Keep early rules and recent discoveries |
+| Sampling temperature | 0.5 | Selected October 18 harness |
+
 The temperature-0.5 configuration used a **143,360-token context window** and allowed up to **12,288 output tokens per ordinary model request**. The harness reserved that output allowance plus **512 tokens** of margin, leaving a nominal **130,560-token input budget**. It estimated the rendered request length, so the effective boundary depended on the request rather than token arithmetic alone.
 
 Once the history exceeded the budget, we cut it substantially, targeting approximately **58,000 retained tokens**. Whole message blocks and the latest interaction determined the exact retained length. The large gap between the input budget and the retention target was deliberate: it left room for several turns of growth before the next cut.
@@ -38,6 +51,16 @@ Serving was sized for that workload:
 - **32 concurrent request lanes** to batch generation.
 - **180 Mamba state slots** for recurrent state.
 - **24 GB of host-memory cache** to extend state capacity beyond the GPU.
+
+| Serving setting | Selected value | Purpose / trade-off |
+|---|---|---|
+| Accelerator | One 96 GB RTX PRO 6000 | Model, active state and concurrent requests share memory |
+| Concurrent lanes | 32 | Selected setup, not a universal optimum |
+| Recurrent state slots | 180 | Capacity for Mamba states |
+| Host cache tier | 24 GB | Extends reusable state beyond GPU memory |
+| Routed expert pool | 341 of 512 per layer | Frees memory at the cost of model capacity |
+| Routed expert weights | Four-bit | Higher-precision tensors remain elsewhere |
+| Selected attention cache | Four-bit | Capacity versus token-quality trade-off |
 
 Attention state, recurrent state and conversation management had to work together; retaining one while repeatedly discarding another would leave part of the benefit unrealized.
 
@@ -62,6 +85,22 @@ The routed experts used four-bit weights, and routing was restricted to **341 of
 Speculative decoding addressed generation speed. A separately trained multi-token-prediction drafter proposed tokens for the target model to verify. What mattered was how much progress the target accepted per verification step. The drafter and target were therefore a pair: changing the target weights could change acceptance and erase a speed advantage measured against the previous model.
 
 Together, faster generation and less repeated prefill left more wall-clock time for game experiments. That made serving efficiency valuable to the playing agent, while keeping the evaluation questions distinct. Throughput measures how quickly it can try; game evaluations measure whether the attempts work. An internal game score and a Kaggle leaderboard score answer different questions again.
+
+### What the measurements actually showed
+
+![Throughput and game score across archived serving configurations](charts/speed-score.png)
+
+The October 11 Score Climb 2 summary makes the trade-off concrete. The 48-lane arm generated more tokens per second, yet scored worse than either 28-lane arm. It also removed more experts and changed context length, so this is **not** evidence that lanes alone caused the loss. It is evidence that optimizing throughput without preserving the playing policy can lose the thing we actually care about. The baseline throughput bar uses the midpoint of its recorded range; its whisker shows that range, not statistical uncertainty.
+
+![The archived concurrency ladder](charts/lane-ladder.png)
+
+A separate 75-game ladder favored 32 lanes over 24 and 28, with two runs per arm. Its scores are not on the same evaluation suite as Score Climb 2. Together, these measurements argue for testing the **whole configuration**, not treating a throughput gain as a predicted game-score gain.
+
+- **What these charts support:** measured speed/score trade-offs within named archived workloads.
+- **What they do not establish:** a local-to-Kaggle conversion, a clean lane-only ablation, or a final submission result.
+- **What is missing:** comparable uncertainty estimates and a matched local/Kaggle series. We do not draw a correlation graph without those paired observations.
+
+[Download the plotted data](charts/chart-data.json) · [Chart sources and reproduction notes](charts/README.md)
 
 ### The optimization inventory
 
@@ -117,6 +156,12 @@ Procedural level generation supplied additional situations. A generator preserve
 The serving decisions followed us into the trainer. It needed the same expert-routing masks as the deployed model; long trajectories required memory-efficient attention and packed expert weights. We also had to keep two training targets straight. Improving the playing policy changes decisions. Improving the speculative drafter can make those decisions arrive faster. Either could help the overall system, but they required different measurements.
 
 The evidence was mixed. The October 18 review recorded earlier weight-training attempts that tied or lost against the base model; the later RL v4 record reported gains on its internal evaluation suites. Those results came from different experiments and measurement settings, so they do not establish the final Kaggle contribution of reinforcement learning. Harness behavior and serving efficiency were already part of the documented submission stack; reinforcement learning remained an experimental track.
+
+### Training progress was real on the internal suite—not a leaderboard promise
+
+![Internal evaluation across selected reinforcement-learning checkpoints](charts/rl-all16.png)
+
+The October 19 snapshot records improvement from 3.04 to 4.72 on the held-out All-16 suite, but the seven-way model soup scored below the five-way soup on this particular metric. The bars are selected checkpoint categories, **not chronological training steps**. These are internal scores on seven hard official games and nine copycats, not Kaggle leaderboard scores; the plot does not show that the trained checkpoint improved the submitted system. No variance estimates were recorded in this summary.
 
 ## When speed no longer matters
 

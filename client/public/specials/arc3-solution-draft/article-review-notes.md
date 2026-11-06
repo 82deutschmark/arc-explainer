@@ -33,3 +33,7 @@ Reworked the opening and transitions around the nested playing, harness and serv
 ## Son feedback revision — 6 November 2026
 
 Organizer thanks, evaluation mismatch, failed custom-eval correlation, recovery regret and the untested 110-lane counterfactual use Son’s direct account in #arc3, 6-November-2026 12:49 EST. The optimization inventory is exactly all 102 k-prefixed directories in ~/GitHub/arc3-speed/kernels, cross-checked against README.md, KERNEL-LEDGER.md, set READMEs and builder docstrings. It includes revisions, snapshots, diagnostics and dead ends, not 102 independent shipped optimizations. The descriptive table copies no implementation code. The repository link is access-controlled and explicitly labeled. Public source release/access remains a separate decision; this article does not claim availability. Authored-game link /arc3/games verified against the application route. Existing artwork and numerical source checks unchanged.
+
+## Settings tables and charts — 6 November 2026
+
+Added context/trim and serving settings tables plus three archived measured charts. Full aggregate data, reproducible plotting script and source/workload caveats accompany the PNGs in charts/. No local/Kaggle correlation is asserted; no new experiments or Kaggle requests. Existing illustration discrepancies remain disclosed.
