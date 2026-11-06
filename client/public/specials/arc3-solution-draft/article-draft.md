@@ -8,7 +8,9 @@ Hey everyone! Before anything else: thank you—and thank you to the organizers 
 
 Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.
 
-**Why a turducken?** Somewhere in October we realized what this competition had turned into. Everyone gets the same card, the same 9 hours and the same 110 games, and once a strong public notebook exists, the race becomes a stuffing contest: how much can you fit inside one bird? That's our entry in the picture. Tufa Labs' harness is the chicken in the middle, Daniel's Milestone 2 notebook is the duck around it, and the turkey is everything we stuffed in around them: 8-bit weights, fused and tiled kernels, a 4-bit history cache, the host CPU and RAM, and 32 games decoding at once instead of 10. It worked, right up until we stuffed in too much. The last part of this post is about that.
+**Why a turducken?** Somewhere in October we realized what this competition had turned into: stuffing as much engineering into the Turducken as possible.
+
+![Team Turducken stuffing engineering into the mechanical turkey](00-stuffing-turducken.png)
 
 Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
 
@@ -84,7 +86,17 @@ Every optimization below is a trade inside this box: free memory to run more gam
 
 ![The game-playing harness](01-harness-garage-v2-corners-only.png)
 
-### 1.1 What the model sees
+### 1.1 How we measured improvements
+
+Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.
+
+Our custom-game effort also produced [Mark’s authored game collection](https://arc.markbarney.net/arc3/games). A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
+
+The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
+
+Board noise, from 8 identical controls: one standard deviation is 1.9 points. Two runs only see effects of about 4 points, and four runs see about 3. Most harness ideas are smaller than that. That's the honest truth of this competition: **most harness ideas drowned in noise**, and the ones that didn't were big.
+
+### 1.2 What the model sees
 
 The base is Daniel Franzen's harness: the model plays by writing python that calls the game, and sees each frame as a 512 px image (the 64×64 grid at 8x, 256 image tokens). On top of it, the 56.02 harness has:
 
@@ -98,7 +110,7 @@ The base is Daniel Franzen's harness: the model plays by writing python that cal
 
 - **Context management:** trim, swap and wipe, below. It's the part of the harness that touches everything else.
 
-### 1.2 Trimming and swapping the context
+### 1.3 Trimming and swapping the context
 
 Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:
 
@@ -192,16 +204,6 @@ whole-run speed**1,674 → 1,807**tok/s (+8%)
 
 A blank line is one token (271); a single newline is another (198). One character was enough to throw away the cache for the rest of every prompt.
 
-### 1.3 How we tested harness ideas
-
-Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The copycats tracked Kaggle best (correlation 0.81 over 9 submissions). The hardest public games didn't track it at all.
-
-Our custom-game effort also produced [Mark’s authored game collection](https://arc.markbarney.net/arc3/games). A correlation on a small retrospective sample did not make our board a reliable gate: it repeatedly liked packages that lost on Kaggle.
-
-The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
-
-Board noise, from 8 identical controls: one standard deviation is 1.9 points. Two runs only see effects of about 4 points, and four runs see about 3. Most harness ideas are smaller than that. That's the honest truth of this competition: **most harness ideas drowned in noise**, and the ones that didn't were big.
-
 ### 1.4 What worked and what didn't
 
 [
@@ -254,6 +256,12 @@ What the traces told us:
 - **Stuck means stuck.** About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.
 
 - **Loops are common.** 35% of moves in our best board run returned the board to an earlier state.
+
+### 1.5 The evaluation gap
+
+**A local improvement was not necessarily a Kaggle improvement.** Our board liked 12 of the ideas above; Kaggle agreed with only 3 of those and went down on the other 9. A promising local delta was a reason to investigate, not proof that the submission had improved.
+
+We tried to close that gap with synthetic games, including the copycats and [Mark’s authored game set](https://arc.markbarney.net/arc3/games). The copycats showed promise on a small retrospective sample, but we ultimately did not build an evaluation set that correlated reliably enough with Kaggle to guide our decisions. Apparently xz@ made better use of synthetic games and beat us; that is our impression, not a measured comparison of their evaluation set with ours.
 
 ## Inference Optimization
 
@@ -423,38 +431,38 @@ Open or download: [vector SVG](charts/original/memory.svg) · [high-resolution P
 | --- | --- | --- | --- |
 | Expert cut | Remove the least-used third of the experts from the card (512 → 341 per layer) | weights 66 → 46.2 GiB | lossy |
 | 4-bit history cache | Keys and values in NVFP4 (the draft model keeps FP8) | 1.01M → 3.80M tokens, with the cut | lossy |
-| Free the 16-bit output head ( khfree ) | Serve the head from its int8 copy and free the 16-bit one before the cache is sized | +0.57 GiB | exact |
-| Deduplicate shared tensors ( kdupe ) | The draft and main models held separate copies of the same tensors | +2.04 GB | exact |
+| Free the 16-bit output head (khfree) | Serve the head from its int8 copy and free the 16-bit one before the cache is sized | +0.57 GiB | exact |
+| Deduplicate shared tensors (kdupe) | The draft and main models held separate copies of the same tensors | +2.04 GB | exact |
 | 180 Mamba slots | Fewer spare linear-attention state slots (~55 MB each) | cache 3.47M → 3.80M tokens | exact |
-| Peak memory log ( kmempeak ) | Log the real memory peak so the cache can be sized to the edge | lowest headroom 1.9 GiB | exact |
+| Peak memory log (kmempeak) | Log the real memory peak so the cache can be sized to the edge | lowest headroom 1.9 GiB | exact |
 
 **Cheaper steps: dense layers and the output head**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| 8-bit dense weights ( kw8 ) | Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed) | step 29.1 → 27.0 ms | lossy |
-| 8-bit activations ( kw8a8 ) | Int8 inputs to the dense layers once a step has more than 64 rows | -3.5 ms per step at 192 rows | lossy |
-| Int8 kernels by row count ( kw8m , kw8x , kw8x3 ) | Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding | at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms | exact |
-| Small 16-bit multiplies ( kfast ) | A faster kernel for the few dense multiplies left in 16-bit | 9.76 → 9.12 ms per step | lossy |
-| Hyper-connection glue ( khc , kglue , kglue2 , kgate8 , kbig3 ) | The model's layer-mixing steps fused into fewer kernels | kernels per step 2,575 → 2,131; -1.2 ms per step | exact |
-| Output head ( klgf , klmh3 , klmh4 ) | The int8 head in one launch, writing the final logits directly | 1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows | exact |
+| 8-bit dense weights (kw8) | Dense layers and the output head in int8, one scale per 128 inputs (3x more accurate than FP8 at the same speed) | step 29.1 → 27.0 ms | lossy |
+| 8-bit activations (kw8a8) | Int8 inputs to the dense layers once a step has more than 64 rows | -3.5 ms per step at 192 rows | lossy |
+| Int8 kernels by row count (kw8m, kw8x, kw8x3) | Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding | at 80 rows 5.21 → 3.55 ms; at 136 rows 9.7 → 7.7 ms | exact |
+| Small 16-bit multiplies (kfast) | A faster kernel for the few dense multiplies left in 16-bit | 9.76 → 9.12 ms per step | lossy |
+| Hyper-connection glue (khc, kglue, kglue2, kgate8, kbig3) | The model's layer-mixing steps fused into fewer kernels | kernels per step 2,575 → 2,131; -1.2 ms per step | exact |
+| Output head (klgf, klmh3, klmh4) | The int8 head in one launch, writing the final logits directly | 1,641 → 1,475 µs; 1,494 → 1,127 µs at 192 rows | exact |
 
 **Experts and routing**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
 | Batch-aware routing, 3 guaranteed experts | Steer tokens to experts the batch already reads; each token keeps its own top 3 (was 4) | +5% speed | lossy |
-| One-kernel reroute ( kbafuse , kbafuse2 ) | The reroute and the cut-expert remap in one kernel per layer | 68-73 → 33-49 µs per layer | exact |
-| One-kernel routing ( kroute ) | Expert selection in one kernel instead of four | 22.3 → 6.9 µs per layer | exact |
-| 16-row expert blocks ( kmoebm16 ) | Smaller blocks when each expert gets only a few rows | 696 → 623 µs per layer at 184 rows | lossy |
+| One-kernel reroute (kbafuse, kbafuse2) | The reroute and the cut-expert remap in one kernel per layer | 68-73 → 33-49 µs per layer | exact |
+| One-kernel routing (kroute) | Expert selection in one kernel instead of four | 22.3 → 6.9 µs per layer | exact |
+| 16-row expert blocks (kmoebm16) | Smaller blocks when each expert gets only a few rows | 696 → 623 µs per layer at 184 rows | lossy |
 
 **Attention**
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| Attention indexer ( kidx , kidxv ) | Load each block of keys once per game instead of once per draft token | 98 → 61 µs per layer | exact |
-| 4-bit attention ( kpf44 , kpf44b , kqsort ) | Prefetch the next block, split keys 8 ways, read keys in order | 237 → 228 µs; 277 → 265 µs | exact / rounding |
-| Linear attention ( kgdn , kconv , kfuse , kvdtrim ) | Read inputs in place, a one-tile conv, skip state writes for empty slots | 8.5 → 4.1 µs per conv call; +7.5% with kfast | exact |
+| Attention indexer (kidx, kidxv) | Load each block of keys once per game instead of once per draft token | 98 → 61 µs per layer | exact |
+| 4-bit attention (kpf44, kpf44b, kqsort) | Prefetch the next block, split keys 8 ways, read keys in order | 237 → 228 µs; 277 → 265 µs | exact / rounding |
+| Linear attention (kgdn, kconv, kfuse, kvdtrim) | Read inputs in place, a one-tile conv, skip state writes for empty slots | 8.5 → 4.1 µs per conv call; +7.5% with kfast | exact |
 
 **More tokens per pass: speculative decoding**
 
@@ -462,10 +470,10 @@ Open or download: [vector SVG](charts/original/memory.svg) · [high-resolution P
 | --- | --- | --- | --- |
 | MTP drafting | From Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass, with exact rejection sampling | 1 → 2.69 tokens per pass | exact |
 | Our drafters | Draft heads fine-tuned on our own games, run in int8 | 2.69 → 3.05 per pass | exact |
-| Faster draft sampling ( kdsamp ) | Pick the top candidates first instead of scanning the whole draft vocabulary | 126 → 13 µs per draft step | exact |
-| Per-game verify depth ( kvd ) | Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most) | +5% | lossy |
+| Faster draft sampling (kdsamp) | Pick the top candidates first instead of scanning the whole draft vocabulary | 126 → 13 µs per draft step | exact |
+| Per-game verify depth (kvd) | Each game verifies only as many draft tokens as it's likely to keep (5 per game, 128 rows at most) | +5% | lossy |
 | 4 draft steps | One more guess per pass | 3.05 → 3.25 per pass, with kvd | lossy |
-| Draft extend on one row ( kdext ) | After a verify, the draft model updates only the row it keeps | +5.2% | lossy |
+| Draft extend on one row (kdext) | After a verify, the draft model updates only the row it keeps | +5.2% | lossy |
 
 Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.
 
@@ -494,19 +502,19 @@ Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for a
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
-| Host-RAM copy ( khost44 ) | A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe | games losing their history 9 → 0; +7.5% tok/s | exact |
+| Host-RAM copy (khost44) | A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe | games losing their history 9 → 0; +7.5% tok/s | exact |
 | Lost-history fix | A bug that made 48-lane runs re-read whole histories | re-reads 32% → 11% of GPU time | exact |
 | Verbatim history | Keep the model's answer byte for byte (Part 1) | +8% tok/s | harness |
 | Window and trim | 140k window, 52k keep (Part 1) | re-reads 12% → 8% of the run | harness |
-| Pin side-request checkpoints ( kpinbranch ) | A summary or review call no longer forces the next turn to re-read its history | 1,787 → 2,160 tok/s | exact |
-| Image embeddings in RAM ( kvlmhost ) | Keep image embeddings in RAM instead of re-encoding them after a trim | 454 RAM hits vs 1,172 first encodes by minute 8 | exact |
-| Prompt attention ( kqsapf , kqsapf2 , kmqa ) | Better tiles for long prompt reads | 6.06 → 4.95 ms per call | exact |
-| No q/k/v copy ( kqkvz ) | Pass inputs as a view instead of copying them | 412 → 171 µs per layer | exact |
-| Fused prompt glue ( kglu ) | Small copies folded into the prefill kernels | 356 → 206 µs at 8,192 rows | exact |
-| Prompt-read experts ( kprefill ) | A better expert-kernel layout for prompt reads | -19% at 1k tokens, -7% at 8k | lossy |
-| CUDA graphs, no host syncs ( kpgraph , kpfsync , kprsync ) | Small reads were waiting on Python; replay recorded graphs instead | small read 175 → 113 ms | exact / rounding |
-| Image encoder attention ( fa4 ) | FlashAttention-4 for the vision encoder | 366 → 87 µs per layer | lossy |
-| Memory-light embedding conv ( kpleconv ) | Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle | 800 → 281 MB per 8k read | exact |
+| Pin side-request checkpoints (kpinbranch) | A summary or review call no longer forces the next turn to re-read its history | 1,787 → 2,160 tok/s | exact |
+| Image embeddings in RAM (kvlmhost) | Keep image embeddings in RAM instead of re-encoding them after a trim | 454 RAM hits vs 1,172 first encodes by minute 8 | exact |
+| Prompt attention (kqsapf, kqsapf2, kmqa) | Better tiles for long prompt reads | 6.06 → 4.95 ms per call | exact |
+| No q/k/v copy (kqkvz) | Pass inputs as a view instead of copying them | 412 → 171 µs per layer | exact |
+| Fused prompt glue (kglu) | Small copies folded into the prefill kernels | 356 → 206 µs at 8,192 rows | exact |
+| Prompt-read experts (kprefill) | A better expert-kernel layout for prompt reads | -19% at 1k tokens, -7% at 8k | lossy |
+| CUDA graphs, no host syncs (kpgraph, kpfsync, kprsync) | Small reads were waiting on Python; replay recorded graphs instead | small read 175 → 113 ms | exact / rounding |
+| Image encoder attention (fa4) | FlashAttention-4 for the vision encoder | 366 → 87 µs per layer | lossy |
+| Memory-light embedding conv (kpleconv) | Run one conv in 2,048-token pieces; fixed a crash that ended whole games on Kaggle | 800 → 281 MB per 8k read | exact |
 
 ### 2.4 Overhead: 255 → 61 ms per 1,000 tokens
 
@@ -534,10 +542,10 @@ The best find here was invisible in per-step profiles: for every new request, th
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
 | Image hash off the scheduler | Hash images in the tokenizer process, not the scheduler loop | 205 → 8.5 ms stall per image request | exact |
-| Zero-copy image hand-off ( kshm ) | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
-| Overlapped launches ( kpdl ) | Each small kernel starts while the last one finishes | ~0.23 µs per kernel | exact |
+| Zero-copy image hand-off (kshm) | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
+| Overlapped launches (kpdl) | Each small kernel starts while the last one finishes | ~0.23 µs per kernel | exact |
 | 34 games over 32 lanes | Two extra games fill lanes left idle by games running python | +4.7 on our 75-game board | harness |
-| Startup DNS fix ( kdnsfix ) | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → ~0 | exact |
+| Startup DNS fix (kdnsfix) | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → ~0 | exact |
 | Scorecard keep-alive (after 56.02) | Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00) | a 46-minute load played normally | harness |
 
 ### 2.5 What didn't make it
@@ -700,5 +708,7 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 ### Thanks again
 
 Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.
+
+![Team Turducken and the mechanical bird on a white background](05-closing-crew-white.png)
 
 This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.

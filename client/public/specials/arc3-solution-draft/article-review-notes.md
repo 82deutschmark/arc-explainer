@@ -21,3 +21,14 @@ Son supplied the complete 29-page `stuffing-the-turducken.pdf` as the visual ref
 Typography is converted to vector paths so standalone SVG/PNG reproductions do not depend on browser font availability. PNG companions are 2400 pixels wide. All eleven charts were inspected in a contact sheet; board/Kaggle, decode waterfall, time breakdown, thinking/score and public-score staircase also inspected at full size against PDF references. Article removes duplicate panel headings/legends/captions; numerical HTML tables remain accessible. On narrow displays, chart panels keep a readable minimum width with horizontal scrolling and explicit full-size SVG/PNG links. A local Chrome file preview was blocked by the browser URL policy, so a complete local-page browser screenshot is not claimed. No bypass attempted.
 
 Reproduction: run `python3.13 charts/redraw_pdf_panels.py` from the canonical report. Requires fontTools, BeautifulSoup, the existing offline DOM/Sharp renderer and locally archived original HTML. Font sources and SIL Open Font Licenses accompany the renderer. No benchmark runs, Kaggle calls, or deployment configuration changes.
+
+## Son’s final editorial feedback, 6 November 2026
+
+Recovered the exact crew-stuffing illustration from the original Discord attachment cache (`exec-3e315eae-d4f8-436e-96d9-15ec7f792ada---d0df6c07-478e-4f3a-9979-96436a471212.png`). It is copied unchanged as `00-stuffing-turducken.png`. The introductory picture narration is replaced by Son’s short engineering-stuffing premise.
+
+Moved the complete board measurement procedure, repeat-run noise estimate and readiness/submission loop before all harness changes. The harness conclusion now explicitly distinguishes local and Kaggle improvement and states that synthetic games did not yield a sufficiently reliable predictive evaluation set. Original retrospective copycat correlation remains intact and qualified by its small sample; it is not erased or misrepresented as zero correlation. The xz@ observation is from Son’s firsthand feedback on 6 November; it is explicitly an impression, not an independently checked claim about that team’s process.
+
+All eleven PDF-style chart asset files and their underlying measurement arrays are preserved, alongside all four previous illustrations and the exact section names. No Kaggle requests or runs.
+
+
+Closing artwork: `05-closing-crew-white.png` is a newly generated white-background variant of the original `00-stuffing-turducken.png`, created with the built-in image-generation tool, not a recovered original. Prompt: preserve the distinctive crew, nested mechanical birds, engineering components and warm amber hand-inked style; remove the workshop scenery and isolate the group on pure white, fully visible; no new text, border or panels. The original introduction artwork remains unchanged.

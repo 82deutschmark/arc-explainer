@@ -1,3 +1,7 @@
+### Version 9.162.25 · November 6, 2026
+
+- Apply Son’s final Turducken editorial feedback: restore the original crew-stuffing introduction artwork, simplify its premise, explain measurement before harness improvements, and close that section with the synthetic-evaluation/local-versus-Kaggle gap. Add a matching white-background thank-you illustration; retain all eleven static PDF-style charts, original data, exact section names and existing art. Synchronize Markdown, review notes and portable package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-final-editorial.md`.
+
 ### Version 9.162.24 · November 6, 2026
 
 - Redraw all eleven Turducken charts as complete PDF-reference vector figures, not bare plot exports: integrated serif titles, warm panels, summary cards, legends and caveats. Preserve original measured geometry/data; outline type for consistent SVG rendering and add 2400px PNGs. Keep numerical HTML tables and readable horizontally scrollable mobile figures; synchronize Markdown, source notes and portable ZIP. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-pdf-chart-redraw.md`.
