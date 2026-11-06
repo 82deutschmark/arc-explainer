@@ -79,5 +79,41 @@
       "y": 4.72,
       "label": "Round 7c Pure Cycle-5 ReST-GRPO Champion (18 clears, 9.0 lv/pass, 4.79 Hard-14!)"
     }
-  ]
+  ],
+  "harness_local_kaggle": {
+    "source": "Autoresearch-Arena/arc-3 harnesses/daniel-main-1017/MANIFEST.md, Claude Opus 5.5, 17-October-2026",
+    "local_suite": "Score Climb 2: 25 official + 25 copycat games, 200 minutes, 32 lanes",
+    "rows": [
+      {
+        "label": "Seal + notes head/tail",
+        "local": 61.1,
+        "kaggle": 48.92,
+        "local_runs": [
+          62.0,
+          63.2,
+          58.2,
+          61.1
+        ]
+      },
+      {
+        "label": "+ goal first",
+        "local": 62.4,
+        "kaggle": 47.45,
+        "local_runs": [
+          65.0,
+          59.8
+        ]
+      },
+      {
+        "label": "+ M180 serving",
+        "local": 61.5,
+        "kaggle": null,
+        "local_runs": [
+          60.7,
+          62.3
+        ]
+      }
+    ],
+    "caveat": "Historical snapshot, not complete final lineage; Kaggle missing for M180 because not yet submitted. Source reports rounded local means; goal-first runs at minute 194. Not a controlled cumulative ablation; suite and Kaggle scores are not calibrated."
+  }
 }

@@ -35,3 +35,19 @@ a.bar(labels,values,color=["#758391"]+["#34735a"]*5); a.set_ylim(0,5.5); a.set_y
 for i,v in enumerate(values): a.text(i,v+.08,f"{v:.2f}",ha="center")
 a.set_title("Selected training checkpoints: progress, but not a monotonic gain")
 finish(f,"rl-all16.png","7 hard official + 9 copycat games. Selected checkpoints, not chronological; no uncertainty supplied. Snapshot: October 19, 2026 UTC.")
+
+# Missing leaderboard measurements remain gaps, never zero-valued bars.
+s=D["harness_local_kaggle"]; rows=s["rows"]
+f,axes=plt.subplots(1,2,figsize=(12,5.8))
+for a,key,title,color in zip(axes,["local","kaggle"],["Local: Score Climb 2", "Kaggle public leaderboard"],["#34735a","#ba7138"]):
+    for i,row in enumerate(rows):
+        value=row[key]
+        if value is None:
+            a.text(i,5,"Not yet\nsubmitted",ha="center",fontsize=11,color="#555555")
+        else:
+            a.bar(i,value,color=color,width=.62)
+            a.text(i,value+1,f"{value:g}",ha="center",fontsize=11)
+    a.set_xticks(range(len(rows)),["Seal + notes\nhead/tail", "+ goal first", "+ M180\nserving"])
+    a.set_ylim(0,75); a.set_ylabel("Reported score"); a.set_title(title,fontsize=13)
+f.suptitle("Harness improvements: local gain did not predict Kaggle gain",fontsize=15)
+finish(f,"harness-local-kaggle.png","October 16–17 archive · Different evaluation sets; not a controlled ablation or calibrated scores. Source: Claude's harness manifest.")

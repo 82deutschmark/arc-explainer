@@ -8,7 +8,7 @@ That is our turducken: the playing policy sits inside a tool-using harness, whic
 
 Here we describe the October 18 submission harness and inference configuration, followed by the reinforcement-learning experiments that developed alongside and after it.
 
-## Turning observations into experiments
+## Harness Iteration
 
 ![The game-playing harness](corners-only/01-harness-garage-v2-corners-only.png)
 
@@ -74,7 +74,23 @@ The notes store was capped at **40,000 characters**. When its displayed form nee
 
 We also made room for abandoning a bad line of thought. After a prolonged stall, a “fresh eyes” mechanism asked the agent to write a handover note, cleared the conversation, and prompted a fresh look at competing explanations. This deliberately traded cache reuse for a chance to escape an unproductive trajectory. Preserving state is useful only while that state is helping.
 
-## Fitting more play into the time budget
+### When the local score stopped predicting Kaggle
+
+![Harness improvements on local testing versus Kaggle](charts/harness-local-kaggle.png)
+
+Reconstructed from Claude Opus 5.5’s October 17 harness manifest, not the original draft graphic. Score Climb 2 used 25 official and 25 copycat games, 200 minutes and 32 lanes. Local means were 61.1 for Seal + notes head/tail, approximately 62.4 after goal-first prompting, and 61.5 with M180 serving; the first two Kaggle scores were 48.92 and 47.45. M180 had not been submitted in this snapshot. The goal-first local runs were reported at minute 194. These are different evaluation sets, not calibrated scores or a controlled cumulative ablation; the local run spread was roughly ±2 points.
+
+One of our most important observations was also one of the least satisfying: an improvement on our local evaluation did not reliably produce an improvement on Kaggle. We could make the serving system faster, or raise our internal game score, without knowing whether that change would help on the hidden games. These were three different measurements:
+
+- **Throughput:** how much reasoning and play fit into the time budget.
+- **Local game score:** whether the agent improved on the games and settings in our evaluation.
+- **Kaggle score:** whether that improvement transferred to the competition’s hidden games.
+
+We tried building our own games to create a separate evaluation set. The aim was to test unfamiliar mechanics rather than keep tuning against the same familiar tasks. The [authored game collection on ARC Explainer](https://arc.markbarney.net/arc3/games) is part of that effort and is available to explore.
+
+Making playable games was not the same as making a useful measuring stick. Ultimately, we did not establish a custom evaluation set whose improvements correlated well enough with Kaggle to guide our decisions confidently. We should not confuse that failure with a lack of interesting games: the missing piece was predictive evaluation. Local results remained useful for diagnosis, but they could not settle which stack would generalize best.
+
+## Inference Optimization
 
 ![The inference stack](corners-only/02-inference-v1-corners-only.png)
 
@@ -146,19 +162,7 @@ The portable recipe is more useful than blindly copying a patch chain:
 
 The [serving-work repository](https://github.com/sonpham-org/arc3-speed) contains the named sets and the kernel ledger. It is access-controlled at the time of this draft; the table above is the self-contained inventory, not a claim that every reader can download the implementation.
 
-## When the local score stopped predicting Kaggle
-
-One of our most important observations was also one of the least satisfying: an improvement on our local evaluation did not reliably produce an improvement on Kaggle. We could make the serving system faster, or raise our internal game score, without knowing whether that change would help on the hidden games. These were three different measurements:
-
-- **Throughput:** how much reasoning and play fit into the time budget.
-- **Local game score:** whether the agent improved on the games and settings in our evaluation.
-- **Kaggle score:** whether that improvement transferred to the competition’s hidden games.
-
-We tried building our own games to create a separate evaluation set. The aim was to test unfamiliar mechanics rather than keep tuning against the same familiar tasks. The [authored game collection on ARC Explainer](https://arc.markbarney.net/arc3/games) is part of that effort and is available to explore.
-
-Making playable games was not the same as making a useful measuring stick. Ultimately, we did not establish a custom evaluation set whose improvements correlated well enough with Kaggle to guide our decisions confidently. We should not confuse that failure with a lack of interesting games: the missing piece was predictive evaluation. Local results remained useful for diagnosis, but they could not settle which stack would generalize best.
-
-## Training the policy that actually plays
+## RL
 
 ![The reinforcement-learning pipeline](corners-only/03-rl-v1-corners-only.png)
 
@@ -200,7 +204,7 @@ Our regrets are about how we chose experiments, not just which kernels we finish
 
 There was also a trap in having a clear objective. Once we were optimizing a particular operating point, evidence against nearby changes narrowed what we were willing to try. We observed lower performance when moving beyond 32 lanes, so we never tried the more radical idea of running **110 lanes at once**. That does not mean 110 would have worked: it remains untested, and fitting that workload would have required different trade-offs. The regret is that we let a local trend stand in for an experiment on a different regime.
 
-## What held the layers together
+### What held the layers together
 
 The most useful distinction was between **what the agent knows**, **what it is currently doing**, and **what the server has cached**. Notes preserve selected knowledge. Recent history preserves the trajectory. Cached state saves computation for an exact rendered prefix. Calling all three “memory” makes it easy to fix the wrong problem.
 

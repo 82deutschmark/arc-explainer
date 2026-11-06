@@ -1,3 +1,7 @@
+### Version 9.162.22 · November 6, 2026
+
+- Restore Son’s original section names and place local/Kaggle harness evidence under Harness Iteration. Add a clearly labeled reconstruction from Claude’s archived harness manifest, retaining missing measurements and workload limits; synchronize article and package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-original-sections.md`.
+
 ### Version 9.162.21 · November 6, 2026
 
 - Restore Son’s fourth “56.02 score plateau” illustration to “When speed no longer matters,” using transparent rounded corners only and preserving all source RGB pixels and dimensions. Recover the earlier four-panel engineering figure with cache-storage, decode, prefill and full-game-clock measurements, source data and renderer; distinguish these historical workloads from cumulative or final-submission results. Synchronize reading page, Markdown, notes and Kaggle package. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-restore-visuals.md`.

@@ -7,3 +7,5 @@ These are archived observations, not current runs or final submission results. N
 - rl-all16.png: arc-3/docs/static/data/rl4-live.json, snapshot 2026-10-19T16:02:00Z, trend_charts.all16.points. Seven hard official games + nine copycats, held out from training per archived dashboard. Displayed as checkpoint categories, not a chronological learning curve (source orders R6b before R5). Selected checkpoints, no error bars or variance available; not Kaggle scores and not proof of final submission improvement.
 
 chart-data.json contains exactly the plotted aggregates. generate_charts.py reproduces all PNGs with matplotlib. Private serving implementation is not copied; only the aggregate measurements requested for the article are exported.
+
+Harness comparison: harness-local-kaggle.png is reconstructed from the adjacent Claude-authored harness-source-manifest.md (October 17), not a recovered original draft chart. Data are in chart-data.json; missing Kaggle results are intentionally absent.
