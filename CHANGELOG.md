@@ -1,3 +1,7 @@
+### Version 9.162.28 · November 6, 2026
+
+- Correct the Turducken closing artwork to Son’s supplied family portrait, regenerated on white with integrated competition thanks and the Team Turducken signature. Replace the earlier stuffing-art variant only at the closing figure; preserve charts/data, other illustrations and DZ01 sharing metadata. Synchronize Markdown, provenance notes and portable ZIP. Author: GPT-6.1 Sol / Codex. Plan: `docs/plans/2026-11-06-turducken-family-thanks.md`.
+
 ### Version 9.162.27 · November 6, 2026
 
 - Replace the gallery’s arbitrary first-game social preview with the boss-selected authentic DZ01 opening board, rendered as a crisp wide game card. Keep server and client gallery titles, descriptions, image alt text and dimensions consistent. Add the Turducken draft’s missing canonical, description, Open Graph and Twitter tags without changing its draft indexing policy or article artwork. Author: GPT-6.1 Sol / Codex. Plan: `docs/plans/2026-11-06-dz01-sharing-seo.md`.

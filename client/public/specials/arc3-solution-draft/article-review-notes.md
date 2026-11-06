@@ -36,3 +36,12 @@ Closing artwork: `05-closing-crew-white.png` is a newly generated white-backgrou
 ## Games-collection links corrected, 6 November 2026
 
 The Boss supplied https://arc.markbarney.net/arc3/gallery as the intended authored-game collection. The previous `/arc3/games` target is the official-game guides page, not the authored gallery. Verified the gallery route in `client/src/App.tsx` and `CommunityGallery.tsx`, the repository remote `82deutschmark/arc-explainer`, and its authored sources under `server/data/arc3-games`; gallery and source-directory URLs both returned HTTP 200. Corrected both article links and added the direct source-directory link. Removed unsupported wording that attributed the gallery to the same measured copycat evaluation effort or treated it as a validated predictive benchmark. Original copycat measurements remain unchanged. Audited all outbound article links and relative image/download targets; preserved chart/data/artwork bytes. No Kaggle calls.
+
+
+## Correct family portrait closing artwork · 6 November 2026
+
+Son identified the correct reference as `05-family-white-v1.png` (Discord attachment, saved at `media/inbound/openclaw-staged-ec4460bf-6262-404f-ba63-adeb50ca72fd/input-05-family-white-v1---6f70fd1a-a05e-4601-937f-22691d2e74da.png` in the workspace). This supersedes the earlier generated stuffing-illustration variant documented above. The closing image is now `05-family-white-thankyou-v2.png`, regenerated with the built-in image-generation tool from that supplied portrait, not recovered original artwork. Original reference left intact. White background retained.
+
+Prompt: regenerate the exact supplied family ensemble and composition, preserving each character, both Yorkshire terriers, copper mechanical turkey/duck/chicken, outfits, warm hand-inked storybook style and pure white backdrop. Keep every character fully visible; no flying ship, scenery, clouds or new characters. Add elegant dark-brown lettering below their feet, not covering characters: “Thank you for an amazing competition!” and smaller “— Team Turducken”.
+
+Only the closing artwork, its alt text and synchronized package changed. The eleven charts/data, section names, prose, settings, other illustrations and DZ01 sharing image remain unchanged.
