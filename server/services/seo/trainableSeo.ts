@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-27
- * PURPOSE: Render approved games and their collection using the existing catalog; individual games are not sitemap targets.
+ * Date: 06-November-2026
+ * PURPOSE: Render approved games and collection content while retaining the shared, curated DZ01 gallery share metadata.
  * SRP/DRY check: Pass — uses the same manifest as the player, never a second approval list.
  */
 import { Arc3TrainableCatalog, trainablePlayId } from '../arc3Mirror/Arc3TrainableCatalog';
@@ -27,6 +27,6 @@ export async function resolvePublicPageMeta(route: string): Promise<ReturnType<t
     const id = trainablePlayId(v), label = v.finalLabel || v.gameId;
     return `<li><a href="/arc3/play/${id}"><img src="/api/arc3-mirror/games/${id}/thumbnail?size=256" alt="${esc(label)} opening board" width="128" height="128" loading="lazy"/>Play ${esc(label)}</a></li>`;
   }).join('')}</ul></main>`;
-  if (versions[0]) tags.image = approvedPlayMeta(trainablePlayId(versions[0]), versions[0].finalLabel || versions[0].gameId).image;
+  // Gallery social art is curated in shared/routes.ts, not selected by catalog order.
   return { status: 200, tags: completeMeta(tags) };
 }

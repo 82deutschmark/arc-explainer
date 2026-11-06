@@ -1,3 +1,7 @@
+### Version 9.162.27 · November 6, 2026
+
+- Replace the gallery’s arbitrary first-game social preview with the boss-selected authentic DZ01 opening board, rendered as a crisp wide game card. Keep server and client gallery titles, descriptions, image alt text and dimensions consistent. Add the Turducken draft’s missing canonical, description, Open Graph and Twitter tags without changing its draft indexing policy or article artwork. Author: GPT-6.1 Sol / Codex. Plan: `docs/plans/2026-11-06-dz01-sharing-seo.md`.
+
 ### Version 9.162.26 · November 6, 2026
 
 - Correct Turducken’s authored-game links to the actual gallery and ARC Explainer game-source directory, replacing official-guide targets and unsupported evaluation-set attribution. Audit article destinations and synchronize downloadable Markdown, notes and ZIP; preserve measurements, charts and artwork. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-game-links.md`.

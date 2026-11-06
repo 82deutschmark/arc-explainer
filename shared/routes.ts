@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 02-November-2026
- * PURPOSE: Describe the permanent Card Cabinet and Mark Barney's research and original-game collection.
+ * Date: 06-November-2026
+ * PURPOSE: Describe public routes and provide consistent gallery search/social metadata with the boss-selected authentic DZ01 preview.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
@@ -139,15 +139,15 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   },
 
   '/arc3/gallery': {
-    title: 'Play ARC-AGI-3 Games — Human-Reviewed Originals | ARC Explainer',
+    title: 'ARC-AGI-3 Game Gallery — Play Original Games | ARC Explainer',
     description:
-      'Play human-reviewed original ARC-AGI-3 reasoning games in your browser. Discover the rules through interaction. No login required.',
+      'Explore our collection of human-reviewed original ARC-AGI-3 games. Pick a board, experiment with its controls and discover its rules. Play free in your browser.',
     url: 'https://arc.markbarney.net/arc3/gallery',
-    // OUR game, not an official one. This was ls20-9607627b -- an ARC Prize Foundation
-    // task -- so every share of this site led with somebody else's work as the picture.
-    // g012 is from the reviewed set and has the busiest opening frame of the fifty
-    // (10 colours) which is what survives being shrunk to a share-card thumbnail.
-    image: 'https://arc.markbarney.net/api/arc3-mirror/games/g012/thumbnail?size=512',
+    // Boss-selected DZ01: committed opening board, nearest-neighbour on a wide share card.
+    // Keep this stable instead of letting catalog ordering choose the public preview.
+    image: 'https://arc.markbarney.net/arc3-dz01-share.png',
+    imageAlt: 'DZ01 opening board — yellow playfield with pixel characters and a hearts display, from our original ARC-AGI-3 game collection',
+    imageWidth: 1200, imageHeight: 630,
     type: 'website',
   },
 
