@@ -1,4 +1,4 @@
-# ARC-AGI-3: making a game-playing model use its time well
+# Stuffing the Turducken
 
 Our approach combined three lines of work: a tool-using game harness, a faster inference stack, and experiments in reinforcement learning. The practical lesson was that these are not independent. A model that takes longer to generate each attempt explores less; a harness that repeatedly discards its cached context spends its budget rereading; and a training recipe that differs from the served model can optimize the wrong behavior.
 

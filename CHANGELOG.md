@@ -1,3 +1,7 @@
+### Version 9.162.17 · November 6, 2026
+
+- Restore Son’s requested article title, “Stuffing the Turducken,” in the ARC-3 review page’s browser title, heading and description and its Markdown download. URL, body and rounded-corner images remain unchanged. Files: `client/public/specials/2026-11-06-arc3-solution-draft.html`, `client/public/specials/arc3-solution-draft/article-draft.md`; plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.162.16 · November 6, 2026
 
 - Publish the requested ARC-3 technical write-up as a standalone, responsive review page under `/specials/2026-11-06-arc3-solution-draft.html`, with the three unchanged transparent-corner PNGs and a Markdown download. Explicit October 18 draft scope and figure captions disclose the 52k/58k and 34/32 discrepancies; no final November result or unverified ARC-CODE link is claimed. Reuses static specials publishing without changing the app, news feed, schedules, or services. Files: reading page and `arc3-solution-draft/` assets; plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.
