@@ -1,3 +1,7 @@
+### Version 9.162.16 · November 6, 2026
+
+- Publish the requested ARC-3 technical write-up as a standalone, responsive review page under `/specials/2026-11-06-arc3-solution-draft.html`, with the three unchanged transparent-corner PNGs and a Markdown download. Explicit October 18 draft scope and figure captions disclose the 52k/58k and 34/32 discrepancies; no final November result or unverified ARC-CODE link is claimed. Reuses static specials publishing without changing the app, news feed, schedules, or services. Files: reading page and `arc3-solution-draft/` assets; plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.162.15 · November 5, 2026
 
 - Card backs, redone from the Boss's notes: much bigger type; no web address or copyright line; each career row's medal coin now sits in the left margin (no separate medal column); a second picture (a team or action scene) fills the space above the record sheet and is cropped toward its subjects so it is actually seen. Mutian Hong's and Bushi Liu's backs use the whale scene. Team profile pages show "first seen" again (the last-seen date stays gone). Author: Claude Sonnet 5.5 Medium.
