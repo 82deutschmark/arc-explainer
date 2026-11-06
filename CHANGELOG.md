@@ -1,3 +1,7 @@
+### Version 9.162.31 · November 6, 2026
+
+- Use Son’s exact forwarded texture-restored v10 artwork as the Turducken article’s first image, retaining original pixels and existing corner styling. Synchronize Markdown, provenance notes and ZIP without changing the closing portrait, prose, charts or SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-first-image.md`.
+
 ### Version 9.162.30 · November 6, 2026
 
 - Restore the exact original family portrait texture in the Turducken closing figure rather than a smoother generated redraw. Preserve the thank-you as native text below the untouched image, synchronize Markdown/notes/ZIP, and retain all prose, charts, settings and SEO. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-06-turducken-original-texture.md`.

@@ -57,3 +57,7 @@ The Boss requested a brief definition of the real American dish before the title
 Son requested recovery of the original texture. The closing illustration now uses `05-family-white-original-texture-v3.png`, a byte-for-byte copy of his supplied `05-family-white-v1.png` attachment. This supersedes the smoother generated v2. No resampling, re-encoding, sharpening or further image generation was used: the original engraved linework, fabric, metal and fur detail are preserved exactly. The same thank-you text is rendered separately as native HTML/Markdown, so adding the wording cannot degrade the image. This is restoration of the supplied artwork, not a newly generated variation. Imagegen skill was consulted; no image edit/generation prompt or tool call was needed because the original bitmap is unchanged.
 
 Scope: closing figure and its caption only; article prose/order, all eleven charts/data, other illustrations and SEO unchanged.
+
+## First image: forwarded texture-restored v10
+
+Son supplied the forwarded `turducken-corrected-v10-texture.png` (Discord attachment 1568354730449699027). Downloaded unchanged from its media proxy and visually inspected. Published as `00-turducken-texture-v10.png` in the introduction, using existing rounded-only CSS, with no generation, crop or recompression. Closing original family portrait, caption, all prose/charts/settings and DZ01 SEO unchanged. SHA-256: f5ef72ab71954022e9fc69f21a91bc88fa35c74ecbca6aa871d031b3f5f59733.

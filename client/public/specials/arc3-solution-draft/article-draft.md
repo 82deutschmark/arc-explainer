@@ -10,7 +10,7 @@ Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, wh
 
 **Why a turducken?** A turducken is a real American dish: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs’ harness is the chicken, Daniel Franzen’s notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much engineering into the Turducken as possible.
 
-![Team Turducken stuffing engineering into the mechanical turkey](00-stuffing-turducken.png)
+![Team Turducken stuffing engineering into the mechanical turkey](00-turducken-texture-v10.png)
 
 Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
 
