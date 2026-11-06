@@ -1,5 +1,7 @@
 # Stuffing the Turducken
 
+First, thank you to the organizers for an amazing competition—and for the generous free RTX compute that let us pursue so many experiments. Having that hardware available made this project possible, including the ideas that failed.
+
 An ARC-AGI-3 agent has to learn what a game is asking while it plays. Every frame is evidence; every action spends time testing a hypothesis. A useful solver therefore needs more than a model that can reason about pictures. It needs a harness that turns reasoning into experiments, an inference stack that leaves time to run them, and a way to carry discoveries forward when the conversation fills up.
 
 That is our turducken: the playing policy sits inside a tool-using harness, which runs inside a carefully fitted serving system. We worked on all three layers, then explored reinforcement learning to improve the policy itself. The connections mattered as much as the individual pieces. A faster model can try more ideas, but repeatedly rereading a rewritten conversation wastes that advantage. Training can improve a policy, but only if the model being trained behaves like the one being served.
@@ -12,7 +14,12 @@ Here we describe the October 18 submission harness and inference configuration, 
 
 We built on Daniel Franzen's notebook and agent framework. The model receives a game frame and writes Python in a sandbox to inspect the frame and take actions. This lets it organize a sequence of moves as a small experiment: identify an uncertainty, choose an action that distinguishes possible explanations, and use the resulting frame to update its model of the game.
 
-The harness had to address two familiar failures. Sometimes the agent analyzed the board at length without moving. Sometimes it moved confidently while pursuing the wrong goal. We emphasized identifying the objective, probing unfamiliar mechanics with small tests, and batching actions once their effects were understood. A level transition called for the same discipline: carry forward the game's rules, but reconsider the plan for the new board.
+The harness had to address two familiar failures: analysis without action, and confident action toward the wrong goal. Our working habits were:
+
+- Identify the objective before committing to a long plan.
+- Probe unfamiliar mechanics with small, discriminating experiments.
+- Batch actions once their effects are understood.
+- At a level transition, carry forward the rules but reconsider the plan for the new board.
 
 That loop produces a growing record of frames, code, observations and reasoning. Keeping it useful became both a memory problem and a serving problem.
 
@@ -26,7 +33,13 @@ This mattered because the server could reuse computation for an unchanged conver
 
 Trimming just enough to squeeze in the next request would keep changing the prefix. A larger, less frequent cut let subsequent requests append to stable history. Each cut still caused recomputation of the affected prefix, and contention or eviction could remove cached state between requests. The aim was to reduce avoidable cache churn, not to depend on permanent residency.
 
-Serving was sized for that workload: **32 concurrent request lanes**, **180 Mamba state slots**, and a **24 GB host-memory cache tier**. Attention state, recurrent state and conversation management had to work together; retaining one while repeatedly discarding another would leave part of the benefit unrealized.
+Serving was sized for that workload:
+
+- **32 concurrent request lanes** to batch generation.
+- **180 Mamba state slots** for recurrent state.
+- **24 GB of host-memory cache** to extend state capacity beyond the GPU.
+
+Attention state, recurrent state and conversation management had to work together; retaining one while repeatedly discarding another would leave part of the benefit unrealized.
 
 ### Keep discoveries somewhere a context cut cannot erase
 
@@ -50,6 +63,47 @@ Speculative decoding addressed generation speed. A separately trained multi-toke
 
 Together, faster generation and less repeated prefill left more wall-clock time for game experiments. That made serving efficiency valuable to the playing agent, while keeping the evaluation questions distinct. Throughput measures how quickly it can try; game evaluations measure whether the attempts work. An internal game score and a Kaggle leaderboard score answer different questions again.
 
+### The optimization inventory
+
+We accumulated **102 named kernel-work directories**. That is an inventory of attempts, revisions and measurement tools—not 102 independent improvements, and certainly not 102 changes to enable together. Some replace earlier versions; others were abandoned. Grouping the complete inventory makes the reusable ideas easier to find:
+
+| Category | Named sets and variants | What to reuse—and what to watch |
+|---|---|---|
+| Dense weights and matrix multiplication | `kfast`, `kfast128`, `kfp8`, `kintn`, `kw4d`, `kw8`, `kw8L`, `kw8a8`, `kw8a8b`, `kw8b`, `kw8bf`, `kw8m`, `kw8x`, `kw8x2`, `kw8x3`, `kgemm256` | Small-batch kernels, precision screens, split-row tactics and activation quantization. INT8 with per-128-input scales was preferable to FP8 in our screen; W8A8 traded precision for speed. Several entries are probes or ablation variants, not shipped improvements. |
+| Expert routing and capacity | `kchop`, `kchopp`, `kexp3`, `ktopk`, `kbafuse`, `kbafuse2`, `kroute`, `kmerge`, `kmoebm16`, `kmoefill`, `kmskip` | Mask or physically remove experts, test fewer experts per token, fuse rerouting/remapping, and tune MoE blocks. Exact routing glue and lossy capacity reductions must be evaluated separately; reducing the batch-aware expert count lost score. |
+| Attention cache and sparse attention | `kkv44`, `kkv44b`, `kkv44c`, `kkv44d`, `kkv84`, `kkv84f`, `kkv84f2`, `kkv84f3`, `kkv84f4`, `kkv84r`, `kq8`, `kq8cfg`, `kq8cfg84`, `kq8r`, `kqsak`, `kqsapf` | Four/eight-bit key-value formats, fused unpack-and-attend kernels, launch configurations, ring variants, sparse-pick screens and prefill tactics. Quantization creates room for lanes but can weaken token quality; a faster unpack kernel does not remove that trade-off. |
+| Attention indexing | `kidx`, `kidxr`, `kmqa`, `kmqa2` | Reuse key tiles across verification rows and split prefill scoring over the key range. Later variants merge earlier patches; they are not independent additive wins. |
+| Hyperconnection mixing and launch glue | `khc`, `kglue`, `kglue1005`, `kglue2`, `khcpf`, `khcpf2`, `kbig`, `kbig2`, `kbig3`, `kgate8`, `kpdl`, `kpdl128`, `ktrim` | Fuse mixing, normalization and gates; overlap an early gate; extend tactics beyond 128 rows; reduce launch overhead. Includes a frozen snapshot and unsuccessful early-start/prefetch and single-launch variants. |
+| Linear-attention state and convolution | `kconv`, `kgdn`, `kqkvz`, `kfuse`, `kfuse8` | Avoid redundant copies, read strided query/key/value views directly, and fuse or omit redundant work. The full Gated DeltaNet rewrite ultimately ran into the memory-bandwidth floor. |
+| Vocabulary heads and sampling | `kdflnext`, `kdhead8`, `kdhead8b`, `kdraft8`, `kdsamp`, `klgf`, `klmh`, `klmh3`, `ktsamp`, `ktsamp2` | Draft-head INT8, compressed target heads, chunk reuse, and top-k-first sampling probes. Draft-only quantization changes proposals; exact target verification is a different guarantee from target-model quantization. |
+| Weight placement and pool sizing | `kdupe`, `kdupe8h`, `kembhost`, `kembw8`, `khfree`, `khfree2`, `khfree3`, `khost44` | Host embeddings, merged patch variants, freeing redundant head weights before cache sizing, and a host tier for four-bit attention/recurrent state. Freeing memory after pool sizing was too late to buy cache capacity. |
+| Recurrent-cache retention | `kanchor`, `kmamba`, `kkeep`, `kkeep2`, `kmsoft`, `ktail` | Diagnose missing answer-end states; protect or save recurrent state and shared prefixes. Soft protection and newest-tail protection passed local checks but failed to deliver in-server; the keep-slot fix addressed skipped saves under lazy speculative execution. |
+| Prefill scheduling and overlap | `kpdmux`, `kpdmuxk`, `kpdmuxk2`, `kpdmuxm`, `kpdshare`, `kpfsync`, `kpgraph`, `kprefill`, `kprio`, `kmix` | Prefill graphs, host-sync removal, split-GPU prefill/decode overlap, stream priority and scratch isolation. Graphing the router at padded row counts could change expert selection; overlap could slow competing kernels enough to lose overall. |
+| Request handoff and measurement | `kshm`, `kprof` | Zero-copy multimodal handoff and whole-request profiling. Profiling is tooling, not a model optimization; CPU-side stalls can be invisible in decode-only timings. |
+| Speculative acceptance experiments | `krelax` | Relaxed acceptance traded target-distribution fidelity for throughput. Treat it as an answer-changing experiment, not an exact speculative-decoding acceleration. |
+
+The portable recipe is more useful than blindly copying a patch chain:
+
+- **Profile the whole game workload.** Separate generation, prompt reading, image handling and cache re-reads; a decode-only benchmark misses several of the largest stalls.
+- **Optimize exact operations first.** Remove copies, redundant work and launch gaps before spending model quality for throughput. Check equality at every relevant row count, including graph replay.
+- **For lossy changes, measure both drift and play.** A small numerical error is a screening result, not evidence of improved game solving.
+- **Re-sweep concurrency and context together.** More lanes change batch shapes and cache pressure; a faster kernel can move the best operating point.
+- **Respect patch order.** Several variants replace entire files. They are alternatives or revisions, not a menu of independent switches.
+
+The [serving-work repository](https://github.com/sonpham-org/arc3-speed) contains the named sets and the kernel ledger. It is access-controlled at the time of this draft; the table above is the self-contained inventory, not a claim that every reader can download the implementation.
+
+## When the local score stopped predicting Kaggle
+
+One of our most important observations was also one of the least satisfying: an improvement on our local evaluation did not reliably produce an improvement on Kaggle. We could make the serving system faster, or raise our internal game score, without knowing whether that change would help on the hidden games. These were three different measurements:
+
+- **Throughput:** how much reasoning and play fit into the time budget.
+- **Local game score:** whether the agent improved on the games and settings in our evaluation.
+- **Kaggle score:** whether that improvement transferred to the competition’s hidden games.
+
+We tried building our own games to create a separate evaluation set. The aim was to test unfamiliar mechanics rather than keep tuning against the same familiar tasks. The [authored game collection on ARC Explainer](https://arc.markbarney.net/arc3/games) is part of that effort and is available to explore.
+
+Making playable games was not the same as making a useful measuring stick. Ultimately, we did not establish a custom evaluation set whose improvements correlated well enough with Kaggle to guide our decisions confidently. We should not confuse that failure with a lack of interesting games: the missing piece was predictive evaluation. Local results remained useful for diagnosis, but they could not settle which stack would generalize best.
+
 ## Training the policy that actually plays
 
 ![The reinforcement-learning pipeline](corners-only/03-rl-v1-corners-only.png)
@@ -64,11 +118,32 @@ The serving decisions followed us into the trainer. It needed the same expert-ro
 
 The evidence was mixed. The October 18 review recorded earlier weight-training attempts that tied or lost against the base model; the later RL v4 record reported gains on its internal evaluation suites. Those results came from different experiments and measurement settings, so they do not establish the final Kaggle contribution of reinforcement learning. Harness behavior and serving efficiency were already part of the documented submission stack; reinforcement learning remained an experimental track.
 
+## When speed no longer matters
+
+Speed matters while an agent is running out of time to pursue useful ideas. It matters much less when the extra tokens repeat a mistaken explanation or pursue the wrong objective. Our harder question became: when are we short of tokens, and when are we short of better tokens?
+
+Several technically appealing approaches did not pan out:
+
+- **More aggressive compression and expert reduction.** These bought memory and throughput, but could take away the reasoning capacity we were trying to exploit. In the recorded lane experiments, the faster 48-lane, half-chopped configuration scored worse locally than the less aggressively chopped stack.
+- **Smarter cache protection.** Protecting a seemingly useful recurrent state looked sensible and passed unit tests, yet could preserve the stale state while the next turn’s needed state was evicted. A plausible cache policy was not enough; the full request lifecycle mattered.
+- **Prefill/decode overlap.** Running them together sounded like free utilization. In practice, shared resources, scratch buffers and kernels sized for the full GPU made overlap difficult, and contention could erase the benefit.
+- **Rewriting work already at its bandwidth floor.** The linear-attention kernel experiments showed how much engineering can produce little gain when data movement, rather than arithmetic, sets the limit.
+
+Our regrets are about how we chose experiments, not just which kernels we finished:
+
+1. **Gauge when token quality actually matters.** We needed a better way to distinguish a game that would benefit from more exploration from one that needed a stronger next inference. Tokens per second alone could not tell us that.
+2. **Ablate backward, not only build forward.** We should have systematically withdrawn optimizations to ask which precision or capacity could be restored in exchange for fewer, better tokens. Some numerical screens and local comparisons were not a substitute for that end-to-end study.
+3. **Be less ambitious about recovery.** Restarting a stalled trajectory, writing a handover and preserving notes are useful mechanisms, but they do not ensure that an agent can recover from a wrong model of the game. We put too much hope in rescuing bad trajectories instead of preventing them or recognizing when to stop investing in them.
+
+There was also a trap in having a clear objective. Once we were optimizing a particular operating point, evidence against nearby changes narrowed what we were willing to try. We observed lower performance when moving beyond 32 lanes, so we never tried the more radical idea of running **110 lanes at once**. That does not mean 110 would have worked: it remains untested, and fitting that workload would have required different trade-offs. The regret is that we let a local trend stand in for an experiment on a different regime.
+
 ## What held the layers together
 
 The most useful distinction was between **what the agent knows**, **what it is currently doing**, and **what the server has cached**. Notes preserve selected knowledge. Recent history preserves the trajectory. Cached state saves computation for an exact rendered prefix. Calling all three “memory” makes it easy to fix the wrong problem.
 
 Our design followed that distinction: preserve history while it is productive, cut it deliberately when it fills up, restore important discoveries from notes, and restart the reasoning when it stalls. Fit the serving stack around that behavior, then evaluate training in the same environment. Stuffing the pieces together was not enough; they had to leave room for one another to work.
+
+It has been an honor to compete with everyone. Thank you to the organizers and to the other teams for making this such a generous, challenging and memorable competition.
 
 ## References
 

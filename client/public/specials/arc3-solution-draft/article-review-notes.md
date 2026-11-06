@@ -29,3 +29,7 @@ The root `ARC3-Inference/inference/agent/tool_agent.py` defaults (32768 context 
 ## Editorial pass — 6 November 2026
 
 Reworked the opening and transitions around the nested playing, harness and serving layers. Reduced repeated defensive qualifications while preserving numerical settings, cache limitations, source links and the distinction between internal training evaluations and submission evidence. Artwork remains unchanged.
+
+## Son feedback revision — 6 November 2026
+
+Organizer thanks, evaluation mismatch, failed custom-eval correlation, recovery regret and the untested 110-lane counterfactual use Son’s direct account in #arc3, 6-November-2026 12:49 EST. The optimization inventory is exactly all 102 k-prefixed directories in ~/GitHub/arc3-speed/kernels, cross-checked against README.md, KERNEL-LEDGER.md, set READMEs and builder docstrings. It includes revisions, snapshots, diagnostics and dead ends, not 102 independent shipped optimizations. The descriptive table copies no implementation code. The repository link is access-controlled and explicitly labeled. Public source release/access remains a separate decision; this article does not claim availability. Authored-game link /arc3/games verified against the application route. Existing artwork and numerical source checks unchanged.

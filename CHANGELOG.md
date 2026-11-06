@@ -1,3 +1,7 @@
+### Version 9.162.19 · November 6, 2026
+
+- Revise “Stuffing the Turducken” from Son’s full editorial feedback: organizer and competitor thanks, a complete categorized inventory of 102 serving-work sets (including variants and unsuccessful attempts), local/Kaggle evaluation mismatch, authored-game evaluation lessons, technical dead ends and token-quality/ablation/recovery regrets. Explicitly label the 110-lane regime untested. Synchronize review page, Markdown and source notes; keep original transparent-corner artwork. Plan: `docs/plans/2026-11-06-turducken-feedback.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.162.18 · November 6, 2026
 
 - Give “Stuffing the Turducken” an editorial pass: connect harness, serving and training through a coherent narrative, preserve verified settings and training-evaluation limits, and move publication checks out of article prose. Synchronize the reading page and Markdown download; retain unchanged rounded-corner artwork and add downloadable source-review notes. Plan: `docs/plans/2026-11-06-arc3-solution-reading-page.md`. Author: GPT-6.1 Sol.
