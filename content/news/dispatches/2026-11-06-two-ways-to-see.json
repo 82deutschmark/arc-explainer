@@ -1,0 +1,53 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "dek": "A five-author ARC-AGI-2 team gave its model two independently developed ways to tackle each grid. Yi-Chia Chen wants to know where each one shines.",
+  "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra Extra High",
+  "generatedBy": "gpt-6.1-terra-extra-high",
+  "headline": "Two ways to see the same puzzle",
+  "id": "2026-11-06-two-ways-to-see",
+  "image": {
+    "alt": "Five established team characters work around two coloured puzzle paths that meet at a shared answer.",
+    "caption": "The Goose’s characters for S & M & N & S & Y examine two routes through the grids.",
+    "src": "/news-images/goose-e6dd75fbd638d83200dc.webp"
+  },
+  "publishedAt": "2026-11-06T19:31:14.128504+00:00",
+  "sections": [
+    {
+      "heading": "One puzzle, two passes",
+      "sourceIds": [
+        "team",
+        "board"
+      ],
+      "text": "One puzzle, two passes, and a final vote. S & M & N & S & Y sent the same model at ARC-AGI-2’s coloured grids through two independently developed solving setups. The first opened with pictures. The other started with text and a Python workspace. Neither got to peek at the other’s answers before taking its turn.\n\nIn their solution write-up, Maciej Sypetkowski, Natalia Jaśkowska, shiiin9, Sergey Bryansky and yuritosci describe an entry that reached ninth on the public board. The final private order and awards are still unknown. The Goose has followed the team on its climb; now the authors have opened the workshop door."
+    },
+    {
+      "heading": "First a picture, then another look",
+      "sourceIds": [
+        "team"
+      ],
+      "text": "The first pass presented the training examples and test grids as images. It could also use text versions in a workspace and run Python. When it wrote a program, the setup automatically checked it against the training examples.\n\nThe second pass began with up to four example pairs as text and used Python to examine the test inputs and any other examples. It used the same underlying model, but its prompt, settings, tools and checks differed. The authors say it started fresh for every task after the first pass ended, regardless of the earlier answer.\n\nThat matters when looking for a winner between the two. This is not a clean experiment that changes only pictures into text: several conditions changed together. The team collected candidate grids from both passes; if they agreed on a grid, it ranked first when choosing the two final answers."
+    },
+    {
+      "heading": "A question from a rival",
+      "sourceIds": [
+        "team"
+      ],
+      "text": "Yi-Chia Chen spotted the same opportunity in the replies. She asked whether the authors had analysed which types of task favoured the image-based or text-based solver. The visible discussion had no answer to that question when the Goose read it. It is a tempting comparison, but the write-up does not establish a general champion.\n\nThe two passes were possible because the team also squeezed the model and managed its working memory across four competition graphics cards. The authors say they pruned and compressed the model, moved waiting conversations into host memory when needed, and kept as many active as the available cache would hold. They report no model training in this approach.\n\nOne team, two routes through the grids, and a question the rest of the field can pick up: where does a picture help a solver notice a pattern that text obscures—and where does it get in the way?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-06T19:31:14.128504+00:00",
+      "id": "team",
+      "title": "S & M & N & S & Y: ninth public solution write-up and discussion",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/9th-public-lb-place-writeup"
+    },
+    {
+      "accessedAt": "2026-11-06T19:31:14.128504+00:00",
+      "id": "board",
+      "title": "ARC-AGI-2 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard"
+    }
+  ]
+}

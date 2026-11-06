@@ -1,0 +1,92 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-33f74dabc4b4197b1acd"
+    ],
+    "assets": [
+      {
+        "sha256": "33f74dabc4b4197b1acda9856b2edfe8ea0876106a53efca9fe1c01b980a2f52",
+        "source": "client/public/news-images/2026-11-06-mp-clock-v2.webp",
+        "target": "client/public/news-images/goose-33f74dabc4b4197b1acd.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/2026-11-06-mp-clock",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "mp’s ARC-AGI-2 agent needed speed, patience and a way to check its own work. Its experiments suggest abandoning difficult puzzles too early can be costly.",
+      "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra Extra High",
+      "generatedBy": "gpt-6.1-terra-extra-high",
+      "headline": "The puzzle solver racing the clock",
+      "id": "2026-11-06-mp-clock",
+      "image": {
+        "alt": "mp’s tabby character watches glowing puzzle attempts in a workshop with a large unnumbered clock.",
+        "caption": "The Goose’s character for mp works through several ARC puzzles against the clock.",
+        "src": "/news-images/goose-33f74dabc4b4197b1acd.webp"
+      },
+      "publishedAt": "2026-11-06T19:31:14.128504+00:00",
+      "sections": [
+        {
+          "heading": "A race against time",
+          "sourceIds": [
+            "mp",
+            "board"
+          ],
+          "text": "An ARC puzzle can resist for a long time before a useful idea arrives. For mp, the trick was finding enough time for those ideas without letting the clock swallow the rest of the field.\n\nIn a solution write-up, mp describes an agent that writes Python programs for coloured-grid puzzles, tests them against the examples and sends surviving attempts to a vote. The public-board result put okiek fifteenth; the private results and awards remain to be confirmed.\n\nThere is a temptation to pull a struggling solver off a problem and send it somewhere else. In mp’s own tests, aborting slow attempts too early cost points. Difficult attempts were expensive, but an expensive attempt could still be the one that eventually found a usable program. These are the author’s experiments on this system, not a universal rule for every agent."
+        },
+        {
+          "heading": "More attempts, more chances",
+          "sourceIds": [
+            "mp"
+          ],
+          "text": "The contest imposed a twelve-hour limit. mp treated it as a budget for the model’s output: make the system run faster, and the agent could try more approaches before time ran out. The account describes compressing a large Qwen model to fit the competition hardware, then adjusting part of it with reinforcement learning to recover some quality. It also describes changes to the machinery serving the model.\n\nSpeed alone did not settle whether an answer was any good. Each puzzle came with examples showing the transformation to learn. The agent could write a program, run it against those examples and revise it when checks failed. Candidates also had to satisfy consistency checks derived from the task. Multiple attempts could then vote on an answer.\n\nPassing the examples was useful, not a guarantee. mp’s analysis says some programs survived verification yet produced wrong answers on test inputs. A rule can explain every example it has seen and still miss the principle behind the puzzle."
+        },
+        {
+          "heading": "The bills hidden in the workshop",
+          "sourceIds": [
+            "mp",
+            "board"
+          ],
+          "text": "The write-up also records less glamorous work on the agent’s surroundings. mp reports finding that a failed library import could be repeated in later code cells, and that some error messages pointed to the wrong line. Fixing those problems improved the author’s own tests.\n\nThe Goose had met okiek on the ARC-AGI-2 board before the close. The recorded October roster listed mp’s Kaggle account; the write-up and the public board now give readers a closer look at the system behind the run.\n\nYi-Chia Chen asked whether giving a solver more time to rethink a passing program resembled the review turns mp had tested. The visible discussion had no answer when checked. The write-up says the submission notebook, model parts and training code are still to come. Will the balance of speed, checks and patience hold up when the rest of the field can try it?"
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-06T19:31:14.128504+00:00",
+          "id": "mp",
+          "title": "mp: Scaling Qwen Flash-Next and Dots-3 Note",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/solution-scaling-qwen-3-8-flash-next-and-dots-3"
+        },
+        {
+          "accessedAt": "2026-11-06T19:31:14.128504+00:00",
+          "id": "board",
+          "title": "ARC-AGI-2 public leaderboard",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard"
+        }
+      ]
+    },
+    "storyId": "2026-11-06-mp-clock",
+    "storySha256": "625f0634581d24052255947bb3d81f3c13408767adf263f730ea05d1e4a1e025",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "33f74dabc4b4197b1acda9856b2edfe8ea0876106a53efca9fe1c01b980a2f52",
+        "source": "client/public/news-images/2026-11-06-mp-clock-v2.webp",
+        "target": "client/public/news-images/goose-33f74dabc4b4197b1acd.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Read the actual Kaggle write-up and visible replies in the in-app browser, checked the public board and named authors against the dated wiki. Compared the clean scene against its reviewed character reference and checked the finished programmed panel at full and phone size. Public places remain provisional; author-reported experiments are attributed.",
+    "reviewedAt": "2026-11-06T19:32:58.150890+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
+    "storySha256": "625f0634581d24052255947bb3d81f3c13408767adf263f730ea05d1e4a1e025"
+  }
+}
