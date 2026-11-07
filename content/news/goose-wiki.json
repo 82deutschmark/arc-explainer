@@ -11993,7 +11993,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "3fee933b73e0a6bcd835f79b96650084064de6f1108be5da997342b9f3354bf5",
+  "fingerprint": "890a06d879bc7cb4fa66712fa61fdac453f7fa3ae6a2b0ab294234b396e16c1e",
   "people": [
     {
       "accounts": [
@@ -24702,6 +24702,24 @@
         "name": "Team Turducken",
         "season": "2026",
         "setId": "arc-3-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "The observed nvbanana roster contains cpmpml and darraghdog. Those two handles also appear in NVARC3 on the ARC-AGI-3 board; these remain separate competition entries.",
+        "entries": [
+          {
+            "competition": "arc-2",
+            "competitionId": "arc-prize-2026-arc-agi-2",
+            "teamId": "15486939"
+          }
+        ],
+        "id": "team-arc-prize-2026-arc-agi-2--15486939-arc-2-2026",
+        "issuedAt": "2026-11-07T23:19:33+00:00",
+        "kind": "team",
+        "name": "nvbanana",
+        "season": "2026",
+        "setId": "arc-2-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -24712,7 +24730,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-06T21:27:54+00:00",
+    "updatedAt": "2026-11-07T23:19:33+00:00",
     "version": 1
   },
   "results": [],

@@ -1,0 +1,105 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-63bcf0ef4d4eec573d4b"
+    ],
+    "assets": [
+      {
+        "sha256": "63bcf0ef4d4eec573d4b3c9ae57054438ba6310f8f72fc3d2ccf8279a0e3a0ec",
+        "source": "client/public/news-images/nvbanana-old-books-v1.webp",
+        "target": "client/public/news-images/goose-63bcf0ef4d4eec573d4b.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/nvbanana-old-books",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "Puzzle books from centuries past helped nvbanana train a grid-solving model. A late-arriving second solver gave the duo one more push up the ARC-AGI-2 public board.",
+      "editorNote": "The Loose Goose sports desk · GPT-6 / Codex",
+      "generatedBy": "gpt-6-codex",
+      "headline": "The old books behind NVIDIA’s new tricks",
+      "id": "nvbanana-old-books",
+      "image": {
+        "alt": "An imagined library laboratory: Jean-François Puget and Darragh Hanley study antique puzzle books beside glowing grids; a small plate identifies nvbanana and its public-board place.",
+        "caption": "The Goose imagines nvbanana turning old puzzle-book ideas into new grids.",
+        "src": "/news-images/goose-63bcf0ef4d4eec573d4b.webp"
+      },
+      "publishedAt": "2026-11-07T23:20:09.443587+00:00",
+      "sections": [
+        {
+          "heading": "A very old bag of tricks",
+          "sourceIds": [
+            "writeup",
+            "history"
+          ],
+          "text": "The books were old. The puzzles were new. And the two people raiding the shelves were trying to teach a machine to see its way through ARC’s coloured grids.\n\nIn their newly published solution, Jean-François “CPMP” Puget and Darragh Hanley describe how nvbanana turned ideas from historical puzzle, mathematics, toy and engineering books into a vast synthetic training set. Their entry reached third on the public leaderboard. That is a provisional public result: the private order and awards remain to be decided.\n\nThere is a sporting reason to pay attention. Puget was part of NVARC, the team that won ARC Prize 2025. This year he and Hanley had a familiar problem: a field that refused to stand still. Their account says new Qwen models reshaped the race, and the pair had to adjust as other teams caught up."
+        },
+        {
+          "heading": "From dusty pages to fresh grids",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The authors say the books ranged from 1588 to 1949, across several languages. A puzzle about sheep pens, for example, inspired a grid rule about merging hollow squares into a shared-wall arrangement. The books supplied ideas; the team says it did not copy their contents into the generated puzzles.\n\nTheir pipeline used Gemini to identify mechanisms in page images and turn them into specifications. Then a separate model, GPT-OSS-120B, wrote and tested code to generate puzzle inputs and outputs. The team kept generated tasks that passed its checks, including agreement among three independently generated output programs, and reports producing roughly six million verified puzzles. Agreement between programs is a useful check, though it is not proof that every puzzle is unambiguous or that a human could infer every intended rule.\n\nThat question caught Yi-Chia Chen’s eye. In the discussion, she asked whether the examples revealed the intended rule sufficiently. Hanley replied that smaller-model tests gave the team confidence in the data, but some puzzles had still resisted those tests and were not filtered out."
+        },
+        {
+          "heading": "A solver that writes the answer",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The main solver was a fine-tuned Qwen3.8-27B model. Instead of writing out a chain of reasoning, it produced the answer grid directly. At test time, the team fine-tuned a small adapter for each puzzle using its example pairs, then sampled multiple transformed views and voted on the resulting grids.\n\nThe hardware was the other puzzle. The competition setup used four L4 graphics cards. The team compressed the model and split work across them: one card ran the frozen lower part of the model while the other three trained the upper part. The authors report that this arrangement reduced fine-tuning time compared with their earlier arrangement. Their 27B system scored 81.39 on the public leaderboard."
+        },
+        {
+          "heading": "The late arrival",
+          "sourceIds": [
+            "writeup",
+            "timeline"
+          ],
+          "text": "In the final stretch, the pair tried a different kind of solver: a compressed Qwen3.8-Flash-Next agent that could write and check Python. Once the direct-grid model had finished, the agent spent the remaining time revisiting the answers with the weakest vote counts. Its checked answers were combined with the first solver’s candidates under the team’s rules.\n\nThe authors report that the blend lifted their public score to 83.89. They also say Kaggle errors curtailed their planned ensemble testing, leaving one submission with the combination they wanted. That is their account of the closing stretch, not a claim about what an untested alternative would have scored.\n\nChen’s questions are still hanging over the library table: where does a direct-grid model shine, and where does a code-writing agent see something it misses? The private results will settle the contest; the team’s released ideas give the rest of the field something to investigate next."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-07T23:20:09.443587+00:00",
+          "id": "writeup",
+          "title": "Darragh Hanley and CPMP: ARC-AGI-2 public third-place solution and discussion",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/arc-agi-2-public-3rd-place-solution"
+        },
+        {
+          "accessedAt": "2026-11-07T23:20:09.443587+00:00",
+          "id": "history",
+          "title": "ARC Prize: 2025 competition results and NVARC",
+          "url": "https://arcprize.org/competitions/2025"
+        },
+        {
+          "accessedAt": "2026-11-07T23:20:09.443587+00:00",
+          "id": "timeline",
+          "title": "ARC Prize 2026 ARC-AGI-2 competition overview",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2"
+        }
+      ]
+    },
+    "storyId": "nvbanana-old-books",
+    "storySha256": "9c2222e077cb2ba7c66addac93d7f34e22527e7a6ba9ef3bb659b7022b206f7b",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "63bcf0ef4d4eec573d4b3c9ae57054438ba6310f8f72fc3d2ccf8279a0e3a0ec",
+        "source": "client/public/news-images/nvbanana-old-books-v1.webp",
+        "target": "client/public/news-images/goose-63bcf0ef4d4eec573d4b.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Read the authors’ 7 November Kaggle write-up and visible replies in the in-app browser, checked the 2025 result against ARC Prize, and matched authors and team to the wiki. Account-specific findings and the public place are attributed and provisional. Compared the new scene to both reviewed individual references, checked its conceptual caption, and inspected the nameplate at full and phone size. On 7 November 2026 the story id and file names were changed to the topic-only name under the Boss's no-dates-in-article-names rule (Claude Sonnet 5.5 Medium); the text, picture bytes and checks above are unchanged, only the id and image path moved.",
+    "reviewedAt": "2026-11-07T23:21:36.291082+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed)",
+    "storySha256": "9c2222e077cb2ba7c66addac93d7f34e22527e7a6ba9ef3bb659b7022b206f7b"
+  }
+}
