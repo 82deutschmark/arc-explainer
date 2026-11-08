@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Author: Claude Opus 5.5 Low; walkthrough player mapping by Claude Opus 5.5 Medium (Round 10)
+Author: Claude Opus 5.5 Low; walkthrough player mapping by Claude Opus 5.5 Medium (Round 10); animated GIFs
+        in place of the stills by Claude Opus 5.5 Medium (Round 11)
 Date: 08-November-2026
 PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the live main page.
          Reads ../2026-11-06-arc3-solution-draft.html (the main page, the single source of the
@@ -9,11 +10,13 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
              simple pipe tables, links, images). Every link and image is an absolute
              https://arc.markbarney.net URL. Illustrations use their white-background copies
              (the IMAGES map imported from make_white_page.py, so both alternates stay in step).
-             The context-management animation cannot play on Kaggle, so its committed still
-             frame (charts/trim-poster.png) is shown, linked to the animated file, with a one-line
-             pointer under it. The one-turn walkthrough is an in-page player (Round 10, make_turn_player.py):
-             its player block is set aside and replaced by the still of its final state
-             (charts/turn-still.png), linked to the figure on the live page. Site-only lines (the nav and the "Review draft" banner) are dropped.
+             Kaggle cannot run the page's player script, so both animated figures are shown as
+             rendered GIFs (Round 11: charts/trim.gif from make_trim_animation.py, charts/turn.gif
+             from make_turn_video.py), each followed by one line linking its MP4 and the live
+             interactive figure. The walkthrough's player block is set aside first. The GIFs and MP4s
+             are linked from the public GitHub repository (raw.githubusercontent.com serves GIFs as
+             images), because the site's fast-publish route takes no .gif or .mp4 files; the site
+             itself serves them under /specials/ once the next deploy carries the commit. Site-only lines (the nav and the "Review draft" banner) are dropped.
            - article-kaggle.txt: the same bytes, so browsers show it as text instead of downloading.
            - ../2026-11-06-arc3-solution-draft-kaggle.html: a tiny unlisted, noindex page with a
              Copy button, the raw Markdown, and a preview rendered from that Markdown.
@@ -45,11 +48,25 @@ OUT_MD = HERE / "article-kaggle.md"
 OUT_TXT = HERE / "article-kaggle.txt"
 OUT_PAGE = HERE.parent / "2026-11-06-arc3-solution-draft-kaggle.html"
 ANIMATION = "arc3-solution-draft/charts/trim.webp"
-POSTER = "arc3-solution-draft/charts/trim-poster.png"
-# The one-turn walkthrough (Round 10): an in-page player between the turn-player markers. Kaggle gets
-# the still of its final state, linked to the figure on the live page.
+# Rendered copies of the two animated figures (Round 11), served from the public repository.
+REPO_RAW = "https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/"
+REPO_BLOB = "https://github.com/82deutschmark/arc-explainer/blob/main/client/public/specials/"
+TRIM_GIF, TRIM_MP4 = "arc3-solution-draft/charts/trim.gif", "arc3-solution-draft/charts/trim.mp4"
+TRIM_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-trim"
+# The one-turn walkthrough (Round 10): an in-page player between the turn-player markers.
 TURN_STILL = "arc3-solution-draft/charts/turn-still.png"
+TURN_GIF, TURN_MP4 = "arc3-solution-draft/charts/turn.gif", "arc3-solution-draft/charts/turn.mp4"
 TURN_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn"
+
+
+def rendered(gif: str, mp4: str, page: str, alt: str) -> list[str]:
+    """A rendered GIF of an animated figure, then one line with its MP4 and the live figure."""
+    for f in (gif, mp4):
+        if not (HERE.parent / f).is_file():
+            raise Fail(f"Rendered animation missing: {f}")
+    return [f"[![{alt}]({REPO_RAW + gif})]({page})",
+            f"*Animated GIF of the figure. [Watch it as an MP4 video]({REPO_BLOB + mp4}) or "
+            f"[see the live figure on the article page]({page}).*"]
 TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=<figcaption>)', re.S)
 
 
@@ -239,17 +256,18 @@ def render_figure(fig: Node) -> list[str]:
         return blocks
     if fig.attrs.get("id") == "fig-trim":
         img = fig.find("img")
-        if img.attrs["src"] != ANIMATION or not (HERE.parent / POSTER).is_file():
-            raise Fail("The animation figure changed; check the poster and animation paths")
+        if img.attrs["src"] != ANIMATION:
+            raise Fail("The animation figure changed; check the animation paths")
         for div in fig.kids():
             if div.tag == "div" and "ft" in div.cls():
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        blocks.append(image(POSTER, html.unescape(img.attrs["alt"]), ANIMATION))
+        gif, links = rendered(TRIM_GIF, TRIM_MP4, TRIM_PAGE, html.unescape(img.attrs["alt"]))
+        blocks.append(gif)
         blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
-        # An explicit link, not a bare URL, so no renderer swallows the closing star into the address.
-        blocks.append(f"*This is a still frame from an animation: [watch the animation]({absolute(ANIMATION)}).*")
+        # Explicit links, not bare URLs, so no renderer swallows the closing star into the address.
+        blocks.append(links)
         return blocks
     if fig.attrs.get("id") == "fig-turn":
         img = fig.find("img")
@@ -260,10 +278,12 @@ def render_figure(fig: Node) -> list[str]:
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        blocks.append(image(TURN_STILL, "The end of the turn: the full transcript has streamed in and the board shows "
-                            "level 2 cleared after the tenth click.", TURN_PAGE))
+        gif, links = rendered(TURN_GIF, TURN_MP4, TURN_PAGE,
+                              "The turn playing: the transcript streams in colour-coded blocks while the "
+                              "Locksmith board steps through the recorded moves, ending with level 1 cleared.")
+        blocks.append(gif)
         blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
-        blocks.append(f"*This is a still of an animated figure: [watch the turn play on the article page]({TURN_PAGE}).*")
+        blocks.append(links)
         return blocks
     if "redrawn-figure" in fig.cls():
         for child in fig.kids():

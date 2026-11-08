@@ -1,4 +1,5 @@
-"""Author: Claude Opus 5.5 Medium (60 frames a second: Claude Opus 5.5 Low, 08-November-2026)
+"""Author: Claude Opus 5.5 Medium (60 frames a second: Claude Opus 5.5 Low, 08-November-2026;
+        restyled to match the one-turn player, plus GIF and MP4 copies: Claude Opus 5.5 Medium, 08-November-2026)
 Date: 07-November-2026
 PURPOSE: Render the "Trimming and swapping, animated" figure of Son Pham's "Stuffing the
 Turducken" special (section 1.1, "Context management", in
@@ -15,15 +16,22 @@ Fixed numbers are the 56.02 settings (140k window, ~52k kept, 32 lanes, 34 admit
 games, 3.80M-token card cache, 24 GB host RAM copy). Turn sizes, growth and swap timing are
 illustrative, exactly as the caption says.
 Every animated quantity is a function of time modulo the loop length, so the last frame flows
-into the first. Frames are drawn with Pillow at 2x and downsampled (anti-aliasing), in the page's
-warm palette and the Bitter / Inter / JetBrains Mono fonts from charts/fonts. img2webp packs them
-into an animated, looping WebP (the fast-publish API takes webp but not video files); ffmpeg
-writes a webm master next to the frames.
-Writes: charts/trim.webp and charts/trim-poster.png (committed); frames and trim.webm under
-OUT_DIR on the Team 4TB drive (never committed).
+into the first. Frames are drawn with Pillow at 2x and downsampled (anti-aliasing).
+Look (Son Pham, 8 Nov: "harmonize ... in terms of font and graphic"): the same family as the
+one-turn harness player (make_turn_player.py): its dark navy surfaces and lines, JetBrains Mono for
+every word (the player inlines the same font file), its top bar with a thin progress bar (here the
+loop position), its legend row of square swatches, and its uppercase label bars with a grey note on
+the right for the two panels. Reasoning blue is the "new turn" colour and the system prompt is black,
+as in the player's transcript. Geometry, timing and content are unchanged from the warm version.
+img2webp packs the frames into an animated, looping WebP (the fast-publish API takes webp but not
+video files). ffmpeg writes an MP4 (H.264, 60 fps) and a web GIF (20 fps, 960 px, looping) for the
+Kaggle copy, which cannot run the page.
+Writes: charts/trim.webp, charts/trim-poster.png, charts/trim.mp4 and charts/trim.gif (committed);
+frames and a high-quality MP4 master under OUT_DIR on the Team 4TB drive (never committed).
 Usage: python3.13 make_trim_animation.py [OUT_DIR]
-SRP/DRY check: Pass - reuses the page's palette hex values and the shared charts/fonts files; no
-other chart script draws raster animation, so the drawing lives here.
+SRP/DRY check: Pass - reuses the player's palette hex values and the shared charts/fonts files; no
+other chart script draws raster animation, so the drawing lives here. The GIF/MP4 encoding settings
+live in media_encode.py, shared with make_turn_video.py.
 """
 
 from pathlib import Path
@@ -36,31 +44,38 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
+import media_encode
+
 HERE = Path(__file__).resolve().parent
 FONTS = HERE / 'fonts'
 OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
     '/Volumes/Team 4TB/loose-goose/art/2026-11-07-turducken-trim-animation')
 
-W, H = 1280, 960
+W, H = 1280, 980
+OY = 40                    # the panels sit this far lower than in the warm version, under the top bar
 S = 2                      # supersampling factor
 FPS = 60                   # 60 frames a second (Son, 8 Nov); was 15
 LOOP = 18.0                # seconds; every motion below is periodic in LOOP
 NFRAMES = int(LOOP * FPS)  # 1,080; frame NFRAMES would equal frame 0, so it is not drawn
 POSTER_T = 11.7            # window full and the next turn won't fit; a swap in flight on the right
 
-# Warm "turducken workshop" palette, copied from the page's CSS overrides.
-BG = '#fbf1e6'          # --panel (the figure background the image sits on)
-SURFACE = '#fffaf4'     # --surface
-INK, INK2, MUTED, LINE = '#2a1a12', '#5a3d2e', '#8f6f5c', '#e6cdb6'
-SYS = '#efe0d0'                         # .ctxbar .sys
-NOTES, NOTES_INK, NOTES_EDGE = '#f4e4ee', '#74365f', '#9c5a8e'   # .ctxbar .notes / harness
-DECODE = '#4d56b8'                      # --c-decode: a turn being generated
-CACHED = '#c9cbee'                      # history sitting in the card's cache (soft decode blue)
-CACHED_EDGE = '#8d92cf'
-KEEP, KEEP_INK, TRIM = '#f6d6c1', '#96390f', '#c4561f'           # .ctxbar .keep / --c-new
-CUT = '#e3cdb8'                         # .ctxbar .old hatch
-SWAP = '#d6970e'                        # --c-reread, the Swap card's colour
-RAM = '#6f8a2e'                         # host RAM tier rows (exact green)
+# The one-turn player's palette (make_turn_player.py, .tp CSS variables), so the two figures match.
+BG = '#0c1220'          # --tp-panel: the panels the drawing sits on
+SURFACE = '#080c16'     # --tp-bg: inside the window column and the lane pills
+CHROME = '#101828'      # --tp-chrome: top bar and label bars
+INK, INK2, MUTED, LINE = '#e2e6ee', '#b9c2d1', '#7d899c', '#212d42'   # --tp-text / -dim / -muted / -line
+EDGE = '#2c3a54'        # the player's outer border and button edges
+SYS, SYS_EDGE = '#000000', '#8b95a7'    # system prompt: black, as the player's system block
+NOTES_HUE = '#a78bfa'                   # notes: violet (the harness's memory)
+NOTES, NOTES_INK, NOTES_EDGE = '#2a2750', '#c4b5fd', NOTES_HUE
+DECODE = '#3b82f6'                      # --tp-think: a turn being generated
+CACHED = '#1b3260'                      # history sitting in the card's cache (dark decode blue)
+CACHED_EDGE = '#2f5597'
+KEEP, KEEP_INK, TRIM = '#3d2614', '#fdba74', '#f97316'           # kept ~52k, read again; the trim
+CUT = '#4b5870'                         # hatch of the cut turns
+SWAP = '#2dd4bf'                        # a swap: the waiting game's chip and the lane's ring
+QUEUE = '#3a4558'                       # a waiting game
+RAM, RAM_FILL = '#4ade80', '#1d4a33'    # host RAM tier
 
 # Token sizes in thousands (k). Window and keep are 56.02 settings; the rest is illustrative.
 WINDOW, KEEP_K, SYS_K, NOTES_K = 140, 52, 6, 4
@@ -80,16 +95,19 @@ def font(name, size, weight=None):
     return f
 
 
+MONO = 'JetBrainsMono.ttf'
 F = {
-    'h': font('Bitter.ttf', 29, 700),
-    'sub': font('Inter.ttf', 19, 400),
-    'lab': font('Inter.ttf', 20, 500),
-    'labb': font('Inter.ttf', 20, 700),
-    'cap': font('Inter.ttf', 22, 500),
-    'small': font('Inter.ttf', 17, 600),
-    'mono': font('JetBrainsMono.ttf', 18, 500),
-    'monob': font('JetBrainsMono.ttf', 18, 700),
-    'leg': font('Inter.ttf', 18, 500),
+    'title': font(MONO, 21, 700),
+    'meta': font(MONO, 19, 400),
+    'bar': font(MONO, 16, 700),     # label bars, uppercase with letter spacing
+    'note': font(MONO, 16, 400),
+    'lab': font(MONO, 18, 500),
+    'labb': font(MONO, 18, 700),
+    'cap': font(MONO, 19, 400),
+    'small': font(MONO, 15, 600),
+    'mono': font(MONO, 17, 400),
+    'monob': font(MONO, 17, 700),
+    'leg': font(MONO, 17, 400),
 }
 
 
@@ -127,10 +145,12 @@ class Canvas:
     def __init__(self):
         self.im = Image.new('RGB', (W * S, H * S), BG)
         self.d = ImageDraw.Draw(self.im)
+        self.oy = 0   # added to every y: OY while drawing the panels, 0 for the chrome
 
     def rect(self, x0, y0, x1, y1, fill=None, outline=None, width=1, r=0):
         if x1 - x0 < 0.3 or y1 - y0 < 0.3:
             return
+        y0, y1 = y0 + self.oy, y1 + self.oy
         r = min(r, (x1 - x0) / 2, (y1 - y0) / 2)
         self.d.rounded_rectangle(sc(x0, y0, x1, y1), radius=round(r * S), fill=fill,
                                  outline=outline, width=round(width * S) if outline else 0)
@@ -139,6 +159,7 @@ class Canvas:
         """Diagonal hatching like the page's .ctxbar .old segment."""
         if x1 - x0 < 1 or y1 - y0 < 1:
             return
+        y0, y1 = y0 + self.oy, y1 + self.oy
         w, h = round((x1 - x0) * S), round((y1 - y0) * S)
         tile = Image.new('RGB', (w, h), bg)
         td = ImageDraw.Draw(tile)
@@ -149,7 +170,7 @@ class Canvas:
         self.im.paste(tile, (round(x0 * S), round(y0 * S)), mask)
 
     def line(self, pts, fill, width=1.5, dash=None):
-        p = [(x * S, y * S) for x, y in pts]
+        p = [(x * S, (y + self.oy) * S) for x, y in pts]
         if not dash:
             self.d.line(p, fill=fill, width=round(width * S))
             return
@@ -169,7 +190,14 @@ class Canvas:
             self.line([a, b], color, width, dash)
 
     def text(self, x, y, s, f, fill=INK, anchor='la'):
-        self.d.text((x * S, y * S), s, font=F[f], fill=fill, anchor=anchor)
+        self.d.text((x * S, (y + self.oy) * S), s, font=F[f], fill=fill, anchor=anchor)
+
+    def spaced(self, x, y, s, f, fill, track=1.2):
+        """Uppercase label with letter spacing, like the player's label bars (CSS letter-spacing)."""
+        for ch in s:
+            self.text(x, y, ch, f, fill, 'lm')
+            x += self.tw(ch, f) + track
+        return x
 
     def tw(self, s, f):
         return self.d.textlength(s, font=F[f]) / S
@@ -345,7 +373,7 @@ def draw_segments(cv, x0, x1, ytop, kpx, segs, r=3, edges=True):
             base = mix(CACHED, SURFACE, 0.4)
             cv.rect(x0, y, x1, y + h, fill=base, r=r)
             if extra > 0:
-                cv.hatch(x0, y, x1, y + h, mix(base, '#c9a98c', extra), base, r=r)
+                cv.hatch(x0, y, x1, y + h, mix(base, CUT, extra), base, r=r)
         elif kind == 'keep':
             read = extra
             yr = y + h * read
@@ -362,18 +390,16 @@ def draw_segments(cv, x0, x1, ytop, kpx, segs, r=3, edges=True):
 
 
 def draw_left(cv, t):
-    cv.text(30, 22, 'One game', 'h')
-    cv.text(30, 60, "Game 1's context in the 140k window", 'sub', MUTED)
     x0, x1 = COL_X0, COL_X1
     # window frame and axis
-    cv.rect(x0, COL_Y0, x1, COL_Y1, fill=SURFACE, outline=LINE, width=1.5, r=6)
+    cv.rect(x0, COL_Y0, x1, COL_Y1, fill=SURFACE, outline=EDGE, width=1.5, r=4)
     for k, lab in ((0, '0'), (70, '70k'), (140, '140k')):
         y = COL_Y0 + k * KPX
         cv.line([(x0 - 10, y), (x0 - 2, y)], MUTED, 1.4)
         cv.text(x0 - 16, y, lab, 'mono', MUTED, 'rm')
     # system prompt and notes stay put through everything
     ys, yn, yh = COL_Y0, COL_Y0 + SYS_K * KPX, COL_Y0 + HEAD * KPX
-    cv.rect(x0 + 3, ys + 3, x1 - 3, yn - 1, fill=SYS, r=3)
+    cv.rect(x0 + 3, ys + 3, x1 - 3, yn - 1, fill=SYS, outline=SYS_EDGE, width=1.2, r=3)
     cv.rect(x0 + 3, yn + 1, x1 - 3, yh - 1, fill=NOTES, outline=NOTES_EDGE, width=1.4, r=3)
     cv.text(x1 + 14, (ys + yn) / 2 - 3, 'system prompt', 'lab', INK2, 'lm')
     cv.text(x1 + 14, (yn + yh) / 2 + 6, 'notes', 'labb', NOTES_INK, 'lm')
@@ -387,7 +413,7 @@ def draw_left(cv, t):
         if b['kind'] == 'cut':
             base = mix(mix(CACHED, SURFACE, 0.4 * b['hatch']), BG, b['fade'])
             cv.rect(xa, ya, xb, yb, fill=base, r=3)
-            cv.hatch(xa, ya, xb, yb, mix(mix(base, '#b8977a', b['hatch']), BG, b['fade']), base, r=3)
+            cv.hatch(xa, ya, xb, yb, mix(mix(base, CUT, b['hatch']), BG, b['fade']), base, r=3)
         elif b['kind'] == 'keep':
             fillc = mix(CACHED, KEEP, b['k_in'])
             edge = mix(CACHED_EDGE, TRIM, b['k_in'])
@@ -457,13 +483,13 @@ def draw_left(cv, t):
     else:
         cap = ['The front changed, so the cache', 'no longer matches: read again.']
     cv.text(30, 846, cap[0], 'cap', INK)
-    cv.text(30, 876, cap[1], 'cap', INK)
+    cv.text(30, 874, cap[1], 'cap', INK)
 
 
 def draw_pill(cv, i, t, x, y, swap_k=0.0):
     segs = lane_state(i, t)
     kp = PH / WINDOW
-    cv.rect(x, y, x + PW, y + PH, fill=SURFACE, outline=mix(LINE, SWAP, swap_k),
+    cv.rect(x, y, x + PW, y + PH, fill=SURFACE, outline=mix(EDGE, SWAP, swap_k),
             width=1.4 + 1.6 * swap_k, r=9)
     # system prompt and notes cap
     cv.rect(x + 3, y + 3, x + PW - 3, y + SYS_K * kp + 2, fill=SYS, r=2)
@@ -472,9 +498,6 @@ def draw_pill(cv, i, t, x, y, swap_k=0.0):
 
 
 def draw_right(cv, t):
-    cv.text(536, 22, 'The whole card, one beat', 'h')
-    cv.text(536, 60, "Each pill is one game's context; 32 decode at once", 'sub', MUTED)
-    cv.line([(510, 30), (510, 930)], LINE, 1.5, (5, 5))
     gx1 = GX0 + 8 * PW + 7 * PG
     cv.text((GX0 + gx1) / 2, 118, '32 lanes', 'labb', INK2, 'mm')
     cv.text(NINTH_X + PW / 2, 118, 'python', 'labb', INK2, 'mm')
@@ -504,7 +527,7 @@ def draw_right(cv, t):
         x, y = NINTH_X, PY0 + j * RP
         kp = PH / WINDOW
         cv.rect(x, y, x + PW, y + PH, fill=SURFACE, r=9)
-        cv.dashed_rect(x, y, x + PW, y + PH, MUTED, 1.4, (5, 4))
+        cv.dashed_rect(x, y, x + PW, y + PH, MUTED, 1.4, (5, 4))   # dashed, like the player's tool-result spine
         cv.rect(x + 3, y + 3, x + PW - 3, y + SYS_K * kp + 2, fill=SYS, r=2)
         cv.rect(x + 3, y + SYS_K * kp + 2, x + PW - 3, y + HEAD * kp + 2, fill=NOTES_EDGE, r=1)
         cv.rect(x + 3, y + HEAD * kp + 3, x + PW - 3, y + level * kp, fill=mix(CACHED, SURFACE, 0.35), r=2)
@@ -523,7 +546,7 @@ def draw_right(cv, t):
     flying = {sw['slot']: (sw, p) for sw, p in active.values()}
     for j in range(76):
         x, y = slot_xy(j)
-        fill = '#b9a28f'
+        fill = QUEUE
         if j in flying:
             p = flying[j][1]
             fill = mix(fill, SWAP, ease(ramp(p, 0, 0.15)) * (1 - ramp(p, 0.85, 1.0)))
@@ -552,26 +575,28 @@ def draw_right(cv, t):
     bx0, bx1 = GX0, GX0 + Q_PER_ROW * Q_PITCH - 4
     for row, (label, right, col, edge) in enumerate((
             ('Card: history cache', '3.80M tokens', CACHED, DECODE),
-            ("Host RAM: write-through copy of the card's cache", '24 GB', mix(RAM, SURFACE, 0.6), RAM))):
+            ("Host RAM: write-through copy of the card's cache", '24 GB', RAM_FILL, RAM))):
         y = MEM_Y + row * 66
         cv.text(bx0, y, label, 'lab', INK)
         cv.text(bx1, y, right, 'monob', INK2, 'ra')
-        cv.rect(bx0, y + 28, bx1, y + 48, fill=SURFACE, outline=LINE, width=1.2, r=4)
+        cv.rect(bx0, y + 28, bx1, y + 48, fill=SURFACE, outline=EDGE, width=1.2, r=4)
         cv.rect(bx0 + 2, y + 30, bx0 + 2 + (bx1 - bx0 - 4) * frac, y + 46, fill=col, r=3)
         cv.line([(bx0 + 2 + (bx1 - bx0 - 4) * frac, y + 26), (bx0 + 2 + (bx1 - bx0 - 4) * frac, y + 50)], edge, 2)
 
 
+LEGEND_Y = 75            # centre line of the legend row (chrome, not offset)
+
+
 def draw_legend(cv):
+    """The player's legend row: small square swatches and monospace labels, left to right."""
     items = [('system prompt', 'sys'), ('notes', 'notes'), ('history in cache', 'cached'),
              ('new turn', 'new'), ('read again', 'keep'), ('cut away', 'cut'), ('swap', 'swap')]
-    y = 930
-    widths = [22 + 8 + cv.tw(lab, 'leg') for lab, _ in items]
-    gap = (W - 60 - sum(widths)) / (len(items) - 1)
-    x = 30
-    for (lab, kind), w in zip(items, widths):
-        box = (x, y - 9, x + 20, y + 9)
+    y = LEGEND_Y
+    x = 20
+    for lab, kind in items:
+        box = (x, y - 8, x + 16, y + 8)
         if kind == 'sys':
-            cv.rect(*box, fill=SYS, r=3)
+            cv.rect(*box, fill=SYS, outline=SYS_EDGE, width=1.2, r=3)
         elif kind == 'notes':
             cv.rect(*box, fill=NOTES, outline=NOTES_EDGE, width=1.4, r=3)
         elif kind == 'cached':
@@ -583,18 +608,39 @@ def draw_legend(cv):
         elif kind == 'cut':
             base = mix(CACHED, SURFACE, 0.4)
             cv.rect(*box, fill=base, r=3)
-            cv.hatch(*box, '#b8977a', base, r=3, step=5)
+            cv.hatch(*box, CUT, base, r=3, step=5)
         else:
-            cv.rect(*box, fill=SURFACE, outline=SWAP, width=2.6, r=4)
-        cv.text(x + 28, y, lab, 'leg', INK2, 'lm')
-        x += w + gap
+            cv.rect(*box, fill=SURFACE, outline=SWAP, width=2.4, r=4)
+        cv.text(x + 25, y, lab, 'leg', INK2, 'lm')
+        x += 25 + cv.tw(lab, 'leg') + 30
+
+
+def draw_chrome(cv, t):
+    """Top bar, loop progress bar, legend row and the two panels' label bars, as in the player."""
+    cv.rect(0, 0, W, 50, fill=CHROME)
+    cv.text(20, 25, 'Context management', 'title', INK, 'lm')
+    x = 20 + cv.tw('Context management', 'title')
+    cv.text(x, 25, ' · 56.02 settings · 140k window · 32 lanes · illustrative timing', 'meta', MUTED, 'lm')
+    cv.rect(0, 50, W, 55, fill='#1a2333')                     # .tp-bar
+    cv.rect(0, 50, W * (t % LOOP) / LOOP, 55, fill=DECODE)    # loop position
+    draw_legend(cv)
+    cv.line([(0, 95), (W, 95)], LINE, 1.5)
+    for x0, x1, label, note in ((0, 510, 'ONE GAME', "game 1's context in the 140k window"),
+                                (510, W, 'THE WHOLE CARD, ONE BEAT', "one pill per game · 32 decode at once")):
+        cv.rect(x0, 96, x1, 132, fill=CHROME)
+        cv.spaced(x0 + 20, 114, label, 'bar', INK)
+        cv.text(x1 - 16, 114, note, 'note', MUTED, 'rm')
+    cv.line([(0, 132), (W, 132)], LINE, 1.5)
+    cv.line([(510, 96), (510, H)], LINE, 1.5)
 
 
 def render(t):
     cv = Canvas()
+    cv.oy = OY
     draw_left(cv, t)
     draw_right(cv, t)
-    draw_legend(cv)
+    cv.oy = 0
+    draw_chrome(cv, t)
     return cv.out()
 
 
@@ -622,11 +668,16 @@ def main():
     # earlier frames' labels in the blended sub-frames
     subprocess.run(['img2webp', '-loop', '0', '-lossless', '-m', '4', *args,
                     '-o', str(HERE / 'trim.webp')], check=True, capture_output=True)
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', str(FPS), '-i',
-                    str(frames / 'f%04d.png'), '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuv420p',
-                    '-b:v', '0', '-crf', '28', str(OUT_DIR / 'trim.webm')], check=True)
+    # Kaggle copies (media_encode.py): a web MP4 and GIF committed next to the WebP, and a
+    # full-quality MP4 master on the Team 4TB drive.
+    pattern = str(frames / 'f%04d.png')
+    sizes = {
+        'trim.mp4': media_encode.mp4(pattern, HERE / 'trim.mp4', 1280),
+        'trim.gif': media_encode.gif(pattern, HERE / 'trim.gif', 960),
+        'master': media_encode.mp4(pattern, OUT_DIR / 'trim-master.mp4', W, crf=12),
+    }
     shutil.copy(__file__, OUT_DIR / Path(__file__).name)
-    print('frames', NFRAMES, 'webp bytes', (HERE / 'trim.webp').stat().st_size)
+    print('frames', NFRAMES, 'webp bytes', (HERE / 'trim.webp').stat().st_size, sizes)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 """Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day; Locksmith turn: his fourth note)
+        (inlined JetBrains Mono and the frame-step hook for make_turn_video.py: Claude Opus 5.5 Medium, Round 11)
 Date: 08-November-2026
 PURPOSE: Build the "One turn of the harness" figure of Son Pham's "Stuffing the Turducken" special
 (section 1.1 of client/public/specials/2026-11-06-arc3-solution-draft.html) as a live in-page player.
@@ -40,6 +41,8 @@ from pathlib import Path
 import json
 import re
 import subprocess
+import base64
+import io
 import sys
 
 from PIL import Image
@@ -200,13 +203,40 @@ def write_board_png():
 
 # ---------------------------------------------------------------- html --------------------------
 
+FONT_TTF = HERE / 'fonts' / 'JetBrainsMono.ttf'
+# Latin, Latin-1, general punctuation (… · ’ “ ” — –), arrows (→) and the pill triangles (▸ ▾).
+FONT_UNICODES = [*range(0x20, 0x7F), *range(0xA0, 0x100), *range(0x2010, 0x2028), *range(0x2190, 0x2194),
+                 0x25B8, 0x25BE, 0x2212]
+
+
+def font_face():
+    """JetBrains Mono, subset and inlined as a data URI, so the player draws in the same typeface as the
+    Context management animation (make_trim_animation.py bakes the same file). Inline because the
+    fast-publish route takes no font files; the subset with its weight axis is about 25 KB of base64."""
+    from fontTools import subset
+    from fontTools.ttLib import TTFont
+    opts = subset.Options()
+    opts.flavor = 'woff2'
+    opts.layout_features = []
+    font = TTFont(FONT_TTF)
+    sub = subset.Subsetter(opts)
+    sub.populate(unicodes=FONT_UNICODES)
+    sub.subset(font)
+    buf = io.BytesIO()
+    font.flavor = 'woff2'
+    font.save(buf)
+    b64 = base64.b64encode(buf.getvalue()).decode()
+    return ('@font-face{font-family:"TP Mono";font-style:normal;font-weight:100 800;font-display:swap;'
+            f'src:url(data:font/woff2;base64,{b64}) format("woff2")}}')
+
+
 CSS = r'''
 /* One turn of the harness: live transcript player (make_turn_player.py). Block look borrowed from the
    arc3.sonpham.net run viewer's Decision pane: label bar tinted with the block colour, coloured spine,
    monospace pre-wrap body. */
 .tp{--tp-bg:#080c16;--tp-panel:#0c1220;--tp-chrome:#101828;--tp-line:#212d42;--tp-text:#e2e6ee;--tp-dim:#b9c2d1;
   --tp-muted:#7d899c;--tp-sys:#000;--tp-user:#22c55e;--tp-think:#3b82f6;--tp-call:#facc15;--tp-result:#c8902a;
-  --tp-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --tp-mono:"TP Mono","JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   background:var(--tp-bg);color:var(--tp-text);border:1px solid #2c3a54;border-radius:6px;font:12px/1.5 var(--tp-mono);
   overflow:hidden;margin:4px 0 0}
 .tp *{box-sizing:border-box}
@@ -347,9 +377,9 @@ JS = r'''
     u = units.length; done = true; setBoard(LAST); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
     setPlaying(false); btnPlay.textContent = 'Replay';
   }
-  function tick(now) {
-    if (!playing) return;
-    var dt = Math.min(100, now - last); last = now;
+  // advance(dt): move the stream on by dt milliseconds. The page drives it from requestAnimationFrame;
+  // the video capture (make_turn_video.py) drives it with a fixed dt per frame, so renders repeat exactly.
+  function advance(dt) {
     var budget = dt;
     while (budget > 0 && u < units.length) {
       if (wait > 0) { var w = Math.min(wait, budget); wait -= w; budget -= w; continue; }
@@ -371,8 +401,13 @@ JS = r'''
     }
     bar.style.width = (100 * u / units.length) + '%';
     if (follow) log.scrollTop = log.scrollHeight;
-    if (u >= units.length && wait <= 0) { finish(); return; }
-    requestAnimationFrame(tick);
+    if (u >= units.length && wait <= 0) { finish(); return false; }
+    return true;
+  }
+  function tick(now) {
+    if (!playing) return;
+    var dt = Math.min(100, now - last); last = now;
+    if (advance(dt)) requestAnimationFrame(tick);
   }
   function setPlaying(p) {
     playing = p; btnPlay.textContent = p ? 'Pause' : 'Play';
@@ -389,10 +424,12 @@ JS = r'''
   });
   ctl.querySelector('[data-a=restart]').addEventListener('click', function () { reset(); setPlaying(true); });
   ctl.querySelector('[data-a=end]').addEventListener('click', finish);
-  window.__turnPlayer = { finish: finish, reset: reset, play: function () { setPlaying(true); } };
+  window.__turnPlayer = { finish: finish, reset: reset, play: function () { setPlaying(true); },
+    step: function (dt) { playing = false; if (!done) advance(dt); return done; } };
 
   var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (calm || location.hash === '#turn-end') { finish(); return; }
+  if (location.hash === '#turn-capture') { reset(); return; }   // frame-by-frame capture: no autoplay
   reset();
   var started = false;
   if ('IntersectionObserver' in window) {
@@ -478,11 +515,20 @@ def splice(page, start, end, new):
     return page[:i + len(start)] + '\n' + new + '\n' + page[j:]
 
 
+def launch_browser(pw):
+    """Playwright's own Chromium, else the installed Google Chrome (the bundled build goes missing when
+    the Python package is updated without "playwright install")."""
+    try:
+        return pw.chromium.launch()
+    except Exception:
+        return pw.chromium.launch(channel='chrome')
+
+
 def take_still():
     """Screenshot the live player's final state from the built page (needs Playwright)."""
     from playwright.sync_api import sync_playwright
     with sync_playwright() as pw:
-        b = pw.chromium.launch()
+        b = launch_browser(pw)
         pg = b.new_page(viewport={'width': 900, 'height': 900}, device_scale_factor=2)
         pg.goto(PAGE.as_uri() + '#turn-end')
         pg.wait_for_function('window.__turnPlayer !== undefined')
@@ -507,7 +553,7 @@ def main():
     check_verbatim()
     write_board_png()
     page = PAGE.read_text()
-    page = splice(page, '<!-- turn-player-css:start -->', '<!-- turn-player-css:end -->', f'<style>{CSS}</style>')
+    page = splice(page, '<!-- turn-player-css:start -->', '<!-- turn-player-css:end -->', f'<style>{font_face()}{CSS}</style>')
     page = splice(page, '<!-- turn-player:start -->', '<!-- turn-player:end -->', figure_html())
     PAGE.write_text(page)
     print('wrote', PAGE)
