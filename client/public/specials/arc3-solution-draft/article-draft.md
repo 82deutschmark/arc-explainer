@@ -1,14 +1,16 @@
 Review draft · Original Claude artifact restored · Static charts plus one recreated animation (trimming and swapping). Author-reported measurements from the original draft; not newly reproduced benchmarks.
 
-**Son Pham** · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
+**Son Pham and Keith Tyser** · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
 
 # Stuffing the Turducken
 
 Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.
 
-We would also like to thank Tufa Labs, whose harness sits at the very heart of our entry, and Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution.
+First and loudest, thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. Dries Smit in particular has been showing the way for all of us since the preview, and everything we built here stands on top of his work. It was a real honor to be in the same competition as him. And what really got us is how nice the Tufa guys are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
 
-Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.
+Just as big a thank you goes to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on. They're legends of the ARC community, and as newcomers we've always found them kind, welcoming and easy to reach. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution. Like Tufa, they are just really, really great guys.
+
+Thank you to Yi-Chia Chen, and to Sanday and Pochi, the rabbits, for being such fierce and friendly competitors. Thank you to Simon Strandgaard, the original librarian and bastion of the ARC-like community, for all of his encouragement and help along the way. And thank you to Jack Cole.
 
 **Why a turducken?** A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.
 
@@ -543,10 +545,12 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 ### Thanks again
 
-Thanks for reading, and thanks again to Tufa Labs, Daniel and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.
+Thanks for reading. It was a wild ride, and we'd do it again. Thank you to Kaggle for the infrastructure and a great competition.
 
 ![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
 
 *Thank you for an amazing competition! — Team Turducken*
+
+And last, a big thank you to the ARC Prize team. Getting to attend the event in Boston was fantastic. Greg Kamradt, thank you for all that you do to keep the ARC Prize Foundation running; it doesn't run without you, and we're so grateful. A smaller but heartfelt shout-out to Permaximum, the Discord moderator, and to all the great community members on the ARC Discord server.
 
 This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.
