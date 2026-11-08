@@ -10,7 +10,7 @@ Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our 
 
 **Why a turducken?** A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. It also fit us: when the teams combined we needed a name, and wrapping all of us up into one big team was just what a turducken does. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.
 
-![Team Turducken stuffing engineering into the mechanical turkey](00-turducken-texture-v10.png)
+![Team Turducken stuffing engineering into the mechanical turkey](1950s/00-turducken-1950s-r9.webp)
 
 ### TL;DR
 
@@ -28,7 +28,7 @@ Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our 
 
 ## The Harness
 
-![The game-playing harness](01-harness-garage-v2-corners-only.png)
+![The game-playing harness](1950s/01-harness-1950s-r9.webp)
 
 ### 1.1 How the harness works
 
@@ -124,7 +124,7 @@ Looking across these results, the improvements that carried over to Kaggle tende
 
 ## Inference Optimization
 
-![The inference stack](02-inference-v2-corners-only.png)
+![The inference stack](1950s/02-inference-1950s-r9.webp)
 
 The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.
 
@@ -300,7 +300,7 @@ Open or download: [vector SVG](charts/original/time.svg) · [high-resolution PNG
 
 ## RL
 
-![The reinforcement-learning pipeline](03-rl-v1-corners-only.png)
+![The reinforcement-learning pipeline](1950s/03-rl-1950s-r9.webp)
 
 We also attempted reinforcement learning (RL) and several other fine-tunes. None of them beat the base model on Kaggle.
 
@@ -338,7 +338,7 @@ Open or download: [vector SVG](charts/original/think.svg) · [high-resolution PN
 
 ## When speed no longer matters
 
-![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](04-speed-plateau-v2-corners-only.png)
+![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](1950s/04-speed-plateau-1950s-r9.webp)
 
 ### 4.1 What we learned
 
@@ -426,7 +426,7 @@ Thank you to OpenMind and Jack Cole for their friendship and encouragement along
 
 **See everyone in ARC-4.**
 
-![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
+![Team Turducken family portrait with two Yorkies](1950s/05-family-1950s-r9.webp)
 
 *Thank you for an amazing competition! — Team Turducken*
 
