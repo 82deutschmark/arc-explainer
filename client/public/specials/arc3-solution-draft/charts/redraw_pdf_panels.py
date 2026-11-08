@@ -6,6 +6,7 @@ ARC Explainer, Markdown and the portable article archive. Uses the existing orig
 renderer for all measured geometry, fontTools for exact font metrics/paths, BeautifulSoup
 for document structure and Sharp for high-resolution PNG rasterization.
 SRP/DRY check: Pass — reuse original data and plot renderer, not a second benchmark model.
+Edited 08-November-2026 by Claude Opus 5.5 Low: panel() no longer draws the rust rail along the top edge.
 """
 
 from pathlib import Path
@@ -202,8 +203,7 @@ def panel(plot, figure, name):
     root.set('height', str(height))
     background = ET.Element('{' + NS + '}rect', {'x':'1','y':'1','width':str(WIDTH-2),'height':str(height-2),'rx':'14','fill':PANEL,'stroke':BORDER,'stroke-width':'1.2'})
     root.insert(2, background)
-    top = ET.Element('{' + NS + '}path', {'d':f'M15 3 H{WIDTH-15}', 'stroke':ACCENT,'stroke-width':'4','fill':'none'})
-    root.insert(3, top)
+    # No accent rail across the top: Son asked on 8 Nov to drop the brown top edge of each chart.
     outline_texts(root)
     return ET.tostring(root, encoding='unicode'), title, subtitle, caption
 

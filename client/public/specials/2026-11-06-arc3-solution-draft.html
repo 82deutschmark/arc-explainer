@@ -222,8 +222,8 @@ h1 { color: #3a2117; }
 main > h2 { border-bottom: 2px solid var(--line); padding-bottom: 6px; }
 figure.hero { margin: 4px 0 26px; padding: 0; border: 1.5px solid #d9b89a; border-radius: 14px; overflow: hidden; background: var(--surface); }
 figure.hero img { display: block; width: 100%; height: auto; }
-/* figures as riveted copper plates: a rust top rail, warm border, two rivets */
-figure { position: relative; border: 1.5px solid #e0c2a6; border-top: 4px solid var(--c-new); }
+/* figures as riveted copper plates: warm border, two rivets */
+figure { position: relative; border: 1.5px solid #e0c2a6; } /* no rust top rail: Son, 8 Nov */
 figure::before, figure::after { content: ""; position: absolute; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--rivet); }
 figure::before { left: 9px; } figure::after { right: 9px; }
 figure.hero::before, figure.hero::after { display: none; }
