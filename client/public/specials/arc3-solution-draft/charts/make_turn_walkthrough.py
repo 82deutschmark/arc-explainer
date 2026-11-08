@@ -27,6 +27,8 @@ Two stages:
 The verbatim rule is enforced in code: every piece of model or harness text drawn must be an exact
 substring of its source section in turn-source.json, and a trim is always drawn as a visible "…".
 Text in coloured chips and in the yellow note box is ours (labels and explanations), never the model's.
+Since 8 Nov (Round 10, Claude Opus 5.5 Medium) only the extract stage is in use: the figure is the in-page
+player built by make_turn_player.py, and the image render below is retired (its webp files are deleted).
 SRP/DRY check: Pass - fonts, palette and colour helpers are imported from make_trim_animation.py (the
 Context management animation); packing follows its img2webp route; no other script draws this figure.
 """

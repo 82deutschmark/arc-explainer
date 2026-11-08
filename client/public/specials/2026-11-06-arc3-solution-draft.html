@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Son’s original article with static charts and requested editorial revisions. SRP/DRY check: Pass — original charts and Markdown serializer reused. 08-November-2026, Claude Opus 5.5 Low: Son's engineering edits to Part 1 (Turducken harness naming, context management, noise, overfitting observation). -->
+<!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Son’s original article with static charts and requested editorial revisions. SRP/DRY check: Pass — original charts and Markdown serializer reused. 08-November-2026, Claude Opus 5.5 Low: Son's engineering edits to Part 1 (Turducken harness naming, context management, noise, overfitting observation). 08-November-2026, Claude Opus 5.5 Medium: the one-turn walkthrough is an in-page transcript player, built by arc3-solution-draft/charts/make_turn_player.py between the turn-player markers. -->
 <html lang="en"><head><!-- frame-runtime --><!-- /frame-runtime -->
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport"><meta content="noindex" name="robots">
@@ -254,7 +254,69 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 .redrawn-figure .chart img{width:100%;max-width:none;height:auto}
 .chart-download{font-size:12px;margin:6px 0 10px;color:#8f6f5c}
 @media print{.redrawn-figure .chart{overflow:visible}.redrawn-figure .chart picture{min-width:0}.chart-download{display:none}}
-</style></head>
+</style><!-- turn-player-css:start -->
+<style>
+/* One turn of the harness: live transcript player (make_turn_player.py). Block look borrowed from the
+   arc3.sonpham.net run viewer's Decision pane: label bar tinted with the block colour, coloured spine,
+   monospace pre-wrap body. */
+.tp{--tp-bg:#080c16;--tp-panel:#0c1220;--tp-chrome:#101828;--tp-line:#212d42;--tp-text:#e2e6ee;--tp-dim:#b9c2d1;
+  --tp-muted:#7d899c;--tp-sys:#000;--tp-user:#22c55e;--tp-think:#3b82f6;--tp-call:#facc15;--tp-result:#c8902a;
+  --tp-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  background:var(--tp-bg);color:var(--tp-text);border:1px solid #2c3a54;border-radius:6px;font:12px/1.5 var(--tp-mono);
+  overflow:hidden;margin:4px 0 0}
+.tp *{box-sizing:border-box}
+.tp-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:7px 10px;background:var(--tp-chrome);border-bottom:1px solid var(--tp-line)}
+.tp-run{color:var(--tp-text);font-weight:600;letter-spacing:.3px}
+.tp-run span{color:var(--tp-muted);font-weight:400}
+.tp-ctl{display:none;gap:6px;margin-left:auto}
+.tp.tp-js .tp-ctl{display:flex}
+.tp-ctl button{font:11px/1 var(--tp-mono);color:var(--tp-text);background:#1a2333;border:1px solid #2c3a54;border-radius:4px;padding:5px 9px;cursor:pointer}
+.tp-ctl button:hover{background:#232e42}
+.tp-ctl button:focus-visible{outline:2px solid var(--tp-think);outline-offset:1px}
+.tp-legend{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 10px;border-bottom:1px solid var(--tp-line);color:var(--tp-dim);font-size:11px}
+.tp-legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.tp-legend .k-system i{background:#000;box-shadow:0 0 0 1px #6b7789}
+.tp-legend .k-user i{background:var(--tp-user)}.tp-legend .k-think i{background:var(--tp-think)}
+.tp-legend .k-call i{background:var(--tp-call)}.tp-legend .k-result i{background:var(--tp-result)}
+.tp-main{display:grid;grid-template-columns:290px 1fr;min-height:0}
+.tp-board{padding:10px;border-right:1px solid var(--tp-line);background:var(--tp-panel)}
+.tp-board img,.tp-board canvas{display:block;width:100%;height:auto;aspect-ratio:1;image-rendering:pixelated;border:1px solid var(--tp-line);border-radius:2px}
+.tp-cap{margin-top:8px;color:var(--tp-dim);font-size:11px;min-height:3em}
+.tp-cap b{color:var(--tp-text);font-weight:600}
+.tp-log{height:470px;overflow-y:auto;overscroll-behavior:contain;background:var(--tp-panel);scrollbar-width:thin}
+.tp-log:focus-visible{outline:2px solid var(--tp-think);outline-offset:-2px}
+.tb{border-bottom:1px solid var(--tp-line)}
+.tb-h{display:flex;gap:8px;align-items:baseline;padding:5px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.tb-h .tb-n{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400;font-style:italic;opacity:.85;color:var(--tp-muted);text-align:right}
+.tb-b{margin:0;padding:7px 10px 8px 12px;white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--tp-mono);color:var(--tp-dim);border-left:3px solid}
+.tb-b .cut{color:var(--tp-muted)}
+.tb-system .tb-h{background:#000;color:#fff}
+.tb-system .tb-b{background:#000;border-left-color:#8b95a7;color:#d5dbe4}
+.tb-user .tb-h{background:color-mix(in srgb,var(--tp-user) 22%,var(--tp-chrome));color:#4ade80}
+.tb-user .tb-b{background:color-mix(in srgb,var(--tp-user) 6%,var(--tp-panel));border-left-color:var(--tp-user)}
+.tb-think .tb-h{background:color-mix(in srgb,var(--tp-think) 26%,var(--tp-chrome));color:#93c5fd}
+.tb-think .tb-b{background:color-mix(in srgb,var(--tp-think) 7%,var(--tp-panel));border-left-color:var(--tp-think)}
+.tb-call .tb-h{background:var(--tp-call);color:#1a1400}
+.tb-call .tb-h .tb-n{color:#6b5a10}
+.tb-call .tb-b{background:color-mix(in srgb,var(--tp-call) 8%,var(--tp-panel));border-left-color:var(--tp-call);color:#f3e9b8}
+.tb-result .tb-h{background:color-mix(in srgb,var(--tp-result) 30%,var(--tp-chrome));color:#e9b85a}
+.tb-result .tb-b{background:color-mix(in srgb,var(--tp-result) 7%,var(--tp-panel));border-left-color:var(--tp-result);border-left-style:dashed;color:#dcc9a0}
+.tb-b .ln.step-on{background:color-mix(in srgb,var(--tp-result) 26%,transparent)}
+.tp-next{padding:8px 10px;color:var(--tp-muted);font-size:11px;text-align:center;letter-spacing:.4px;border-bottom:1px solid var(--tp-line)}
+.tp-note{padding:6px 10px;border-top:1px solid var(--tp-line);border-left:3px solid #d29922;background:var(--tp-chrome);color:var(--tp-dim);font-size:11px}
+.tp-bar{height:3px;background:#1a2333}.tp-bar i{display:block;height:100%;width:0;background:var(--tp-think)}
+.tp.tp-js .tb.tp-hide,.tp.tp-js .tp-next.tp-hide{display:none}
+@media (max-width:640px){
+  .tp-main{grid-template-columns:1fr}
+  .tp-board{border-right:0;border-bottom:1px solid var(--tp-line);display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:start;padding:8px}
+  .tp-cap{margin-top:0}
+  .tp-log{height:min(62vh,460px)}
+  .tb-h .tb-n{display:none}
+  .tp-ctl{margin-left:0}
+}
+</style>
+<!-- turn-player-css:end -->
+</head>
 <body>
 <main><nav><a href="/">ARC Explainer</a> · <a download="" href="arc3-solution-draft/article-draft.md">Markdown</a> · <a download="" href="arc3-solution-draft/charts/original/source-data.json">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts plus one recreated animation (trimming and swapping). Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
 <div class="byline"><b>Son Pham, Mark Barney, Keith Tyser, NT, ngyzly, Slow∞Loop and Ronen Dunlea</b> · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02</div>
@@ -282,13 +344,306 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li>The snippet plays moves with <code>action([...])</code>, one move or a whole planned batch, and the state refreshes after each one, so a single call can probe, loop or run a search.</li>
 <li>The printed result comes back, and the model can call <code>python</code> again, as often as it likes. Each call has a 30-second limit.</li>
 </ol>
-<p>Here is one real turn from a saved run, step by step: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.</p>
+<p>Here is one real turn from a saved run, played back fast: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.</p>
+<!-- turn-player:start -->
 <figure id="fig-turn">
 <div class="ft">One turn of the harness, from a saved run</div>
-<div class="fs">The system prompt, the board the model saw, its reasoning, its two python calls and their output, then its moves played through action() on the recorded game.</div>
-<picture><source media="(max-width: 640px)" srcset="arc3-solution-draft/charts/turn-tall.webp" width="1080" height="2025"><img src="arc3-solution-draft/charts/turn-wide.webp" width="1920" height="1080" loading="lazy" alt="Animation in eight steps, from one real turn of Reaching Lurch, level 2. One: excerpts of the system prompt, marked game rules, notes memory, and one tool with own functions. Two: the turn message listing ten helper functions the model wrote earlier, and the board it sees. Three: its reasoning. Four: a python call that defines two helpers and simulates ten clicks, with the printed plan. Five: more reasoning about checking each click. Six: the python call that plays the ten clicks through run_checked. Seven: the output lines appear one per click while the recorded board on the right changes, until both knobs sit in their rings and the level is cleared. Eight: on the next turn the model writes the level's mechanics into its notes and the new helpers are listed back." style="display:block;width:100%;max-width:100%;height:auto;margin:6px auto 0;border-radius:8px"></picture>
-<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the boards are the run's recorded frames. The last step is the first python call of the following turn. The coloured chips and the yellow notes are ours.</figcaption>
+<div class="fs">The transcript streams as the turn happened: the system prompt, the turn message, the model's reasoning, its two python calls and their output. The board steps through the recorded game as each action() click lands.</div>
+<div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">
+<div class="tp-top"><span class="tp-run">Reaching Lurch <span>· level 2 · step 11 · run 20261023_1410_daniel-candnp3-a</span></span><span class="tp-ctl"><button type="button" data-a="play">Play</button><button type="button" data-a="restart">Restart</button><button type="button" data-a="end">Skip to end</button></span></div>
+<div class="tp-bar"><i></i></div>
+<div class="tp-legend"><span class="k-system"><i></i>System prompt</span><span class="k-user"><i></i>User prompt</span><span class="k-think"><i></i>Reasoning</span><span class="k-call"><i></i>Tool call</span><span class="k-result"><i></i>Tool result</span></div>
+<div class="tp-main">
+<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" loading="lazy" alt="The recorded Reaching Lurch board: level 2 cleared, both knobs sitting in their rings."><div class="tp-cap"><b>Level 2 cleared</b> after the tenth click. The recorded game board.</div></div>
+<div class="tp-log" tabindex="0" aria-label="Transcript of the turn">
+<section class="tb tb-system" data-kind="system"><div class="tb-h"><span>SYSTEM PROMPT</span><span class="tb-n">harness: game rules · notes memory · one tool · own functions</span></div><pre class="tb-b"><span class="ln">You are a coding agent solving a grid-based puzzle game.
+</span><span class="ln cut">…
+</span><span class="ln">- Your job is to solve the entire game by clearing every level, not just the current screen.
+</span><span class="ln cut">…
+</span><span class="ln">NOTES FOR THE WHOLE GAME: in every python call, `notes` is one markdown text that persists for this game
+</span><span class="ln cut">…
+</span><span class="ln">It survives tool timeouts, level changes, summaries and history trims; ordinary variables and files do not.
+</span><span class="ln cut">…
+</span><span class="ln">- You have exactly one tool: `python`.
+</span><span class="ln cut">…
+</span><span class="ln">Eligible functions you define are retained automatically for later calls throughout this game, including across level changes
+</span><span class="ln cut">…
+</span></pre></section>
+<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span><span class="tb-n">harness: own functions listed back</span></div><pre class="tb-b"><span class="ln">Your last python snippet executed NO actions (it only computed or inspected state - that is fine).
+</span><span class="ln">For reference, the most recent executed sequence earlier this turn was: MOUSE(row=26, col=10).
+</span><span class="ln">Current state: step 13, level 2.
+</span><span class="ln">Valid actions right now: MOUSE.
+</span><span class="ln cut">…
+</span><span class="ln">Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6).
+</span><span class="ln cut">…
+</span><span class="ln">Current grid image:
+</span><span class="ln">
+</span><span class="ln">[image attached]
+</span></pre></section>
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span></div><pre class="tb-b"><span class="ln">Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.
+</span><span class="ln">def masks():
+</span><span class="ln">    B=blocked_set()
+</span><span class="ln">    K=frozenset((r,c) for r in range(64) for c in range(64) if ok_cell((r,c),B,'k'))
+</span><span class="ln">    return B,K
+</span><span class="ln">Then simulate(clicks, B, K) — pass as args.
+</span><span class="ln">Let me write both in one snippet and run the simulation.
+</span></pre></section>
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+</span><span class="ln">&lt;function=python&gt;
+</span><span class="ln">&lt;parameter=code&gt;
+</span><span class="ln">def masks():
+</span><span class="ln">    B=blocked_set()
+</span><span class="ln">    K=frozenset((r,c) for r in range(64) for c in range(64) if ok_cell((r,c),B,'k'))
+</span><span class="ln">    return B,K
+</span><span class="ln">def simulate(clicks,B,K):
+</span><span class="ln">    slots={'A':(6,17),'B':(9,49),'C':(21,8),'D':(26,10),'E':(48,54)}
+</span><span class="ln">    sel='D'; log=[]
+</span><span class="ln">    for x in clicks:
+</span><span class="ln">        hits=[s for s,p in slots.items() if s!=sel and x in diamond(p)]
+</span><span class="ln">        if hits:
+</span><span class="ln">            if len(hits)&gt;1: log.append(('AMBIG',x,hits)); continue
+</span><span class="ln">            sel=hits[0]; log.append(('select',sel)); continue
+</span><span class="ln">        if x in diamond(slots[sel]): log.append(('noop-own',x)); continue
+</span><span class="ln">        new=dict(slots); new[sel]=x
+</span><span class="ln">        ko=fl_mean([new['A'],new['B'],new['C']]); kp=fl_mean([new['D'],new['E']])
+</span><span class="ln">        if ko in K and kp in K and ok_cell(x,B,'d'):
+</span><span class="ln">            slots=new; log.append(('move',sel,x,'ko',ko,'kp',kp))
+</span><span class="ln">        else: log.append(('REJECT',x))
+</span><span class="ln">    return slots,sel,log
+</span><span class="ln">B,K=masks()
+</span><span class="ln">clicks=[(48,54),(13,57),(26,10),(23,57),(6,17),(58,42),(9,49),(34,40),(21,8),(61,38)]
+</span><span class="ln">st,sel,log=simulate(clicks,B,K)
+</span><span class="ln">for l in log: print(l)
+</span><span class="ln">print('FINAL ko',fl_mean([st['A'],st['B'],st['C']]),'kp',fl_mean([st['D'],st['E']]))
+</span><span class="ln">&lt;/parameter&gt;
+</span><span class="ln">&lt;/function&gt;
+</span><span class="ln">&lt;/tool_call&gt;
+</span></pre></section>
+<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span></div><pre class="tb-b"><span class="ln">('select', 'E')
+</span><span class="ln">('move', 'E', (13, 57), 'ko', (12, 24), 'kp', (19, 33))
+</span><span class="ln">('select', 'D')
+</span><span class="ln">('move', 'D', (23, 57), 'ko', (12, 24), 'kp', (18, 57))
+</span><span class="ln">('select', 'A')
+</span><span class="ln">('move', 'A', (58, 42), 'ko', (29, 33), 'kp', (18, 57))
+</span><span class="ln">('select', 'B')
+</span><span class="ln">('move', 'B', (34, 40), 'ko', (37, 30), 'kp', (18, 57))
+</span><span class="ln">('select', 'C')
+</span><span class="ln">('move', 'C', (61, 38), 'ko', (51, 40), 'kp', (18, 57))
+</span><span class="ln">FINAL ko (51, 40) kp (18, 57)
+</span></pre></section>
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span></div><pre class="tb-b"><span class="ln">The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).
+</span><span class="ln">Now execute with run_checked and expectations:
+</span><span class="ln">- After click 2 (index 1): 'M' at (19,33).
+</span><span class="ln">- After click 4 (index 3): 'M' at (18,57).
+</span><span class="ln">- After click 6 (index 5): 'M' at (29,33).
+</span><span class="ln">- After click 8 (index 6? no) — let me map:
+</span><span class="ln">  clicks[0]=(48,54) select → no knob change: expect 'M' still at (12,24) and (37,32)? Wait, the current kp is (37,32) (since p1 is at (26,10), p2 at (48,54) → mean (37,32)) ✓. So after click 0: ko (12,24), kp (37,32).
+</span><span class="ln">  clicks[1]=(13,57): kp → (19,33).
+</span><span class="ln">  clicks[2]=(26,10): no change.
+</span><span class="ln">  clicks[3]=(23,57): kp → (18,57).
+</span><span class="ln">  clicks[4]=(6,17): no change.
+</span><span class="ln">  clicks[5]=(58,42): ko → (29,33).
+</span><span class="ln">  clicks[6]=(9,49): no change.
+</span><span class="ln">  clicks[7]=(34,40): ko → (37,30).
+</span><span class="ln">  clicks[8]=(21,8): no change.
+</span><span class="ln">  clicks[9]=(61,38): ko → (51,40).
+</span><span class="ln">Expectations:
+</span><span class="ln">0: M at (12,24) and (37,32)
+</span><span class="ln">1: M at (19,33)
+</span><span class="ln">2: M at (19,33)
+</span><span class="ln">3: M at (18,57)
+</span><span class="ln">4: M at (18,57) and (12,24)
+</span><span class="ln">5: M at (29,33)
+</span><span class="ln">6: M at (29,33)
+</span><span class="ln">7: M at (37,30)
+</span><span class="ln">8: M at (37,30)
+</span><span class="ln">9: M at (51,40)
+</span><span class="ln">Let me use dict-style expectations {(r,c):'M'} — run_checked accepts {(row,col): letter}.
+</span><span class="ln">Note: the animation may make the final frame the settled one — current_frame after each action is the settled board ✓.
+</span><span class="ln">Let me execute. If the level completes at the last step, great.
+</span><span class="ln">One risk: the expectation checks happen after each action; if the game rejects a move (my model wrong), the check fails and run_checked stops ✓.
+</span><span class="ln">Let me go.
+</span></pre></section>
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: checked play</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+</span><span class="ln">&lt;function=python&gt;
+</span><span class="ln">&lt;parameter=code&gt;
+</span><span class="ln">M=lambda r,c:{'action':'MOUSE','row':r,'col':c}
+</span><span class="ln">clicks=[(48,54),(13,57),(26,10),(23,57),(6,17),(58,42),(9,49),(34,40),(21,8),(61,38)]
+</span><span class="ln">exp=[ {(12,24):'M',(37,32):'M'}, {(19,33):'M'}, {(19,33):'M'}, {(18,57):'M'},
+</span><span class="ln">      {(18,57):'M',(12,24):'M'}, {(29,33):'M'}, {(29,33):'M'}, {(37,30):'M'},
+</span><span class="ln">      {(37,30):'M'}, {(51,40):'M'} ]
+</span><span class="ln">moves=[(M(*c),e) for c,e in zip(clicks,exp)]
+</span><span class="ln">print(run_checked(moves))
+</span><span class="ln">print('level',current_frame.level,'step',current_frame.step)
+</span><span class="ln">print('state',last_action_call_result.get('state'),'completed',last_action_call_result.get('level_completed'))
+</span><span class="ln">&lt;/parameter&gt;
+</span><span class="ln">&lt;/function&gt;
+</span><span class="ln">&lt;/tool_call&gt;
+</span></pre></section>
+<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span><span class="tb-n">each line is one action() on the game</span></div><pre class="tb-b"><span class="ln" data-step="0">[action] MOUSE(row=48, col=54) -&gt; effect
+</span><span class="ln" data-step="1">[action] MOUSE(row=13, col=57) -&gt; effect
+</span><span class="ln" data-step="2">[action] MOUSE(row=26, col=10) -&gt; effect
+</span><span class="ln" data-step="3">[action] MOUSE(row=23, col=57) -&gt; effect
+</span><span class="ln" data-step="4">[action] MOUSE(row=6, col=17) -&gt; effect
+</span><span class="ln" data-step="5">[action] MOUSE(row=58, col=42) -&gt; effect
+</span><span class="ln" data-step="6">[action] MOUSE(row=9, col=49) -&gt; effect
+</span><span class="ln" data-step="7">[action] MOUSE(row=34, col=40) -&gt; effect
+</span><span class="ln" data-step="8">[action] MOUSE(row=21, col=8) -&gt; effect
+</span><span class="ln" data-step="9">[action] MOUSE(row=61, col=38) -&gt; LEVEL COMPLETED
+</span><span class="ln">{'planned': 10, 'executed': 10, 'checked': 9, 'all_met': True, 'stopped': 'level_completed at step 9 (MOUSE(row=61, col=38))', 'level': 3, 'step': 22}
+</span><span class="ln">level 3 step 22
+</span><span class="ln">state NOT_FINISHED completed True
+</span></pre></section>
+<div class="tp-next">next turn · level 3</div>
+<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span><span class="tb-n">harness: own functions listed back</span></div><pre class="tb-b"><span class="ln">Reminder: the earlier sequence this turn completed the level; you are now on the new level.
+</span><span class="ln">Current state: step 23, level 3.
+</span><span class="ln cut">…
+</span><span class="ln">Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6), masks(), simulate(clicks, B, K),
+</span><span class="ln cut">…
+</span></pre></section>
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: notes memory</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+</span><span class="ln">&lt;function=python&gt;
+</span><span class="ln">&lt;parameter=code&gt;
+</span><span class="ln">notes.append("""## Level 3 layout
+</span><span class="ln">- Green group N: 4 slots n0 head(16,14)[SELECTED], n1(9,34), n2(16,39), n3(21,23); knob mean start (15,27); TARGET green ring center (53,55).
+</span><span class="ln">- Purple group p: p0(34,37), p1(40,52); knob mean start (37,44); TARGET purple ring center (57,34).
+</span><span class="ln">- Same mechanics as L2 (knob=floor(mean), knob blob must avoid S/outside, click anchor=select, click empty=move selected slot).
+</span><span class="ln">- Green plan (10 clicks, simulated OK): (9,34),(34,13),(16,14),(50,57),(34,13),(53,57),(21,23),(57,51),(16,39),(52,55) -&gt; n mean (53,55).
+</span><span class="ln">""")
+</span><span class="ln">M=lambda r,c:{'action':'MOUSE','row':r,'col':c}
+</span><span class="ln cut">…
+</span></pre></section>
+</div>
+</div>
+<div class="tp-note">Stored transcript: this turn's input is rebuilt from the run's saved transcripts, so it is not guaranteed to be the exact prompt bytes. Every word in the coloured blocks is copied from it; "…" marks a cut.</div>
+</div>
+<script type="application/json" id="turn-player-data">{"chars":"WwgGcBMPRbSYOrNp","pal":[[255,255,255],[204,204,204],[153,153,153],[102,102,102],[51,51,51],[0,0,0],[229,58,163],[255,123,204],[249,60,49],[30,147,255],[136,216,241],[255,220,0],[255,133,27],[146,18,49],[79,204,48],[163,86,214]],"before":"BgggggggBBgggggggggggBBBBBBBBBBBBBgggggggBBBBBBBBgggggggggggggggBgggggggBBgggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggggBgggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggBgggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggggWggggggBBBBBBBBBBGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggWggggggBBBBBBBBBGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggWgggggBBBBBBBBBGGOGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBGBwBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBwwGGOGGBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBwOOOBBBBBBBBBBBwwwwwwwwBBBGGGBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOOOOBBwwwwwwwwBBBBBBBBBBBBGBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOMOOwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOOOOBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBBBBBwwBOOOBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBpBBBBBWBBBBBBBBBBBBBBBBwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBpBBBBWBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBBBpBBBWBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBGBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBBBpBBBWBBBBBBGGGwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBpBBBBWBBBBBGGOGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBpBBBBBWBBBBBBGGGBBBBBBBBBBBBBBBSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBGBBBBBBBBBBBBBBBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBWBBBBBBBBBBSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBWWWBBBBBBBSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBWWpWWBBBBSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBWWWwwBBBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBWBBBwwBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBwwSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBSSSSBBBBBWBBBBBBBBBBBBBBBSSwwSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBSSSSSBBBBBWBBBBBBBBBBBBBSSSSSSwwSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSWSBBBBBBBBBBBBSSSSSSSSwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSSBBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSSSSBBBBBBBBBBBBBBBBBBBBBBBwwBpppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSWSSSSSBBBBBBBBBBBBBBBBBBBBBBBBpppppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSWSSSSSSBBBBBBBBBBBBBBBBBBBBBBBppMppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSWSSSSSSBBBBBBBBBBBBSSSSSBBBBBBpppppBBBBBBBBBBBBBBBBBBBBBBSSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSBBBBBpppBwwBBBBBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSSSBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSSSSBBBBBBBBBBwwBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBwwBBBGBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBwwGGGBBBBSSSSWgggSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBOBOBBBBBBBBBBGGpGGBBBggggWgggSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBOBBBOBBBBBBBBBBGGGBBBBggggWggggggSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBOBBBBBOBBBBBBBBBBGBBBBBggggWggggggSSSgggggggSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBOBBBBBOBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBBOBBBOBBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBBBOBOBBBBBBBBBBBBBBBBBBggggWggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggggggWgggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggggggggg","steps":[{"a":"MOUSE(row=48, col=54)","r":48,"c":54,"d":[[4,0,"B"],[24,10,"G"],[25,9,"G"],[25,10,"G"],[25,11,"G"],[26,8,"G"],[26,9,"G"],[26,11,"G"],[26,12,"G"],[27,9,"G"],[27,10,"G"],[27,11,"G"],[28,10,"G"],[46,54,"W"],[47,53,"W"],[47,54,"W"],[47,55,"W"],[48,52,"W"],[48,53,"W"],[48,55,"W"],[48,56,"W"],[49,53,"W"],[49,54,"W"],[49,55,"W"],[50,54,"W"]]},{"a":"MOUSE(row=13, col=57)","r":13,"c":57,"d":[[5,0,"B"],[11,57,"W"],[12,56,"W"],[12,57,"W"],[12,58,"W"],[13,55,"W"],[13,56,"W"],[13,57,"p"],[13,58,"W"],[13,59,"W"],[14,51,"w"],[14,52,"w"],[14,53,"w"],[14,54,"w"],[14,56,"W"],[14,57,"W"],[14,58,"W"],[15,47,"w"],[15,48,"w"],[15,49,"w"],[15,50,"w"],[15,57,"W"],[16,43,"w"],[16,44,"w"],[16,45,"w"],[16,46,"w"],[17,32,"p"],[17,33,"p"],[17,34,"p"],[17,39,"w"],[17,40,"w"],[17,41,"w"],[17,42,"w"],[18,31,"p"],[18,32,"p"],[18,33,"p"],[18,34,"p"],[18,35,"p"],[18,36,"w"],[18,37,"w"],[18,38,"w"],[19,31,"p"],[19,32,"p"],[19,33,"M"],[19,34,"p"],[19,35,"p"],[20,29,"w"],[20,30,"w"],[20,31,"p"],[20,32,"p"],[20,33,"p"],[20,34,"p"],[20,35,"p"],[21,25,"w"],[21,26,"w"],[21,27,"w"],[21,28,"w"],[21,32,"p"],[21,33,"p"],[21,34,"p"],[22,22,"w"],[22,23,"w"],[22,24,"w"],[23,19,"w"],[23,20,"w"],[23,21,"w"],[24,15,"w"],[24,16,"w"],[24,17,"w"],[24,18,"w"],[25,12,"w"],[25,13,"w"],[25,14,"w"],[27,12,"B"],[27,13,"B"],[28,14,"B"],[28,15,"B"],[29,16,"B"],[29,17,"S"],[30,18,"S"],[30,19,"S"],[31,20,"S"],[31,21,"S"],[32,22,"S"],[32,23,"S"],[33,24,"B"],[33,25,"B"],[34,26,"B"],[34,27,"B"],[35,28,"B"],[35,29,"B"],[35,31,"B"],[35,32,"B"],[35,33,"B"],[36,30,"B"],[36,31,"B"],[36,32,"B"],[36,33,"B"],[36,34,"B"],[37,30,"B"],[37,31,"B"],[37,32,"B"],[37,33,"B"],[37,34,"B"],[38,30,"B"],[38,31,"B"],[38,32,"B"],[38,33,"B"],[38,34,"B"],[39,31,"B"],[39,32,"B"],[39,33,"B"],[39,35,"B"],[39,36,"B"],[40,37,"B"],[40,38,"B"],[41,39,"B"],[41,40,"B"],[42,41,"B"],[42,42,"B"],[43,43,"B"],[43,44,"B"],[44,45,"B"],[44,46,"B"],[45,47,"B"],[45,48,"B"],[46,49,"B"],[46,50,"B"],[46,54,"B"],[47,51,"B"],[47,52,"B"],[47,53,"B"],[47,54,"B"],[47,55,"B"],[48,52,"B"],[48,53,"B"],[48,54,"B"],[48,55,"B"],[48,56,"B"],[49,53,"B"],[49,54,"B"],[49,55,"B"],[50,54,"B"]]},{"a":"MOUSE(row=26, col=10)","r":26,"c":10,"d":[[6,0,"B"],[11,57,"G"],[12,56,"G"],[12,57,"G"],[12,58,"G"],[13,55,"G"],[13,56,"G"],[13,58,"G"],[13,59,"G"],[14,56,"G"],[14,57,"G"],[14,58,"G"],[15,57,"G"],[24,10,"W"],[25,9,"W"],[25,10,"W"],[25,11,"W"],[26,8,"W"],[26,9,"W"],[26,11,"W"],[26,12,"W"],[27,9,"W"],[27,10,"W"],[27,11,"W"],[28,10,"W"]]},{"a":"MOUSE(row=23, col=57)","r":23,"c":57,"d":[[7,0,"B"],[8,0,"B"],[14,51,"B"],[14,52,"B"],[14,53,"B"],[14,54,"B"],[15,47,"B"],[15,48,"B"],[15,49,"B"],[15,50,"B"],[15,56,"W"],[15,58,"W"],[16,43,"B"],[16,44,"B"],[16,45,"B"],[16,46,"B"],[16,55,"W"],[16,56,"p"],[16,57,"p"],[16,58,"p"],[16,59,"W"],[17,32,"B"],[17,33,"B"],[17,34,"B"],[17,39,"B"],[17,40,"B"],[17,41,"B"],[17,42,"B"],[17,54,"W"],[17,55,"p"],[17,56,"p"],[17,57,"p"],[17,58,"p"],[17,59,"p"],[17,60,"W"],[18,31,"B"],[18,32,"B"],[18,33,"B"],[18,34,"B"],[18,35,"B"],[18,36,"B"],[18,37,"B"],[18,38,"B"],[18,55,"p"],[18,56,"p"],[18,57,"M"],[18,58,"p"],[18,59,"p"],[19,31,"B"],[19,32,"B"],[19,33,"B"],[19,34,"B"],[19,35,"B"],[19,54,"W"],[19,55,"p"],[19,56,"p"],[19,57,"p"],[19,58,"p"],[19,59,"p"],[19,60,"W"],[20,29,"B"],[20,30,"B"],[20,31,"B"],[20,32,"B"],[20,33,"B"],[20,34,"B"],[20,35,"B"],[20,55,"W"],[20,56,"p"],[20,57,"p"],[20,58,"p"],[20,59,"W"],[21,25,"B"],[21,26,"B"],[21,27,"B"],[21,28,"B"],[21,32,"B"],[21,33,"B"],[21,34,"B"],[21,56,"W"],[21,57,"W"],[21,58,"W"],[22,22,"B"],[22,23,"B"],[22,24,"B"],[22,56,"W"],[22,57,"W"],[22,58,"W"],[23,19,"B"],[23,20,"B"],[23,21,"B"],[23,55,"W"],[23,56,"W"],[23,57,"p"],[23,58,"W"],[23,59,"W"],[24,10,"B"],[24,15,"B"],[24,16,"B"],[24,17,"B"],[24,18,"B"],[24,56,"W"],[24,57,"W"],[24,58,"W"],[25,9,"B"],[25,10,"B"],[25,11,"B"],[25,12,"B"],[25,13,"B"],[25,14,"B"],[25,57,"W"],[26,8,"B"],[26,9,"B"],[26,10,"B"],[26,11,"B"],[26,12,"B"],[27,9,"B"],[27,10,"B"],[27,11,"B"],[28,10,"B"]]},{"a":"MOUSE(row=6, col=17)","r":6,"c":17,"d":[[4,17,"W"],[5,16,"W"],[5,17,"W"],[5,18,"W"],[6,15,"W"],[6,16,"W"],[6,18,"W"],[6,19,"W"],[7,16,"W"],[7,17,"W"],[7,18,"W"],[8,17,"W"],[9,0,"B"],[21,57,"G"],[22,56,"G"],[22,57,"G"],[22,58,"G"],[23,55,"G"],[23,56,"G"],[23,58,"G"],[23,59,"G"],[24,56,"G"],[24,57,"G"],[24,58,"G"],[25,57,"G"]]},{"a":"MOUSE(row=58, col=42)","r":58,"c":42,"d":[[4,17,"B"],[5,16,"B"],[5,17,"B"],[5,18,"B"],[6,15,"B"],[6,16,"B"],[6,17,"B"],[6,18,"B"],[6,19,"B"],[7,16,"B"],[7,17,"B"],[7,18,"B"],[8,17,"B"],[8,19,"B"],[9,20,"B"],[9,21,"B"],[9,45,"B"],[9,46,"B"],[10,0,"B"],[10,22,"B"],[10,23,"B"],[10,24,"B"],[10,25,"B"],[10,37,"B"],[10,38,"B"],[10,39,"B"],[10,40,"B"],[10,41,"B"],[10,42,"B"],[10,43,"B"],[10,44,"B"],[11,22,"B"],[11,23,"B"],[11,24,"B"],[11,25,"B"],[11,26,"B"],[11,29,"B"],[11,30,"B"],[11,31,"B"],[11,32,"B"],[11,33,"B"],[11,34,"B"],[11,35,"B"],[11,36,"B"],[11,47,"w"],[12,22,"B"],[12,23,"B"],[12,24,"B"],[12,25,"B"],[12,26,"B"],[12,27,"B"],[12,28,"B"],[12,47,"w"],[13,22,"B"],[13,23,"B"],[13,24,"B"],[13,25,"B"],[13,26,"B"],[13,46,"w"],[14,20,"B"],[14,21,"B"],[14,23,"B"],[14,24,"B"],[14,25,"B"],[14,45,"w"],[15,18,"B"],[15,19,"B"],[15,44,"w"],[16,17,"B"],[16,43,"w"],[17,15,"B"],[17,16,"B"],[17,43,"w"],[18,13,"B"],[18,14,"B"],[18,42,"w"],[19,11,"B"],[19,12,"B"],[19,41,"w"],[20,10,"B"],[20,40,"w"],[21,39,"w"],[22,10,"w"],[22,11,"w"],[22,12,"w"],[22,39,"w"],[23,13,"w"],[23,14,"w"],[23,15,"w"],[23,38,"w"],[24,16,"w"],[24,17,"w"],[24,18,"w"],[24,37,"w"],[25,19,"w"],[25,20,"w"],[25,21,"w"],[25,22,"w"],[25,36,"w"],[26,23,"w"],[26,24,"w"],[26,25,"w"],[26,35,"w"],[27,26,"w"],[27,27,"w"],[27,28,"w"],[27,32,"O"],[27,33,"O"],[27,34,"O"],[27,35,"w"],[28,29,"w"],[28,30,"w"],[28,31,"O"],[28,32,"O"],[28,33,"O"],[28,34,"O"],[28,35,"O"],[29,31,"O"],[29,32,"O"],[29,33,"M"],[29,34,"O"],[29,35,"O"],[30,31,"O"],[30,32,"O"],[30,33,"O"],[30,34,"O"],[30,35,"O"],[31,32,"O"],[31,33,"O"],[31,34,"O"],[32,34,"w"],[33,34,"w"],[34,35,"w"],[35,35,"w"],[36,35,"w"],[37,35,"w"],[38,36,"w"],[39,36,"w"],[40,36,"w"],[41,37,"w"],[42,37,"w"],[43,37,"w"],[44,38,"w"],[45,38,"w"],[46,38,"w"],[47,39,"w"],[49,39,"w"],[50,40,"w"],[51,40,"w"],[52,40,"w"],[53,40,"w"],[55,41,"w"],[56,41,"w"],[56,42,"W"],[57,41,"W"],[57,42,"W"],[57,43,"W"],[58,40,"W"],[58,41,"W"],[58,42,"O"],[58,43,"W"],[58,44,"W"],[59,41,"W"],[59,42,"W"],[59,43,"W"],[60,42,"W"]]},{"a":"MOUSE(row=9, col=49)","r":9,"c":49,"d":[[7,49,"W"],[8,48,"W"],[8,49,"W"],[8,50,"W"],[9,47,"W"],[9,48,"W"],[9,50,"W"],[9,51,"W"],[10,48,"W"],[10,49,"W"],[10,50,"W"],[11,0,"B"],[11,49,"W"],[56,42,"G"],[57,41,"G"],[57,42,"G"],[57,43,"G"],[58,40,"G"],[58,41,"G"],[58,43,"G"],[58,44,"G"],[59,41,"G"],[59,42,"G"],[59,43,"G"],[60,42,"G"]]},{"a":"MOUSE(row=34, col=40)","r":34,"c":40,"d":[[7,49,"B"],[8,48,"B"],[8,49,"B"],[8,50,"B"],[9,47,"B"],[9,48,"B"],[9,49,"B"],[9,50,"B"],[9,51,"B"],[10,48,"B"],[10,49,"B"],[10,50,"B"],[11,47,"B"],[11,49,"B"],[12,0,"B"],[12,47,"B"],[13,46,"B"],[14,45,"B"],[15,44,"B"],[16,43,"B"],[17,43,"B"],[18,42,"B"],[19,41,"B"],[20,40,"B"],[21,39,"B"],[22,11,"B"],[22,12,"B"],[22,39,"B"],[23,11,"w"],[23,13,"B"],[23,14,"B"],[23,15,"B"],[23,38,"B"],[24,12,"w"],[24,16,"B"],[24,17,"B"],[24,18,"B"],[24,37,"S"],[25,13,"w"],[25,14,"w"],[25,19,"S"],[25,20,"S"],[25,21,"S"],[25,22,"S"],[25,36,"S"],[26,15,"w"],[26,23,"S"],[26,24,"S"],[26,25,"S"],[26,35,"S"],[27,16,"w"],[27,26,"S"],[27,27,"S"],[27,28,"S"],[27,32,"B"],[27,33,"B"],[27,34,"B"],[27,35,"B"],[28,17,"w"],[28,18,"w"],[28,29,"S"],[28,30,"S"],[28,31,"B"],[28,32,"B"],[28,33,"B"],[28,34,"B"],[28,35,"B"],[29,19,"w"],[29,31,"B"],[29,32,"B"],[29,33,"B"],[29,34,"B"],[29,35,"B"],[30,20,"w"],[30,21,"w"],[30,31,"B"],[30,32,"B"],[30,33,"B"],[30,34,"B"],[30,35,"B"],[31,22,"w"],[31,32,"B"],[31,33,"B"],[31,34,"B"],[32,23,"w"],[32,34,"B"],[32,40,"W"],[33,24,"w"],[33,25,"w"],[33,34,"B"],[33,39,"W"],[33,40,"W"],[33,41,"W"],[34,26,"w"],[34,35,"B"],[34,38,"W"],[34,39,"W"],[34,40,"O"],[34,41,"W"],[34,42,"W"],[35,27,"w"],[35,29,"O"],[35,30,"O"],[35,31,"O"],[35,36,"w"],[35,37,"w"],[35,38,"w"],[35,39,"W"],[35,40,"W"],[35,41,"W"],[36,28,"O"],[36,29,"O"],[36,30,"O"],[36,31,"O"],[36,32,"O"],[36,33,"w"],[36,34,"w"],[36,35,"B"],[36,40,"W"],[37,28,"O"],[37,29,"O"],[37,30,"M"],[37,31,"O"],[37,32,"O"],[37,35,"B"],[38,28,"O"],[38,29,"O"],[38,30,"O"],[38,31,"O"],[38,32,"O"],[38,36,"B"],[39,29,"O"],[39,30,"O"],[39,31,"O"],[39,36,"B"],[40,32,"w"],[40,36,"B"],[41,32,"w"],[41,37,"B"],[42,33,"w"],[42,37,"B"],[43,33,"w"],[43,37,"B"],[44,34,"w"],[44,38,"B"],[45,35,"w"],[45,38,"B"],[46,35,"w"],[46,38,"B"],[47,36,"w"],[47,39,"B"],[48,36,"w"],[49,37,"w"],[49,39,"B"],[50,40,"B"],[51,38,"w"],[51,40,"B"],[52,39,"w"],[52,40,"B"],[53,39,"w"],[53,40,"B"],[54,40,"w"],[55,40,"w"],[55,41,"B"]]},{"a":"MOUSE(row=21, col=8)","r":21,"c":8,"d":[[13,0,"B"],[19,8,"W"],[20,7,"W"],[20,8,"W"],[20,9,"W"],[21,6,"W"],[21,7,"W"],[21,9,"W"],[21,10,"W"],[22,7,"W"],[22,8,"W"],[22,9,"W"],[23,8,"W"],[32,40,"G"],[33,39,"G"],[33,40,"G"],[33,41,"G"],[34,38,"G"],[34,39,"G"],[34,41,"G"],[34,42,"G"],[35,39,"G"],[35,40,"G"],[35,41,"G"],[36,40,"G"]]},{"a":"MOUSE(row=61, col=38)","r":61,"c":38,"d":[[14,0,"B"],[19,8,"B"],[20,7,"B"],[20,8,"B"],[20,9,"B"],[21,6,"B"],[21,7,"B"],[21,8,"B"],[21,9,"B"],[21,10,"B"],[22,7,"B"],[22,8,"B"],[22,9,"B"],[22,10,"B"],[23,8,"B"],[23,11,"B"],[24,12,"B"],[25,13,"B"],[25,14,"B"],[26,15,"B"],[27,16,"B"],[28,17,"S"],[28,18,"S"],[29,19,"S"],[30,20,"S"],[30,21,"S"],[31,22,"S"],[32,23,"S"],[33,24,"B"],[33,25,"B"],[34,26,"B"],[35,27,"B"],[35,29,"B"],[35,30,"B"],[35,31,"B"],[35,35,"B"],[35,36,"B"],[35,37,"B"],[35,38,"B"],[36,28,"B"],[36,29,"B"],[36,30,"B"],[36,31,"B"],[36,32,"B"],[36,33,"B"],[36,34,"B"],[37,28,"B"],[37,29,"B"],[37,30,"B"],[37,31,"B"],[37,32,"B"],[37,40,"w"],[38,28,"B"],[38,29,"B"],[38,30,"B"],[38,31,"B"],[38,32,"B"],[38,40,"w"],[39,29,"B"],[39,30,"B"],[39,31,"B"],[39,40,"w"],[40,32,"B"],[40,40,"w"],[41,32,"B"],[41,40,"w"],[42,33,"B"],[42,40,"w"],[43,33,"B"],[43,40,"w"],[44,34,"B"],[44,40,"w"],[45,35,"B"],[45,40,"w"],[46,35,"B"],[46,40,"w"],[47,36,"B"],[47,40,"w"],[48,36,"B"],[48,40,"w"],[49,37,"B"],[49,39,"O"],[49,40,"O"],[49,41,"O"],[50,38,"O"],[50,39,"O"],[50,40,"O"],[50,41,"O"],[50,42,"O"],[51,38,"O"],[51,39,"O"],[51,40,"M"],[51,41,"O"],[51,42,"O"],[52,38,"O"],[52,39,"O"],[52,40,"O"],[52,41,"O"],[52,42,"O"],[53,39,"O"],[53,40,"O"],[53,41,"O"],[54,40,"B"],[55,39,"w"],[55,40,"B"],[55,41,"w"],[56,39,"w"],[57,39,"w"],[58,39,"w"],[59,38,"W"],[60,37,"W"],[60,38,"W"],[60,39,"W"],[61,36,"W"],[61,37,"W"],[61,38,"O"],[61,39,"W"],[61,40,"W"],[62,37,"W"],[62,38,"W"],[62,39,"W"],[63,38,"W"]]}],"capStart":"<b>Before the turn<\/b> \u00b7 the board attached to the turn message (recorded frame)","capStep":"The recorded game after this action(); the ring marks the click.","capEnd":"<b>Level 2 cleared<\/b>: both knobs sit in their rings."}</script>
+<script>
+(function () {
+  // One turn of the harness: streams the transcript and steps the board (make_turn_player.py).
+  var root = document.querySelector('#fig-turn .tp');
+  var dataEl = document.getElementById('turn-player-data');
+  if (!root || !dataEl || root.classList.contains('tp-js')) return;
+  var D = JSON.parse(dataEl.textContent);
+  root.classList.add('tp-js');
+  var log = root.querySelector('.tp-log'), cap = root.querySelector('.tp-cap'), bar = root.querySelector('.tp-bar i');
+  var img = root.querySelector('.tp-board img');
+  var cv = document.createElement('canvas'); cv.width = 512; cv.height = 512;
+  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', img.getAttribute('alt'));
+  img.replaceWith(cv);
+  var g = cv.getContext('2d');
+  var idx = {}; for (var i = 0; i < D.chars.length; i++) idx[D.chars[i]] = i;
+  var grid = [];
+
+  function paint(mark) {
+    for (var r = 0; r < 64; r++) for (var c = 0; c < 64; c++) {
+      var p = D.pal[idx[grid[r * 64 + c]]];
+      g.fillStyle = 'rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')'; g.fillRect(c * 8, r * 8, 8, 8);
+    }
+    if (!mark) return;
+    var x = mark.c * 8 + 4, y = mark.r * 8 + 4;   // the click: a ring with a dot
+    g.lineWidth = 5; g.strokeStyle = '#000'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
+    g.lineWidth = 2.5; g.strokeStyle = '#fff'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 3.5, 0, 7); g.fill();
+  }
+  function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..9: after click k
+    grid = D.before.split('');
+    for (var s = 0; s <= k; s++) D.steps[s].d.forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; });
+    paint(k >= 0 ? D.steps[k] : null);
+    cap.innerHTML = k < 0 ? D.capStart
+      : '<b>Click ' + (k + 1) + ' of 10</b> · ' + D.steps[k].a + (k === 9 ? '<br>' + D.capEnd : '<br>' + D.capStep);
+  }
+
+  // The stream: every line of every block, in order. Inputs appear a line at a time; the model's
+  // own output (reasoning, tool calls) types out; each action() result line steps the board.
+  var units = [];
+  [].forEach.call(log.children, function (el) {
+    if (el.classList.contains('tp-next')) { units.push({ el: el, div: true }); return; }
+    var kind = el.dataset.kind;
+    [].forEach.call(el.querySelectorAll('.ln'), function (ln, n) {
+      units.push({ el: ln, block: el, first: n === 0, text: ln.textContent, kind: kind,
+                   step: ln.dataset.step === undefined ? null : +ln.dataset.step });
+    });
+  });
+  var CPS = 260, LINE = { system: 40, user: 40, result: 70 }, STEP = 650, GAP = 320;
+  var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
+
+  function reset() {
+    units.forEach(function (x) {
+      if (x.div) { x.el.classList.add('tp-hide'); return; }
+      x.el.textContent = ''; x.opened = false; x.el.classList.remove('step-on'); x.block.classList.add('tp-hide');
+    });
+    u = 0; shown = 0; wait = 0; done = false; follow = true; setBoard(-1); log.scrollTop = 0; bar.style.width = '0';
+  }
+  function finish() {
+    units.forEach(function (x) {
+      if (x.div) { x.el.classList.remove('tp-hide'); return; }
+      x.el.textContent = x.text; x.el.classList.remove('step-on'); x.block.classList.remove('tp-hide');
+    });
+    u = units.length; done = true; setBoard(9); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
+    setPlaying(false); btnPlay.textContent = 'Replay';
+  }
+  function tick(now) {
+    if (!playing) return;
+    var dt = Math.min(100, now - last); last = now;
+    var budget = dt;
+    while (budget > 0 && u < units.length) {
+      if (wait > 0) { var w = Math.min(wait, budget); wait -= w; budget -= w; continue; }
+      var x = units[u];
+      if (x.div) { x.el.classList.remove('tp-hide'); wait = GAP; u++; continue; }
+      if (x.first && !x.opened) {   // a new block: show its label bar, then a short beat
+        x.opened = true; x.block.classList.remove('tp-hide');
+        if (u) { wait = GAP; continue; }
+      }
+      if (x.kind === 'think' || x.kind === 'call') {      // typed out
+        var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * CPS / 1000)));
+        shown += n; budget -= n * 1000 / CPS; x.el.textContent = x.text.slice(0, shown);
+        if (shown < x.text.length) break;
+      } else {
+        x.el.textContent = x.text; wait = LINE[x.kind] || 40;
+      }
+      if (x.step !== null) {
+        units.forEach(function (y) { if (y.el.classList) y.el.classList.remove('step-on'); });
+        x.el.classList.add('step-on'); setBoard(x.step); wait = STEP;
+      }
+      u++; shown = 0;
+    }
+    bar.style.width = (100 * u / units.length) + '%';
+    if (follow) log.scrollTop = log.scrollHeight;
+    if (u >= units.length && wait <= 0) { finish(); return; }
+    requestAnimationFrame(tick);
+  }
+  function setPlaying(p) {
+    playing = p; btnPlay.textContent = p ? 'Pause' : 'Play';
+    if (p) { last = performance.now(); requestAnimationFrame(tick); }
+  }
+  // Follow the newest text unless the reader scrolls up; scrolling back down resumes it.
+  log.addEventListener('scroll', function () {
+    follow = log.scrollHeight - log.scrollTop - log.clientHeight < 30;
+  });
+  var ctl = root.querySelector('.tp-ctl');
+  var btnPlay = ctl.querySelector('[data-a=play]');
+  btnPlay.addEventListener('click', function () {
+    if (done) { reset(); setPlaying(true); } else { if (!playing) follow = true; setPlaying(!playing); }
+  });
+  ctl.querySelector('[data-a=restart]').addEventListener('click', function () { reset(); setPlaying(true); });
+  ctl.querySelector('[data-a=end]').addEventListener('click', finish);
+  window.__turnPlayer = { finish: finish, reset: reset, play: function () { setPlaying(true); } };
+
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (calm || location.hash === '#turn-end') { finish(); return; }
+  reset();
+  var started = false;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, ob) {
+      es.forEach(function (e) { if (e.isIntersecting && !started) { started = true; ob.disconnect(); setPlaying(true); } });
+    }, { threshold: 0.35 }).observe(root);
+  } else { started = true; setPlaying(true); }
+})();
+</script>
+<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.</figcaption>
 </figure>
+<!-- turn-player:end -->
 <p>On top of that loop, the Turducken harness keeps these things for the model:</p>
 <ul>
 <li><strong>Its own functions:</strong> helpers the model writes (a path search, an object finder) stay defined for the whole game and are listed back to it every turn, so a tool built on level 1 is still there on level 6. This comes from Daniel's notebook, which already keeps them for the whole game; we kept his setting.</li>

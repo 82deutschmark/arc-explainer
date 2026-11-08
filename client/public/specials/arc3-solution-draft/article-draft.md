@@ -44,15 +44,15 @@ One turn goes like this:
 
 4. The printed result comes back, and the model can call `python` again, as often as it likes. Each call has a 30-second limit.
 
-Here is one real turn from a saved run, step by step: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.
+Here is one real turn from a saved run, played back fast: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.
 
 One turn of the harness, from a saved run
 
-The system prompt, the board the model saw, its reasoning, its two python calls and their output, then its moves played through action() on the recorded game.
+The transcript streams as the turn happened: the system prompt, the turn message, the model's reasoning, its two python calls and their output. The board steps through the recorded game as each action() click lands.
 
-![One real turn of Reaching Lurch, level 2, in eight steps: system prompt excerpts, the turn message and board, the reasoning, two python calls with their output, the ten clicks played through run_checked on the recorded board until the level clears, and the next turn's notes.](charts/turn-wide.webp)
+![The end of the turn: the full transcript has streamed in and the board shows level 2 cleared after the tenth click. On the page this plays as a live transcript, colour-coded by block (system prompt black, user prompt green, reasoning blue, tool call yellow, tool result amber), next to one game board.](charts/turn-still.png)
 
-Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the boards are the run's recorded frames. The last step is the first python call of the following turn. The coloured chips and the yellow notes are ours.
+Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.
 
 On top of that loop, the Turducken harness keeps these things for the model:
 

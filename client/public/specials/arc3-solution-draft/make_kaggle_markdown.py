@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Author: Claude Opus 5.5 Low
+Author: Claude Opus 5.5 Low; walkthrough player mapping by Claude Opus 5.5 Medium (Round 10)
 Date: 08-November-2026
 PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the live main page.
          Reads ../2026-11-06-arc3-solution-draft.html (the main page, the single source of the
@@ -11,8 +11,9 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
              (the IMAGES map imported from make_white_page.py, so both alternates stay in step).
              The context-management animation cannot play on Kaggle, so its committed still
              frame (charts/trim-poster.png) is shown, linked to the animated file, with a one-line
-             pointer under it; the one-turn walkthrough (Round 7, Claude Opus 5.5 Low) gets its still
-             of the final state (charts/turn-still.png) the same way. Site-only lines (the nav and the "Review draft" banner) are dropped.
+             pointer under it. The one-turn walkthrough is an in-page player (Round 10, make_turn_player.py):
+             its player block is set aside and replaced by the still of its final state
+             (charts/turn-still.png), linked to the figure on the live page. Site-only lines (the nav and the "Review draft" banner) are dropped.
            - article-kaggle.txt: the same bytes, so browsers show it as text instead of downloading.
            - ../2026-11-06-arc3-solution-draft-kaggle.html: a tiny unlisted, noindex page with a
              Copy button, the raw Markdown, and a preview rendered from that Markdown.
@@ -45,11 +46,23 @@ OUT_TXT = HERE / "article-kaggle.txt"
 OUT_PAGE = HERE.parent / "2026-11-06-arc3-solution-draft-kaggle.html"
 ANIMATION = "arc3-solution-draft/charts/trim.webp"
 POSTER = "arc3-solution-draft/charts/trim-poster.png"
-# The one-turn walkthrough (Round 7): a <picture> with a tall phone version and a wide one; Kaggle
-# gets the wide animation's still of the final state, linked to the wide animation.
-TURN_ANIMATION = "arc3-solution-draft/charts/turn-wide.webp"
-TURN_TALL = "arc3-solution-draft/charts/turn-tall.webp"
+# The one-turn walkthrough (Round 10): an in-page player between the turn-player markers. Kaggle gets
+# the still of its final state, linked to the figure on the live page.
 TURN_STILL = "arc3-solution-draft/charts/turn-still.png"
+TURN_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn"
+TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=<figcaption>)', re.S)
+
+
+def without_player(page: str) -> str:
+    """Swap the walkthrough's player block (transcript, board, scripts) for one still image."""
+    i, j = page.find("<!-- turn-player:start -->"), page.find("<!-- turn-player:end -->")
+    if i < 0 or j < i:
+        raise Fail("The walkthrough markers are gone; check make_turn_player.py")
+    fig, n = TURN_PLAYER.subn(f'<img class="turn-still" src="{TURN_STILL}" alt="">', page[i:j], count=1)
+    if n != 1:
+        raise Fail("The walkthrough player block changed; check make_turn_player.py")
+    return page[:i] + fig + page[j:]
+
 
 VOID = {"img", "source", "br"}
 KNOWN = {
@@ -239,20 +252,18 @@ def render_figure(fig: Node) -> list[str]:
         blocks.append(f"*This is a still frame from an animation: [watch the animation]({absolute(ANIMATION)}).*")
         return blocks
     if fig.attrs.get("id") == "fig-turn":
-        pic = fig.find("picture")
-        img, src = pic.find("img"), pic.find("source")
-        if (img.attrs["src"] != TURN_ANIMATION or src.attrs.get("srcset") != TURN_TALL
-                or not (HERE.parent / TURN_STILL).is_file()):
-            raise Fail("The walkthrough figure changed; check its still and animation paths")
+        img = fig.find("img")
+        if not img or img.attrs.get("src") != TURN_STILL or not (HERE.parent / TURN_STILL).is_file():
+            raise Fail("The walkthrough figure changed; check its still")
         for div in fig.kids():
             if div.tag == "div" and "ft" in div.cls():
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        blocks.append(image(TURN_STILL, "The final step of the walkthrough: the ten clicks have run and level 2 is "
-                            "cleared; the right board is the recorded game.", TURN_ANIMATION))
+        blocks.append(image(TURN_STILL, "The end of the turn: the full transcript has streamed in and the board shows "
+                            "level 2 cleared after the tenth click.", TURN_PAGE))
         blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
-        blocks.append(f"*This is the last frame of an eight-step animation: [watch the animation]({absolute(TURN_ANIMATION)}).*")
+        blocks.append(f"*This is a still of an animated figure: [watch the turn play on the article page]({TURN_PAGE}).*")
         return blocks
     if "redrawn-figure" in fig.cls():
         for child in fig.kids():
@@ -402,7 +413,7 @@ document.getElementById('copy').addEventListener('click', async () => {{
 def main() -> int:
     builder = TreeBuilder()
     try:
-        builder.feed(MAIN.read_text(encoding="utf-8"))
+        builder.feed(without_player(MAIN.read_text(encoding="utf-8")))
         if builder.root is None:
             raise Fail("No <main> in the main page")
         md = "\n\n".join(render(builder.root)) + "\n"
