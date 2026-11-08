@@ -36,3 +36,8 @@ Son asked that the charts stop saying "board" and say "offline evaluation". `rew
 ## Tokens per second, exact or lossy (added 7 November 2026, Claude Opus 5.5 Low)
 
 `tps-exact-lossy.svg` / `.png`, built by `python3.13 make_tps_exact_lossy_chart.py`. Bars are the whole-run tok/s of the TIME rows in `original/source-data.json` (the ladder chart's numbers). Each build's colour is imported from `make_decode_exact_lossy_chart.py`, so the two charts never disagree; the 1 Nov bar (after 56.02, never shipped) is its own kind, and its caption numbers come from the measured time split. Writes only those two files.
+
+
+## Trimming and swapping, animated (added 7 November 2026, Claude Opus 5.5 Medium)
+
+`trim.webp` (animated, looping, 1280x960, 15 fps, 18 s) and `trim-poster.png`, built by `python3.13 make_trim_animation.py`. A recreation of the original artifact's lost trim video from its archived caption and alt text, not the original file. Fixed numbers are the 56.02 settings; turn sizes, growth and swap timing are illustrative. Frames and a webm master go to the Team 4TB drive (path in the script header), never to git. Writes only those two files here.

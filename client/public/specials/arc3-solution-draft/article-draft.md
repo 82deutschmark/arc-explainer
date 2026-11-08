@@ -1,4 +1,4 @@
-Review draft · Original Claude artifact restored · Static charts, no animation. Author-reported measurements from the original draft; not newly reproduced benchmarks.
+Review draft · Original Claude artifact restored · Static charts plus one recreated animation (trimming and swapping). Author-reported measurements from the original draft; not newly reproduced benchmarks.
 
 **Son Pham** · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
 
@@ -63,6 +63,14 @@ On top of that loop, the 56.02 harness keeps these things for the model:
 #### Trim, swap and wipe
 
 Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:
+
+Trimming and swapping, animated
+
+Left: one game's context fills up a turn at a time; when the next turn won't fit, the earliest turns are cut away and the game keeps going. Right: all 32 lanes on one beat. At some trims a waiting game from the queue takes the lane; two admitted games wait in the ninth column while they run python; host RAM keeps a copy of what the card caches.
+
+![Animation. Left: game 1's context fills the 140k window turn by turn under the system prompt and notes; when full, the oldest turns are cut away, the last 52k move up and are read again. Right: 32 lane pills grow and are cut back when full; at some trims the priority queue swaps a waiting game into the lane; two admitted games wait in a ninth column while they run python; host RAM mirrors the card's cache.](charts/trim.webp)
+
+Turn sizes, growth and swap timing are illustrative. The 140k window, ~52k kept after a trim, 32 lanes, 34 admitted games, the 3.80M-token cache and the 24 GB host tier are the 56.02 settings.
 
 Trim, swap, wipe: how 110 conversations share one card
 
