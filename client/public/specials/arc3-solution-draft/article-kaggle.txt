@@ -45,7 +45,7 @@ Here is one real turn from a saved run, played back fast: what the model was tol
 
 The transcript streams fast, in the order the turns went: the system prompt, the turn message, the model's reasoning (shortened), each python call as a yellow pill (click one for the full code), the output, then the next turn. The board steps through the recorded game as each move lands.
 
-[![The turn playing: the transcript streams in colour-coded blocks while the Locksmith board steps through the recorded moves, ending with level 1 cleared.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/afa4df0ee25d0c6321ab83ef1d7085b0b2ea2445/client/public/specials/arc3-solution-draft/charts/turn.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn)
+[![The turn playing: the transcript streams in colour-coded blocks while the Locksmith board steps through the recorded moves, ending with level 1 cleared.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/2bdeae6367eb1815171e9d3b98fa00f042b68eb0/client/public/specials/arc3-solution-draft/charts/turn.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn)
 
 *Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The model walks the block to the locked box with its last six steps of budget; nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label bars are ours.*
 
@@ -70,7 +70,7 @@ All 110 games open at the start and share one 9-hour clock, but the card holds 3
 
 Left: one game's context in the 140k window. Right: the 32 decoding lanes, two admitted games running python in the ninth column, the queue of waiting games, and the host-RAM copy of the card's cache.
 
-[![Animation. Left: game 1's context fills the 140k window turn by turn under the system prompt and notes; when full, the oldest turns are cut away, the last 52k move up and are read again. Right: 32 lane pills grow and are cut back when full; at some trims the priority queue swaps a waiting game into the lane; two admitted games wait in a ninth column while they run python; host RAM mirrors the card's cache.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/afa4df0ee25d0c6321ab83ef1d7085b0b2ea2445/client/public/specials/arc3-solution-draft/charts/trim.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-trim)
+[![Animation. Left: game 1's context fills the 140k window turn by turn under the system prompt and notes; when full, the oldest turns are cut away, the last 52k move up and are read again. Right: 32 lane pills grow and are cut back when full; at some trims the priority queue swaps a waiting game into the lane; two admitted games wait in a ninth column while they run python; host RAM mirrors the card's cache.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/2bdeae6367eb1815171e9d3b98fa00f042b68eb0/client/public/specials/arc3-solution-draft/charts/trim.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-trim)
 
 *Turn sizes, growth and swap timing are illustrative. The 140k window, \~52k kept after a trim, 32 lanes, 34 admitted games, the 3.80M-token cache and the 24 GB host tier are the 56.02 settings.*
 
