@@ -4,12 +4,12 @@ PURPOSE: Build the "decode time, exact or lossy" figure that opens section 4.2 o
 "Stuffing the Turducken" special (client/public/specials/2026-11-06-arc3-solution-draft.html).
 It is a waterfall of measured decode time per 1,000 generated tokens, build by build, from
 Daniel Franzen's notebook (1 Oct, 1,138 ms) to the 56.02 build (23 Oct, 330 ms), with each
-build's drop coloured by the kind of change that went into it: exact only, exact and lossy
+build's drop colored by the kind of change that went into it: exact only, exact and lossy
 together with the bigger lever exact, the same with the bigger lever lossy, or can't tell.
 Data: the decode values are the TIME rows of original/source-data.json (whole-run server-log
 splits). The kind of each drop is a judgement read off each build's recipe, NOT a computed
 millisecond split; see DROPS below for the evidence behind each call. The plot is drawn here as
-a plain SVG and handed to redraw_pdf_panels.panel(), so title, fonts, panel colour, accent rule
+a plain SVG and handed to redraw_pdf_panels.panel(), so title, fonts, panel color, accent rule
 and outlined type match the other redrawn figures; the PNG uses the same 2400px Sharp call.
 Writes only decode-exact-lossy.svg and .png next to this script (no page, Markdown or ZIP).
 Usage: python3.13 make_decode_exact_lossy_chart.py
@@ -33,13 +33,13 @@ NAME = 'decode-exact-lossy'
 SHARP = '/Users/macmini/GitHub/arc-explainer/node_modules/sharp'
 NS = rp.NS
 
-# Page colours: the warm theme's ink, muted and grid, plus the .tag.exact / .tag.lossy colours.
+# Page colors: the warm theme's ink, muted and grid, plus the .tag.exact / .tag.lossy colors.
 INK, INK2, MUTED, GRID, PANEL = '#2a1a12', '#5a3d2e', '#8f6f5c', '#efdecb', '#fbf1e6'
 DECODE = '#4d56b8'
 EXACT, EXACT_SOFT = '#6f8a2e', '#eef2df'
 LOSSY, LOSSY_SOFT = '#c4561f', '#f6d6c1'
 
-# kind -> (legend label, stroke/ink colour, fill, hatched)
+# kind -> (legend label, stroke/ink color, fill, hatched)
 KINDS = {
     'exact': ('Exact changes only', EXACT, EXACT, False),
     'mexact': ('Exact and lossy, bigger lever exact', EXACT, EXACT_SOFT, True),
@@ -115,7 +115,7 @@ def plot(builds):
         el(svg, 'rect', x=x, y=y, width=w, height=h, rx=3, fill='url(#h-%s)' % key if hatched else fill,
            stroke=ink, stroke_width=1.3)
 
-    # Legend in two rows, drawn here because the shared panel legend has no hatched colour swatches.
+    # Legend in two rows, drawn here because the shared panel legend has no hatched color swatches.
     for ri, row in enumerate([['exact', 'mexact'], ['mlossy', 'unknown']]):
         lx = 0
         for key in row:
@@ -183,7 +183,7 @@ def figure_markup(by_kind, total):
     share = lambda k: round(100 * by_kind[k] / total)  # noqa: E731
     return f'''<figure>
 <div class="ft">Decode time, build by build: exact or lossy</div>
-<div class="fs">Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is coloured by the kind of change that made it. Only the first drop was exact all the way through.</div>
+<div class="fs">Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is colored by the kind of change that made it. Only the first drop was exact all the way through.</div>
 <figcaption>How we split it: we read each build's recipe and tagged its changes exact or lossy, as in Part 2. A build that mixed both can't be split by milliseconds from our logs, so we name the lever that did most of the work, from what moved: games at once, tokens per pass or step time. At 6 Oct that was two more games and a better drafter (exact). At 11 Oct it was 32 games at once, which only fit because experts were cut and the history cache went to 4 bits (lossy). At 23 Oct it was more tokens per pass from verify depth and 4 draft steps (lossy). At 18 Oct we can't tell. From 6 Oct on, every build already carried lossy changes, so the 330 ms was never an exact number. Same runs as the time chart in Part 2; about {share('mlossy')}% of the drop came in lossy-led builds and {share('exact')}% in the all-exact one.</figcaption>
 </figure>'''
 

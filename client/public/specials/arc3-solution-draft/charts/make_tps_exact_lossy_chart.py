@@ -18,7 +18,7 @@ measured and is printed in the caption by this script. The share strip covers on
 decode chart; the PNG uses the same 2400px Sharp call.
 Writes only tps-exact-lossy.svg and .png next to this script (no page, Markdown or ZIP).
 Usage: python3.13 make_tps_exact_lossy_chart.py
-SRP/DRY check: Pass - imports the decode chart's kinds, colours, build calls and text helpers
+SRP/DRY check: Pass - imports the decode chart's kinds, colors, build calls and text helpers
 (that module only writes from its own main()); only the upward geometry, the 1 Nov bar and the
 wording live here.
 """
@@ -34,7 +34,7 @@ from bs4 import BeautifulSoup
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import redraw_pdf_panels as rp  # noqa: E402  (panel composition, fonts, outlining)
-import make_decode_exact_lossy_chart as dec  # noqa: E402  (same kinds, colours and build calls)
+import make_decode_exact_lossy_chart as dec  # noqa: E402  (same kinds, colors and build calls)
 
 NAME = 'tps-exact-lossy'
 el, txt, fmt = dec.el, dec.txt, dec.fmt
@@ -43,7 +43,7 @@ TPS = dec.DECODE  # same blue as the decode chart's start and end bars
 
 # The decode chart's four kinds plus one for the build after 56.02. That build is not one of the
 # decode chart's calls: its recipe is splice and vocab trim (both lossy, Part 2.4) and lean turns
-# (a harness change), so it is drawn in the lossy colour but with its own lighter hatch and a
+# (a harness change), so it is drawn in the lossy color but with its own lighter hatch and a
 # dashed outline, and the caption spells out what is measured about it.
 KINDS = dict(dec.KINDS, after=('After 56.02, never shipped', LOSSY, '#fdf0e6', True))
 AFTER = ('1 Nov', 'after 56.02: splice, lean turns, vocab trim')
@@ -152,7 +152,7 @@ def figure_markup(builds, after, by_kind, total):
     assert abs(d['decode']) < 5, d  # the caption's "decode didn't move" claim depends on this
     return f'''<figure>
 <div class="ft">Tokens per second, build by build: exact or lossy</div>
-<div class="fs">Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colours as the decode chart, so you can see how much of the speed came from lossy changes.</div>
+<div class="fs">Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colors as the decode chart, so you can see how much of the speed came from lossy changes.</div>
 <figcaption>This counts the whole run, not just decode: prompt reading and idle lanes are in here too. Each build keeps the exact-or-lossy call from the decode chart; we didn't re-judge any of them. Up to 56.02, about {share('mlossy')}% of the gain came in builds where a lossy change was the bigger lever, {share('mexact')}% where an exact one was, only {share('exact')}% in the all-exact build, and the last {share('unknown')}% in the build we can't call. Then the last bar. After 56.02, decode didn't get any faster ({fmt(b['p']['decode'])} vs {fmt(a['p']['decode'])} ms per 1,000 tokens). The time we saved came from re-reading less history ({fmt(-d['reread'])} ms per 1,000 tokens, that's splice, lossy), shorter new turns ({fmt(-d['fresh'])} ms, lean turns) and fewer idle lanes ({fmt(-d['idle'])} ms). Some of that idle-lane part may be the 75-game test set this run used, which keeps lanes busier, rather than the build. The vocab trim (lossy) was in there too. It never became our final build: every build like it that we sent to Kaggle scored lower than 56.02.</figcaption>
 </figure>'''
 

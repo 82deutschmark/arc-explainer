@@ -14,7 +14,7 @@ Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderfu
 
 ![Team Turducken stuffing engineering into the mechanical turkey](00-turducken-texture-v10.png)
 
-Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learnt. We ran about 1,950 full runs on outside compute during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
+Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learned. We ran about 1,950 full runs on outside compute during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
 
 ### TL;DR
 
@@ -470,11 +470,11 @@ Looking back at this chart, here's what we should have done:
 
 ### 4.2 The biggest lesson: we didn't notice when token quality started to matter
 
-Here's that lesson in one picture. This is our decode time, build by build, with each drop coloured by whether exact or lossy changes paid for it.
+Here's that lesson in one picture. This is our decode time, build by build, with each drop colored by whether exact or lossy changes paid for it.
 
 [
 
-![Decode time, build by build: exact or lossy. Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is coloured by the kind of change that made it. Only the first drop was exact all the way through.](charts/decode-exact-lossy.png)
+![Decode time, build by build: exact or lossy. Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is colored by the kind of change that made it. Only the first drop was exact all the way through.](charts/decode-exact-lossy.png)
 
 ](charts/decode-exact-lossy.svg)
 
@@ -491,11 +491,11 @@ Open or download: [vector SVG](charts/decode-exact-lossy.svg) · [high-resolutio
 | 18 Oct · 52.82 build | 363.8 | −20.7 | 32 | 3.05 | 36.6 | Exact and lossy, can't tell | 8-bit activations and 16-row expert blocks (lossy) with exact routing fusions and 180 Mamba slots |
 | 23 Oct · 56.02 build | 330.0 | −33.8 | 32 | 3.25 | 35.1 | Exact and lossy, bigger lever lossy | Per-game verify depth, 4 draft steps and 3 experts (lossy) with exact fused kernels |
 
-And here's the rest of it, whole-run speed in the same colours: most of the gain came in builds where a lossy change did the heavy lifting, and the extra speed after 56.02 came with lossy changes while Kaggle went down.
+And here's the rest of it, whole-run speed in the same colors: most of the gain came in builds where a lossy change did the heavy lifting, and the extra speed after 56.02 came with lossy changes while Kaggle went down.
 
 [
 
-![Tokens per second, build by build: exact or lossy. Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colours as the decode chart, so you can see how much of the speed came from lossy changes.](charts/tps-exact-lossy.png)
+![Tokens per second, build by build: exact or lossy. Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colors as the decode chart, so you can see how much of the speed came from lossy changes.](charts/tps-exact-lossy.png)
 
 ](charts/tps-exact-lossy.svg)
 
@@ -519,7 +519,7 @@ Our offline evaluation couldn't see it. In the offline-vs-Kaggle chart in Part 1
 
 What we'd do differently:
 
-- **Measure quality per token directly** for every lossy change: KL against the full model on recorded replies, plus a behaviour check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run offline evaluation can't.
+- **Measure quality per token directly** for every lossy change: KL against the full model on recorded replies, plus a behavior check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run offline evaluation can't.
 
 - **Watch the tokens-to-score curve.** When more tokens stop buying score, stop buying tokens with quality.
 
