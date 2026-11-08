@@ -83,3 +83,7 @@ Part 1: trim, swap, copy and wipe moved from the harness list into their own sub
 Public-25 chart: built from a saved arc3.sonpham.net catalog snapshot (7 Nov), runs that played all 25 public games, scored on those 25 only; labelled as the local board, not the Kaggle leaderboard; data gaps stated under it. No Kaggle requests.
 
 Open harness feedback in these notes: none was outstanding. The earlier harness items (team-branch provenance, "candidate is not proof of shipping") are already handled by Son's teammates paragraph in 1.3.
+
+## Typo fix in the thanks paragraph · 7 November 2026
+
+Author: Claude Sonnet 5.5 Low. Fixed the doubled "also would also" and the stray "thank you to" in the second opening paragraph: now "We would also like to thank Tufa Labs, ... and Daniel Franzen, ...". Markdown and HTML only; no other wording, chart, artwork or setting changed. Awkward-language list for Son's final reread was given in the Discord thread, nothing else edited.
