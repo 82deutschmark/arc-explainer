@@ -31,3 +31,8 @@ Son asked that the charts stop saying "board" and say "offline evaluation". `rew
 ## Decode, exact or lossy (added 7 November 2026, Claude Opus 5.5 Low)
 
 `decode-exact-lossy.svg` / `.png`, built by `python3.13 make_decode_exact_lossy_chart.py`. Bar heights are the TIME decode values in `original/source-data.json`. Each drop's colour is a reading of that build's recipe (sources listed in the script's DROPS comment), not a computed millisecond split. Writes only those two files.
+
+
+## Tokens per second, exact or lossy (added 7 November 2026, Claude Opus 5.5 Low)
+
+`tps-exact-lossy.svg` / `.png`, built by `python3.13 make_tps_exact_lossy_chart.py`. Bars are the whole-run tok/s of the TIME rows in `original/source-data.json` (the ladder chart's numbers). Each build's colour is imported from `make_decode_exact_lossy_chart.py`, so the two charts never disagree; the 1 Nov bar (after 56.02, never shipped) is its own kind, and its caption numbers come from the measured time split. Writes only those two files.
