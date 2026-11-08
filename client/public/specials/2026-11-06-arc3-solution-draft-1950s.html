@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Son’s original article with static charts and requested editorial revisions. SRP/DRY check: Pass — original charts and Markdown serializer reused. 08-November-2026, Claude Opus 5.5 Low: Son's engineering edits to Part 1 (Turducken harness naming, context management, noise, overfitting observation). 08-November-2026, Claude Opus 5.5 Medium: the one-turn walkthrough is an in-page transcript player, built by arc3-solution-draft/charts/make_turn_player.py between the turn-player markers. -->
+<!-- Author: GPT-6.1 Sol; Date: 06-November-2026; PURPOSE: Son’s original article with static charts and requested editorial revisions. SRP/DRY check: Pass — original charts and Markdown serializer reused. 08-November-2026, Claude Opus 5.5 Low: Son's engineering edits to Part 1 (Turducken harness naming, context management, noise, overfitting observation). 08-November-2026, Claude Opus 5.5 Medium: the one-turn walkthrough is an in-page transcript player, built by arc3-solution-draft/charts/make_turn_player.py between the turn-player markers. 08-November-2026, Claude Opus 5.5 Low (round 13): Son's art decision, this page now shows the 1950s science-fiction art in the newsprint theme (between the 1950s-theme markers); the classic painted art moved to the -classic alternate, built with the white, cat and 1950s alternates by arc3-solution-draft/make_variant_pages.py; closing portrait alt made style-neutral. -->
 <html lang="en"><head><!-- frame-runtime --><!-- /frame-runtime -->
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport"><meta content="noindex, nofollow" name="robots">
@@ -334,7 +334,8 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 }
 </style>
 <!-- turn-player-css:end -->
-<style>/* 1950s pulp science-fiction alternate (made by arc3-solution-draft/make_variant_pages.py) */
+<!-- 1950s-theme:start -->
+<style>/* 1950s pulp science-fiction theme for the 1950s art (round 13: the main page's look; alternates without it are built by arc3-solution-draft/make_variant_pages.py) */
 :root{--bg:#efe4cc;--surface:#f8f1e0;--panel:#f6ecd6;--ink:#1d1a1c;--ink-2:#3d3438;--muted:#6f6158;
 --line:#cdb994;--accent:#c4302b;--accent-soft:#f6dccf;
 --display:"Futura","Avenir Next Condensed","Trebuchet MS","Arial Narrow",sans-serif}
@@ -350,6 +351,7 @@ figure.hero{background:var(--panel)}
 figure img{border-radius:0}
 .tldr{border:2px solid #1d1a1c;border-left:6px solid #c4302b;border-radius:2px;background:#f8f1e0}
 </style>
+<!-- 1950s-theme:end -->
 </head>
 <body>
 <main><nav><a href="/">ARC Explainer</a> · <a download="" href="arc3-solution-draft/article-draft.md">Markdown</a> · <a download="" href="arc3-solution-draft/charts/original/source-data.json">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts plus one recreated animation (trimming and swapping). Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
@@ -1201,7 +1203,7 @@ figure img{border-radius:0}
 <p>Thank you to Kaggle for the infrastructure and a great competition.</p>
 <p>Thank you to OpenMind and Jack Cole for their friendship and encouragement along the way.</p>
 <p><strong>See everyone in ARC-4.</strong></p>
-<figure id="fig-closing-crew" class="hero"><img src="arc3-solution-draft/1950s/05-family-1950s-r9.webp" alt="Original textured Team Turducken family portrait with two Yorkies" loading="lazy"><figcaption style="margin:12px 0 0;text-align:center;color:#6b3517;font:italic 600 clamp(20px,4vw,32px)/1.3 Georgia,serif">Thank you for an amazing competition!<br><span style="font-size:0.72em">— Team Turducken</span></figcaption></figure>
+<figure id="fig-closing-crew" class="hero"><img src="arc3-solution-draft/1950s/05-family-1950s-r9.webp" alt="Team Turducken family portrait with two Yorkies" loading="lazy"><figcaption style="margin:12px 0 0;text-align:center;color:#6b3517;font:italic 600 clamp(20px,4vw,32px)/1.3 Georgia,serif">Thank you for an amazing competition!<br><span style="font-size:0.72em">— Team Turducken</span></figcaption></figure>
 <p><em>This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.</em></p>
 </main>
 </body></html>

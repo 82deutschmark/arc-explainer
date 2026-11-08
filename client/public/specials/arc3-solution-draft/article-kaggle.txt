@@ -8,7 +8,7 @@ Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our 
 
 **Why a turducken?** A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. It also fit us: when the teams combined we needed a name, and wrapping all of us up into one big team was just what a turducken does. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.
 
-![Team Turducken stuffing engineering into the mechanical turkey](https://arc.markbarney.net/specials/arc3-solution-draft/white/00-turducken-white.png)
+![Team Turducken stuffing engineering into the mechanical turkey](https://arc.markbarney.net/specials/arc3-solution-draft/00-turducken-texture-v10.png)
 
 *Team Turducken stuffing engineering into the mechanical turkey*
 
@@ -24,7 +24,7 @@ Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our 
 
 ## The Harness
 
-![The game-playing harness](https://arc.markbarney.net/specials/arc3-solution-draft/white/01-harness-white.png)
+![The game-playing harness](https://arc.markbarney.net/specials/arc3-solution-draft/01-harness-garage-v2-corners-only.png)
 
 *The game-playing harness*
 
@@ -111,7 +111,7 @@ Looking across these results, the improvements that carried over to Kaggle tende
 
 ## Inference Optimization
 
-![The inference stack](https://arc.markbarney.net/specials/arc3-solution-draft/white/02-inference-v2-white.png)
+![The inference stack](https://arc.markbarney.net/specials/arc3-solution-draft/02-inference-v2-corners-only.png)
 
 *The inference stack*
 
@@ -277,7 +277,7 @@ Open or download: [vector SVG](https://arc.markbarney.net/specials/arc3-solution
 
 ## RL
 
-![The reinforcement-learning pipeline](https://arc.markbarney.net/specials/arc3-solution-draft/white/03-rl-white.png)
+![The reinforcement-learning pipeline](https://arc.markbarney.net/specials/arc3-solution-draft/03-rl-v1-corners-only.png)
 
 *The reinforcement-learning pipeline*
 
@@ -315,7 +315,7 @@ Open or download: [vector SVG](https://arc.markbarney.net/specials/arc3-solution
 
 ## When speed no longer matters
 
-![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](https://arc.markbarney.net/specials/arc3-solution-draft/white/04-speed-plateau-v2-white.png)
+![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](https://arc.markbarney.net/specials/arc3-solution-draft/04-speed-plateau-v2-corners-only.png)
 
 *The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it*
 
@@ -395,7 +395,7 @@ Thank you to OpenMind and Jack Cole for their friendship and encouragement along
 
 **See everyone in ARC-4.**
 
-![Original textured Team Turducken family portrait with two Yorkies](https://arc.markbarney.net/specials/arc3-solution-draft/05-family-white-original-texture-v3.png)
+![Team Turducken family portrait with two Yorkies](https://arc.markbarney.net/specials/arc3-solution-draft/05-family-white-original-texture-v3.png)
 
 *Thank you for an amazing competition!*
 

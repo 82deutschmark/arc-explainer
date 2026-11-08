@@ -2,15 +2,16 @@
 """
 Author: Claude Opus 5.5 Low; walkthrough player mapping by Claude Opus 5.5 Medium (Round 10); animated GIFs
         in place of the stills by Claude Opus 5.5 Medium (Round 11); video page in the light look by Claude
-        Opus 5.5 Low (Round 12)
+        Opus 5.5 Low (Round 12); classic painted art from the shared ART table by Claude Opus 5.5 Low (Round 13)
 Date: 08-November-2026
 PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the live main page.
          Reads ../2026-11-06-arc3-solution-draft.html (the main page, the single source of the
          article text) and writes:
            - article-kaggle.md: plain Markdown for a Kaggle write-up (headings, bold, lists,
              simple pipe tables, links, images). Every link and image is an absolute
-             https://arc.markbarney.net URL. Illustrations use their white-background copies
-             (the IMAGES map imported from make_white_page.py, so both alternates stay in step).
+             https://arc.markbarney.net URL. Illustrations use the classic painted art on its own
+             backgrounds (Son's round 13 decision: classic art for Kaggle, 1950s art on the site), taken
+             from the classic column of the ART table in make_variant_pages.py, so every alternate stays in step.
              Kaggle cannot run the page's player script, so both animated figures are shown as
              rendered GIFs (Round 11: charts/trim.gif from make_trim_animation.py, charts/turn.gif
              from make_turn_video.py), each followed by one line linking its MP4 and the live
@@ -29,7 +30,7 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
          Then fast-publish the three outputs (tools/specials-publish/publish_specials.py with the
          file paths) and commit them.
 SRP/DRY check: Pass -- the main page stays the single source of the text; illustration mapping is
-         reused from make_white_page.py; this file only converts and wraps.
+         reused from make_variant_pages.py; this file only converts and wraps.
 """
 
 from __future__ import annotations
@@ -44,7 +45,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True  # keep the published folder free of __pycache__
 sys.path.insert(0, str(HERE))
-from make_white_page import IMAGES, MAIN, PREFIX  # noqa: E402  (same folder)
+from make_variant_pages import MAIN, PREFIX, art_map, illustrations  # noqa: E402  (same folder)
+
+KAGGLE_ART = "classic"
+IMAGES = art_map(KAGGLE_ART)   # main-page picture -> its classic painted original
 
 BASE = "https://arc.markbarney.net/specials/"
 OUT_MD = HERE / "article-kaggle.md"
@@ -263,9 +267,9 @@ def render_figure(fig: Node) -> list[str]:
         img = fig.find("img")
         name = img.attrs["src"].removeprefix(PREFIX)
         if name not in IMAGES:
-            raise Fail(f"No white copy mapped for illustration {name} (add it in make_white_page.py)")
+            raise Fail(f"No {KAGGLE_ART} copy mapped for illustration {name} (add it to ART in make_variant_pages.py)")
         if not (HERE / IMAGES[name]).is_file():
-            raise Fail(f"White copy missing on disk: {IMAGES[name]}")
+            raise Fail(f"{KAGGLE_ART} copy missing on disk: {IMAGES[name]}")
         alt = html.unescape(img.attrs["alt"])
         blocks.append(image(PREFIX + IMAGES[name], alt))
         cap = fig.find("figcaption")
@@ -508,7 +512,9 @@ The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">articl
 def main() -> int:
     builder = TreeBuilder()
     try:
-        builder.feed(without_player(MAIN.read_text(encoding="utf-8")))
+        page = MAIN.read_text(encoding="utf-8")
+        illustrations(page)   # stops unless the main page carries exactly the six mapped pictures
+        builder.feed(without_player(page))
         if builder.root is None:
             raise Fail("No <main> in the main page")
         md = "\n\n".join(render(builder.root)) + "\n"
