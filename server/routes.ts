@@ -9,6 +9,8 @@
  *          /api/auth, its Google sign-in.
  *          2026-10-21 (Claude Opus 5.5): mounts the team-only ARC-AGI-2 eval runs (teamEvals) at
  *          /api/team beside the runs record.
+ *          2026-11-08 (Claude Opus 5.5 Medium): mounts /api/review-comments, shared review
+ *          comments for special pages (the Turducken review editor).
  * SRP/DRY check: Pass - route registration only.
  */
 
@@ -54,6 +56,7 @@ import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 import kaggleRouter from "./routes/kaggle";
 import teamRunsRouter from "./routes/teamRuns";
 import specialsPublishRouter from "./routes/specialsPublish";
+import reviewCommentsRouter from "./routes/reviewComments";
 import teamEvalsRouter from "./routes/teamEvals";
 import teamAuthRouter from "./routes/teamAuth";
 
@@ -137,6 +140,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Team-only Kaggle runs record, behind the team sign-in (2026-10-19).
   app.use("/api/team", teamRunsRouter);
   app.use("/api/specials", specialsPublishRouter);
+  // Shared, durable review comments on special pages (Turducken review editor, 2026-11-08).
+  app.use("/api/review-comments", reviewCommentsRouter);
   // Team-only ARC-AGI-2 eval runs and their reasoning traces (2026-10-21).
   app.use("/api/team", teamEvalsRouter);
   // Private reference content is stored in the database, never public assets.
