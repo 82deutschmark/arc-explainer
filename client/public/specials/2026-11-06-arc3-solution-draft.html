@@ -311,7 +311,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 .tp.tp-js .tb-call{border-bottom:0;padding:6px 10px 6px 12px;background:var(--tp-panel)}
 .tp.tp-js .tb-call .tb-h,.tp.tp-js .tb-call .tb-b{display:none}
 .tp.tp-js .tb-call.open .tb-b{display:block;margin-top:6px;border-radius:3px}
-.tp.tp-js .tb-prow{display:flex;align-items:center;gap:10px;min-width:0}
+.tp.tp-js .tb-prow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0}
 .tb-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;max-width:100%;font:12px/1.4 var(--tp-mono);color:#1a1400;
   background:var(--tp-call);border:0;border-radius:999px;padding:3px 12px 3px 4px;cursor:pointer;text-align:left}
 .tb-pill:hover{background:#fde047}
@@ -363,13 +363,13 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <!-- turn-player:start -->
 <figure id="fig-turn">
 <div class="ft">One turn of the harness, from a saved run</div>
-<div class="fs">The transcript streams fast, in the order the turn went: the system prompt, the turn message, the model's reasoning (shortened), its two python calls as yellow pills (click one for the full code) and their output. The board steps through the recorded game as each action() click lands.</div>
+<div class="fs">The transcript streams fast, in the order the turns went: the system prompt, the turn message, the model's reasoning (shortened), each python call as a yellow pill (click one for the full code), the output, then the next turn. The board steps through the recorded game as each move lands.</div>
 <div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">
-<div class="tp-top"><span class="tp-run">Reaching Lurch <span>· level 2 · step 11 · run 20261023_1410_daniel-candnp3-a</span></span><span class="tp-ctl"><button type="button" data-a="play">Play</button><button type="button" data-a="restart">Restart</button><button type="button" data-a="end">Skip to end</button></span></div>
+<div class="tp-top"><span class="tp-run">Locksmith <span>· level 1 · steps 15 and 16 · run 20261023_1410_daniel-candnp3-a</span></span><span class="tp-ctl"><button type="button" data-a="play">Play</button><button type="button" data-a="restart">Restart</button><button type="button" data-a="end">Skip to end</button></span></div>
 <div class="tp-bar"><i></i></div>
 <div class="tp-legend"><span class="k-system"><i></i>System prompt</span><span class="k-user"><i></i>User prompt</span><span class="k-think"><i></i>Reasoning</span><span class="k-call"><i></i>Tool call</span><span class="k-result"><i></i>Tool result</span></div>
 <div class="tp-main">
-<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" loading="lazy" alt="The recorded Reaching Lurch board: level 2 cleared, both knobs sitting in their rings."><div class="tp-cap"><b>Level 2 cleared</b> after the tenth click. The recorded game board.</div></div>
+<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" loading="lazy" alt="The recorded Locksmith board: level 1 cleared, the block inside the locked box at the top."><div class="tp-cap"><b>Level 1 cleared</b> on the seventh move. The recorded game board.</div></div>
 <div class="tp-log" tabindex="0" aria-label="Transcript of the turn">
 <section class="tb tb-system" data-kind="system"><div class="tb-h"><span>SYSTEM PROMPT</span><span class="tb-n">harness: game rules · notes memory · one tool · own functions</span></div><pre class="tb-b"><span class="ln">You are a coding agent solving a grid-based puzzle game.
 </span><span class="ln cut">…
@@ -384,125 +384,100 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </span><span class="ln">Eligible functions you define are retained automatically for later calls throughout this game, including across level changes
 </span><span class="ln cut">…
 </span></pre></section>
-<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span><span class="tb-n">harness: own functions listed back</span></div><pre class="tb-b"><span class="ln">Your last python snippet executed NO actions (it only computed or inspected state - that is fine).
-</span><span class="ln">For reference, the most recent executed sequence earlier this turn was: MOUSE(row=26, col=10).
-</span><span class="ln">Current state: step 13, level 2.
-</span><span class="ln">Valid actions right now: MOUSE.
+<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span><span class="tb-n">harness: own functions listed back · diff image</span></div><pre class="tb-b"><span class="ln">The code executed 4 actions in the previous sequence.
+</span><span class="ln">Executed actions: DOWN, UP, DOWN, UP.
 </span><span class="ln cut">…
-</span><span class="ln">Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6).
+</span><span class="ln">You are still on the same level.
+</span><span class="ln">Current state: step 40, level 1.
+</span><span class="ln">Valid actions right now: UP, DOWN, LEFT, RIGHT.
+</span><span class="ln cut">…
+</span><span class="ln">Your retained functions from earlier Python calls in this game: blockpos(frame), icon3(frame), win3(frame), pluscell(frame), cell(frame), nodesig(f). These are your previous definitions, available to call directly.
 </span><span class="ln cut">…
 </span><span class="ln">Current grid image:
 </span><span class="ln">
 </span><span class="ln">[image attached]
+</span><span class="ln">
+</span><span class="ln">Diff image (step 35 -&gt; 39): cells that changed since your previous analyzer turn in their new true color; unchanged cells dimmed to dark navy (an off-palette color).
+</span><span class="ln">
+</span><span class="ln">[image attached]
 </span></pre></section>
-<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">Now the icon is B (111001101) = the window's logo. 5 presses. Yellow = 20 - 4*2 = 12 px = 6 cols. So 6 actions left!
+</span><span class="ln">Hmm, tight. To reach the neck from (1,1): UP (0,1), RIGHT (0,2), RIGHT (0,3), RIGHT (0,4), UP (neck), UP (top) = 6 actions exactly. Let's do it! If the win triggers, great.
 </span><span class="ln cut">…
-</span><span class="ln">Let me write both in one snippet and run the simulation.
+</span><span class="ln">Let me just directly measure: yellow now = 12 px = 6 cols. If each successful action costs 1 col, we have 6 actions left. Let's use them wisely: the 6-action path to the neck top.
+</span><span class="ln">If we die, the level restarts and I'll know the budget better.
+</span><span class="ln">Let me go: UP, RIGHT, RIGHT, RIGHT, UP, UP.
+</span><span class="ln cut">…
+</span><span class="ln">Let me execute one at a time to catch the win and stop early.
 </span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">st,sel,log=simulate(clicks,B,K)</code></button></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: one action() per move</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">seq=['UP','RIGHT','RIGHT','RIGHT','UP','UP']</code></button><span class="tb-pn">harness: one action() per move</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
 </span><span class="ln">&lt;function=python&gt;
 </span><span class="ln">&lt;parameter=code&gt;
-</span><span class="ln">def masks():
-</span><span class="ln">    B=blocked_set()
-</span><span class="ln">    K=frozenset((r,c) for r in range(64) for c in range(64) if ok_cell((r,c),B,'k'))
-</span><span class="ln">    return B,K
-</span><span class="ln">def simulate(clicks,B,K):
-</span><span class="ln">    slots={'A':(6,17),'B':(9,49),'C':(21,8),'D':(26,10),'E':(48,54)}
-</span><span class="ln">    sel='D'; log=[]
-</span><span class="ln">    for x in clicks:
-</span><span class="ln">        hits=[s for s,p in slots.items() if s!=sel and x in diamond(p)]
-</span><span class="ln">        if hits:
-</span><span class="ln">            if len(hits)&gt;1: log.append(('AMBIG',x,hits)); continue
-</span><span class="ln">            sel=hits[0]; log.append(('select',sel)); continue
-</span><span class="ln">        if x in diamond(slots[sel]): log.append(('noop-own',x)); continue
-</span><span class="ln">        new=dict(slots); new[sel]=x
-</span><span class="ln">        ko=fl_mean([new['A'],new['B'],new['C']]); kp=fl_mean([new['D'],new['E']])
-</span><span class="ln">        if ko in K and kp in K and ok_cell(x,B,'d'):
-</span><span class="ln">            slots=new; log.append(('move',sel,x,'ko',ko,'kp',kp))
-</span><span class="ln">        else: log.append(('REJECT',x))
-</span><span class="ln">    return slots,sel,log
-</span><span class="ln">B,K=masks()
-</span><span class="ln">clicks=[(48,54),(13,57),(26,10),(23,57),(6,17),(58,42),(9,49),(34,40),(21,8),(61,38)]
-</span><span class="ln">st,sel,log=simulate(clicks,B,K)
-</span><span class="ln">for l in log: print(l)
-</span><span class="ln">print('FINAL ko',fl_mean([st['A'],st['B'],st['C']]),'kp',fl_mean([st['D'],st['E']]))
+</span><span class="ln">
+</span><span class="ln">seq=['UP','RIGHT','RIGHT','RIGHT','UP','UP']
+</span><span class="ln">for a in seq:
+</span><span class="ln">    r=action([a])
+</span><span class="ln">    t=transitions[-1]
+</span><span class="ln">    res=t.result
+</span><span class="ln">    print(a, cell(t.after_frame),'icon',''.join(icon3(t.after_frame)),'done',res.get('level_completed'),'over',res.get('game_over'),'yellow',[n['pixels'] for n in t.after_frame.segmentation['nodes'] if n['color']=='Y'])
+</span><span class="ln">    if res.get('level_completed') or res.get('game_over'): break
 </span><span class="ln">&lt;/parameter&gt;
 </span><span class="ln">&lt;/function&gt;
 </span><span class="ln">&lt;/tool_call&gt;
 </span></pre></section>
-<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span></div><pre class="tb-b"><span class="ln">('select', 'E')
-</span><span class="ln">('move', 'E', (13, 57), 'ko', (12, 24), 'kp', (19, 33))
-</span><span class="ln">('select', 'D')
-</span><span class="ln">('move', 'D', (23, 57), 'ko', (12, 24), 'kp', (18, 57))
-</span><span class="ln">('select', 'A')
-</span><span class="ln">('move', 'A', (58, 42), 'ko', (29, 33), 'kp', (18, 57))
-</span><span class="ln">('select', 'B')
-</span><span class="ln">('move', 'B', (34, 40), 'ko', (37, 30), 'kp', (18, 57))
-</span><span class="ln">('select', 'C')
-</span><span class="ln">('move', 'C', (61, 38), 'ko', (51, 40), 'kp', (18, 57))
-</span><span class="ln">FINAL ko (51, 40) kp (18, 57)
+<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span><span class="tb-n">each [action] line is one move on the game</span></div><pre class="tb-b"><span class="ln" data-step="0">[action] UP -&gt; effect
+</span><span class="ln">UP (0, 1) icon 111001101 done False over False yellow [12]
+</span><span class="ln" data-step="1">[action] RIGHT -&gt; effect
+</span><span class="ln">RIGHT (0, 2) icon 111001101 done False over False yellow [10]
+</span><span class="ln" data-step="2">[action] RIGHT -&gt; effect
+</span><span class="ln">RIGHT (0, 3) icon 111001101 done False over False yellow [8]
+</span><span class="ln" data-step="3">[action] RIGHT -&gt; effect
+</span><span class="ln">RIGHT (0, 4) icon 111001101 done False over False yellow [6]
+</span><span class="ln" data-step="4">[action] UP -&gt; effect
+</span><span class="ln">UP (-1, 4) icon 111001101 done False over False yellow [4]
+</span><span class="ln" data-step="5">[action] UP -&gt; effect
+</span><span class="ln">UP (-2, 4) icon 111001101 done False over False yellow [2]
 </span></pre></section>
-<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).
-</span><span class="ln">Now execute with run_checked and expectations:
+<div class="tp-next">next turn · still level 1</div>
+<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span></div><pre class="tb-b"><span class="ln">The code executed 6 actions in the previous sequence.
+</span><span class="ln">Executed actions: UP, RIGHT, RIGHT, RIGHT, UP, UP.
+</span><span class="ln">You are still on the same level.
+</span><span class="ln">Current state: step 46, level 1.
 </span><span class="ln cut">…
-</span><span class="ln">Let me execute. If the level completes at the last step, great.
-</span><span class="ln">One risk: the expectation checks happen after each action; if the game rejects a move (my model wrong), the check fails and run_checked stops ✓.
-</span><span class="ln">Let me go.
 </span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: checked play</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">print(run_checked(moves))</code></button><span class="tb-pn">harness: checked play</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">Yellow = 2 px = 1 col. The block is at the neck top with the logo matching the window. No win. So the "code + exit" hypothesis is wrong (or the exit is elsewhere).
+</span><span class="ln cut">…
+</span><span class="ln">Hmm, so maybe the puzzle is: the glyph inside the box must be REMOVED so the block can enter the box and reach the top. How to remove the glyph? Maybe by pressing the plus (the code)? Hmm! Maybe the code (logo matching the window) unlocks the box, and then the block can enter!
+</span><span class="ln cut">…
+</span><span class="ln">Yellow = 2 px = 1 col. Let me spend it on UP. If it's blocked, we're at 0 → maybe game over → restart.
+</span><span class="ln">Let me do UP and see.
+</span></pre></section>
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">r=action(['UP'])</code></button></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
 </span><span class="ln">&lt;function=python&gt;
 </span><span class="ln">&lt;parameter=code&gt;
-</span><span class="ln">M=lambda r,c:{'action':'MOUSE','row':r,'col':c}
-</span><span class="ln">clicks=[(48,54),(13,57),(26,10),(23,57),(6,17),(58,42),(9,49),(34,40),(21,8),(61,38)]
-</span><span class="ln">exp=[ {(12,24):'M',(37,32):'M'}, {(19,33):'M'}, {(19,33):'M'}, {(18,57):'M'},
-</span><span class="ln">      {(18,57):'M',(12,24):'M'}, {(29,33):'M'}, {(29,33):'M'}, {(37,30):'M'},
-</span><span class="ln">      {(37,30):'M'}, {(51,40):'M'} ]
-</span><span class="ln">moves=[(M(*c),e) for c,e in zip(clicks,exp)]
-</span><span class="ln">print(run_checked(moves))
-</span><span class="ln">print('level',current_frame.level,'step',current_frame.step)
-</span><span class="ln">print('state',last_action_call_result.get('state'),'completed',last_action_call_result.get('level_completed'))
+</span><span class="ln">
+</span><span class="ln">r=action(['UP'])
+</span><span class="ln">res=r[0] if isinstance(r,list) else r
+</span><span class="ln">print(r)
+</span><span class="ln">t=transitions[-1]
+</span><span class="ln">print("block rows", blockpos(t.after_frame))
+</span><span class="ln">a=current_frame.ascii.split('\n')
+</span><span class="ln">for i in range(8,26): print(i, a[i][30:42])
+</span><span class="ln">print("yellow",[n['pixels'] for n in current_frame.segmentation['nodes'] if n['color']=='Y'])
 </span><span class="ln">&lt;/parameter&gt;
 </span><span class="ln">&lt;/function&gt;
 </span><span class="ln">&lt;/tool_call&gt;
 </span></pre></section>
-<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span><span class="tb-n">each line is one action() on the game</span></div><pre class="tb-b"><span class="ln" data-step="0">[action] MOUSE(row=48, col=54) -&gt; effect
-</span><span class="ln" data-step="1">[action] MOUSE(row=13, col=57) -&gt; effect
-</span><span class="ln" data-step="2">[action] MOUSE(row=26, col=10) -&gt; effect
-</span><span class="ln" data-step="3">[action] MOUSE(row=23, col=57) -&gt; effect
-</span><span class="ln" data-step="4">[action] MOUSE(row=6, col=17) -&gt; effect
-</span><span class="ln" data-step="5">[action] MOUSE(row=58, col=42) -&gt; effect
-</span><span class="ln" data-step="6">[action] MOUSE(row=9, col=49) -&gt; effect
-</span><span class="ln" data-step="7">[action] MOUSE(row=34, col=40) -&gt; effect
-</span><span class="ln" data-step="8">[action] MOUSE(row=21, col=8) -&gt; effect
-</span><span class="ln" data-step="9">[action] MOUSE(row=61, col=38) -&gt; LEVEL COMPLETED
-</span><span class="ln">{'planned': 10, 'executed': 10, 'checked': 9, 'all_met': True, 'stopped': 'level_completed at step 9 (MOUSE(row=61, col=38))', 'level': 3, 'step': 22}
-</span><span class="ln">level 3 step 22
-</span><span class="ln">state NOT_FINISHED completed True
-</span></pre></section>
-<div class="tp-next">next turn · level 3</div>
-<section class="tb tb-user" data-kind="user"><div class="tb-h"><span>USER PROMPT</span><span class="tb-n">harness: own functions listed back</span></div><pre class="tb-b"><span class="ln">Reminder: the earlier sequence this turn completed the level; you are now on the new level.
-</span><span class="ln">Current state: step 23, level 3.
+<section class="tb tb-result" data-kind="result"><div class="tb-h"><span>TOOL RESULT: python</span></div><pre class="tb-b"><span class="ln" data-step="6">[action] UP -&gt; LEVEL COMPLETED
+</span><span class="ln">{'executed': True, 'action_num': 46, 'level': 2, 'score': 1, 'state': 'NOT_FINISHED', 'valid_actions': ['UP', 'DOWN', 'LEFT', 'RIGHT'], 'board_changed': True, 'done': False, 'level_completed': True, 'game_over': False, 'run_complete': False, 'action_display': 'UP', 'gameplay_changed': True, 'executed_actions': ['UP'], 'no_op': False, 'animation': {'frames': 2, 'transient_pixels': 29, 'transient_bbox': [10, 34, 62, 54]}, 'stop_reason': 'level_completed', 'run_elapsed_seconds': 1301.6835553310002, 'time_remaining_seconds': 10698.316444668999}
 </span><span class="ln cut">…
-</span><span class="ln">Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6), masks(), simulate(clicks, B, K),
-</span><span class="ln cut">…
-</span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: notes memory</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">notes.append("""## Level 3 layout</code></button><span class="tb-pn">harness: notes memory</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
-</span><span class="ln">&lt;function=python&gt;
-</span><span class="ln">&lt;parameter=code&gt;
-</span><span class="ln">notes.append("""## Level 3 layout
-</span><span class="ln">- Green group N: 4 slots n0 head(16,14)[SELECTED], n1(9,34), n2(16,39), n3(21,23); knob mean start (15,27); TARGET green ring center (53,55).
-</span><span class="ln">- Purple group p: p0(34,37), p1(40,52); knob mean start (37,44); TARGET purple ring center (57,34).
-</span><span class="ln">- Same mechanics as L2 (knob=floor(mean), knob blob must avoid S/outside, click anchor=select, click empty=move selected slot).
-</span><span class="ln">- Green plan (10 clicks, simulated OK): (9,34),(34,13),(16,14),(50,57),(34,13),(53,57),(21,23),(57,51),(16,39),(52,55) -&gt; n mean (53,55).
-</span><span class="ln">""")
-</span><span class="ln">M=lambda r,c:{'action':'MOUSE','row':r,'col':c}
-</span><span class="ln cut">…
+</span><span class="ln">yellow [8, 8, 84]
 </span></pre></section>
 </div>
 </div>
 <div class="tp-note">Stored transcript: this turn's input is rebuilt from the run's saved transcripts, so it is not guaranteed to be the exact prompt bytes. Every word in the coloured blocks is copied from it; "…" marks a cut.</div>
 </div>
-<script type="application/json" id="turn-player-data">{"chars":"WwgGcBMPRbSYOrNp","pal":[[255,255,255],[204,204,204],[153,153,153],[102,102,102],[51,51,51],[0,0,0],[229,58,163],[255,123,204],[249,60,49],[30,147,255],[136,216,241],[255,220,0],[255,133,27],[146,18,49],[79,204,48],[163,86,214]],"before":"BgggggggBBgggggggggggBBBBBBBBBBBBBgggggggBBBBBBBBgggggggggggggggBgggggggBBgggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggggBgggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggBgggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggggWggggggBBBBBBBBBBGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggWggggggBBBBBBBBBGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggWgggggBBBBBBBBBGGOGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBGGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBGBwBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBwwGGOGGBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBwOOOBBBBBBBBBBBwwwwwwwwBBBGGGBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOOOOBBwwwwwwwwBBBBBBBBBBBBGBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOMOOwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWgBBBBBBBBBBBBBBBBBBBBOOOOOBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBBBBBwwBOOOBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBpBBBBBWBBBBBBBBBBBBBBBBwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBpBBBBWBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBBBpBBBWBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBGBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBBBpBBBWBBBBBBGGGwBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBBBpBBBBWBBBBBGGOGGBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBpBpBBBBBWBBBBBBGGGBBBBBBBBBBBBBBBSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBGBBBBBBBBBBBBBBBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBWBBBBBBBBBBSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBWWWBBBBBBBSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBWWpWWBBBBSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBWWWwwBBBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBWBBBwwBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBWBBBBBBBBBBBBBBBwwSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBSSSSBBBBBWBBBBBBBBBBBBBBBSSwwSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBSSSSSBBBBBWBBBBBBBBBBBBBSSSSSSwwSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSWSBBBBBBBBBBBBSSSSSSSSwwBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSSBBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSWSSSSBBBBBBBBBBBBBBBBBBBBBBBwwBpppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSWSSSSSBBBBBBBBBBBBBBBBBBBBBBBBpppppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSWSSSSSSBBBBBBBBBBBBBBBBBBBBBBBppMppBBBBBBBBBBBBBBBBBBBBSSSSSSSSSWSSSSSSBBBBBBBBBBBBSSSSSBBBBBBpppppBBBBBBBBBBBBBBBBBBBBBBSSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSBBBBBpppBwwBBBBBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSSSBBBBBBBBBwwBBBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSBBBBBBBBBSSSSSSSSSSSSSBBBBBBBBBBwwBBBBBBBBBBBBBBBBBSSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBwwBBBBBBBBBBBBBBBBSSSSSWSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBwwBBBBBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBwwBBBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBwwBBBBBBBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBwwBBBGBBBBSSSSSWgggSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBwwGGGBBBBSSSSWgggSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBOBOBBBBBBBBBBGGpGGBBBggggWgggSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBOBBBOBBBBBBBBBBGGGBBBBggggWggggggSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBOBBBBBOBBBBBBBBBBGBBBBBggggWggggggSSSgggggggSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBOBBBBBOBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBBOBBBOBBBBBBBBBBBBBBBBBggggWggggggSSggggggggSSBBBBBBBBBBBBBBBBBBBBOBOBBBBBBBBBBBBBBBBBBggggWggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggggggWgggggggggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBgggggggggggggggggWgggggggggggggggBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBggggggggggggggggg","steps":[{"a":"MOUSE(row=48, col=54)","r":48,"c":54,"d":[[4,0,"B"],[24,10,"G"],[25,9,"G"],[25,10,"G"],[25,11,"G"],[26,8,"G"],[26,9,"G"],[26,11,"G"],[26,12,"G"],[27,9,"G"],[27,10,"G"],[27,11,"G"],[28,10,"G"],[46,54,"W"],[47,53,"W"],[47,54,"W"],[47,55,"W"],[48,52,"W"],[48,53,"W"],[48,55,"W"],[48,56,"W"],[49,53,"W"],[49,54,"W"],[49,55,"W"],[50,54,"W"]]},{"a":"MOUSE(row=13, col=57)","r":13,"c":57,"d":[[5,0,"B"],[11,57,"W"],[12,56,"W"],[12,57,"W"],[12,58,"W"],[13,55,"W"],[13,56,"W"],[13,57,"p"],[13,58,"W"],[13,59,"W"],[14,51,"w"],[14,52,"w"],[14,53,"w"],[14,54,"w"],[14,56,"W"],[14,57,"W"],[14,58,"W"],[15,47,"w"],[15,48,"w"],[15,49,"w"],[15,50,"w"],[15,57,"W"],[16,43,"w"],[16,44,"w"],[16,45,"w"],[16,46,"w"],[17,32,"p"],[17,33,"p"],[17,34,"p"],[17,39,"w"],[17,40,"w"],[17,41,"w"],[17,42,"w"],[18,31,"p"],[18,32,"p"],[18,33,"p"],[18,34,"p"],[18,35,"p"],[18,36,"w"],[18,37,"w"],[18,38,"w"],[19,31,"p"],[19,32,"p"],[19,33,"M"],[19,34,"p"],[19,35,"p"],[20,29,"w"],[20,30,"w"],[20,31,"p"],[20,32,"p"],[20,33,"p"],[20,34,"p"],[20,35,"p"],[21,25,"w"],[21,26,"w"],[21,27,"w"],[21,28,"w"],[21,32,"p"],[21,33,"p"],[21,34,"p"],[22,22,"w"],[22,23,"w"],[22,24,"w"],[23,19,"w"],[23,20,"w"],[23,21,"w"],[24,15,"w"],[24,16,"w"],[24,17,"w"],[24,18,"w"],[25,12,"w"],[25,13,"w"],[25,14,"w"],[27,12,"B"],[27,13,"B"],[28,14,"B"],[28,15,"B"],[29,16,"B"],[29,17,"S"],[30,18,"S"],[30,19,"S"],[31,20,"S"],[31,21,"S"],[32,22,"S"],[32,23,"S"],[33,24,"B"],[33,25,"B"],[34,26,"B"],[34,27,"B"],[35,28,"B"],[35,29,"B"],[35,31,"B"],[35,32,"B"],[35,33,"B"],[36,30,"B"],[36,31,"B"],[36,32,"B"],[36,33,"B"],[36,34,"B"],[37,30,"B"],[37,31,"B"],[37,32,"B"],[37,33,"B"],[37,34,"B"],[38,30,"B"],[38,31,"B"],[38,32,"B"],[38,33,"B"],[38,34,"B"],[39,31,"B"],[39,32,"B"],[39,33,"B"],[39,35,"B"],[39,36,"B"],[40,37,"B"],[40,38,"B"],[41,39,"B"],[41,40,"B"],[42,41,"B"],[42,42,"B"],[43,43,"B"],[43,44,"B"],[44,45,"B"],[44,46,"B"],[45,47,"B"],[45,48,"B"],[46,49,"B"],[46,50,"B"],[46,54,"B"],[47,51,"B"],[47,52,"B"],[47,53,"B"],[47,54,"B"],[47,55,"B"],[48,52,"B"],[48,53,"B"],[48,54,"B"],[48,55,"B"],[48,56,"B"],[49,53,"B"],[49,54,"B"],[49,55,"B"],[50,54,"B"]]},{"a":"MOUSE(row=26, col=10)","r":26,"c":10,"d":[[6,0,"B"],[11,57,"G"],[12,56,"G"],[12,57,"G"],[12,58,"G"],[13,55,"G"],[13,56,"G"],[13,58,"G"],[13,59,"G"],[14,56,"G"],[14,57,"G"],[14,58,"G"],[15,57,"G"],[24,10,"W"],[25,9,"W"],[25,10,"W"],[25,11,"W"],[26,8,"W"],[26,9,"W"],[26,11,"W"],[26,12,"W"],[27,9,"W"],[27,10,"W"],[27,11,"W"],[28,10,"W"]]},{"a":"MOUSE(row=23, col=57)","r":23,"c":57,"d":[[7,0,"B"],[8,0,"B"],[14,51,"B"],[14,52,"B"],[14,53,"B"],[14,54,"B"],[15,47,"B"],[15,48,"B"],[15,49,"B"],[15,50,"B"],[15,56,"W"],[15,58,"W"],[16,43,"B"],[16,44,"B"],[16,45,"B"],[16,46,"B"],[16,55,"W"],[16,56,"p"],[16,57,"p"],[16,58,"p"],[16,59,"W"],[17,32,"B"],[17,33,"B"],[17,34,"B"],[17,39,"B"],[17,40,"B"],[17,41,"B"],[17,42,"B"],[17,54,"W"],[17,55,"p"],[17,56,"p"],[17,57,"p"],[17,58,"p"],[17,59,"p"],[17,60,"W"],[18,31,"B"],[18,32,"B"],[18,33,"B"],[18,34,"B"],[18,35,"B"],[18,36,"B"],[18,37,"B"],[18,38,"B"],[18,55,"p"],[18,56,"p"],[18,57,"M"],[18,58,"p"],[18,59,"p"],[19,31,"B"],[19,32,"B"],[19,33,"B"],[19,34,"B"],[19,35,"B"],[19,54,"W"],[19,55,"p"],[19,56,"p"],[19,57,"p"],[19,58,"p"],[19,59,"p"],[19,60,"W"],[20,29,"B"],[20,30,"B"],[20,31,"B"],[20,32,"B"],[20,33,"B"],[20,34,"B"],[20,35,"B"],[20,55,"W"],[20,56,"p"],[20,57,"p"],[20,58,"p"],[20,59,"W"],[21,25,"B"],[21,26,"B"],[21,27,"B"],[21,28,"B"],[21,32,"B"],[21,33,"B"],[21,34,"B"],[21,56,"W"],[21,57,"W"],[21,58,"W"],[22,22,"B"],[22,23,"B"],[22,24,"B"],[22,56,"W"],[22,57,"W"],[22,58,"W"],[23,19,"B"],[23,20,"B"],[23,21,"B"],[23,55,"W"],[23,56,"W"],[23,57,"p"],[23,58,"W"],[23,59,"W"],[24,10,"B"],[24,15,"B"],[24,16,"B"],[24,17,"B"],[24,18,"B"],[24,56,"W"],[24,57,"W"],[24,58,"W"],[25,9,"B"],[25,10,"B"],[25,11,"B"],[25,12,"B"],[25,13,"B"],[25,14,"B"],[25,57,"W"],[26,8,"B"],[26,9,"B"],[26,10,"B"],[26,11,"B"],[26,12,"B"],[27,9,"B"],[27,10,"B"],[27,11,"B"],[28,10,"B"]]},{"a":"MOUSE(row=6, col=17)","r":6,"c":17,"d":[[4,17,"W"],[5,16,"W"],[5,17,"W"],[5,18,"W"],[6,15,"W"],[6,16,"W"],[6,18,"W"],[6,19,"W"],[7,16,"W"],[7,17,"W"],[7,18,"W"],[8,17,"W"],[9,0,"B"],[21,57,"G"],[22,56,"G"],[22,57,"G"],[22,58,"G"],[23,55,"G"],[23,56,"G"],[23,58,"G"],[23,59,"G"],[24,56,"G"],[24,57,"G"],[24,58,"G"],[25,57,"G"]]},{"a":"MOUSE(row=58, col=42)","r":58,"c":42,"d":[[4,17,"B"],[5,16,"B"],[5,17,"B"],[5,18,"B"],[6,15,"B"],[6,16,"B"],[6,17,"B"],[6,18,"B"],[6,19,"B"],[7,16,"B"],[7,17,"B"],[7,18,"B"],[8,17,"B"],[8,19,"B"],[9,20,"B"],[9,21,"B"],[9,45,"B"],[9,46,"B"],[10,0,"B"],[10,22,"B"],[10,23,"B"],[10,24,"B"],[10,25,"B"],[10,37,"B"],[10,38,"B"],[10,39,"B"],[10,40,"B"],[10,41,"B"],[10,42,"B"],[10,43,"B"],[10,44,"B"],[11,22,"B"],[11,23,"B"],[11,24,"B"],[11,25,"B"],[11,26,"B"],[11,29,"B"],[11,30,"B"],[11,31,"B"],[11,32,"B"],[11,33,"B"],[11,34,"B"],[11,35,"B"],[11,36,"B"],[11,47,"w"],[12,22,"B"],[12,23,"B"],[12,24,"B"],[12,25,"B"],[12,26,"B"],[12,27,"B"],[12,28,"B"],[12,47,"w"],[13,22,"B"],[13,23,"B"],[13,24,"B"],[13,25,"B"],[13,26,"B"],[13,46,"w"],[14,20,"B"],[14,21,"B"],[14,23,"B"],[14,24,"B"],[14,25,"B"],[14,45,"w"],[15,18,"B"],[15,19,"B"],[15,44,"w"],[16,17,"B"],[16,43,"w"],[17,15,"B"],[17,16,"B"],[17,43,"w"],[18,13,"B"],[18,14,"B"],[18,42,"w"],[19,11,"B"],[19,12,"B"],[19,41,"w"],[20,10,"B"],[20,40,"w"],[21,39,"w"],[22,10,"w"],[22,11,"w"],[22,12,"w"],[22,39,"w"],[23,13,"w"],[23,14,"w"],[23,15,"w"],[23,38,"w"],[24,16,"w"],[24,17,"w"],[24,18,"w"],[24,37,"w"],[25,19,"w"],[25,20,"w"],[25,21,"w"],[25,22,"w"],[25,36,"w"],[26,23,"w"],[26,24,"w"],[26,25,"w"],[26,35,"w"],[27,26,"w"],[27,27,"w"],[27,28,"w"],[27,32,"O"],[27,33,"O"],[27,34,"O"],[27,35,"w"],[28,29,"w"],[28,30,"w"],[28,31,"O"],[28,32,"O"],[28,33,"O"],[28,34,"O"],[28,35,"O"],[29,31,"O"],[29,32,"O"],[29,33,"M"],[29,34,"O"],[29,35,"O"],[30,31,"O"],[30,32,"O"],[30,33,"O"],[30,34,"O"],[30,35,"O"],[31,32,"O"],[31,33,"O"],[31,34,"O"],[32,34,"w"],[33,34,"w"],[34,35,"w"],[35,35,"w"],[36,35,"w"],[37,35,"w"],[38,36,"w"],[39,36,"w"],[40,36,"w"],[41,37,"w"],[42,37,"w"],[43,37,"w"],[44,38,"w"],[45,38,"w"],[46,38,"w"],[47,39,"w"],[49,39,"w"],[50,40,"w"],[51,40,"w"],[52,40,"w"],[53,40,"w"],[55,41,"w"],[56,41,"w"],[56,42,"W"],[57,41,"W"],[57,42,"W"],[57,43,"W"],[58,40,"W"],[58,41,"W"],[58,42,"O"],[58,43,"W"],[58,44,"W"],[59,41,"W"],[59,42,"W"],[59,43,"W"],[60,42,"W"]]},{"a":"MOUSE(row=9, col=49)","r":9,"c":49,"d":[[7,49,"W"],[8,48,"W"],[8,49,"W"],[8,50,"W"],[9,47,"W"],[9,48,"W"],[9,50,"W"],[9,51,"W"],[10,48,"W"],[10,49,"W"],[10,50,"W"],[11,0,"B"],[11,49,"W"],[56,42,"G"],[57,41,"G"],[57,42,"G"],[57,43,"G"],[58,40,"G"],[58,41,"G"],[58,43,"G"],[58,44,"G"],[59,41,"G"],[59,42,"G"],[59,43,"G"],[60,42,"G"]]},{"a":"MOUSE(row=34, col=40)","r":34,"c":40,"d":[[7,49,"B"],[8,48,"B"],[8,49,"B"],[8,50,"B"],[9,47,"B"],[9,48,"B"],[9,49,"B"],[9,50,"B"],[9,51,"B"],[10,48,"B"],[10,49,"B"],[10,50,"B"],[11,47,"B"],[11,49,"B"],[12,0,"B"],[12,47,"B"],[13,46,"B"],[14,45,"B"],[15,44,"B"],[16,43,"B"],[17,43,"B"],[18,42,"B"],[19,41,"B"],[20,40,"B"],[21,39,"B"],[22,11,"B"],[22,12,"B"],[22,39,"B"],[23,11,"w"],[23,13,"B"],[23,14,"B"],[23,15,"B"],[23,38,"B"],[24,12,"w"],[24,16,"B"],[24,17,"B"],[24,18,"B"],[24,37,"S"],[25,13,"w"],[25,14,"w"],[25,19,"S"],[25,20,"S"],[25,21,"S"],[25,22,"S"],[25,36,"S"],[26,15,"w"],[26,23,"S"],[26,24,"S"],[26,25,"S"],[26,35,"S"],[27,16,"w"],[27,26,"S"],[27,27,"S"],[27,28,"S"],[27,32,"B"],[27,33,"B"],[27,34,"B"],[27,35,"B"],[28,17,"w"],[28,18,"w"],[28,29,"S"],[28,30,"S"],[28,31,"B"],[28,32,"B"],[28,33,"B"],[28,34,"B"],[28,35,"B"],[29,19,"w"],[29,31,"B"],[29,32,"B"],[29,33,"B"],[29,34,"B"],[29,35,"B"],[30,20,"w"],[30,21,"w"],[30,31,"B"],[30,32,"B"],[30,33,"B"],[30,34,"B"],[30,35,"B"],[31,22,"w"],[31,32,"B"],[31,33,"B"],[31,34,"B"],[32,23,"w"],[32,34,"B"],[32,40,"W"],[33,24,"w"],[33,25,"w"],[33,34,"B"],[33,39,"W"],[33,40,"W"],[33,41,"W"],[34,26,"w"],[34,35,"B"],[34,38,"W"],[34,39,"W"],[34,40,"O"],[34,41,"W"],[34,42,"W"],[35,27,"w"],[35,29,"O"],[35,30,"O"],[35,31,"O"],[35,36,"w"],[35,37,"w"],[35,38,"w"],[35,39,"W"],[35,40,"W"],[35,41,"W"],[36,28,"O"],[36,29,"O"],[36,30,"O"],[36,31,"O"],[36,32,"O"],[36,33,"w"],[36,34,"w"],[36,35,"B"],[36,40,"W"],[37,28,"O"],[37,29,"O"],[37,30,"M"],[37,31,"O"],[37,32,"O"],[37,35,"B"],[38,28,"O"],[38,29,"O"],[38,30,"O"],[38,31,"O"],[38,32,"O"],[38,36,"B"],[39,29,"O"],[39,30,"O"],[39,31,"O"],[39,36,"B"],[40,32,"w"],[40,36,"B"],[41,32,"w"],[41,37,"B"],[42,33,"w"],[42,37,"B"],[43,33,"w"],[43,37,"B"],[44,34,"w"],[44,38,"B"],[45,35,"w"],[45,38,"B"],[46,35,"w"],[46,38,"B"],[47,36,"w"],[47,39,"B"],[48,36,"w"],[49,37,"w"],[49,39,"B"],[50,40,"B"],[51,38,"w"],[51,40,"B"],[52,39,"w"],[52,40,"B"],[53,39,"w"],[53,40,"B"],[54,40,"w"],[55,40,"w"],[55,41,"B"]]},{"a":"MOUSE(row=21, col=8)","r":21,"c":8,"d":[[13,0,"B"],[19,8,"W"],[20,7,"W"],[20,8,"W"],[20,9,"W"],[21,6,"W"],[21,7,"W"],[21,9,"W"],[21,10,"W"],[22,7,"W"],[22,8,"W"],[22,9,"W"],[23,8,"W"],[32,40,"G"],[33,39,"G"],[33,40,"G"],[33,41,"G"],[34,38,"G"],[34,39,"G"],[34,41,"G"],[34,42,"G"],[35,39,"G"],[35,40,"G"],[35,41,"G"],[36,40,"G"]]},{"a":"MOUSE(row=61, col=38)","r":61,"c":38,"d":[[14,0,"B"],[19,8,"B"],[20,7,"B"],[20,8,"B"],[20,9,"B"],[21,6,"B"],[21,7,"B"],[21,8,"B"],[21,9,"B"],[21,10,"B"],[22,7,"B"],[22,8,"B"],[22,9,"B"],[22,10,"B"],[23,8,"B"],[23,11,"B"],[24,12,"B"],[25,13,"B"],[25,14,"B"],[26,15,"B"],[27,16,"B"],[28,17,"S"],[28,18,"S"],[29,19,"S"],[30,20,"S"],[30,21,"S"],[31,22,"S"],[32,23,"S"],[33,24,"B"],[33,25,"B"],[34,26,"B"],[35,27,"B"],[35,29,"B"],[35,30,"B"],[35,31,"B"],[35,35,"B"],[35,36,"B"],[35,37,"B"],[35,38,"B"],[36,28,"B"],[36,29,"B"],[36,30,"B"],[36,31,"B"],[36,32,"B"],[36,33,"B"],[36,34,"B"],[37,28,"B"],[37,29,"B"],[37,30,"B"],[37,31,"B"],[37,32,"B"],[37,40,"w"],[38,28,"B"],[38,29,"B"],[38,30,"B"],[38,31,"B"],[38,32,"B"],[38,40,"w"],[39,29,"B"],[39,30,"B"],[39,31,"B"],[39,40,"w"],[40,32,"B"],[40,40,"w"],[41,32,"B"],[41,40,"w"],[42,33,"B"],[42,40,"w"],[43,33,"B"],[43,40,"w"],[44,34,"B"],[44,40,"w"],[45,35,"B"],[45,40,"w"],[46,35,"B"],[46,40,"w"],[47,36,"B"],[47,40,"w"],[48,36,"B"],[48,40,"w"],[49,37,"B"],[49,39,"O"],[49,40,"O"],[49,41,"O"],[50,38,"O"],[50,39,"O"],[50,40,"O"],[50,41,"O"],[50,42,"O"],[51,38,"O"],[51,39,"O"],[51,40,"M"],[51,41,"O"],[51,42,"O"],[52,38,"O"],[52,39,"O"],[52,40,"O"],[52,41,"O"],[52,42,"O"],[53,39,"O"],[53,40,"O"],[53,41,"O"],[54,40,"B"],[55,39,"w"],[55,40,"B"],[55,41,"w"],[56,39,"w"],[57,39,"w"],[58,39,"w"],[59,38,"W"],[60,37,"W"],[60,38,"W"],[60,39,"W"],[61,36,"W"],[61,37,"W"],[61,38,"O"],[61,39,"W"],[61,40,"W"],[62,37,"W"],[62,38,"W"],[62,39,"W"],[63,38,"W"]]}],"capStart":"<b>Before the turn<\/b> \u00b7 the board attached to the turn message (recorded frame)","capStep":"The recorded game after this action(); the ring marks the click.","capEnd":"<b>Level 2 cleared<\/b>: both knobs sit in their rings."}</script>
+<script type="application/json" id="turn-player-data">{"chars":"WwgGcBMPRbSYOrNp","pal":[[255,255,255],[204,204,204],[153,153,153],[102,102,102],[51,51,51],[0,0,0],[229,58,163],[255,123,204],[249,60,49],[30,147,255],[136,216,241],[255,220,0],[255,133,27],[146,18,49],[79,204,48],[163,86,214]],"before":"BBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGGGGGGGGGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBBBBBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBBBBBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBbbbBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBBBbBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBbBbBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBBBBBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGBBBBBBBGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccGGGGGGGGGcccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccccccccccccccccccccccGGGGGcccccccccccccccccccccccccBBBBccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGOOOOOGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGOOOOOGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGbbbbbGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGbbbbbGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGbbbbbGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccGGGGGGGGGGGGGGGcccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGccccccccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGccccccccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGccccccccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGccccccccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGccccccccccGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBcccccccccccccccGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGccccccccccBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBBBBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBBBBBBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBbbbbbbBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBbbbbbbBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBBBbbBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBBBBBbbBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBbbBBbbBBccccccccccccccccccccccccccccccccccccccccccccccccccccccBBbbBBbbBBcBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBcBBBBBBBBBBcBGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGYYYYYYYBRRBRRBRRcBBBBBBBBBBcBGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGYYYYYYYBRRBRRBRRccccccccccccBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB","steps":[{"a":"UP","d":[[25,19,"O"],[25,20,"O"],[25,21,"O"],[25,22,"O"],[25,23,"O"],[26,19,"O"],[26,20,"O"],[26,21,"O"],[26,22,"O"],[26,23,"O"],[27,19,"b"],[27,20,"b"],[27,21,"b"],[27,22,"b"],[27,23,"b"],[28,19,"b"],[28,20,"b"],[28,21,"b"],[28,22,"b"],[28,23,"b"],[29,19,"b"],[29,20,"b"],[29,21,"b"],[29,22,"b"],[29,23,"b"],[30,19,"G"],[30,20,"G"],[30,21,"G"],[30,22,"G"],[30,23,"G"],[31,19,"G"],[31,20,"G"],[31,21,"W"],[31,22,"G"],[31,23,"G"],[32,19,"G"],[32,20,"w"],[32,21,"W"],[32,22,"W"],[32,23,"G"],[33,19,"G"],[33,20,"G"],[33,21,"w"],[33,22,"G"],[33,23,"G"],[34,19,"G"],[34,20,"G"],[34,21,"G"],[34,22,"G"],[34,23,"G"],[61,48,"G"],[62,48,"G"]]},{"a":"RIGHT","d":[[25,19,"G"],[25,20,"G"],[25,21,"G"],[25,22,"G"],[25,23,"G"],[25,24,"O"],[25,25,"O"],[25,26,"O"],[25,27,"O"],[25,28,"O"],[26,19,"G"],[26,20,"G"],[26,21,"G"],[26,22,"G"],[26,23,"G"],[26,24,"O"],[26,25,"O"],[26,26,"O"],[26,27,"O"],[26,28,"O"],[27,19,"G"],[27,20,"G"],[27,21,"G"],[27,22,"G"],[27,23,"G"],[27,24,"b"],[27,25,"b"],[27,26,"b"],[27,27,"b"],[27,28,"b"],[28,19,"G"],[28,20,"G"],[28,21,"G"],[28,22,"G"],[28,23,"G"],[28,24,"b"],[28,25,"b"],[28,26,"b"],[28,27,"b"],[28,28,"b"],[29,19,"G"],[29,20,"G"],[29,21,"G"],[29,22,"G"],[29,23,"G"],[29,24,"b"],[29,25,"b"],[29,26,"b"],[29,27,"b"],[29,28,"b"],[61,49,"G"],[62,49,"G"]]},{"a":"RIGHT","d":[[25,24,"G"],[25,25,"G"],[25,26,"G"],[25,27,"G"],[25,28,"G"],[25,29,"O"],[25,30,"O"],[25,31,"O"],[25,32,"O"],[25,33,"O"],[26,24,"G"],[26,25,"G"],[26,26,"G"],[26,27,"G"],[26,28,"G"],[26,29,"O"],[26,30,"O"],[26,31,"O"],[26,32,"O"],[26,33,"O"],[27,24,"G"],[27,25,"G"],[27,26,"G"],[27,27,"G"],[27,28,"G"],[27,29,"b"],[27,30,"b"],[27,31,"b"],[27,32,"b"],[27,33,"b"],[28,24,"G"],[28,25,"G"],[28,26,"G"],[28,27,"G"],[28,28,"G"],[28,29,"b"],[28,30,"b"],[28,31,"b"],[28,32,"b"],[28,33,"b"],[29,24,"G"],[29,25,"G"],[29,26,"G"],[29,27,"G"],[29,28,"G"],[29,29,"b"],[29,30,"b"],[29,31,"b"],[29,32,"b"],[29,33,"b"],[61,50,"G"],[62,50,"G"]]},{"a":"RIGHT","d":[[25,29,"G"],[25,30,"G"],[25,31,"G"],[25,32,"G"],[25,33,"G"],[25,34,"O"],[25,35,"O"],[25,36,"O"],[25,37,"O"],[25,38,"O"],[26,29,"G"],[26,30,"G"],[26,31,"G"],[26,32,"G"],[26,33,"G"],[26,34,"O"],[26,35,"O"],[26,36,"O"],[26,37,"O"],[26,38,"O"],[27,29,"G"],[27,30,"G"],[27,31,"G"],[27,32,"G"],[27,33,"G"],[27,34,"b"],[27,35,"b"],[27,36,"b"],[27,37,"b"],[27,38,"b"],[28,29,"G"],[28,30,"G"],[28,31,"G"],[28,32,"G"],[28,33,"G"],[28,34,"b"],[28,35,"b"],[28,36,"b"],[28,37,"b"],[28,38,"b"],[29,29,"G"],[29,30,"G"],[29,31,"G"],[29,32,"G"],[29,33,"G"],[29,34,"b"],[29,35,"b"],[29,36,"b"],[29,37,"b"],[29,38,"b"],[61,51,"G"],[62,51,"G"]]},{"a":"UP","d":[[20,34,"O"],[20,35,"O"],[20,36,"O"],[20,37,"O"],[20,38,"O"],[21,34,"O"],[21,35,"O"],[21,36,"O"],[21,37,"O"],[21,38,"O"],[22,34,"b"],[22,35,"b"],[22,36,"b"],[22,37,"b"],[22,38,"b"],[23,34,"b"],[23,35,"b"],[23,36,"b"],[23,37,"b"],[23,38,"b"],[24,34,"b"],[24,35,"b"],[24,36,"b"],[24,37,"b"],[24,38,"b"],[25,34,"G"],[25,35,"G"],[25,36,"G"],[25,37,"G"],[25,38,"G"],[26,34,"G"],[26,35,"G"],[26,36,"G"],[26,37,"G"],[26,38,"G"],[27,34,"G"],[27,35,"G"],[27,36,"G"],[27,37,"G"],[27,38,"G"],[28,34,"G"],[28,35,"G"],[28,36,"G"],[28,37,"G"],[28,38,"G"],[29,34,"G"],[29,35,"G"],[29,36,"G"],[29,37,"G"],[29,38,"G"],[61,52,"G"],[62,52,"G"]]},{"a":"UP","d":[[15,34,"O"],[15,35,"O"],[15,36,"O"],[15,37,"O"],[15,38,"O"],[16,34,"O"],[16,35,"O"],[16,36,"O"],[16,37,"O"],[16,38,"O"],[17,34,"b"],[17,35,"b"],[17,36,"b"],[17,37,"b"],[17,38,"b"],[18,34,"b"],[18,35,"b"],[18,36,"b"],[18,37,"b"],[18,38,"b"],[19,34,"b"],[19,35,"b"],[19,36,"b"],[19,37,"b"],[19,38,"b"],[20,34,"G"],[20,35,"G"],[20,36,"G"],[20,37,"G"],[20,38,"G"],[21,34,"G"],[21,35,"G"],[21,36,"G"],[21,37,"G"],[21,38,"G"],[22,34,"G"],[22,35,"G"],[22,36,"G"],[22,37,"G"],[22,38,"G"],[23,34,"G"],[23,35,"G"],[23,36,"G"],[23,37,"G"],[23,38,"G"],[24,34,"G"],[24,35,"G"],[24,36,"G"],[24,37,"G"],[24,38,"G"],[61,53,"G"],[62,53,"G"]]},{"a":"UP","d":[[10,34,"O"],[10,35,"O"],[10,36,"O"],[10,37,"O"],[10,38,"O"],[11,34,"O"],[11,35,"O"],[11,36,"O"],[11,37,"O"],[11,38,"O"],[12,34,"b"],[12,35,"b"],[12,36,"b"],[12,38,"b"],[13,34,"b"],[13,36,"b"],[13,38,"b"],[14,34,"b"],[14,35,"b"],[14,36,"b"],[14,37,"b"],[14,38,"b"],[15,34,"B"],[15,35,"B"],[15,36,"B"],[15,37,"B"],[15,38,"B"],[16,34,"G"],[16,35,"G"],[16,36,"G"],[16,37,"G"],[16,38,"G"],[17,34,"G"],[17,35,"G"],[17,36,"G"],[17,37,"G"],[17,38,"G"],[18,34,"G"],[18,35,"G"],[18,36,"G"],[18,37,"G"],[18,38,"G"],[19,34,"G"],[19,35,"G"],[19,36,"G"],[19,37,"G"],[19,38,"G"],[61,54,"G"],[62,54,"G"]]}],"capStart":"<b>Before the turn<\/b> \u00b7 the board attached to the turn message (recorded frame)","capStep":"The recorded game after this move; the yellow bar at the bottom is the step budget.","capWait":"At the top, under the locked box. No win yet; one step of budget left.","capEnd":"<b>Level 1 cleared<\/b>: the block went into the box."}</script>
 <script>
 (function () {
   // One turn of the harness: streams the transcript and steps the board (make_turn_player.py).
@@ -520,23 +495,20 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
   var idx = {}; for (var i = 0; i < D.chars.length; i++) idx[D.chars[i]] = i;
   var grid = [];
 
-  function paint(mark) {
+  function paint() {
     for (var r = 0; r < 64; r++) for (var c = 0; c < 64; c++) {
       var p = D.pal[idx[grid[r * 64 + c]]];
       g.fillStyle = 'rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')'; g.fillRect(c * 8, r * 8, 8, 8);
     }
-    if (!mark) return;
-    var x = mark.c * 8 + 4, y = mark.r * 8 + 4;   // the click: a ring with a dot
-    g.lineWidth = 5; g.strokeStyle = '#000'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
-    g.lineWidth = 2.5; g.strokeStyle = '#fff'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
-    g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 3.5, 0, 7); g.fill();
   }
-  function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..9: after click k
+  var LAST = D.steps.length - 1;
+  function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..LAST: after move k
     grid = D.before.split('');
     for (var s = 0; s <= k; s++) D.steps[s].d.forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; });
-    paint(k >= 0 ? D.steps[k] : null);
+    paint();
     cap.innerHTML = k < 0 ? D.capStart
-      : '<b>Click ' + (k + 1) + ' of 10</b> · ' + D.steps[k].a + (k === 9 ? '<br>' + D.capEnd : '<br>' + D.capStep);
+      : '<b>Move ' + (k + 1) + ' of ' + (LAST + 1) + '</b> · ' + D.steps[k].a
+        + '<br>' + (k === LAST ? D.capEnd : k === LAST - 1 ? D.capWait : D.capStep);
   }
 
   // The stream: every line of every block, in order, typed out fast (the point is the feel of how
@@ -557,7 +529,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
                    step: ln.dataset.step === undefined ? null : +ln.dataset.step });
     });
   });
-  // Characters per second by block kind; STEP is the beat on each click, GAP the beat between blocks.
+  // Characters per second by block kind; STEP is the beat on each move, GAP the beat between blocks.
   var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
   var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
 
@@ -574,7 +546,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
       if (x.div) { x.el.classList.remove('tp-hide'); return; }
       x.el.textContent = x.text; x.el.classList.remove('step-on'); x.block.classList.remove('tp-hide');
     });
-    u = units.length; done = true; setBoard(9); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
+    u = units.length; done = true; setBoard(LAST); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
     setPlaying(false); btnPlay.textContent = 'Replay';
   }
   function tick(now) {
@@ -632,7 +604,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
   } else { started = true; setPlaying(true); }
 })();
 </script>
-<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.</figcaption>
+<figcaption>Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The model walks the block to the locked box with its last six steps of budget; nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label bars are ours.</figcaption>
 </figure>
 <!-- turn-player:end -->
 <p>On top of that loop, the Turducken harness keeps these things for the model:</p>

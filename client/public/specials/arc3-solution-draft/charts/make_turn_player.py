@@ -1,11 +1,11 @@
-"""Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day)
+"""Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day; Locksmith turn: his fourth note)
 Date: 08-November-2026
 PURPOSE: Build the "One turn of the harness" figure of Son Pham's "Stuffing the Turducken" special
 (section 1.1 of client/public/specials/2026-11-06-arc3-solution-draft.html) as a live in-page player.
 Son's second note on the figure (8 Nov): one continuous transcript, colour-coded by block (system prompt
 black, user prompt green, reasoning blue, tool call yellow, tool result a different yellow), monospace,
 no page switching, streaming fast with the newest text always in view, and ONE game canvas that steps
-through the recorded game as each action() click is reached. Look and feel follow the arc3.sonpham.net
+through the recorded game as each move is reached. Look and feel follow the arc3.sonpham.net
 run viewer's Decision pane (its "Review" trace: uppercase label bar tinted with the block colour, a
 coloured left spine on a monospace pre-wrap body, the same colour roles and monospace stack).
 Son's third note (8 Nov): show the text flowing really fast (the feel of how much goes by, about 15-25
@@ -14,9 +14,10 @@ high rate; each tool call plays as a yellow pill holding the call name and ONE r
 (click the pill to open the full verbatim call); reasoning keeps its real key lines with "…" for the rest.
 The pills are a script-only view: without JavaScript each call shows as its full code block.
 
-Data: charts/turn-source.json (written by make_turn_walkthrough.py extract from the saved run
-20261023_1410_daniel-candnp3-a, game 24 Reaching Lurch, level 2, step file game-24-step-10.json, plus
-the first tool call of game-24-step-11.json). Nothing here reads the run itself.
+Data: charts/turn-source.json (written by extract_turn_source.py from the saved run
+20261023_1410_daniel-candnp3-a). Since Son's fourth note (8 Nov, "use a simpler game, like LS20") it is the
+game Locksmith, level 1: the site's step 15 (six moves up to the locked box, one action() each) and step 16
+(one more UP clears the level). Before that it was Reaching Lurch, level 2. Nothing here reads the run itself.
 
 What it writes (run from anywhere: python3 make_turn_player.py):
   - the article page, between the turn-player markers: a <style> block in the head, and in the body
@@ -31,8 +32,7 @@ The verbatim rule is enforced in code: every transcript line must be an exact su
 section, whole sections must reassemble exactly, and every trim is a visible "…" line. Block labels are
 the trace's own section labels. Our own words (legend, board caption, harness notes in the label bars,
 the stored-transcript notice) sit outside the block bodies.
-SRP/DRY check: Pass - turn-source.json and its extract stage are reused from make_turn_walkthrough.py
-(whose image render is retired by this player); no other script builds this figure.
+SRP/DRY check: Pass - turn-source.json comes from extract_turn_source.py; no other script builds this figure.
 """
 
 from html import escape
@@ -54,7 +54,7 @@ T = SRC['text']
 
 # ---------------------------------------------------------------- transcript --------------------
 # A block: (css kind, trace label, harness note or '', lines). A line is (section, text) for verbatim
-# text, CUT for a visible trim, or ('step', k, section, text) for the result line of action() click k.
+# text, CUT for a visible trim, or ('step', k, section, text) for the result line of move k.
 # A tool call block carries a fifth item: the one real line of its code shown in its pill.
 
 
@@ -63,7 +63,10 @@ def whole(sec):
     return [(sec, ln) for ln in T[sec].split('\n')]
 
 
-res2 = T['result2'].split('\n')
+RES = T['result'].split('\n')
+NRES = T['next_result'].split('\n')
+MOVES = SRC['moves']          # six moves in turn A, then turn B's clearing UP
+
 BLOCKS = [
     ('system', 'SYSTEM PROMPT', 'harness: game rules · notes memory · one tool · own functions', [
         ('system', 'You are a coding agent solving a grid-based puzzle game.'),
@@ -79,48 +82,62 @@ BLOCKS = [
         ('system', 'Eligible functions you define are retained automatically for later calls throughout this game, including across level changes'),
         CUT,
     ]),
-    ('user', 'USER PROMPT', 'harness: own functions listed back', [
-        ('user', 'Your last python snippet executed NO actions (it only computed or inspected state - that is fine).'),
-        ('user', 'For reference, the most recent executed sequence earlier this turn was: MOUSE(row=26, col=10).'),
-        ('user', 'Current state: step 13, level 2.'),
-        ('user', 'Valid actions right now: MOUSE.'),
+    ('user', 'USER PROMPT', 'harness: own functions listed back · diff image', [
+        ('user', 'The code executed 4 actions in the previous sequence.'),
+        ('user', 'Executed actions: DOWN, UP, DOWN, UP.'),
         CUT,
-        ('user', 'Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6).'),
+        ('user', 'You are still on the same level.'),
+        ('user', 'Current state: step 40, level 1.'),
+        ('user', 'Valid actions right now: UP, DOWN, LEFT, RIGHT.'),
+        CUT,
+        ('user', 'Your retained functions from earlier Python calls in this game: blockpos(frame), icon3(frame), win3(frame), pluscell(frame), cell(frame), nodesig(f). These are your previous definitions, available to call directly.'),
         CUT,
         ('user', 'Current grid image:'),
         ('user', ''),
         ('user', '[image attached]'),
+        ('user', ''),
+        ('user', 'Diff image (step 35 -> 39): cells that changed since your previous analyzer turn in their new true color; unchanged cells dimmed to dark navy (an off-palette color).'),
+        ('user', ''),
+        ('user', '[image attached]'),
     ]),
     ('think', 'THINKING', 'shortened', [
-        ('think1', 'Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.'),
+        ('think', "Now the icon is B (111001101) = the window's logo. 5 presses. Yellow = 20 - 4*2 = 12 px = 6 cols. So 6 actions left!"),
+        ('think', 'Hmm, tight. To reach the neck from (1,1): UP (0,1), RIGHT (0,2), RIGHT (0,3), RIGHT (0,4), UP (neck), UP (top) = 6 actions exactly. Let\'s do it! If the win triggers, great.'),
         CUT,
-        ('think1', 'Let me write both in one snippet and run the simulation.'),
-    ]),
-    ('call', 'TOOL CALL: python', '', whole('call1'), 'st,sel,log=simulate(clicks,B,K)'),
-    ('result', 'TOOL RESULT: python', '', whole('result1')),
-    ('think', 'THINKING', 'shortened', [
-        ('think2', 'The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).'),
-        ('think2', 'Now execute with run_checked and expectations:'),
+        ('think', 'Let me just directly measure: yellow now = 12 px = 6 cols. If each successful action costs 1 col, we have 6 actions left. Let\'s use them wisely: the 6-action path to the neck top.'),
+        ('think', "If we die, the level restarts and I'll know the budget better."),
+        ('think', 'Let me go: UP, RIGHT, RIGHT, RIGHT, UP, UP.'),
         CUT,
-        ('think2', 'Let me execute. If the level completes at the last step, great.'),
-        ('think2', 'One risk: the expectation checks happen after each action; if the game rejects a move (my model wrong), the check fails and run_checked stops ✓.'),
-        ('think2', 'Let me go.'),
+        ('think', 'Let me execute one at a time to catch the win and stop early.'),
     ]),
-    ('call', 'TOOL CALL: python', 'harness: checked play', whole('call2'), 'print(run_checked(moves))'),
-    ('result', 'TOOL RESULT: python', 'each line is one action() on the game', [
-        ('step', k, 'result2', res2[k]) for k in range(10)
-    ] + [('result2', ln) for ln in res2[10:]]),
+    ('call', 'TOOL CALL: python', 'harness: one action() per move', whole('call'), "seq=['UP','RIGHT','RIGHT','RIGHT','UP','UP']"),
+    # Every "[action]" line is one move on the game: the board steps there.
+    ('result', 'TOOL RESULT: python', 'each [action] line is one move on the game', [
+        ('step', n // 2, 'result', ln) if n % 2 == 0 else ('result', ln) for n, ln in enumerate(RES)
+    ]),
     'NEXT',
-    ('user', 'USER PROMPT', 'harness: own functions listed back', [
-        ('next_user', 'Reminder: the earlier sequence this turn completed the level; you are now on the new level.'),
-        ('next_user', 'Current state: step 23, level 3.'),
-        CUT,
-        ('next_user', 'Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6), masks(), simulate(clicks, B, K),'),
+    ('user', 'USER PROMPT', '', [
+        ('next_user', 'The code executed 6 actions in the previous sequence.'),
+        ('next_user', 'Executed actions: UP, RIGHT, RIGHT, RIGHT, UP, UP.'),
+        ('next_user', 'You are still on the same level.'),
+        ('next_user', 'Current state: step 46, level 1.'),
         CUT,
     ]),
-    ('call', 'TOOL CALL: python', 'harness: notes memory', [
-        (sec, ln) for sec, ln in whole('next_call')[:10]
-    ] + [CUT], 'notes.append("""## Level 3 layout'),
+    ('think', 'THINKING', 'shortened', [
+        ('next_think', 'Yellow = 2 px = 1 col. The block is at the neck top with the logo matching the window. No win. So the "code + exit" hypothesis is wrong (or the exit is elsewhere).'),
+        CUT,
+        ('next_think', 'Hmm, so maybe the puzzle is: the glyph inside the box must be REMOVED so the block can enter the box and reach the top. How to remove the glyph? Maybe by pressing the plus (the code)? Hmm! Maybe the code (logo matching the window) unlocks the box, and then the block can enter!'),
+        CUT,
+        ('next_think', "Yellow = 2 px = 1 col. Let me spend it on UP. If it's blocked, we're at 0 → maybe game over → restart."),
+        ('next_think', 'Let me do UP and see.'),
+    ]),
+    ('call', 'TOOL CALL: python', '', whole('next_call'), "r=action(['UP'])"),
+    ('result', 'TOOL RESULT: python', '', [
+        ('step', len(MOVES) - 1, 'next_result', NRES[0]),
+        ('next_result', NRES[1]),
+        CUT,
+        ('next_result', NRES[-1]),
+    ]),
 ]
 
 LEGEND = [('system', 'System prompt'), ('user', 'User prompt'), ('think', 'Reasoning'),
@@ -152,34 +169,32 @@ def check_verbatim():
             sec = secs.pop()
             if '\n'.join(ln[-1] for ln in b[3]) != T[sec]:
                 raise SystemExit(f'Whole section {sec} does not reassemble exactly')
-    for k in range(10):
-        assert SRC['clicks'][k]['action'] in res2[k], (k, res2[k])
+    steps = [ln for b in BLOCKS if b != 'NEXT' for ln in b[3] if ln != CUT and ln[0] == 'step']
+    assert [ln[1] for ln in steps] == list(range(len(MOVES))), [ln[1] for ln in steps]
+    for ln in steps:   # each step line is the result line of that move
+        assert ln[3].startswith(f"[action] {MOVES[ln[1]]['action']} -> "), ln
 
 
 # ---------------------------------------------------------------- boards ------------------------
 
 def board_data():
-    """Boards as 64x64 strings of colour letters; each click as the cells it changed."""
-    rows = lambda s: s.split('\n')
-    before = SRC['before']
-    shown = [c['board'] for c in SRC['clicks']]
-    shown[-1] = SRC['solved']      # the clearing click: show the solved level-2 board, not level 3
-    prev, steps = before, []
-    for k, (c, cur) in enumerate(zip(SRC['clicks'], shown)):
-        m = re.fullmatch(r'MOUSE\(row=(\d+), col=(\d+)\)', c['action'])
-        pr, cr = rows(prev), rows(cur)
+    """Boards as 64x64 strings of colour letters; each move as the cells it changed."""
+    rows = lambda b: b.split('\n')
+    prev, steps = SRC['before'], []
+    for m in MOVES:
+        pr, cr = rows(prev), rows(m['board'])
         delta = [[r, q, cr[r][q]] for r in range(64) for q in range(64) if pr[r][q] != cr[r][q]]
-        steps.append({'a': c['action'], 'r': int(m[1]), 'c': int(m[2]), 'd': delta})
-        prev = cur
+        steps.append({'a': m['action'], 'd': delta})
+        prev = m['board']
     pal = {ch: [int(x) for x in rgb[4:-1].split(',')] for ch, rgb in zip(SRC['color_chars'], SRC['palette'])}
     return {'chars': SRC['color_chars'], 'pal': [pal[ch] for ch in SRC['color_chars']],
-            'before': before.replace('\n', ''), 'steps': steps}
+            'before': SRC['before'].replace('\n', ''), 'steps': steps}
 
 
 def write_board_png():
     pal = {ch: tuple(int(x) for x in rgb[4:-1].split(',')) for ch, rgb in zip(SRC['color_chars'], SRC['palette'])}
     im = Image.new('RGB', (64, 64))
-    im.putdata([pal[ch] for ch in SRC['solved'].replace('\n', '')])
+    im.putdata([pal[ch] for ch in MOVES[-1]['board'].replace('\n', '')])
     im.resize((512, 512), Image.NEAREST).save(BOARD_PNG, optimize=True)
 
 
@@ -241,7 +256,7 @@ CSS = r'''
 .tp.tp-js .tb-call{border-bottom:0;padding:6px 10px 6px 12px;background:var(--tp-panel)}
 .tp.tp-js .tb-call .tb-h,.tp.tp-js .tb-call .tb-b{display:none}
 .tp.tp-js .tb-call.open .tb-b{display:block;margin-top:6px;border-radius:3px}
-.tp.tp-js .tb-prow{display:flex;align-items:center;gap:10px;min-width:0}
+.tp.tp-js .tb-prow{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0}
 .tb-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;max-width:100%;font:12px/1.4 var(--tp-mono);color:#1a1400;
   background:var(--tp-call);border:0;border-radius:999px;padding:3px 12px 3px 4px;cursor:pointer;text-align:left}
 .tb-pill:hover{background:#fde047}
@@ -278,23 +293,20 @@ JS = r'''
   var idx = {}; for (var i = 0; i < D.chars.length; i++) idx[D.chars[i]] = i;
   var grid = [];
 
-  function paint(mark) {
+  function paint() {
     for (var r = 0; r < 64; r++) for (var c = 0; c < 64; c++) {
       var p = D.pal[idx[grid[r * 64 + c]]];
       g.fillStyle = 'rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')'; g.fillRect(c * 8, r * 8, 8, 8);
     }
-    if (!mark) return;
-    var x = mark.c * 8 + 4, y = mark.r * 8 + 4;   // the click: a ring with a dot
-    g.lineWidth = 5; g.strokeStyle = '#000'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
-    g.lineWidth = 2.5; g.strokeStyle = '#fff'; g.beginPath(); g.arc(x, y, 15, 0, 7); g.stroke();
-    g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 3.5, 0, 7); g.fill();
   }
-  function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..9: after click k
+  var LAST = D.steps.length - 1;
+  function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..LAST: after move k
     grid = D.before.split('');
     for (var s = 0; s <= k; s++) D.steps[s].d.forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; });
-    paint(k >= 0 ? D.steps[k] : null);
+    paint();
     cap.innerHTML = k < 0 ? D.capStart
-      : '<b>Click ' + (k + 1) + ' of 10</b> · ' + D.steps[k].a + (k === 9 ? '<br>' + D.capEnd : '<br>' + D.capStep);
+      : '<b>Move ' + (k + 1) + ' of ' + (LAST + 1) + '</b> · ' + D.steps[k].a
+        + '<br>' + (k === LAST ? D.capEnd : k === LAST - 1 ? D.capWait : D.capStep);
   }
 
   // The stream: every line of every block, in order, typed out fast (the point is the feel of how
@@ -315,7 +327,7 @@ JS = r'''
                    step: ln.dataset.step === undefined ? null : +ln.dataset.step });
     });
   });
-  // Characters per second by block kind; STEP is the beat on each click, GAP the beat between blocks.
+  // Characters per second by block kind; STEP is the beat on each move, GAP the beat between blocks.
   var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
   var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
 
@@ -332,7 +344,7 @@ JS = r'''
       if (x.div) { x.el.classList.remove('tp-hide'); return; }
       x.el.textContent = x.text; x.el.classList.remove('step-on'); x.block.classList.remove('tp-hide');
     });
-    u = units.length; done = true; setBoard(9); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
+    u = units.length; done = true; setBoard(LAST); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
     setPlaying(false); btnPlay.textContent = 'Replay';
   }
   function tick(now) {
@@ -402,7 +414,7 @@ def line_html(ln):
 def figure_html():
     p = SRC['provenance']
     out = ['<div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">',
-           '<div class="tp-top"><span class="tp-run">Reaching Lurch <span>· level 2 · step 11 · run '
+           '<div class="tp-top"><span class="tp-run">Locksmith <span>· level 1 · steps 15 and 16 · run '
            f'{escape(p["run"])}</span></span>'
            '<span class="tp-ctl"><button type="button" data-a="play">Play</button>'
            '<button type="button" data-a="restart">Restart</button>'
@@ -411,12 +423,12 @@ def figure_html():
            '<div class="tp-legend">' + ''.join(f'<span class="k-{k}"><i></i>{n}</span>' for k, n in LEGEND) + '</div>',
            '<div class="tp-main">',
            '<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" '
-           'loading="lazy" alt="The recorded Reaching Lurch board: level 2 cleared, both knobs sitting in their rings.">'
-           '<div class="tp-cap"><b>Level 2 cleared</b> after the tenth click. The recorded game board.</div></div>',
+           'loading="lazy" alt="The recorded Locksmith board: level 1 cleared, the block inside the locked box at the top.">'
+           '<div class="tp-cap"><b>Level 1 cleared</b> on the seventh move. The recorded game board.</div></div>',
            '<div class="tp-log" tabindex="0" aria-label="Transcript of the turn">']
     for b in BLOCKS:
         if b == 'NEXT':
-            out.append('<div class="tp-next">next turn · level 3</div>')
+            out.append('<div class="tp-next">next turn · still level 1</div>')
             continue
         kind, label, note, lines = b[:4]
         n = f'<span class="tb-n">{escape(note)}</span>' if note else ''
@@ -436,23 +448,24 @@ def figure_html():
             '</div>']
     data = board_data()
     data['capStart'] = '<b>Before the turn</b> · the board attached to the turn message (recorded frame)'
-    data['capStep'] = 'The recorded game after this action(); the ring marks the click.'
-    data['capEnd'] = '<b>Level 2 cleared</b>: both knobs sit in their rings.'
+    data['capStep'] = 'The recorded game after this move; the yellow bar at the bottom is the step budget.'
+    data['capWait'] = 'At the top, under the locked box. No win yet; one step of budget left.'
+    data['capEnd'] = '<b>Level 1 cleared</b>: the block went into the box.'
     js_data = json.dumps(data, separators=(',', ':')).replace('</', '<\\/')
     return '\n'.join([
         '<figure id="fig-turn">',
         '<div class="ft">One turn of the harness, from a saved run</div>',
-        '<div class="fs">The transcript streams fast, in the order the turn went: the system prompt, the turn message, '
-        'the model\'s reasoning (shortened), its two python calls as yellow pills (click one for the full code) and '
-        'their output. The board steps through the recorded game as each action() click lands.</div>',
+        '<div class="fs">The transcript streams fast, in the order the turns went: the system prompt, the turn message, '
+        'the model\'s reasoning (shortened), each python call as a yellow pill (click one for the full code), the '
+        'output, then the next turn. The board steps through the recorded game as each move lands.</div>',
         *out,
         f'<script type="application/json" id="turn-player-data">{js_data}</script>',
         f'<script>{JS}</script>',
-        '<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run '
+        '<figcaption>Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run '
         f'<code>{escape(p["run"])}</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code '
         'and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the '
-        'run\'s recorded frames. The last two '
-        'blocks are from the start of the following turn. The legend, board captions and the grey notes in the label '
+        'run\'s recorded frames. The model walks the block to the locked box with its last six steps of budget; '
+        'nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label '
         'bars are ours.</figcaption>',
         '</figure>',
     ])
@@ -473,14 +486,14 @@ def take_still():
         pg = b.new_page(viewport={'width': 900, 'height': 900}, device_scale_factor=2)
         pg.goto(PAGE.as_uri() + '#turn-end')
         pg.wait_for_function('window.__turnPlayer !== undefined')
-        # Final state, controls hidden, the transcript scrolled to the second (shortened) reasoning, so
-        # the run_checked pill, the ten action() lines, the cleared level and the next turn's notes follow.
+        # Final state, controls hidden, the transcript scrolled to the first turn's python pill, so its six
+        # moves, the next turn's reasoning and the clearing UP follow.
         pg.evaluate('''() => {
           window.__turnPlayer.finish();
           const tp = document.querySelector("#fig-turn .tp"), log = tp.querySelector(".tp-log");
           tp.querySelector(".tp-ctl").style.display = "none";
           log.style.height = "860px";
-          const th = [...log.querySelectorAll(".tb-think")].pop();
+          const th = log.querySelector(".tb-call");
           log.scrollTop = th.offsetTop - log.offsetTop;
         }''')
         pg.locator('#fig-turn .tp').screenshot(path=str(STILL_PNG))
