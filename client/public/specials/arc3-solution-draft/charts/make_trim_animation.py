@@ -1,5 +1,6 @@
 """Author: Claude Opus 5.5 Medium (60 frames a second: Claude Opus 5.5 Low, 08-November-2026;
-        restyled to match the one-turn player, plus GIF and MP4 copies: Claude Opus 5.5 Medium, 08-November-2026)
+        restyled to match the one-turn player, plus GIF and MP4 copies: Claude Opus 5.5 Medium, 08-November-2026;
+        light theme: Claude Opus 5.5 Low, 08-November-2026)
 Date: 07-November-2026
 PURPOSE: Render the "Trimming and swapping, animated" figure of Son Pham's "Stuffing the
 Turducken" special (section 1.1, "Context management", in
@@ -18,11 +19,14 @@ illustrative, exactly as the caption says.
 Every animated quantity is a function of time modulo the loop length, so the last frame flows
 into the first. Frames are drawn with Pillow at 2x and downsampled (anti-aliasing).
 Look (Son Pham, 8 Nov: "harmonize ... in terms of font and graphic"): the same family as the
-one-turn harness player (make_turn_player.py): its dark navy surfaces and lines, JetBrains Mono for
+one-turn harness player (make_turn_player.py): its surfaces and lines, JetBrains Mono for
 every word (the player inlines the same font file), its top bar with a thin progress bar (here the
 loop position), its legend row of square swatches, and its uppercase label bars with a grey note on
 the right for the two panels. Reasoning blue is the "new turn" colour and the system prompt is black,
 as in the player's transcript. Geometry, timing and content are unchanged from the warm version.
+Round 12 (Son Pham, 8 Nov: "I would prefer that the animations are light theme"): both figures moved
+from the dark navy look to a light one built from the article page's own tokens; colour only, plus a
+thin border drawn into the frame so the GIF keeps an edge on a white page.
 img2webp packs the frames into an animated, looping WebP (the fast-publish API takes webp but not
 video files). ffmpeg writes an MP4 (H.264, 60 fps) and a web GIF (20 fps, 960 px, looping) for the
 Kaggle copy, which cannot run the page.
@@ -49,7 +53,7 @@ import media_encode
 HERE = Path(__file__).resolve().parent
 FONTS = HERE / 'fonts'
 OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
-    '/Volumes/Team 4TB/loose-goose/art/2026-11-07-turducken-trim-animation')
+    '/Volumes/Team 4TB/loose-goose/art/2026-11-08-turducken-trim-light')   # light set (Round 12)
 
 W, H = 1280, 980
 OY = 40                    # the panels sit this far lower than in the warm version, under the top bar
@@ -60,22 +64,26 @@ NFRAMES = int(LOOP * FPS)  # 1,080; frame NFRAMES would equal frame 0, so it is 
 POSTER_T = 11.7            # window full and the next turn won't fit; a swap in flight on the right
 
 # The one-turn player's palette (make_turn_player.py, .tp CSS variables), so the two figures match.
-BG = '#0c1220'          # --tp-panel: the panels the drawing sits on
-SURFACE = '#080c16'     # --tp-bg: inside the window column and the lane pills
-CHROME = '#101828'      # --tp-chrome: top bar and label bars
-INK, INK2, MUTED, LINE = '#e2e6ee', '#b9c2d1', '#7d899c', '#212d42'   # --tp-text / -dim / -muted / -line
-EDGE = '#2c3a54'        # the player's outer border and button edges
-SYS, SYS_EDGE = '#000000', '#8b95a7'    # system prompt: black, as the player's system block
-NOTES_HUE = '#a78bfa'                   # notes: violet (the harness's memory)
-NOTES, NOTES_INK, NOTES_EDGE = '#2a2750', '#c4b5fd', NOTES_HUE
-DECODE = '#3b82f6'                      # --tp-think: a turn being generated
-CACHED = '#1b3260'                      # history sitting in the card's cache (dark decode blue)
-CACHED_EDGE = '#2f5597'
-KEEP, KEEP_INK, TRIM = '#3d2614', '#fdba74', '#f97316'           # kept ~52k, read again; the trim
-CUT = '#4b5870'                         # hatch of the cut turns
-SWAP = '#2dd4bf'                        # a swap: the waiting game's chip and the lane's ring
-QUEUE = '#3a4558'                       # a waiting game
-RAM, RAM_FILL = '#4ade80', '#1d4a33'    # host RAM tier
+# Light theme (Son Pham, 8 Nov: "I would prefer that the animations are light theme"), built from the
+# article page's own :root tokens (--panel #f7f8f6, --ink #15171a, --line #e3e6e1). Every text colour
+# below clears 4.5:1 on BG and CHROME; fills that carry no text are free to be pale.
+BG = '#fafbf9'          # --tp-panel: the panels the drawing sits on
+SURFACE = '#f1f3ef'     # --tp-bg: inside the window column and the lane pills
+CHROME = '#e9ece6'      # --tp-chrome: top bar and label bars
+INK, INK2, MUTED, LINE = '#15171a', '#3d434a', '#5f666d', '#d5d9d2'   # --tp-text / -dim / -muted / -line
+EDGE = '#a9b0a6'        # the player's outer border and button edges
+TRACK = '#dde1da'       # .tp-bar: the progress bar's empty track
+SYS, SYS_EDGE = '#000000', '#000000'    # system prompt: black, as the player's system block
+NOTES_HUE = '#7c3aed'                   # notes: violet (the harness's memory)
+NOTES, NOTES_INK, NOTES_EDGE = '#ede9fe', '#5b21b6', NOTES_HUE
+DECODE = '#2563eb'                      # --tp-think: a turn being generated
+CACHED = '#c3d5f5'                      # history sitting in the card's cache (light decode blue)
+CACHED_EDGE = '#7096d8'
+KEEP, KEEP_INK, TRIM = '#fde0c4', '#9a3412', '#c2410c'           # kept ~52k, read again; the trim
+CUT = '#7a8188'                         # hatch of the cut turns
+SWAP = '#0f766e'                        # a swap: the waiting game's chip and the lane's ring
+QUEUE = '#c4cac1'                       # a waiting game
+RAM, RAM_FILL = '#15803d', '#bbf0cc'    # host RAM tier
 
 # Token sizes in thousands (k). Window and keep are 56.02 settings; the rest is illustrative.
 WINDOW, KEEP_K, SYS_K, NOTES_K = 140, 52, 6, 4
@@ -621,7 +629,7 @@ def draw_chrome(cv, t):
     cv.text(20, 25, 'Context management', 'title', INK, 'lm')
     x = 20 + cv.tw('Context management', 'title')
     cv.text(x, 25, ' · 56.02 settings · 140k window · 32 lanes · illustrative timing', 'meta', MUTED, 'lm')
-    cv.rect(0, 50, W, 55, fill='#1a2333')                     # .tp-bar
+    cv.rect(0, 50, W, 55, fill=TRACK)                         # .tp-bar
     cv.rect(0, 50, W * (t % LOOP) / LOOP, 55, fill=DECODE)    # loop position
     draw_legend(cv)
     cv.line([(0, 95), (W, 95)], LINE, 1.5)
@@ -641,6 +649,9 @@ def render(t):
     draw_right(cv, t)
     cv.oy = 0
     draw_chrome(cv, t)
+    # The frame's own border, drawn in: on a white page (Kaggle's Markdown drops the page's img border)
+    # a light figure would otherwise have no edge at all.
+    cv.rect(0.5, 0.5, W - 0.5, H - 0.5, outline=EDGE, width=1.5, r=6)
     return cv.out()
 
 

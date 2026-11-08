@@ -1,5 +1,6 @@
 """Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day; Locksmith turn: his fourth note)
         (inlined JetBrains Mono and the frame-step hook for make_turn_video.py: Claude Opus 5.5 Medium, Round 11)
+        (light theme, Son's "I would prefer that the animations are light theme": Claude Opus 5.5 Low, Round 12)
 Date: 08-November-2026
 PURPOSE: Build the "One turn of the harness" figure of Son Pham's "Stuffing the Turducken" special
 (section 1.1 of client/public/specials/2026-11-06-arc3-solution-draft.html) as a live in-page player.
@@ -14,6 +15,10 @@ seconds for the turn), tool calls as compact pills, reasoning shortened. So: eve
 high rate; each tool call plays as a yellow pill holding the call name and ONE real line of its code
 (click the pill to open the full verbatim call); reasoning keeps its real key lines with "…" for the rest.
 The pills are a script-only view: without JavaScript each call shows as its full code block.
+Round 12 (Son, 8 Nov): light theme from the article page's tokens. On light the hue moves from the label
+text into the label bar fill (near-black label text), each body is a very light tint with a strong coloured
+spine, the system block stays black, and the two yellows differ by darkness and spine style (bright gold
+solid for the tool call, dark ochre dashed for the tool result).
 
 Data: charts/turn-source.json (written by extract_turn_source.py from the saved run
 20261023_1410_daniel-candnp3-a). Since Son's fourth note (8 Nov, "use a simpler game, like LS20") it is the
@@ -234,10 +239,10 @@ CSS = r'''
 /* One turn of the harness: live transcript player (make_turn_player.py). Block look borrowed from the
    arc3.sonpham.net run viewer's Decision pane: label bar tinted with the block colour, coloured spine,
    monospace pre-wrap body. */
-.tp{--tp-bg:#080c16;--tp-panel:#0c1220;--tp-chrome:#101828;--tp-line:#212d42;--tp-text:#e2e6ee;--tp-dim:#b9c2d1;
-  --tp-muted:#7d899c;--tp-sys:#000;--tp-user:#22c55e;--tp-think:#3b82f6;--tp-call:#facc15;--tp-result:#c8902a;
+.tp{--tp-bg:#f1f3ef;--tp-panel:#fafbf9;--tp-chrome:#e9ece6;--tp-line:#d5d9d2;--tp-text:#15171a;--tp-dim:#3d434a;
+  --tp-muted:#5f666d;--tp-sys:#000;--tp-user:#16a34a;--tp-think:#2563eb;--tp-call:#facc15;--tp-result:#b7791f;
   --tp-mono:"TP Mono","JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  background:var(--tp-bg);color:var(--tp-text);border:1px solid #2c3a54;border-radius:6px;font:12px/1.5 var(--tp-mono);
+  background:var(--tp-bg);color:var(--tp-text);border:1px solid #a9b0a6;border-radius:6px;font:12px/1.5 var(--tp-mono);
   overflow:hidden;margin:4px 0 0}
 .tp *{box-sizing:border-box}
 .tp-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:7px 10px;background:var(--tp-chrome);border-bottom:1px solid var(--tp-line)}
@@ -245,12 +250,12 @@ CSS = r'''
 .tp-run span{color:var(--tp-muted);font-weight:400}
 .tp-ctl{display:none;gap:6px;margin-left:auto}
 .tp.tp-js .tp-ctl{display:flex}
-.tp-ctl button{font:11px/1 var(--tp-mono);color:var(--tp-text);background:#1a2333;border:1px solid #2c3a54;border-radius:4px;padding:5px 9px;cursor:pointer}
-.tp-ctl button:hover{background:#232e42}
+.tp-ctl button{font:11px/1 var(--tp-mono);color:var(--tp-text);background:#fff;border:1px solid #a9b0a6;border-radius:4px;padding:5px 9px;cursor:pointer}
+.tp-ctl button:hover{background:var(--tp-bg)}
 .tp-ctl button:focus-visible{outline:2px solid var(--tp-think);outline-offset:1px}
 .tp-legend{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 10px;border-bottom:1px solid var(--tp-line);color:var(--tp-dim);font-size:11px}
 .tp-legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.tp-legend .k-system i{background:#000;box-shadow:0 0 0 1px #6b7789}
+.tp-legend .k-system i{background:#000}
 .tp-legend .k-user i{background:var(--tp-user)}.tp-legend .k-think i{background:var(--tp-think)}
 .tp-legend .k-call i{background:var(--tp-call)}.tp-legend .k-result i{background:var(--tp-result)}
 .tp-main{display:grid;grid-template-columns:290px 1fr;min-height:0}
@@ -266,20 +271,22 @@ CSS = r'''
 .tb-b{margin:0;padding:7px 10px 8px 12px;white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--tp-mono);color:var(--tp-dim);border-left:3px solid}
 .tb-b .cut{color:var(--tp-muted)}
 .tb-system .tb-h{background:#000;color:#fff}
-.tb-system .tb-b{background:#000;border-left-color:#8b95a7;color:#d5dbe4}
-.tb-user .tb-h{background:color-mix(in srgb,var(--tp-user) 22%,var(--tp-chrome));color:#4ade80}
-.tb-user .tb-b{background:color-mix(in srgb,var(--tp-user) 6%,var(--tp-panel));border-left-color:var(--tp-user)}
-.tb-think .tb-h{background:color-mix(in srgb,var(--tp-think) 26%,var(--tp-chrome));color:#93c5fd}
-.tb-think .tb-b{background:color-mix(in srgb,var(--tp-think) 7%,var(--tp-panel));border-left-color:var(--tp-think)}
+.tb-system .tb-b{background:#111315;border-left-color:#000;color:#e4e7eb}
+.tb-system .tb-b .cut{color:#a3aab2}
+.tb-user .tb-h{background:color-mix(in srgb,var(--tp-user) 30%,#fff);color:#0b3d1d}
+.tb-user .tb-b{background:color-mix(in srgb,var(--tp-user) 7%,#fff);border-left-color:var(--tp-user);color:#1c2a20}
+.tb-think .tb-h{background:color-mix(in srgb,var(--tp-think) 24%,#fff);color:#0b2560}
+.tb-think .tb-b{background:color-mix(in srgb,var(--tp-think) 6%,#fff);border-left-color:var(--tp-think);color:#1b2333}
 .tb-call .tb-h{background:var(--tp-call);color:#1a1400}
-.tb-call .tb-h .tb-n{color:#6b5a10}
-.tb-call .tb-b{background:color-mix(in srgb,var(--tp-call) 8%,var(--tp-panel));border-left-color:var(--tp-call);color:#f3e9b8}
-.tb-result .tb-h{background:color-mix(in srgb,var(--tp-result) 30%,var(--tp-chrome));color:#e9b85a}
-.tb-result .tb-b{background:color-mix(in srgb,var(--tp-result) 7%,var(--tp-panel));border-left-color:var(--tp-result);border-left-style:dashed;color:#dcc9a0}
-.tb-b .ln.step-on{background:color-mix(in srgb,var(--tp-result) 26%,transparent)}
+.tb-call .tb-h .tb-n{color:#4d4006}
+.tb-call .tb-b{background:color-mix(in srgb,var(--tp-call) 16%,#fff);border-left-color:#eab308;color:#2e2600}
+.tb-result .tb-h{background:color-mix(in srgb,var(--tp-result) 34%,#fff);color:#3a2404}
+.tb-result .tb-h .tb-n,.tb-user .tb-h .tb-n,.tb-think .tb-h .tb-n{color:#40464d}
+.tb-result .tb-b{background:color-mix(in srgb,var(--tp-result) 9%,#fff);border-left-color:#8a5a12;border-left-style:dashed;color:#2f2414}
+.tb-b .ln.step-on{background:color-mix(in srgb,var(--tp-result) 30%,transparent)}
 .tp-next{padding:8px 10px;color:var(--tp-muted);font-size:11px;text-align:center;letter-spacing:.4px;border-bottom:1px solid var(--tp-line)}
 .tp-note{padding:6px 10px;border-top:1px solid var(--tp-line);border-left:3px solid #d29922;background:var(--tp-chrome);color:var(--tp-dim);font-size:11px}
-.tp-bar{height:3px;background:#1a2333}.tp-bar i{display:block;height:100%;width:0;background:var(--tp-think)}
+.tp-bar{height:3px;background:#dde1da}.tp-bar i{display:block;height:100%;width:0;background:var(--tp-think)}
 .tp.tp-js .tb.tp-hide,.tp.tp-js .tp-next.tp-hide{display:none}
 /* Tool calls as pills (script only; without it the full call block shows). */
 .tb-prow{display:none}
@@ -290,7 +297,7 @@ CSS = r'''
 .tb-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;max-width:100%;font:12px/1.4 var(--tp-mono);color:#1a1400;
   background:var(--tp-call);border:0;border-radius:999px;padding:3px 12px 3px 4px;cursor:pointer;text-align:left}
 .tb-pill:hover{background:#fde047}
-.tb-pill:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.tb-pill:focus-visible{outline:2px solid #1a1400;outline-offset:2px}
 .tb-pk{flex:0 0 auto;white-space:nowrap;background:#1a1400;color:var(--tp-call);border-radius:999px;padding:1px 8px;font-size:10px;letter-spacing:.6px;text-transform:uppercase;font-weight:600}
 .tb-pk::before{content:"\25B8  "}
 .tb-call.open .tb-pk::before{content:"\25BE  "}

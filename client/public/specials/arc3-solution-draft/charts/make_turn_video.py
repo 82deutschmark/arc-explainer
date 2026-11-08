@@ -1,4 +1,4 @@
-"""Author: Claude Opus 5.5 Medium
+"""Author: Claude Opus 5.5 Medium (Round 12 light theme re-film, new output folder: Claude Opus 5.5 Low)
 Date: 08-November-2026
 PURPOSE: Film the "One turn of the harness" player (make_turn_player.py; the game Locksmith, level 1,
 from the saved run 20261023_1410_daniel-candnp3-a) into an MP4 and a looping GIF for the Kaggle copy of
@@ -30,7 +30,7 @@ from make_turn_player import launch_browser
 
 HERE = Path(__file__).resolve().parent
 PAGE = HERE.parent.parent / '2026-11-06-arc3-solution-draft.html'
-OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('/Volumes/Team 4TB/data/turducken-r11/turn-video')
+OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('/Volumes/Team 4TB/data/turducken-r12/turn-video')   # light film (Round 12)
 FPS = media_encode.FPS_IN
 LEAD = 0.6          # seconds on the empty start (board before the turn) so the first frame is a clean one
 HOLD = 3.0          # seconds the final state stays on screen before the loop restarts

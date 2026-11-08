@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Author: Claude Opus 5.5 Low; walkthrough player mapping by Claude Opus 5.5 Medium (Round 10); animated GIFs
-        in place of the stills by Claude Opus 5.5 Medium (Round 11)
+        in place of the stills by Claude Opus 5.5 Medium (Round 11); video page in the light look by Claude
+        Opus 5.5 Low (Round 12)
 Date: 08-November-2026
 PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the live main page.
          Reads ../2026-11-06-arc3-solution-draft.html (the main page, the single source of the
@@ -466,26 +467,26 @@ the "watch it as an MP4 video" links in the Kaggle copy (make_kaggle_markdown.py
 are served from the public GitHub repository because the site's fast-publish route takes no .mp4 or
 .gif files; GitHub's own file page will not play an MP4 this size, but a video element plays the raw
 file. Addresses are pinned to the commit that last changed each file. Styled in the figures' own look
-(dark navy, monospace).
+(light since Round 12, monospace).
 SRP/DRY check: Pass - written with the Kaggle copy so both use the same pinned addresses.
 -->
 <style>
-body{{margin:0;background:#080c16;color:#e2e6ee;font:14px/1.55 ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace}}
+body{{margin:0;background:#fff;color:#15171a;font:14px/1.55 ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace}}
 main{{max-width:1000px;margin:0 auto;padding:24px 20px 60px}}
 h1{{font-size:18px;font-weight:700;margin:0 0 4px}}
-p{{color:#b9c2d1;margin:0 0 20px}}
-a{{color:#93c5fd}}
-section{{border:1px solid #2c3a54;border-radius:6px;background:#0c1220;margin:0 0 28px;overflow:hidden}}
-section h2{{margin:0;padding:7px 12px;background:#101828;border-bottom:1px solid #212d42;font-size:13px;font-weight:600}}
-video{{display:block;width:100%;height:auto;background:#080c16}}
-.links{{padding:8px 12px;border-top:1px solid #212d42;color:#7d899c;font-size:12px}}
+p{{color:#3d434a;margin:0 0 20px}}
+a{{color:#1d4ed8}}
+section{{border:1px solid #a9b0a6;border-radius:6px;background:#fafbf9;margin:0 0 28px;overflow:hidden}}
+section h2{{margin:0;padding:7px 12px;background:#e9ece6;border-bottom:1px solid #d5d9d2;font-size:13px;font-weight:600}}
+video{{display:block;width:100%;height:auto;background:#f1f3ef}}
+.links{{padding:8px 12px;border-top:1px solid #d5d9d2;color:#5f666d;font-size:12px}}
 </style></head>
 <body><main>
 <h1>Stuffing the Turducken: the two animated figures as video</h1>
 <p>Rendered copies of the two animated figures in the write-up, for places that cannot run the page.
 The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">article page</a>.</p>
 <section id="turn">
-<h2>One turn of the harness, from a saved run <span style="color:#7d899c;font-weight:400">· Locksmith, level 1</span></h2>
+<h2>One turn of the harness, from a saved run <span style="color:#5f666d;font-weight:400">· Locksmith, level 1</span></h2>
 <video controls loop muted playsinline preload="metadata" width="1280" height="962"
   src="{turn_mp4}"></video>
 <div class="links"><a href="{turn_mp4}">MP4</a> ·
