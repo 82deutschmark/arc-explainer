@@ -109,3 +109,7 @@ Author: Claude Opus 5.5 Low. The inference illustration now uses `02-inference-v
 ## Outside compute wording · 7 November 2026
 
 Author: Claude Sonnet 5.5 Low. At the Boss's and Son's direction, the two mentions of GCP in the reading text (the "about 1,950 full runs" sentence and the Score Climb description) now say "outside compute". Reading text only; the internal evidence files that name the original cloud are left as provenance.
+
+## Keith removed from the closing thanks · 7 November 2026
+
+Author: Claude Sonnet 5.5 Low. At Son's direction the closing now reads "thanks again to Tufa Labs, Daniel and the team" (Keith is on the team). Keith's source credit for the box, staircase and cache figures, and the references to his sandbox, adapters and write-up, are attribution of work and stay. Also re-fixed the opening grammar "like to thank you to Tufa Labs" to "like to thank Tufa Labs, ... and Daniel Franzen", which Son's word-for-word restore had brought back.

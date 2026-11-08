@@ -6,7 +6,7 @@ Review draft · Original Claude artifact restored · Static charts, no animation
 
 Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.
 
-We would also like to thank you to Tufa Labs, whose harness sits at the very heart of our entry and to Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution.
+We would also like to thank Tufa Labs, whose harness sits at the very heart of our entry, and Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution.
 
 Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.
 
@@ -704,7 +704,7 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 ### Thanks again
 
-Thanks for reading, and thanks again to Tufa Labs, Daniel, Keith and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.
+Thanks for reading, and thanks again to Tufa Labs, Daniel and the team. It was a wild ride, and we'd do it again. It has been an honor for us to compete with everyone.
 
 ![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
 
