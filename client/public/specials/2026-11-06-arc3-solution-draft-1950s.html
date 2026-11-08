@@ -306,12 +306,27 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 .tp-note{padding:6px 10px;border-top:1px solid var(--tp-line);border-left:3px solid #d29922;background:var(--tp-chrome);color:var(--tp-dim);font-size:11px}
 .tp-bar{height:3px;background:#1a2333}.tp-bar i{display:block;height:100%;width:0;background:var(--tp-think)}
 .tp.tp-js .tb.tp-hide,.tp.tp-js .tp-next.tp-hide{display:none}
+/* Tool calls as pills (script only; without it the full call block shows). */
+.tb-prow{display:none}
+.tp.tp-js .tb-call{border-bottom:0;padding:6px 10px 6px 12px;background:var(--tp-panel)}
+.tp.tp-js .tb-call .tb-h,.tp.tp-js .tb-call .tb-b{display:none}
+.tp.tp-js .tb-call.open .tb-b{display:block;margin-top:6px;border-radius:3px}
+.tp.tp-js .tb-prow{display:flex;align-items:center;gap:10px;min-width:0}
+.tb-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;max-width:100%;font:12px/1.4 var(--tp-mono);color:#1a1400;
+  background:var(--tp-call);border:0;border-radius:999px;padding:3px 12px 3px 4px;cursor:pointer;text-align:left}
+.tb-pill:hover{background:#fde047}
+.tb-pill:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.tb-pk{flex:0 0 auto;white-space:nowrap;background:#1a1400;color:var(--tp-call);border-radius:999px;padding:1px 8px;font-size:10px;letter-spacing:.6px;text-transform:uppercase;font-weight:600}
+.tb-pk::before{content:"\25B8  "}
+.tb-call.open .tb-pk::before{content:"\25BE  "}
+.tp .tb-pill code{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;white-space:pre-wrap;word-break:break-word;min-width:0}
+.tb-pn{flex:1 1 auto;min-width:0;color:var(--tp-muted);font-size:10.5px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){
   .tp-main{grid-template-columns:1fr}
   .tp-board{border-right:0;border-bottom:1px solid var(--tp-line);display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:start;padding:8px}
   .tp-cap{margin-top:0}
   .tp-log{height:min(62vh,460px)}
-  .tb-h .tb-n{display:none}
+  .tb-h .tb-n,.tb-pn{display:none}
   .tp-ctl{margin-left:0}
 }
 </style>
@@ -364,7 +379,7 @@ figure img{border-radius:0}
 <!-- turn-player:start -->
 <figure id="fig-turn">
 <div class="ft">One turn of the harness, from a saved run</div>
-<div class="fs">The transcript streams as the turn happened: the system prompt, the turn message, the model's reasoning, its two python calls and their output. The board steps through the recorded game as each action() click lands.</div>
+<div class="fs">The transcript streams fast, in the order the turn went: the system prompt, the turn message, the model's reasoning (shortened), its two python calls as yellow pills (click one for the full code) and their output. The board steps through the recorded game as each action() click lands.</div>
 <div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">
 <div class="tp-top"><span class="tp-run">Reaching Lurch <span>· level 2 · step 11 · run 20261023_1410_daniel-candnp3-a</span></span><span class="tp-ctl"><button type="button" data-a="play">Play</button><button type="button" data-a="restart">Restart</button><button type="button" data-a="end">Skip to end</button></span></div>
 <div class="tp-bar"><i></i></div>
@@ -396,15 +411,11 @@ figure img{border-radius:0}
 </span><span class="ln">
 </span><span class="ln">[image attached]
 </span></pre></section>
-<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span></div><pre class="tb-b"><span class="ln">Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.
-</span><span class="ln">def masks():
-</span><span class="ln">    B=blocked_set()
-</span><span class="ln">    K=frozenset((r,c) for r in range(64) for c in range(64) if ok_cell((r,c),B,'k'))
-</span><span class="ln">    return B,K
-</span><span class="ln">Then simulate(clicks, B, K) — pass as args.
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.
+</span><span class="ln cut">…
 </span><span class="ln">Let me write both in one snippet and run the simulation.
 </span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">st,sel,log=simulate(clicks,B,K)</code></button></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
 </span><span class="ln">&lt;function=python&gt;
 </span><span class="ln">&lt;parameter=code&gt;
 </span><span class="ln">def masks():
@@ -447,40 +458,14 @@ figure img{border-radius:0}
 </span><span class="ln">('move', 'C', (61, 38), 'ko', (51, 40), 'kp', (18, 57))
 </span><span class="ln">FINAL ko (51, 40) kp (18, 57)
 </span></pre></section>
-<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span></div><pre class="tb-b"><span class="ln">The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).
+<section class="tb tb-think" data-kind="think"><div class="tb-h"><span>THINKING</span><span class="tb-n">shortened</span></div><pre class="tb-b"><span class="ln">The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).
 </span><span class="ln">Now execute with run_checked and expectations:
-</span><span class="ln">- After click 2 (index 1): 'M' at (19,33).
-</span><span class="ln">- After click 4 (index 3): 'M' at (18,57).
-</span><span class="ln">- After click 6 (index 5): 'M' at (29,33).
-</span><span class="ln">- After click 8 (index 6? no) — let me map:
-</span><span class="ln">  clicks[0]=(48,54) select → no knob change: expect 'M' still at (12,24) and (37,32)? Wait, the current kp is (37,32) (since p1 is at (26,10), p2 at (48,54) → mean (37,32)) ✓. So after click 0: ko (12,24), kp (37,32).
-</span><span class="ln">  clicks[1]=(13,57): kp → (19,33).
-</span><span class="ln">  clicks[2]=(26,10): no change.
-</span><span class="ln">  clicks[3]=(23,57): kp → (18,57).
-</span><span class="ln">  clicks[4]=(6,17): no change.
-</span><span class="ln">  clicks[5]=(58,42): ko → (29,33).
-</span><span class="ln">  clicks[6]=(9,49): no change.
-</span><span class="ln">  clicks[7]=(34,40): ko → (37,30).
-</span><span class="ln">  clicks[8]=(21,8): no change.
-</span><span class="ln">  clicks[9]=(61,38): ko → (51,40).
-</span><span class="ln">Expectations:
-</span><span class="ln">0: M at (12,24) and (37,32)
-</span><span class="ln">1: M at (19,33)
-</span><span class="ln">2: M at (19,33)
-</span><span class="ln">3: M at (18,57)
-</span><span class="ln">4: M at (18,57) and (12,24)
-</span><span class="ln">5: M at (29,33)
-</span><span class="ln">6: M at (29,33)
-</span><span class="ln">7: M at (37,30)
-</span><span class="ln">8: M at (37,30)
-</span><span class="ln">9: M at (51,40)
-</span><span class="ln">Let me use dict-style expectations {(r,c):'M'} — run_checked accepts {(row,col): letter}.
-</span><span class="ln">Note: the animation may make the final frame the settled one — current_frame after each action is the settled board ✓.
+</span><span class="ln cut">…
 </span><span class="ln">Let me execute. If the level completes at the last step, great.
 </span><span class="ln">One risk: the expectation checks happen after each action; if the game rejects a move (my model wrong), the check fails and run_checked stops ✓.
 </span><span class="ln">Let me go.
 </span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: checked play</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: checked play</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">print(run_checked(moves))</code></button><span class="tb-pn">harness: checked play</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
 </span><span class="ln">&lt;function=python&gt;
 </span><span class="ln">&lt;parameter=code&gt;
 </span><span class="ln">M=lambda r,c:{'action':'MOUSE','row':r,'col':c}
@@ -517,7 +502,7 @@ figure img{border-radius:0}
 </span><span class="ln">Your retained functions from earlier Python calls in this game: center_of(n), centers(frame), snap(f), build(frames), blocked_set(), diamond(c, r=2), blob5(c), ok_cell(c, b, kind), fl_mean(pts), sep(a, b, d=6), masks(), simulate(clicks, B, K),
 </span><span class="ln cut">…
 </span></pre></section>
-<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: notes memory</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
+<section class="tb tb-call" data-kind="call"><div class="tb-h"><span>TOOL CALL: python</span><span class="tb-n">harness: notes memory</span></div><div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" title="Show the full tool call"><span class="tb-pk">python</span><code class="ln">notes.append("""## Level 3 layout</code></button><span class="tb-pn">harness: notes memory</span></div><pre class="tb-b"><span class="ln">&lt;tool_call&gt;
 </span><span class="ln">&lt;function=python&gt;
 </span><span class="ln">&lt;parameter=code&gt;
 </span><span class="ln">notes.append("""## Level 3 layout
@@ -570,24 +555,33 @@ figure img{border-radius:0}
       : '<b>Click ' + (k + 1) + ' of 10</b> · ' + D.steps[k].a + (k === 9 ? '<br>' + D.capEnd : '<br>' + D.capStep);
   }
 
-  // The stream: every line of every block, in order. Inputs appear a line at a time; the model's
-  // own output (reasoning, tool calls) types out; each action() result line steps the board.
+  // The stream: every line of every block, in order, typed out fast (the point is the feel of how
+  // much text goes by); a tool call plays as its pill's one line; each action() result line steps
+  // the board. Clicking a pill opens the full verbatim call.
   var units = [];
   [].forEach.call(log.children, function (el) {
     if (el.classList.contains('tp-next')) { units.push({ el: el, div: true }); return; }
     var kind = el.dataset.kind;
-    [].forEach.call(el.querySelectorAll('.ln'), function (ln, n) {
+    if (kind === 'call') {
+      var pb = el.querySelector('.tb-pill');
+      pb.addEventListener('click', function () {
+        var open = el.classList.toggle('open'); pb.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    [].forEach.call(el.querySelectorAll(kind === 'call' ? '.tb-pill .ln' : '.ln'), function (ln, n) {
       units.push({ el: ln, block: el, first: n === 0, text: ln.textContent, kind: kind,
                    step: ln.dataset.step === undefined ? null : +ln.dataset.step });
     });
   });
-  var CPS = 260, LINE = { system: 40, user: 40, result: 70 }, STEP = 650, GAP = 320;
+  // Characters per second by block kind; STEP is the beat on each click, GAP the beat between blocks.
+  var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
   var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
 
   function reset() {
     units.forEach(function (x) {
       if (x.div) { x.el.classList.add('tp-hide'); return; }
       x.el.textContent = ''; x.opened = false; x.el.classList.remove('step-on'); x.block.classList.add('tp-hide');
+      x.block.classList.remove('open');
     });
     u = 0; shown = 0; wait = 0; done = false; follow = true; setBoard(-1); log.scrollTop = 0; bar.style.width = '0';
   }
@@ -611,13 +605,10 @@ figure img{border-radius:0}
         x.opened = true; x.block.classList.remove('tp-hide');
         if (u) { wait = GAP; continue; }
       }
-      if (x.kind === 'think' || x.kind === 'call') {      // typed out
-        var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * CPS / 1000)));
-        shown += n; budget -= n * 1000 / CPS; x.el.textContent = x.text.slice(0, shown);
-        if (shown < x.text.length) break;
-      } else {
-        x.el.textContent = x.text; wait = LINE[x.kind] || 40;
-      }
+      var cps = CPS[x.kind] || 600;                       // typed out
+      var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * cps / 1000)));
+      shown += n; budget -= n * 1000 / cps; x.el.textContent = x.text.slice(0, shown);
+      if (shown < x.text.length) break;
       if (x.step !== null) {
         units.forEach(function (y) { if (y.el.classList) y.el.classList.remove('step-on'); });
         x.el.classList.add('step-on'); setBoard(x.step); wait = STEP;
@@ -657,7 +648,7 @@ figure img{border-radius:0}
   } else { started = true; setPlaying(true); }
 })();
 </script>
-<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.</figcaption>
+<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.</figcaption>
 </figure>
 <!-- turn-player:end -->
 <p>On top of that loop, the Turducken harness keeps these things for the model:</p>

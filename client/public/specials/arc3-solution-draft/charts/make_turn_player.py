@@ -1,4 +1,4 @@
-"""Author: Claude Opus 5.5 Medium
+"""Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day)
 Date: 08-November-2026
 PURPOSE: Build the "One turn of the harness" figure of Son Pham's "Stuffing the Turducken" special
 (section 1.1 of client/public/specials/2026-11-06-arc3-solution-draft.html) as a live in-page player.
@@ -8,6 +8,11 @@ no page switching, streaming fast with the newest text always in view, and ONE g
 through the recorded game as each action() click is reached. Look and feel follow the arc3.sonpham.net
 run viewer's Decision pane (its "Review" trace: uppercase label bar tinted with the block colour, a
 coloured left spine on a monospace pre-wrap body, the same colour roles and monospace stack).
+Son's third note (8 Nov): show the text flowing really fast (the feel of how much goes by, about 15-25
+seconds for the turn), tool calls as compact pills, reasoning shortened. So: every block types out at a
+high rate; each tool call plays as a yellow pill holding the call name and ONE real line of its code
+(click the pill to open the full verbatim call); reasoning keeps its real key lines with "…" for the rest.
+The pills are a script-only view: without JavaScript each call shows as its full code block.
 
 Data: charts/turn-source.json (written by make_turn_walkthrough.py extract from the saved run
 20261023_1410_daniel-candnp3-a, game 24 Reaching Lurch, level 2, step file game-24-step-10.json, plus
@@ -50,6 +55,7 @@ T = SRC['text']
 # ---------------------------------------------------------------- transcript --------------------
 # A block: (css kind, trace label, harness note or '', lines). A line is (section, text) for verbatim
 # text, CUT for a visible trim, or ('step', k, section, text) for the result line of action() click k.
+# A tool call block carries a fifth item: the one real line of its code shown in its pill.
 
 
 def whole(sec):
@@ -85,11 +91,22 @@ BLOCKS = [
         ('user', ''),
         ('user', '[image attached]'),
     ]),
-    ('think', 'THINKING', '', whole('think1')),
-    ('call', 'TOOL CALL: python', '', whole('call1')),
+    ('think', 'THINKING', 'shortened', [
+        ('think1', 'Variables reset. Let me define a retained function `masks()` that returns (B, K, V) and use it inside simulate.'),
+        CUT,
+        ('think1', 'Let me write both in one snippet and run the simulation.'),
+    ]),
+    ('call', 'TOOL CALL: python', '', whole('call1'), 'st,sel,log=simulate(clicks,B,K)'),
     ('result', 'TOOL RESULT: python', '', whole('result1')),
-    ('think', 'THINKING', '', whole('think2')),
-    ('call', 'TOOL CALL: python', 'harness: checked play', whole('call2')),
+    ('think', 'THINKING', 'shortened', [
+        ('think2', 'The simulation says the plan works: final ko = (51,40) (orange ring) and kp = (18,57) (purple ring).'),
+        ('think2', 'Now execute with run_checked and expectations:'),
+        CUT,
+        ('think2', 'Let me execute. If the level completes at the last step, great.'),
+        ('think2', 'One risk: the expectation checks happen after each action; if the game rejects a move (my model wrong), the check fails and run_checked stops ✓.'),
+        ('think2', 'Let me go.'),
+    ]),
+    ('call', 'TOOL CALL: python', 'harness: checked play', whole('call2'), 'print(run_checked(moves))'),
     ('result', 'TOOL RESULT: python', 'each line is one action() on the game', [
         ('step', k, 'result2', res2[k]) for k in range(10)
     ] + [('result2', ln) for ln in res2[10:]]),
@@ -103,7 +120,7 @@ BLOCKS = [
     ]),
     ('call', 'TOOL CALL: python', 'harness: notes memory', [
         (sec, ln) for sec, ln in whole('next_call')[:10]
-    ] + [CUT]),
+    ] + [CUT], 'notes.append("""## Level 3 layout'),
 ]
 
 LEGEND = [('system', 'System prompt'), ('user', 'User prompt'), ('think', 'Reasoning'),
@@ -115,12 +132,21 @@ def check_verbatim():
     for b in BLOCKS:
         if b == 'NEXT':
             continue
+        pos = {}
         for ln in b[3]:
             if ln == CUT:
                 continue
             sec, text = ln[-2], ln[-1]
             if text not in T[sec]:
                 raise SystemExit(f'Not verbatim in {sec}: {text[:80]!r}')
+            at = T[sec].find(text, pos.get(sec, 0))   # shown lines keep the trace's order
+            if at < 0:
+                raise SystemExit(f'Out of order in {sec}: {text[:80]!r}')
+            pos[sec] = at + len(text)
+        if b[0] == 'call':
+            pill, sec = b[4], b[3][0][-2]
+            if pill not in T[sec].split('\n'):
+                raise SystemExit(f'Pill line is not a whole line of {sec}: {pill!r}')
         secs = {ln[-2] for ln in b[3] if ln != CUT}
         if CUT not in b[3] and len(secs) == 1:
             sec = secs.pop()
@@ -210,12 +236,27 @@ CSS = r'''
 .tp-note{padding:6px 10px;border-top:1px solid var(--tp-line);border-left:3px solid #d29922;background:var(--tp-chrome);color:var(--tp-dim);font-size:11px}
 .tp-bar{height:3px;background:#1a2333}.tp-bar i{display:block;height:100%;width:0;background:var(--tp-think)}
 .tp.tp-js .tb.tp-hide,.tp.tp-js .tp-next.tp-hide{display:none}
+/* Tool calls as pills (script only; without it the full call block shows). */
+.tb-prow{display:none}
+.tp.tp-js .tb-call{border-bottom:0;padding:6px 10px 6px 12px;background:var(--tp-panel)}
+.tp.tp-js .tb-call .tb-h,.tp.tp-js .tb-call .tb-b{display:none}
+.tp.tp-js .tb-call.open .tb-b{display:block;margin-top:6px;border-radius:3px}
+.tp.tp-js .tb-prow{display:flex;align-items:center;gap:10px;min-width:0}
+.tb-pill{display:inline-flex;flex:0 0 auto;align-items:center;gap:8px;max-width:100%;font:12px/1.4 var(--tp-mono);color:#1a1400;
+  background:var(--tp-call);border:0;border-radius:999px;padding:3px 12px 3px 4px;cursor:pointer;text-align:left}
+.tb-pill:hover{background:#fde047}
+.tb-pill:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.tb-pk{flex:0 0 auto;white-space:nowrap;background:#1a1400;color:var(--tp-call);border-radius:999px;padding:1px 8px;font-size:10px;letter-spacing:.6px;text-transform:uppercase;font-weight:600}
+.tb-pk::before{content:"\25B8  "}
+.tb-call.open .tb-pk::before{content:"\25BE  "}
+.tp .tb-pill code{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;white-space:pre-wrap;word-break:break-word;min-width:0}
+.tb-pn{flex:1 1 auto;min-width:0;color:var(--tp-muted);font-size:10.5px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){
   .tp-main{grid-template-columns:1fr}
   .tp-board{border-right:0;border-bottom:1px solid var(--tp-line);display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:start;padding:8px}
   .tp-cap{margin-top:0}
   .tp-log{height:min(62vh,460px)}
-  .tb-h .tb-n{display:none}
+  .tb-h .tb-n,.tb-pn{display:none}
   .tp-ctl{margin-left:0}
 }
 '''
@@ -256,24 +297,33 @@ JS = r'''
       : '<b>Click ' + (k + 1) + ' of 10</b> · ' + D.steps[k].a + (k === 9 ? '<br>' + D.capEnd : '<br>' + D.capStep);
   }
 
-  // The stream: every line of every block, in order. Inputs appear a line at a time; the model's
-  // own output (reasoning, tool calls) types out; each action() result line steps the board.
+  // The stream: every line of every block, in order, typed out fast (the point is the feel of how
+  // much text goes by); a tool call plays as its pill's one line; each action() result line steps
+  // the board. Clicking a pill opens the full verbatim call.
   var units = [];
   [].forEach.call(log.children, function (el) {
     if (el.classList.contains('tp-next')) { units.push({ el: el, div: true }); return; }
     var kind = el.dataset.kind;
-    [].forEach.call(el.querySelectorAll('.ln'), function (ln, n) {
+    if (kind === 'call') {
+      var pb = el.querySelector('.tb-pill');
+      pb.addEventListener('click', function () {
+        var open = el.classList.toggle('open'); pb.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    [].forEach.call(el.querySelectorAll(kind === 'call' ? '.tb-pill .ln' : '.ln'), function (ln, n) {
       units.push({ el: ln, block: el, first: n === 0, text: ln.textContent, kind: kind,
                    step: ln.dataset.step === undefined ? null : +ln.dataset.step });
     });
   });
-  var CPS = 260, LINE = { system: 40, user: 40, result: 70 }, STEP = 650, GAP = 320;
+  // Characters per second by block kind; STEP is the beat on each click, GAP the beat between blocks.
+  var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
   var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
 
   function reset() {
     units.forEach(function (x) {
       if (x.div) { x.el.classList.add('tp-hide'); return; }
       x.el.textContent = ''; x.opened = false; x.el.classList.remove('step-on'); x.block.classList.add('tp-hide');
+      x.block.classList.remove('open');
     });
     u = 0; shown = 0; wait = 0; done = false; follow = true; setBoard(-1); log.scrollTop = 0; bar.style.width = '0';
   }
@@ -297,13 +347,10 @@ JS = r'''
         x.opened = true; x.block.classList.remove('tp-hide');
         if (u) { wait = GAP; continue; }
       }
-      if (x.kind === 'think' || x.kind === 'call') {      // typed out
-        var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * CPS / 1000)));
-        shown += n; budget -= n * 1000 / CPS; x.el.textContent = x.text.slice(0, shown);
-        if (shown < x.text.length) break;
-      } else {
-        x.el.textContent = x.text; wait = LINE[x.kind] || 40;
-      }
+      var cps = CPS[x.kind] || 600;                       // typed out
+      var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * cps / 1000)));
+      shown += n; budget -= n * 1000 / cps; x.el.textContent = x.text.slice(0, shown);
+      if (shown < x.text.length) break;
       if (x.step !== null) {
         units.forEach(function (y) { if (y.el.classList) y.el.classList.remove('step-on'); });
         x.el.classList.add('step-on'); setBoard(x.step); wait = STEP;
@@ -371,11 +418,17 @@ def figure_html():
         if b == 'NEXT':
             out.append('<div class="tp-next">next turn · level 3</div>')
             continue
-        kind, label, note, lines = b
+        kind, label, note, lines = b[:4]
         n = f'<span class="tb-n">{escape(note)}</span>' if note else ''
         body = ''.join(line_html(ln) for ln in lines)
+        pill = ''
+        if kind == 'call':   # script-only pill: the call name and one real line; click opens the full call
+            pn = f'<span class="tb-pn">{escape(note)}</span>' if note else ''
+            pill = (f'<div class="tb-prow"><button type="button" class="tb-pill" aria-expanded="false" '
+                    f'title="Show the full tool call"><span class="tb-pk">python</span>'
+                    f'<code class="ln">{escape(b[4], quote=False)}</code></button>{pn}</div>')
         out.append(f'<section class="tb tb-{kind}" data-kind="{kind}"><div class="tb-h"><span>{escape(label)}</span>{n}</div>'
-                   f'<pre class="tb-b">{body}</pre></section>')
+                   f'{pill}<pre class="tb-b">{body}</pre></section>')
     out += ['</div>', '</div>',
             '<div class="tp-note">Stored transcript: this turn\'s input is rebuilt from the run\'s saved transcripts, '
             'so it is not guaranteed to be the exact prompt bytes. Every word in the coloured blocks is copied from it; '
@@ -389,15 +442,16 @@ def figure_html():
     return '\n'.join([
         '<figure id="fig-turn">',
         '<div class="ft">One turn of the harness, from a saved run</div>',
-        '<div class="fs">The transcript streams as the turn happened: the system prompt, the turn message, the model\'s '
-        'reasoning, its two python calls and their output. The board steps through the recorded game as each action() '
-        'click lands.</div>',
+        '<div class="fs">The transcript streams fast, in the order the turn went: the system prompt, the turn message, '
+        'the model\'s reasoning (shortened), its two python calls as yellow pills (click one for the full code) and '
+        'their output. The board steps through the recorded game as each action() click lands.</div>',
         *out,
         f'<script type="application/json" id="turn-player-data">{js_data}</script>',
         f'<script>{JS}</script>',
         '<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run '
         f'<code>{escape(p["run"])}</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code '
-        'and output are verbatim, cut only where "…" shows, and the board is the run\'s recorded frames. The last two '
+        'and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the '
+        'run\'s recorded frames. The last two '
         'blocks are from the start of the following turn. The legend, board captions and the grey notes in the label '
         'bars are ours.</figcaption>',
         '</figure>',
@@ -419,15 +473,15 @@ def take_still():
         pg = b.new_page(viewport={'width': 900, 'height': 900}, device_scale_factor=2)
         pg.goto(PAGE.as_uri() + '#turn-end')
         pg.wait_for_function('window.__turnPlayer !== undefined')
-        # Final state, controls hidden, the transcript scrolled so the ten action() lines and the cleared
-        # level sit at the top, with the next turn's notes below them.
+        # Final state, controls hidden, the transcript scrolled to the second (shortened) reasoning, so
+        # the run_checked pill, the ten action() lines, the cleared level and the next turn's notes follow.
         pg.evaluate('''() => {
           window.__turnPlayer.finish();
           const tp = document.querySelector("#fig-turn .tp"), log = tp.querySelector(".tp-log");
           tp.querySelector(".tp-ctl").style.display = "none";
-          log.style.height = "760px";
-          const res = [...log.querySelectorAll(".tb-result")].pop();
-          log.scrollTop = res.offsetTop - log.offsetTop;
+          log.style.height = "860px";
+          const th = [...log.querySelectorAll(".tb-think")].pop();
+          log.scrollTop = th.offsetTop - log.offsetTop;
         }''')
         pg.locator('#fig-turn .tp').screenshot(path=str(STILL_PNG))
         b.close()

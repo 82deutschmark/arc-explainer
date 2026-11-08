@@ -48,11 +48,11 @@ Here is one real turn from a saved run, played back fast: what the model was tol
 
 One turn of the harness, from a saved run
 
-The transcript streams as the turn happened: the system prompt, the turn message, the model's reasoning, its two python calls and their output. The board steps through the recorded game as each action() click lands.
+The transcript streams fast, in the order the turn went: the system prompt, the turn message, the model's reasoning (shortened), its two python calls as yellow pills (click one for the full code) and their output. The board steps through the recorded game as each action() click lands.
 
-![The end of the turn: the full transcript has streamed in and the board shows level 2 cleared after the tenth click. On the page this plays as a live transcript, colour-coded by block (system prompt black, user prompt green, reasoning blue, tool call yellow, tool result amber), next to one game board.](charts/turn-still.png)
+![The end of the turn: the full transcript has streamed in and the board shows level 2 cleared after the tenth click. On the page this plays as a live transcript, colour-coded by block (system prompt black, user prompt green, reasoning blue, tool call as a yellow pill, tool result amber), next to one game board.](charts/turn-still.png)
 
-Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.
+Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The last two blocks are from the start of the following turn. The legend, board captions and the grey notes in the label bars are ours.
 
 On top of that loop, the Turducken harness keeps these things for the model:
 
