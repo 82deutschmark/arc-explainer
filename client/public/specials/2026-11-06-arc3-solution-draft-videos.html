@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="noindex, nofollow" name="robots">
+<title>Stuffing the Turducken: the two animated figures as video</title>
+<!--
+Author: Claude Opus 5.5 Medium (Round 11)
+Date: 08-November-2026
+PURPOSE: Unlisted page that plays the rendered MP4s of the two animated figures of the Turducken
+write-up (charts/trim.mp4 from make_trim_animation.py, charts/turn.mp4 from make_turn_video.py), for
+the "watch it as an MP4 video" links in the Kaggle copy (make_kaggle_markdown.py). The videos and GIFs
+are served from the public GitHub repository because the site's fast-publish route takes no .mp4 or
+.gif files; GitHub's own file page will not play an MP4 this size, but a video element plays the raw
+file. Styled in the figures' own look (dark navy, monospace). Hand-written; no generator.
+SRP/DRY check: Pass - one static page; the files it points at are built by the two figure scripts.
+-->
+<style>
+body{margin:0;background:#080c16;color:#e2e6ee;font:14px/1.55 ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace}
+main{max-width:1000px;margin:0 auto;padding:24px 20px 60px}
+h1{font-size:18px;font-weight:700;margin:0 0 4px}
+p{color:#b9c2d1;margin:0 0 20px}
+a{color:#93c5fd}
+section{border:1px solid #2c3a54;border-radius:6px;background:#0c1220;margin:0 0 28px;overflow:hidden}
+section h2{margin:0;padding:7px 12px;background:#101828;border-bottom:1px solid #212d42;font-size:13px;font-weight:600}
+video{display:block;width:100%;height:auto;background:#080c16}
+.links{padding:8px 12px;border-top:1px solid #212d42;color:#7d899c;font-size:12px}
+</style></head>
+<body><main>
+<h1>Stuffing the Turducken: the two animated figures as video</h1>
+<p>Rendered copies of the two animated figures in the write-up, for places that cannot run the page.
+The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">article page</a>.</p>
+<section id="turn">
+<h2>One turn of the harness, from a saved run <span style="color:#7d899c;font-weight:400">· Locksmith, level 1</span></h2>
+<video controls loop muted playsinline preload="metadata" width="1280" height="962"
+  src="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/turn.mp4"></video>
+<div class="links"><a href="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/turn.mp4">MP4</a> ·
+<a href="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/turn.gif">GIF</a> ·
+<a href="2026-11-06-arc3-solution-draft.html#fig-turn">live figure</a></div>
+</section>
+<section id="trim">
+<h2>Context management, animated</h2>
+<video controls loop muted playsinline preload="metadata" width="1280" height="980"
+  src="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/trim.mp4"></video>
+<div class="links"><a href="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/trim.mp4">MP4</a> ·
+<a href="https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/arc3-solution-draft/charts/trim.gif">GIF</a> ·
+<a href="2026-11-06-arc3-solution-draft.html#fig-trim">live figure</a></div>
+</section>
+</main></body></html>

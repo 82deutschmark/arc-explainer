@@ -49,7 +49,7 @@ The transcript streams fast, in the order the turns went: the system prompt, the
 
 *Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The model walks the block to the locked box with its last six steps of budget; nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label bars are ours.*
 
-*Animated GIF of the figure. [Watch it as an MP4 video](https://github.com/82deutschmark/arc-explainer/blob/main/client/public/specials/arc3-solution-draft/charts/turn.mp4) or [see the live figure on the article page](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn).*
+*Animated GIF of the figure. [Watch it as an MP4 video](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft-videos.html#turn) or [see the live figure on the article page](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn).*
 
 On top of that loop, the Turducken harness keeps these things for the model:
 
@@ -74,7 +74,7 @@ Left: one game's context in the 140k window. Right: the 32 decoding lanes, two a
 
 *Turn sizes, growth and swap timing are illustrative. The 140k window, \~52k kept after a trim, 32 lanes, 34 admitted games, the 3.80M-token cache and the 24 GB host tier are the 56.02 settings.*
 
-*Animated GIF of the figure. [Watch it as an MP4 video](https://github.com/82deutschmark/arc-explainer/blob/main/client/public/specials/arc3-solution-draft/charts/trim.mp4) or [see the live figure on the article page](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-trim).*
+*Animated GIF of the figure. [Watch it as an MP4 video](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft-videos.html#trim) or [see the live figure on the article page](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-trim).*
 
 - **Trimming.** When a game's prompt reaches the 140k-token window, the harness drops its oldest turns and keeps the system prompt, the notes and the most recent \~52k tokens. The start of the prompt has changed, so the server's prefix cache no longer matches and the kept 52k must be prefilled again. The server logs of two 56.02 offline-evaluation runs show about 340 trims per run, about 46k tokens each: half of all prompt tokens, but only 8% of the clock.
 - **Swapping.** 34 games are admitted at a time, so 32 can decode while two run `python`; the other 76 wait. An admitted game gives up its slot only right after a trim, when its cached history is invalid anyway and leaving costs nothing.

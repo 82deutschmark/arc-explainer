@@ -13,7 +13,7 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
              Kaggle cannot run the page's player script, so both animated figures are shown as
              rendered GIFs (Round 11: charts/trim.gif from make_trim_animation.py, charts/turn.gif
              from make_turn_video.py), each followed by one line linking its MP4 and the live
-             interactive figure. The walkthrough's player block is set aside first. The GIFs and MP4s
+             interactive figure (the MP4 plays on the unlisted page 2026-11-06-arc3-solution-draft-videos.html). The walkthrough's player block is set aside first. The GIFs and MP4s
              are linked from the public GitHub repository (raw.githubusercontent.com serves GIFs as
              images), because the site's fast-publish route takes no .gif or .mp4 files; the site
              itself serves them under /specials/ once the next deploy carries the commit. Site-only lines (the nav and the "Review draft" banner) are dropped.
@@ -50,22 +50,28 @@ OUT_PAGE = HERE.parent / "2026-11-06-arc3-solution-draft-kaggle.html"
 ANIMATION = "arc3-solution-draft/charts/trim.webp"
 # Rendered copies of the two animated figures (Round 11), served from the public repository.
 REPO_RAW = "https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/"
-REPO_BLOB = "https://github.com/82deutschmark/arc-explainer/blob/main/client/public/specials/"
+# GitHub's own file page will not play an MP4 this size, so "watch as video" goes to a small unlisted page
+# that plays the raw files (2026-11-06-arc3-solution-draft-videos.html, hand-written).
+VIDEOS = BASE + "2026-11-06-arc3-solution-draft-videos.html"
 TRIM_GIF, TRIM_MP4 = "arc3-solution-draft/charts/trim.gif", "arc3-solution-draft/charts/trim.mp4"
 TRIM_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-trim"
+TRIM_VIDEO = VIDEOS + "#trim"
 # The one-turn walkthrough (Round 10): an in-page player between the turn-player markers.
 TURN_STILL = "arc3-solution-draft/charts/turn-still.png"
 TURN_GIF, TURN_MP4 = "arc3-solution-draft/charts/turn.gif", "arc3-solution-draft/charts/turn.mp4"
 TURN_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn"
+TURN_VIDEO = VIDEOS + "#turn"
 
 
-def rendered(gif: str, mp4: str, page: str, alt: str) -> list[str]:
+def rendered(gif: str, mp4: str, video: str, page: str, alt: str) -> list[str]:
     """A rendered GIF of an animated figure, then one line with its MP4 and the live figure."""
     for f in (gif, mp4):
         if not (HERE.parent / f).is_file():
             raise Fail(f"Rendered animation missing: {f}")
+    if REPO_RAW + mp4 not in (HERE.parent / VIDEOS.removeprefix(BASE)).read_text():
+        raise Fail(f"The videos page does not play {mp4}")
     return [f"[![{alt}]({REPO_RAW + gif})]({page})",
-            f"*Animated GIF of the figure. [Watch it as an MP4 video]({REPO_BLOB + mp4}) or "
+            f"*Animated GIF of the figure. [Watch it as an MP4 video]({video}) or "
             f"[see the live figure on the article page]({page}).*"]
 TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=<figcaption>)', re.S)
 
@@ -263,7 +269,7 @@ def render_figure(fig: Node) -> list[str]:
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        gif, links = rendered(TRIM_GIF, TRIM_MP4, TRIM_PAGE, html.unescape(img.attrs["alt"]))
+        gif, links = rendered(TRIM_GIF, TRIM_MP4, TRIM_VIDEO, TRIM_PAGE, html.unescape(img.attrs["alt"]))
         blocks.append(gif)
         blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
         # Explicit links, not bare URLs, so no renderer swallows the closing star into the address.
@@ -278,7 +284,7 @@ def render_figure(fig: Node) -> list[str]:
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        gif, links = rendered(TURN_GIF, TURN_MP4, TURN_PAGE,
+        gif, links = rendered(TURN_GIF, TURN_MP4, TURN_VIDEO, TURN_PAGE,
                               "The turn playing: the transcript streams in colour-coded blocks while the "
                               "Locksmith board steps through the recorded moves, ending with level 1 cleared.")
         blocks.append(gif)
