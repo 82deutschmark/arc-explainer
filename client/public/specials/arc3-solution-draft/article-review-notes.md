@@ -170,3 +170,5 @@ Rabbit name corrected: "Sanday" was a typo; the rabbits are Sanbei and Pochi (Bo
 - 08-Nov-2026 (Claude Sonnet 5.5): Added thanks to Dr. Tim Scarfe and the MLST community in the top thanks, on the Boss's request (wording his).
 
 - 08-Nov-2026 (Claude Sonnet 5.5): Added thanks to NVARC and XZ (XZ for using our games to overtake us, per Son), OpenMind for the Bayesian rule inferrer (per Son; not on the team), and François Chollet and Mike Knoop in the ARC Prize paragraph. Jack Cole stays thanked but is not an ARC-3 team member, per Son.
+
+- 08-Nov-2026 (Claude Sonnet 5.5): Per the Boss, made outside-people thanks vaguer to avoid upsetting Kaggle: removed the Bayesian rule inferrer credit and the XZ-used-our-games line; OpenMind now a general thanks. Added the Boss's reason for the name (teams combined, all wrapped into one team). Three alternative team/thanks versions drafted in chat; the Boss will choose tomorrow morning.
