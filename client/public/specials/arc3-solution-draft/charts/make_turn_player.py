@@ -271,6 +271,7 @@ CSS = r'''
 .tb-b{margin:0;padding:7px 10px 8px 12px;white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--tp-mono);color:var(--tp-dim);border-left:3px solid}
 .tb-b .cut{color:var(--tp-muted)}
 .tb-system .tb-h{background:#000;color:#fff}
+.tb-system .tb-h .tb-n{color:#b4bac1}
 .tb-system .tb-b{background:#111315;border-left-color:#000;color:#e4e7eb}
 .tb-system .tb-b .cut{color:#a3aab2}
 .tb-user .tb-h{background:color-mix(in srgb,var(--tp-user) 30%,#fff);color:#0b3d1d}
