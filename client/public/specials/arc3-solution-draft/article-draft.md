@@ -94,9 +94,9 @@ at most **3** per level
 
 What survives all three: **the notes**, shown again after every trim and at every new level.
 
-Trim counts from the 56.02 board twin's server log: prompt reads of 20k+ tokens that started from an empty cache, two runs.
+Trim counts from the 56.02 offline-evaluation twin's server log: prompt reads of 20k+ tokens that started from an empty cache, two runs.
 
-- **Trim.** When a game's prompt hits the 140k window, the harness keeps the system prompt, the notes and the last 52k tokens. The front of the prompt changed, so the server's cache no longer matches and the kept 52k is read again. A 56.02 board run does about 340 trims of about 46k tokens each: half of all prompt tokens, but only 8% of the clock.
+- **Trim.** When a game's prompt hits the 140k window, the harness keeps the system prompt, the notes and the last 52k tokens. The front of the prompt changed, so the server's cache no longer matches and the kept 52k is read again. A 56.02 offline-evaluation run does about 340 trims of about 46k tokens each: half of all prompt tokens, but only 8% of the clock.
 
 - **Swap.** 34 games hold a slot at a time; the other 76 wait in a priority queue. A game gives up its slot only right after a trim, the one moment it costs nothing because its cache is useless anyway. The queue then picks who plays next: a new game, or one coming back to re-read its kept history.
 
@@ -126,13 +126,13 @@ Most of these are lossy: they change what the model says, so the only way to jud
 
 Kaggle only gives us one submission a day, and a single score from it carries way too much variance to tell us whether an idea actually helped. So we did the measuring ourselves, locally, before spending a submission.
 
-We started with the 25 public games on a 132-minute clock. Once we pushed to 32 lanes, 25 games weren't enough to keep every lane busy, so we built "copycat" games, one for each public game, and ran all 50 together. We called this **Score Climb**: 50 games, 2 to 4 hours per run, 32 lanes, on outside-compute boxes with the same RTX PRO 6000. Then we ran every idea 2 to 4 times, so we could tell a real improvement from plain luck. The loop: **idea → 2 to 4 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
+We started with the 25 public games on a 132-minute clock. Once we pushed to 32 lanes, 25 games weren't enough to keep every lane busy, so we built "copycat" games, one for each public game, and ran all 50 together. We called this **Score Climb**: 50 games, 2 to 4 hours per run, 32 lanes, on outside-compute boxes with the same RTX PRO 6000. Then we ran every idea 2 to 4 times, so we could tell a real improvement from plain luck.
 
 The catch is noise. Across 8 identical controls, one standard deviation was 1.9 points, so two runs only see effects of about 4 points. Most harness ideas were smaller than that, and Kaggle is noisy too: resubmitting the same package moved 3.4. Honestly, we never had a ruler fine enough to see small changes. (Our later authored games are public in the [ARC-3 Synthetic Games repository](https://github.com/82deutschmark/arc3-synthetic-games); they are not the copycats measured here.)
 
 ### 1.3 Performance so far
 
-So what actually moved the needle on Kaggle? Here are the changes that did, each one measured against the package it was added to:
+In the end, only four changes to our harness package gave a real jump on Kaggle. Here they are, each one measured against the package it was added to:
 
 - **Notes memory: +8.8**, our biggest gain (the same package also restored exact draft acceptance).
 
@@ -142,11 +142,11 @@ So what actually moved the needle on Kaggle? Here are the changes that did, each
 
 - **Notes shown as head + tail, with crash fixes: +1.7**, inside Kaggle's own noise.
 
-Everything else we sent to Kaggle scored lower, even when the board liked it. The board liked 12 ideas; Kaggle agreed with 3:
+Everything else we sent to Kaggle scored lower, even when our offline evaluation liked it. The offline evaluation liked 12 ideas; Kaggle agreed with only 3:
 
 [
 
-![Our board liked 12 of these ideas. Kaggle liked 3 of them.. Score change for each idea against the package it was added to. The filled dot is what our board said; the arrow runs to the ring, what Kaggle scored. Orange rows: the board said better, Kaggle said worse.](charts/original/delta2.png)
+![Offline evaluation liked 12 of these ideas. Kaggle liked 3 of them. Score change for each idea against the package it was added to. The filled dot is what our offline evaluation said; the arrow runs to the ring, what Kaggle scored. Orange rows: offline evaluation said better, Kaggle said worse.](charts/original/delta2.png)
 
 ](charts/original/delta2.svg)
 
@@ -154,7 +154,7 @@ Open or download: [vector SVG](charts/original/delta2.svg) · [high-resolution P
 
 Every idea in the chart, in one line each:
 
-| Idea | What it is | Board | Kaggle |
+| Idea | What it is | Offline eval | Kaggle |
 | --- | --- | --- | --- |
 | Notes memory, relaxed acceptance off | A notes file per game that survives trims; draft tokens back to exact acceptance | +2.8 | +8.8 |
 | Mamba 180, 140k window, temperature 0.5 | A bigger window paid for by fewer Mamba slots; sampling temperature 0.6 → 0.5 | +4.3 | +5.4 |
@@ -171,13 +171,15 @@ Every idea in the chart, in one line each:
 | Splice | After a trim, rebuild the cache from the old one instead of re-reading | +2.6, +0.4 | −8.7, −5.3 |
 | Lean turns + vocab trim | Shorter turn messages (the rules shown once, not every turn), plus the vocab trim | +1.9 | −9.6 |
 
-Read the two columns together. Nearly everything that lost on Kaggle looked fine or better on our board. That's the lesson of Part 4.
+Read the two columns together. Nearly everything that lost on Kaggle looked fine or better in our offline evaluation. That's the lesson of Part 4.
 
-And here is our local board over time. Each dot is one run stored on our run site, [arc3.sonpham.net](https://arc3.sonpham.net), that played all 25 public games, scored on those 25 only. **This is our local public-25 board, not the Kaggle leaderboard**, which scores 110 hidden games. Runs differ in board size and clock length, so the dots are grouped by board and never joined into one line.
+There's one more thing we think was going on, and honestly it bugs me. A lot of harness iteration quietly overfits to the public set: you keep tuning an idea until it wins on the games you can see, and then it falls flat on the private set. Our offline evaluation had the 25 public games sitting right in the middle of it, so it was really easy to fool ourselves. We can't prove how much of the gap was this, but we suspect it explains a good chunk of those orange rows.
+
+And here is our local offline evaluation over time. Each dot is one run stored on our run site, [arc3.sonpham.net](https://arc3.sonpham.net), that played all 25 public games, scored on those 25 only. **This is our local public-25 offline evaluation, not the Kaggle leaderboard**, which scores 110 hidden games. Runs differ in game count and clock length, so the dots are grouped by setup and never joined into one line.
 
 [
 
-![Our local public-25 board, run by run. Each dot is one local run that played all 25 public games, scored on those 25 only. This is not the Kaggle leaderboard.](charts/public25-over-time.png)
+![Our local public-25 offline evaluation, run by run. Each dot is one local run that played all 25 public games, scored on those 25 only. This is not the Kaggle leaderboard.](charts/public25-over-time.png)
 
 ](charts/public25-over-time.svg)
 
@@ -185,17 +187,17 @@ Open or download: [vector SVG](charts/public25-over-time.svg) · [high-resolutio
 
 Gaps in the data: the site holds only the runs we uploaded, a small share of the roughly 1,950 we ran. It has no complete public-25 run before 27 September or after 31 October, so our first weeks and the 3-bit work from 1 November are missing, and many days have no run at all. Four runs sit far below the rest; two near zero were broken runs, and why the other two scored low was not checked.
 
-Ideas that only ran on the board, none clearly above noise: an animation feed (+7.5 on a 10-game animation subset, nothing on all 25), key-value and curator memory variants, notes shared across games (notes turned out 92% game-specific), a fixed protocol for levels 5+, a state-repeat guard, thinking caps, a rolling summary (22% slower), restarting stuck levels, a trim gate, a symbolic rule finder, and a live coach from a frontier model (no clear win in 113 tries).
+Ideas that only ran in offline evaluation, none clearly above noise: an animation feed (+7.5 on a 10-game animation subset, nothing on all 25), key-value and curator memory variants, notes shared across games (notes turned out 92% game-specific), a fixed protocol for levels 5+, a state-repeat guard, thinking caps, a rolling summary (22% slower), restarting stuck levels, a trim gate, a symbolic rule finder, and a live coach from a frontier model (no clear win in 113 tries).
 
 Teammates also built harness branches that didn't make the 56.02 package: Keith's sandbox, which keeps a game's Python helpers through a timeout, and Slow∞Loop's (dzj) split memory for game rules and level notes, with a handoff before each trim and verified action facts. Details are in our [merge plan](https://github.com/Autoresearch-Arena/arc-3/blob/main/harnesses/MERGE-OVERVIEW-KEITH-DZJ-1018.md) (team repository).
 
 What the traces told us:
 
-- **Uncleared levels, not efficiency.** Across six board runs of the 56.02 config, about 31 points were lost to levels never cleared and about 7 to move efficiency. Cleared levels 5+ already used 0.65x the human moves (median).
+- **Uncleared levels, not efficiency.** Across six offline-evaluation runs of the 56.02 config, about 31 points were lost to levels never cleared and about 7 to move efficiency. Cleared levels 5+ already used 0.65x the human moves (median).
 
 - **Stuck means stuck.** About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.
 
-- **Loops are common.** 35% of moves in our best board run returned the board to an earlier state.
+- **Loops are common.** 35% of moves in our best offline-evaluation run returned the board to an earlier state.
 
 ## Inference Optimization
 
@@ -235,7 +237,7 @@ experts kept341 of 512 per layer, 4-bit (Intel W4A16)
 dense layersint8 weights (one scale per 128 inputs), 8-bit activations above 64 rows
 drafterMTP · 4 draft tokens · per-game verify depth
 history cacheNVFP4 · 3.80M tokens · 140k window, a trim keeps 52k
-speed2,150 tok/s over a whole run on our board
+speed2,150 tok/s over a whole run in our offline evaluation
 bottleneckmemory bandwidth and games at once
 
 best public **56.02**
@@ -533,17 +535,17 @@ Open or download: [vector SVG](charts/original/wf-overhead.svg) · [high-resolut
 | 3 Oct · harness changes: fewer idle lanes | 217.2 | -38.0 |
 | 6 Oct · image hash off the scheduler, zero-copy hand-off | 77.7 | -139.5 |
 | 11 Oct · prompt-read CUDA graphs, 32 games | 48.9 | -28.8 |
-| 18 Oct · longer board runs: more idle lanes | 70.7 | +21.8 |
+| 18 Oct · longer offline-evaluation runs: more idle lanes | 70.7 | +21.8 |
 | 23 Oct · 34 games over 32 lanes | 61.4 | -9.3 |
 
-The best find here was invisible in per-step profiles: for every new request, the scheduler loop SHA-256-hashed about 300 MB of image pixels while every lane waited. 4.2% of the whole run. Only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our board runs out of games near the end, Kaggle's 110 games mostly don't.
+The best find here was invisible in per-step profiles: for every new request, the scheduler loop SHA-256-hashed about 300 MB of image pixels while every lane waited. 4.2% of the whole run. Only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our offline evaluation runs out of games near the end, Kaggle's 110 games mostly don't.
 
 | Change | What it does | Measured |  |
 | --- | --- | --- | --- |
 | Image hash off the scheduler | Hash images in the tokenizer process, not the scheduler loop | 205 → 8.5 ms stall per image request | exact |
 | Zero-copy image hand-off (kshm) | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
 | Overlapped launches (kpdl) | Each small kernel starts while the last one finishes | ~0.23 µs per kernel | exact |
-| 34 games over 32 lanes | Two extra games fill lanes left idle by games running python | +4.7 on our 75-game board | harness |
+| 34 games over 32 lanes | Two extra games fill lanes left idle by games running python | +4.7 on our 75-game offline evaluation | harness |
 | Startup DNS fix (kdnsfix) | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → ~0 | exact |
 | Scorecard keep-alive (after 56.02) | Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00) | a 46-minute load played normally | harness |
 
@@ -551,19 +553,19 @@ The best find here was invisible in per-step profiles: for every new request, th
 
 Of 191 named speed changes, 69 shipped in some build, 71 were dropped, and 51 were parked or never left the test bench. The ones worth knowing about:
 
-- **Relaxed draft acceptance** (accept draft tokens more often than exact sampling would): +5.0 on the board at 0.7, but its Kaggle package dropped 41.97 → 38.45, and 0.5 lost 9 board points. Banned after that.
+- **Relaxed draft acceptance** (accept draft tokens more often than exact sampling would): +5.0 in offline evaluation at 0.7, but its Kaggle package dropped 41.97 → 38.45, and 0.5 lost 9 points there. Banned after that.
 
 - **Overlapping prompt reads with decode:** 3 to 5% slower, and out of memory by minute 17-22.
 
 - **Mixing prefill into decode batches:** worth at most ~1%, because every prefill chunk re-reads all the experts.
 
-- **Splice** (rebuild the cache after a trim): tied on the board, lost on Kaggle three times out of three.
+- **Splice** (rebuild the cache after a trim): tied in offline evaluation, lost on Kaggle three times out of three.
 
 - **Vocab trim** (cut the output layer to the tokens we use): lost on Kaggle all three times. About one reply in five wants a token the trim removed, mostly names the model coins for game objects.
 
-- **3-bit experts:** +5% tokens per second and 8.2 GB freed, but the board went 66.2 → 58.7.
+- **3-bit experts:** +5% tokens per second and 8.2 GB freed, but offline evaluation went 66.2 → 58.7.
 
-- **8-bit Mamba states:** +11% history cache and a board tie, but in our final stack the model thought 35% less per move (Part 4).
+- **8-bit Mamba states:** +11% history cache and an offline-evaluation tie, but in our final stack the model thought 35% less per move (Part 4).
 
 ## RL
 
@@ -578,14 +580,14 @@ We spent real money and a lot of weekends on RL and other fine-tunes. None of it
 | Evolution strategies | 16-17 Oct | Random LoRA-shaped weight nudges, keep the best each round | best nudge 25.8 vs base 24.9, inside the noise |
 | RL LoRAs, merged at load | 19-21 Oct | Keith's RL adapters on our int8 stack | Kaggle 52.82 → 51.12 and → 44.68; our int8 layers kept only 22% of an adapter's change |
 | RL5 | 25-26 Oct | Three waves of the same recipe | learned to think half as long (median reply 2,657 → 1,401 tokens); 51.5 → 29.5 |
-| GRPO on the log harness | 28 Oct | An adapter trained on the harness we submitted on 25 Oct | board 61.85 → 58.24 |
-| Correctors (distillation) | 24 Oct, 1-2 Nov | LoRAs that pull a cut or 3-bit model back toward the full model | KL down 16-23% offline, but thinking 17-45% longer per move; board -9 |
+| GRPO on the log harness | 28 Oct | An adapter trained on the harness we submitted on 25 Oct | offline evaluation 61.85 → 58.24 |
+| Correctors (distillation) | 24 Oct, 1-2 Nov | LoRAs that pull a cut or 3-bit model back toward the full model | KL down 16-23% offline, but thinking 17-45% longer per move; offline evaluation -9 |
 | 2-bit distillation | Keith's write-up | A night on eight B300s to train the 2-bit model back toward 4-bit | ~6,000 training tokens/s against 24-85k planned; no 2-bit weight changed in the layers checked |
-| Think-less fine-tunes | 23 Oct | Two public Flash-Next fine-tunes that claim shorter thinking | board 33.5 and 40.3 vs 64.2 |
+| Think-less fine-tunes | 23 Oct | Two public Flash-Next fine-tunes that claim shorter thinking | offline evaluation 33.5 and 40.3 vs 64.2 |
 
 [
 
-![Move the thinking length, and the score drops. Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of board noise.](charts/original/think.png)
+![Move the thinking length, and the score drops. Change in thinking per move against change in score, for every training run or lossy speed change where we measured both. The grey band is one SD of offline-evaluation noise.](charts/original/think.png)
 
 ](charts/original/think.svg)
 
@@ -595,10 +597,10 @@ Open or download: [vector SVG](charts/original/think.svg) · [high-resolution PN
 
 | Change | Thinking per move | Score change | Numbers |
 | --- | --- | --- | --- |
-| 8-bit Mamba states | -19.3% | -0.5 | 961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.7 |
-| 3-bit + 8-bit states, 194k window | -36.9% | -5.9 | 639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.0 |
-| 3-bit + corrector LoRA | +45% | -8.8 | 1,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.0 |
-| 3-bit + corrector, medium effort | +50.8% | -8.6 | 1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0 |
+| 8-bit Mamba states | -19.3% | -0.5 | 961 / 778 vs 1,044 / 1,111 tokens per move; offline evaluation 60.2 vs 60.7 |
+| 3-bit + 8-bit states, 194k window | -36.9% | -5.9 | 639 / 769 vs 1,056 / 1,177; offline evaluation 45.4 / 43.8 vs 51.9 / 49.0 |
+| 3-bit + corrector LoRA | +45% | -8.8 | 1,514 / 1,659 vs 1,037 / 1,151; offline evaluation 40.2 / 43.1 vs 51.9 / 49.0 |
+| 3-bit + corrector, medium effort | +50.8% | -8.6 | 1,592 / 1,707 vs 1,037 / 1,151; offline evaluation 40.4 / 43.3 vs 51.9 / 49.0 |
 | RL5 | -47.3% | -22.0 | median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5 |
 
 Why it didn't work for us: the base model was already good at the games, and every training run we did changed **how long the model thinks** before it changed **how well**. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. Another team saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.
@@ -668,21 +670,21 @@ Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed
 
 Looking back at this chart, here's what we should have done:
 
-- **Change strategy when the curve flattens.** The signs were there. On 9 October, 4x the clock only took the board from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the 31 points we lost to levels the model never cleared, not in the speed.
+- **Change strategy when the curve flattens.** The signs were there. On 9 October, 4x the clock only took our offline evaluation from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the 31 points we lost to levels the model never cleared, not in the speed.
 
 - **Price every speed trick in quality, not just tokens.** Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits. 4.2 is about this.
 
-- **Don't be too ambitious with correction and RL.** 3-bit experts already gave +5% tokens per second and 8 GB of memory, for about 7 points on the board. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big correction push into 2-bit: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. The smaller gap was the better bet.
+- **Don't be too ambitious with correction and RL.** 3-bit experts already gave +5% tokens per second and 8 GB of memory, for about 7 points in offline evaluation. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big correction push into 2-bit: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. The smaller gap was the better bet.
 
 ### 4.2 The biggest lesson: we didn't notice when token quality started to matter
 
 In turducken terms: we kept stuffing after the bird was full. For most of October, more tokens meant more score, and that trained us to treat every token as the same token. Somewhere between 52.82 and 56.02 that stopped being true, and we didn't notice. After 56.02, **every faster build we shipped scored lower on Kaggle**: splice (47.33, 48.37), Lean turns with vocab trim (46.41), vocab trim alone (49.88).
 
-Our board couldn't see it. In the board-vs-Kaggle chart in Part 1, nearly every lossy change was flat or up on the board and down on Kaggle: each loss was smaller than the board's noise, and Kaggle's 110 games over 9 hours compounded it. When we went back to the logs afterwards, the signs were there: the final 3-bit stack thought 35% less per move and ended 2 to 5 times as many turns without a tool call, and one reply in five wanted a token the vocab trim had removed. Nothing in our gate was looking for that.
+Our offline evaluation couldn't see it. In the offline-vs-Kaggle chart in Part 1, nearly every lossy change was flat or up in offline evaluation and down on Kaggle: each loss was smaller than the offline evaluation's noise, and Kaggle's 110 games over 9 hours compounded it. When we went back to the logs afterwards, the signs were there: the final 3-bit stack thought 35% less per move and ended 2 to 5 times as many turns without a tool call, and one reply in five wanted a token the vocab trim had removed. Nothing in our gate was looking for that.
 
 What we'd do differently:
 
-- **Measure quality per token directly** for every lossy change: KL against the full model on recorded replies, plus a behaviour check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run board can't.
+- **Measure quality per token directly** for every lossy change: KL against the full model on recorded replies, plus a behaviour check (tokens per move, turns without a tool call, replies cut off mid-thought) on the stored logs. It costs cents and catches what a 2-run offline evaluation can't.
 
 - **Watch the tokens-to-score curve.** When more tokens stop buying score, stop buying tokens with quality.
 
@@ -698,7 +700,7 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 - **Memory is throughput.** On a memory-bound decoder, freed gigabytes become lanes and history, and lanes are almost free per step.
 
-- **Know your noise before you read a result.** SD 1.9 on our board; ±3.4 on Kaggle for the same package. A one-point "win" is a coin flip.
+- **Know your noise before you read a result.** SD 1.9 in our offline evaluation; ±3.4 on Kaggle for the same package. A one-point "win" is a coin flip.
 
 - **Treat the prefix cache as a contract.** One squeezed blank line cost us 8% of our speed.
 
