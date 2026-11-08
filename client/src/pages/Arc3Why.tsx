@@ -14,8 +14,8 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function Arc3Why() {
   usePageMeta({
-    title: "The best of, after a lot of playing | ARC Explainer",
-    description: 'The best of our synthetic ARC-AGI-3 games, made by a game producer with coding agents and played by people, and the games to play.',
+    title: "Slop, constraints, and a person in the loop | ARC Explainer",
+    description: 'After Budd and Scarfe: why most of our synthetic ARC-AGI-3 games were slop, and why the forty-six we kept were played and reworked by people.',
     canonicalPath: '/arc3/why',
   });
   const { games, isLoading } = useApprovedGames();
