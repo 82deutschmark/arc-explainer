@@ -259,20 +259,21 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <div class="byline"><b>Son Pham</b> · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02</div>
 <h1>Stuffing the Turducken</h1>
 <p>Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.</p>
-<p>We would also like to thank Tufa Labs, whose harness sits at the very heart of our entry, and Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution. Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.</p>
+<p>We would also like to thank you to Tufa Labs, whose harness sits at the very heart of our entry and to Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution.</p>
+<p>Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.</p>
 <p><strong>Why a turducken?</strong> A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.</p><figure id="fig-stuffing-intro" class="hero"><img src="arc3-solution-draft/00-turducken-texture-v10.png" width="1536" height="1024" alt="Team Turducken stuffing engineering into the mechanical turkey" loading="eager"></figure>
 <p>Here's our write-up, in three parts: <strong>the harness</strong>, <strong>the inference optimizations</strong>, and <strong>the RL that didn't work</strong>, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.</p>
 <div class="tldr"><h3>TL;DR</h3><ul>
 <li><strong>Base:</strong> Daniel Franzen's public notebook from 1 October. 110 games on one RTX PRO 6000 in 9 hours.</li>
 <li><strong>Harness:</strong> notes memory, goal first, checked play, temperature 0.5, and a lot of work on trimming and swapping 110 conversations through one card.</li>
 <li><strong>Inference:</strong> 191 speed changes tried, 69 shipped. 2,150 tokens per second over a whole run, 32 games at once. Per 1,000 tokens: decode 1,138 → 330 ms, prefill 259 → 74 ms, overhead 255 → 61 ms.</li>
-<li><strong>RL:</strong> eight attempts, none beat the base model on Kaggle.</li>
+<li><strong>RL:</strong> none of our training attempts beat the base model on Kaggle.</li>
 <li><strong>Two biggest lessons:</strong><ul>
 <li>We didn't notice when token quality started to matter. After 56.02, every faster build we shipped scored lower.</li>
 <li>Limited compute pushed us into overly ambitious RL. None of our attempts worked.</li>
 </ul></li>
 </ul></div>
-<h2>Harness Iteration</h2><figure class="hero"><img alt="The game-playing harness" loading="lazy" src="arc3-solution-draft/01-harness-garage-v2-corners-only.png"></figure>
+<h2>The Harness</h2><figure class="hero"><img alt="The game-playing harness" loading="lazy" src="arc3-solution-draft/01-harness-garage-v2-corners-only.png"></figure>
 <h3>1.1 How the harness works</h3>
 <p>From 1 October we built on Daniel Franzen's public Milestone 2 notebook. Its harness, built around Tufa Labs' harness, runs each of the 110 games as its own conversation with the model, and the model plays by writing code. It has exactly one tool: <code>python</code>.</p>
 <p>One turn goes like this:</p>
@@ -319,7 +320,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <p>The harness has a handful of dials. These are the ones we actually turned:</p>
 <ul>
 <li><strong>Window and keep:</strong> when a trim fires (128k, then 140k, paid for with fewer Mamba state slots) and how much history it keeps (58k, then 52k).</li>
-<li><strong>Slots and queue:</strong> how many games hold a slot (34 admitted, 32 decoding) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.</li>
+<li><strong>Slots and queue:</strong> how many games hold a slot (32 lanes decode at once; we overpark to 34 games so the card stays busy while a game runs python) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.</li>
 <li><strong>Fresh eyes:</strong> how long a level may stay stuck before a wipe (120k tokens), how long the handover note can be (400 words), and how many wipes a level gets (3). Restarting stuck levels on a timer instead lost at every setting we tried.</li>
 <li><strong>Notes:</strong> what the model must write (goal first), how long notes are shown in full before head + tail (6,000 characters), and whether notes are per game or shared. Shared notes and fancier memory did no better.</li>
 <li><strong>Sampling and thinking:</strong> temperature (0.8 → 0.6 → 0.5), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.</li>
@@ -458,7 +459,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li><strong>Loops are common.</strong> 35% of moves in our best board run returned the board to an earlier state.</li>
 </ul>
 <h2>Inference Optimization</h2><figure class="hero"><img alt="The inference stack" loading="lazy" src="arc3-solution-draft/02-inference-v1-corners-only.png"></figure>
-<p>The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours; our 56.02 run took 9 h 13 m. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.</p>
+<p>The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.</p>
 <p>One rule came before any change: <strong>is it exact or lossy?</strong> An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The biggest lesson at the end is about the times we bent that rule.</p>
 <figure id="fig-box">
 <div class="ft">The box: one RTX PRO 6000, 110 games, 9 hours</div>
@@ -485,7 +486,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </div>
 <dl class="stats">
 <dt>games</dt><dd>110 live · 34 admitted · 32 decoding</dd>
-<dt>clock</dt><dd>9 h (our 56.02 run took 9 h 13 m)</dd>
+<dt>clock</dt><dd>9 h</dd>
 <dt>experts kept</dt><dd>341 of 512 per layer, 4-bit (Intel W4A16)</dd>
 <dt>dense layers</dt><dd>int8 weights (one scale per 128 inputs), 8-bit activations above 64 rows</dd>
 <dt>drafter</dt><dd>MTP · 4 draft tokens · per-game verify depth</dd>
@@ -1033,7 +1034,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 
 <details><summary>Show the numbers</summary><div class="tablewrap" id="table-think"><table><thead><tr><th>Change</th><th class="n">Thinking per move</th><th class="n">Score change</th><th class="n">Numbers</th></tr></thead><tbody><tr><td>8-bit Mamba states</td><td class="n">-19.3%</td><td class="n">-0.5</td><td class="n">961 / 778 vs 1,044 / 1,111 tokens per move; board 60.2 vs 60.7</td></tr><tr><td>3-bit + 8-bit states, 194k window</td><td class="n">-36.9%</td><td class="n">-5.9</td><td class="n">639 / 769 vs 1,056 / 1,177; board 45.4 / 43.8 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector LoRA</td><td class="n">+45%</td><td class="n">-8.8</td><td class="n">1,514 / 1,659 vs 1,037 / 1,151; board 40.2 / 43.1 vs 51.9 / 49.0</td></tr><tr><td>3-bit + corrector, medium effort</td><td class="n">+50.8%</td><td class="n">-8.6</td><td class="n">1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0</td></tr><tr><td>RL5</td><td class="n">-47.3%</td><td class="n">-22.0</td><td class="n">median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5</td></tr></tbody></table></div></details>
 </figure>
-<p>Why it didn't work for us: the base model was already good at the games, and every training run we did changed <strong>how long the model thinks</strong> before it changed <strong>how well</strong>. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. 1st place saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.</p>
+<p>Why it didn't work for us: the base model was already good at the games, and every training run we did changed <strong>how long the model thinks</strong> before it changed <strong>how well</strong>. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. Another team saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.</p>
 <h2>When speed no longer matters</h2><figure class="hero"><img alt="The Turducken tries to fly beyond its 56.02 plateau" loading="lazy" src="arc3-solution-draft/04-speed-plateau-v1-corners-only.png"></figure>
 <h3>4.1 The climb, and what it was telling us</h3>
 <figure class="redrawn-figure" id="fig-kaggle">
@@ -1062,7 +1063,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </ol>
 <p>We should also have ablated backward: withdraw optimizations one at a time to see which capacity or precision was worth restoring for fewer, better tokens. And our objective narrowed our search. Because nearby tests beyond 32 lanes scored worse, we never tried the radical 110-lane regime ourselves. That remained an untested alternative for our stack, not a demonstrated failure.</p><h3>4.3 The rest</h3>
 <ol>
-<li><strong>Count games, not just speed.</strong> 1st place (and 6th) ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.</li>
+<li><strong>Count games, not just speed.</strong> Some other teams ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.</li>
 <li><strong>Measure the whole run, not a step.</strong> Our biggest overhead win was invisible in per-step profiles, and prompt reading (~23% of the run) was invisible in SGLang's own throughput line.</li>
 <li><strong>Memory is throughput.</strong> On a memory-bound decoder, freed gigabytes become lanes and history, and lanes are almost free per step.</li>
 <li><strong>Know your noise before you read a result.</strong> SD 1.9 on our board; ±3.4 on Kaggle for the same package. A one-point "win" is a coin flip.</li>

@@ -1,3 +1,7 @@
+### Version 9.162.35 · November 7, 2026
+
+- Turducken special, Son's answers to the open items: his opening kept word for word (only "also would also" fixed, earlier extra rewording undone); Part 1 renamed "The Harness"; nine-hour budget only (the 9 h 13 m run removed); rival ranks removed; the RL TL;DR no longer claims an unverified attempt count; the dials line states 32 lanes overparked to 34 games. Markdown, page, review notes and the canonical ZIP kept in sync. Author: Claude Opus 5.5 Low.
+
 ### Version 9.162.34 · November 7, 2026
 
 - Turducken special, Son's 7-Nov harness pass: replace the opening thanks and "Why a turducken?" with Son's own words (verbatim); move trim, swap and wipe out of the harness list into its own part of 1.1 with the restored three-card figure; add a short "What we can change" passage on the harness dials; rename 1.2/1.3 to "How we measure performance" and "Performance so far"; add the local public-25 board chart (SVG + PNG + CSV, built from a saved arc3.sonpham.net catalog snapshot, clearly labelled as not the Kaggle leaderboard, with its data gaps). Keith Tyser's figure credit, dropped with the old opening, now sits on the box diagram caption. Markdown and page kept in sync. Author: Claude Opus 5.5 Low. Plan: `docs/plans/2026-11-07-turducken-harness-overview.md`.

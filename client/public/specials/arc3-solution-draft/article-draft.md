@@ -6,7 +6,9 @@ Review draft · Original Claude artifact restored · Static charts, no animation
 
 Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.
 
-We would also like to thank Tufa Labs, whose harness sits at the very heart of our entry, and Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution. Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.
+We would also like to thank you to Tufa Labs, whose harness sits at the very heart of our entry and to Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution.
+
+Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.
 
 **Why a turducken?** A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.
 
@@ -22,13 +24,13 @@ Here's our write-up, in three parts: **the harness**, **the inference optimizati
 
 - **Inference:** 191 speed changes tried, 69 shipped. 2,150 tokens per second over a whole run, 32 games at once. Per 1,000 tokens: decode 1,138 → 330 ms, prefill 259 → 74 ms, overhead 255 → 61 ms.
 
-- **RL:** eight attempts, none beat the base model on Kaggle.
+- **RL:** none of our training attempts beat the base model on Kaggle.
 
 - **Two biggest lessons:**
     - We didn't notice when token quality started to matter. After 56.02, every faster build we shipped scored lower.
     - Limited compute pushed us into overly ambitious RL. None of our attempts worked.
 
-## Harness Iteration
+## The Harness
 
 ![The game-playing harness](01-harness-garage-v2-corners-only.png)
 
@@ -108,7 +110,7 @@ The harness has a handful of dials. These are the ones we actually turned:
 
 - **Window and keep:** when a trim fires (128k, then 140k, paid for with fewer Mamba state slots) and how much history it keeps (58k, then 52k).
 
-- **Slots and queue:** how many games hold a slot (34 admitted, 32 decoding) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.
+- **Slots and queue:** how many games hold a slot (32 lanes decode at once; we overpark to 34 games so the card stays busy while a game runs python) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.
 
 - **Fresh eyes:** how long a level may stay stuck before a wipe (120k tokens), how long the handover note can be (400 words), and how many wipes a level gets (3). Restarting stuck levels on a timer instead lost at every setting we tried.
 
@@ -197,7 +199,7 @@ What the traces told us:
 
 ![The inference stack](02-inference-v1-corners-only.png)
 
-The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours; our 56.02 run took 9 h 13 m. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.
+The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.
 
 One rule came before any change: **is it exact or lossy?** An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The biggest lesson at the end is about the times we bent that rule.
 
@@ -226,7 +228,7 @@ pinned memory outside the card
 **the rest**python sandboxes, page cache
 
 games110 live · 34 admitted · 32 decoding
-clock9 h (our 56.02 run took 9 h 13 m)
+clock9 h
 experts kept341 of 512 per layer, 4-bit (Intel W4A16)
 dense layersint8 weights (one scale per 128 inputs), 8-bit activations above 64 rows
 drafterMTP · 4 draft tokens · per-game verify depth
@@ -597,7 +599,7 @@ Open or download: [vector SVG](charts/original/think.svg) · [high-resolution PN
 | 3-bit + corrector, medium effort | +50.8% | -8.6 | 1,592 / 1,707 vs 1,037 / 1,151; board 40.4 / 43.3 vs 51.9 / 49.0 |
 | RL5 | -47.3% | -22.0 | median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5 |
 
-Why it didn't work for us: the base model was already good at the games, and every training run we did changed **how long the model thinks** before it changed **how well**. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. 1st place saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.
+Why it didn't work for us: the base model was already good at the games, and every training run we did changed **how long the model thinks** before it changed **how well**. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. Another team saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.
 
 ## When speed no longer matters
 
@@ -688,7 +690,7 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 ### 4.3 The rest
 
-- **Count games, not just speed.** 1st place (and 6th) ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.
+- **Count games, not just speed.** Some other teams ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.
 
 - **Measure the whole run, not a step.** Our biggest overhead win was invisible in per-step profiles, and prompt reading (~23% of the run) was invisible in SGLang's own throughput line.
 

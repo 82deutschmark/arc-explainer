@@ -87,3 +87,17 @@ Open harness feedback in these notes: none was outstanding. The earlier harness 
 ## Typo fix in the thanks paragraph · 7 November 2026
 
 Author: Claude Sonnet 5.5 Low. Fixed the doubled "also would also" and the stray "thank you to" in the second opening paragraph: now "We would also like to thank Tufa Labs, ... and Daniel Franzen, ...". Markdown and HTML only; no other wording, chart, artwork or setting changed. Awkward-language list for Son's final reread was given in the Discord thread, nothing else edited.
+
+## Son's answers applied · 7 November 2026
+
+Author: Claude Opus 5.5 Low. Applied Son's answers to the open items (relayed from #publication and #loose-goose).
+
+- Opening: Son's text word for word, with only "also would also" changed to "would also". The previous typo commit had also dropped "thank you to" and reworded "and to Daniel Franzen"; those words are put back as Son wrote them, and "Finally, thank you to the ARC Prize Foundation and Kaggle..." is its own paragraph again, as in his message.
+- Section title: "Harness Iteration" is now "The Harness", per Son ("The next section should be 'The Harness'"). This supersedes the earlier handoff rule to keep the old title.
+- Budget: nine hours only. Both mentions of the 56.02 run's 9 h 13 m (inference opening and the box's clock row) are removed.
+- Experts removed: the prose already said "a third" / 512 → 341, never 30%. Only the inference illustration said "30% EXPERTS REMOVED"; it is relabelled 33% (see the artwork note below).
+- Lanes: 32 lanes decode at once, overparked to 34 games so the card stays busy while games run python. The prose was already accurate ("34 games admitted · 32 decoding", "34 games over 32 lanes"); the dials line now says it in those words. The inference illustration's "34 LANES" label is relabelled 32 LANES. The harness illustration's "34 GAMES / 32 LANES" is correct and untouched.
+- RL count: NOT verified. The TL;DR said "eight attempts" while the RL table has nine rows. The team repository's fine-tuning summary (arc-3, docs/onboarding/fine-tuning.md, last updated 18 Oct) uses a different list: it includes the 27B SFT, the RL v2 turn coach, teacher injection and the Opus live coach, and does not cover RL5, GRPO on the log harness, the correctors, 2-bit distillation or the think-less fine-tunes (the last are public fine-tunes we only tested). No single verified count exists, so the TL;DR now says "none of our training attempts beat the base model on Kaggle" without a number. Son to confirm a count if he wants one.
+- Rival ranks: removed. "1st place saw the same trade" is now "Another team saw the same trade"; "1st place (and 6th) ran all 110 games" is now "Some other teams ran all 110 games". The byline's "5th on the public leaderboard" is our own standing, not a rival's, and is kept.
+- Links and model-name spelling: left as they are (Son does not mind).
+- Keith Tyser: his figure credit stays on the box-diagram caption ("Our box, staircase and cache figures are adapted from Keith Tyser's write-up"), not in Son's opening. No teaser under the title; the 7.36-to-56.02 standfirst stays out.
