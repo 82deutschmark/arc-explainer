@@ -12,8 +12,6 @@ Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our 
 
 ![Team Turducken stuffing engineering into the mechanical turkey](00-turducken-texture-v10.png)
 
-Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learned. We ran about 1,950 full runs on outside compute during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
-
 ### TL;DR
 
 - **Base:** Daniel Franzen's public notebook from 1 October. 110 games on one RTX PRO 6000 in 9 hours.
@@ -404,11 +402,7 @@ Team Turducken is seven people, and none of this happens without every one of th
 - **Mark Barney** — manager.
 - **Mark Barney, NT, ngyzly and Ronen Dunlea** — game makers. The games gave us so much to train and test on.
 
-Thank you all.
-
-Thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. It was a real honor to be in the same competition as them, and we got to meet Dries and Michal. What really got us is how nice they are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
-
-Just as big a thank you goes to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on. They're legends of the ARC community, and as newcomers we've always found them kind, welcoming and easy to reach. Our solution would not have existed without their generous sharing. Like Tufa, they are just really, really great guys.
+Thank you to Tufa Labs, whose harness sits at the heart of our entry. They shared it openly and were generous with what they know, and it was an honor to compete alongside them and to meet Dries and Michal, who were friendly and kind. Thank you also to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on; as newcomers we found them welcoming and easy to reach. Our solution would not have existed without the generous sharing of both teams.
 
 Thank you for a fierce and friendly race to Tufa Labs, Yi-Chia Chen (and Sanbei and Pochi, the rabbits), NVARC, XZ and all the other competitors.
 
