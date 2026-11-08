@@ -9,6 +9,10 @@ PURPOSE: The write-up "Creativity can't be interpolated", the home of it on the 
 Updated: 2026-11-08, Claude Sonnet 5.5 Medium. The Boss: tidy the presentation, talk up the producer and the iteration, say these are
          the best of and were played by people, and that nobody lost a job. Rewritten in his words (his 8-Nov message); the
          research-paper tour and the human-numbers paragraph are cut.
+Updated: 2026-11-08 (later), Claude Sonnet 5.5 Medium. The Boss: lean on Budd and Scarfe's paper, drop the bitterness, keep Boden and the
+         phylogeny out, check the numbers, make it more academic. Paper claims read from the MLST archive page and full text; ARC's
+         claims from arXiv 2603.24621 (section 3.6, the ten-person calibration); counts from the live player on 8-Nov-2026
+         (1,358 games incl. 25 public; 800 ai-generated + 252 redbluepill; 46 approved).
 SRP/DRY check: Pass - text only, one copy. The playable games under it belong to Arc3Why.
 */
 import React from 'react';
@@ -22,32 +26,28 @@ const LINK = 'underline underline-offset-2';
 export default function Arc3WhyContent() {
   return (
     <article className="text-[18px] leading-[1.65]" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-      <h1 className="text-[40px] sm:text-[56px] font-bold leading-[1.05] tracking-[-1px] mb-3">The best of, after a lot of playing.</h1>
-      <p className="text-[21px] leading-[1.4] mb-8 opacity-70">A game producer, a pile of coding agents, and the games that survived being played by people.</p>
+      <h1 className="text-[40px] sm:text-[56px] font-bold leading-[1.05] tracking-[-1px] mb-3">Slop, constraints, and a person in the loop.</h1>
+      <p className="text-[21px] leading-[1.4] mb-8 opacity-70">Notes from a game production pipeline, after Budd and Scarfe’s “Why Creativity Cannot Be Interpolated.”</p>
 
-      <P>I’m a video game producer. I’ve produced games at a AAA studio that will stay nameless, and I learned to write code in the ’80s for one reason: I wanted to make games. I’m still not a great programmer. I don’t need to be. What I know is what makes a game work, what makes it confusing, and when it’s done.</P>
+      <P>I’m a video game producer. I’ve produced games at a AAA studio that will stay nameless, and for this project I directed a team of coding agents and a few collaborators, Son and Ronen among them. This page explains what we made, why most of it was thrown away, and why the rest looks the way it does. The explanation is not mine. It comes from a paper by two friends of mine, Dr. Jeremy Budd and Dr. Tim Scarfe of Machine Learning Street Talk: <a className={LINK} href="https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/">Why Creativity Cannot Be Interpolated</a> (2026). What follows is a report on how its argument held up in a workshop.</P>
 
-      <H2>These are the best of</H2>
-      <P>I looked at the other synthetic game sets out there. They’re nice, and they’re procedurally generated, obviously. Not one of them had human plays, and I’d bet not one was fun. Nobody had iterated on them. Somebody pointed a machine at the problem and shipped what came out.</P>
-      <P>These are different. Every game on this page is the result of real human iteration, mostly mine. Someone played a version, said what was wrong, the agents fixed it, and someone played it again. LT03 went through eight versions. I’m proud of these.</P>
+      <H2>What the paper claims</H2>
+      <P>The paper’s central claim is that novelty is not creativity. A system can produce output that is new, one piece at a time, and still not be creative, because genuine creativity requires respect for the constraints of the domain it works in. Budd and Scarfe call “slop” the conjugate failure: what you get when novelty is not constrained by understanding.</P>
+      <P>Two further claims matter here. First, current AI is only meaningfully creative under human supervision. A model is coherent within any single frame but has no trajectory of its own, and its output resolves into a coherent whole only when a competent person supplies the grounding. Second, human and AI co-creation is the most promising path, with a warning attached: done well it offers a fresh perspective, done badly it reduces the work to slop. In the authors’ phrasing, “AI amplifies what you bring to it.” They also caution against wild extrapolation from today’s systems to near-term labour-market disruption.</P>
 
-      <H2>Nobody lost their job</H2>
-      <P>The games industry is at a turning point with AI in production and AI art, and I know a lot of people are scared. So let me say it plainly: no artists lost their jobs here. No programmers lost theirs. Nobody did. All that happened is that I got to iterate faster, much faster.</P>
-      <P>Iteration speed is what game development comes down to. Historically you either had a cracked solo developer from the early days, or a big corporate studio with the people and the time. What these tools gave me is the speed of the first with the discipline of the second: the producer’s job, run at a pace that wasn’t possible before.</P>
+      <H2>The constraints of this domain</H2>
+      <P>ARC-AGI-3 states its constraints. Each environment was attempted by ten people, and only environments fully solved by at least two of them, independently and on a first look, were admitted. The private games are harder than the public ones but remain solvable by people. The public set is, in ARC’s words, intentionally easier, with a stronger emphasis on clarity and fun (<a className={LINK} href="https://arxiv.org/abs/2603.24621">the ARC-AGI-3 paper</a>, section 3.6). A game that belongs in this domain is therefore one that a person can pick up cold and figure out, that is hard for an AI, and, in the public set, pleasant to play.</P>
+      <P>By the paper’s definition, a game that breaks these constraints is slop however new it looks. Many of the synthetic game sets I examined appear to break them in the most basic way. A solver or a scripted solution shows that a game can be won, which says nothing about whether a person can work it out, and none of the sets I looked at published a record of people playing. Several look easier for a program than for a person, which is the reverse of what the domain asks for.</P>
 
-      <H2>They laughed</H2>
-      <P>A year and a half ago, when these coding tools were taking off, software engineers laughed at them. A lot of them laughed at me for using them. What could a video game producer, a project manager, possibly know about building anything?</P>
-      <P>It turns out quite a bit. The agents write the code. They don’t notice that a game is dull, or confusing, or has nothing new in it. That takes someone who has spent a career shipping games. Running a pipeline of AI tools well is a producer’s skill.</P>
+      <H2>What we found when we counted</H2>
+      <P>We were no exception. The player on this site now holds 1,358 of our games, which includes the 25 public ones. Of the rest, about a thousand came out of batch generators. Forty-six are approved, and those are the games on this page. More than nine in ten of what we made did not survive being played. The paper would predict that outcome: generation without understanding gives you volume, and judging the volume is a separate job that needs a person.</P>
 
-      <H2>What slop is, and why most of ours was</H2>
-      <P>Dr. Tim Scarfe of Machine Learning Street Talk has a clean way to say what slop is: something that looks new but doesn’t respect the constraints of its domain. ARC-AGI-3 has constraints. A game has to be easy for a person and hard for an AI. The public 25 also had to be at least reasonably fun, and a person had to be able to figure each one out.</P>
-      <P>A lot of the synthetic sets I saw would probably be easier for an AI than for a person. That breaks the first rule of the domain, and it’s why they’re slop. We were no different. We made more than thirteen hundred games for the player, and about ninety-five out of every hundred were slop by that test. Only the ones people played, fixed and kept are on this page. (The careful version is <a className={LINK} href="https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/">Why Creativity Cannot Be Interpolated</a>, by Dr. Jeremy Budd and Dr. Scarfe.)</P>
+      <H2>Method: the person is the outside check</H2>
+      <P>Our pipeline follows the paper’s division of labour. The agents write the code and the art. A person plays each version, says what is unclear, dull or derivative, and decides what is kept. The lock-target line went through eight versions on the way to LT03 that way, and most of the feedback on all of these games is mine. The agents supplied speed. I supplied what the paper calls grounding, and what Kenneth Stanley, whom the authors cite, calls a nose for the interesting. A producer’s job, which is to say what a game is for and when it is finished, turns out to be the job the paper assigns to the human.</P>
+      <P>The same reading applies to the question everyone in games is asking. In this project no artist and no programmer lost a job. What changed is how fast one person could iterate. That is a modest claim about one workshop, and it is consistent with the paper’s caution against sweeping forecasts: its authors note that spreadsheets did not lead to fewer accountants.</P>
 
-      <H2>If you’re coming from ARC-AGI-3</H2>
-      <P>ARC calls its 25 public games intentionally easier, and says they don’t fully cover the mechanics of the private set (<a className={LINK} href="https://arxiv.org/abs/2603.24621">its own paper</a>, section 3.6). Beating all 25 is the tutorial level. These games are built to be hard for an AI in ways a person finds easy, and people have played and reworked every one.</P>
-
-      <H2>Whose games these are</H2>
-      <P>Not all of them are mine. Some came from Son and Ronen, and some of Son’s came out of his own head. Some started as GPT and Claude output that people then played and reworked. I can’t promise any idea is new. I can promise people played them and kept sending them back until they worked.</P>
+      <H2>Limits</H2>
+      <P>Not every game here is mine. Some came from Son and Ronen, and some started as GPT or Claude output that people then played and reworked. I cannot promise any idea is new. The working bet is that games a person played and fixed make better practice for an agent than games only a program checked. Nobody has measured that yet, and nothing on this page claims it.</P>
     </article>
   );
 }
