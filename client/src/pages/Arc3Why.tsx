@@ -14,8 +14,8 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function Arc3Why() {
   usePageMeta({
-    title: "Creativity can't be interpolated | ARC Explainer",
-    description: 'Why our synthetic ARC-AGI-3 games were made the slow way, with a person in the loop, and the games to play.',
+    title: "The best of, after a lot of playing | ARC Explainer",
+    description: 'The best of our synthetic ARC-AGI-3 games, made by a game producer with coding agents and played by people, and the games to play.',
     canonicalPath: '/arc3/why',
   });
   const { games, isLoading } = useApprovedGames();
