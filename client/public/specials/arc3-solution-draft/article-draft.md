@@ -545,7 +545,11 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 ### Thanks again
 
-Thanks for reading. It was a wild ride, and we'd do it again. Thank you to Kaggle for the infrastructure and a great competition.
+Thanks for reading. It was a wild ride, and we'd do it again.
+
+Turducken is a crew of seven, and none of this happens without every one of them. Keith Tyser, thank you for the sandbox work, the training code and all the speed experiments. Slow∞Loop, thank you for the structured memory work. NT and ngyzly, thank you for the games you built, which gave us so much to train and test on. Ronen Dunlea, thank you for the batch of games you added. And Mark Barney, thank you for being on this crew with us.
+
+Thank you to Kaggle for the infrastructure and a great competition.
 
 ![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
 
