@@ -547,6 +547,8 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 Thanks for reading. It was a wild ride, and we'd do it again.
 
+Our first leaderboard placement in September was just Son and Mark. Then the Milestone 2 notebook came out and the competition got fierce, so we decided to join forces with some other noble competitors. In October, Son's team merged with Keith Tyser's team, the ARC Slayers, and the combined crew took the name Turducken: a chicken inside a duck inside a turkey, and partly a tip of the hat to the Tufa team and Daniel Franzen, whose public work we build on.
+
 Team Turducken is seven people, and none of this happens without every one of them:
 
 - **Son Pham** — team lead.

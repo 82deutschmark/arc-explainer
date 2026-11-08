@@ -164,3 +164,5 @@ Rabbit name corrected: "Sanday" was a typo; the rabbits are Sanbei and Pochi (Bo
 - 08-Nov-2026 (Claude Sonnet 5.5): Mark Barney added as third author on request (his government name); removed his line from the crew thanks. Byline: Son Pham, Keith Tyser and Mark Barney.
 
 - 08-Nov-2026 (Claude Sonnet 5.5): Son supplied the roster and roles (lead; harness and inference; RL; manager; game makers). Byline now lists all seven; crew thanks replaced by a roster list. Ronen printed as Ronen Dunlea at the Boss's request. NT, ngyzly and Slow Loop still nicknames.
+
+- 08-Nov-2026 (Claude Sonnet 5.5): Added how-the-team-came-together paragraph. September placement and Milestone 2 notebook: the Boss's own account in chat (not independently checked). October merger with Keith Tyser's ARC Slayers and the name Turducken: Loose Goose wiki dispatch 2026-10-18-arc3-superteam-merger-official (team's own messages of 18 Oct). Wiki also lists kawaimahiro as the fourth Slayers member; roster count suggests it is the ngyzly account but that is unconfirmed, so no names changed.
