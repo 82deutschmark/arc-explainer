@@ -124,13 +124,15 @@ Most of these are lossy: they change what the model says, so the only way to jud
 
 ### 1.2 How we measure performance
 
-Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on outside-compute boxes with the same RTX PRO 6000. The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
+Kaggle only gives us one submission a day, and a single score from it carries way too much variance to tell us whether an idea actually helped. So we did the measuring ourselves, locally, before spending a submission.
 
-Board noise, from 8 identical controls: one standard deviation is 1.9 points, so two runs only see effects of about 4 points. Most harness ideas were smaller than that, and Kaggle is noisy too: the same package resubmitted moved 3.4. We never had a ruler fine enough to see small changes. (Our later authored games are public in the [ARC-3 Synthetic Games repository](https://github.com/82deutschmark/arc3-synthetic-games); they are not the copycats measured here.)
+We started with the 25 public games on a 132-minute clock. Once we pushed to 32 lanes, 25 games weren't enough to keep every lane busy, so we built "copycat" games, one for each public game, and ran all 50 together. We called this **Score Climb**: 50 games, 2 to 4 hours per run, 32 lanes, on outside-compute boxes with the same RTX PRO 6000. Then we ran every idea 2 to 4 times, so we could tell a real improvement from plain luck. The loop: **idea → 2 to 4 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
+
+The catch is noise. Across 8 identical controls, one standard deviation was 1.9 points, so two runs only see effects of about 4 points. Most harness ideas were smaller than that, and Kaggle is noisy too: resubmitting the same package moved 3.4. Honestly, we never had a ruler fine enough to see small changes. (Our later authored games are public in the [ARC-3 Synthetic Games repository](https://github.com/82deutschmark/arc3-synthetic-games); they are not the copycats measured here.)
 
 ### 1.3 Performance so far
 
-What moved our Kaggle score, against the package each change was added to:
+So what actually moved the needle on Kaggle? Here are the changes that did, each one measured against the package it was added to:
 
 - **Notes memory: +8.8**, our biggest gain (the same package also restored exact draft acceptance).
 
