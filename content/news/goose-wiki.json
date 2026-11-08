@@ -11993,7 +11993,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "890a06d879bc7cb4fa66712fa61fdac453f7fa3ae6a2b0ab294234b396e16c1e",
+  "fingerprint": "5e5fa7269655d9e05f89c4b7d5a10071f78ff4c5036b7a10eab86d2c09da4e93",
   "people": [
     {
       "accounts": [
@@ -12594,19 +12594,19 @@
           "url": "https://www.kaggle.com/ngyzly"
         }
       ],
-      "briefing": "Cho Royou competes on Kaggle as ngyzly and appears on the dated Team Turducken ARC-3 roster.",
+      "briefing": "ngyzly is a Kaggle competitor on the dated Team Turducken ARC-3 roster.",
       "facts": [
         {
           "checkedAt": "2026-11-05T23:37:25.158176+00:00",
           "sourceTitle": "Kaggle profile",
           "sourceUrl": "https://www.kaggle.com/ngyzly",
-          "text": "The public Kaggle profile displays Cho Royou for the account ngyzly. A brown-and-black tabby cat with a white bib, black glasses and a knitted hood."
+          "text": "The public Kaggle profile for ngyzly shows a brown-and-black tabby cat with a white bib, black glasses and a knitted hood."
         }
       ],
       "hallOfFame": [],
       "id": "cho-royou",
       "memberships": [],
-      "name": "Cho Royou"
+      "name": "ngyzly"
     },
     {
       "accounts": [
@@ -22463,7 +22463,7 @@
       },
       {
         "art": {
-          "alt": "2026-10-30-dz-retro-space-v1",
+          "alt": "Slow∞Loop as a blonde retro space heroine holding a pink plush rabbit, with a graphics card and a round screen console",
           "artworkId": "2026-10-30-dz-retro-space-v1",
           "commissionedAt": "2026-11-05T23:35:36+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
@@ -22498,7 +22498,7 @@
       },
       {
         "art": {
-          "alt": "Cho Royou — ARC cat character",
+          "alt": "ngyzly as a brown tabby cat with a white bib, black glasses and a knitted brown hood, among ARC puzzle grids and graphics cards",
           "artworkId": "cho-royou-cat-v1",
           "commissionedAt": "2026-11-05T23:39:10+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
@@ -22515,7 +22515,7 @@
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/turducken-team-v3.webp"
         },
-        "description": "Cho Royou competes on Kaggle as ngyzly and appears on the dated Team Turducken ARC-3 roster.",
+        "description": "ngyzly is a Kaggle competitor on the dated Team Turducken ARC-3 roster.",
         "entries": [
           {
             "competition": "arc-3",
@@ -22526,17 +22526,17 @@
         "id": "person-cho-royou-arc-3-2026",
         "issuedAt": "2026-11-05T23:37:26+00:00",
         "kind": "person",
-        "name": "Cho Royou",
+        "name": "ngyzly",
         "personId": "cho-royou",
         "season": "2026",
         "setId": "arc-3-2026"
       },
       {
         "art": {
-          "alt": "Ronen — Herminator ARC-3 character",
+          "alt": "Herminator, a knight in silver-blue armor with a cobalt plume, among ARC puzzle grids and graphics cards",
           "artworkId": "ronen-herminator-v1",
           "commissionedAt": "2026-11-06T21:25:11+00:00",
-          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "credit": "Herminator, the agreed stand-in character for Ronen, not a likeness; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/ronen-herminator-v1.webp"
         },
         "artFallback": "none",
@@ -22550,6 +22550,7 @@
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/turducken-team-v3.webp"
         },
+        "biography": "Pictured as Herminator, the silver-and-cobalt plumed knight the team agreed on as his stand-in character. The picture is not a likeness of Ronen.",
         "description": "Ronen Dunlea competes on Kaggle as scizical and appears on the dated Team Turducken ARC-3 roster.",
         "entries": [
           {
@@ -24730,7 +24731,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-07T23:19:33+00:00",
+    "updatedAt": "2026-11-08T07:01:58+00:00",
     "version": 1
   },
   "results": [],
