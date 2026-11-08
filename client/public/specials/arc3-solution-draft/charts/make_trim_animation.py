@@ -1,7 +1,7 @@
-"""Author: Claude Opus 5.5 Medium
+"""Author: Claude Opus 5.5 Medium (60 frames a second: Claude Opus 5.5 Low, 08-November-2026)
 Date: 07-November-2026
 PURPOSE: Render the "Trimming and swapping, animated" figure of Son Pham's "Stuffing the
-Turducken" special (section 1.1, "Trim, swap and wipe", in
+Turducken" special (section 1.1, "Context management", in
 client/public/specials/2026-11-06-arc3-solution-draft.html and article-draft.md). The original
 Claude artifact showed a looping video (charts/trim.webm / trim.gif) that is not on this machine,
 so this is a faithful recreation from that figure's archived caption and alt text:
@@ -43,9 +43,9 @@ OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
 
 W, H = 1280, 960
 S = 2                      # supersampling factor
-FPS = 15
+FPS = 60                   # 60 frames a second (Son, 8 Nov); was 15
 LOOP = 18.0                # seconds; every motion below is periodic in LOOP
-NFRAMES = int(LOOP * FPS)  # 270; frame NFRAMES would equal frame 0, so it is not drawn
+NFRAMES = int(LOOP * FPS)  # 1,080; frame NFRAMES would equal frame 0, so it is not drawn
 POSTER_T = 11.7            # window full and the next turn won't fit; a swap in flight on the right
 
 # Warm "turducken workshop" palette, copied from the page's CSS overrides.
@@ -612,11 +612,16 @@ def main():
         pool.map(_frame, range(NFRAMES))
     render(POSTER_T).save(HERE / 'trim-poster.png', optimize=True)
     files = [str(frames / f'f{n:04d}.png') for n in range(NFRAMES)]
-    delay = round(1000 / FPS)
-    # lossless: flat art compresses better than lossy here (about 2 MB), and lossy left faint
-    # ghosts of earlier frames' labels in the blended sub-frames
-    subprocess.run(['img2webp', '-loop', '0', '-lossless', '-m', '4', '-d', str(delay),
-                    *files, '-o', str(HERE / 'trim.webp')], check=True, capture_output=True)
+    # WebP frame durations are whole milliseconds and 1000/60 is not, so each frame gets the
+    # cumulative-rounded share of the loop (16 or 17 ms) and the loop still lasts exactly LOOP s.
+    args = []
+    for n, f in enumerate(files):
+        d = round((n + 1) * 1000 / FPS) - round(n * 1000 / FPS)
+        args += ['-d', str(d), f]
+    # lossless: flat art compresses better than lossy here, and lossy left faint ghosts of
+    # earlier frames' labels in the blended sub-frames
+    subprocess.run(['img2webp', '-loop', '0', '-lossless', '-m', '4', *args,
+                    '-o', str(HERE / 'trim.webp')], check=True, capture_output=True)
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', str(FPS), '-i',
                     str(frames / 'f%04d.png'), '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuv420p',
                     '-b:v', '0', '-crf', '28', str(OUT_DIR / 'trim.webm')], check=True)

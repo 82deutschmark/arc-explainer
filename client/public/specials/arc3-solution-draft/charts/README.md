@@ -40,4 +40,4 @@ Son asked that the charts stop saying "board" and say "offline evaluation". `rew
 
 ## Trimming and swapping, animated (added 7 November 2026, Claude Opus 5.5 Medium)
 
-`trim.webp` (animated, looping, 1280x960, 15 fps, 18 s) and `trim-poster.png`, built by `python3.13 make_trim_animation.py`. A recreation of the original artifact's lost trim video from its archived caption and alt text, not the original file. Fixed numbers are the 56.02 settings; turn sizes, growth and swap timing are illustrative. Frames and a webm master go to the Team 4TB drive (path in the script header), never to git. Writes only those two files here.
+`trim.webp` (animated, looping, 1280x960, 60 fps since 8 Nov, 18 s, about 6.4 MB lossless) and `trim-poster.png`, built by `python3.13 make_trim_animation.py`. A recreation of the original artifact's lost trim video from its archived caption and alt text, not the original file. Fixed numbers are the 56.02 settings; turn sizes, growth and swap timing are illustrative. Frames and a webm master go to the Team 4TB drive (path in the script header), never to git. Writes only those two files here.
