@@ -1,3 +1,7 @@
+### Version 9.163.0 · November 7, 2026
+
+- Fast publishing for special pages: an authenticated `PUT /api/specials/file` writes an edited /specials/ file (html, md, images, csv, json; nested paths, traversal-safe, 15 MB cap) onto the Railway volume, and a layer ahead of the static handler serves it with no-cache, falling back to the baked files. Pushed copies last until the next deploy, so git stays the record. New `tools/specials-publish/publish_specials.py` pushes changed files and checks the live copy once. Why: Son asked for Turducken edits to go live in seconds instead of after a full repo build. Reuses the arc3 admin token; tests in `tests/unit/specialsOverlay.test.ts`; doc `docs/reference/api/specials-fast-publish.md`. Author: Claude Opus 5.5 Low.
+
 ### Version 9.162.36 · November 7, 2026
 
 - Turducken special: correct the inference illustration's labels to "33% EXPERTS REMOVED" and "32 LANES" in a new file (02-inference-v2), keeping the original artwork's pixels and texture everywhere outside the two signs; the earlier file is kept. Markdown, page, review notes and the canonical ZIP point at the new file. Author: Claude Opus 5.5 Low.

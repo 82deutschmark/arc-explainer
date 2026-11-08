@@ -30,6 +30,8 @@ import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
 import { syncContributors } from './scripts/seedContributors.ts';
 import { metaTagInjector, seoRouting, seoHostPolicy } from './middleware/metaTagInjector.js';
+import { specialsOverlay } from './middleware/specialsOverlay';
+import { pruneOldOverlays } from './services/specialsOverlay';
 import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -197,6 +199,13 @@ const initServer = async () => {
     logger.info(`Production mode: serving static files from ${staticPath}`, 'server');
 
     app.use(seoRouting);
+
+    // Special pages pushed through PUT /api/specials/file this deployment win over the baked
+    // copy; everything else falls through to the static handler below unchanged.
+    app.use('/specials', specialsOverlay);
+    pruneOldOverlays()
+      .then(removed => removed.length && logger.info(`Pruned ${removed.length} old specials overlay folder(s)`, 'server'))
+      .catch(error => logger.warn(`Specials overlay prune failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`, 'server'));
 
     // Serve static files (e.g., assets, css, js)
     // Use explicit index: false to prevent express from serving index.html directly

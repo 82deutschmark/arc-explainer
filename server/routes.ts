@@ -53,6 +53,7 @@ import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 import kaggleRouter from "./routes/kaggle";
 import teamRunsRouter from "./routes/teamRuns";
+import specialsPublishRouter from "./routes/specialsPublish";
 import teamEvalsRouter from "./routes/teamEvals";
 import teamAuthRouter from "./routes/teamAuth";
 
@@ -135,6 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/kaggle", kaggleRouter);
   // Team-only Kaggle runs record, behind the team sign-in (2026-10-19).
   app.use("/api/team", teamRunsRouter);
+  app.use("/api/specials", specialsPublishRouter);
   // Team-only ARC-AGI-2 eval runs and their reasoning traces (2026-10-21).
   app.use("/api/team", teamEvalsRouter);
   // Private reference content is stored in the database, never public assets.
