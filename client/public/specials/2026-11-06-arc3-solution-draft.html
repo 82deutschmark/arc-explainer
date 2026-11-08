@@ -319,11 +319,11 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <h4>What we can change</h4>
 <p>The harness has a handful of dials. These are the ones we actually turned:</p>
 <ul>
-<li><strong>Window and keep:</strong> when a trim fires (128k, then 140k, paid for with fewer Mamba state slots) and how much history it keeps (58k, then 52k).</li>
-<li><strong>Slots and queue:</strong> how many games hold a slot (32 lanes decode at once; we overpark to 34 games so the card stays busy while a game runs python) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.</li>
-<li><strong>Fresh eyes:</strong> how long a level may stay stuck before a wipe (120k tokens), how long the handover note can be (400 words), and how many wipes a level gets (3). Restarting stuck levels on a timer instead lost at every setting we tried.</li>
-<li><strong>Notes:</strong> what the model must write (goal first), how long notes are shown in full before head + tail (6,000 characters), and whether notes are per game or shared. Shared notes and fancier memory did no better.</li>
-<li><strong>Sampling and thinking:</strong> temperature (0.8 → 0.6 → 0.5), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.</li>
+<li><strong>Window and keep:</strong> when a trim fires (128k in Daniel's notebook) and how much history it keeps (58k).</li>
+<li><strong>Slots and queue:</strong> how many games hold a slot (Daniel's notebook ran 10 at once) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.</li>
+<li><strong>Fresh eyes:</strong> how long a level may stay stuck before a wipe, how long the handover note can be, and how many wipes a level gets. Restarting stuck levels on a timer instead lost at every setting we tried.</li>
+<li><strong>Notes:</strong> what the model must write, how long notes are shown in full before they are cut to head + tail, and whether notes are per game or shared. Shared notes and fancier memory did no better.</li>
+<li><strong>Sampling and thinking:</strong> temperature (0.7 in Daniel's notebook), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.</li>
 <li><strong>What a turn shows:</strong> how much text repeats every turn (lean turns), and whether every frame of an in-game animation is shown.</li>
 </ul>
 <p>Most of these are lossy: they change what the model says, so the only way to judge one is to play games with it. That is where the hard part was.</p>

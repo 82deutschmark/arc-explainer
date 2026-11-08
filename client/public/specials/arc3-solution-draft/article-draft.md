@@ -108,15 +108,15 @@ Trim counts from the 56.02 board twin's server log: prompt reads of 20k+ tokens 
 
 The harness has a handful of dials. These are the ones we actually turned:
 
-- **Window and keep:** when a trim fires (128k, then 140k, paid for with fewer Mamba state slots) and how much history it keeps (58k, then 52k).
+- **Window and keep:** when a trim fires (128k in Daniel's notebook) and how much history it keeps (58k).
 
-- **Slots and queue:** how many games hold a slot (32 lanes decode at once; we overpark to 34 games so the card stays busy while a game runs python) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.
+- **Slots and queue:** how many games hold a slot (Daniel's notebook ran 10 at once) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.
 
-- **Fresh eyes:** how long a level may stay stuck before a wipe (120k tokens), how long the handover note can be (400 words), and how many wipes a level gets (3). Restarting stuck levels on a timer instead lost at every setting we tried.
+- **Fresh eyes:** how long a level may stay stuck before a wipe, how long the handover note can be, and how many wipes a level gets. Restarting stuck levels on a timer instead lost at every setting we tried.
 
-- **Notes:** what the model must write (goal first), how long notes are shown in full before head + tail (6,000 characters), and whether notes are per game or shared. Shared notes and fancier memory did no better.
+- **Notes:** what the model must write, how long notes are shown in full before they are cut to head + tail, and whether notes are per game or shared. Shared notes and fancier memory did no better.
 
-- **Sampling and thinking:** temperature (0.8 → 0.6 → 0.5), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.
+- **Sampling and thinking:** temperature (0.7 in Daniel's notebook), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.
 
 - **What a turn shows:** how much text repeats every turn (lean turns), and whether every frame of an in-game animation is shown.
 
