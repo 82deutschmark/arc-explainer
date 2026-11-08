@@ -13,9 +13,10 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
              Kaggle cannot run the page's player script, so both animated figures are shown as
              rendered GIFs (Round 11: charts/trim.gif from make_trim_animation.py, charts/turn.gif
              from make_turn_video.py), each followed by one line linking its MP4 and the live
-             interactive figure (the MP4 plays on the unlisted page 2026-11-06-arc3-solution-draft-videos.html). The walkthrough's player block is set aside first. The GIFs and MP4s
+             interactive figure (the MP4 plays on the unlisted page 2026-11-06-arc3-solution-draft-videos.html,
+             which this script also writes). The walkthrough's player block is set aside first. The GIFs and MP4s
              are linked from the public GitHub repository (raw.githubusercontent.com serves GIFs as
-             images), because the site's fast-publish route takes no .gif or .mp4 files; the site
+             images), pinned to the commit that last changed each file, because the site's fast-publish route takes no .gif or .mp4 files; the site
              itself serves them under /specials/ once the next deploy carries the commit. Site-only lines (the nav and the "Review draft" banner) are dropped.
            - article-kaggle.txt: the same bytes, so browsers show it as text instead of downloading.
            - ../2026-11-06-arc3-solution-draft-kaggle.html: a tiny unlisted, noindex page with a
@@ -34,6 +35,7 @@ from __future__ import annotations
 
 import html
 import re
+import subprocess
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -48,11 +50,13 @@ OUT_MD = HERE / "article-kaggle.md"
 OUT_TXT = HERE / "article-kaggle.txt"
 OUT_PAGE = HERE.parent / "2026-11-06-arc3-solution-draft-kaggle.html"
 ANIMATION = "arc3-solution-draft/charts/trim.webp"
-# Rendered copies of the two animated figures (Round 11), served from the public repository.
-REPO_RAW = "https://raw.githubusercontent.com/82deutschmark/arc-explainer/main/client/public/specials/"
+# Rendered copies of the two animated figures (Round 11), served from the public repository at the commit
+# that last changed each file, so a later push, rename or history rewrite on main cannot break a pasted copy.
+REPO_RAW = "https://raw.githubusercontent.com/82deutschmark/arc-explainer/{sha}/client/public/specials/{rel}"
 # GitHub's own file page will not play an MP4 this size, so "watch as video" goes to a small unlisted page
-# that plays the raw files (2026-11-06-arc3-solution-draft-videos.html, hand-written).
-VIDEOS = BASE + "2026-11-06-arc3-solution-draft-videos.html"
+# that plays the raw files; this script writes it (OUT_VIDEOS) with the same pinned addresses.
+OUT_VIDEOS = HERE.parent / "2026-11-06-arc3-solution-draft-videos.html"
+VIDEOS = BASE + OUT_VIDEOS.name
 TRIM_GIF, TRIM_MP4 = "arc3-solution-draft/charts/trim.gif", "arc3-solution-draft/charts/trim.mp4"
 TRIM_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-trim"
 TRIM_VIDEO = VIDEOS + "#trim"
@@ -63,14 +67,25 @@ TURN_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn"
 TURN_VIDEO = VIDEOS + "#turn"
 
 
+def pinned(rel: str) -> str:
+    """Raw GitHub address of a committed file at the commit that last changed it. Stops if the file is
+    missing, differs from that commit, or the commit is not on origin/main yet (commit and push first)."""
+    path = HERE.parent / rel
+    if not path.is_file():
+        raise Fail(f"Rendered animation missing: {rel}")
+    git = ["git", "-C", str(HERE)]
+    sha = subprocess.run([*git, "log", "-1", "--format=%H", "--", str(path)], capture_output=True, text=True).stdout.strip()
+    if not sha or subprocess.run([*git, "diff", "--quiet", "HEAD", "--", str(path)]).returncode != 0:
+        raise Fail(f"{rel} is not committed as it is on disk; commit and push it first")
+    if subprocess.run([*git, "merge-base", "--is-ancestor", sha, "origin/main"]).returncode != 0:
+        raise Fail(f"The commit holding {rel} is not on origin/main; push it first")
+    return REPO_RAW.format(sha=sha, rel=rel)
+
+
 def rendered(gif: str, mp4: str, video: str, page: str, alt: str) -> list[str]:
     """A rendered GIF of an animated figure, then one line with its MP4 and the live figure."""
-    for f in (gif, mp4):
-        if not (HERE.parent / f).is_file():
-            raise Fail(f"Rendered animation missing: {f}")
-    if REPO_RAW + mp4 not in (HERE.parent / VIDEOS.removeprefix(BASE)).read_text():
-        raise Fail(f"The videos page does not play {mp4}")
-    return [f"[![{alt}]({REPO_RAW + gif})]({page})",
+    pinned(mp4)   # the videos page plays it; stop here if it is not committed and pushed
+    return [f"[![{alt}]({pinned(gif)})]({page})",
             f"*Animated GIF of the figure. [Watch it as an MP4 video]({video}) or "
             f"[see the live figure on the article page]({page}).*"]
 TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=<figcaption>)', re.S)
@@ -436,6 +451,59 @@ document.getElementById('copy').addEventListener('click', async () => {{
 """
 
 
+VIDEOS_PAGE = '''<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="noindex, nofollow" name="robots">
+<title>Stuffing the Turducken: the two animated figures as video</title>
+<!--
+Made by arc3-solution-draft/make_kaggle_markdown.py; do not edit by hand.
+Author: Claude Opus 5.5 Medium (Round 11)
+Date: 08-November-2026
+PURPOSE: Unlisted page that plays the rendered MP4s of the two animated figures of the Turducken
+write-up (charts/trim.mp4 from make_trim_animation.py, charts/turn.mp4 from make_turn_video.py), for
+the "watch it as an MP4 video" links in the Kaggle copy (make_kaggle_markdown.py). The videos and GIFs
+are served from the public GitHub repository because the site's fast-publish route takes no .mp4 or
+.gif files; GitHub's own file page will not play an MP4 this size, but a video element plays the raw
+file. Addresses are pinned to the commit that last changed each file. Styled in the figures' own look
+(dark navy, monospace).
+SRP/DRY check: Pass - written with the Kaggle copy so both use the same pinned addresses.
+-->
+<style>
+body{{margin:0;background:#080c16;color:#e2e6ee;font:14px/1.55 ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace}}
+main{{max-width:1000px;margin:0 auto;padding:24px 20px 60px}}
+h1{{font-size:18px;font-weight:700;margin:0 0 4px}}
+p{{color:#b9c2d1;margin:0 0 20px}}
+a{{color:#93c5fd}}
+section{{border:1px solid #2c3a54;border-radius:6px;background:#0c1220;margin:0 0 28px;overflow:hidden}}
+section h2{{margin:0;padding:7px 12px;background:#101828;border-bottom:1px solid #212d42;font-size:13px;font-weight:600}}
+video{{display:block;width:100%;height:auto;background:#080c16}}
+.links{{padding:8px 12px;border-top:1px solid #212d42;color:#7d899c;font-size:12px}}
+</style></head>
+<body><main>
+<h1>Stuffing the Turducken: the two animated figures as video</h1>
+<p>Rendered copies of the two animated figures in the write-up, for places that cannot run the page.
+The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">article page</a>.</p>
+<section id="turn">
+<h2>One turn of the harness, from a saved run <span style="color:#7d899c;font-weight:400">· Locksmith, level 1</span></h2>
+<video controls loop muted playsinline preload="metadata" width="1280" height="962"
+  src="{turn_mp4}"></video>
+<div class="links"><a href="{turn_mp4}">MP4</a> ·
+<a href="{turn_gif}">GIF</a> ·
+<a href="2026-11-06-arc3-solution-draft.html#fig-turn">live figure</a></div>
+</section>
+<section id="trim">
+<h2>Context management, animated</h2>
+<video controls loop muted playsinline preload="metadata" width="1280" height="980"
+  src="{trim_mp4}"></video>
+<div class="links"><a href="{trim_mp4}">MP4</a> ·
+<a href="{trim_gif}">GIF</a> ·
+<a href="2026-11-06-arc3-solution-draft.html#fig-trim">live figure</a></div>
+</section>
+</main></body></html>
+'''
+
+
 def main() -> int:
     builder = TreeBuilder()
     try:
@@ -452,8 +520,11 @@ def main() -> int:
     OUT_MD.write_text(md, encoding="utf-8")
     OUT_TXT.write_text(md, encoding="utf-8")
     OUT_PAGE.write_text(PAGE.format(md_escaped=html.escape(md), preview=md_to_html(md)), encoding="utf-8")
+    OUT_VIDEOS.write_text(VIDEOS_PAGE.format(
+        turn_mp4=pinned(TURN_MP4), turn_gif=pinned(TURN_GIF), trim_mp4=pinned(TRIM_MP4), trim_gif=pinned(TRIM_GIF)),
+        encoding="utf-8")
     images = len(re.findall(r"!\[", md))
-    print(f"Wrote {OUT_MD.name}, {OUT_TXT.name} and {OUT_PAGE.name}: {images} images, all links absolute.")
+    print(f"Wrote {OUT_MD.name}, {OUT_TXT.name}, {OUT_PAGE.name} and {OUT_VIDEOS.name}: {images} images, all links absolute.")
     return 0
 
 
