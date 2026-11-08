@@ -32,9 +32,9 @@ async function run(){
  for(const el of d.querySelectorAll('*'))for(const at of [...el.attributes])if(/^on/i.test(at.name)||at.name.startsWith('data-a'))el.removeAttribute(at.name);
  d.querySelector('#fig-trim').remove(); // The following static trim/swap/wipe panel conveys the same actual settings without illustrative motion.
  d.querySelector('h1').textContent='Stuffing the Turducken';
- const headings={'Part 1. The harness':'Harness Iteration','Part 2. The inference optimizations':'Inference Optimization','Part 3. RL: what we tried, and why none of it shipped':'RL','Part 4. What we learnt':'When speed no longer matters'};
+ const headings={'Part 1. The harness':'The Harness','Part 2. The inference optimizations':'Inference Optimization','Part 3. RL: what we tried, and why none of it shipped':'RL','Part 4. What we learnt':'When speed no longer matters'};
  for(const h of [...d.querySelectorAll('h2')]){if(headings[h.textContent])h.textContent=headings[h.textContent];else {const n=d.createElement('h3');n.innerHTML=h.innerHTML;h.replaceWith(n);}}
- const pics=['01-harness-garage-v2','02-inference-v1','03-rl-v1','04-speed-plateau-v1'];
+ const pics=['01-harness-garage-v2','02-inference-v2','03-rl-v1','04-speed-plateau-v1'];
  d.querySelector('#fig-hero').remove();
  [...d.querySelectorAll('h2')].forEach((h,i)=>{const fig=d.createElement('figure');fig.className='hero';fig.innerHTML=`<img src="arc3-solution-draft/${pics[i]}-corners-only.png" alt="${['The game-playing harness','The inference stack','The reinforcement-learning pipeline','The Turducken tries to fly beyond its 56.02 plateau'][i]}" loading="lazy">`;h.after(fig);});
  const p=d.querySelector('main > p');p.innerHTML=p.innerHTML.replace('thank you.','thank you—and thank you to the organizers for the generous free RTX compute.');
