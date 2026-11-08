@@ -162,3 +162,5 @@ Author: Claude Sonnet 5.5 Low. Son (8 Nov, queued message): since the rest of th
 Rabbit name corrected: "Sanday" was a typo; the rabbits are Sanbei and Pochi (Boss, 8 Nov; matches our earlier Chen scene files).
 
 - 08-Nov-2026 (Claude Sonnet 5.5): Mark Barney added as third author on request (his government name); removed his line from the crew thanks. Byline: Son Pham, Keith Tyser and Mark Barney.
+
+- 08-Nov-2026 (Claude Sonnet 5.5): Son supplied the roster and roles (lead; harness and inference; RL; manager; game makers). Byline now lists all seven; crew thanks replaced by a roster list. Ronen printed as Ronen Dunlea at the Boss's request. NT, ngyzly and Slow Loop still nicknames.
