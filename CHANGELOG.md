@@ -1,3 +1,7 @@
+### Version 9.163.2 · November 7, 2026
+
+- Railway now skips the build when a push only touches `client/public/specials/` or `CHANGELOG.md` (service watch paths set in Railway settings, not in the repo). Article edits go live through the fast-publish route and are still committed and pushed to main as the record, at no build cost. Any push touching other files builds as before, and that build resets the live special pages to what is in git. Why: Son, Railway credit on the account is limited. Rollback: clear the service's watch paths. Note: the publish helper only sends page files (no chart-making scripts); those land with the next ordinary build. Author: Claude Opus 5.5 Low.
+
 ### Version 9.163.1 · November 7, 2026
 
 - Turducken special: the "When speed no longer matters" illustration now shows four rival airships instead of two, each on a brass plaque: Tufa Labs and Yi-Chia Chen small and high in the far corner (ahead the whole time), NVARC and XZ climbing past us with exhaust trails from our altitude (the two that overtook us). No rival ranks or scores. New file 04-speed-plateau-v2 keeps the original's pixels byte for byte outside the upper-right sky (about 7% of the picture); inside it the airships come from an image-tool layout pass with the original's paper grain added back. The earlier v1 file is kept. Markdown, page, page builder and review notes point at v2. Not pushed (publishing goes through the no-build route). Why: Son's request. Author: Claude Opus 5.5 Medium.
