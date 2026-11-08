@@ -396,8 +396,6 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 Thanks for reading. It was a wild ride, and we'd do it again.
 
-Our first leaderboard placement in September was just Son and Mark. Then the Milestone 2 notebook came out and the competition got fierce, so we decided to join forces with some other noble competitors. In October, Son's team merged with Keith Tyser's team, the ARC Slayers, and the combined crew took the name Turducken: a chicken inside a duck inside a turkey, and partly a tip of the hat to the Tufa team and Daniel Franzen, whose public work we build on.
-
 Team Turducken is seven people, and none of this happens without every one of them:
 
 - **Son Pham** — team lead.
@@ -408,15 +406,21 @@ Team Turducken is seven people, and none of this happens without every one of th
 
 Thank you all.
 
-Thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. It was a real honor to be in the same competition as Dries Smit. And what really got us is how nice the Tufa guys are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
+Thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. It was a real honor to be in the same competition as them, and we got to meet Dries and Michal. What really got us is how nice they are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
 
 Just as big a thank you goes to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on. They're legends of the ARC community, and as newcomers we've always found them kind, welcoming and easy to reach. Our solution would not have existed without their generous sharing. Like Tufa, they are just really, really great guys.
 
-Thank you to Yi-Chia Chen, and to Sanbei and Pochi, the rabbits, for being such fierce and friendly competitors. Thank you to NVARC and XZ, just as fierce. Well played to both. Thank you to OpenMind for his friendship and encouragement along the way. Thank you to Simon Strandgaard, the original librarian and bastion of the ARC-like community, for all of his encouragement and help along the way. Thank you to Dr. Tim Scarfe and the entire MLST community for their amazing mentorship and support in navigating the complex and ever-evolving AI landscape. And thank you to Jack Cole.
+Thank you for a fierce and friendly race to Tufa Labs, Yi-Chia Chen (and Sanbei and Pochi, the rabbits), NVARC, XZ and all the other competitors.
+
+Thank you to Simon Strandgaard, the original librarian and bastion of the ARC-like community, for all of his encouragement and help along the way. Thank you to Dr. Tim Scarfe and the entire MLST community for their amazing mentorship and support in navigating the complex and ever-evolving AI landscape.
 
 A big thank you to the ARC Prize team, and to François Chollet and Mike Knoop, who created ARC and founded ARC Prize and gave all of us something worth chasing. Getting to attend the event in Boston was fantastic. Greg Kamradt, thank you for all that you do to keep the ARC Prize Foundation running; it doesn't run without you, and we're so grateful. A smaller but heartfelt shout-out to Permaximum, the Discord moderator, and to all the great community members on the ARC Discord server.
 
 Thank you to Kaggle for the infrastructure and a great competition.
+
+Thank you to OpenMind and Jack Cole for their friendship and encouragement along the way.
+
+**See everyone in ARC-4.**
 
 ![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
 
