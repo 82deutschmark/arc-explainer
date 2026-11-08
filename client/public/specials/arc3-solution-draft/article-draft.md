@@ -175,30 +175,6 @@ Read the two columns together. Nearly everything that lost on Kaggle looked fine
 
 There's one more thing we think was going on, and honestly it bugs me. A lot of harness iteration quietly overfits to the public set: you keep tuning an idea until it wins on the games you can see, and then it falls flat on the private set. Our offline evaluation had the 25 public games sitting right in the middle of it, so it was really easy to fool ourselves. We can't prove how much of the gap was this, but we suspect it explains a good chunk of those orange rows.
 
-And here is our local offline evaluation over time. Each dot is one run stored on our run site, [arc3.sonpham.net](https://arc3.sonpham.net), that played all 25 public games, scored on those 25 only. **This is our local public-25 offline evaluation, not the Kaggle leaderboard**, which scores 110 hidden games. Runs differ in game count and clock length, so the dots are grouped by setup and never joined into one line.
-
-[
-
-![Our local public-25 offline evaluation, run by run. Each dot is one local run that played all 25 public games, scored on those 25 only. This is not the Kaggle leaderboard.](charts/public25-over-time.png)
-
-](charts/public25-over-time.svg)
-
-Open or download: [vector SVG](charts/public25-over-time.svg) · [high-resolution PNG](charts/public25-over-time.png) · [every plotted run (CSV)](charts/public25-runs.csv)
-
-Gaps in the data: the site holds only the runs we uploaded, a small share of the roughly 1,950 we ran. It has no complete public-25 run before 27 September or after 31 October, so our first weeks and the 3-bit work from 1 November are missing, and many days have no run at all. Four runs sit far below the rest; two near zero were broken runs, and why the other two scored low was not checked.
-
-Ideas that only ran in offline evaluation, none clearly above noise: an animation feed (+7.5 on a 10-game animation subset, nothing on all 25), key-value and curator memory variants, notes shared across games (notes turned out 92% game-specific), a fixed protocol for levels 5+, a state-repeat guard, thinking caps, a rolling summary (22% slower), restarting stuck levels, a trim gate, a symbolic rule finder, and a live coach from a frontier model (no clear win in 113 tries).
-
-Teammates also built harness branches that didn't make the 56.02 package: Keith's sandbox, which keeps a game's Python helpers through a timeout, and Slow∞Loop's (dzj) split memory for game rules and level notes, with a handoff before each trim and verified action facts. Details are in our [merge plan](https://github.com/Autoresearch-Arena/arc-3/blob/main/harnesses/MERGE-OVERVIEW-KEITH-DZJ-1018.md) (team repository).
-
-What the traces told us:
-
-- **Uncleared levels, not efficiency.** Across six offline-evaluation runs of the 56.02 config, about 31 points were lost to levels never cleared and about 7 to move efficiency. Cleared levels 5+ already used 0.65x the human moves (median).
-
-- **Stuck means stuck.** About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.
-
-- **Loops are common.** 35% of moves in our best offline-evaluation run returned the board to an earlier state.
-
 ## Inference Optimization
 
 ![The inference stack](02-inference-v2-corners-only.png)
@@ -223,42 +199,52 @@ Decode is memory-bound: at 12 games, one step reads about 20 GB of expert weight
 
 **Fit more games on the card**
 
-- **Expert cut:** removed the least-used third of the experts (512 → 341 per layer); weights 66 → 46.2 GiB (lossy).
-- **4-bit history cache:** keys and values in NVFP4 (the draft model keeps FP8); 1.01M → 3.80M tokens of history, together with the cut (lossy).
-- **Free the 16-bit output head:** serve the head from its int8 copy; +0.57 GiB (exact).
-- **Deduplicate shared tensors:** the draft and main models held separate copies; +2.04 GB (exact).
-- **180 Mamba slots:** fewer spare linear-attention state slots; cache 3.47M → 3.80M tokens (exact).
-- **Peak memory log:** log the real memory peak so the cache can be sized to the edge; lowest headroom 1.9 GiB (exact).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Expert cut | Removed the least-used third of the experts (512 → 341 per layer) | weights 66 → 46.2 GiB | lossy |
+| 4-bit history cache | Keys and values in NVFP4 (the draft model keeps FP8) | 1.01M → 3.80M tokens of history, together with the cut | lossy |
+| Free the 16-bit output head | Serve the head from its int8 copy | +0.57 GiB | exact |
+| Deduplicate shared tensors | The draft and main models held separate copies | +2.04 GB | exact |
+| 180 Mamba slots | Fewer spare linear-attention state slots | cache 3.47M → 3.80M tokens | exact |
+| Peak memory log | Log the real memory peak so the cache can be sized to the edge | lowest headroom 1.9 GiB | exact |
 
 **Cheaper steps: dense layers and the output head**
 
-- **8-bit dense weights:** dense layers and the output head in int8, one scale per 128 inputs; step 29.1 → 27.0 ms (lossy).
-- **8-bit activations:** int8 inputs once a step has more than 64 rows; -3.5 ms per step at 192 rows (lossy).
-- **Int8 kernels by row count:** kernels sized for 33-48, 65-96 and 129-256 rows instead of padding; at 80 rows 5.21 → 3.55 ms (exact).
-- **Small 16-bit multiplies:** a faster kernel for the few dense multiplies left in 16-bit; 9.76 → 9.12 ms per step (lossy).
-- **Fused layer mixing:** the model's layer-mixing steps fused into fewer kernels; 2,575 → 2,131 kernels per step, -1.2 ms (exact).
-- **Output head in one launch:** the int8 head writes the final logits directly; 1,494 → 1,127 µs at 192 rows (exact).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| 8-bit dense weights | Dense layers and the output head in int8, one scale per 128 inputs | step 29.1 → 27.0 ms | lossy |
+| 8-bit activations | Int8 inputs once a step has more than 64 rows | -3.5 ms per step at 192 rows | lossy |
+| Int8 kernels by row count | Kernels sized for 33-48, 65-96 and 129-256 rows instead of padding | at 80 rows 5.21 → 3.55 ms | exact |
+| Small 16-bit multiplies | A faster kernel for the few dense multiplies left in 16-bit | 9.76 → 9.12 ms per step | lossy |
+| Fused layer mixing | The model's layer-mixing steps fused into fewer kernels | 2,575 → 2,131 kernels per step, -1.2 ms | exact |
+| Output head in one launch | The int8 head writes the final logits directly | 1,494 → 1,127 µs at 192 rows | exact |
 
 **Experts and routing**
 
-- **Batch-aware routing:** steer tokens to experts the batch already reads, each token keeping its own top 3 (was 4); +5% speed (lossy).
-- **One-kernel reroute and routing:** the reroute, the cut-expert remap and expert selection each in one kernel; routing 22.3 → 6.9 µs per layer (exact).
-- **16-row expert blocks:** smaller blocks when each expert gets only a few rows; 696 → 623 µs per layer at 184 rows (lossy).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Batch-aware routing | Steer tokens to experts the batch already reads, each token keeping its own top 3 (was 4) | +5% speed | lossy |
+| One-kernel reroute and routing | The reroute, the cut-expert remap and expert selection each in one kernel | routing 22.3 → 6.9 µs per layer | exact |
+| 16-row expert blocks | Smaller blocks when each expert gets only a few rows | 696 → 623 µs per layer at 184 rows | lossy |
 
 **Attention**
 
-- **Attention indexer:** load each block of keys once per game instead of once per draft token; 98 → 61 µs per layer (exact).
-- **4-bit attention:** prefetch the next block, split keys 8 ways, read keys in order; 237 → 228 µs (exact).
-- **Linear attention:** read inputs in place, a one-tile conv, skip state writes for empty slots; conv 8.5 → 4.1 µs per call (exact).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Attention indexer | Load each block of keys once per game instead of once per draft token | 98 → 61 µs per layer | exact |
+| 4-bit attention | Prefetch the next block, split keys 8 ways, read keys in order | 237 → 228 µs | exact / rounding |
+| Linear attention | Read inputs in place, a one-tile conv, skip state writes for empty slots | conv 8.5 → 4.1 µs per call | exact |
 
 **More tokens per pass: speculative decoding**
 
-- **MTP drafting:** from Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass; 1 → 2.69 tokens per pass (exact).
-- **Our drafters:** draft heads fine-tuned on our own games, run in int8; 2.69 → 3.05 per pass (exact).
-- **Faster draft sampling:** pick the top candidates first instead of scanning the whole draft vocabulary; 126 → 13 µs per draft step (exact).
-- **Per-game verify depth:** each game verifies only as many draft tokens as it is likely to keep; +5% (lossy).
-- **4 draft steps:** one more guess per pass; 3.05 → 3.25 per pass, with verify depth (lossy).
-- **Draft extend on one row:** after a verify, the draft model updates only the row it keeps; +5.2% (lossy).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| MTP drafting | From Daniel's notebook: a draft head guesses tokens ahead and the big model verifies them in one pass | 1 → 2.69 tokens per pass | exact |
+| Our drafters | Draft heads fine-tuned on our own games, run in int8 | 2.69 → 3.05 per pass | exact |
+| Faster draft sampling | Pick the top candidates first instead of scanning the whole draft vocabulary | 126 → 13 µs per draft step | exact |
+| Per-game verify depth | Each game verifies only as many draft tokens as it is likely to keep | +5% | lossy |
+| 4 draft steps | One more guess per pass | 3.05 → 3.25 per pass, with verify depth | lossy |
+| Draft extend on one row | After a verify, the draft model updates only the row it keeps | +5.2% | lossy |
 
 Speculative decoding with rejection sampling is exact on its own. But batch-aware routing picks experts per batch, so anything that changes which rows share a step changes the output slightly. That's why the verify-depth rows count as lossy.
 
@@ -268,33 +254,39 @@ Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for a
 
 **Keep history in the cache**
 
-- **Host-RAM copy:** a 24 GB write-through copy of the card's cache; evicted history comes back over PCIe; games losing their history 9 → 0, +7.5% tok/s (exact).
-- **Lost-history fix:** a bug that made 48-lane runs re-read whole histories; re-reads 32% → 11% of GPU time (exact).
-- **Verbatim history:** keep the model's answer byte for byte; +8% tok/s (harness).
-- **Window and trim:** 140k window, a trim keeps 52k; re-reads 12% → 8% of the run (harness).
-- **Pin side-request checkpoints:** a summary or review call no longer forces the next turn to re-read its history; 1,787 → 2,160 tok/s (exact).
-- **Image embeddings in RAM:** keep image embeddings instead of re-encoding them after a trim; 454 RAM hits vs 1,172 first encodes by minute 8 (exact).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Host-RAM copy | A 24 GB write-through copy of the card's cache; evicted history comes back over PCIe | games losing their history 9 → 0, +7.5% tok/s | exact |
+| Lost-history fix | A bug that made 48-lane runs re-read whole histories | re-reads 32% → 11% of GPU time | exact |
+| Verbatim history | Keep the model's answer byte for byte | +8% tok/s | harness change |
+| Window and trim | 140k window, a trim keeps 52k | re-reads 12% → 8% of the run | harness change |
+| Pin side-request checkpoints | A summary or review call no longer forces the next turn to re-read its history | 1,787 → 2,160 tok/s | exact |
+| Image embeddings in RAM | Keep image embeddings instead of re-encoding them after a trim | 454 RAM hits vs 1,172 first encodes by minute 8 | exact |
 
 **Faster prompt reads**
 
-- **Prompt attention:** better tiles for long prompt reads; 6.06 → 4.95 ms per call (exact).
-- **No q/k/v copy:** pass inputs as a view instead of copying them; 412 → 171 µs per layer (exact).
-- **Fused prompt glue:** small copies folded into the prefill kernels; 356 → 206 µs at 8,192 rows (exact).
-- **Prompt-read experts:** a better expert-kernel layout for prompt reads; -19% at 1k tokens, -7% at 8k (lossy).
-- **CUDA graphs, no host syncs:** small reads were waiting on Python, so we replay recorded graphs instead; small read 175 → 113 ms (exact).
-- **Image encoder attention:** FlashAttention-4 for the vision encoder; 366 → 87 µs per layer (lossy).
-- **Memory-light embedding conv:** run one conv in 2,048-token pieces, which also fixed a crash that ended whole games on Kaggle; 800 → 281 MB per 8k read (exact).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Prompt attention | Better tiles for long prompt reads | 6.06 → 4.95 ms per call | exact |
+| No q/k/v copy | Pass inputs as a view instead of copying them | 412 → 171 µs per layer | exact |
+| Fused prompt glue | Small copies folded into the prefill kernels | 356 → 206 µs at 8,192 rows | exact |
+| Prompt-read experts | A better expert-kernel layout for prompt reads | -19% at 1k tokens, -7% at 8k | lossy |
+| CUDA graphs, no host syncs | Small reads were waiting on Python, so we replay recorded graphs instead | small read 175 → 113 ms | exact / rounding |
+| Image encoder attention | FlashAttention-4 for the vision encoder | 366 → 87 µs per layer | lossy |
+| Memory-light embedding conv | Run one conv in 2,048-token pieces, which also fixed a crash that ended whole games on Kaggle | 800 → 281 MB per 8k read | exact |
 
 ### 2.3 Overhead: 255 → 61 ms per 1,000 tokens
 
 The best find here was invisible in per-step profiles: for every new request, the scheduler loop hashed about 300 MB of image pixels while every lane waited. That was 4.2% of the whole run, and only a whole-run timeline showed it. The other half of overhead is lanes sitting empty, which depends on how many games are left to play: our offline evaluation runs out of games near the end, Kaggle's 110 games mostly don't.
 
-- **Image hash off the scheduler:** hash images in the tokenizer process instead; 205 → 8.5 ms stall per image request (exact).
-- **Zero-copy image hand-off:** hand image data over without cloning it; 59 → 2.5 ms per request (exact).
-- **Overlapped launches:** each small kernel starts while the last one finishes; about 0.23 µs per kernel (exact).
-- **34 games over 32 lanes:** two extra games fill lanes left idle by games running python; +4.7 on our 75-game offline evaluation (harness).
-- **Startup DNS fix:** skip a DNS lookup that Kaggle's offline box never answers; torch init 12.85 s → about 0 (exact).
-- **Scorecard keep-alive:** keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00); a 46-minute load played normally. Added after 56.02 (harness).
+| Change | What it does | Measured | Exact or lossy |
+| --- | --- | --- | --- |
+| Image hash off the scheduler | Hash images in the tokenizer process instead | 205 → 8.5 ms stall per image request | exact |
+| Zero-copy image hand-off | Hand image data over without cloning it | 59 → 2.5 ms per request | exact |
+| Overlapped launches | Each small kernel starts while the last one finishes | about 0.23 µs per kernel | exact |
+| 34 games over 32 lanes | Two extra games fill lanes left idle by games running python | +4.7 on our 75-game offline evaluation | harness change |
+| Startup DNS fix | Skip a DNS lookup that Kaggle's offline box never answers | torch init 12.85 s → about 0 | exact |
+| Scorecard keep-alive | Keep the scorecard open during slow model loads (it closes after 15 idle minutes, which gave us a 0.00) | a 46-minute load played normally. Added after 56.02 | harness change |
 
 ### 2.4 What didn't make it
 
@@ -462,7 +454,7 @@ Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed
 
 Looking back at this chart, here's what we should have done:
 
-- **Change strategy when the curve flattens.** The signs were there. On 9 October, 4x the clock only took our offline evaluation from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the 31 points we lost to levels the model never cleared, not in the speed.
+- **Change strategy when the curve flattens.** The signs were there. On 9 October, 4x the clock only took our offline evaluation from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the levels the model never cleared, not in the speed.
 
 - **Price every speed trick in quality, not just tokens.** Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits. 4.2 is about this.
 
