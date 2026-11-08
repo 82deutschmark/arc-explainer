@@ -45,7 +45,7 @@ Here is one real turn from a saved run, played back fast: what the model was tol
 
 The transcript streams fast, in the order the turns went: the system prompt, the turn message, the model's reasoning (shortened), each python call as a yellow pill (click one for the full code), the output, then the next turn. The board steps through the recorded game as each move lands.
 
-[![The turn playing: the transcript streams in colour-coded blocks while the Locksmith board steps through the recorded moves, ending with level 1 cleared.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/2bdeae6367eb1815171e9d3b98fa00f042b68eb0/client/public/specials/arc3-solution-draft/charts/turn.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn)
+[![The turn playing: the transcript streams in colour-coded blocks while the Locksmith board steps through the recorded moves, ending with level 1 cleared.](https://raw.githubusercontent.com/82deutschmark/arc-explainer/854feb4256578af05fd2a30c8dd6800f2d014ad3/client/public/specials/arc3-solution-draft/charts/turn.gif)](https://arc.markbarney.net/specials/2026-11-06-arc3-solution-draft.html#fig-turn)
 
 *Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the run's recorded frames. The model walks the block to the locked box with its last six steps of budget; nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label bars are ours.*
 
