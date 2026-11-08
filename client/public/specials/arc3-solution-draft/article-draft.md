@@ -462,6 +462,27 @@ Looking back at this chart, here's what we should have done:
 
 ### 4.2 The biggest lesson: we didn't notice when token quality started to matter
 
+Here's that lesson in one picture. This is our decode time, build by build, with each drop coloured by whether exact or lossy changes paid for it.
+
+[
+
+![Decode time, build by build: exact or lossy. Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is coloured by the kind of change that made it. Only the first drop was exact all the way through.](charts/decode-exact-lossy.png)
+
+](charts/decode-exact-lossy.svg)
+
+Open or download: [vector SVG](charts/decode-exact-lossy.svg) · [high-resolution PNG](charts/decode-exact-lossy.png)
+
+**Chart data**
+
+| Build | Decode ms per 1,000 tokens | Change | Games at once | Tokens per pass | Step ms | Kind of build | What went in |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 Oct · Daniel Franzen's notebook, as published | 1,138.0 |  | 10 | 2.69 | 32.3 | Start | Daniel Franzen's notebook, as published |
+| 3 Oct · host-RAM cache tier, tuned drafter | 1,086.9 | −51.1 | 10 | 2.89 | 32.7 | Exact only | Host-RAM cache tier and a drafter tuned on our games |
+| 6 Oct · 8-bit dense weights, exact kernels | 761.3 | −325.6 | 12 | 3.06 | 28.3 | Exact and lossy, bigger lever exact | Two more games and a better drafter (exact); 8-bit dense weights (lossy) and exact kernels in the step |
+| 11 Oct · 32 games, a third of the experts cut | 384.5 | −376.8 | 32 | 3.05 | 37.8 | Exact and lossy, bigger lever lossy | 32 games, fitting only because experts were cut and the cache went to 4 bits (lossy); batch-aware routing (lossy); exact big-batch kernels |
+| 18 Oct · 52.82 build | 363.8 | −20.7 | 32 | 3.05 | 36.6 | Exact and lossy, can't tell | 8-bit activations and 16-row expert blocks (lossy) with exact routing fusions and 180 Mamba slots |
+| 23 Oct · 56.02 build | 330.0 | −33.8 | 32 | 3.25 | 35.1 | Exact and lossy, bigger lever lossy | Per-game verify depth, 4 draft steps and 3 experts (lossy) with exact fused kernels |
+
 In turducken terms: we kept stuffing after the bird was full. For most of October, more tokens meant more score, and that trained us to treat every token as the same token. Somewhere between 52.82 and 56.02 that stopped being true, and we didn't notice. After 56.02, **every faster build we shipped scored lower on Kaggle**: splice (47.33, 48.37), Lean turns with vocab trim (46.41), vocab trim alone (49.88).
 
 Our offline evaluation couldn't see it. In the offline-vs-Kaggle chart in Part 1, nearly every lossy change was flat or up in offline evaluation and down on Kaggle: each loss was smaller than the offline evaluation's noise, and Kaggle's 110 games over 9 hours compounded it. When we went back to the logs afterwards, the signs were there: the final 3-bit stack thought 35% less per move and ended 2 to 5 times as many turns without a tool call, and one reply in five wanted a token the vocab trim had removed. Nothing in our gate was looking for that.

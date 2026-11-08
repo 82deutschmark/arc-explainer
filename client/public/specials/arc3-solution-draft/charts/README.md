@@ -26,3 +26,8 @@ Canonical regeneration: `python3.13 charts/redraw_pdf_panels.py` from the report
 ## Offline evaluation wording (added 7 November 2026, Claude Opus 5.5 Low)
 
 Son asked that the charts stop saying "board" and say "offline evaluation". `reword_offline_charts.py` re-renders delta2, ladder, lanes, think, time and wf-overhead from the archived original frame with an exact list of wording swaps, then rebuilds only their SVG and 2400px PNG (no page, Markdown, data or ZIP writes). With the swaps removed it reproduces the previous SVGs byte for byte. `make_public25_chart.py` now draws "offline evaluation" too; its CSV family names are unchanged. Running the older canonical `redraw_pdf_panels.py` would bring the old wording back, so use `python3.13 charts/reword_offline_charts.py` for these six figures.
+
+
+## Decode, exact or lossy (added 7 November 2026, Claude Opus 5.5 Low)
+
+`decode-exact-lossy.svg` / `.png`, built by `python3.13 make_decode_exact_lossy_chart.py`. Bar heights are the TIME decode values in `original/source-data.json`. Each drop's colour is a reading of that build's recipe (sources listed in the script's DROPS comment), not a computed millisecond split. Writes only those two files.
