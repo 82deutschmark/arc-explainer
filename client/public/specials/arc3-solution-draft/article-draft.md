@@ -1,6 +1,6 @@
 Review draft · Original Claude artifact restored · Static charts plus one recreated animation (trimming and swapping). Author-reported measurements from the original draft; not newly reproduced benchmarks.
 
-**Son Pham and Keith Tyser** · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
+**Son Pham, Keith Tyser and Mark Barney** · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02
 
 # Stuffing the Turducken
 
@@ -547,7 +547,7 @@ We should also have ablated backward: withdraw optimizations one at a time to se
 
 Thanks for reading. It was a wild ride, and we'd do it again.
 
-Turducken is a crew of seven, and none of this happens without every one of them. Keith Tyser, thank you for the sandbox work, the training code and all the speed experiments. Slow∞Loop, thank you for the structured memory work. NT and ngyzly, thank you for the games you built, which gave us so much to train and test on. Ronen Dunlea, thank you for the batch of games you added. And Mark Barney, thank you for being on this crew with us.
+Turducken is a crew of seven, and none of this happens without every one of them. Keith Tyser, thank you for the sandbox work, the training code and all the speed experiments. Slow∞Loop, thank you for the structured memory work. NT and ngyzly, thank you for the games you built, which gave us so much to train and test on. Ronen Dunlea, thank you for the batch of games you added.
 
 Thank you to Kaggle for the infrastructure and a great competition.
 

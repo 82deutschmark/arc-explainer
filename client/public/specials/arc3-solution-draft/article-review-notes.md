@@ -160,3 +160,5 @@ Author: Claude Sonnet 5.5 Low. At Son's direction (8 Nov, 01:40): byline and str
 Author: Claude Sonnet 5.5 Low. Son (8 Nov, queued message): since the rest of the team is thanked, Keith is thanked too, and ngyzly is a game maker. New crew paragraph in the closing: Keith Tyser (sandbox work, training code, speed experiments; from the team notes and the 18 October merge plan), Slow∞Loop (structured memory), NT and ngyzly (games), Ronen Dunlea (a batch of games), Mark Barney (on the crew, no role claimed). Teammates are still named by nickname where only the nickname is known; Son wants their real names or preferred wording before this is final. "Crew of seven" is the Kaggle roster (dzjiann, Keith Tyser, Mark Barney, mitubant, ngyzly, scizical, Son Pham).
 
 Rabbit name corrected: "Sanday" was a typo; the rabbits are Sanbei and Pochi (Boss, 8 Nov; matches our earlier Chen scene files).
+
+- 08-Nov-2026 (Claude Sonnet 5.5): Mark Barney added as third author on request (his government name); removed his line from the crew thanks. Byline: Son Pham, Keith Tyser and Mark Barney.
