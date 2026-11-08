@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Author: Claude Opus 5.5 Low
+Author: Claude Opus 5.5 Low (round 9 1950s set: Claude Opus 5.5 Low)
 Date: 08-November-2026
 PURPOSE: Build the two re-illustrated alternates of the Turducken write-up from the main page:
            - 2026-11-06-arc3-solution-draft-cat.html: the same art, with ngyzly drawn as his cat
              (pictures in cat/);
-           - 2026-11-06-arc3-solution-draft-1950s.html: every illustration re-painted in the Boss's
-             1950s pulp science-fiction style (pictures in 1950s/), with a matching newsprint page
-             theme and chart frames.
+           - 2026-11-06-arc3-solution-draft-1950s.html: every illustration in the Boss's 1950s pulp
+             science-fiction style (pictures in 1950s/*-r9.webp: round 9, generated fresh from text
+             prompts with ngyzly drawn as his cat; the rejected round 8 re-paints sit unreferenced in
+             1950s/round8-superseded/), with a matching newsprint page theme and chart frames.
          Reads ../2026-11-06-arc3-solution-draft.html (the main page, which other edits keep changing)
          and writes each alternate with identical text. Only these things differ: each illustration's
          image reference (the VARIANTS maps below; charts and the trim animation are untouched), a
@@ -18,7 +19,8 @@ PURPOSE: Build the two re-illustrated alternates of the Turducken write-up from 
          Run from anywhere after any edit to the main page:
            python3 client/public/specials/arc3-solution-draft/make_variant_pages.py
          Working and full-size files live on the Team 4TB drive
-         (loose-goose/art/2026-11-08-turducken-cat-1950s, MANIFEST.txt there); only web-size copies
+         (loose-goose/art/2026-11-08-turducken-cat-1950s for the cat set,
+         loose-goose/art/2026-11-08-turducken-r9 for the 1950s set; MANIFEST.txt in each); only web-size copies
          live in cat/ and 1950s/. Same shape as make_white_page.py, which builds the white alternate.
 SRP/DRY check: Pass -- the main page stays the single source of the article text; this only swaps
          image references and adds page-level CSS and metadata, like make_white_page.py.
@@ -73,12 +75,12 @@ VARIANTS = {
         "title": "1950s science-fiction version",
         "css": PULP_CSS,
         "images": {
-            "00-turducken-texture-v10.png": "1950s/00-turducken-1950s.webp",
-            "01-harness-garage-v2-corners-only.png": "1950s/01-harness-1950s.webp",
-            "02-inference-v2-corners-only.png": "1950s/02-inference-1950s.webp",
-            "03-rl-v1-corners-only.png": "1950s/03-rl-1950s.webp",
-            "04-speed-plateau-v2-corners-only.png": "1950s/04-speed-plateau-1950s.webp",
-            "05-family-white-original-texture-v3.png": "1950s/05-family-1950s.webp",
+            "00-turducken-texture-v10.png": "1950s/00-turducken-1950s-r9.webp",
+            "01-harness-garage-v2-corners-only.png": "1950s/01-harness-1950s-r9.webp",
+            "02-inference-v2-corners-only.png": "1950s/02-inference-1950s-r9.webp",
+            "03-rl-v1-corners-only.png": "1950s/03-rl-1950s-r9.webp",
+            "04-speed-plateau-v2-corners-only.png": "1950s/04-speed-plateau-1950s-r9.webp",
+            "05-family-white-original-texture-v3.png": "1950s/05-family-1950s-r9.webp",
         },
     },
 }
