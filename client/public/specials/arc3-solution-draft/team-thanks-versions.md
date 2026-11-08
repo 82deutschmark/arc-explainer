@@ -2,7 +2,7 @@
 
 Drafted 08-Nov-2026 by Claude Sonnet 5.5 (Medium) for the Boss and Son. Not published into the article. The Tufa Labs and ARChitects thanks (public harness and public Milestone 2 notebook) stay as they are in every version. These versions replace the team section and the competitor, friend and ARC Prize thanks only.
 
-## Current (live now)
+## As it read before Son's second review (8 Nov)
 
 Our first leaderboard placement in September was just Son and Mark. Then the Milestone 2 notebook came out and the competition got fierce, so we decided to join forces with some other noble competitors. In October, Son's team merged with Keith Tyser's team, the ARC Slayers, and the combined crew took the name Turducken: a chicken inside a duck inside a turkey, and partly a tip of the hat to the Tufa team and Daniel Franzen, whose public work we build on.
 

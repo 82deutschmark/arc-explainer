@@ -18,6 +18,9 @@ measured and is printed in the caption by this script. The share strip covers on
 decode chart; the PNG uses the same 2400px Sharp call.
 Writes only tps-exact-lossy.svg and .png next to this script (no page, Markdown or ZIP).
 Usage: python3.13 make_tps_exact_lossy_chart.py
+Updated 08-November-2026 (Claude Opus 5.5 Low): the decode chart left the article (Son: one chart
+of the lossy and exact share is enough), so the subtitle and caption no longer point at it. The
+build kinds are still imported from make_decode_exact_lossy_chart.py, which stays as the record.
 SRP/DRY check: Pass - imports the decode chart's kinds, colors, build calls and text helpers
 (that module only writes from its own main()); only the upward geometry, the 1 Nov bar and the
 wording live here.
@@ -152,8 +155,8 @@ def figure_markup(builds, after, by_kind, total):
     assert abs(d['decode']) < 5, d  # the caption's "decode didn't move" claim depends on this
     return f'''<figure>
 <div class="ft">Tokens per second, build by build: exact or lossy</div>
-<div class="fs">Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colors as the decode chart, so you can see how much of the speed came from lossy changes.</div>
-<figcaption>This counts the whole run, not just decode: prompt reading and idle lanes are in here too. Each build keeps the exact-or-lossy call from the decode chart; we didn't re-judge any of them. Up to 56.02, about {share('mlossy')}% of the gain came in builds where a lossy change was the bigger lever, {share('mexact')}% where an exact one was, only {share('exact')}% in the all-exact build, and the last {share('unknown')}% in the build we can't call. Then the last bar. After 56.02, decode didn't get any faster ({fmt(b['p']['decode'])} vs {fmt(a['p']['decode'])} ms per 1,000 tokens). The time we saved came from re-reading less history ({fmt(-d['reread'])} ms per 1,000 tokens, that's splice, lossy), shorter new turns ({fmt(-d['fresh'])} ms, lean turns) and fewer idle lanes ({fmt(-d['idle'])} ms). Some of that idle-lane part may be the 75-game test set this run used, which keeps lanes busier, rather than the build. The vocab trim (lossy) was in there too. It never became our final build: every build like it that we sent to Kaggle scored lower than 56.02.</figcaption>
+<div class="fs">Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Each gain is colored by whether exact or lossy changes paid for it, so you can see how much of the speed came from lossy changes.</div>
+<figcaption>This counts the whole run, not just decode: prompt reading and idle lanes are in here too. Each build's color is our reading of its recipe, not a measured split. Up to 56.02, about {share('mlossy')}% of the gain came in builds where a lossy change was the bigger lever, {share('mexact')}% where an exact one was, only {share('exact')}% in the all-exact build, and the last {share('unknown')}% in the build we can't call. Then the last bar. After 56.02, decode didn't get any faster ({fmt(b['p']['decode'])} vs {fmt(a['p']['decode'])} ms per 1,000 tokens). The time we saved came from re-reading less history ({fmt(-d['reread'])} ms per 1,000 tokens, that's splice, lossy), shorter new turns ({fmt(-d['fresh'])} ms, lean turns) and fewer idle lanes ({fmt(-d['idle'])} ms). Some of that idle-lane part may be the 75-game test set this run used, which keeps lanes busier, rather than the build. The vocab trim (lossy) was in there too. It never became our final build: every build like it that we sent to Kaggle scored lower than 56.02.</figcaption>
 </figure>'''
 
 

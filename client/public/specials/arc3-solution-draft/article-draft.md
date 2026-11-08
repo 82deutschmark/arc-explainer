@@ -4,13 +4,9 @@ Review draft · Original Claude artifact restored · Static charts plus one recr
 
 # Stuffing the Turducken
 
-Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.
+Hi everyone! Before anything else, thank you to everyone who took part in this competition. It has truly been an honor to compete with you all. The level of inference engineering reached the stratosphere over these six months, and that would not have happened without everyone's relentlessness.
 
-First and loudest, thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. Dries Smit in particular has been showing the way for all of us since the preview, and everything we built here stands on top of his work. It was a real honor to be in the same competition as him. And what really got us is how nice the Tufa guys are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
-
-Just as big a thank you goes to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on. They're legends of the ARC community, and as newcomers we've always found them kind, welcoming and easy to reach. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution. Like Tufa, they are just really, really great guys.
-
-Thank you to Yi-Chia Chen, and to Sanbei and Pochi, the rabbits, for being such fierce and friendly competitors. Thank you to NVARC and XZ, just as fierce. Well played to both. Thank you to OpenMind for his friendship and encouragement along the way. Thank you to Simon Strandgaard, the original librarian and bastion of the ARC-like community, for all of his encouragement and help along the way. Thank you to Dr. Tim Scarfe and the entire MLST community for their amazing mentorship and support in navigating the complex and ever-evolving AI landscape. And thank you to Jack Cole.
+Our team name is a tribute to Tufa Labs, whose harness sits at the heart of our entry, and to Daniel Franzen, whose public Milestone 2 notebook we built on. More thanks, to them and to many others, at the end.
 
 **Why a turducken?** A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. It also fit us: when the teams combined we needed a name, and wrapping all of us up into one big team was just what a turducken does. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.
 
@@ -30,7 +26,7 @@ Here's our write-up, in three parts: **the harness**, **the inference optimizati
 
 - **Two biggest lessons:**
     - We didn't notice when token quality started to matter. After 56.02, every faster build we shipped scored lower.
-    - Limited compute pushed us into overly ambitious RL. None of our attempts worked.
+    - We were too ambitious with recovery. We tried to bring 2-bit back to 4-bit quality when settling for 3-bit was the better bet. Past some point, lost token quality can't be recovered.
 
 ## The Harness
 
@@ -124,7 +120,7 @@ Looking across these results, the improvements that carried over to Kaggle tende
 
 The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.
 
-One rule came before any change: **is it exact or lossy?** An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The biggest lesson at the end is about the times we bent that rule.
+One rule came before any change: **is it exact or lossy?** An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The lessons at the end come back to this rule: several lossy changes only tied in our offline evaluation, and scored lower once they reached Kaggle.
 
 Every second of a run, the GPU is doing one of three things:
 
@@ -134,7 +130,7 @@ Every second of a run, the GPU is doing one of three things:
 
 - **Overhead:** everything else. A fixed cost for every prompt read, CPU stalls, and lanes sitting empty.
 
-Per 1,000 tokens of generated output, we took decode from 1,138 to 330 ms, prefill from 259 to 74 ms and overhead from 255 to 61 ms. Here is everything that went in, bucket by bucket. Each change is tagged exact or lossy, as in the rule above.
+Per 1,000 tokens of generated output, we took decode from 1,138 to 330 ms, prefill from 259 to 74 ms and overhead from 255 to 61 ms.
 
 ### 2.1 Decode: 1,138 → 330 ms per 1,000 tokens
 
@@ -193,7 +189,7 @@ Speculative decoding with rejection sampling is exact on its own. But batch-awar
 
 ### 2.2 Prefill: 259 → 74 ms per 1,000 tokens
 
-Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for about 23% of the run, and about 45% of all prompt tokens were re-reads: history the cache had already seen and then lost. The biggest prefill wins were about not losing history; the rest were kernels. The single best one was a one-character bug: the harness stored the model's answer with its blank lines squeezed, so the next prompt stopped matching what the server had cached right at that answer, and everything after it was read again. A blank line is one token and a single newline is another. Keeping history verbatim moved previous-answer reuse from 38% to 95-100% of turns, and whole-run speed from 1,674 to 1,807 tok/s (+8%).
+Prefill was the sneaky one. At 20 lanes, prompt reading stalled every lane for about 23% of the run, and about 45% of all prompt tokens were re-reads: history the cache had already seen and then lost. The biggest prefill wins were about not losing history; the rest were kernels. The biggest surprise was a one-character bug: the harness stored the model's answer with its blank lines squeezed, so the next prompt stopped matching what the server had cached right at that answer, and everything after it was read again. A blank line is one token and a single newline is another. Keeping history verbatim moved previous-answer reuse from 38% to 95-100% of turns, and whole-run speed from 1,674 to 1,807 tok/s (+8%).
 
 **Keep history in the cache**
 
@@ -241,11 +237,11 @@ Of 191 named speed changes, 69 shipped in some build, 71 were dropped, and 51 we
 
 - **Mixing prefill into decode batches:** worth at most ~1%, because every prefill chunk re-reads all the experts.
 
-- **Splice** (rebuild the cache after a trim): tied in offline evaluation, lost on Kaggle three times out of three.
+- **Splice** (after a trim, rebuild the cache from the old one instead of reading the history again): huge potential. Each version bought more speed, but it only tied in offline evaluation and lost on Kaggle three times out of three, and splices built on splices drifted until we capped the depth.
 
 - **Vocab trim** (cut the output layer to the tokens we use): lost on Kaggle all three times. About one reply in five wants a token the trim removed, mostly names the model coins for game objects.
 
-- **3-bit experts:** +5% tokens per second and 8.2 GB freed, but offline evaluation went 66.2 → 58.7.
+- **3-bit experts:** +5% tokens per second and 8.2 GB freed, and at our highest 3-bit setting we reached up to 2,600 tokens per second, but offline evaluation went 66.2 → 58.7.
 
 - **8-bit Mamba states:** +11% history cache and an offline-evaluation tie, but in our final stack the model thought 35% less per move (Part 4).
 
@@ -298,7 +294,7 @@ Open or download: [vector SVG](charts/original/time.svg) · [high-resolution PNG
 
 ![The reinforcement-learning pipeline](03-rl-v1-corners-only.png)
 
-We spent real money and a lot of weekends on RL and other fine-tunes. None of it beat the base model on Kaggle.
+We also attempted reinforcement learning (RL) and several other fine-tunes. None of them beat the base model on Kaggle.
 
 | Attempt | When | What | Result |
 | --- | --- | --- | --- |
@@ -330,107 +326,27 @@ Open or download: [vector SVG](charts/original/think.svg) · [high-resolution PN
 | 3-bit + corrector, medium effort | +50.8% | -8.6 | 1,592 / 1,707 vs 1,037 / 1,151; offline evaluation 40.4 / 43.3 vs 51.9 / 49.0 |
 | RL5 | -47.3% | -22.0 | median reply 2,657 to 1,401 tokens; 32-game set 51.5 to 29.5 |
 
-Why it didn't work for us: the base model was already good at the games, and every training run we did changed **how long the model thinks** before it changed **how well**. Shorter thinking lost. Longer thinking lost too, because the game is on a clock. Another team saw the same trade (RL helped hard stages but hurt action efficiency) and only switched to their RL model for the last three hours.
+**The lesson: we were too ambitious with recovery.** 3-bit experts gave +5% tokens per second and 8 GB of memory, for about 7 points in offline evaluation. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big recovery push into 2-bit, trying to bring it all the way back to 4-bit quality: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. Settling for 3-bit would, we think, have given us a result similar to Yi-Chia Chen's approach. There is a point where token quality becomes unrecoverable, and a lossy improvement must never push the model past it.
 
 ## When speed no longer matters
 
 ![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](04-speed-plateau-v2-corners-only.png)
 
-### 4.1 The climb, and what it was telling us
-
-[
-
-![Where speed stopped helping. Our best public score by date, with the main change behind each step, from our first Flash-Next notebook on vLLM (7.36, 21 Sep). Hollow dots are submissions that didn't beat the best.](charts/original/kaggle.png)
-
-](charts/original/kaggle.svg)
-
-Open or download: [vector SVG](charts/original/kaggle.svg) · [high-resolution PNG](charts/original/kaggle.png)
-
-**Chart data**
-
-| Date | Public score | What changed |
-| --- | --- | --- |
-| 2026-09-21 | 7.36 | First Flash-Next notebook (vLLM) |
-| 2026-09-22 | 5.60 | Prompt deletions |
-| 2026-09-23 | 6.17 | Same notebook as 22 Sep, resubmitted |
-| 2026-09-24 | 6.74 | Same notebook again |
-| 2026-09-25 | 6.47 | Compact prompt v5 |
-| 2026-09-26 | 4.83 | Compact v5 resubmitted |
-| 2026-09-27 | 8.23 | Moved to SGLang |
-| 2026-09-28 | 12.21 | SGLang + expert pruning |
-| 2026-09-29 | 15.68 | Pruning + temperature 0.8 + tuned drafter |
-| 2026-09-30 | 18.99 | More pruning, temperature 0.6 |
-| 2026-10-01 | 8.14 | Different expert set (336) |
-| 2026-10-02 | 3.93 | Our harness + Franzen's tool fixes (Combo A) |
-| 2026-10-03 | 28.94 | Daniel Franzen's notebook + our drafter + animation feed |
-| 2026-10-04 | 27.79 | 4-bit cache, 13 games |
-| 2026-10-05 | 31.63 | Host-RAM cache tier + fused 8-bit attention |
-| 2026-10-06 | 33.74 | 8-bit dense weights |
-| 2026-10-07 | 31.11 | 16-bit line, 11 games |
-| 2026-10-08 | 35.45 | 8-bit v3, 13 games |
-| 2026-10-09 | 35.32 | 8-bit v3 resubmitted |
-| 2026-10-10 | 39.24 | 20 games, 8/4-bit cache, fresh eyes when stuck |
-| 2026-10-11 | 41.69 | A third of the experts cut, 28 games |
-| 2026-10-12 | 41.97 | 32 games, 8-bit activations |
-| 2026-10-13 | 37.56 | Summary when the window fills |
-| 2026-10-14 | 38.45 | Relaxed acceptance 0.7 + cache pinning |
-| 2026-10-15 | 47.25 | Notes memory + exact acceptance + new drafter |
-| 2026-10-16 | 48.92 | Notes head + tail, OOM fixes |
-| 2026-10-17 | 47.45 | Goal first |
-| 2026-10-18 | 52.82 | Mamba 180, 140k window, temperature 0.5 |
-| 2026-10-19 | 41.37 | Predict before acting |
-| 2026-10-20 | 51.12 | RL LoRA merged at load |
-| 2026-10-21 | 44.68 | Second RL LoRA |
-| 2026-10-22 | 0.00 | Speed stack: model load took 66 min, scorecard closed |
-| 2026-10-23 | 56.02 | Speed stack: per-game verify depth, 4 draft steps, 34 over 32 |
-| 2026-10-24 | 47.33 | + splice + keep-alive |
-| 2026-10-25 | 45.49 | + splice v3 + game log |
-| 2026-10-26 | 49.34 | Splice v3 stack alone |
-| 2026-10-28 | 53.70 | Expert-kernel rounding + keep-alive + game gate |
-| 2026-10-29 | 49.07 | + predict before acting |
-| 2026-10-30 | 50.34 | 53.70 package resubmitted |
-| 2026-10-31 | 46.41 | Lean turns + vocab trim |
-| 2026-11-01 | 48.37 | 53.70 + splice + vocab trim |
-| 2026-11-02 | 49.88 | 53.70 + vocab trim |
+### 4.1 What we learned
 
 Our best score went from 7.36 to 41.97 in three weeks, and most steps were speed: SGLang, expert pruning, 8-bit weights, more games at once. Then the harness took it from 41.97 to 52.82 (notes memory, goal first, a bigger window, temperature 0.5), and one last speed push made it 56.02. After that, nothing beat it: nine submissions over the last ten days, all lower.
 
-Looking back at this chart, here's what we should have done:
+Looking back, here's what we should have done:
 
 - **Change strategy when the curve flattens.** The signs were there. On 9 October, 4x the clock only took our offline evaluation from 58 to 64. On 23 October, +11% tokens per second bought +3.2 on Kaggle; the next speed builds bought nothing or less. When more tokens stop buying score, the next point lives somewhere else: in the levels the model never cleared, not in the speed.
 
-- **Price every speed trick in quality, not just tokens.** Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits. 4.2 is about this.
+- **Price every speed trick in quality, not just tokens.** Each change after 56.02 bought tokens by making each one a little worse: a cache rebuilt instead of re-read, a word the model wasn't allowed to say, experts at 3 bits.
 
-- **Don't be too ambitious with correction and RL.** 3-bit experts already gave +5% tokens per second and 8 GB of memory, for about 7 points in offline evaluation. 2-bit gave +23% and 19 GB, but scored about 30-35 against 54 for 4-bit (Keith's numbers). We put the big correction push into 2-bit: a night of distillation on eight B300s, after which not one 2-bit weight had changed in the layers we checked. We only started correcting 3-bit on 1 November, too late to finish. The smaller gap was the better bet.
-
-### 4.2 The biggest lesson: we didn't notice when token quality started to matter
-
-Here's that lesson in one picture. This is our decode time, build by build, with each drop colored by whether exact or lossy changes paid for it.
+**The biggest one: we didn't notice when token quality started to matter.** Most of our speed came in builds where a lossy change was the bigger lever. This chart shows whole-run speed build by build, each gain colored by whether exact or lossy changes paid for it; the extra speed after 56.02 came with lossy changes while Kaggle went down.
 
 [
 
-![Decode time, build by build: exact or lossy. Milliseconds of decode per 1,000 generated tokens, from Daniel's notebook to the 56.02 build. Each drop is colored by the kind of change that made it. Only the first drop was exact all the way through.](charts/decode-exact-lossy.png)
-
-](charts/decode-exact-lossy.svg)
-
-Open or download: [vector SVG](charts/decode-exact-lossy.svg) · [high-resolution PNG](charts/decode-exact-lossy.png)
-
-**Chart data**
-
-| Build | Decode ms per 1,000 tokens | Change | Games at once | Tokens per pass | Step ms | Kind of build | What went in |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 Oct · Daniel Franzen's notebook, as published | 1,138.0 |  | 10 | 2.69 | 32.3 | Start | Daniel Franzen's notebook, as published |
-| 3 Oct · host-RAM cache tier, tuned drafter | 1,086.9 | −51.1 | 10 | 2.89 | 32.7 | Exact only | Host-RAM cache tier and a drafter tuned on our games |
-| 6 Oct · 8-bit dense weights, exact kernels | 761.3 | −325.6 | 12 | 3.06 | 28.3 | Exact and lossy, bigger lever exact | Two more games and a better drafter (exact); 8-bit dense weights (lossy) and exact kernels in the step |
-| 11 Oct · 32 games, a third of the experts cut | 384.5 | −376.8 | 32 | 3.05 | 37.8 | Exact and lossy, bigger lever lossy | 32 games, fitting only because experts were cut and the cache went to 4 bits (lossy); batch-aware routing (lossy); exact big-batch kernels |
-| 18 Oct · 52.82 build | 363.8 | −20.7 | 32 | 3.05 | 36.6 | Exact and lossy, can't tell | 8-bit activations and 16-row expert blocks (lossy) with exact routing fusions and 180 Mamba slots |
-| 23 Oct · 56.02 build | 330.0 | −33.8 | 32 | 3.25 | 35.1 | Exact and lossy, bigger lever lossy | Per-game verify depth, 4 draft steps and 3 experts (lossy) with exact fused kernels |
-
-And here's the rest of it, whole-run speed in the same colors: most of the gain came in builds where a lossy change did the heavy lifting, and the extra speed after 56.02 came with lossy changes while Kaggle went down.
-
-[
-
-![Tokens per second, build by build: exact or lossy. Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Same builds and same colors as the decode chart, so you can see how much of the speed came from lossy changes.](charts/tps-exact-lossy.png)
+![Tokens per second, build by build: exact or lossy. Whole-run tokens per second, from Daniel's notebook to the 56.02 build, then the build that came after it. Each gain is colored by whether exact or lossy changes paid for it, so you can see how much of the speed came from lossy changes.](charts/tps-exact-lossy.png)
 
 ](charts/tps-exact-lossy.svg)
 
@@ -462,7 +378,7 @@ What we'd do differently:
 
 We should also have ablated backward: withdraw optimizations one at a time to see which capacity or precision was worth restoring for fewer, better tokens. And our objective narrowed our search. Because nearby tests beyond 32 lanes scored worse, we never tried the radical 110-lane regime ourselves. That remained an untested alternative for our stack, not a demonstrated failure.
 
-### 4.3 The rest
+### 4.2 The rest
 
 - **Count games, not just speed.** Some other teams ran all 110 games at once, at about half our speed per game, with every history in host RAM and a compressed embedding table to make room. We optimized 32 lanes; they optimized for 110.
 
@@ -492,12 +408,18 @@ Team Turducken is seven people, and none of this happens without every one of th
 
 Thank you all.
 
+Thank you to Tufa Labs. Their harness sits at the very heart of our entry, and honestly, so does their example. It was a real honor to be in the same competition as Dries Smit. And what really got us is how nice the Tufa guys are: friendly, kind and open, and generous with what they know. They're the big story of this competition, and we're super excited to see where they go next.
+
+Just as big a thank you goes to the ARChitects, and to Daniel Franzen in particular, who published his Milestone 2 notebook for the rest of us to build on. They're legends of the ARC community, and as newcomers we've always found them kind, welcoming and easy to reach. Our solution would not have existed without their generous sharing. Like Tufa, they are just really, really great guys.
+
+Thank you to Yi-Chia Chen, and to Sanbei and Pochi, the rabbits, for being such fierce and friendly competitors. Thank you to NVARC and XZ, just as fierce. Well played to both. Thank you to OpenMind for his friendship and encouragement along the way. Thank you to Simon Strandgaard, the original librarian and bastion of the ARC-like community, for all of his encouragement and help along the way. Thank you to Dr. Tim Scarfe and the entire MLST community for their amazing mentorship and support in navigating the complex and ever-evolving AI landscape. And thank you to Jack Cole.
+
+A big thank you to the ARC Prize team, and to François Chollet and Mike Knoop, who created ARC and founded ARC Prize and gave all of us something worth chasing. Getting to attend the event in Boston was fantastic. Greg Kamradt, thank you for all that you do to keep the ARC Prize Foundation running; it doesn't run without you, and we're so grateful. A smaller but heartfelt shout-out to Permaximum, the Discord moderator, and to all the great community members on the ARC Discord server.
+
 Thank you to Kaggle for the infrastructure and a great competition.
 
 ![Original textured Team Turducken family portrait with two Yorkies](05-family-white-original-texture-v3.png)
 
 *Thank you for an amazing competition! — Team Turducken*
-
-And last, a big thank you to the ARC Prize team, and to François Chollet and Mike Knoop, who created ARC and founded ARC Prize and gave all of us something worth chasing. Getting to attend the event in Boston was fantastic. Greg Kamradt, thank you for all that you do to keep the ARC Prize Foundation running; it doesn't run without you, and we're so grateful. A smaller but heartfelt shout-out to Permaximum, the Discord moderator, and to all the great community members on the ARC Discord server.
 
 This post was written with help from Claude. Numbers come from our run logs, server logs and Kaggle's submission history. I've checked them, but if something looks off, ask in the comments and I'll dig up the log.
