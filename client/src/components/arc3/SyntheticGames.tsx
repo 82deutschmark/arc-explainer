@@ -261,7 +261,7 @@ function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
           </span>
         </span>
         <span className="block text-[10px] leading-[1.5] truncate" style={{ color: '#8E8B88', fontFamily: MONO }}>{pick.inputs}</span>
-        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-6" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
+        <span className="mt-1 text-[12px] leading-[1.35] line-clamp-3" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
       </span>
     </button>
   );
