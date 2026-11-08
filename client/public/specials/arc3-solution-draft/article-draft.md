@@ -14,7 +14,7 @@ Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderfu
 
 ![Team Turducken stuffing engineering into the mechanical turkey](00-turducken-texture-v10.png)
 
-Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
+Here's our write-up, in three parts: **the harness**, **the inference optimizations**, and **the RL that didn't work**, then what we learnt. We ran about 1,950 full runs on outside compute during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.
 
 ### TL;DR
 
@@ -124,7 +124,7 @@ Most of these are lossy: they change what the model says, so the only way to jud
 
 ### 1.2 How we measure performance
 
-Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
+Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. **Score Climb:** 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on outside-compute boxes with the same RTX PRO 6000. The loop: **idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.**
 
 Board noise, from 8 identical controls: one standard deviation is 1.9 points, so two runs only see effects of about 4 points. Most harness ideas were smaller than that, and Kaggle is noisy too: the same package resubmitted moved 3.4. We never had a ruler fine enough to see small changes. (Our later authored games are public in the [ARC-3 Synthetic Games repository](https://github.com/82deutschmark/arc3-synthetic-games); they are not the copycats measured here.)
 
