@@ -25,6 +25,9 @@ Updated: 2026-11-02, Claude Opus 5.5 High. The Boss: the picks must be data-dens
          the first sentence of "what is special".
          2026-11-05: a panel leads with "why AI struggles" (catalog spoiler.hard) and folds the long
          write-up; every Play goes to the lab, which records plays, so renamed tags need no matching here.
+2026-11-08: the picks come in the Gemini review's order (catalog "ranking"): Strongest, Strong with a caveat, Weaker as
+         tests, each under its own heading, with the grade on the card and a one-line reason in the panel. Read from the
+         catalog at runtime; a catalog without "ranking" still shows one plain grid. Claude Sonnet 5.5 Medium.
 SRP/DRY check: Pass - reuses the mirror route, its thumbnails and the published catalog. No
          approval logic lives here: the lab owns approval, the catalog owns the picks.
 */
@@ -63,7 +66,9 @@ interface CatalogGame {
 }
 /** The catalog's hand-checked write-up of one game. Any field can be missing. */
 export interface Spoiler { teaser?: string; hard?: string; special?: string; rules?: string[]; vsPublic?: string; look?: string; markSaid?: string }
-interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string } }
+/** The catalog's ranking of the picks: tiers in order, plus each game's grade and one-line reason. */
+interface Ranking { note?: string; tiers: { name: string; games: string[] }[]; games: Record<string, { grade: string; why: string }> }
+interface Catalog { featured: string[]; games: CatalogGame[]; highlight?: { games: string[]; text: string }; ranking?: Ranking }
 
 export interface Pick {
   id: string;
@@ -77,6 +82,12 @@ export interface Pick {
   levelStrip: string;
   /** The lab page for the game, where plays are recorded. */
   href: string;
+  /** From the catalog's ranking: letter grade, one-line reason and the tier heading it sits under. */
+  grade?: string;
+  why?: string;
+  tier?: string;
+  /** Said once under the tiers when a pick was graded on its older version. */
+  rankNote?: string;
 }
 
 export function labelOf(game: ApprovedGame): string {
@@ -140,6 +151,10 @@ export function usePicks(approved: ApprovedGame[]): Pick[] {
         levelStrip: `${WRITEUP_URL}${game.media.levels}`,
         // Plays are recorded at the lab (arc3.sonpham.net), which hosts all twelve, so every Play goes there.
         href: game.play,
+        grade: data.ranking?.games[id]?.grade,
+        why: data.ranking?.games[id]?.why,
+        tier: data.ranking?.tiers.find((t) => t.games.includes(id))?.name,
+        rankNote: data.ranking?.note,
       }];
     });
   }, [data, approved, mirror]);
@@ -241,7 +256,9 @@ function PickCard({ pick, onOpen }: { pick: Pick; onOpen: () => void }) {
       <span className="block w-full px-2 pt-1.5 pb-2">
         <span className="flex items-baseline justify-between gap-2" style={{ fontFamily: MONO }}>
           <b className="text-[15px] text-white group-hover:text-[#E53AA3]">{pick.label}</b>
-          <span className="text-[10px] tracking-[.5px]" style={{ color: '#8E8B88' }}>{pick.levels} LV</span>
+          <span className="text-[10px] tracking-[.5px]" style={{ color: '#8E8B88' }}>
+            {pick.grade && <b className="mr-2 text-[12px]" style={{ color: HOT }}>{pick.grade}</b>}{pick.levels} LV
+          </span>
         </span>
         <span className="block text-[10px] leading-[1.5] truncate" style={{ color: '#8E8B88', fontFamily: MONO }}>{pick.inputs}</span>
         <span className="mt-1 text-[12px] leading-[1.35] line-clamp-6" style={{ color: '#C9C6C3' }}>{pick.spoiler.teaser || hook(pick.spoiler.special)}</span>
@@ -279,6 +296,7 @@ function PickPanel({ pick }: { pick: Pick }) {
         </PlayLink>
       </div>
       <div className="min-w-0 text-[13px] leading-[1.5]" style={{ color: '#D6D3D0' }}>
+        {pick.why && <Part label={`RANKED ${pick.grade} · ${(pick.tier || '').toUpperCase()}`}><p className="text-white text-[14px]">{pick.why}</p></Part>}
         {pick.flag && <p className="mb-3 px-3 py-2 text-white" style={{ borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{pick.flag}</p>}
         {notes.hard && <Part label="WHY AI STRUGGLES"><p className="text-white text-[14px]">{notes.hard}</p></Part>}
         <details className="mt-2 pt-2" style={{ borderTop: `1px solid ${LINE}` }}>
@@ -302,11 +320,26 @@ function PickPanel({ pick }: { pick: Pick }) {
 export function PickGrid({ picks }: { picks: Pick[] }) {
   const [open, setOpen] = useState<Pick | null>(null);
   const flag = picks.find((pick) => pick.flag)?.flag;
+  // Tier headings in the catalog's order; with no ranking there is one unlabelled group.
+  const tiers = useMemo(() => {
+    const order: string[] = [];
+    for (const pick of picks) if (!order.includes(pick.tier ?? '')) order.push(pick.tier ?? '');
+    return order.map((name) => ({ name, items: picks.filter((pick) => (pick.tier ?? '') === name) }));
+  }, [picks]);
   return (
     <>
-      <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {picks.map((pick) => <PickCard key={pick.id} pick={pick} onOpen={() => setOpen(pick)} />)}
-      </div>
+      {tiers.map(({ name, items }) => (
+        <section key={name || 'all'} className="mb-4">
+          {name && <h2 className="mb-1.5 text-[11px] font-bold tracking-[1.5px] uppercase" style={{ color: name === tiers[0].name ? HOT : '#A8A5A2', fontFamily: MONO }}>{name}</h2>}
+          <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {items.map((pick) => <PickCard key={pick.id} pick={pick} onOpen={() => setOpen(pick)} />)}
+          </div>
+        </section>
+      ))}
+      <p className="mb-2 text-[11px]" style={{ color: '#8E8B88', fontFamily: MONO }}>
+        {picks[0]?.rankNote && <>Grades are the Gemini review's, as tests for AI agents. {picks[0].rankNote} </>}
+        <Link href="/arc3/gallery" className="underline" style={{ color: '#E53AA3' }}>The rest of the games →</Link>
+      </p>
       {flag && <p className="mt-2 px-3 py-2 text-[13px] leading-[1.5]" style={{ color: '#F4F2F0', borderLeft: `3px solid ${HOT}`, background: 'rgba(229,58,163,.1)' }}>{flag}</p>}
       <Dialog open={open !== null} onOpenChange={(next) => { if (!next) setOpen(null); }}>
         <DialogContent className="max-w-[960px] w-[calc(100vw-24px)] max-h-[calc(100vh-24px)] overflow-y-auto p-4 sm:p-5 rounded-none border-[#2C2B2A]"
