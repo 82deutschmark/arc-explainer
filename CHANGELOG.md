@@ -1,3 +1,7 @@
+### Version 9.163.1 · November 7, 2026
+
+- Turducken special: the "When speed no longer matters" illustration now shows four rival airships instead of two, each on a brass plaque: Tufa Labs and Yi-Chia Chen small and high in the far corner (ahead the whole time), NVARC and XZ climbing past us with exhaust trails from our altitude (the two that overtook us). No rival ranks or scores. New file 04-speed-plateau-v2 keeps the original's pixels byte for byte outside the upper-right sky (about 7% of the picture); inside it the airships come from an image-tool layout pass with the original's paper grain added back. The earlier v1 file is kept. Markdown, page, page builder and review notes point at v2. Not pushed (publishing goes through the no-build route). Why: Son's request. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.163.0 · November 7, 2026
 
 - Fast publishing for special pages: an authenticated `PUT /api/specials/file` writes an edited /specials/ file (html, md, images, csv, json; nested paths, traversal-safe, 15 MB cap) onto the Railway volume, and a layer ahead of the static handler serves it with no-cache, falling back to the baked files. Pushed copies last until the next deploy, so git stays the record. New `tools/specials-publish/publish_specials.py` pushes changed files and checks the live copy once. Why: Son asked for Turducken edits to go live in seconds instead of after a full repo build. Reuses the arc3 admin token; tests in `tests/unit/specialsOverlay.test.ts`; doc `docs/reference/api/specials-fast-publish.md`. Author: Claude Opus 5.5 Low.

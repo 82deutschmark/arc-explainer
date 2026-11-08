@@ -603,7 +603,7 @@ Why it didn't work for us: the base model was already good at the games, and eve
 
 ## When speed no longer matters
 
-![The Turducken tries to fly beyond its 56.02 plateau](04-speed-plateau-v1-corners-only.png)
+![The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it](04-speed-plateau-v2-corners-only.png)
 
 ### 4.1 The climb, and what it was telling us
 

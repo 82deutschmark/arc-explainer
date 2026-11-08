@@ -34,9 +34,9 @@ async function run(){
  d.querySelector('h1').textContent='Stuffing the Turducken';
  const headings={'Part 1. The harness':'The Harness','Part 2. The inference optimizations':'Inference Optimization','Part 3. RL: what we tried, and why none of it shipped':'RL','Part 4. What we learnt':'When speed no longer matters'};
  for(const h of [...d.querySelectorAll('h2')]){if(headings[h.textContent])h.textContent=headings[h.textContent];else {const n=d.createElement('h3');n.innerHTML=h.innerHTML;h.replaceWith(n);}}
- const pics=['01-harness-garage-v2','02-inference-v2','03-rl-v1','04-speed-plateau-v1'];
+ const pics=['01-harness-garage-v2','02-inference-v2','03-rl-v1','04-speed-plateau-v2'];
  d.querySelector('#fig-hero').remove();
- [...d.querySelectorAll('h2')].forEach((h,i)=>{const fig=d.createElement('figure');fig.className='hero';fig.innerHTML=`<img src="arc3-solution-draft/${pics[i]}-corners-only.png" alt="${['The game-playing harness','The inference stack','The reinforcement-learning pipeline','The Turducken tries to fly beyond its 56.02 plateau'][i]}" loading="lazy">`;h.after(fig);});
+ [...d.querySelectorAll('h2')].forEach((h,i)=>{const fig=d.createElement('figure');fig.className='hero';fig.innerHTML=`<img src="arc3-solution-draft/${pics[i]}-corners-only.png" alt="${['The game-playing harness','The inference stack','The reinforcement-learning pipeline','The Turducken stalls at its 56.02 plateau while Tufa Labs and Yi-Chia Chen fly far above and NVARC and XZ climb past it'][i]}" loading="lazy">`;h.after(fig);});
  const p=d.querySelector('main > p');p.innerHTML=p.innerHTML.replace('thank you.','thank you—and thank you to the organizers for the generous free RTX compute.');
  const close=[...d.querySelectorAll('p')].find(p=>p.textContent.startsWith('Thanks for reading'));close.innerHTML+=' It has been an honor for us to compete with everyone.';
  const regret=[...d.querySelectorAll('h3')].find(h=>h.textContent.startsWith('4.3'));
