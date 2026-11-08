@@ -11,7 +11,8 @@ PURPOSE: Build the Kaggle-pasteable Markdown of the Turducken write-up from the 
              (the IMAGES map imported from make_white_page.py, so both alternates stay in step).
              The context-management animation cannot play on Kaggle, so its committed still
              frame (charts/trim-poster.png) is shown, linked to the animated file, with a one-line
-             pointer under it. Site-only lines (the nav and the "Review draft" banner) are dropped.
+             pointer under it; the one-turn walkthrough (Round 7, Claude Opus 5.5 Low) gets its still
+             of the final state (charts/turn-still.png) the same way. Site-only lines (the nav and the "Review draft" banner) are dropped.
            - article-kaggle.txt: the same bytes, so browsers show it as text instead of downloading.
            - ../2026-11-06-arc3-solution-draft-kaggle.html: a tiny unlisted, noindex page with a
              Copy button, the raw Markdown, and a preview rendered from that Markdown.
@@ -44,6 +45,11 @@ OUT_TXT = HERE / "article-kaggle.txt"
 OUT_PAGE = HERE.parent / "2026-11-06-arc3-solution-draft-kaggle.html"
 ANIMATION = "arc3-solution-draft/charts/trim.webp"
 POSTER = "arc3-solution-draft/charts/trim-poster.png"
+# The one-turn walkthrough (Round 7): a <picture> with a tall phone version and a wide one; Kaggle
+# gets the wide animation's still of the final state, linked to the wide animation.
+TURN_ANIMATION = "arc3-solution-draft/charts/turn-wide.webp"
+TURN_TALL = "arc3-solution-draft/charts/turn-tall.webp"
+TURN_STILL = "arc3-solution-draft/charts/turn-still.png"
 
 VOID = {"img", "source", "br"}
 KNOWN = {
@@ -231,6 +237,22 @@ def render_figure(fig: Node) -> list[str]:
         blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
         # An explicit link, not a bare URL, so no renderer swallows the closing star into the address.
         blocks.append(f"*This is a still frame from an animation: [watch the animation]({absolute(ANIMATION)}).*")
+        return blocks
+    if fig.attrs.get("id") == "fig-turn":
+        pic = fig.find("picture")
+        img, src = pic.find("img"), pic.find("source")
+        if (img.attrs["src"] != TURN_ANIMATION or src.attrs.get("srcset") != TURN_TALL
+                or not (HERE.parent / TURN_STILL).is_file()):
+            raise Fail("The walkthrough figure changed; check its still and animation paths")
+        for div in fig.kids():
+            if div.tag == "div" and "ft" in div.cls():
+                blocks.append(f"**{para(inline(div))}**")
+            elif div.tag == "div" and "fs" in div.cls():
+                blocks.append(para(inline(div)))
+        blocks.append(image(TURN_STILL, "The final step of the walkthrough: the ten clicks have run and level 2 is "
+                            "cleared; the right board is the recorded game.", TURN_ANIMATION))
+        blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
+        blocks.append(f"*This is the last frame of an eight-step animation: [watch the animation]({absolute(TURN_ANIMATION)}).*")
         return blocks
     if "redrawn-figure" in fig.cls():
         for child in fig.kids():

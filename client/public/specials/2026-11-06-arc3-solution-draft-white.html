@@ -161,6 +161,7 @@ td.n, th.n { text-align: right; padding-right: 0; padding-left: 10px; white-spac
 .after .m { font: 0.74rem var(--mono); color: var(--ink-2); }
 .after .m b { display: block; font: 600 1.15rem/1.35 var(--mono); color: var(--ink); letter-spacing: -0.02em; }
 .after .m b em { font-style: normal; color: var(--c-decode); }
+@media (max-width: 640px) { #fig-turn { padding: 10px 4px 8px; } } /* phone: the tall walkthrough gets the full width */
 @media (max-width: 640px) {
   main { padding: 26px 16px 60px; }
   h1 { font-size: 1.65rem; }
@@ -283,6 +284,13 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li>The snippet plays moves with <code>action([...])</code>, one move or a whole planned batch, and the state refreshes after each one, so a single call can probe, loop or run a search.</li>
 <li>The printed result comes back, and the model can call <code>python</code> again, as often as it likes. Each call has a 30-second limit.</li>
 </ol>
+<p>Here is one real turn from a saved run, step by step: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.</p>
+<figure id="fig-turn">
+<div class="ft">One turn of the harness, from a saved run</div>
+<div class="fs">The system prompt, the board the model saw, its reasoning, its two python calls and their output, then its moves played through action() on the recorded game.</div>
+<picture><source media="(max-width: 640px)" srcset="arc3-solution-draft/charts/turn-tall.webp" width="1080" height="2025"><img src="arc3-solution-draft/charts/turn-wide.webp" width="1920" height="1080" loading="lazy" alt="Animation in eight steps, from one real turn of Reaching Lurch, level 2. One: excerpts of the system prompt, marked game rules, notes memory, and one tool with own functions. Two: the turn message listing ten helper functions the model wrote earlier, and the board it sees. Three: its reasoning. Four: a python call that defines two helpers and simulates ten clicks, with the printed plan. Five: more reasoning about checking each click. Six: the python call that plays the ten clicks through run_checked. Seven: the output lines appear one per click while the recorded board on the right changes, until both knobs sit in their rings and the level is cleared. Eight: on the next turn the model writes the level's mechanics into its notes and the new helpers are listed back." style="display:block;width:100%;max-width:100%;height:auto;margin:6px auto 0;border-radius:8px"></picture>
+<figcaption>Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run <code>20261023_1410_daniel-candnp3-a</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the boards are the run's recorded frames. The last step is the first python call of the following turn. The coloured chips and the yellow notes are ours.</figcaption>
+</figure>
 <p>On top of that loop, the Turducken harness keeps these things for the model:</p>
 <ul>
 <li><strong>Its own functions:</strong> helpers the model writes (a path search, an object finder) stay defined for the whole game and are listed back to it every turn, so a tool built on level 1 is still there on level 6. This comes from Daniel's notebook, which already keeps them for the whole game; we kept his setting.</li>

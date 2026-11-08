@@ -39,6 +39,18 @@ One turn goes like this:
 3. The snippet plays moves with `action([...])`, one move or a whole planned batch, and the state refreshes after each one, so a single call can probe, loop or run a search.
 4. The printed result comes back, and the model can call `python` again, as often as it likes. Each call has a 30-second limit.
 
+Here is one real turn from a saved run, step by step: what the model was told, what it saw, what it thought, the code it ran, and what its moves did to the game.
+
+**One turn of the harness, from a saved run**
+
+The system prompt, the board the model saw, its reasoning, its two python calls and their output, then its moves played through action() on the recorded game.
+
+[![The final step of the walkthrough: the ten clicks have run and level 2 is cleared; the right board is the recorded game.](https://arc.markbarney.net/specials/arc3-solution-draft/charts/turn-still.png)](https://arc.markbarney.net/specials/arc3-solution-draft/charts/turn-wide.webp)
+
+*Real trace, not a mock-up: the game Reaching Lurch, level 2, step 11 of run `20261023_1410_daniel-candnp3-a`, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code and output are verbatim, cut only where "…" shows, and the boards are the run's recorded frames. The last step is the first python call of the following turn. The coloured chips and the yellow notes are ours.*
+
+*This is the last frame of an eight-step animation: [watch the animation](https://arc.markbarney.net/specials/arc3-solution-draft/charts/turn-wide.webp).*
+
 On top of that loop, the Turducken harness keeps these things for the model:
 
 - **Its own functions:** helpers the model writes (a path search, an object finder) stay defined for the whole game and are listed back to it every turn, so a tool built on level 1 is still there on level 6. This comes from Daniel's notebook, which already keeps them for the whole game; we kept his setting.
