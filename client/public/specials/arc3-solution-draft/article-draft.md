@@ -197,7 +197,7 @@ What the traces told us:
 
 ## Inference Optimization
 
-![The inference stack](02-inference-v1-corners-only.png)
+![The inference stack](02-inference-v2-corners-only.png)
 
 The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.
 

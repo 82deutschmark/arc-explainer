@@ -458,7 +458,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li><strong>Stuck means stuck.</strong> About 19 games per run ended stuck on a level 5+. Giving everyone 4x the clock only took 58 to 64: the losses were stalls (flailing and paralysis), not missing tokens.</li>
 <li><strong>Loops are common.</strong> 35% of moves in our best board run returned the board to an earlier state.</li>
 </ul>
-<h2>Inference Optimization</h2><figure class="hero"><img alt="The inference stack" loading="lazy" src="arc3-solution-draft/02-inference-v1-corners-only.png"></figure>
+<h2>Inference Optimization</h2><figure class="hero"><img alt="The inference stack" loading="lazy" src="arc3-solution-draft/02-inference-v2-corners-only.png"></figure>
 <p>The model is Qwen3.8-Flash-Next with Intel's 4-bit AutoRound weights, served by Daniel Franzen's SGLang fork with MTP drafting. The scored run is 110 games on one RTX PRO 6000 (96 GB) in 9 hours. Every move costs a thousand-plus tokens of thinking, so the card's tokens per second turn into moves, and moves turn into levels.</p>
 <p>One rule came before any change: <strong>is it exact or lossy?</strong> An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The biggest lesson at the end is about the times we bent that rule.</p>
 <figure id="fig-box">

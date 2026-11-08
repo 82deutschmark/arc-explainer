@@ -1,3 +1,7 @@
+### Version 9.162.36 · November 7, 2026
+
+- Turducken special: correct the inference illustration's labels to "33% EXPERTS REMOVED" and "32 LANES" in a new file (02-inference-v2), keeping the original artwork's pixels and texture everywhere outside the two signs; the earlier file is kept. Markdown, page, review notes and the canonical ZIP point at the new file. Author: Claude Opus 5.5 Low.
+
 ### Version 9.162.35 · November 7, 2026
 
 - Turducken special, Son's answers to the open items: his opening kept word for word (only "also would also" fixed, earlier extra rewording undone); Part 1 renamed "The Harness"; nine-hour budget only (the 9 h 13 m run removed); rival ranks removed; the RL TL;DR no longer claims an unverified attempt count; the dials line states 32 lanes overparked to 34 games. Markdown, page, review notes and the canonical ZIP kept in sync. Author: Claude Opus 5.5 Low.
