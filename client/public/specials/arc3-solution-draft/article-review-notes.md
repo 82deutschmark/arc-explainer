@@ -168,3 +168,5 @@ Rabbit name corrected: "Sanday" was a typo; the rabbits are Sanbei and Pochi (Bo
 - 08-Nov-2026 (Claude Sonnet 5.5): Added how-the-team-came-together paragraph. September placement and Milestone 2 notebook: the Boss's own account in chat (not independently checked). October merger with Keith Tyser's ARC Slayers and the name Turducken: Loose Goose wiki dispatch 2026-10-18-arc3-superteam-merger-official (team's own messages of 18 Oct). Wiki also lists kawaimahiro as the fourth Slayers member; roster count suggests it is the ngyzly account but that is unconfirmed, so no names changed.
 
 - 08-Nov-2026 (Claude Sonnet 5.5): Added thanks to Dr. Tim Scarfe and the MLST community in the top thanks, on the Boss's request (wording his).
+
+- 08-Nov-2026 (Claude Sonnet 5.5): Added thanks to NVARC and XZ (XZ for using our games to overtake us, per Son), OpenMind for the Bayesian rule inferrer (per Son; not on the team), and François Chollet and Mike Knoop in the ARC Prize paragraph. Jack Cole stays thanked but is not an ARC-3 team member, per Son.
