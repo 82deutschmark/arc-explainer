@@ -46,7 +46,7 @@ S = 2                      # supersampling factor
 FPS = 15
 LOOP = 18.0                # seconds; every motion below is periodic in LOOP
 NFRAMES = int(LOOP * FPS)  # 270; frame NFRAMES would equal frame 0, so it is not drawn
-POSTER_T = 16.4            # late re-read on the left, a swap in flight on the right
+POSTER_T = 11.7            # window full and the next turn won't fit; a swap in flight on the right
 
 # Warm "turducken workshop" palette, copied from the page's CSS overrides.
 BG = '#fbf1e6'          # --panel (the figure background the image sits on)
