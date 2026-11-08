@@ -70,3 +70,16 @@ The Boss identified a separate repository in his account. Verified `82deutschmar
 Expanded the scored-harness explanation and added a separate team-branch discussion from the preserved 18 October merge overview: C5m sandbox recovery, GUIDE/WORKING memory lifecycle, host-facts and frame inspection. The subsection explicitly does not claim these proposed integrations all shipped in 56.02; no new benchmark numbers or combined gains added. Current generic tool_agent.py is not treated as the archived scored package. Exact handoff is committed in `docs/2026-11-06-turducken-assistant-handoff.md`.
 
 Original chart/data/artwork and settings unchanged. Markdown and ZIP synchronized.
+
+
+## Son's harness-overview pass · 7 November 2026
+
+Author: Claude Opus 5.5 Low. Built on Son's own 7-Nov restructure (TL;DR shortened, Part 1 rebuilt).
+
+Opening paragraphs replaced with Son's supplied text, words unchanged (the doubled "also would also" is kept on purpose for Son to decide); only paragraph breaks and the existing bold "Why a turducken?" lead-in were added. Lost with the old opening and not elsewhere in the article: thanks to the organizers for free RTX compute, thanks to teammates and congratulations to every team. Keith Tyser's credit for the adapted box, staircase and cache figures now sits in the box-diagram caption. The 7.36 and 56.02 scores remain in the climb chart and its table; the roughly 1,950 runs remain in the "three parts" paragraph.
+
+Part 1: trim, swap, copy and wipe moved from the harness list into their own sub-part of 1.1, restoring the earlier three-card figure and bullets (Son's earlier wording). New "What we can change" passage lists only dials already documented (window and keep size, slots and queue, fresh-eyes thresholds, notes policy, sampling and thinking caps, turn contents). 1.2 and 1.3 renamed to Son's "How we measure performance" and "Performance so far"; their text is unchanged. Section name "Harness Iteration" kept.
+
+Public-25 chart: built from a saved arc3.sonpham.net catalog snapshot (7 Nov), runs that played all 25 public games, scored on those 25 only; labelled as the local board, not the Kaggle leaderboard; data gaps stated under it. No Kaggle requests.
+
+Open harness feedback in these notes: none was outstanding. The earlier harness items (team-branch provenance, "candidate is not proof of shipping") are already handled by Son's teammates paragraph in 1.3.

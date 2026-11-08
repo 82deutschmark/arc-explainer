@@ -16,3 +16,8 @@ Harness comparison: harness-local-kaggle.png is reconstructed from the adjacent 
 `original/*.svg` and `.png` now contain full static vector figure compositions matching Son’s supplied PDF style: original measured plot marks plus integrated title, subtitle, legends, summary cards and caveats. SVG type is outlined for consistent typography, with 2400px PNG companions. These are vector redraws, not PDF screenshots. Data are unchanged; `original/redraw-manifest.json` records the source hash and eleven figures. The older charts above remain archived alternatives, not the current original-article figures.
 
 Canonical regeneration: `python3.13 charts/redraw_pdf_panels.py` from the report root. It first runs the preserved `static_original.cjs` against the locally archived original HTML, then composes final vector panels and synchronizes the page, Markdown and ZIP. Requires Python 3.13 fontTools/BeautifulSoup and installed JS DOM/Sharp dependencies as recorded in the scripts. `fonts/` contains the original SIL-OFL typefaces and licenses. Raw Claude runtime HTML is deliberately not distributed.
+
+
+## Local public-25 board over time (added 7 November 2026)
+
+`public25-over-time.svg` / `.png` and `public25-runs.csv` (every plotted run). Source: a saved snapshot of arc3.sonpham.net/api/v1/catalog read on 7 November 2026; runs kept only if they played all 25 official public games, scored as the mean of those 25. This is the local board, not the Kaggle leaderboard. Regenerate with `python3 make_public25_chart.py <snapshot.json>`; the snapshot itself stays on the Team 4TB drive (path in the script header).

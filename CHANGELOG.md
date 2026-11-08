@@ -1,3 +1,7 @@
+### Version 9.162.34 · November 7, 2026
+
+- Turducken special, Son's 7-Nov harness pass: replace the opening thanks and "Why a turducken?" with Son's own words (verbatim); move trim, swap and wipe out of the harness list into its own part of 1.1 with the restored three-card figure; add a short "What we can change" passage on the harness dials; rename 1.2/1.3 to "How we measure performance" and "Performance so far"; add the local public-25 board chart (SVG + PNG + CSV, built from a saved arc3.sonpham.net catalog snapshot, clearly labelled as not the Kaggle leaderboard, with its data gaps). Keith Tyser's figure credit, dropped with the old opening, now sits on the box diagram caption. Markdown and page kept in sync. Author: Claude Opus 5.5 Low. Plan: `docs/plans/2026-11-07-turducken-harness-overview.md`.
+
 ### Version 9.162.33 · November 6, 2026
 
 - Sync all seven Team Turducken ARC-AGI-3 cards, Ronen’s Herminator portrait, the corrected team picture and merger history from The Loose Goose. Preserve older card addresses and update the collection checks for competition editions and reviewed artwork. Author: GPT-6 / Codex (reasoning effort not exposed). Plan: `docs/plans/2026-11-06-turducken-card-sync.md`.

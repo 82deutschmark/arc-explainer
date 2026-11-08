@@ -62,6 +62,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; 
 h1 { font-size: 2.2rem; margin: 6px 0 14px; }
 h2 { font-size: 1.55rem; margin: 60px 0 10px; }
 h3 { font-size: 1.12rem; margin: 32px 0 8px; }
+h4 { font-family: var(--display); font-weight: 700; font-size: 1rem; line-height: 1.25; margin: 26px 0 6px; }
 p { margin: 0 0 14px; }
 a { color: var(--accent); text-underline-offset: 2px; }
 a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
@@ -257,9 +258,9 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <main><nav><a href="/">ARC Explainer</a> · <a download="" href="arc3-solution-draft/article-draft.md">Markdown</a> · <a download="" href="arc3-solution-draft/charts/original/source-data.json">Original chart data</a></nav><p class="byline">Review draft · Original Claude artifact restored · Static charts, no animation. Author-reported measurements from the original draft; not newly reproduced benchmarks.</p>
 <div class="byline"><b>Son Pham</b> · Team Turducken · ARC Prize 2026, ARC-AGI-3 · 5th on the public leaderboard, 56.02</div>
 <h1>Stuffing the Turducken</h1>
-<p>Hey everyone! Before anything else: thank you—and thank you to the organizers for the generous free RTX compute. This has truly been a wild ride, from 7.36 on 21 September to 56.02 on 23 October, with about 1,950 full runs on GCP in between.</p>
-<p>Thank you to ARC Prize and Kaggle for a really fun competition. To Tufa Labs, whose harness sits at the very center of our entry. To Daniel Franzen, for publishing his Milestone 2 notebook: we built on it from 1 October, and this write-up only exists because he shared. To Keith Tyser, whose write-up our box, staircase and cache figures are adapted from. To my teammates on Team Turducken. And congrats to every team, and thanks to everyone who shared along the way. This board taught us a ton.</p>
-<p><strong>Why a turducken?</strong> A turducken is a real American dish: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs’ harness is the chicken, Daniel Franzen’s notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much engineering into the Turducken as possible.</p><figure id="fig-stuffing-intro" class="hero"><img src="arc3-solution-draft/00-turducken-texture-v10.png" width="1536" height="1024" alt="Team Turducken stuffing engineering into the mechanical turkey" loading="eager"></figure>
+<p>Hi everyone! Before anything else, we simply would like to say thank you. Thank you to everyone who has participated in the competition. It has truly been an honor to compete with you all, especially those who have spent the last 6 months giving everything they could in the competition. The level of inference engineering in this competition has truly reached the stratosphere, and that would not have happened without the relentlessness of everyone for the past 6 months.</p>
+<p>We also would also like to thank you to Tufa Labs, whose harness sits at the very heart of our entry and to Daniel Franzen, for publishing his Milestone 2 notebook. Our solution would not have existed without their generous sharing, and we named our team Turducken to honor their contribution. Finally, thank you to the ARC Prize Foundation and Kaggle for hosting a wonderful competition.</p>
+<p><strong>Why a turducken?</strong> A turducken is a real American Thanksgiving treat: a deboned chicken stuffed inside a deboned duck, which is then stuffed inside a deboned turkey. The name combines turkey, duck and chicken. That nesting is our metaphor: Tufa Labs' harness is the chicken, Daniel Franzen's notebook is the duck around it, and our engineering optimizations are the outer turkey. Somewhere in October we realized what this competition had turned into: stuffing as much inference engineering into the Turducken as possible.</p><figure id="fig-stuffing-intro" class="hero"><img src="arc3-solution-draft/00-turducken-texture-v10.png" width="1536" height="1024" alt="Team Turducken stuffing engineering into the mechanical turkey" loading="eager"></figure>
 <p>Here's our write-up, in three parts: <strong>the harness</strong>, <strong>the inference optimizations</strong>, and <strong>the RL that didn't work</strong>, then what we learnt. We ran about 1,950 full runs on GCP during the competition and kept every log, so nearly every number below comes straight out of a log file. When it doesn't, I say so.</p>
 <div class="tldr"><h3>TL;DR</h3><ul>
 <li><strong>Base:</strong> Daniel Franzen's public notebook from 1 October. 110 games on one RTX PRO 6000 in 9 hours.</li>
@@ -287,14 +288,48 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <li><strong>Notes memory:</strong> one markdown <code>notes</code> text per game, written from inside <code>python</code> and held by the harness, so it survives timeouts and history trims. It is shown again after every trim and at every new level, as head + tail once it passes 6,000 characters.</li>
 <li><strong>Goal first:</strong> on a level's first turn, the model writes what "solved" looks like into its notes before it acts.</li>
 <li><strong>Checked play:</strong> <code>run_checked([(move, expect), ...])</code> plays moves and stops at the first one that doesn't do what was expected; <code>check_rule(rule)</code> tests a candidate rule against every recorded move of the level.</li>
-<li><strong>Trimming and swapping:</strong> when a game's history reaches 140k tokens, the harness keeps the system prompt, the notes and the last 52k. 34 games hold a slot on the card while the other 76 wait in a queue, and a game gives up its slot only right after a trim, when its cache is useless anyway.</li>
-<li><strong>Fresh eyes:</strong> after 120k tokens stuck on one level, the model writes a handover note of at most 400 words, the conversation is cleared, and it carries on from the note on the same board, at most 3 times per level.</li>
 <li><strong>Sampling:</strong> temperature 0.5 (0.8 → 0.6 → 0.5 over the competition), top-p 0.95, top-k 20.</li>
 </ul>
-<h3>1.2 How we tested ideas</h3>
+<h4>Trim, swap and wipe</h4>
+<p>Here's the problem. All 110 games open at the start and share one 9-hour clock, but the card holds 3.8M tokens of history and only 32 games can decode at once. So the harness and the server juggle a few moves. Here's what that looks like for one game, and for the whole card at once:</p>
+<figure id="fig-context">
+<div class="ft">Trim, swap, wipe: how 110 conversations share one card</div>
+<div class="fs">The three things that can happen to a game's history.</div>
+<div class="ctx3">
+<div class="ccard trim"><div class="ct">Trim</div><div class="cw">when the prompt hits 140k</div>
+<p>Keep the system prompt, the notes and the last 52k. The prompt no longer matches the cache, so the kept 52k is read again from scratch.</p>
+<div class="cn"><b>~340</b> trims per run, <b>~46k</b> tokens each: half of all prompt tokens, <b>8%</b> of the clock</div></div>
+<div class="ccard park"><div class="ct">Swap</div><div class="cw">right after a trim</div>
+<p>The priority queue can give the slot to one of the 76 waiting games; the trimmed game rejoins the queue. Host RAM keeps a write-through copy of the card's cache.</p>
+<div class="cn"><b>34</b> slots for <b>110</b> games; with the RAM copy, games losing their history: <b>9 → 0</b></div></div>
+<div class="ccard wipe"><div class="ct">Wipe</div><div class="cw">after 120k tokens stuck on one level</div>
+<p>The model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board.</p>
+<div class="cn">at most <b>3</b> per level</div></div>
+</div>
+<div class="ctxfoot">What survives all three: <b>the notes</b>, shown again after every trim and at every new level.</div>
+<figcaption>Trim counts from the 56.02 board twin's server log: prompt reads of 20k+ tokens that started from an empty cache, two runs.</figcaption>
+</figure>
+<ul>
+<li><strong>Trim.</strong> When a game's prompt hits the 140k window, the harness keeps the system prompt, the notes and the last 52k tokens. The front of the prompt changed, so the server's cache no longer matches and the kept 52k is read again. A 56.02 board run does about 340 trims of about 46k tokens each: half of all prompt tokens, but only 8% of the clock.</li>
+<li><strong>Swap.</strong> 34 games hold a slot at a time; the other 76 wait in a priority queue. A game gives up its slot only right after a trim, the one moment it costs nothing because its cache is useless anyway. The queue then picks who plays next: a new game, or one coming back to re-read its kept history.</li>
+<li><strong>Copy.</strong> Host RAM keeps a 24 GB write-through copy of everything the card caches. If the card has to evict a game's history, it comes back over PCIe instead of being re-read.</li>
+<li><strong>Wipe (fresh eyes).</strong> When a level eats 120k generated tokens without a clear, the model writes a handover note of at most 400 words, the conversation is cleared, and play continues on the same board. At most 3 times per level.</li>
+</ul>
+<h4>What we can change</h4>
+<p>The harness has a handful of dials. These are the ones we actually turned:</p>
+<ul>
+<li><strong>Window and keep:</strong> when a trim fires (128k, then 140k, paid for with fewer Mamba state slots) and how much history it keeps (58k, then 52k).</li>
+<li><strong>Slots and queue:</strong> how many games hold a slot (34 admitted, 32 decoding) and who gets a freed slot. A trim gate that let a trimmed game keep its slot tied.</li>
+<li><strong>Fresh eyes:</strong> how long a level may stay stuck before a wipe (120k tokens), how long the handover note can be (400 words), and how many wipes a level gets (3). Restarting stuck levels on a timer instead lost at every setting we tried.</li>
+<li><strong>Notes:</strong> what the model must write (goal first), how long notes are shown in full before head + tail (6,000 characters), and whether notes are per game or shared. Shared notes and fancier memory did no better.</li>
+<li><strong>Sampling and thinking:</strong> temperature (0.8 → 0.6 → 0.5), top-p 0.95, top-k 20, and caps on thinking per turn, which tied.</li>
+<li><strong>What a turn shows:</strong> how much text repeats every turn (lean turns), and whether every frame of an in-game animation is shown.</li>
+</ul>
+<p>Most of these are lossy: they change what the model says, so the only way to judge one is to play games with it. That is where the hard part was.</p>
+<h3>1.2 How we measure performance</h3>
 <p>Kaggle gives one submission a day, and a single score is noisy, so we built an offline board. <strong>Score Climb:</strong> 50 games (the 25 public games plus 25 "copycat" games we built, one per public game), 2 to 4 hours per run, 32 lanes, on GCP G4 Spot boxes with the same RTX PRO 6000. The loop: <strong>idea → 2 board runs → read the traces → keep or drop → package plus a 10-game readiness run on Kaggle → submit.</strong></p>
 <p>Board noise, from 8 identical controls: one standard deviation is 1.9 points, so two runs only see effects of about 4 points. Most harness ideas were smaller than that, and Kaggle is noisy too: the same package resubmitted moved 3.4. We never had a ruler fine enough to see small changes. (Our later authored games are public in the <a href="https://github.com/82deutschmark/arc3-synthetic-games">ARC-3 Synthetic Games repository</a>; they are not the copycats measured here.)</p>
-<h3>1.3 What improved</h3>
+<h3>1.3 Performance so far</h3>
 <p>What moved our Kaggle score, against the package each change was added to:</p>
 <ul>
 <li><strong>Notes memory: +8.8</strong>, our biggest gain (the same package also restored exact draft acceptance).</li>
@@ -409,6 +444,11 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 </tbody>
 </table></div>
 <p>Read the two columns together. Nearly everything that lost on Kaggle looked fine or better on our board. That's the lesson of Part 4.</p>
+<p>And here is our local board over time. Each dot is one run stored on our run site, <a href="https://arc3.sonpham.net">arc3.sonpham.net</a>, that played all 25 public games, scored on those 25 only. <strong>This is our local public-25 board, not the Kaggle leaderboard</strong>, which scores 110 hidden games. Runs differ in board size and clock length, so the dots are grouped by board and never joined into one line.</p>
+<figure class="redrawn-figure" id="fig-public25">
+<div aria-label="Our local public-25 board, run by run; scroll horizontally on narrow screens" class="chart" id="chart-public25" role="region" tabindex="0"><a href="arc3-solution-draft/charts/public25-over-time.svg"><picture><source srcset="arc3-solution-draft/charts/public25-over-time.svg" type="image/svg+xml"><img alt="Our local public-25 board, run by run. Each dot is one local run that played all 25 public games, scored on those 25 only. This is not the Kaggle leaderboard." height="515" loading="lazy" src="arc3-solution-draft/charts/public25-over-time.png" width="960"></picture></a></div><p class="chart-download">Open or download: <a href="arc3-solution-draft/charts/public25-over-time.svg">vector SVG</a> · <a href="arc3-solution-draft/charts/public25-over-time.png">high-resolution PNG</a> · <a href="arc3-solution-draft/charts/public25-runs.csv">every plotted run (CSV)</a></p>
+</figure>
+<p>Gaps in the data: the site holds only the runs we uploaded, a small share of the roughly 1,950 we ran. It has no complete public-25 run before 27 September or after 31 October, so our first weeks and the 3-bit work from 1 November are missing, and many days have no run at all. Four runs sit far below the rest; two near zero were broken runs, and why the other two scored low was not checked.</p>
 <p>Ideas that only ran on the board, none clearly above noise: an animation feed (+7.5 on a 10-game animation subset, nothing on all 25), key-value and curator memory variants, notes shared across games (notes turned out 92% game-specific), a fixed protocol for levels 5+, a state-repeat guard, thinking caps, a rolling summary (22% slower), restarting stuck levels, a trim gate, a symbolic rule finder, and a live coach from a frontier model (no clear win in 113 tries).</p>
 <p>Teammates also built harness branches that didn't make the 56.02 package: Keith's sandbox, which keeps a game's Python helpers through a timeout, and Slow∞Loop's (dzj) split memory for game rules and level notes, with a handoff before each trim and verified action facts. Details are in our <a href="https://github.com/Autoresearch-Arena/arc-3/blob/main/harnesses/MERGE-OVERVIEW-KEITH-DZJ-1018.md">merge plan</a> (team repository).</p>
 <p>What the traces told us:</p>
@@ -422,7 +462,7 @@ html.export figure.export-on::before, html.export figure.export-on::after { disp
 <p>One rule came before any change: <strong>is it exact or lossy?</strong> An exact change gives the same output bit for bit, so it ships on a speed test alone. A lossy change changes what the model says, so it has to win games first. The biggest lesson at the end is about the times we bent that rule.</p>
 <figure id="fig-box">
 <div class="ft">The box: one RTX PRO 6000, 110 games, 9 hours</div>
-<div class="fs">The 56.02 configuration, read from its server startup log.</div>
+<div class="fs">The 56.02 configuration, read from its server startup log. Our box, staircase and cache figures are adapted from Keith Tyser's write-up.</div>
 <div class="boxgrid">
 <div class="card">
 <div class="ch">RTX PRO 6000 <span>· 96 GB</span></div>
