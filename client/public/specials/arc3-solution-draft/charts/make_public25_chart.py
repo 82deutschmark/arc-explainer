@@ -1,4 +1,5 @@
-# Author: Claude Opus 5.5 (effort: low), first version; Claude Opus 5.5 Low, adapted for the ARC Explainer special
+# Author: Claude Opus 5.5 (effort: low), first version; Claude Opus 5.5 Low, adapted for the ARC Explainer special;
+#   Claude Opus 5.5 Low, 07-November-2026: visible wording says "offline evaluation", not "board" (Son's request)
 # Date: 07-November-2026
 # PURPOSE: Build the "public-25 score over time" chart for Son Pham's "Stuffing the Turducken" special
 #   (client/public/specials/2026-11-06-arc3-solution-draft.html, Part 1.3 "Performance so far").
@@ -67,6 +68,14 @@ STYLE = {
     "50-game Score Climb board (25 public + 25 copycats)": ("#eb6834", "s"),
     "Larger mixed boards (75 to 100 games)": ("#1baf7a", "^"),
 }
+# What the legend shows for each family. The family names above stay as they are because they
+# are the values in public25-runs.csv; only the drawn wording changes (Son, 7-Nov: say
+# "offline evaluation", never "board").
+LABEL = {
+    "25-game board (public games only)": "25-game offline evaluation (public games only)",
+    "50-game Score Climb board (25 public + 25 copycats)": "50-game Score Climb offline evaluation (25 public + 25 copycats)",
+    "Larger mixed boards (75 to 100 games)": "Larger mixed offline evaluations (75 to 100 games)",
+}
 INK, INK2, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 # svg.fonttype "path" draws text as outlines so the SVG looks the same without the font installed.
 plt.rcParams.update({"font.family": "Helvetica Neue", "font.size": 11, "svg.fonttype": "path"})
@@ -75,7 +84,7 @@ fig.patch.set_facecolor("white"); ax.set_facecolor("white")
 for fam, (col, mk) in STYLE.items():
     pts = [x for x in rows if x["family"] == fam]
     ax.scatter([x["date"] for x in pts], [x["public25_score"] for x in pts], s=46, c=col, marker=mk,
-               edgecolors="white", linewidths=1.2, zorder=3, label=f"{fam} — {len(pts)} runs")
+               edgecolors="white", linewidths=1.2, zorder=3, label=f"{LABEL[fam]} — {len(pts)} runs")
 
 ax.set_ylim(0, 80)
 ax.set_xlim(datetime(2026, 9, 27), datetime(2026, 11, 1, 12))
@@ -98,12 +107,12 @@ ax.annotate("8 Oct: runs started on a 540-minute clock",
 ax.annotate("Two broken runs\n(near-zero scores)", xy=(datetime(2026, 10, 30, 15), 3.5), xytext=(datetime(2026, 10, 22, 12), 9),
             fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="-", color="#9a9993", lw=0.9))
 
-fig.text(0.065, 0.955, "Our local public-25 board, run by run (not the Kaggle leaderboard)", fontsize=15, weight="bold", color=INK)
+fig.text(0.065, 0.955, "Our local public-25 offline evaluation, run by run (not the Kaggle leaderboard)", fontsize=15, weight="bold", color=INK)
 fig.text(0.065, 0.915, "Each dot is one local run stored on arc3.sonpham.net that played all 25 public games, scored on those 25 only. "
          "Kaggle scores 110 hidden games.", fontsize=10, color=INK2)
 ax.legend(loc="upper left", bbox_to_anchor=(-0.01, -0.09), ncol=1, frameon=False, fontsize=9.5, labelcolor=INK)
 fig.text(0.065, 0.025, "No complete public-25 runs on the site before 27 Sep or after 31 Oct. Runs differ in clock length and "
-         "board size, so dots are not a single like-for-like series.", fontsize=8.8, color=INK2)
+         "offline evaluation size, so dots are not a single like-for-like series.", fontsize=8.8, color=INK2)
 fig.subplots_adjust(left=0.065, right=0.98, top=0.86, bottom=0.25)
 fig.savefig(HERE / "public25-over-time.png", facecolor="white")
 fig.savefig(HERE / "public25-over-time.svg", facecolor="white")

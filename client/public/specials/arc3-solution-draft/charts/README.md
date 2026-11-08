@@ -21,3 +21,8 @@ Canonical regeneration: `python3.13 charts/redraw_pdf_panels.py` from the report
 ## Local public-25 board over time (added 7 November 2026)
 
 `public25-over-time.svg` / `.png` and `public25-runs.csv` (every plotted run). Source: a saved snapshot of arc3.sonpham.net/api/v1/catalog read on 7 November 2026; runs kept only if they played all 25 official public games, scored as the mean of those 25. This is the local board, not the Kaggle leaderboard. Regenerate with `python3 make_public25_chart.py <snapshot.json>`; the snapshot itself stays on the Team 4TB drive (path in the script header).
+
+
+## Offline evaluation wording (added 7 November 2026, Claude Opus 5.5 Low)
+
+Son asked that the charts stop saying "board" and say "offline evaluation". `reword_offline_charts.py` re-renders delta2, ladder, lanes, think, time and wf-overhead from the archived original frame with an exact list of wording swaps, then rebuilds only their SVG and 2400px PNG (no page, Markdown, data or ZIP writes). With the swaps removed it reproduces the previous SVGs byte for byte. `make_public25_chart.py` now draws "offline evaluation" too; its CSV family names are unchanged. Running the older canonical `redraw_pdf_panels.py` would bring the old wording back, so use `python3.13 charts/reword_offline_charts.py` for these six figures.
