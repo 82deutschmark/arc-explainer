@@ -11,8 +11,8 @@ Updated: 2026-11-08, Claude Sonnet 5.5 Medium. The Boss: tidy the presentation, 
          research-paper tour and the human-numbers paragraph are cut.
 Updated: 2026-11-08 (later), Claude Sonnet 5.5 Medium. The Boss: lean on Budd and Scarfe's paper, drop the bitterness, keep Boden and the
          phylogeny out, check the numbers, make it more academic. Paper claims read from the MLST archive page and full text; ARC's
-         claims from arXiv 2603.24621 (section 3.6, the ten-person calibration); counts from the live player on 8-Nov-2026
-         (1,358 games incl. 25 public; 800 ai-generated + 252 redbluepill; 46 approved).
+         claims from arXiv 2603.24621 (section 3.6, the ten-person calibration); counts from the live player and the Games page on 8-Nov-2026
+         (1,046 distinct games excluding the 25 public and 252 imported; 46 approved = 4.4%; 800 ai-generated, 0 approved; 918 versions: Claude 422, GPT 360, human 111, other 25).
 SRP/DRY check: Pass - text only, one copy. The playable games under it belong to Arc3Why.
 */
 import React from 'react';
@@ -40,7 +40,8 @@ export default function Arc3WhyContent() {
       <P>By the paper’s definition, a game that breaks these constraints is slop however new it looks. Many of the synthetic game sets I examined appear to break them in the most basic way. A solver or a scripted solution shows that a game can be won, which says nothing about whether a person can work it out, and none of the sets I looked at published a record of people playing. Several look easier for a program than for a person, which is the reverse of what the domain asks for.</P>
 
       <H2>What we found when we counted</H2>
-      <P>We were no exception. The player on this site now holds 1,358 of our games, which includes the 25 public ones. Of the rest, about a thousand came out of batch generators. Forty-six are approved, and those are the games on this page. More than nine in ten of what we made did not survive being played. The paper would predict that outcome: generation without understanding gives you volume, and judging the volume is a separate job that needs a person.</P>
+      <P>We were no exception. I counted on 8 November 2026. The player on this site holds 1,046 distinct games made by our team and our agents. That leaves out ARC’s 25 public games and the 252 ARC Prize environments we imported. Forty-six are approved: 4.4 percent, so 95.6 percent were not kept. Eight hundred of the 1,046 were batch output credited to GPT, and not one of those eight hundred was approved.</P>
+      <P>The Games page keeps every saved version of the games we kept working on: 918 versions of 643 games, in 502 lines of descent. Claude models wrote 422 of those versions (Opus 5.5 alone wrote 211), GPT models 360, people 111 and other sources 25. The 46 kept games have one thing in common: a person played them and sent them back. The paper would predict this outcome. Generation without understanding gives you volume, and judging the volume is a separate job that needs a person.</P>
 
       <H2>Method: the person is the outside check</H2>
       <P>Our pipeline follows the paper’s division of labour. The agents write the code and the art. A person plays each version, says what is unclear, dull or derivative, and decides what is kept. The lock-target line went through eight versions on the way to LT03 that way, and most of the feedback on all of these games is mine. The agents supplied speed. I supplied what the paper calls grounding, and what Kenneth Stanley, whom the authors cite, calls a nose for the interesting. A producer’s job, which is to say what a game is for and when it is finished, turns out to be the job the paper assigns to the human.</P>
