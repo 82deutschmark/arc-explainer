@@ -1,3 +1,7 @@
+### Version 9.164.25 · November 9, 2026
+
+- Publish an unlisted plain-prose ARC paper preview, “The Capacity to Acquire Capacity: Learning a New Domain with AI,” led by Budd and Scarfe and Chollet and centered on the authors’ entry into an unfamiliar technical domain. Reuse the existing serif reading layout with no figures, columns, or internal notes; preserve approved prose as a companion plain-text source and leave earlier previews untouched. Publish through the existing fast-publish route and retain the exact files in git. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-09-human-learning-paper-preview.md`.
+
 ### Version 9.164.24 · November 9, 2026
 
 - ARC Prize 2026 Paper Track, the Boss-led write-up, sixth version, as an unlisted PREVIEW page (Claude Opus 5.5 Low): `/specials/2026-11-09-arc3-paper-track-boss-v6-preview.html`, noindex, not linked from any page, nav or the sitemap, same "Preview draft, not submitted" line and plain look as the v5 preview. `specials/arc3-paper-track-boss-v6-preview/article.md` carries the body of bubba-workspace `docs/plans/2026-11-08-arc-paper-track/writeup-boss-v6.md` word for word, without its authoring comment and reviewer notes; `make_page.py` there is the v5 builder with new paths and text. Also the round-two Desloppifier picker for that body, `/specials/2026-11-09-arc3-paper-v6-desloppify-picker.html` (noindex, unlinked, self-contained; a copy of the generated comparison page with an author comment added). Earlier previews unchanged. Published through the fast-publish route.
