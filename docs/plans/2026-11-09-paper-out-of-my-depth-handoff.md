@@ -17,7 +17,9 @@ written this paper badly in three different ways. The Boss is tired of it.
 | v9 | v8 with the synthetic-games facts pasted in (mine). | Mechanical. Over the word limit. |
 | v10, "The Ruler Is a Person" (mine, live) | First-person rewrite. | I typed up his chat messages as prose, kept his throwaway lines, framed his result as "bought", and invented a line of biography. |
 
-All four are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
+| v11, "Out of My Depth" (mine, live) | Written after this note, at the Boss's order to push my own version of section 3. First person, new prose, adds the frozen-model thread below. | Not yet read by the Boss. Start here. Run section 5 on it before changing anything. |
+
+All five are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
 strip of six game pictures are reusable. Its voice is not.
 
 The essay that should exist has not been written. Section 3 is the argument for it.
@@ -100,6 +102,8 @@ kept, and none of the eight hundred batch-made ones. Every kept game is one a pe
 back. Honest starting point: when the engine came out the Boss could only reskin existing games, and
 Son was the one making new, strange ones. Show the games. Say "cannot yet" and "passable, not
 finished", never "cannot".
+
+**The frozen model (added by the Boss after the first version of this note).** This is his answer to Universality. The measure of intelligence is the capacity to acquire new capacities. He has acquired them this year. The model in our entry is frozen: it cannot. Soon a larger one ships and this one is retired and replaced, not taught. He is the same mind, revised daily, with no successor. It ties straight to the entry: everything the entry learns is held outside the weights, in code the model writes during one game, and the harness discards it when the game ends. For Progress he asked "progress on what?" The v11 answer: it locates the gap as learning that outlasts a game, offers the human-played games, and keeps the record of what lost.
 
 **The close.** The man school did not work for spent a year writing lessons for machines, as problems
 to work out, not answers to store. Whether they teach anything is unmeasured, and the essay says so.
