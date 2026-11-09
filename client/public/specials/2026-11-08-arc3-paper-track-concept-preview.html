@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- Author: Claude Opus 5.5 Low; Date: 08-November-2026; PURPOSE: unlisted preview of Team Turducken's second ARC Prize 2026 Paper Track write-up, the concept paper (not submitted); written by make_page.py from arc3-paper-track-concept-preview/article.md. SRP/DRY check: Pass - converter reused from the first draft's page; plain reading look matches the first preview. -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1" name="viewport"><meta content="noindex, nofollow" name="robots">
+<title>Check, Don&#x27;t Predict: Cheap Falsification Tools for an ARC-AGI-3 Agent (preview)</title>
+<meta name="description" content="Preview of Team Turducken&#x27;s second ARC Prize 2026 Paper Track write-up: small checking tools that let an ARC-AGI-3 agent test its own beliefs against the frame and its move history before they cost lives.">
+<link rel="canonical" href="https://arc.markbarney.net/specials/2026-11-08-arc3-paper-track-concept-preview.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ARC Explainer">
+<meta property="og:title" content="Check, Don&#x27;t Predict: Cheap Falsification Tools for an ARC-AGI-3 Agent">
+<meta property="og:description" content="Preview of Team Turducken&#x27;s second ARC Prize 2026 Paper Track write-up: small checking tools that let an ARC-AGI-3 agent test its own beliefs against the frame and its move history before they cost lives.">
+<meta property="og:url" content="https://arc.markbarney.net/specials/2026-11-08-arc3-paper-track-concept-preview.html">
+<meta name="twitter:card" content="summary">
+<style>
+/* Plain reading look, same as the first preview: one narrow column, system serif body, real headings,
+   no cards, colours, borders or decoration. */
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #fff; color: #1a1a1a; font: 19px/1.6 Charter, "Iowan Old Style", Georgia, "Times New Roman", serif; }
+main { max-width: 40rem; margin: 0 auto; padding: 48px 20px 96px; }
+.note { font-size: 0.85rem; color: #666; margin: 0 0 20px; }
+h1, h2 { font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.25; }
+h1 { font-size: 2rem; margin: 0 0 8px; }
+.subtitle { font-size: 1.15rem; font-style: italic; color: #444; margin: 0 0 28px; }
+h2 { font-size: 1.35rem; margin: 2.2em 0 0.6em; }
+p, ul, ol { margin: 0 0 1em; }
+ul, ol { padding-left: 1.4em; }
+li { margin: 0 0 0.5em; }
+a { color: #1a4f9c; }
+code { font: 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+</style>
+</head><body>
+<main>
+<p class="note">Preview draft, not submitted</p>
+<h1>Check, Don't Predict: Cheap Falsification Tools for an ARC-AGI-3 Agent</h1>
+<p class="subtitle">Team Turducken. Small checking tools that let an agent kill its own wrong beliefs before they cost lives, and why making it predict every move lost.</p>
+<h2>1. Submission</h2>
+<p>Our scored entry to ARC-AGI-3 is submission 57721173, public score 53.70, kernel sonphamorg/arc3-daniel-cnp3k5mx-ff-nosplice-o34g, script version 363005415 [S§0, S§4; confirmed by Son]. The same script version scored differently on other runs, so a few points between runs is noise, not signal [S§0].</p>
+<p>The agent plays each game by writing Python against a small game interface: an action call, frame objects with a text grid, a list of recorded transitions, and helper functions it can keep between calls. That interface is Daniel Franzen's harness, built on Tufa Labs' work; it is not ours and we do not claim it [S§3]. This paper is about three things we added on top: checked play, rule replay against history, and notes that survive history trims. The first write-up covers serving, model and inference details; this one covers why the checking tools work.</p>
+<h2>2. The failure we were fighting</h2>
+<p>Before building anything, we read 875 game traces from 35 runs to find out why games are won and lost [arc-3: docs/trace-findings/2026-10-10-trace-review.md]. Wins look the same everywhere: the rule is found early with one or two cheap probes, the board is written down as a few numbers and checked against the frame, and the solution is played as one checked batch on the first life. 83% of clears happen on the first life; after two game overs on a level only 61% ever clear, and after four only 35% [same source].</p>
+<p>The dominant failure is not a lack of reasoning. It is a wrong belief that hardens. A control that works only in one situation is tried in the wrong one and written off: "nothing happened here" becomes "this does nothing". This one pattern explains 4 of the 8 hard-game walls in the review [same source]. Then memory freezes it. Handover notes file the stall's cause under CONFIRMED; rolling summaries carry the misreading forward as "established"; the agent is told to doubt its plans but never its confirmed mechanics, so they are never retested [same source].</p>
+<p>The separating signal was reading the frame. Frame-diff code appears in 17 to 20% of requests on cleared levels against 8 to 9% on stuck ones [same source]. This is observational, not causal: winning levels may simply be easier to read.</p>
+<h2>3. The tools</h2>
+<p>We turned what winners did by hand into three functions the agent may call from its own code [arc-3: harnesses/daniel-main-1017/variants/exec/block_exec.py].</p>
+<p><strong>Checked play.</strong> The agent passes a list of moves, each with an expectation: either a few cells and the colours they must show, or a function of the new and previous frame. The tool plays one move at a time and stops at the first failed expectation, returning which step failed and a compact diff of what actually changed. A plan with no expectations at all is refused as a blind batch [same source].</p>
+<p><strong>Rule replay.</strong> The agent writes a rule as a function of before-frame, action and after-frame that returns true, false or "does not apply". The tool replays it against every recorded move of the level, skipping resets, level changes and game overs, and reports how often it held, how often it broke and the first broken examples. A rule that never applied is reported as "no evidence", never as a pass [same source].</p>
+<p><strong>Cell readers</strong> return the colour at a position, so expectations stay short [same source].</p>
+<p>About a hundred words of system prompt offer the tools, including one line aimed squarely at the dominant failure: "nothing happened" is a result to record with where you tried it, not proof the control does nothing [same source]. Expectations and rules cannot move the game; the tool blocks the action call while they run [same source]. A notes memory that survives history trims, shown as head and tail past a size cap, keeps findings alive across long games [S§3].</p>
+<p>The tools are on in the scored line: the switch is set in the 48.92 and 52.82 notebooks [S§3], and in the cleaned copy of the 53.70 package, which its own equivalence check shows sends the model byte-identical requests [arc-3: harnesses/daniel-main-1030-rulesonce]. The submitted kernel itself was not reopened.</p>
+<h2>4. Why it works</h2>
+<p>A belief in an interactive game is only dangerous when it is acted on. The agent has two cheap sources of truth that cost no lives: the frame in front of it, and the record of what already happened. Checked play turns every planned move into a test against the frame, so a wrong rule fails on the first move that contradicts it, not after a life is spent. Rule replay turns the whole level history into a test set, so a rule that the agent's memory calls confirmed can be contradicted by moves it already made, at zero cost in moves. These are the only mechanisms in the harness that can falsify a belief before it costs lives; notes and summaries can only repeat beliefs.</p>
+<p>Both tools are offered, not mandated. The agent pays for a check only when it is unsure. That matters because the clock is shared: about nine hours across all games [S§6], so every token spent on a move the agent already understands is taken from a game it has not solved.</p>
+<h2>5. What lost, and why</h2>
+<p><strong>Mandated prediction.</strong> A strict predict-before-acting variant, built on the 52.82 line, scored 41.37 (submission 57399562) [S§3, S§4]. It forced the expensive step on every move, including moves the agent already understood, and spent the shared clock doing it.</p>
+<p><strong>Rolling summaries.</strong> They hurt when an early misreading was written down as established, and cost time at every window: 18 to 26% fewer moves [arc-3: trace review]. A summary amplifies beliefs; it does not check them.</p>
+<p><strong>Heavier reasoning scaffolds.</strong> On the hardest seven games, symbolic, solver, execution and self-check arms were each run twice; none beat the plain control [arc-3: HARNESS-NOTES.md, intensive-harness ladder, 27-Sep]. The sample is thin.</p>
+<p><strong>A full executable world model.</strong> We reproduced the core of an OPINE-style agent, which writes a simulator of the game and verifies it by exact replay, on one game, but it never reached a scored run [S§2; arc-3: harnesses/world-model/MANIFEST.md]. An outside controlled ablation, as recorded in our notes, ranked verification first and the executable world model weakest [arc-3: HARNESS-NOTES.md; outside study not re-read, unverified].</p>
+<p><strong>A rich perception language.</strong> A fourteen-method vision toolkit was never measured in play [S§3].</p>
+<h2>6. Novelty</h2>
+<p>Program-search languages and executable world models such as OPINE are the public prior work. Our claim is the lighter, cheaper version. Instead of asking a model to write a whole simulator, ask it for a few expected cells per move and a rule it can test against history. A model under a shared clock can actually use that, and the heavy versions lost or never shipped.</p>
+<h2>7. Universality</h2>
+<p>The tools read only frames and recorded transitions; nothing is game-specific, so they apply to any interactive grid environment with an observable state and a move log. We test on copycat games (one rule-alike copy per public game) and on public synthetic games that run on the real engine; the synthetic-games repository is public for others to use [S§3]. The cleaned 53.70 package scored about the same on copycats as on official games in two runs of our own replay setup [arc-3: harnesses/daniel-main-1030-rulesonce/README.md].</p>
+<h2>8. What others can take</h2>
+<p>Offer verify-before-commit tools; do not mandate them. Make "nothing happened" a recorded observation with its situation, never a conclusion. Never let notes promote a belief to confirmed without a check against history. Make tool crashes harmless: a timed-out tool call wiping every saved helper showed up in 111 game-runs in our review [arc-3: trace review]. Skip what lost: strict prediction, rolling summaries, heavy scaffolds.</p>
+<h2>9. Limits</h2>
+<p>We have no clean ablation of the checking tools; they shipped bundled with other changes, so any score credit to them is unverified [S§5]. We have no usage counts from scored runs; the tools log them to a side file we have not yet recovered [S§5]. The trace review predates the tools, so there is no before-and-after on the same signals [S§5]. This is mechanism plus trace evidence, not a measured gain.</p>
+</main>
+</body></html>
