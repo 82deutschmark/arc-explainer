@@ -16,6 +16,9 @@ The Boss requested a rewritten paper led by Budd and Scarfe and Chollet, centere
 ## TODO
 - [x] Locate existing repo and publication instructions.
 - [x] Create isolated adjacent worktree from current origin/main.
-- [ ] Receive reviewed prose from parent.
-- [ ] Generate and inspect static page; update changelog.
-- [ ] Commit, push, and fast-publish exact files; report verification.
+- [x] Receive reviewed prose from parent.
+- [x] Generate and inspect static page; update changelog.
+- [x] Commit, push, and fast-publish exact files; report verification.
+
+## Publication result
+The approved prose and HTML were published and verified byte-for-byte by the fast-publish script. The source is committed on the review branch. The preview is live, but the branch must merge before a later full deployment for the baked copy to retain it. No merge was performed.
