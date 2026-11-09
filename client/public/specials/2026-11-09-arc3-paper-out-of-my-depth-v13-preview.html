@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- Author: Claude Fable 5.2; Date: 09-November-2026; PURPOSE: Unlisted preview of the thirteenth paper-track draft, built by arc3-paper-out-of-my-depth-v13-preview/make_page.py from article.md; plain serif reading look of the earlier previews plus one strip of kept-game pictures. SRP/DRY check: Pass - static page, existing look and publisher reused. -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Out of My Depth (preview)</title>
+<meta name="description" content="A game producer on ARC-AGI-3: a frozen model, a thousand machine-made games, and the capacity to acquire capacity.">
+<link rel="canonical" href="https://arc.markbarney.net/specials/2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ARC Explainer">
+<meta property="og:title" content="Out of My Depth">
+<meta property="og:description" content="A game producer on ARC-AGI-3: a frozen model, a thousand machine-made games, and the capacity to acquire capacity.">
+<meta property="og:url" content="https://arc.markbarney.net/specials/2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html">
+<meta name="twitter:card" content="summary">
+<style>
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #fff; color: #1a1a1a; font: 19px/1.6 Charter, "Iowan Old Style", Georgia, "Times New Roman", serif; }
+main { max-width: 40rem; margin: 0 auto; padding: 48px 20px 96px; }
+.note { font-size: 0.85rem; color: #666; margin: 0 0 20px; }
+h1, h2 { font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.25; }
+h1 { font-size: 2rem; margin: 0 0 8px; }
+h2 { font-size: 1.35rem; margin: 2.2em 0 0.6em; }
+p { margin: 0 0 1em; overflow-wrap: anywhere; }
+a { color: #1a4f9c; }
+blockquote { margin: 0 0 1.4em; padding: 0 0 0 1em; border-left: 3px solid #ccc; color: #333; font-size: 0.95em; }
+/* Game pictures are tiny pixel frames: scale them up with hard edges, three across, two on a phone. */
+.games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 1.6em 0 0.5em; }
+.games figure { margin: 0; }
+.games img { display: block; width: 100%; height: auto; image-rendering: pixelated; background: #000; }
+.games figcaption { font-size: 0.78rem; line-height: 1.35; color: #444; margin-top: 6px; }
+.cap { font-size: 0.82rem; color: #666; margin: 0 0 1.6em; }
+@media (max-width: 520px) { .games { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head><body>
+<main>
+<p class="note">Preview draft, not submitted</p>
+<h1>Out of My Depth</h1>
+<p><em>Mark Barney and Son Pham, Team Turducken. ARC Prize 2026, ARC-AGI-3.</em></p>
+<blockquote><p><strong>Abstract.</strong> Our team sat fifth on the public ARC-AGI-3 board with a small open model whose weights never change. This essay is by the team's co-lead, a game producer. It argues that intelligence is the capacity to acquire capacity, that keeping what you acquire is the other half, and that agency, choosing what to acquire, is a third thing. In our entry the keeping and the choosing live in the people, not the model.</p></blockquote>
+<p>By December 2024, when OpenAI announced o3, machines were passing the exams that diplomas certify: the bar, the medical licensing boards. They held no diploma and needed none. I am the opposite case. I left university without a degree, my mathematics stops at calculus, and people have told me all my life that I am smart without my ever being able to check. Credential and capability had come apart from both ends, and it shook me. What had the exams been measuring?</p>
+<p>Paulo Freire called the schooling I walked out of banking: the teacher deposits, the students receive, memorize and repeat [2, p. 72]. The exam audits the account. His example is arithmetic: a student memorizes that four times four is sixteen without ever perceiving what four times four means [2, p. 71]. That was my multiplication tables. In the late 1980s I was asked to grind through them by hand when calculators existed, and I spent the time teaching myself computers. Once a machine does the computation, grinding it by hand teaches compliance, not what four times four means. It cost me. I never got good at mathematics, and I am not certain the trade was right. What a calculator never told me was which problems were worth solving.</p>
+<p>A language model is the banking student carried to its limit, and it passed the finals. That told me less about the machine than about the finals.</p>
+<h2>The test anyone can referee</h2>
+<p>I went looking for where it breaks. That led me to François Chollet. Intelligence is "the rate at which a learner turns its experience and priors into new skills at valuable tasks that involve uncertainty and adaptation" [1].</p>
+<p>His benchmark had a second property that mattered to me. I could referee it. Almost nobody can judge a model's repair of a large codebase. An ARC task a child can check. "Easy for humans, hard for AI" matters now that so much that is hard for humans is easy for machines. It is the one kind of test where everyone can still see for themselves.</p>
+<p>So I joined a machine learning contest, far out of my depth. That is a producer's ordinary condition: I am answerable for work done by people who know more than I do. When I don't know something I go and find out. Son Pham led the team with me and did the agent and performance engineering.</p>
+<h2>A frozen mind, one game at a time</h2>
+<p>ARC-AGI-3 is a set of turn-based games with no instructions. The player finds the goal and rules by playing, and is scored against people's move counts.</p>
+<p>Our entry [3] runs Qwen3.8-Flash-Next, a small open model in Intel's 4-bit build, through 110 hidden games inside Daniel Franzen's public harness. The model's weights are frozen: nothing it meets in a game changes them. Apart from speed-only draft heads, our fine-tunes and reinforcement learning never beat the base model [4].</p>
+<p>Inside a game it keeps code. The harness shows it each screen as objects and changes, and nothing about any game. The model guesses a rule, writes Python to test it, and the game answers. The functions it writes are kept until the game ends, a median of 88 a game on our test board. We added notes, a scheduler and two checking tools. In the nearest run we can read, the model never called our checks and wrote its own.</p>
+<p>This notebook scored 53.70, and 50.34 when resubmitted unchanged. Our best, a sibling, scored 56.02: fifth of 4,923 on the public board, by our own mirror of it. The full record, with prior work and what lost, is in our write-up [4].</p>
+<p>Why might it work? Almost nothing is deposited, and we have no ablation. Once we did deposit an answer, and it was wrong: our prompt still tells the model not to be distracted by the bar at the edge of the screen. In 21 of the 25 public games it is the move budget.</p>
+<p>But when a game ends, the harness throws the library away. Of 3,108 functions the model named on our test board, 2,622 appeared in one game only. It begins every game having kept nothing from the last.</p>
+<h2>Posing the problem</h2>
+<p>When ARC Prize released its game engine, we ran the benchmark in reverse. Could a machine make a game that a person finds easy?</p>
+<p>Each official environment was given to ten people, and admitted only if at least two solved it independently, at first sight [5]. Our brief kept ARC's words: easy for people, hard for AI, and fun.</p>
+<p>I began by repainting games that already existed. Son was making original ones, unlike anything in the public set. Then agents tried. What an agent hands back runs, has levels, and can be won. It is seldom a game. A rule turns on timing no one can see. Budd and Scarfe define slop: "Slop is what happens when an artefact is generated without path-dependence, without understanding, without respecting the phylogeny or the constraints" [6].</p>
+<p>A game is a problem posed to someone who does not know the answer yet. Freire's alternative to the deposit was posing problems [2, p. 79]. To pose one well you must play it as that person, get lost where they would, and notice when being lost stops being interesting. Our agents wrote passable first drafts and could not finish them.</p>
+<p>Together with the agents we made 1,046 games and kept 46. Eight hundred were batch output from GPT models, and not one of those was kept [7]. Every game we kept had a person's judgment on it, usually mine.</p>
+<div class="games"><figure><img src="arc3-paper-out-of-my-depth-v13-preview/bl02.png" alt="Basket Lift" width="256" height="256"><figcaption><strong>Basket Lift.</strong> Get the fruit to the basket on lifts that weigh you.</figcaption></figure><figure><img src="arc3-paper-out-of-my-depth-v13-preview/st02.png" alt="Shadow Topple" width="256" height="256"><figcaption><strong>Shadow Topple.</strong> Turn the light and the blocks topple along their shadows.</figcaption></figure><figure><img src="arc3-paper-out-of-my-depth-v13-preview/kt03.png" alt="Knot Tying" width="256" height="256"><figcaption><strong>Knot Tying.</strong> Lay a cord over and under, then pull it tight.</figcaption></figure><figure><img src="arc3-paper-out-of-my-depth-v13-preview/dz03.png" alt="Dig Zone" width="256" height="256"><figcaption><strong>Dig Zone.</strong> Loose sand pours, packed sand holds, quicksand slumps.</figcaption></figure><figure><img src="arc3-paper-out-of-my-depth-v13-preview/eh02.png" alt="Eroding Horizons" width="256" height="256"><figcaption><strong>Eroding Horizons.</strong> Every peek with your lantern wears away the floor home.</figcaption></figure><figure><img src="arc3-paper-out-of-my-depth-v13-preview/ss01.png" alt="Shared Supply" width="256" height="256"><figcaption><strong>Shared Supply.</strong> Thread the fruit from the tray onto the skewers, in order.</figcaption></figure></div><p class="cap">Six of the games we kept. Real engine frames; all playable at <a href="https://82deutschmark.github.io/arc3-synthetic-games/">https://82deutschmark.github.io/arc3-synthetic-games/</a></p>
+<h2>Acquire, keep, choose</h2>
+<p>I use Budd and Scarfe's phrase, "the capacity to acquire capacity" [6], for what Chollet's rate measures. It wants a second verb. The banking student keeps without acquiring. Our model is the mirror: it acquires inside a game, from its own code and a game able to say no, and keeps none of it past the last screen. Its weights are finished; only the game in front of it is not. When a larger model ships this one will be retired and replaced, not taught. Freire says people know themselves to be unfinished, and that this awareness lies at education's roots [2, p. 84]. The team around it did both, and the entry's capacity lives in us and in the harness we kept improving.</p>
+<p>Agency is a third thing. Intelligence acquires capacity. Agency chooses which capacity is worth acquiring, and for whose purposes. Freire's banked student is an object: the teacher chooses the content, and the students, who were not consulted, adapt to it [2, p. 73]. The alternative is to become a being for oneself, acting on the world to change it [2, pp. 74, 79]. Our model chooses hypotheses and never the game. I chose mine. A tool supplies capacity to anyone and cannot supply the purpose. Budd and Scarfe write that AI amplifies what you bring to it [6].</p>
+<p>I am 44, and there is no next version of me: the same mind has to learn and keep. Our model cannot; its library is discarded when each game ends. That is the gap worth closing. We offer the games, open and each with a person's judgment on it [7]. We bet they are better practice than games only a solver has checked. Nobody has measured that.</p>
+<p>One person's taste judged the games, where ARC used ten. Our best score was never rerun, and we have not seen the private board.</p>
+<p>I cannot say how smart I am. A year ago I could do none of this. I kept what I learned, and I chose what to learn.</p>
+<p><strong>Thanks.</strong> Ronen, Daniel Franzen, Tufa Labs, Intel AutoRound.</p>
+<h2>References</h2>
+<p>[1] François Chollet. On the Measure of Intelligence. 2019. <a href="https://arxiv.org/abs/1911.01547">https://arxiv.org/abs/1911.01547</a></p>
+<p>[2] Paulo Freire. Pedagogy of the Oppressed, chapter 2. Translated by Myra Bergman Ramos. 30th anniversary edition. Bloomsbury, 2014 (Continuum, 2000).</p>
+<p>[3] Team Turducken. Kaggle notebook, version 363005415. <a href="https://www.kaggle.com/code/sonphamorg/arc3-daniel-cnp3k5mx-ff-nosplice-o34g?scriptVersionId=363005415">https://www.kaggle.com/code/sonphamorg/arc3-daniel-cnp3k5mx-ff-nosplice-o34g?scriptVersionId=363005415</a></p>
+<p>[4] Team Turducken. Stuffing the Turducken. November 2026.</p>
+<p>[5] ARC Prize. ARC-AGI-3 Technical Report, sections 3.6 and 5. 2026. <a href="https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf">https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf</a></p>
+<p>[6] Jeremy Budd and Tim Scarfe. Why Creativity Cannot Be Interpolated. 2026. <a href="https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/">https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/</a></p>
+<p>[7] Mark Barney. ARC-3 Synthetic Games. 8 November 2026. <a href="https://82deutschmark.github.io/arc3-synthetic-games/">https://82deutschmark.github.io/arc3-synthetic-games/</a></p>
+</main>
+</body></html>

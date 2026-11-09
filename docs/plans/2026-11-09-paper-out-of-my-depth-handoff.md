@@ -19,9 +19,11 @@ written this paper badly in three different ways. The Boss is tired of it.
 
 | v11, "Out of My Depth" (mine, live) | Written after this note, at the Boss's order to push my own version of section 3. First person, new prose, adds the frozen-model thread below. | Not yet read by the Boss. Start here. Run section 5 on it before changing anything. |
 
-| v12, "Out of My Depth" (mine, live, CURRENT) | v11 revised after the Boss's notes: models did the diploma work, calculator story as his own cost-and-doubt, Freire paraphrased (banking, unfinished beings), agency as the capacity to acquire and keep, ending built on acquire versus keep, the weights-frozen line repaired. | Start here. Run section 5 on it. |
+| v12, "Out of My Depth" (mine, live, superseded by v13) | v11 revised after the Boss's notes: models did the diploma work, calculator story as his own cost-and-doubt, Freire paraphrased (banking, unfinished beings), agency as the capacity to acquire and keep, ending built on acquire versus keep, the weights-frozen line repaired. | Start here. Run section 5 on it. |
 
-All six are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
+| v13, "Out of My Depth" (mine, live, CURRENT) | v12 rebuilt on the primary Freire text and after a four-reader hostile check. Agency separated from intelligence: intelligence acquires capacity, agency chooses which capacity is worth acquiring and for whose purposes. Acquire, keep, choose. | Start here. Not yet read by the Boss. |
+
+All seven are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
 strip of six game pictures are reusable. Its voice is not.
 
 The essay that should exist has not been written. Section 3 is the argument for it.
@@ -197,3 +199,11 @@ Run these yourself, once each. Do not spin up a crowd of checkers (see the workf
 - **The training claim.** "Our fine-tunes and reinforcement learning never beat the base model on Kaggle" comes from line 368 of `client/public/specials/arc3-solution-draft/article-draft.md`. Confirm that draft is what reference [4] means.
 - **The frozen-model fix.** The weights never change; inside one game the model does learn (writes and keeps code) and the harness discards it afterwards. The essay now says both. Keep the two statements together.
 - **Calculator story.** The Boss's account: late 1980s, early 1990s, multiplication tables by hand versus a calculator, he hacked on computers instead. The essay's version is a paraphrase; check the dates and "teaching myself computers" with him.
+
+## 9. After v13
+
+- **Freire primary text found.** Pedagogy of the Oppressed, chapter 2, 30th anniversary edition (a scan at courses.cs.duke.edu, compsci290.2 spring24 readings). Verified pages: p. 71 his own example is "four times four is sixteen" memorized without perceiving what it means (the Boss's multiplication tables); p. 72 banking, receive, memorize, repeat; p. 73 the list of banking practices, including that the teacher chooses the content and the students, who were not consulted, adapt; p. 74 "beings for others" versus "beings for themselves"; p. 79 liberation as praxis, "empty vessel" rejected, deposit-making replaced by posing problems; p. 84 people as unfinished and aware of their incompletion. "Agency" is not his word, so the essay does not attribute the word to him.
+- **Agency, settled for now.** Not the capacity to acquire capacity (the Boss objected: that is intelligence). Agency is choosing which capacity is worth acquiring, and for whose purposes. It matches Chollet's "valuable tasks" and the calculator story. Chollet's remark about agency is still unverified and uncited.
+- **Hostile readers found and the draft fixed:** the stray citation grammar; Freire's capital-S Subject is the banking teacher, not the liberated person (now "being for oneself"); "finished" is not Freire's word, and a frozen model does learn inside a game; fifth place belongs to the best sibling notebook, not the linked entry; the shipped prompt still contains the edge-bar advice, so it is not "early"; fine-tune claim limited by speed-only draft heads; the "no ablation" admission added.
+- **Still open.** The judge scored Universality, Progress and Theory low (1 of 5). Honest reasons: one harness, no ablation, the acquire/keep/choose triad not tested. Do not paper over this; an essay can only claim the framing. Also unresolved: whether every kept game really had a recorded human play (the repo's 6 November review struck "human-playtested set"); the essay says only that a person's judgment was on each. The 3,108 and 2,622 function counts come from the 50-game test board, not the Kaggle run, and the essay now says so. Reference [5] now cites sections 3.6 and 5 of the technical report.
+- **Time.** The team's notes put the deadline at 23:59 UTC on 9 November.
