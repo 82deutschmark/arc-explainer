@@ -64,6 +64,24 @@ BOARD_PNG = HERE / 'turn-board-cleared.png'
 STILL_PNG = HERE / 'turn-still.png'
 CUT = '…'
 T = SRC['text']
+# Per-figure settings; make_turn_player_sk48.py swaps them with use() so the same code builds the second figure.
+FIG = {'id': 'fig-turn', 'data': 'turn-player-data', 'glob': '__turnPlayer', 'label': 'LS20',
+       'start': '<!-- turn-player:start -->', 'end': '<!-- turn-player:end -->',
+       'png_rel': 'arc3-solution-draft/charts/turn-board-cleared.png', 'png': BOARD_PNG,
+       'alt': 'The recorded Locksmith board: level 1 cleared, the block inside the locked door at the top.',
+       'next_label': 'next turn · still level 1',
+       'next': lambda: json.loads((HERE / 'clear-frame.json').read_text())['board'].replace('\n', ''), 'anim': lambda: None,
+       'caps': {'capStart': '<b>Before the turn</b> · the board attached to the turn message (recorded frame)',
+                'capStep': 'The recorded game after this move; the yellow bar at the bottom is the step budget.',
+                'capWait': 'At the door. No win yet; one step of budget left.',
+                'capEnd': '<b>At the door</b> with the right key, so the level clears.',
+                'capNext': '<b>Level 1 cleared.</b> Level 2 begins, and the yellow step bar is full again.'}}
+
+
+def use(src, blocks, fig):
+    """Point the builders at another saved turn (name, blocks and settings)."""
+    global SRC, T, MOVES, BLOCKS, FIG
+    SRC, T, MOVES, BLOCKS, FIG = src, src['text'], src['moves'], blocks, {**FIG, **fig}
 
 # ---------------------------------------------------------------- transcript --------------------
 # A block: (css kind, trace label, harness note or '', lines). A line is (section, text) for verbatim
@@ -183,9 +201,11 @@ def check_verbatim():
             if '\n'.join(ln[-1] for ln in b[3]) != T[sec]:
                 raise SystemExit(f'Whole section {sec} does not reassemble exactly')
     steps = [ln for b in BLOCKS if b != 'NEXT' for ln in b[3] if ln != CUT and ln[0] == 'step']
-    assert [ln[1] for ln in steps] == list(range(len(MOVES))), [ln[1] for ln in steps]
-    for ln in steps:   # each step line is the result line of that move
-        assert ln[3].startswith(f"[action] {MOVES[ln[1]]['action']} -> "), ln
+    flat = [k for ln in steps for k in (ln[1] if isinstance(ln[1], list) else [ln[1]])]
+    assert flat == list(range(len(MOVES))), flat
+    for ln in steps:   # a one-move line is the result line of that move
+        if not isinstance(ln[1], list):
+            assert ln[3].startswith(f"[action] {MOVES[ln[1]]['action']} -> "), ln
 
 
 # ---------------------------------------------------------------- boards ------------------------
@@ -204,11 +224,11 @@ def board_data():
             'before': SRC['before'].replace('\n', ''), 'steps': steps}
 
 
-def write_board_png():
+def write_board_png(path=None):
     pal = {ch: tuple(int(x) for x in rgb[4:-1].split(',')) for ch, rgb in zip(SRC['color_chars'], SRC['palette'])}
     im = Image.new('RGB', (64, 64))
     im.putdata([pal[ch] for ch in MOVES[-1]['board'].replace('\n', '')])
-    im.resize((512, 512), Image.NEAREST).save(BOARD_PNG, optimize=True)
+    im.resize((512, 512), Image.NEAREST).save(path or FIG['png'], optimize=True)
 
 
 # ---------------------------------------------------------------- html --------------------------
@@ -323,8 +343,8 @@ CSS = r'''
 JS = r'''
 (function () {
   // One turn of the harness: streams the transcript and steps the board (make_turn_player.py).
-  var root = document.querySelector('#fig-turn .tp');
-  var dataEl = document.getElementById('turn-player-data');
+  var root = document.querySelector('#__FIG__ .tp');
+  var dataEl = document.getElementById('__DATA__');
   if (!root || !dataEl || root.classList.contains('tp-js')) return;
   var D = JSON.parse(dataEl.textContent);
   root.classList.add('tp-js');
@@ -346,13 +366,14 @@ JS = r'''
   var LAST = D.steps.length - 1;
   // The clearing move has two real frames: the player at the door, then the first frame of level 2 (D.next). Show the
   // door frame, hold a beat (counted in advance(), so a fixed-step video capture repeats exactly), then the new level.
-  var HOLD = 1100, clearT = 0, clearing = false;
+  // When the clearing move has its own recorded animation (D.anim, frame deltas), play it, then show the new level.
+  var HOLD = 1100, FM = 80, clearT = 0, clearing = false, animI = 0;
   function showNext() { clearing = false; grid = D.next.split(''); paint(); cap.innerHTML = D.capNext; }
   function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..LAST: after move k
     grid = D.before.split('');
     for (var s = 0; s <= k; s++) D.steps[s].d.forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; });
     paint();
-    clearing = k === LAST; clearT = 0;
+    clearing = k === LAST; clearT = 0; animI = 0;
     cap.innerHTML = k < 0 ? D.capStart
       : '<b>Move ' + (k + 1) + ' of ' + (LAST + 1) + '</b> · ' + D.steps[k].a
         + '<br>' + (k === LAST ? D.capEnd : k === LAST - 1 ? D.capWait : D.capStep);
@@ -373,12 +394,12 @@ JS = r'''
     }
     [].forEach.call(el.querySelectorAll(kind === 'call' ? '.tb-pill .ln' : '.ln'), function (ln, n) {
       units.push({ el: ln, block: el, first: n === 0, text: ln.textContent, kind: kind,
-                   step: ln.dataset.step === undefined ? null : +ln.dataset.step });
+                   steps: ln.dataset.step === undefined ? null : ln.dataset.step.split(',').map(Number) });
     });
   });
   // Characters per second by block kind; STEP is the beat on each move, GAP the beat between blocks.
   var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
-  var u = 0, shown = 0, wait = 0, playing = false, last = 0, follow = true, done = false;
+  var u = 0, shown = 0, wait = 0, pend = [], playing = false, last = 0, follow = true, done = false;
 
   function reset() {
     units.forEach(function (x) {
@@ -386,23 +407,32 @@ JS = r'''
       x.el.textContent = ''; x.opened = false; x.el.classList.remove('step-on'); x.block.classList.add('tp-hide');
       x.block.classList.remove('open');
     });
-    u = 0; shown = 0; wait = 0; done = false; follow = true; setBoard(-1); log.scrollTop = 0; bar.style.width = '0';
+    u = 0; shown = 0; wait = 0; pend = []; animI = 0; done = false; follow = true; setBoard(-1); log.scrollTop = 0; bar.style.width = '0';
   }
   function finish() {
     units.forEach(function (x) {
       if (x.div) { x.el.classList.remove('tp-hide'); return; }
       x.el.textContent = x.text; x.el.classList.remove('step-on'); x.block.classList.remove('tp-hide');
     });
-    u = units.length; done = true; setBoard(LAST); showNext(); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
+    u = units.length; done = true; pend = []; setBoard(LAST); showNext(); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
     setPlaying(false); btnPlay.textContent = 'Replay';
   }
   // advance(dt): move the stream on by dt milliseconds. The page drives it from requestAnimationFrame;
   // the video capture (make_turn_video.py) drives it with a fixed dt per frame, so renders repeat exactly.
   function advance(dt) {
     var budget = dt;
-    if (clearing) { clearT += dt; if (clearT >= HOLD) showNext(); }
-    while (budget > 0 && u < units.length) {
+    if (clearing) {
+      clearT += dt;
+      if (D.anim) {
+        while (animI < D.anim.length && clearT >= (animI + 1) * FM) {
+          D.anim[animI].forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; }); animI++; paint();
+        }
+        if (animI >= D.anim.length) showNext();
+      } else if (clearT >= HOLD) showNext();
+    }
+    while (budget > 0 && (u < units.length || pend.length)) {
       if (wait > 0) { var w = Math.min(wait, budget); wait -= w; budget -= w; continue; }
+      if (pend.length) { setBoard(pend.shift()); wait = STEP; continue; }
       var x = units[u];
       if (x.div) { x.el.classList.remove('tp-hide'); wait = GAP; u++; continue; }
       if (x.first && !x.opened) {   // a new block: show its label bar, then a short beat
@@ -413,15 +443,15 @@ JS = r'''
       var n = Math.min(x.text.length - shown, Math.max(1, Math.floor(budget * cps / 1000)));
       shown += n; budget -= n * 1000 / cps; x.el.textContent = x.text.slice(0, shown);
       if (shown < x.text.length) break;
-      if (x.step !== null) {
+      if (x.steps) {
         units.forEach(function (y) { if (y.el.classList) y.el.classList.remove('step-on'); });
-        x.el.classList.add('step-on'); setBoard(x.step); wait = STEP;
+        x.el.classList.add('step-on'); pend = x.steps.slice();
       }
       u++; shown = 0;
     }
     bar.style.width = (100 * u / units.length) + '%';
     if (follow) log.scrollTop = log.scrollHeight;
-    if (u >= units.length && wait <= 0) { finish(); return false; }
+    if (u >= units.length && wait <= 0 && !pend.length) { finish(); return false; }
     return true;
   }
   function tick(now) {
@@ -444,7 +474,7 @@ JS = r'''
   });
   ctl.querySelector('[data-a=restart]').addEventListener('click', function () { reset(); setPlaying(true); });
   ctl.querySelector('[data-a=end]').addEventListener('click', finish);
-  window.__turnPlayer = { finish: finish, reset: reset, play: function () { setPlaying(true); },
+  window.__GLOB__ = { finish: finish, reset: reset, play: function () { setPlaying(true); },
     step: function (dt) { playing = false; if (!done) advance(dt); return done; } };
 
   var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -468,28 +498,30 @@ HL = ["Hmm, tight.", "No win. So the", "the glyph inside the box must be", "If i
 def line_html(ln):
     if ln == CUT:
         return f'<span class="ln cut">{CUT}\n</span>'
-    step = f' data-step="{ln[1]}"' if ln[0] == 'step' else ''
-    hl = ' hl' if any(p in ln[-1] for p in HL) else ''
+    step = ''
+    if ln[0] == 'step':
+        step = ' data-step="' + (','.join(map(str, ln[1])) if isinstance(ln[1], list) else str(ln[1])) + '"'
+    hl = ' hl' if any(p in ln[-1] for p in FIG.get('hl', HL)) else ''
     return f'<span class="ln{hl}"{step}>{escape(ln[-1], quote=False)}\n</span>'
 
 
 def figure_html():
     p = SRC['provenance']
     out = ['<div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">',
-           '<div class="tp-top"><span class="tp-run">LS20</span>'
+           f'<div class="tp-top"><span class="tp-run">{FIG["label"]}</span>'
            '<span class="tp-ctl"><button type="button" data-a="play">Play</button>'
            '<button type="button" data-a="restart">Restart</button>'
            '<button type="button" data-a="end">Skip to end</button></span></div>',
            '<div class="tp-bar"><i></i></div>',
            '<div class="tp-legend">' + ''.join(f'<span class="k-{k}"><i></i>{n}</span>' for k, n in LEGEND) + '</div>',
            '<div class="tp-main">',
-           '<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" '
-           'loading="lazy" alt="The recorded Locksmith board: level 1 cleared, the block inside the locked door at the top.">'
+           f'<div class="tp-board"><img src="{FIG["png_rel"]}" width="512" height="512" '
+           f'loading="lazy" alt="{escape(FIG["alt"])}">'
            '<div class="tp-cap"><b>Level 1 cleared</b> on the seventh move. The recorded game board.</div></div>',
            '<div class="tp-log" tabindex="0" aria-label="Transcript of the turn">']
     for b in BLOCKS:
         if b == 'NEXT':
-            out.append('<div class="tp-next">next turn · still level 1</div>')
+            out.append(f'<div class="tp-next">{FIG["next_label"]}</div>')
             continue
         kind, label, note, lines = b[:4]
         n = f'<span class="tb-n">{escape(note)}</span>' if note else ''
@@ -505,21 +537,19 @@ def figure_html():
     out += ['</div>', '</div>',
             '</div>']
     data = board_data()
-    data['next'] = json.loads((HERE / 'clear-frame.json').read_text())['board'].replace('\n', '')
-    data['capStart'] = '<b>Before the turn</b> · the board attached to the turn message (recorded frame)'
-    data['capStep'] = 'The recorded game after this move; the yellow bar at the bottom is the step budget.'
-    data['capWait'] = 'At the door. No win yet; one step of budget left.'
-    data['capEnd'] = '<b>At the door</b> with the right key, so the level clears.'
-    data['capNext'] = '<b>Level 1 cleared.</b> Level 2 begins, and the yellow step bar is full again.'
+    data['next'] = FIG['next']()
+    data.update(FIG['caps'])
+    if FIG['anim']() is not None:
+        data['anim'] = FIG['anim']()
     js_data = json.dumps(data, separators=(',', ':')).replace('</', '<\\/')
     return '\n'.join([
-        '<figure id="fig-turn">',
+        f'<figure id="{FIG["id"]}">',
         '<div class="ft">One turn, from the model\'s side</div>',
         '<div class="fs">Each block is one thing said or done, in order: what the model was told, what it thought, what it ran '
         'and what came back. The yellow pills are the programs it wrote, the board beside them steps through the real moves, and the pink marker is ours, on the moments worth watching.</div>',
         *out,
-        f'<script type="application/json" id="turn-player-data">{js_data}</script>',
-        f'<script>{JS}</script>',
+        f'<script type="application/json" id="{FIG["data"]}">{js_data}</script>',
+        '<script>' + JS.replace('__FIG__', FIG['id']).replace('__DATA__', FIG['data']).replace('__GLOB__', FIG['glob']) + '</script>',
         '</figure>',
     ])
 
