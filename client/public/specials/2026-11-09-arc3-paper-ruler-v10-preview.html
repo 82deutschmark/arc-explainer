@@ -1,0 +1,74 @@
+<!doctype html>
+<!-- Author: Claude Fable 5.2; Date: 09-November-2026; PURPOSE: Unlisted preview of the tenth paper-track draft, built by arc3-paper-ruler-v10-preview/make_page.py from article.md; plain serif reading look of the earlier previews plus one strip of kept-game pictures. SRP/DRY check: Pass - static page, existing look and publisher reused. -->
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The Ruler Is a Person (preview)</title>
+<meta name="description" content="A game producer's notes from fifth place on ARC-AGI-3: what AI let us buy, and what a person still had to judge.">
+<link rel="canonical" href="https://arc.markbarney.net/specials/2026-11-09-arc3-paper-ruler-v10-preview.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="ARC Explainer">
+<meta property="og:title" content="The Ruler Is a Person">
+<meta property="og:description" content="A game producer's notes from fifth place on ARC-AGI-3: what AI let us buy, and what a person still had to judge.">
+<meta property="og:url" content="https://arc.markbarney.net/specials/2026-11-09-arc3-paper-ruler-v10-preview.html">
+<meta name="twitter:card" content="summary">
+<style>
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #fff; color: #1a1a1a; font: 19px/1.6 Charter, "Iowan Old Style", Georgia, "Times New Roman", serif; }
+main { max-width: 40rem; margin: 0 auto; padding: 48px 20px 96px; }
+.note { font-size: 0.85rem; color: #666; margin: 0 0 20px; }
+h1, h2 { font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.25; }
+h1 { font-size: 2rem; margin: 0 0 8px; }
+h2 { font-size: 1.35rem; margin: 2.2em 0 0.6em; }
+p { margin: 0 0 1em; overflow-wrap: anywhere; }
+a { color: #1a4f9c; }
+blockquote { margin: 0 0 1.4em; padding: 0 0 0 1em; border-left: 3px solid #ccc; color: #333; font-size: 0.95em; }
+/* Game pictures are tiny pixel frames: scale them up with hard edges, three across, two on a phone. */
+.games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 1.6em 0 0.5em; }
+.games figure { margin: 0; }
+.games img { display: block; width: 100%; height: auto; image-rendering: pixelated; background: #000; }
+.games figcaption { font-size: 0.78rem; line-height: 1.35; color: #444; margin-top: 6px; }
+.cap { font-size: 0.82rem; color: #666; margin: 0 0 1.6em; }
+@media (max-width: 520px) { .games { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head><body>
+<main>
+<p class="note">Preview draft, not submitted</p>
+<h1>The Ruler Is a Person</h1>
+<p><em>A game producer's notes from fifth place on ARC-AGI-3. Mark Barney and Son Pham, Team Turducken, ARC Prize 2026.</em></p>
+<blockquote><p><strong>Abstract.</strong> A video game producer with no engineering background co-led a team to fifth on the ARC-AGI-3 public board. That skill was bought. What could not be bought showed when we asked machines to make the games: 1,046 made, 46 kept, each because a person played it. The unit of measure in ARC-AGI-3 is a person, and nobody has measured the unit.</p></blockquote>
+<p>In December 2024 a model called o3 came out, and I had a crisis of faith. Machines could already pass the bar exam and the medical boards. All my life people have accused me of being smart, and I have never known how smart. Smarter than a lot of people, and nowhere near the smartest people I know. If a machine could pass the tests we give our professionals, what did the word mean?</p>
+<p>Early in 2025 I went looking at how we benchmark the new god in a box. I love failure modes. I wanted to see where it breaks. That led me to ARC, and ARC hooked me for one reason. I could not check a model's answer on a software benchmark or on Humanity's Last Exam. On ARC a little kid can tell whether the machine is right or just sounds confident. I produce video games. I'm not a software engineer or a data scientist, and I'm not much good at math. This year Son and I led a team that sat fifth of 4,923 on that benchmark's public board.</p>
+<p>By François Chollet's own account, that placing says little about me. He defines intelligence as "the rate at which a learner turns its experience and priors into new skills at valuable tasks that involve uncertainty and adaptation" [1], and he warns that skill can be bought with priors and experience. We bought ours. This paper is about what the money could not buy.</p>
+<h2>What we bought</h2>
+<p>The entry is a public Kaggle notebook [2]. It scored 53.70 on the public board, and 50.34 when resubmitted unchanged two days later. Our best, a sibling notebook, scored 56.02. It runs a small open model, Qwen3.8-Flash-Next in Intel's 4-bit build, inside Daniel Franzen's public harness, which is built on Tufa Labs'. The model sees each screen as objects and the changes between screens. It writes Python to test its guesses. What we added is mostly plumbing, plus two checks that let the game contradict the model. The engineering is written up in full elsewhere, with what lost beside what won [3].</p>
+<p>Almost none of that was mine to begin with. Son did the agent and performance engineering. Coding agents wrote the code I directed, and when I didn't understand a result, a model explained it. By Chollet's measure I had very expensive priors on tap. Fifth is a good hog. It was raised on other people's corn, it is not the fattest hog at the fair, and it is not what this paper is about.</p>
+<h2>The test, turned inside out</h2>
+<p>ARC-AGI-3 asks whether a machine can learn a game a person finds easy. When ARC Prize released its engine so that anyone could write games, we ran the test backwards without meaning to. Can a machine <em>make</em> a game a person finds easy?</p>
+<p>Each official environment was tried by ten people, and only those fully solved by at least two of them, independently and on a first look, were admitted [4]. Our own brief added one word: easy for people, hard for AI, and fun.</p>
+<p>With the engine in my hands I could reskin and recolor games that already existed. Son could make new ones, strange ones, well outside anything in the public set. That gap between the two of us was the first honest measurement of the year. The agents had given us the same hands. They had not given us the same ideas.</p>
+<p>Then we let the agents try alone. Asking a coding agent for an ARC-3 game is the surest prompt for slop I know. What comes back runs. It has a grid, colors, levels, a hidden rule and a winning sequence a solver can find. It is usually not a game. A rule hangs on timing nobody can see. The picture cannot show the difference the code cares about. Budd and Scarfe name it: "Slop is what happens when an artefact is generated without path-dependence, without understanding, without respecting the phylogeny or the constraints" [5]. A program proving that a game can be won says nothing about whether a person can work it out, and that is the constraint this domain is built on.</p>
+<p>On 8 November our player held 1,046 games made by the team and its agents. Forty-six were approved. Eight hundred were batch output credited to GPT, and not one of the eight hundred was kept [6].</p>
+<div class="games"><figure><img src="arc3-paper-ruler-v10-preview/bl02.png" alt="Basket Lift" width="256" height="256"><figcaption><strong>Basket Lift.</strong> Get the fruit to the basket on lifts that weigh you.</figcaption></figure><figure><img src="arc3-paper-ruler-v10-preview/st02.png" alt="Shadow Topple" width="256" height="256"><figcaption><strong>Shadow Topple.</strong> Turn the light and the blocks topple along their shadows.</figcaption></figure><figure><img src="arc3-paper-ruler-v10-preview/kt03.png" alt="Knot Tying" width="256" height="256"><figcaption><strong>Knot Tying.</strong> Lay a cord over and under, then pull it tight.</figcaption></figure><figure><img src="arc3-paper-ruler-v10-preview/dz03.png" alt="Dig Zone" width="256" height="256"><figcaption><strong>Dig Zone.</strong> Loose sand pours, packed sand holds, quicksand slumps.</figcaption></figure><figure><img src="arc3-paper-ruler-v10-preview/eh02.png" alt="Eroding Horizons" width="256" height="256"><figcaption><strong>Eroding Horizons.</strong> Every peek with your lantern wears away the floor home.</figcaption></figure><figure><img src="arc3-paper-ruler-v10-preview/ss01.png" alt="Shared Supply" width="256" height="256"><figcaption><strong>Shared Supply.</strong> Thread the fruit from the tray onto the skewers, in order.</figcaption></figure></div><p class="cap">Six of the games we kept. Real engine frames; all playable at <a href="https://82deutschmark.github.io/arc3-synthetic-games/">https://82deutschmark.github.io/arc3-synthetic-games/</a></p>
+<p>The games we kept have one thing in common: a person played them and sent them back. Lock Target went through eight versions that way. The agents wrote the code and drew the art. I played, said what was unclear, dull or borrowed, and decided what stayed. That is a producer's job, to say what a game is for and when it is finished. Budd and Scarfe warn about the supervisor illusion, "the creativity lives in the human's understanding, not in the AI's computation" [5], and it cuts both ways. Where I understood nothing, I got recolors. In their words, "AI amplifies what you bring to it." What I brought was a career of playing unfinished games and saying no.</p>
+<h2>The ruler is a person</h2>
+<p>Our agent's worst habit is telling a fluent story about a game and believing it. In one run it spent the whole game calling a rival a confused "bot" while the rival was beating it [3]. The only thing that corrected it was the game itself: a move it predicted, failing on screen. The game was the ruler. The story was not.</p>
+<p>For the question "is this a game" there is no ruler in the code. No program can say this is clear, this is fair, this is fun. The benchmark never pretends otherwise, and that is what hooked me: a kid can check it. Its games are admitted by people, two out of ten. Its score is counted in people: how close the machine's moves come to a person's. The unit of measure in ARC-AGI-3 is a human being figuring something out for the first time.</p>
+<p>And nobody has measured the unit. I still can't tell you how smart I am. We say the tests we have for people are flawed, and nobody has handed me a better one. It turns out to be easier to measure a machine than a person, because for the machine we have a ruler, and the ruler is us. For one year my job was to be it: the person on a first look, over and over.</p>
+<p>My line all year was that intelligence is the capacity to add capacity. Budd and Scarfe write "the capacity to acquire capacity" [5]. That capacity can now be rented. I rented it, and it carried a game producer to fifth place. What cannot be rented yet is knowing which of the thousand things you can now make is worth keeping. Chollet's definition has a word for it that is easy to read past: skills at <em>valuable</em> tasks. Someone has to know what valuable is, and today that someone is a person.</p>
+<h2>What we claim, and what we don't</h2>
+<p>We claim a count, a method, and the kept games themselves: open and playable, each with the reason it is hard for a machine written beside it [6]. We bet that games a person played and fixed make better practice for an agent than games only a program checked. Nobody has measured that, including us.</p>
+<p>One producer's taste is one ruler. ARC used ten people a game and we used mostly me. Our own review of twelve favorites found that random key presses cleared the first level of ten of them, and we have been fixing them since [7]. One person iterated faster, and found out where speed stopped helping.</p>
+<p><strong>Thanks.</strong> Son Pham, who led this with me and made the games I couldn't. Ronen. Daniel Franzen, Tufa Labs and Intel AutoRound. Jeremy Budd and Tim Scarfe, whose paper named what we were throwing away.</p>
+<h2>References</h2>
+<p>[1] François Chollet. On the Measure of Intelligence. 2019. <a href="https://arxiv.org/abs/1911.01547">https://arxiv.org/abs/1911.01547</a></p>
+<p>[2] Team Turducken. Kaggle notebook, version 363005415. <a href="https://www.kaggle.com/code/sonphamorg/arc3-daniel-cnp3k5mx-ff-nosplice-o34g?scriptVersionId=363005415">https://www.kaggle.com/code/sonphamorg/arc3-daniel-cnp3k5mx-ff-nosplice-o34g?scriptVersionId=363005415</a></p>
+<p>[3] Team Turducken. Stuffing the Turducken. November 2026.</p>
+<p>[4] ARC Prize. ARC-AGI-3 Technical Report, section 3.6. 2026. <a href="https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf">https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf</a></p>
+<p>[5] Jeremy Budd and Tim Scarfe. Why Creativity Cannot Be Interpolated. Version 1.2, February 2026. <a href="https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/">https://archive.mlst.ai/paper/why-creativity-cannot-be-interpolated/</a></p>
+<p>[6] Mark Barney. ARC-3 Synthetic Games. 8 November 2026. <a href="https://82deutschmark.github.io/arc3-synthetic-games/">https://82deutschmark.github.io/arc3-synthetic-games/</a></p>
+<p>[7] ARC-3 Synthetic Games. Review of the twelve featured games. 5 November 2026.</p>
+</main>
+</body></html>

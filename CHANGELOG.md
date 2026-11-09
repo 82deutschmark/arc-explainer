@@ -1,3 +1,7 @@
+### Version 9.164.27 · November 9, 2026
+
+- Paper Track, tenth draft, as an unlisted preview (noindex, unlinked): "The Ruler Is a Person", `/specials/2026-11-09-arc3-paper-ruler-v10-preview.html`. A first-person rewrite around one idea: the skill that reached fifth place was bought, and what could not be bought was judging which machine-made games are games; the unit of measure in ARC-AGI-3 is a person. Opens with the Boss's own story, credits the Boss and Son as joint leads, shows six kept games from the synthetic-games site, and stays under the 1,500-word limit. Built by `specials/arc3-paper-ruler-v10-preview/make_page.py` from `article.md`. Earlier previews untouched. Author: Claude Fable 5.2.
+
 ### Version 9.164.26 · November 9, 2026
 
 - Human-learning paper preview, version nine (unlisted, noindex): adds the Boss's synthetic-games "why" page material to the v8 essay: the ARC-AGI-3 human-solvability rule, the 1,046 made / 46 approved count, who wrote the saved versions, the producer-as-grounding method, jobs and limits, and a new reference [6]. Version eight untouched; not yet fast-published. Author: Claude Sonnet 5.5 Low.
