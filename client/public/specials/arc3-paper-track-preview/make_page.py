@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Author: Claude Opus 5.5 Low
-Date: 08-November-2026
+Date: 08-November-2026 (plain reading look, same day, Claude Opus 5.5 Low)
 PURPOSE: Build the unlisted PREVIEW page of the ARC Prize 2026 Paper Track write-up, version 2
          ("Universal hands, disposable languages", reframed around skill acquisition), at
          ../2026-11-08-arc3-paper-track-preview.html. Reads article.md in this folder: the title,
@@ -14,6 +14,9 @@ PURPOSE: Build the unlisted PREVIEW page of the ARC Prize 2026 Paper Track write
          draft's page), reused here; this script adds [text](url) links, which v2 uses and the
          first draft did not, and keeps the number check honest about them (URL digits are left
          out of the comparison because they are not visible text).
+         Look: Son said the first version read like slop and he only needs to read it, so the page
+         is now one narrow column of system serif text with plain headings, the small preview note,
+         title, subtitle, the cover once, then the body. No nav, byline, cards, colours or borders.
          Run from anywhere: python3 client/public/specials/arc3-paper-track-preview/make_page.py
          Then fast-publish (tools/specials-publish/publish_specials.py with the file paths) and commit.
 SRP/DRY check: Pass -- converter, inline rules and look reused from the first draft's generator,
@@ -69,7 +72,7 @@ def main() -> None:
             "and a 4-bit model writes, tests and throws away its own Python skills for every ARC-AGI-3 game.")
     e = html.escape
     page = f"""<!doctype html>
-<!-- Author: Claude Opus 5.5 Low; Date: 08-November-2026; PURPOSE: unlisted preview of Team Turducken's ARC Prize 2026 Paper Track write-up, version 2 (not submitted); written by make_page.py from arc3-paper-track-preview/article.md. SRP/DRY check: Pass - converter and look reused from the first draft's page. -->
+<!-- Author: Claude Opus 5.5 Low; Date: 08-November-2026; PURPOSE: unlisted preview of Team Turducken's ARC Prize 2026 Paper Track write-up, version 2 (not submitted); written by make_page.py from arc3-paper-track-preview/article.md. SRP/DRY check: Pass - converter reused from the first draft's page; plain reading look per Son. -->
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1" name="viewport"><meta content="noindex, nofollow" name="robots">
@@ -87,46 +90,32 @@ def main() -> None:
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{COVER}">
 <style>
-/* The Turducken special's white engineering-blog look (2026-11-06-arc3-solution-draft.html), as trimmed for the first draft's page. */
-:root {{ color-scheme: light; --bg: #ffffff; --panel: #f7f8f6; --ink: #15171a; --ink-2: #4c5258; --muted: #858b91;
-  --line: #e3e6e1; --accent: #2b8a3e; --accent-soft: #edf6ef; --warn: #b4531f; --warn-soft: #fdf1e8;
-  --display: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace; }}
-* {{ box-sizing: border-box; }}
-html {{ -webkit-text-size-adjust: 100%; background: var(--bg); }}
-body {{ margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 var(--body); }}
-main {{ max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }}
-.prose {{ max-width: 680px; }}
-nav {{ font: 0.8rem var(--mono); color: var(--muted); margin-bottom: 18px; }}
-h1, h2 {{ font-family: var(--display); font-weight: 700; text-wrap: balance; line-height: 1.2; letter-spacing: -0.015em; }}
-h1 {{ font-size: 2.2rem; margin: 6px 0 6px; }}
-.dek {{ font-size: 1.12rem; color: var(--ink-2); margin: 0 0 14px; }}
-h2 {{ font-size: 1.45rem; margin: 48px 0 10px; }}
-p {{ margin: 0 0 14px; }}
-a {{ color: var(--accent); text-underline-offset: 2px; }}
-.byline {{ font: 0.82rem var(--mono); color: var(--muted); margin-bottom: 22px; }}
-.byline b {{ color: var(--ink-2); font-weight: 500; }}
-/* The preview banner uses a warm tone, not the green accent, so it does not read as part of the article. */
-.preview {{ border: 1px solid var(--line); border-left: 3px solid var(--warn); background: var(--warn-soft); border-radius: 8px;
-  padding: 10px 16px; margin: 0 0 22px; font: 600 0.82rem/1.5 var(--mono); color: var(--warn); }}
-ul, ol {{ margin: 0 0 14px; padding-left: 22px; }}
-li {{ margin: 5px 0; }}
-strong {{ font-weight: 600; }}
-code {{ font: 0.84em var(--mono); background: var(--panel); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; }}
-figure.hero {{ margin: 18px 0 30px; padding: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }}
+/* Plain reading look, per Son ("I just need to READ the content"): one narrow column, system serif body,
+   real headings, no cards, colours, borders or decoration. */
+:root {{ color-scheme: light; }}
+html {{ -webkit-text-size-adjust: 100%; }}
+body {{ margin: 0; background: #fff; color: #1a1a1a; font: 19px/1.6 Charter, "Iowan Old Style", Georgia, "Times New Roman", serif; }}
+main {{ max-width: 40rem; margin: 0 auto; padding: 48px 20px 96px; }}
+.note {{ font-size: 0.85rem; color: #666; margin: 0 0 20px; }}
+h1, h2 {{ font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.25; }}
+h1 {{ font-size: 2rem; margin: 0 0 8px; }}
+.subtitle {{ font-size: 1.15rem; font-style: italic; color: #444; margin: 0 0 28px; }}
+h2 {{ font-size: 1.35rem; margin: 2.2em 0 0.6em; }}
+p, ul, ol {{ margin: 0 0 1em; }}
+ul, ol {{ padding-left: 1.4em; }}
+li {{ margin: 0 0 0.5em; }}
+a {{ color: #1a4f9c; }}
+code {{ font: 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }}
+figure.hero {{ margin: 0 0 32px; }}
 figure.hero img {{ display: block; width: 100%; height: auto; }}
 </style>
 </head><body>
-<main><nav><a href="/">ARC Explainer</a></nav>
-<div class="preview" role="note">Preview draft, not submitted</div>
+<main>
+<p class="note">Preview draft, not submitted</p>
 <h1>{inline(title)}</h1>
-<p class="dek">{inline(subtitle)}</p>
-<div class="byline"><b>Team Turducken</b> · ARC Prize 2026 Paper Track, ARC-AGI-3</div>
+<p class="subtitle">{inline(subtitle)}</p>
 {cover}
-<div class="prose">
 {body}
-</div>
 </main>
 </body></html>
 """
