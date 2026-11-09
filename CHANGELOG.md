@@ -1,3 +1,7 @@
+### Version 9.164.30 · November 9, 2026
+
+- Paper Track, thirteenth draft, as an unlisted preview (noindex, unlinked): "Out of My Depth", `/specials/2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html`. Built on Freire's chapter two read in the primary text (four times four is sixteen, banking, being for oneself, unfinished beings), with agency separated from intelligence (choosing which capacity is worth acquiring and for whose purposes), an acquire-keep-choose ending, and fixes from a four-reader hostile check: fifth place attributed to the best sibling notebook, the still-shipped edge-bar prompt, the fine-tune claim limited, the missing ablation admitted. Under 1,500 words with references. Handoff note updated. Earlier previews untouched. Author: Claude Sonnet 5.5.
+
 ### Version 9.164.29 · November 9, 2026
 
 - Paper Track, twelfth draft, as an unlisted preview (noindex, unlinked): "Out of My Depth", `/specials/2026-11-09-arc3-paper-out-of-my-depth-v12-preview.html`. Revises v11 after the Boss's notes: models did the diploma work, his calculator-and-computers story, Freire cited (book, paraphrased), the weights-frozen line repaired (weights fixed, learning inside a game, library discarded, fine-tunes lost), agency defined as the capacity to acquire and keep, and a new ending on acquire versus keep. Under 1,500 words with references. Handoff note updated. Earlier previews untouched. Author: Claude Sonnet 5.5.
