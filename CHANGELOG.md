@@ -1,3 +1,7 @@
+### Version 9.164.31 · November 9, 2026
+
+- Public hosting for the Paper Track Plan B figures so the Kaggle write-up can embed them: four PNGs under `/specials/arc-paper-figures/` (within-run climbs, memory-bundle comparison, fourteen paired local-versus-Kaggle comparisons, fifteen-game contact sheet). Files only, noindex by being unlinked; replaced at the same address when the figures change. Published through the fast-publish route. Author: Claude Sonnet 5.5.
+
 ### Version 9.164.30 · November 9, 2026
 
 - Paper Track, thirteenth draft, as an unlisted preview (noindex, unlinked): "Out of My Depth", `/specials/2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html`. Built on Freire's chapter two read in the primary text (four times four is sixteen, banking, being for oneself, unfinished beings), with agency separated from intelligence (choosing which capacity is worth acquiring and for whose purposes), an acquire-keep-choose ending, and fixes from a four-reader hostile check: fifth place attributed to the best sibling notebook, the still-shipped edge-bar prompt, the fine-tune claim limited, the missing ablation admitted. Under 1,500 words with references. Handoff note updated. Earlier previews untouched. Author: Claude Sonnet 5.5.
