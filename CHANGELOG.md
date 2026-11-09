@@ -1,3 +1,7 @@
+### Version 9.164.30 · November 9, 2026
+
+- Add the distinct, unnumbered paper-track alternative “Acquiring Capacity, Respecting Constraints: Lessons from ARC-AGI-3” as an unlisted preview. Preserve the full approved abstract, argument, and references in a plain serif reader; reuse v11’s exact game-image strip/captions at the selected point without any memoir byline or editorial notes. All earlier personal and technical previews remain untouched. Source and page are retained in git and published through the existing fast-publish route. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-09-domain-constraints-paper-preview.md`.
+
 ### Version 9.164.29 · November 9, 2026
 
 - Paper Track, twelfth draft, as an unlisted preview (noindex, unlinked): "Out of My Depth", `/specials/2026-11-09-arc3-paper-out-of-my-depth-v12-preview.html`. Revises v11 after the Boss's notes: models did the diploma work, his calculator-and-computers story, Freire cited (book, paraphrased), the weights-frozen line repaired (weights fixed, learning inside a game, library discarded, fine-tunes lost), agency defined as the capacity to acquire and keep, and a new ending on acquire versus keep. Under 1,500 words with references. Handoff note updated. Earlier previews untouched. Author: Claude Sonnet 5.5.
