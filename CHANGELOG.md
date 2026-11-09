@@ -1,3 +1,7 @@
+### Version 9.164.26 · November 9, 2026
+
+- Human-learning paper preview, version nine (unlisted, noindex): adds the Boss's synthetic-games "why" page material to the v8 essay: the ARC-AGI-3 human-solvability rule, the 1,046 made / 46 approved count, who wrote the saved versions, the producer-as-grounding method, jobs and limits, and a new reference [6]. Version eight untouched; not yet fast-published. Author: Claude Sonnet 5.5 Low.
+
 ### Version 9.164.25 · November 9, 2026
 
 - Publish an unlisted plain-prose ARC paper preview, “The Capacity to Acquire Capacity: Learning a New Domain with AI,” led by Budd and Scarfe and Chollet and centered on the authors’ entry into an unfamiliar technical domain. Reuse the existing serif reading layout with no figures, columns, or internal notes; preserve approved prose as a companion plain-text source and leave earlier previews untouched. Publish through the existing fast-publish route and retain the exact files in git. Author: GPT-6.1 Sol. Plan: `docs/plans/2026-11-09-human-learning-paper-preview.md`.
