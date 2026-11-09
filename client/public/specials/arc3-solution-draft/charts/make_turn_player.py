@@ -67,7 +67,7 @@ T = SRC['text']
 # Per-figure settings; make_turn_player_sk48.py swaps them with use() so the same code builds the second figure.
 FIG = {'id': 'fig-turn', 'data': 'turn-player-data', 'glob': '__turnPlayer', 'label': 'LS20',
        'start': '<!-- turn-player:start -->', 'end': '<!-- turn-player:end -->',
-       'png_rel': 'arc3-solution-draft/charts/turn-board-cleared.png', 'png': BOARD_PNG,
+       'png_rel': 'arc3-solution-draft/charts/turn-board-cleared.png', 'png': BOARD_PNG, 'still': STILL_PNG,
        'alt': 'The recorded Locksmith board: level 1 cleared, the block inside the locked door at the top.',
        'next_label': 'next turn · still level 1',
        'next': lambda: json.loads((HERE / 'clear-frame.json').read_text())['board'].replace('\n', ''), 'anim': lambda: None,
@@ -577,22 +577,22 @@ def take_still():
         b = launch_browser(pw)
         pg = b.new_page(viewport={'width': 900, 'height': 900}, device_scale_factor=2)
         pg.goto(PAGE.as_uri() + '#turn-end')
-        pg.wait_for_function('window.__turnPlayer !== undefined')
+        pg.wait_for_function('window.' + FIG['glob'] + ' !== undefined')
         # Final state, controls hidden, the transcript scrolled to the first turn's python pill, so its six
         # moves, the next turn's reasoning and the clearing UP follow.
-        pg.evaluate('''() => {
-          window.__turnPlayer.finish();
-          const tp = document.querySelector("#fig-turn .tp"), log = tp.querySelector(".tp-log");
+        pg.evaluate('''([id, glob]) => {
+          window[glob].finish();
+          const tp = document.querySelector("#" + id + " .tp"), log = tp.querySelector(".tp-log");
           tp.querySelector(".tp-ctl").style.display = "none";
           log.style.height = "860px";
           const th = log.querySelector(".tb-call");
           log.scrollTop = th.offsetTop - log.offsetTop;
-        }''')
-        pg.locator('#fig-turn .tp').screenshot(path=str(STILL_PNG))
+        }''', [FIG['id'], FIG['glob']])
+        pg.locator('#' + FIG['id'] + ' .tp').screenshot(path=str(FIG['still']))
         b.close()
-    subprocess.run(['python3', '-c', f'from PIL import Image; im=Image.open("{STILL_PNG}"); '
-                    f'im.convert("RGB").save("{STILL_PNG}", optimize=True)'], check=True)
-    print('wrote', STILL_PNG)
+    subprocess.run([sys.executable, '-c', f'from PIL import Image; im=Image.open("{FIG["still"]}"); '
+                    f'im.convert("RGB").save("{FIG["still"]}", optimize=True)'], check=True)
+    print('wrote', FIG['still'])
 
 
 def main():

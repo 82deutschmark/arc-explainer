@@ -64,6 +64,7 @@ HL = ['That matches the HUD picture exactly', 'So the goal picture =', 'So the m
 FIG = {'id': 'fig-turn-sk48', 'data': 'turn-player-sk48-data', 'glob': '__turnPlayerSk48', 'label': 'SK48',
        'start': '<!-- turn-player-sk48:start -->', 'end': '<!-- turn-player-sk48:end -->',
        'png_rel': 'arc3-solution-draft/charts/turn-board-cleared-sk48.png', 'png': HERE / 'turn-board-cleared-sk48.png',
+       'still': HERE / 'turn-still-sk48.png',
        'alt': 'The recorded Skewer Kebabs board after the clearing move.',
        'next': lambda: SRC['next'], 'anim': lambda: SRC['anim'], 'hl': HL,
        'caps': {'capStart': '<b>Before the turn</b> · the board attached to the turn message (recorded frame)',
@@ -81,6 +82,8 @@ def main():
     page = base.splice(page, FIG['start'], FIG['end'], base.figure_html())
     base.PAGE.write_text(page)
     print('wrote', base.PAGE)
+    if '--still' in __import__('sys').argv:
+        base.take_still()
 
 
 if __name__ == '__main__':

@@ -45,7 +45,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True  # keep the published folder free of __pycache__
 sys.path.insert(0, str(HERE))
-from make_variant_pages import MAIN, PREFIX, art_map, illustrations  # noqa: E402  (same folder)
+from make_variant_pages import MAIN, PREFIX, art_map  # noqa: E402  (same folder)
 
 KAGGLE_ART = "classic"
 IMAGES = art_map(KAGGLE_ART)   # main-page picture -> its classic painted original
@@ -70,6 +70,11 @@ TURN_STILL = "arc3-solution-draft/charts/turn-still.png"
 TURN_GIF, TURN_MP4 = "arc3-solution-draft/charts/turn.gif", "arc3-solution-draft/charts/turn.mp4"
 TURN_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn"
 TURN_VIDEO = VIDEOS + "#turn"
+# The same figure again on SK48 (Part 1): make_turn_player_sk48.py, filmed by make_turn_video.py sk48.
+SK48_STILL = "arc3-solution-draft/charts/turn-still-sk48.png"
+SK48_GIF, SK48_MP4 = "arc3-solution-draft/charts/turn-sk48.gif", "arc3-solution-draft/charts/turn-sk48.mp4"
+SK48_PAGE = BASE + "2026-11-06-arc3-solution-draft.html#fig-turn-sk48"
+SK48_VIDEO = VIDEOS + "#turn-sk48"
 
 
 def pinned(rel: str) -> str:
@@ -93,18 +98,20 @@ def rendered(gif: str, mp4: str, video: str, page: str, alt: str) -> list[str]:
     return [f"[![{alt}]({pinned(gif)})]({page})",
             f"*Animated GIF of the figure. [Watch it as an MP4 video]({video}) or "
             f"[see the live figure on the article page]({page}).*"]
-TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=<figcaption>)', re.S)
+TURN_PLAYER = re.compile(r'<div class="tp" .*?(?=</figure>)', re.S)
 
 
 def without_player(page: str) -> str:
-    """Swap the walkthrough's player block (transcript, board, scripts) for one still image."""
-    i, j = page.find("<!-- turn-player:start -->"), page.find("<!-- turn-player:end -->")
-    if i < 0 or j < i:
-        raise Fail("The walkthrough markers are gone; check make_turn_player.py")
-    fig, n = TURN_PLAYER.subn(f'<img class="turn-still" src="{TURN_STILL}" alt="">', page[i:j], count=1)
-    if n != 1:
-        raise Fail("The walkthrough player block changed; check make_turn_player.py")
-    return page[:i] + fig + page[j:]
+    """Swap each walkthrough's player block (transcript, board, scripts) for one still image."""
+    for name, still in (("turn-player", TURN_STILL), ("turn-player-sk48", SK48_STILL)):
+        i, j = page.find(f"<!-- {name}:start -->"), page.find(f"<!-- {name}:end -->")
+        if i < 0 or j < i:
+            raise Fail(f"The {name} markers are gone; check make_turn_player.py")
+        fig, n = TURN_PLAYER.subn(f'<img class="turn-still" src="{still}" alt="">', page[i:j], count=1)
+        if n != 1:
+            raise Fail(f"The {name} player block changed; check make_turn_player.py")
+        page = page[:i] + fig + page[j:]
+    return page
 
 
 VOID = {"img", "source", "br"}
@@ -277,8 +284,6 @@ def render_figure(fig: Node) -> list[str]:
             # Line breaks in a caption become separate italic lines.
             for line in inline(cap).split("\n"):
                 blocks.append(f"*{para(line)}*")
-        else:
-            blocks.append(f"*{alt}*")
         return blocks
     if fig.attrs.get("id") == "fig-trim":
         img = fig.find("img")
@@ -295,21 +300,41 @@ def render_figure(fig: Node) -> list[str]:
         # Explicit links, not bare URLs, so no renderer swallows the closing star into the address.
         blocks.append(links)
         return blocks
-    if fig.attrs.get("id") == "fig-turn":
+    if fig.attrs.get("id") in ("fig-turn", "fig-turn-sk48"):
+        sk = fig.attrs["id"] == "fig-turn-sk48"
+        still = SK48_STILL if sk else TURN_STILL
         img = fig.find("img")
-        if not img or img.attrs.get("src") != TURN_STILL or not (HERE.parent / TURN_STILL).is_file():
+        if not img or img.attrs.get("src") != still or not (HERE.parent / still).is_file():
             raise Fail("The walkthrough figure changed; check its still")
         for div in fig.kids():
             if div.tag == "div" and "ft" in div.cls():
                 blocks.append(f"**{para(inline(div))}**")
             elif div.tag == "div" and "fs" in div.cls():
                 blocks.append(para(inline(div)))
-        gif, links = rendered(TURN_GIF, TURN_MP4, TURN_VIDEO, TURN_PAGE,
-                              "The turn playing: the transcript streams in colour-coded blocks while the "
-                              "Locksmith board steps through the recorded moves, ending with level 1 cleared.")
+        if sk:
+            gif, links = rendered(SK48_GIF, SK48_MP4, SK48_VIDEO, SK48_PAGE,
+                                  "The turn playing on Skewer Kebabs: the transcript streams in colour-coded blocks while "
+                                  "the board steps through the recorded moves, ending with level 1 cleared.")
+        else:
+            gif, links = rendered(TURN_GIF, TURN_MP4, TURN_VIDEO, TURN_PAGE,
+                                  "The turn playing: the transcript streams in colour-coded blocks while the "
+                                  "LS20 board steps through the recorded moves, ending with level 1 cleared.")
         blocks.append(gif)
-        blocks.append(f"*{para(inline(fig.find('figcaption')))}*")
+        cap = fig.find("figcaption")
+        if cap:
+            blocks.append(f"*{para(inline(cap))}*")
         blocks.append(links)
+        return blocks
+    if "lb" in fig.cls():
+        # The top-five leaderboard: bars do not survive Markdown, so it is a small table.
+        rows = []
+        for div in fig.kids():
+            if div.tag == "div" and "ft" in div.cls():
+                blocks.append(f"**{para(inline(div))}**")
+            elif div.tag == "div" and "lb-row" in div.cls():
+                cells = [para(inline(c)) for c in div.kids() if c.tag == "span" and ("lb-bar" not in c.cls())]
+                rows.append(cells)
+        blocks.append("| Place | Team | Score |\n| --- | --- | --- |\n" + "\n".join("| " + " | ".join(r) + " |" for r in rows))
         return blocks
     if "redrawn-figure" in fig.cls():
         for child in fig.kids():
@@ -460,7 +485,7 @@ VIDEOS_PAGE = '''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta content="noindex, nofollow" name="robots">
-<title>Stuffing the Turducken: the two animated figures as video</title>
+<title>Stuffing the Turducken: the animated figures as video</title>
 <!--
 Made by arc3-solution-draft/make_kaggle_markdown.py; do not edit by hand.
 Author: Claude Opus 5.5 Medium (Round 11)
@@ -486,8 +511,8 @@ video{{display:block;width:100%;height:auto;background:#f1f3ef}}
 .links{{padding:8px 12px;border-top:1px solid #d5d9d2;color:#5f666d;font-size:12px}}
 </style></head>
 <body><main>
-<h1>Stuffing the Turducken: the two animated figures as video</h1>
-<p>Rendered copies of the two animated figures in the write-up, for places that cannot run the page.
+<h1>Stuffing the Turducken: the animated figures as video</h1>
+<p>Rendered copies of the animated figures in the write-up, for places that cannot run the page.
 The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">article page</a>.</p>
 <section id="turn">
 <h2>One turn of the harness, from a saved run <span style="color:#5f666d;font-weight:400">· Locksmith, level 1</span></h2>
@@ -496,6 +521,14 @@ The live figures are on the <a href="2026-11-06-arc3-solution-draft.html">articl
 <div class="links"><a href="{turn_mp4}">MP4</a> ·
 <a href="{turn_gif}">GIF</a> ·
 <a href="2026-11-06-arc3-solution-draft.html#fig-turn">live figure</a></div>
+</section>
+<section id="turn-sk48">
+<h2>One turn of the harness, again on Skewer Kebabs <span style="color:#5f666d;font-weight:400">· SK48, level 1</span></h2>
+<video controls loop muted playsinline preload="metadata" width="1280" height="962"
+  src="{sk48_mp4}"></video>
+<div class="links"><a href="{sk48_mp4}">MP4</a> ·
+<a href="{sk48_gif}">GIF</a> ·
+<a href="2026-11-06-arc3-solution-draft.html#fig-turn-sk48">live figure</a></div>
 </section>
 <section id="trim">
 <h2>Context management, animated</h2>
@@ -513,7 +546,6 @@ def main() -> int:
     builder = TreeBuilder()
     try:
         page = MAIN.read_text(encoding="utf-8")
-        illustrations(page)   # stops unless the main page carries exactly the six mapped pictures
         builder.feed(without_player(page))
         if builder.root is None:
             raise Fail("No <main> in the main page")
@@ -528,7 +560,7 @@ def main() -> int:
     OUT_TXT.write_text(md, encoding="utf-8")
     OUT_PAGE.write_text(PAGE.format(md_escaped=html.escape(md), preview=md_to_html(md)), encoding="utf-8")
     OUT_VIDEOS.write_text(VIDEOS_PAGE.format(
-        turn_mp4=pinned(TURN_MP4), turn_gif=pinned(TURN_GIF), trim_mp4=pinned(TRIM_MP4), trim_gif=pinned(TRIM_GIF)),
+        turn_mp4=pinned(TURN_MP4), turn_gif=pinned(TURN_GIF), sk48_mp4=pinned(SK48_MP4), sk48_gif=pinned(SK48_GIF), trim_mp4=pinned(TRIM_MP4), trim_gif=pinned(TRIM_GIF)),
         encoding="utf-8")
     images = len(re.findall(r"!\[", md))
     print(f"Wrote {OUT_MD.name}, {OUT_TXT.name}, {OUT_PAGE.name} and {OUT_VIDEOS.name}: {images} images, all links absolute.")
