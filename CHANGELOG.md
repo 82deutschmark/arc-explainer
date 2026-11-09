@@ -1,3 +1,7 @@
+### Version 9.164.32 · November 9, 2026
+
+- Paper Track Plan B public reference pages and figures (unlisted, noindex): `/specials/arc-paper-evidence.html` (clean evidence summary: notebooks and scores, configuration, token arithmetic, climb method verified against the archived run data, memory comparison, fourteen paired comparisons), `/specials/arc-paper-sk48-trace-note.html` (the team's sk48 trace note), the transfer chart with arrows and the games contact sheet on a white background under `/specials/arc-paper-figures/`. Published through the fast-publish route. Author: Claude Sonnet 5.5.
+
 ### Version 9.164.31 · November 9, 2026
 
 - Public hosting for the Paper Track Plan B figures so the Kaggle write-up can embed them: four PNGs under `/specials/arc-paper-figures/` (within-run climbs, memory-bundle comparison, fourteen paired local-versus-Kaggle comparisons, fifteen-game contact sheet). Files only, noindex by being unlinked; replaced at the same address when the figures change. Published through the fast-publish route. Author: Claude Sonnet 5.5.
