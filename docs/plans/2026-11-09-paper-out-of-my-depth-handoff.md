@@ -19,7 +19,9 @@ written this paper badly in three different ways. The Boss is tired of it.
 
 | v11, "Out of My Depth" (mine, live) | Written after this note, at the Boss's order to push my own version of section 3. First person, new prose, adds the frozen-model thread below. | Not yet read by the Boss. Start here. Run section 5 on it before changing anything. |
 
-All five are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
+| v12, "Out of My Depth" (mine, live, CURRENT) | v11 revised after the Boss's notes: models did the diploma work, calculator story as his own cost-and-doubt, Freire paraphrased (banking, unfinished beings), agency as the capacity to acquire and keep, ending built on acquire versus keep, the weights-frozen line repaired. | Start here. Run section 5 on it. |
+
+All six are live as unlisted previews under `client/public/specials/`. v10's submission paragraph and its
 strip of six game pictures are reusable. Its voice is not.
 
 The essay that should exist has not been written. Section 3 is the argument for it.
@@ -187,3 +189,11 @@ Run these yourself, once each. Do not spin up a crowd of checkers (see the workf
 2. Son's surname, and whether Son has read the plan for a first-person piece under both names.
 3. How much of the no-degree story he wants in public.
 4. Which title.
+
+## 8. Added after v12 (open items for the next assistant)
+
+- **Chollet on agency.** The Boss says Chollet has posted that generative tools are a boon to people with extremely high agency. I could not verify it and kept Chollet's name out of that passage. If he finds the post, cite it exactly and tie it to the agency paragraph in "Acquire, and keep".
+- **Freire.** I cite the book only (translator Ramos, 30th anniversary edition, Continuum 2000, chapter 2) and paraphrase banking and the "unfinished beings" idea from summaries, not the primary text. The Boss thinks another passage of Freire fits; ask which. Quote nothing until the text is in hand.
+- **The training claim.** "Our fine-tunes and reinforcement learning never beat the base model on Kaggle" comes from line 368 of `client/public/specials/arc3-solution-draft/article-draft.md`. Confirm that draft is what reference [4] means.
+- **The frozen-model fix.** The weights never change; inside one game the model does learn (writes and keeps code) and the harness discards it afterwards. The essay now says both. Keep the two statements together.
+- **Calculator story.** The Boss's account: late 1980s, early 1990s, multiplication tables by hand versus a calculator, he hacked on computers instead. The essay's version is a paraphrase; check the dates and "teaching myself computers" with him.
