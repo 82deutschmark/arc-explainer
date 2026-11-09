@@ -48,7 +48,7 @@ What survives the noise is the shape of the result: across many submissions, a s
 
 ## Accurate enough?
 
-"5th on the LB out of 5k... accurate enough? Over 50% too!" The facts, precisely: this submission scored 53.70; our team best of 56.02 placed fifth of 4,923 teams on the public leaderboard when the board closed. ARC-AGI-3 scores each level on action efficiency against human players, so over fifty is not "half the games solved". It means that in worlds it had never seen, our agent earned more than half of what matching human efficiency on every level would earn. On the razor's edge, that is accurate enough for us.
+"5th on the LB out of 5k... accurate enough? Over 50% too!" The facts, precisely: this submission scored 53.70; our team best of 56.02 placed fifth of 4,923 teams on the public leaderboard when the board closed. ARC-AGI-3 scores each level on action efficiency against human players, so over fifty is not "half the games solved". On the razor's edge, that is accurate enough for us.
 
 ## For the next team
 
