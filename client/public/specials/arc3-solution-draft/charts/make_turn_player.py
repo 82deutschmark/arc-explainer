@@ -395,8 +395,8 @@ JS = r'''
     });
   });
   // Characters per second by block kind; STEP is the beat on each move, GAP the beat between blocks.
-  var CPS = { system: 900, user: 900, think: 200, call: 90, result: 700 }, STEP = 650, GAP = 240;
-  var u = 0, shown = 0, wait = 0, pend = [], playing = false, last = 0, follow = true, done = false;
+  var CPS = { system: 1800, user: 1800, think: 520, call: 220, result: 1400 }, STEP = 380, GAP = 120;
+  var u = 0, shown = 0, wait = 0, pend = [], playing = false, last = 0, follow = true, done = false, userPaused = false;
 
   function reset() {
     units.forEach(function (x) {
@@ -454,7 +454,7 @@ JS = r'''
   function tick(now) {
     if (!playing) return;
     var dt = Math.min(100, now - last); last = now;
-    if (advance(dt)) requestAnimationFrame(tick);
+    if (advance(dt)) requestAnimationFrame(tick); else scheduleLoop();
   }
   function setPlaying(p) {
     playing = p; btnPlay.textContent = p ? 'Pause' : 'Play';
@@ -467,10 +467,10 @@ JS = r'''
   var ctl = root.querySelector('.tp-ctl');
   var btnPlay = ctl.querySelector('[data-a=play]');
   btnPlay.addEventListener('click', function () {
+    userPaused = playing;
     if (done) { reset(); setPlaying(true); } else { if (!playing) follow = true; setPlaying(!playing); }
   });
-  ctl.querySelector('[data-a=restart]').addEventListener('click', function () { reset(); setPlaying(true); });
-  ctl.querySelector('[data-a=end]').addEventListener('click', finish);
+  ctl.querySelector('[data-a=restart]').addEventListener('click', function () { userPaused = false; reset(); setPlaying(true); });
   window.__GLOB__ = { finish: finish, reset: reset, play: function () { setPlaying(true); },
     step: function (dt) { playing = false; if (!done) advance(dt); return done; } };
 
@@ -478,12 +478,23 @@ JS = r'''
   if (calm || location.hash === '#turn-end') { finish(); return; }
   if (location.hash === '#turn-capture') { reset(); return; }   // frame-by-frame capture: no autoplay
   reset();
-  var started = false;
+  // Loops: it plays only while it is on screen, starts from the top each time the reader scrolls to it, and after
+  // the last move holds the finished board a moment and plays again. Pause stops the loop until Play or Restart.
+  var visible = false, loopTimer = 0;
+  function scheduleLoop() {
+    clearTimeout(loopTimer);
+    loopTimer = setTimeout(function () { if (visible && !userPaused) { reset(); setPlaying(true); } }, 2600);
+  }
+  function startFresh() { clearTimeout(loopTimer); reset(); setPlaying(true); }
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es, ob) {
-      es.forEach(function (e) { if (e.isIntersecting && !started) { started = true; ob.disconnect(); setPlaying(true); } });
-    }, { threshold: 0.35 }).observe(root);
-  } else { started = true; setPlaying(true); }
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        visible = e.isIntersecting;
+        if (visible && !userPaused) startFresh();
+        else if (!visible) { clearTimeout(loopTimer); if (playing) setPlaying(false); }
+      });
+    }, { threshold: 0.2 }).observe(root);
+  } else { visible = true; startFresh(); }
 })();
 '''
 
@@ -507,8 +518,7 @@ def figure_html():
     out = ['<div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">',
            f'<div class="tp-top"><span class="tp-run">{FIG["label"]}</span>'
            '<span class="tp-ctl"><button type="button" data-a="play">Play</button>'
-           '<button type="button" data-a="restart">Restart</button>'
-           '<button type="button" data-a="end">Skip to end</button></span></div>',
+           '<button type="button" data-a="restart">Restart</button></span></div>',
            '<div class="tp-bar"><i></i></div>',
            '<div class="tp-legend">' + ''.join(f'<span class="k-{k}"><i></i>{n}</span>' for k, n in LEGEND) + '</div>',
            '<div class="tp-main">',
