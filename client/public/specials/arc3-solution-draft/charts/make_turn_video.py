@@ -16,7 +16,7 @@ for HOLD seconds, then the GIF loops back to the empty start, which opens the fi
   - frames and a full-quality MP4 master under OUT_DIR on the Team 4TB drive (never committed).
 The words are the page's, so the verbatim checks in make_turn_player.py cover the video too; run that
 script first if the transcript or styles changed.
-Usage: python3.13 make_turn_video.py [OUT_DIR]   (needs Playwright with Chromium, and ffmpeg)
+Usage: python3.14 make_turn_video.py [ls20|sk48] [OUT_DIR]   (needs Playwright with Chromium, and ffmpeg)
 SRP/DRY check: Pass - make_turn_player.py builds the figure, media_encode.py holds the encoding; this
 only films.
 """
@@ -28,9 +28,14 @@ import sys
 import media_encode
 from make_turn_player import launch_browser
 
+# which figure to film: python3 make_turn_video.py [ls20|sk48] [OUT_DIR]
+FIGS = {'ls20': ('fig-turn', '__turnPlayer', 'turn'), 'sk48': ('fig-turn-sk48', '__turnPlayerSk48', 'turn-sk48')}
+WHICH = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] in FIGS else 'ls20'
+FIG_ID, GLOB, STEM = FIGS[WHICH]
+
 HERE = Path(__file__).resolve().parent
-PAGE = HERE.parent.parent / '2026-11-06-arc3-solution-draft.html'
-OUT_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('/Volumes/Team 4TB/data/turducken-r12/turn-video')   # light film (Round 12)
+PAGE = HERE.parent.parent / '2026-11-08-turducken-opening-pass.html'   # the Boss's opening pass; Son's page 2026-11-06-arc3-solution-draft.html is left as it was
+OUT_DIR = Path(sys.argv[-1]) if len(sys.argv) > 2 else Path('/Volumes/Team 4TB/data/turducken-r16/' + STEM + '-video')   # light film (Round 12)
 FPS = media_encode.FPS_IN
 LEAD = 0.6          # seconds on the empty start (board before the turn) so the first frame is a clean one
 HOLD = 3.0          # seconds the final state stays on screen before the loop restarts
@@ -49,21 +54,21 @@ def main():
         b = launch_browser(pw)
         pg = b.new_page(viewport={'width': VIEWPORT, 'height': 900}, device_scale_factor=2)
         pg.goto(PAGE.as_uri() + '#turn-capture')
-        pg.wait_for_function('window.__turnPlayer !== undefined')
+        pg.wait_for_function(f'window.{GLOB} !== undefined')
         pg.evaluate('document.fonts.ready')
-        pg.evaluate('''() => {
-          const tp = document.querySelector("#fig-turn .tp");
+        pg.evaluate('''(id) => {
+          const tp = document.querySelector("#" + id + " .tp");
           tp.querySelector(".tp-ctl").style.display = "none";
           tp.scrollIntoView({block: "center"});
-        }''')
-        fig = pg.locator('#fig-turn .tp')
+        }''', FIG_ID)
+        fig = pg.locator(f'#{FIG_ID} .tp')
         done = False
         while not done:
             fig.screenshot(path=str(frames / f'f{n:04d}.png'), animations='disabled')
             n += 1
             if n > MAX_FRAMES:
                 raise SystemExit('The player did not finish within a minute of film; check the page.')
-            done = pg.evaluate(f'window.__turnPlayer.step({1000 / FPS})')
+            done = pg.evaluate(f'window.{GLOB}.step({1000 / FPS})')
         fig.screenshot(path=str(frames / f'f{n:04d}.png'), animations='disabled')   # the final state
         b.close()
     for k in range(lead):
@@ -74,9 +79,9 @@ def main():
     total = n + round(HOLD * FPS)
     pattern = str(frames / 'f%04d.png')
     sizes = {
-        'turn.mp4': media_encode.mp4(pattern, HERE / 'turn.mp4', 1280),
-        'turn.gif': media_encode.gif(pattern, HERE / 'turn.gif', 960),
-        'master': media_encode.mp4(pattern, OUT_DIR / 'turn-master.mp4', 1554, crf=12),
+        f'{STEM}.mp4': media_encode.mp4(pattern, HERE / f'{STEM}.mp4', 1280),
+        f'{STEM}.gif': media_encode.gif(pattern, HERE / f'{STEM}.gif', 960),
+        'master': media_encode.mp4(pattern, OUT_DIR / f'{STEM}-master.mp4', 1554, crf=12),
     }
     shutil.copy(__file__, OUT_DIR / Path(__file__).name)
     print('frames', total, f'({total / FPS:.1f} s)', sizes)
