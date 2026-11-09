@@ -1,6 +1,11 @@
 """Author: Claude Opus 5.5 Medium (pills, short reasoning and faster stream: Son's third note, same day; Locksmith turn: his fourth note)
         (inlined JetBrains Mono and the frame-step hook for make_turn_video.py: Claude Opus 5.5 Medium, Round 11)
         (light theme, Son's "I would prefer that the animations are light theme": Claude Opus 5.5 Low, Round 12)
+        (the Boss's opening pass, 8 Nov: plain title and caption, no run id or step line or stored-transcript notice in the
+         figure, "locked door", and a painted LEVEL 1 CLEARED banner on the last move because the recorded frames carry no
+         clearing animation: Claude Sonnet 5.5 Low). Second pass, same day: the painted banner is gone; the real level-2 frame
+         (charts/clear-frame.json, made by replay_clear_frame.py) follows the door frame after a beat, the figure has no
+         caption under it, and a pink marker highlights the moments worth watching.
 Date: 08-November-2026
 PURPOSE: Build the "One turn of the harness" figure of Son Pham's "Stuffing the Turducken" special
 (section 1.1 of client/public/specials/2026-11-06-arc3-solution-draft.html) as a live in-page player.
@@ -284,6 +289,7 @@ CSS = r'''
 .tb-result .tb-h{background:color-mix(in srgb,var(--tp-result) 34%,#fff);color:#3a2404}
 .tb-result .tb-h .tb-n,.tb-user .tb-h .tb-n,.tb-think .tb-h .tb-n{color:#40464d}
 .tb-result .tb-b{background:color-mix(in srgb,var(--tp-result) 9%,#fff);border-left-color:#8a5a12;border-left-style:dashed;color:#2f2414}
+.tb-b .ln.hl{background:#ffd3e1}
 .tb-b .ln.step-on{background:color-mix(in srgb,var(--tp-result) 30%,transparent)}
 .tp-next{padding:8px 10px;color:var(--tp-muted);font-size:11px;text-align:center;letter-spacing:.4px;border-bottom:1px solid var(--tp-line)}
 .tp-note{padding:6px 10px;border-top:1px solid var(--tp-line);border-left:3px solid #d29922;background:var(--tp-chrome);color:var(--tp-dim);font-size:11px}
@@ -338,10 +344,15 @@ JS = r'''
     }
   }
   var LAST = D.steps.length - 1;
+  // The clearing move has two real frames: the player at the door, then the first frame of level 2 (D.next). Show the
+  // door frame, hold a beat (counted in advance(), so a fixed-step video capture repeats exactly), then the new level.
+  var HOLD = 1100, clearT = 0, clearing = false;
+  function showNext() { clearing = false; grid = D.next.split(''); paint(); cap.innerHTML = D.capNext; }
   function setBoard(k) {   // k = -1: the board attached to the turn; k = 0..LAST: after move k
     grid = D.before.split('');
     for (var s = 0; s <= k; s++) D.steps[s].d.forEach(function (e) { grid[e[0] * 64 + e[1]] = e[2]; });
     paint();
+    clearing = k === LAST; clearT = 0;
     cap.innerHTML = k < 0 ? D.capStart
       : '<b>Move ' + (k + 1) + ' of ' + (LAST + 1) + '</b> · ' + D.steps[k].a
         + '<br>' + (k === LAST ? D.capEnd : k === LAST - 1 ? D.capWait : D.capStep);
@@ -382,13 +393,14 @@ JS = r'''
       if (x.div) { x.el.classList.remove('tp-hide'); return; }
       x.el.textContent = x.text; x.el.classList.remove('step-on'); x.block.classList.remove('tp-hide');
     });
-    u = units.length; done = true; setBoard(LAST); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
+    u = units.length; done = true; setBoard(LAST); showNext(); bar.style.width = '100%'; log.scrollTop = log.scrollHeight;
     setPlaying(false); btnPlay.textContent = 'Replay';
   }
   // advance(dt): move the stream on by dt milliseconds. The page drives it from requestAnimationFrame;
   // the video capture (make_turn_video.py) drives it with a fixed dt per frame, so renders repeat exactly.
   function advance(dt) {
     var budget = dt;
+    if (clearing) { clearT += dt; if (clearT >= HOLD) showNext(); }
     while (budget > 0 && u < units.length) {
       if (wait > 0) { var w = Math.min(wait, budget); wait -= w; budget -= w; continue; }
       var x = units[u];
@@ -449,18 +461,22 @@ JS = r'''
 '''
 
 
+# Lines of the model's thinking worth a marker (Boss's picks, 8 Nov). Matching is by phrase; the text itself is never changed.
+HL = ["Hmm, tight.", "No win. So the", "the glyph inside the box must be", "If it's blocked, we're at 0"]
+
+
 def line_html(ln):
     if ln == CUT:
         return f'<span class="ln cut">{CUT}\n</span>'
     step = f' data-step="{ln[1]}"' if ln[0] == 'step' else ''
-    return f'<span class="ln"{step}>{escape(ln[-1], quote=False)}\n</span>'
+    hl = ' hl' if any(p in ln[-1] for p in HL) else ''
+    return f'<span class="ln{hl}"{step}>{escape(ln[-1], quote=False)}\n</span>'
 
 
 def figure_html():
     p = SRC['provenance']
     out = ['<div class="tp" role="group" aria-label="One turn of the harness: the saved transcript and the recorded game board">',
-           '<div class="tp-top"><span class="tp-run">Locksmith <span>· level 1 · steps 15 and 16 · run '
-           f'{escape(p["run"])}</span></span>'
+           '<div class="tp-top"><span class="tp-run">LS20</span>'
            '<span class="tp-ctl"><button type="button" data-a="play">Play</button>'
            '<button type="button" data-a="restart">Restart</button>'
            '<button type="button" data-a="end">Skip to end</button></span></div>',
@@ -468,7 +484,7 @@ def figure_html():
            '<div class="tp-legend">' + ''.join(f'<span class="k-{k}"><i></i>{n}</span>' for k, n in LEGEND) + '</div>',
            '<div class="tp-main">',
            '<div class="tp-board"><img src="arc3-solution-draft/charts/turn-board-cleared.png" width="512" height="512" '
-           'loading="lazy" alt="The recorded Locksmith board: level 1 cleared, the block inside the locked box at the top.">'
+           'loading="lazy" alt="The recorded Locksmith board: level 1 cleared, the block inside the locked door at the top.">'
            '<div class="tp-cap"><b>Level 1 cleared</b> on the seventh move. The recorded game board.</div></div>',
            '<div class="tp-log" tabindex="0" aria-label="Transcript of the turn">']
     for b in BLOCKS:
@@ -487,31 +503,23 @@ def figure_html():
         out.append(f'<section class="tb tb-{kind}" data-kind="{kind}"><div class="tb-h"><span>{escape(label)}</span>{n}</div>'
                    f'{pill}<pre class="tb-b">{body}</pre></section>')
     out += ['</div>', '</div>',
-            '<div class="tp-note">Stored transcript: this turn\'s input is rebuilt from the run\'s saved transcripts, '
-            'so it is not guaranteed to be the exact prompt bytes. Every word in the coloured blocks is copied from it; '
-            '"…" marks a cut.</div>',
             '</div>']
     data = board_data()
+    data['next'] = json.loads((HERE / 'clear-frame.json').read_text())['board'].replace('\n', '')
     data['capStart'] = '<b>Before the turn</b> · the board attached to the turn message (recorded frame)'
     data['capStep'] = 'The recorded game after this move; the yellow bar at the bottom is the step budget.'
-    data['capWait'] = 'At the top, under the locked box. No win yet; one step of budget left.'
-    data['capEnd'] = '<b>Level 1 cleared</b>: the block went into the box.'
+    data['capWait'] = 'At the door. No win yet; one step of budget left.'
+    data['capEnd'] = '<b>At the door</b> with the right key, so the level clears.'
+    data['capNext'] = '<b>Level 1 cleared.</b> Level 2 begins, and the yellow step bar is full again.'
     js_data = json.dumps(data, separators=(',', ':')).replace('</', '<\\/')
     return '\n'.join([
         '<figure id="fig-turn">',
-        '<div class="ft">One turn of the harness, from a saved run</div>',
-        '<div class="fs">The transcript streams fast, in the order the turns went: the system prompt, the turn message, '
-        'the model\'s reasoning (shortened), each python call as a yellow pill (click one for the full code), the '
-        'output, then the next turn. The board steps through the recorded game as each move lands.</div>',
+        '<div class="ft">One turn, from the model\'s side</div>',
+        '<div class="fs">Each block is one thing said or done, in order: what the model was told, what it thought, what it ran '
+        'and what came back. The yellow pills are the programs it wrote, the board beside them steps through the real moves, and the pink marker is ours, on the moments worth watching.</div>',
         *out,
         f'<script type="application/json" id="turn-player-data">{js_data}</script>',
         f'<script>{JS}</script>',
-        '<figcaption>Real trace, not a mock-up: the game Locksmith, level 1, steps 15 and 16 of run '
-        f'<code>{escape(p["run"])}</code>, an offline-evaluation run of the 56.02 package. Prompt text, reasoning, code '
-        'and output are verbatim, cut only where "…" shows (the reasoning keeps its key lines), and the board is the '
-        'run\'s recorded frames. The model walks the block to the locked box with its last six steps of budget; '
-        'nothing happens, and on the next turn it spends its final step on one more UP. The legend, board captions and the grey notes in the label '
-        'bars are ours.</figcaption>',
         '</figure>',
     ])
 
