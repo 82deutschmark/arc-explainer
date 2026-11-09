@@ -34,7 +34,6 @@ BLOCKS = [
     ('user', 'USER PROMPT', 'harness: own functions listed back · board image', [
         ('user', 'Your previous exchange this turn produced no tool call and executed no actions.'),
         CUT,
-        ('user', 'Current state: step 133, level 1.'),
         ('user', 'Valid actions right now: UP, DOWN, LEFT, RIGHT, MOUSE, UNDO.'),
         CUT,
         ('user', T['user'].split('\n')[15]),
@@ -66,6 +65,8 @@ FIG = {'id': 'fig-turn-sk48', 'data': 'turn-player-sk48-data', 'glob': '__turnPl
        'png_rel': 'arc3-solution-draft/charts/turn-board-cleared-sk48.png', 'png': HERE / 'turn-board-cleared-sk48.png',
        'still': HERE / 'turn-still-sk48.png',
        'alt': 'The recorded Skewer Kebabs board after the clearing move.',
+       'title': 'Another turn, on Skewer Kebabs', 'sub': None,
+       'nojs_cap': '<b>Level 1 cleared.</b> The recorded game board.',
        'next': lambda: SRC['next'], 'anim': lambda: SRC['anim'], 'hl': HL,
        'caps': {'capStart': '<b>Before the turn</b> · the board attached to the turn message (recorded frame)',
                 'capStep': 'The recorded game after this move.',

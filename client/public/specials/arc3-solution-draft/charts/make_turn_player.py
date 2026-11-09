@@ -70,6 +70,9 @@ FIG = {'id': 'fig-turn', 'data': 'turn-player-data', 'glob': '__turnPlayer', 'la
        'png_rel': 'arc3-solution-draft/charts/turn-board-cleared.png', 'png': BOARD_PNG, 'still': STILL_PNG,
        'alt': 'The recorded Locksmith board: level 1 cleared, the block inside the locked door at the top.',
        'next_label': 'next turn · still level 1',
+       'title': "One turn, from the model's side",
+       'sub': 'Read top to bottom: what the model was told, what it thought, the code it wrote, what came back. Pink marks the moments worth watching.',
+       'nojs_cap': '<b>Level 1 cleared.</b> The recorded game board.',
        'next': lambda: json.loads((HERE / 'clear-frame.json').read_text())['board'].replace('\n', ''), 'anim': lambda: None,
        'caps': {'capStart': '<b>Before the turn</b> · the board attached to the turn message (recorded frame)',
                 'capStep': 'The recorded game after this move; the yellow bar at the bottom is the step budget.',
@@ -113,12 +116,11 @@ BLOCKS = [
         ('system', 'Eligible functions you define are retained automatically for later calls throughout this game, including across level changes'),
         CUT,
     ]),
-    ('user', 'USER PROMPT', 'harness: own functions listed back · diff image', [
+    ('user', 'USER PROMPT', 'harness: own functions listed back · board image', [
         ('user', 'The code executed 4 actions in the previous sequence.'),
         ('user', 'Executed actions: DOWN, UP, DOWN, UP.'),
         CUT,
         ('user', 'You are still on the same level.'),
-        ('user', 'Current state: step 40, level 1.'),
         ('user', 'Valid actions right now: UP, DOWN, LEFT, RIGHT.'),
         CUT,
         ('user', 'Your retained functions from earlier Python calls in this game: blockpos(frame), icon3(frame), win3(frame), pluscell(frame), cell(frame), nodesig(f). These are your previous definitions, available to call directly.'),
@@ -126,8 +128,6 @@ BLOCKS = [
         ('user', 'Current grid image:'),
         ('user', ''),
         ('user', '[image attached]'),
-        ('user', ''),
-        ('user', 'Diff image (step 35 -> 39): cells that changed since your previous analyzer turn in their new true color; unchanged cells dimmed to dark navy (an off-palette color).'),
         ('user', ''),
         ('user', '[image attached]'),
     ]),
@@ -151,7 +151,6 @@ BLOCKS = [
         ('next_user', 'The code executed 6 actions in the previous sequence.'),
         ('next_user', 'Executed actions: UP, RIGHT, RIGHT, RIGHT, UP, UP.'),
         ('next_user', 'You are still on the same level.'),
-        ('next_user', 'Current state: step 46, level 1.'),
         CUT,
     ]),
     ('think', 'THINKING', 'shortened', [
@@ -165,9 +164,7 @@ BLOCKS = [
     ('call', 'TOOL CALL: python', '', whole('next_call'), "r=action(['UP'])"),
     ('result', 'TOOL RESULT: python', '', [
         ('step', len(MOVES) - 1, 'next_result', NRES[0]),
-        ('next_result', NRES[1]),
         CUT,
-        ('next_result', NRES[-1]),
     ]),
 ]
 
@@ -517,7 +514,7 @@ def figure_html():
            '<div class="tp-main">',
            f'<div class="tp-board"><img src="{FIG["png_rel"]}" width="512" height="512" '
            f'loading="lazy" alt="{escape(FIG["alt"])}">'
-           '<div class="tp-cap"><b>Level 1 cleared</b> on the seventh move. The recorded game board.</div></div>',
+           f'<div class="tp-cap">{FIG["nojs_cap"]}</div></div>',
            '<div class="tp-log" tabindex="0" aria-label="Transcript of the turn">']
     for b in BLOCKS:
         if b == 'NEXT':
@@ -544,9 +541,8 @@ def figure_html():
     js_data = json.dumps(data, separators=(',', ':')).replace('</', '<\\/')
     return '\n'.join([
         f'<figure id="{FIG["id"]}">',
-        '<div class="ft">One turn, from the model\'s side</div>',
-        '<div class="fs">Each block is one thing said or done, in order: what the model was told, what it thought, what it ran '
-        'and what came back. The yellow pills are the programs it wrote, the board beside them steps through the real moves, and the pink marker is ours, on the moments worth watching.</div>',
+        f'<div class="ft">{escape(FIG["title"])}</div>',
+        *([f'<div class="fs">{escape(FIG["sub"])}</div>'] if FIG['sub'] else []),
         *out,
         f'<script type="application/json" id="{FIG["data"]}">{js_data}</script>',
         '<script>' + JS.replace('__FIG__', FIG['id']).replace('__DATA__', FIG['data']).replace('__GLOB__', FIG['glob']) + '</script>',
