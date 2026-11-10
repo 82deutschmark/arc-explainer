@@ -1,3 +1,7 @@
+### Version 9.164.33 · November 9, 2026
+
+- Show the six credited Tufa Labs authors in the final-solutions article using its verified cast. Frame Dries Smit’s existing card art around his head and shoulders so the card banner clears his face. Checked both article renders and the actual card thumbnail. Author: GPT-6.1 Sol / Codex (reasoning effort inherited).
+
 ### Version 9.164.32 · November 9, 2026
 
 - Paper Track Plan B public reference pages and figures (unlisted, noindex): `/specials/arc-paper-evidence.html` (clean evidence summary: notebooks and scores, configuration, token arithmetic, climb method verified against the archived run data, memory comparison, fourteen paired comparisons), `/specials/arc-paper-sk48-trace-note.html` (the team's sk48 trace note), the transfer chart with arrows and the games contact sheet on a white background under `/specials/arc-paper-figures/`. Published through the fast-publish route. Author: Claude Sonnet 5.5.

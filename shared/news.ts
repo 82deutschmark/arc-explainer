@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
  * Date: 04-November-2026
+ * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -78,6 +79,8 @@ export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
   dek?: string;
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
+  /** Ordered, verified story cast. An empty list deliberately shows no cards. */
+  personIds?: string[];
   /** Historical dispatches lack a writer ID; new features record their actual writer. */
   generatedBy?: typeof NEWS_EDITION_WRITERS[number];
   commissionedBy?: 'mark-barney';
@@ -195,7 +198,7 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
 export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
   return namedPeople(story.headline, people)[0] ?? namedPeople(story.dek, people)[0] ?? citedPeople(story.sections, people)[0];
 }
-type ReportedStory = { headline: string; dek?: string; sections: NewsSection[]; competition?: NewsCompetition; dataAsOf?: string; publishedAt?: string };
+type ReportedStory = { headline: string; dek?: string; sections: NewsSection[]; competition?: NewsCompetition; dataAsOf?: string; publishedAt?: string; personIds?: string[] };
 /** Whole names only: handles such as xz also match title case, never a substring in another word. */
 function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson[] {
   if (!text) return [];
@@ -221,14 +224,20 @@ function passagePeople(text: string | undefined, story: ReportedStory, people: N
   }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person) : [];
   return [...new Map([...members, ...direct].map(person => [person.id, person])).values()];
 }
-/** Headline and opening subjects lead; named teams bring their sourced cast. */
+/** An editorial cast wins; older stories use the sourced names and teams in their prose. */
 export function reportedPeople(stories: ReportedStory[], people: NewsPerson[]): NewsPerson[] {
-  const subjects = stories.flatMap(story => [
-    ...passagePeople(story.headline, story, people),
-    ...passagePeople(story.sections[0]?.text, story, people),
-    ...passagePeople(story.dek, story, people),
-    ...story.sections.flatMap(section => [...passagePeople(section.text, story, people), ...citedPeople([section], people)]),
-  ]);
+  const byId = new Map(people.map(person => [person.id, person]));
+  const subjects = stories.flatMap(story => {
+    if (story.personIds !== undefined) {
+      return story.personIds.map(id => byId.get(id)).filter((person): person is NewsPerson => !!person);
+    }
+    return [
+      ...passagePeople(story.headline, story, people),
+      ...passagePeople(story.sections[0]?.text, story, people),
+      ...passagePeople(story.dek, story, people),
+      ...story.sections.flatMap(section => [...passagePeople(section.text, story, people), ...citedPeople([section], people)]),
+    ];
+  });
   return [...new Map(subjects.map(person => [person.id, person])).values()];
 }
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */

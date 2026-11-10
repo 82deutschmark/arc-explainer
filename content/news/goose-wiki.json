@@ -11996,7 +11996,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "90c2dbe49e26cfe0c0ebd60288db95f3a0fb49dc5e5c64ea0addbd9fc8f7ab80",
+  "fingerprint": "1f49b4e916aa95139fd3b969703651c4f5da5aab06d97ee6fc953ca459750703",
   "people": [
     {
       "accounts": [
@@ -20369,6 +20369,7 @@
           "artworkId": "2026-10-12-dries-smit-character-v1-base",
           "commissionedAt": "2026-11-02T23:03:02+00:00",
           "credit": "Existing ARC Daily character illustration",
+          "framing": "upper-body",
           "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
         },
         "artNotes": [

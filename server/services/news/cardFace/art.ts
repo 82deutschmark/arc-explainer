@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium
  * Date: 02-November-2026
+ * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Fit registered original card artwork into the existing card design without cutting
  *          off the subject. A blurred background fills unused space; original files stay untouched.
  *          Paths are guarded and missing images use the existing placeholder.
@@ -173,7 +174,19 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
     // The front is a big close-up: a portrait or square picture runs edge to edge. Wide pictures keep the contained layout below.
     const meta = await sharp(read.buf, opts).metadata();
     if (meta.width && meta.height && meta.width / meta.height <= 1.05) {
-      const png = await jpeg(sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' }).resize(W, H, { fit: 'cover', position: sharp.strategy.attention }));
+      const portrait = sharp(read.buf, opts).rotate().flatten({ background: '#0b0c10' });
+      if (art.framing === 'upper-body') {
+        // A full-body source with a face at the top needs headroom for the card border and badges.
+        // Carry the source's own backdrop into that space and center the original head and shoulders.
+        const headroom = Math.round(H * 0.13);
+        const width = Math.max(1, Math.min(Math.round(meta.width * 0.74), Math.floor(meta.height * W / (H - headroom))));
+        const height = Math.max(1, Math.floor(width * (H - headroom) / W));
+        portrait.extract({ left: Math.floor((meta.width - width) / 2), top: 0, width, height })
+          .resize(W, H - headroom, { fit: 'fill' }).extend({ top: headroom, bottom: 0, left: 0, right: 0, extendWith: 'copy' });
+      } else {
+        portrait.resize(W, H, { fit: 'cover', position: sharp.strategy.attention });
+      }
+      const png = await jpeg(portrait);
       return { png, mime: 'image/jpeg', kind: 'contract', mode: 'full-bleed', plate: null, freeBand: null };
     }
   }

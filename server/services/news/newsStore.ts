@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
  * Date: 03-November-2026
+ * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -30,6 +31,7 @@ const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, headline: text.max(240), dek: text.max(700).optional(),
+  personIds: z.array(safeId).refine(ids => new Set(ids).size === ids.length, 'Dispatch cast IDs must be unique').optional(),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),

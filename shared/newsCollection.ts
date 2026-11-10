@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
  * Date: 03-November-2026
+ * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -23,6 +24,7 @@ const entry = z.object({ competition, competitionId: z.string(), teamId: z.strin
 export const collectionArtSchema = z.object({
   src: z.string().regex(/^\/news-images\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:webp|png|jpg|jpeg)$/),
   alt: z.string().min(1), credit: z.string().min(1), artworkId: id.optional(), commissionedAt: stamp.optional(),
+  framing: z.literal('upper-body').optional(),
 }).strict();
 export const cardDefinitionSchema = z.object({
   id, kind: z.enum(['person', 'team']), name: z.string().min(1),

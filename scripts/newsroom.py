@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
 # Date: 02-November-2026
+# 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
@@ -601,8 +602,14 @@ def publish(draft, brief, root=ROOT):
 
 def validate_dispatch(draft):
     required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
-    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote', 'dek'}:
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote', 'dek', 'personIds'}:
         raise ValueError('invalid dispatch fields')
+    if 'personIds' in draft:
+        cast = draft['personIds']
+        if (not isinstance(cast, list)
+                or any(not isinstance(person, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', person) for person in cast)
+                or len(set(cast)) != len(cast)):
+            raise ValueError('dispatch cast needs unique person IDs')
     if 'generatedBy' in draft and draft['generatedBy'] not in WRITERS:
         raise ValueError('invalid dispatch writer')
     if 'commissionedBy' in draft and draft['commissionedBy'] != 'mark-barney':

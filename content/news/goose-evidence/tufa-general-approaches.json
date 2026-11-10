@@ -24,6 +24,14 @@
         "caption": "The Goose imagines Tufa Labs unplugging elaborate puzzle tools while one laptop keeps working. The plate marks the team’s ARC-AGI-2 public place.",
         "src": "/news-images/goose-70151e777a53a3cd73e9.webp"
       },
+      "personIds": [
+        "dries-smit",
+        "jeroen-cottaar",
+        "isaiahp",
+        "stefano-viel",
+        "dlorah",
+        "infinitecreativity"
+      ],
       "publishedAt": "2026-11-10T01:51:07+00:00",
       "sections": [
         {
@@ -103,7 +111,7 @@
       ]
     },
     "storyId": "tufa-general-approaches",
-    "storySha256": "3cbcce4ce0d118e2c6f742883b45809e3a76d3fd7412ec55e5ae83a385297c93",
+    "storySha256": "5175fcce408110ae2242bd04df6174ac2a6530f51f0cce1f1f4e30c5414503af",
     "version": 1
   },
   "review": {
@@ -121,9 +129,9 @@
       "art-continuity",
       "copy"
     ],
-    "notes": "Read both primary write-ups and refreshed the provisional public board places. Checked dated rosters and matched each of the six visible characters to the reference records. The independent Claude read identified the combined parameter sweep, built-in prediction head and omitted positive ablation results; all were corrected and checked against the source. At phone size the single Tufa nameplate reads first and the caption identifies ARC-AGI-2. Cape and regalia are reserved for verified Grandmasters: Isaiah Pressman is the caped Canada goose, Jeroen Cottaar has his established coat, and Harold Bessis is the plain gray goose in a utility vest.",
-    "reviewedAt": "2026-11-10T01:51:07+00:00",
-    "reviewedBy": "GPT-6.1 Sol / Codex, with separate Claude editorial review",
-    "storySha256": "3cbcce4ce0d118e2c6f742883b45809e3a76d3fd7412ec55e5ae83a385297c93"
+    "notes": "Read both primary write-ups and refreshed the provisional public board places. Checked dated rosters and matched each of the six visible characters to the reference records. The independent Claude read identified the combined parameter sweep, built-in prediction head and omitted positive ablation results; all were corrected and checked against the source. At phone size the single Tufa nameplate reads first and the caption identifies ARC-AGI-2. Cape and regalia are reserved for verified Grandmasters: Isaiah Pressman is the caped Canada goose, Jeroen Cottaar has his established coat, and Harold Bessis is the plain gray goose in a utility vest. Cast correction: the card row now lists only the six people verified in the ARC-AGI-2 and ARC-AGI-3 rosters, with the original copy and illustration unchanged.",
+    "reviewedAt": "2026-11-10T02:49:36+00:00",
+    "reviewedBy": "GPT-6.1 Sol / Codex; original copy and illustration reviewed separately by Claude",
+    "storySha256": "5175fcce408110ae2242bd04df6174ac2a6530f51f0cce1f1f4e30c5414503af"
   }
 }

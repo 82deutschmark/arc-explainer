@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
  * Date: 02-November-2026
+ * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: ADAPTER from the production collection (shared/newsCollection.ts CollectionCard / NewsCollection) to the
  *          ENRICHED CARD MODEL that cardFace/model.ts viewModel() consumes. The TypeScript port of the design
  *          scratch's Python enrichment, so the renderer never touches raw collection data.
@@ -323,7 +324,7 @@ function artFor(ctx: Context, card: CollectionCard) {
     return artRecord(dir, art.src, 'last-year-hall-of-fame', others, true, art.alt, art.credit);
   }
   const source = art.src.startsWith('/news-images/cards/') ? 'registered' : art.artworkId ? 'editorial-portrait' : 'registered';
-  return { ...artRecord(dir, art.src, source, [], null, art.alt, art.credit), registered: source === 'registered' };
+  return { ...artRecord(dir, art.src, source, [], null, art.alt, art.credit), registered: source === 'registered', framing: art.framing };
 }
 
 /** A team's Kaggle name without the art-brief suffix some cards carry ("yktori - Silver Comet" -> "yktori"). */

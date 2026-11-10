@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
  * Date: 03-November-2026; 03-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
+ * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
@@ -26,7 +27,7 @@ import NewsWire from '../client/src/pages/NewsWire';
 import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
 import { ArticleArchive, EditionLabel } from '../client/src/components/news/NewsDesk';
-import { newsArticleMeta } from '../server/services/news/newsPresentation';
+import { newsArticleMeta, resolveNewsMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { getNewsIndex } from '../server/services/news/newsStore';
@@ -339,4 +340,22 @@ test('includes the sourced cast of the lead team, scoped to its competition', ()
   const ids = reportedPeople([article], index.people!).map(p => p.id);
   for (const id of ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel']) expect(ids).toContain(id);
   expect(ids[0]).toBe('dries-smit');
+});
+
+test('the Tufa report shows only its six credited authors in both article renders', () => {
+  vi.stubGlobal('React', React);
+  const path = '/news/tufa-general-approaches';
+  const people = ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel', 'dlorah', 'infinitecreativity'];
+  const cards = getNewsCollection().cards;
+  const expected = people.map(id => cards.find(card => card.personId === id)!.cardUrl);
+  const clientHtml = render(NewsArticle, path, getNewsIndex());
+  const serverHtml = resolveNewsMeta(path)?.tags.bodyHtml;
+  const rows = [
+    clientHtml.match(/<section class="news-story-people"[\s\S]*?<\/section>/)?.[0],
+    serverHtml?.match(/<aside aria-label="In this story"[\s\S]*?<\/aside>/)?.[0],
+  ];
+  for (const row of rows) {
+    expect(row).toBeDefined();
+    expect([...row!.matchAll(/href="(\/news\/cards\/[^"]+)"/g)].map(match => match[1])).toEqual(expected);
+  }
 });
