@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
  * Date: 02-November-2026
+ * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: The 1200 x 630 link preview in the Topps look: exact size, the real front render at the left (not a re-draw),
  *          the name, tier line, lead contest rank and score and the single AS OF date at the right, Japanese names, a card
  *          with no art, and image addresses that change with the content.
@@ -38,7 +39,8 @@ it('competitor previews retain the identity and omit unavailable standings', asy
   const text = textOf(await buildCollectionShareNode(card, collection, null)).join('\n');
   expect(text).toContain('Ivan Sorokin');
   expect(text).toContain('KAGGLE GRANDMASTER');
-  expect(card.entries).toEqual([]);
+  expect(card.entries.length).toBeGreaterThan(0);
+  expect(card.entries.every(entry => entry.status === 'unavailable' && entry.rank === null && entry.score === null)).toBe(true);
   expect(text).not.toContain('RANK');
   expect(text).not.toContain('SCORE');
   expect(text).toContain('ARC.MARKBARNEY.NET');

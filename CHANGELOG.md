@@ -1,3 +1,7 @@
+### Version 9.164.37 · November 9, 2026
+
+- Updated three competitor-card checks for Michal Tešnar’s commissioned character, Ivan Sorokin’s roster-only entry and the ledger’s career overflow notice. Verified the reverse still shows the saved standings and intact artwork. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).
+
 ### Version 9.164.36 · November 9, 2026
 
 - Keep contest standings independent when a board fails, and use a recorded roster for the same entry when a board omits its members. Final results carry their own data and competitor card dates reflect measured evidence. Fixed the card checks for confirmed solo entries, set design, roster-only dates and the current ledger back. Author: GPT-6 / Codex (reasoning effort not exposed).

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed)
  * Date: 03-November-2026
+ * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: Check that the approved re card uses separate front and back pictures and
  * retains the complete dated career table over an uncropped picture on its reverse.
  * SRP/DRY check: Pass — exercise the real wiki projection and existing card renderer.
@@ -47,13 +48,15 @@ it('keeps live standings and the career table over the complete reverse illustra
   const original = collection.cards.find(item => item.id === 'person-refv00-2026')!;
   const card = { ...original, entries: original.entries.map((entry, i) => ({ ...entry,
     rank: i + 1, score: 45.67 + i, submissions: 10, status: 'public' as const })) };
+  expect(card.entries.length).toBeGreaterThan(0);
   const adjusted = { ...collection, cards: collection.cards.map(item => item.id === card.id ? card : item) };
   const { model, names } = cardFaceModel(card, adjusted);
   const node: any = await backNode(model, { namesById: names, backPicture: card.backArt!.src });
   const words = textOf(node).join(' ');
   expect(words).toContain('STANDINGS');
   expect(words).toContain('45.67');
-  expect(words).toContain('NeuroGolf');
+  expect(words).toContain('NVIDIA Nemotron');
+  expect(words).toContain('7 MORE CONTESTS ON THE KAGGLE PROFILE');
   expect(words).toContain('8 CONTESTS');
   const image = Buffer.from(node.props.children[0].props.src.split(',')[1], 'base64');
   // 05-Nov-2026 (ledger reverse): the whole second picture is kept, never cropped; a picture that is not 5:7 sits on a blurred copy of itself.

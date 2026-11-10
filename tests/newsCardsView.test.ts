@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild)
  * Date: 03-November-2026; 02-November-2026
+ * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: Render the real Card Cabinet pages and protect what the Boss asked for: every card we already hold for a
  *          person is shown and linked, tiers and sponsor roles are named in Kaggle's words, nobody is a "player",
  *          no internal notes reach the page, Mark has his own avatar, and team cards link their roster.
@@ -41,13 +42,13 @@ it('shows both actual faces together for individual and team cards', () => {
   }
 });
 
-it('keeps Tufa identities and the verified account avatar on their own cards', () => {
+it('keeps Tufa identities and commissioned character art on their own cards', () => {
   const cards = prepare().cards;
   expect(cards.find(card => card.personId === 'dlorah')?.name).toBe('Harold Bessis');
   for (const id of ['mohamed-osman', 'jerome-sieber']) expect(cards.some(card => card.personId === id)).toBe(true);
-  const flamingo = cards.find(card => card.personId === 'infinitecreativity')!;
-  expect(flamingo.name).toBe('Michal Tešnar');
-  expect(flamingo.art?.src).toBe('/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg');
+  const michal = cards.find(card => card.personId === 'infinitecreativity')!;
+  expect(michal.name).toBe('Michal Tešnar');
+  expect(michal.art?.src).toBe('/news-images/cards/2026/michal-tesnar-tufa-card-v1.webp');
   for (const id of ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel', 'dlorah', 'mohamed-osman', 'jerome-sieber']) {
     expect(cards.find(card => card.personId === id)?.art?.src, id).toBeTruthy();
   }
