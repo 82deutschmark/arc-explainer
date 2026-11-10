@@ -1,7 +1,7 @@
-/* Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 03-November-2026
+/* Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 09-November-2026
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
- * articles, notebook, people, community and unified masthead, semantic team-name emphasis,
+ * articles, story archive, notebook, people and unified masthead, semantic team-name emphasis,
  * and disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
  * financial terminal, like a sports page ... take this back to a different era"). Newsprint and
@@ -390,14 +390,17 @@
 .news-person-history { font: 400 11.5px var(--sans); }
 .news-team-people > ul { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .news-team-people .news-muted { margin: 4px 0 10px; }
-.news-community-list { max-width: 800px; }
-.news-source-jump { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 24px; font: 700 13px/1.5 var(--sans); }
-.news-source-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 20px; margin: 16px 0 10px; }
-.news-source-controls label { width: min(100%, 340px); font: 700 12px/1.5 var(--sans); }
-.news-source-controls input { margin-top: 4px; border-radius: 0; border-color: var(--hair); background: var(--paper); color: var(--ink); }
-.news-source-controls [role="group"] { display: flex; flex-wrap: wrap; gap: 6px; }
-.news-source-filter { border-radius: 0; border-color: var(--hair); background: var(--paper); color: var(--ink); }
-.news-source-filter[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.news-story-archive { max-width: 800px; }
+.news-archive-controls { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 8px 0 12px; }
+.news-archive-controls label { width: min(100%, 300px); font: 700 13px/1.5 var(--sans); }
+.news-archive-controls input, .news-archive-controls select { width: 100%; min-height: 44px; margin-top: 4px; padding: 8px 12px; border: 1px solid var(--muted); border-radius: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.4 var(--sans); }
+.news-archive-month { margin: 24px 0; }
+.news-archive-month h2 { margin-bottom: 0; }
+.news-archive-month ol { margin: 0; padding: 0; list-style: none; }
+.news-archive-month li { padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.news-archive-month h3 { font: 700 21px/1.25 var(--serif); overflow-wrap: anywhere; }
+.news-archive-month p { margin: 4px 0; font: 15px/1.5 var(--serif); overflow-wrap: anywhere; }
+.news-archive-month .news-byline { margin-top: 5px; }
 .news-boards { max-width: 800px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--ink); scroll-margin-top: 80px; }
 .news-boards ul { list-style: none; margin: 0; padding: 0; }
 .news-boards li { padding: 12px 0; border-bottom: 1px solid var(--hair); }
@@ -408,8 +411,6 @@
 .news-boards.is-compact h3 { font-size: 15px; }
 .news-boards.is-compact .news-board-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-size: 13px; }
 .news-boards .news-byline { margin-top: 7px; }
-#tweet-archive, .news-community-list .news-story { scroll-margin-top: 80px; }
-.news-community-list .news-story { padding: 18px 0; border-bottom: 1px solid var(--hair); }
 .news-method h2 { font-size: 22px; }
 .news-staff { max-width: 880px; }
 .news-staff > section { padding-top: 12px; border-top: 2px solid var(--ink); margin-top: 24px; }
@@ -451,7 +452,6 @@
 .news-person-header { display: flex; align-items: center; gap: 24px; padding: 18px 0 16px; }
 .news-person-header h1 { margin: 4px 0 8px; font: 700 clamp(30px, 4vw, 46px)/1.08 var(--serif); letter-spacing: -.02em; }
 .news-person-header .news-honors { margin-bottom: 8px; font-size: 10.5px; }
-.news-post-with-face { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: start; }
 
 /* ── Faces: square headshots with an ink rule; initials when a person has no picture ───── */
 .news-portrait { display: block; flex: none; object-fit: cover; background: var(--tint); border: 1px solid var(--ink); }
@@ -541,8 +541,6 @@
   .news-ad-actions a { flex: 1 1 140px; }
   .news-person-header { flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 8px; }
   .news-portrait-hero { width: 132px; height: 132px; }
-  .news-post-with-face { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; }
-  .news-post-with-face .news-portrait-card { width: 56px; height: 56px; }
 }
 
 /* The illustrated nameplate uses real text over the integrated reporter goose. */

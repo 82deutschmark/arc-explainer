@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 03-November-2026
+ * Date: 09-November-2026
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
@@ -21,7 +21,7 @@
  *          10-Oct-2026 (Claude Sonnet 5.5): every page that shares the front-page card advertises
  *          its versioned address (cardFor), so link-preview services refetch it with each new
  *          day and edition; the front page links to the ARC leaderboards hub.
- *          Crawler HTML mirrors the collected tweet archive and smaller Kaggle discussion column.
+ *          Crawler HTML mirrors the story archive and the front-page Kaggle discussion column.
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
@@ -32,7 +32,7 @@ import {
   type NewsArticle, type NewsDispatch, type NewsSection, type CompetitorRecord, type NewsStat, articleCompetitionLabel, articleFigureStats, newsArticlePath, competitorPath, NEWS_NAME, NEWS_STORY_MISSING, articleStructuredData, dispatchStructuredData, newsPublisher,
   articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit, publishedCompetitionOrder, competitionStories,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
-  type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
+  type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, recentDiscussions, NEWS_ARCHIVE, publishedStories, archiveMonths,
 } from '../../../shared/news';
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
@@ -130,10 +130,18 @@ function peopleMeta(people: NewsPerson[], articles: NewsArticle[], person?: News
     bodyHtml: `<main><h1>${esc(person?.name ?? 'People behind the teams')}</h1><p>Verified people and dated competition rosters. Observations do not establish joining dates or credit for particular submissions.</p>${person ? `${cardsHtml}${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="176" height="176"/>${person.editorialPortrait ? `<p>AI editorial portrait based on <a href="${esc(portrait.sourceUrl)}">${esc(portrait.sourceTitle)}</a>.</p>` : ""}` : ''}${person.hallOfFame.length ? `<ul>${person.hallOfFame.map(card => `<li><a href="${esc(card.path)}">${esc(card.label)}</a></li>`).join('')}</ul>` : ''}${person.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></p>`).join('')}<h2>Observed teams</h2><ul>${person.memberships.map(member => `<li>${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)}) · ${esc(member.memberHandle)} · observed ${timeTag(member.firstObservedAt, false)}–${timeTag(member.lastObservedAt, false)} <a href="${esc(member.sourceUrl)}">Roster source</a></li>`).join('')}</ul><h2>Public accounts</h2><ul>${person.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.handle)}</a> · <a href="${esc(account.sourceUrl)}">Identity source</a></li>`).join('')}</ul>${person.hallOfFame.map(card => `<figure><a href="${esc(card.path)}">${card.image ? `<img src="${esc(card.image.src)}" alt="${esc(card.image.alt)}"/>` : ''}${esc(card.label)}</a><figcaption>Historical ARC Hall of Fame artwork.</figcaption></figure>`).join('')}` : `<ul>${people.map(item => `<li>${personLink(item)}${item.hallOfFame.length ? ` · ${item.hallOfFame.map(card => esc(card.label)).join('; ')}` : ''}${item.memberships.length ? ` · ${item.memberships.map(member => `${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)})`).join('; ')}` : ''}</li>`).join('')}</ul>`}<p><a href="/news">Front page</a> · <a href="/news/cards">All cards</a></p></main>` };
 }
 const discussionsHtml = (threads: NewsDiscussion[]) => `<section id="kaggle-boards"><h2>From the Kaggle boards</h2>${recentDiscussions(threads).map(thread => `<article><h3><a href="${esc(thread.url)}">${esc(thread.title)}</a></h3><p>${esc(competitionName(thread.competition))} · @${esc(thread.author)}</p><p>${esc(thread.summary)}</p><p>Activity ${timeTag(thread.latestActivityAt ?? thread.postedAt!)} · ${thread.commentCount} replies</p></article>`).join('')}</section>`;
-function communityMeta(posts: NewsSocialPost[], articles: NewsArticle[], discussions: NewsDiscussion[]): RouteMetaTags {
-  const tags = completeMeta({ ...ROUTE_META_TAGS['/news/community'], ...cardFor(articles) });
-  return { ...tags, jsonLd: collection(tags, posts.map(post => ({ name: `${post.authorName}: ${post.summary}`, path: `/news/community#post-${post.id}` }))),
-    bodyHtml: `<main><h1>Around the contests</h1><section id="tweet-archive"><h2>From X — the collected archive</h2><p>Collected public posts from the past 30 days, newest first, with original sources. Scores belong to each post's date.</p>${chronologicalSocialPosts(posts).map(post => `<article id="post-${post.id}"><h2><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h2><p>${esc(post.summary)}</p><p>${esc(post.whyItMatters)}</p>${post.postedAt ? `<p>Posted ${timeTag(post.postedAt)}.</p>` : '<p>Posting time unavailable.</p>'}${post.storyUrl ? `<a href="${esc(post.storyUrl)}">Linked release</a>` : ''}</article>`).join('')}</section>${discussionsHtml(discussions)}<a href="/news">Front page</a></main>` };
+function storyArchiveMeta(articles: NewsArticle[], dispatches: NewsDispatch[]): RouteMetaTags {
+  const tags = completeMeta({ ...ROUTE_META_TAGS[NEWS_ARCHIVE.path], ...cardFor(articles) });
+  const stories = publishedStories(articles, dispatches);
+  const groups = archiveMonths(stories).map(([month, entries]) => {
+    const rows = entries.map(story => {
+      const competition = 'edition' in story ? articleCompetitionLabel(story) : competitionName(story.competition);
+      return `<li><article><h3><a href="${esc(newsArticlePath(story.id))}">${esc(story.headline)}</a></h3>${story.dek ? `<p>${esc(story.dek)}</p>` : ''}<p>${timeTag(story.publishedAt, false)} · ${esc(competition)}</p></article></li>`;
+    }).join('');
+    return `<section><h2>${esc(month)}</h2><ol>${rows}</ol></section>`;
+  }).join('');
+  return { ...tags, jsonLd: collection(tags, stories.map(story => ({ name: story.headline, path: newsArticlePath(story.id) }))),
+    bodyHtml: `<main><h1>${esc(NEWS_ARCHIVE.heading)}</h1><p>${esc(NEWS_ARCHIVE.description)}</p>${groups || '<p>No stories have been published yet.</p>'}<a href="/news">Front page</a></main>` };
 }
 function editorCreditHtml(note?: string): string {
   const editor = NEWS_HUMAN_EDITOR;
@@ -156,7 +164,7 @@ function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags
 function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[], social: NewsSocialPost[], discussions: NewsDiscussion[], people: NewsPerson[] = []): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });
   const posts = frontPageSocialPosts(social);
-  const socialHtml = posts.length ? `<section><h2>From X</h2><p>Research and reactions around the contests</p>${posts.map(post => `<article><h3><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h3><p>${esc(post.summary)}</p>${post.postedAt ? `<p>${timeTag(post.postedAt, false)}</p>` : ''}</article>`).join('')}<a href="/news/community#tweet-archive">Browse the collected tweet archive</a></section>` : '';
+  const socialHtml = posts.length ? `<section><h2>From X</h2><p>Research and reactions around the contests</p>${posts.map(post => `<article><h3><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h3><p>${esc(post.summary)}</p>${post.postedAt ? `<p>${timeTag(post.postedAt, false)}</p>` : ''}</article>`).join('')}</section>` : '';
   const leadsHtml = publishedCompetitionOrder(articles, dispatches).map(competition => {
     const stories = competitionStories(articles, dispatches, competition), first = stories[0];
     const feature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
@@ -171,7 +179,7 @@ function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire
     return `<section data-news-lead="${esc(first.id)}">${linked}<ul>${stories.slice(1).filter(story => story.id !== feature?.id).slice(0, 3).map(story => `<li><a href="${newsArticlePath(story.id)}">${esc('article' in story ? story.article.headline : story.dispatch.headline)}</a></li>`).join('')}</ul></section>`;
   }).join('');
   return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: newsArticlePath(dispatch.id) })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
-    bodyHtml: `<main><h1>${NEWS_NAME}: ${NEWS_BRAND.goose ? "the sports tabloid of the Kaggleverse" : "ARC-AGI-3 and ARC-AGI-2 contest reporting"}</h1><p>Source-linked competition reporting, meaningful moves and the people behind the teams. Each report preserves its dates and evidence; the linked Kaggle pages provide current standings.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/cards">Cards</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${leadsHtml || '<p>The first edition is being prepared.</p>'}</main>` };
+    bodyHtml: `<main><h1>${NEWS_NAME}: ${NEWS_BRAND.goose ? "the sports tabloid of the Kaggleverse" : "ARC-AGI-3 and ARC-AGI-2 contest reporting"}</h1><p>Source-linked competition reporting, meaningful moves and the people behind the teams. Each report preserves its dates and evidence; the linked Kaggle pages provide current standings.</p><p><a href="/news/wire">The wire</a> · <a href="${NEWS_ARCHIVE.path}">${NEWS_ARCHIVE.heading}</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/cards">Cards</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${leadsHtml || '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles) });
@@ -234,7 +242,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     if (storyRoute) return unavailableStoryMeta(route, true);
     throw error;
   }
-  const { articles, competitors, dispatches = [], people = [], social = [], socialArchive = [], discussions = [], wire = [] } = archive.index;
+  const { articles, competitors, dispatches = [], people = [], social = [], discussions = [], wire = [] } = archive.index;
   if (route === '/news') {
     const tags = frontPageMeta(articles, dispatches, wire, social, discussions, people);
     return { status: 200, tags };
@@ -259,7 +267,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };
-  if (route === '/news/community') return { status: 200, tags: communityMeta(socialArchive, articles, discussions) };
+  if (route === NEWS_ARCHIVE.path) return { status: 200, tags: storyArchiveMeta(articles, dispatches) };
   if (route === NEWS_STAFF_PATH || route === '/news/how-this-is-made') return { status: 200, tags: staffMeta() };
   const personRoute = route.match(/^\/news\/people\/([a-z0-9-]+)$/);
   if (personRoute) { const person = people.find(item => item.id === personRoute[1]); if (person) return { status: 200, tags: peopleMeta(people, articles, person) }; }
@@ -284,14 +292,14 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);
 /** News URLs with a real last-change time: publication for editions, last check for notebooks. */
 export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
-  const { articles, competitors, dispatches = [], people = [], social = [], socialArchive = [], discussions = [], wire = [] } = getNewsIndex();
+  const { articles, competitors, dispatches = [], people = [], wire = [] } = getNewsIndex();
   const cabinet = getNewsCollection();
   return [
     { url: `${SITE_ORIGIN}/news`, lastmod: latest([...articles.map(article => article.publishedAt), ...dispatches.map(dispatch => dispatch.publishedAt), ...wire.map(story => story.publishedAt)]) },
     { url: `${SITE_ORIGIN}/news/wire`, lastmod: latest(wire.map(story => story.publishedAt)) },
     { url: `${SITE_ORIGIN}/news/cards`, lastmod: cabinet.updatedAt },
     ...cabinet.cards.map(card => ({ url: `${SITE_ORIGIN}${collectionCardPath(card.id)}`, lastmod: cabinet.updatedAt })),
-    { url: `${SITE_ORIGIN}/news/community`, lastmod: latest([...socialArchive.map(post => post.checkedAt), ...discussions.map(thread => thread.checkedAt)]) },
+    { url: `${SITE_ORIGIN}${NEWS_ARCHIVE.path}`, lastmod: publishedStories(articles, dispatches)[0]?.publishedAt },
     { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
     { url: `${SITE_ORIGIN}${NEWS_TIPS_PATH}` },
     ...people.map(person => ({ url: `${SITE_ORIGIN}${personPath(person.id)}`, lastmod: latest([...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)]) })),
@@ -304,9 +312,9 @@ export const newsSitemapUrls = (): string[] => newsSitemapEntries().map(entry =>
 /** RSS follows permanent story URLs for both scheduled editions and wiki dispatches. */
 export function newsRss(): string {
   const { articles, dispatches = [] } = getNewsIndex();
-  const stories = [...articles, ...dispatches].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
+  const stories = publishedStories(articles, dispatches);
   const feed = `${SITE_ORIGIN}/news/feed.xml`;
-  const built = latest(stories.map(story => story.publishedAt));
+  const built = stories[0]?.publishedAt;
   return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>${esc(NEWS_NAME)}</title><link>${SITE_ORIGIN}/news</link><atom:link href="${feed}" rel="self" type="application/rss+xml"/><description>Source-linked competition news, meaningful moves and the people behind major Kaggle contests.</description><language>en</language>${built ? `<lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate>` : ''}<ttl>60</ttl>${stories.slice(0, 40).map(story => {
     const link = `${SITE_ORIGIN}${newsArticlePath(story.id)}`;
     const edition = 'stats' in story;

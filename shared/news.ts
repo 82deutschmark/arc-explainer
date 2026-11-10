@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 04-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
+ * Date: 09-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
@@ -142,7 +142,7 @@ export function frontPageSocialPosts(posts: NewsSocialPost[]): NewsSocialPost[] 
   return [...posts].sort((a, b) => Number(b.importance >= 2) - Number(a.importance >= 2)
     || (b.postedAt ?? b.checkedAt).localeCompare(a.postedAt ?? a.checkedAt) || b.id.localeCompare(a.id))
     .filter(post => {
-      // Related replies and reactions share one front-page slot; the community desk keeps all posts.
+      // Related replies and reactions share one front-page slot; the source ledger keeps all posts.
       const story = post.storyUrl ?? post.threadId ?? post.id;
       if (seen.has(story)) return false;
       seen.add(story);
@@ -168,6 +168,31 @@ export interface NewsWireStory {
   generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
 export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; socialArchive?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[] }
+/** The permanent archive is fed by the same published editions and features as RSS. */
+export const NEWS_ARCHIVE = {
+  path: '/news/community',
+  heading: 'Story archive',
+  description: 'Browse published features and editions, from the latest stories to earlier coverage.',
+} as const;
+
+export function publishedStories(articles: NewsArticle[], dispatches: NewsDispatch[] = []) {
+  // Different UTC offsets can represent the same instant, so order by time rather than spelling.
+  return [...articles, ...dispatches].sort((a, b) =>
+    Date.parse(b.publishedAt) - Date.parse(a.publishedAt) || a.id.localeCompare(b.id));
+}
+
+const archiveMonthFormat = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+export function archiveMonths(stories: ReturnType<typeof publishedStories>) {
+  const months = new Map<string, typeof stories>();
+  for (const story of stories) {
+    const month = archiveMonthFormat.format(new Date(story.publishedAt));
+    const entries = months.get(month);
+    if (entries) entries.push(story);
+    else months.set(month, [story]);
+  }
+  return [...months];
+}
+
 /** One publication order for browser and initial HTML; no fixed competition slate. */
 export function competitionStories(articles: NewsArticle[], dispatches: NewsDispatch[], competition: NewsCompetition) {
   return [

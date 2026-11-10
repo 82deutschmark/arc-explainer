@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 06-November-2026
+ * Date: 09-November-2026
  * PURPOSE: Describe public routes and provide consistent gallery search/social metadata with the boss-selected authentic DZ01 preview.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -40,7 +40,7 @@
  */
 
 import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
-import { NEWS_NAME, NEWS_BRAND, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
+import { NEWS_NAME, NEWS_BRAND, NEWS_ARCHIVE, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
 import { NEWS_STAFF_PATH, NEWS_STAFF_TITLE, NEWS_STAFF_DESCRIPTION, NEWS_HUMAN_EDITOR } from './newsStaff';
 
 export interface RouteMetaTags {
@@ -105,7 +105,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/competitors': { title: 'Competitor profiles | The ARC Daily Digest', description: 'Meet the ARC-AGI competitors: team backgrounds, members and coverage from The ARC Daily Digest.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/cards': { title: 'Kaggle card catalog | The ARC Daily Digest', description: 'Competition card sets for individual Kaggle competitors, teams and sponsors, with permanent editions, Kaggle medals, tiers and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
-  '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
+  [NEWS_ARCHIVE.path]: { title: `${NEWS_ARCHIVE.heading} | ${NEWS_NAME}`, description: NEWS_ARCHIVE.description, url: SITE + NEWS_ARCHIVE.path, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
     title: 'ARC-AGI-3 Resource Hub — human reasoning, replays, games, papers',
@@ -370,7 +370,6 @@ if (NEWS_BRAND.goose) {
     '/news/competitors': ['Competitor profiles', 'Competition-specific teams, dated identity context and original Kaggle links.'],
     '/news/people': ['People behind the teams', 'The recurring cast across Kaggle competitions, with verified public profiles and linked history.'],
     '/news/cards': ['Kaggle card catalog', 'Competition card sets for individual competitors, teams and sponsors, with approved art, Kaggle medals and linked career history.'],
-    '/news/community': ['Around the contests', 'Public methods, discussions and reactions with original source links.'],
   };
   for (const [route, [title, description]] of Object.entries(sections)) {
     ROUTE_META_TAGS[route] = { ...ROUTE_META_TAGS[route], title: `${title} | ${NEWS_NAME}`, description };

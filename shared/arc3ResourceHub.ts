@@ -1,6 +1,6 @@
 /*
-Author: Claude Opus 5.5 High
-Date: 2026-11-01
+Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 High
+Date: 09-November-2026
 PURPOSE: The ARC-AGI-3 resource directory behind /home, and the outside ARC-1/2 reading behind
          /arc2. Every entry was opened and checked on 1-Nov-2026: dead links, sign-in walls and
          descriptions the page did not support were dropped. Descriptions stay plain, with no
@@ -9,6 +9,8 @@ PURPOSE: The ARC-AGI-3 resource directory behind /home, and the outside ARC-1/2 
          To add a resource, add a row to its section. The hub renders and filters from this.
 SRP/DRY check: Pass - one list, read by the hub page and by the crawler copy of it.
 */
+import { NEWS_ARCHIVE, NEWS_NAME } from './news';
+
 export interface HubResource { title: string; url: string; by: string; date: string; desc: string }
 export interface HubSection { id: string; title: string; blurb: string; items: HubResource[] }
 export interface OutsideReading { title: string; url: string; by: string; desc: string }
@@ -1679,11 +1681,11 @@ export const ARC3_HUB_SECTIONS: HubSection[] = [
     "desc": "Verified people and the dated team rosters they appear on across the ARC competitions."
    },
    {
-    "title": "Around the contests",
-    "url": "/news/community",
-    "by": "The ARC Daily Digest",
+    "title": NEWS_ARCHIVE.heading,
+    "url": NEWS_ARCHIVE.path,
+    "by": NEWS_NAME,
     "date": "",
-    "desc": "Public posts from the past 30 days about the competitions, newest first, with links to the original sources."
+    "desc": NEWS_ARCHIVE.description
    },
    {
     "title": "The wire",

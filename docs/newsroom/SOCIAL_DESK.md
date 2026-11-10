@@ -152,7 +152,7 @@ copy its subscriber section into public content, X or Discord.
 
 `export-public` writes up to 20 recent public posts to `content/news/social.json` (the curated From
 X strip and edition sources, filtered by `social-editorial.json`) and the full 30-day public
-archive to `content/news/social-archive.json` (`/news/community#tweet-archive`).
+archive to `content/news/social-archive.json`.
 `discussion-export` writes the selected public discussion leads to `content/news/discussions.json`.
 The Sunday meeting digest (Bubba's `arc-weekly-announcement` skill) reads the same seven-day public
 archive; it does not authorize recurring sends.

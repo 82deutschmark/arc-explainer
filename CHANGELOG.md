@@ -1,3 +1,7 @@
+### Version 9.164.34 · November 9, 2026
+
+- The Story archive replaces the October roundup at `/news/community`. It lists published features and editions by month, newest first, with search and a competition filter. New stories appear with their existing links as soon as the paper publishes them. The plain server page uses the same list. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.164.33 · November 9, 2026
 
 - Show the six credited Tufa Labs authors in the final-solutions article using its verified cast. Frame Dries Smit’s existing card art around his head and shoulders so the card banner clears his face. Checked both article renders and the actual card thumbnail. Author: GPT-6.1 Sol / Codex (reasoning effort inherited).

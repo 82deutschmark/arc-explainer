@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026; 03-November-2026
+ * Date: 09-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
@@ -188,20 +188,26 @@ test('Kaggle threads follow the prominent X strip and the wire, with original li
   const html = render(News, '/news', index, markets(index));
   expect(html.indexOf('aria-label="From X"')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
   expect(html.indexOf('What’s news')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
-  // The front-page column is capped at the three most recent threads; the community page carries the rest.
+  // The front-page column links to the original threads.
   for (const thread of recentDiscussions(index.discussions!).slice(0, 3)) expect(html).toContain(`href="${thread.url}"`);
-  expect(html).toContain('/news/community#tweet-archive');
+  expect(html).toContain('href="/news/community">Story archive</a>');
+  expect(html).not.toContain('/news/community#');
 });
 
-test('community archive retains collected posts omitted from the curated strip', () => {
+test('story archive links to every published edition and dispatch in newest-first order', () => {
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const html = render(NewsCommunity, '/news/community', index);
-  expect(index.socialArchive!.length).toBeGreaterThan(index.social!.length);
-  for (const post of index.socialArchive!) expect(html).toContain(`id="post-${post.id}"`);
-  expect(html).toContain('Search collected tweets');
-  expect(html).toContain('Filter tweets by competition');
-  expect(html).toContain('id="kaggle-boards"');
+  const stories = [...index.articles, ...index.dispatches!].sort((a, b) =>
+    Date.parse(b.publishedAt) - Date.parse(a.publishedAt) || a.id.localeCompare(b.id));
+  const links = [...html.matchAll(/<h3><a href="([^"]+)">/g)].map(match => match[1]);
+  expect(links).toEqual(stories.map(story => `/news/${story.id}`));
+  expect(html).toContain('Search stories');
+  expect(html).toContain('All competitions');
+  for (const competition of new Set(stories.map(story => story.competition))) {
+    expect(html).toContain(`<option value="${competition}">`);
+  }
+  expect(html).not.toContain('tweet-archive');
 });
 
 test('wire stories run in What’s News and in full on the wire page', () => {

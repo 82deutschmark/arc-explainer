@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026; 03-November-2026
+ * Date: 09-November-2026
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -29,7 +29,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_ARCHIVE, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
@@ -85,7 +85,7 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
     <Link href="/news">Front page</Link>
     <Link href={wirePath()}>The wire</Link>
     <Link href="/news/cards">{brand.goose ? 'Cards' : 'ARC Prize Cards'}</Link>
-    <Link href="/news/community">Around the contests</Link>
+    <Link href={NEWS_ARCHIVE.path}>{NEWS_ARCHIVE.heading}</Link>
     <Link href={NEWS_STAFF_PATH}>About the paper</Link>
     {brand.goose ? <a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener noreferrer">Kaggle contests ↗</a> : <>
     <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>

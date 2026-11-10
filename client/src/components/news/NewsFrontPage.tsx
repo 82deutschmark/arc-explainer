@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026
+ * Date: 09-November-2026
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the newest contest report printed in full, the other contest under it)
@@ -9,7 +9,7 @@
  *          09-Oct-2026 (Claude Opus 5.5): rebuilt per the Boss ("information-dense, like a
  *          financial terminal, like a sports page"); without the market digest the columns
  *          close up and the reporting still leads.
- *          Selected Kaggle threads sit below the wire; the leading X strip links to the full collected archive.
+ *          Selected Kaggle threads sit below the wire; the X strip links to the original posts.
  * SRP/DRY check: Pass — reuses story previews, dispatch rendering, the market tables and the wire.
  */
 import { Link } from 'wouter';
@@ -59,7 +59,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
         {competitions.map((competition, position) => <CompetitionDesk key={competition} articles={articles} dispatches={dispatches} competition={competition} lead={position === 0} people={people} />)}
       </section>
       <AroundTheContests index={index} />
-      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} compact /></section>
+      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} /></section>
       {!!boards.length && <aside className="news-col-board" aria-label="The board">
         <h2 className="news-flag"><span>The board</span><em>Day = change since a day earlier</em></h2>
         {boards.map(board => <BoardTable key={board.competition} board={board} links={links} limit={board.competition === 'arc-3' ? 25 : 20} />)}
@@ -87,6 +87,5 @@ export function AroundTheContests({ index }: { index: NewsIndex }) {
         </div>
       </li>;
     })}</ul>
-    <Link href="/news/community#tweet-archive" className="news-read">Browse the collected tweet archive →</Link>
   </section>;
 }

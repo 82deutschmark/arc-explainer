@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 03-November-2026; 2026-11-01 (own-site ARChitect portraits: GPT-6.1 Sol / Codex); 2026-10-30 (Claude Sonnet 5.5: slow archive walks get a 60 s limit; faces from the web, Jack's own Kaggle picture); 2026-10-29 (card path assertion supports specials without a box score); 2026-10-28 (reserved feature permalink regression)
+ * Date: 09-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
@@ -104,15 +104,22 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     expect(evidence.headers.get('content-type')).toContain('json');
   }
 }, 60_000);
-it('serves the full public tweet archive and rejects unread or restricted board leads', async () => {
-  const index = getNewsIndex();
-  const html = await (await fetch(`${base}/news/community`)).text();
-  for (const post of index.socialArchive!) {
-    expect(post.visibility).toBe('public');
-    expect(html).toContain(`id="post-${post.id}"`);
-  }
-  for (const thread of index.discussions!) expect(html).toContain(thread.url);
-  const thread = index.discussions![0];
+it('serves permanent story links in the archive before JavaScript runs', async () => {
+  const { articles, dispatches = [] } = getNewsIndex();
+  const stories = [...articles, ...dispatches].sort((a, b) =>
+    Date.parse(b.publishedAt) - Date.parse(a.publishedAt) || a.id.localeCompare(b.id));
+  const response = await fetch(`${base}/news/community`);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain('<h1>Story archive</h1>');
+  const links = [...html.matchAll(/<h3><a href="([^"]+)">/g)].map(match => match[1]);
+  expect(links).toEqual(stories.map(story => `/news/${story.id}`));
+  expect(html).not.toContain('tweet-archive');
+  const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
+  expect(sitemap).toContain(`<loc>${SITE_ORIGIN}/news/community</loc><lastmod>${stories[0].publishedAt}</lastmod>`);
+});
+it('rejects unread or restricted board leads', () => {
+  const thread = newsDiscussionSchema.parse(JSON.parse(fs.readFileSync('content/news/discussions.json', 'utf8'))[0]);
   for (const invalid of [{ bodyRead: false }, { visibility: 'unknown' }, { decision: 'watch-only' },
     { postedAt: null, latestActivityAt: null }, { url: 'https://www.kaggle.com/competitions/other/discussion/748593' }]) {
     expect(newsDiscussionSchema.safeParse({ ...thread, ...invalid }).success).toBe(false);
@@ -134,7 +141,7 @@ it('discovers every archived article and separate competitor identity through th
 }, 60_000); // the archive keeps growing; each of these walks all of it
 it('serves the newest 40 editions and wiki stories in RSS order without including older archive entries', async () => {
   const { articles, dispatches = [] } = getNewsIndex();
-  const stories = [...articles, ...dispatches].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
+  const stories = [...articles, ...dispatches].sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt) || a.id.localeCompare(b.id));
   const rss = await fetch(`${base}/news/feed.xml`);
   expect(rss.headers.get('content-type')).toContain('application/rss+xml');
   const xml = await rss.text();

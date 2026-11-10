@@ -68,4 +68,4 @@ This writes at most twenty read, dated, publicly verified leads to `content/news
 
 ## Public source column
 
-The existing news API validates and serves only the selected read/public/dated discussion export. The front page’s **From the Kaggle boards** column follows What’s News in the wire column, below the prominent X strip. It shows up to three threads with attributed summaries, observed activity dates and original links. `/news/community#kaggle-boards` carries every current selected lead in full. Activity is labelled separately from original topic creation; titles alone never enter this public column. Both React and crawler HTML use the same selection and source data.
+The existing news API validates and serves only the selected read/public/dated discussion export. The front page’s **From the Kaggle boards** column follows What’s News in the wire column, below the prominent X strip. It shows up to three threads with attributed summaries, observed activity dates and original links. Activity is labelled separately from original topic creation; titles alone never enter this public column. Both React and crawler HTML use the same selection and source data.

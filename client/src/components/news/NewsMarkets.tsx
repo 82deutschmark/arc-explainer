@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 03-November-2026; 03-November-2026
+ * Date: 09-November-2026
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
@@ -15,7 +15,7 @@
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
-import { competitorPath, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { NEWS_ARCHIVE, competitorPath, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 import { daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { formatOptionalNumber } from '@shared/utils/formatters';
@@ -210,7 +210,7 @@ const INSIDE: { href: string; title: string; text: string; external?: boolean }[
   { href: '/human-records.html', title: 'Human and AI records', text: 'action counts against AI scores', external: true },
   { href: '/arc3/games', title: 'Game guides', text: 'the 25 public ARC-AGI-3 games' },
   { href: '/news/cards', title: 'Cards', text: 'the competitors, teams and their stories' },
-  { href: '/news/community', title: 'Around the contests', text: 'public posts and research' },
+  { href: NEWS_ARCHIVE.path, title: NEWS_ARCHIVE.heading, text: 'published stories by date and competition' },
   { href: '/hall-of-fame', title: 'Hall of Fame', text: 'illustrated cards of past winners' },
   { href: ARC_DISCORD_URL, title: 'ARC Discord', text: 'the official community', external: true },
 ];
