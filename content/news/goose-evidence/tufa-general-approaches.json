@@ -1,0 +1,129 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-70151e777a53a3cd73e9"
+    ],
+    "assets": [
+      {
+        "sha256": "70151e777a53a3cd73e9081a37f6ad3801f7af6eed6f2f47748e7f3c623563d4",
+        "source": "client/public/news-images/tufa-general-approaches-v1.webp",
+        "target": "client/public/news-images/goose-70151e777a53a3cd73e9.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/tufa-general-approaches",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "The lab behind the Duck spent months building special tools. Its final write-ups show which ones earned their place, and how many it could have left on the bench.",
+      "editorNote": "Claude Sonnet 5.5 Medium · Edited by GPT-6.1 Sol / Codex",
+      "generatedBy": "claude-sonnet-5-5",
+      "headline": "Tufa Labs audits its own cleverness",
+      "id": "tufa-general-approaches",
+      "image": {
+        "alt": "In a GPU workshop, three people, two cyber-geese and a pink cyber-duck gather around a glowing laptop as small black spiders unplug equipment. The Tufa Labs nameplate marks first on the ARC-AGI-2 public leaderboard.",
+        "caption": "The Goose imagines Tufa Labs unplugging elaborate puzzle tools while one laptop keeps working. The plate marks the team’s ARC-AGI-2 public place.",
+        "src": "/news-images/goose-70151e777a53a3cd73e9.webp"
+      },
+      "publishedAt": "2026-11-10T01:51:07+00:00",
+      "sections": [
+        {
+          "heading": "The lab puts itself on trial",
+          "sourceIds": [
+            "arc2",
+            "arc3",
+            "board2",
+            "board3"
+          ],
+          "text": "Nobody asked Tufa Labs to cross-examine itself. The team behind the Duck had finished first on the ARC-AGI-2 public leaderboard and second on the ARC-AGI-3 public leaderboard. Then it opened the workshop and showed how little some of its favourite gadgets had bought it. Those are public places, with the final private order still to come.\n\nThe workshop is the harness: the instructions, tools and time limits that surround the model. Tufa’s descendant of the Duck gives its model a persistent Python workspace, where it can write code, try a move and check what happened."
+        },
+        {
+          "heading": "The gadget graveyard",
+          "sourceIds": [
+            "arc2",
+            "arc3"
+          ],
+          "text": "Tufa varied several settings together in simulated competition runs on its own hardware, then used statistical analysis to estimate what each setting contributed. The team saw no clear benefit from the ARC-AGI-2 answer audit or a cap of ten passes rather than two. In practice, fewer than three percent of tasks finished more than two passes in that sweep. The team says the experiment may have missed small effects.\n\nSome tools earned their keep. Keeping room for a second candidate grid per pass did better than forcing one. Summarising long sessions beat cutting their histories in half. And the model did better when it could see the puzzle images.\n\nIn ARC-AGI-3, the agent could write a little simulator for the game it was playing. The harness could then stop a batch of moves when the simulator got a prediction wrong. Tufa says the agent chose to use it on about half the games. Both forcing it on and taking it away hurt in the team’s tests. The tool was most useful when the agent could decide whether to reach for it."
+        },
+        {
+          "heading": "The keystone that wasn’t",
+          "sourceIds": [
+            "arc2",
+            "arc3"
+          ],
+          "text": "The bigger surprise came before those tests. Tufa says it spent most of its time and resources on training models for ARC. It saw gains with earlier Qwen models, then failed to get similar gains with Qwen3.8-Flash-Next. On the ARC-AGI-2 public board, the first run with the new model before Tufa’s own training beat its best run with the smaller model it had trained. The submissions changed in several ways, so that jump cannot measure training’s effect by itself.\n\nThe lab still had plenty of engineering to do. Its biggest single jump on the ARC-AGI-3 progress chart came when it added speculative decoding. It tuned Qwen’s built-in prediction head to guess the next few tokens so the model could check them together. That bought the solver more time to think without prescribing how it should play."
+        },
+        {
+          "heading": "Room to work",
+          "sourceIds": [
+            "arc2",
+            "arc3",
+            "roster2",
+            "roster3"
+          ],
+          "text": "Jeroen Cottaar posted both accounts. The ARC-AGI-2 roster lists Cottaar, Isaiah Pressman, Dries Smit and Stefano Viel. The ARC-AGI-3 roster adds Harold Bessis and Michal Tešnar.\n\nTufa’s verdict for this model is to give it a clear task, good tools and room to use them. It has shared the source for both entries. Now rivals can try the same workshop and see which of their own gadgets they can put back on the shelf."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "arc2",
+          "title": "Tufa Labs final ARC-AGI-2 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/757513"
+        },
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "arc3",
+          "title": "Tufa Labs final ARC-AGI-3 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/757506"
+        },
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "board2",
+          "title": "Kaggle ARC-AGI-2 public leaderboard",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard"
+        },
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "board3",
+          "title": "Kaggle ARC-AGI-3 public leaderboard",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+        },
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "roster2",
+          "title": "Tufa Labs ARC-AGI-2 roster",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard?teamId=16756524"
+        },
+        {
+          "accessedAt": "2026-11-10T01:49:49+00:00",
+          "id": "roster3",
+          "title": "Tufa Labs ARC-AGI-3 roster",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard?teamId=15486995"
+        }
+      ]
+    },
+    "storyId": "tufa-general-approaches",
+    "storySha256": "3cbcce4ce0d118e2c6f742883b45809e3a76d3fd7412ec55e5ae83a385297c93",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "70151e777a53a3cd73e9081a37f6ad3801f7af6eed6f2f47748e7f3c623563d4",
+        "source": "client/public/news-images/tufa-general-approaches-v1.webp",
+        "target": "client/public/news-images/goose-70151e777a53a3cd73e9.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Read both primary write-ups and refreshed the provisional public board places. Checked dated rosters and matched each of the six visible characters to the reference records. The independent Claude read identified the combined parameter sweep, built-in prediction head and omitted positive ablation results; all were corrected and checked against the source. At phone size the single Tufa nameplate reads first and the caption identifies ARC-AGI-2. Cape and regalia are reserved for verified Grandmasters: Isaiah Pressman is the caped Canada goose, Jeroen Cottaar has his established coat, and Harold Bessis is the plain gray goose in a utility vest.",
+    "reviewedAt": "2026-11-10T01:51:07+00:00",
+    "reviewedBy": "GPT-6.1 Sol / Codex, with separate Claude editorial review",
+    "storySha256": "3cbcce4ce0d118e2c6f742883b45809e3a76d3fd7412ec55e5ae83a385297c93"
+  }
+}

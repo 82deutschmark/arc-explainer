@@ -10,7 +10,6 @@
     "/jfPuget3.png": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37",
     "/news-images/2026-10-19-arc-mutants-academy-v1.png": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3",
     "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a",
-    "/news-images/2026-10-19-tufa-citadel-v5-base.webp": "926a097348ab04e3f0a1e2e3945febb97647070120522b373907f95fb223bb72",
     "/news-images/2026-10-26-architects-dream-team-base.png": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
     "/news-images/2026-11-02-infinity-lightning-leap-v1.webp": "c2324aaa8bbd199bbef47ca209d5aa8b2b445b8f17fb7c66ffc72ab3e3511c3c",
     "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
@@ -56,11 +55,13 @@
     "/news-images/cards/2026/gklambauer-goose-v1.webp": "f87196ae1e7b8f2a26ef898b327e5764bdefdce03776957a2ba73b53a53640a4",
     "/news-images/cards/2026/grigoriy-zatravkin-goose-v1.webp": "a457d7cb96cb5930dfef066e73981bfa25fcd1889820e594461821d2bcd9a09f",
     "/news-images/cards/2026/guoqin-gu-dragon-v1.webp": "b0c516476ef1cd0beee10aba50376b80f36fbdfdf69af319e6338b62242289b5",
+    "/news-images/cards/2026/harold-bessis-tufa-card-v1.webp": "53eebbc7195f960718838425078190a2fe1028ad0d1e10940c91ef600a521124",
     "/news-images/cards/2026/hazem-lashen-goose-v1.webp": "ec3cd66a1000486addc60d29bbe10c2fb7af0a9f840b2c897d0bb893704a1c31",
     "/news-images/cards/2026/iamkw0n-comic-v1.webp": "56022ac8767668348cd2de12ed5dad21670cfdc3ce5ceb8689d5ea983759e0a9",
     "/news-images/cards/2026/ibyyue-tabby-v1.webp": "bf07a629a80278172bdde4e24911d80f9501c4cc59cb5e416e9272f94ef95fcc",
     "/news-images/cards/2026/ichnia-team-v1.webp": "eea52ea59996d638b3539a41ffdf349baddd88efe919daf29257933d67a29e46",
     "/news-images/cards/2026/insuperabile-comic-v1.webp": "0f3aefb19f76dc3d717be40300241638f2e8f350c5eb50f7af58b7c2370faf1d",
+    "/news-images/cards/2026/isaiah-pressman-tufa-card-v1.webp": "85a4708c7f477bcb52c7ab5ddcbd83e751bc7e08abed2573f9971f5be23c643b",
     "/news-images/cards/2026/itsu-comic-v1.webp": "48fe5026f7d4ba573392aa982f06ae5839bac3f1579765e0cc1abcd7e4fe65a1",
     "/news-images/cards/2026/jan-disselhoff-hero-v1.png": "7df540894412366d9b21bf5f56692a82fccd4561c528da6eaf77789455792051",
     "/news-images/cards/2026/jiaxibi0220-goose-v1.webp": "bedcad0a0e67619f30e1882fbd79f2fb481fd4ca3ed0cc454bc56c3c2545288a",
@@ -77,6 +78,7 @@
     "/news-images/cards/2026/matinaghaei-comic-v1.webp": "20d05da6e5ec29319412fddaf4a29b22b8f82735ba49ea217decbc295b78674a",
     "/news-images/cards/2026/md-boktiar-comic-v1.webp": "cdc2dd15d55f14f1b9d7256276c1d371c3374f821a326141e9163683e2600304",
     "/news-images/cards/2026/michael-poluektov-comic-v1.webp": "acc82d3660e5a270756bae96defdd3085e630bc80aca12613d6eac27153fddc2",
+    "/news-images/cards/2026/michal-tesnar-tufa-card-v1.webp": "33f0dd19d41045b90b3171ccb34916bdcc07e71aff69dd1bb6c44fa4744ef125",
     "/news-images/cards/2026/minhtu123-comic-v1.webp": "d4aacf6e67bcbbe95272b3871488bc782c1272de6f9ed8647bdec8c263398cd9",
     "/news-images/cards/2026/muhammad-yassir-comic-v1.webp": "28e8e219c6c52b8d37a98519f2e32cde94192f44e4c891dbb346819d1568030b",
     "/news-images/cards/2026/mutian-hong-explorer-v1.webp": "da13c40f186f3ee468f06ce87f03c34c0560c9f6b035decb0d91e8e695c3b294",
@@ -104,6 +106,7 @@
     "/news-images/cards/2026/sergey-bryansky-comic-v1.webp": "7502767397277919ee41a0f06bfda06d44ae3b5d63a514de5d9162696180cafb",
     "/news-images/cards/2026/shiiin9-goose-v1.webp": "2a694c064f2fc9fd69e99c6d0b407104eb567f8cc4edffa24b9e2b2f8b73f120",
     "/news-images/cards/2026/smnsy-team-v1.webp": "b7f2a4ace223145ea3ba0a80ec80f7f8f611c53153d0231b8e97923806deebc9",
+    "/news-images/cards/2026/stefano-viel-tufa-card-v1.webp": "f461655e7fd454af0dddeb39bb1f09be818f550dc2edeb3e4a12d2aaa4bc2947",
     "/news-images/cards/2026/taiiiiiichi-goose-v1.webp": "26ac72b14a3bd9831c4fba257145118bf7e7cb485d2463b50b1196b1f5b1d2c8",
     "/news-images/cards/2026/takeru-sato-stairway-v1.webp": "47500ccc76da2cf3792d36abd3e3ff75133eed9ad46d0c0560099e445f7f345d",
     "/news-images/cards/2026/teppei-fukutomi-robot-v1.webp": "1b9f54c719a2195613fcc04188bea08e3aaadf02680f237744292e4768c26bc7",
@@ -11993,7 +11996,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "890a06d879bc7cb4fa66712fa61fdac453f7fa3ae6a2b0ab294234b396e16c1e",
+  "fingerprint": "90c2dbe49e26cfe0c0ebd60288db95f3a0fb49dc5e5c64ea0addbd9fc8f7ab80",
   "people": [
     {
       "accounts": [
@@ -12594,19 +12597,19 @@
           "url": "https://www.kaggle.com/ngyzly"
         }
       ],
-      "briefing": "Cho Royou competes on Kaggle as ngyzly and appears on the dated Team Turducken ARC-3 roster.",
+      "briefing": "ngyzly is a Kaggle competitor on the dated Team Turducken ARC-3 roster.",
       "facts": [
         {
           "checkedAt": "2026-11-05T23:37:25.158176+00:00",
           "sourceTitle": "Kaggle profile",
           "sourceUrl": "https://www.kaggle.com/ngyzly",
-          "text": "The public Kaggle profile displays Cho Royou for the account ngyzly. A brown-and-black tabby cat with a white bib, black glasses and a knitted hood."
+          "text": "The public Kaggle profile for ngyzly shows a brown-and-black tabby cat with a white bib, black glasses and a knitted hood."
         }
       ],
       "hallOfFame": [],
       "id": "cho-royou",
       "memberships": [],
-      "name": "Cho Royou"
+      "name": "ngyzly"
     },
     {
       "accounts": [
@@ -13534,6 +13537,12 @@
           "sourceTitle": "Tufa Labs — Duck Harness",
           "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
           "text": "Tufa Labs credits Harold Bessis as a coauthor of its Duck Harness write-up."
+        },
+        {
+          "checkedAt": "2026-11-10T00:39:38.030148+00:00",
+          "sourceTitle": "Harold Bessis’s public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/dlorah",
+          "text": "Harold Bessis competes as dlorah. The artwork uses a fictional gray cyber-goose under the Goose card fallback rule, without relying on a likeness."
         }
       ],
       "hallOfFame": [],
@@ -14760,7 +14769,7 @@
       ],
       "name": "Michal Tešnar",
       "portrait": {
-        "alt": "Michal Tešnar’s pink flamingo Kaggle avatar",
+        "alt": "Michal Tešnar’s pink rubber-duck Kaggle avatar",
         "checkedAt": "2026-11-02T22:20:00Z",
         "kind": "kaggle",
         "sourceTitle": "InfiniteCreativity — Kaggle profile",
@@ -20457,14 +20466,14 @@
       },
       {
         "art": {
-          "alt": "Isaiah Pressman’s Canada goose Kaggle avatar",
-          "artworkId": "character-isaiahp",
-          "commissionedAt": "2026-11-02T23:03:02+00:00",
-          "credit": "Isaiah Pressman’s Kaggle avatar",
-          "src": "/news-images/people/isaiahp.webp"
+          "alt": "Isaiah Pressman — Tufa ARC card character",
+          "artworkId": "asset-85a4708c7f477bcb52c7",
+          "commissionedAt": "2026-11-10T00:39:41+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/isaiah-pressman-tufa-card-v1.webp"
         },
         "artNotes": [
-          "Approval and scene conditions: wiki/artwork/character-isaiahp.md"
+          "Approval and scene conditions: wiki/artwork/asset-85a4708c7f477bcb52c7.md"
         ],
         "description": "ARC Prize’s 2025 results list MindsAI third; the final Kaggle leaderboard lists pressman1 (displayed as IsaiahP) on that MindsAI & Tufa Labs team with jcole75, driessmit1, moeosman and michaelhodel.",
         "entries": [],
@@ -20709,14 +20718,14 @@
       },
       {
         "art": {
-          "alt": "Stefano Viel’s own Kaggle profile portrait",
-          "artworkId": "asset-8e7a30ca16fed6dc3037",
-          "commissionedAt": "2026-11-02T23:03:02+00:00",
-          "credit": "Stefano Viel’s Kaggle portrait",
-          "src": "/news-images/people/stefano-viel.webp"
+          "alt": "Stefano Viel — Tufa ARC card character",
+          "artworkId": "asset-f461655e7fd454af0ddd",
+          "commissionedAt": "2026-11-10T00:39:39+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/stefano-viel-tufa-card-v1.webp"
         },
         "artNotes": [
-          "Approval and scene conditions: wiki/artwork/asset-8e7a30ca16fed6dc3037.md"
+          "Approval and scene conditions: wiki/artwork/asset-f461655e7fd454af0ddd.md"
         ],
         "description": "Stefano Viel’s Kaggle profile gives his job as Research Scientist at Tufa Labs, based in Zürich, Switzerland, and links to his GitHub, LinkedIn and X accounts.",
         "entries": [],
@@ -22021,15 +22030,15 @@
       },
       {
         "art": {
-          "alt": "The established Tufa Labs spider mascots in their GPU citadel; no portrait of Harold is implied.",
-          "artworkId": "2026-10-19-tufa-citadel-v5-base",
-          "commissionedAt": "2026-11-02T23:03:02+00:00",
-          "credit": "Previously published Tufa Labs mascot scene",
-          "src": "/news-images/2026-10-19-tufa-citadel-v5-base.webp"
+          "alt": "Harold Bessis — Tufa ARC card character",
+          "artworkId": "asset-53eebbc7195f96071883",
+          "commissionedAt": "2026-11-10T00:39:43+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/harold-bessis-tufa-card-v1.webp"
         },
         "artFallback": "none",
         "artNotes": [
-          "Approval and scene conditions: wiki/artwork/2026-10-19-tufa-citadel-v5-base.md"
+          "Approval and scene conditions: wiki/artwork/asset-53eebbc7195f96071883.md"
         ],
         "description": "Harold Bessis coauthored Tufa Labs’ Duck Harness write-up and appeared as dlorah on the ARC-AGI-3 Tufa Labs competition roster.",
         "entries": [],
@@ -22043,15 +22052,15 @@
       },
       {
         "art": {
-          "alt": "Michal Tešnar’s pink flamingo Kaggle avatar",
-          "artworkId": "asset-e5860c4a8c998039bf75",
-          "commissionedAt": "2026-11-02T22:27:18+00:00",
-          "credit": "Michal Tešnar’s Kaggle avatar",
-          "src": "/news-images/people/2026-11-02-infinitecreativity-kaggle-avatar.jpg"
+          "alt": "Michal Tešnar — Tufa ARC card character",
+          "artworkId": "asset-33f0dd19d41045b90b31",
+          "commissionedAt": "2026-11-10T00:40:09+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/michal-tesnar-tufa-card-v1.webp"
         },
         "artFallback": "none",
         "artNotes": [
-          "The editor confirmed the account identity on 2 November 2026."
+          "Approval and scene conditions: wiki/artwork/asset-33f0dd19d41045b90b31.md"
         ],
         "description": "Michal Tešnar coauthored Tufa Labs’ Duck Harness write-up and competed as InfiniteCreativity on its ARC-AGI-3 roster.",
         "entries": [],
@@ -22463,7 +22472,7 @@
       },
       {
         "art": {
-          "alt": "2026-10-30-dz-retro-space-v1",
+          "alt": "Slow∞Loop as a blonde retro space heroine holding a pink plush rabbit, with a graphics card and a round screen console",
           "artworkId": "2026-10-30-dz-retro-space-v1",
           "commissionedAt": "2026-11-05T23:35:36+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
@@ -22498,7 +22507,7 @@
       },
       {
         "art": {
-          "alt": "Cho Royou — ARC cat character",
+          "alt": "ngyzly as a brown tabby cat with a white bib, black glasses and a knitted brown hood, among ARC puzzle grids and graphics cards",
           "artworkId": "cho-royou-cat-v1",
           "commissionedAt": "2026-11-05T23:39:10+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
@@ -22515,7 +22524,7 @@
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/turducken-team-v3.webp"
         },
-        "description": "Cho Royou competes on Kaggle as ngyzly and appears on the dated Team Turducken ARC-3 roster.",
+        "description": "ngyzly is a Kaggle competitor on the dated Team Turducken ARC-3 roster.",
         "entries": [
           {
             "competition": "arc-3",
@@ -22526,17 +22535,17 @@
         "id": "person-cho-royou-arc-3-2026",
         "issuedAt": "2026-11-05T23:37:26+00:00",
         "kind": "person",
-        "name": "Cho Royou",
+        "name": "ngyzly",
         "personId": "cho-royou",
         "season": "2026",
         "setId": "arc-3-2026"
       },
       {
         "art": {
-          "alt": "Ronen — Herminator ARC-3 character",
+          "alt": "Herminator, a knight in silver-blue armor with a cobalt plume, among ARC puzzle grids and graphics cards",
           "artworkId": "ronen-herminator-v1",
           "commissionedAt": "2026-11-06T21:25:11+00:00",
-          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "credit": "Herminator, the agreed stand-in character for Ronen, not a likeness; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/ronen-herminator-v1.webp"
         },
         "artFallback": "none",
@@ -22550,6 +22559,7 @@
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/turducken-team-v3.webp"
         },
+        "biography": "Pictured as Herminator, the silver-and-cobalt plumed knight the team agreed on as his stand-in character. The picture is not a likeness of Ronen.",
         "description": "Ronen Dunlea competes on Kaggle as scizical and appears on the dated Team Turducken ARC-3 roster.",
         "entries": [
           {
@@ -24730,7 +24740,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-07T23:19:33+00:00",
+    "updatedAt": "2026-11-10T00:40:09+00:00",
     "version": 1
   },
   "results": [],
