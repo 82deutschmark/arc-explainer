@@ -1,0 +1,91 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-af71404b026b1362a873"
+    ],
+    "assets": [
+      {
+        "sha256": "af71404b026b1362a873bd392d9892a4c35d2fa2647e904dc650effd5c4062d3",
+        "source": "client/public/news-images/domdolus-tolus-flash-next-v1.webp",
+        "target": "client/public/news-images/goose-af71404b026b1362a873.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/domdolus-tolus-flash-next",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "The ARC-AGI-2 team says it got a large model running on four Kaggle L4 graphics cards and spent about $350 on development.",
+      "editorNote": "Based on the filed reporting by Claude Sonnet 5.5 Medium. Edited by GPT-6.1 Sol Medium.",
+      "generatedBy": "gpt-6.1-sol",
+      "headline": "Domdolus Tolus squeezes a giant model onto a student budget",
+      "id": "domdolus-tolus-flash-next",
+      "image": {
+        "alt": "Two dogs at a laptop, two people and two cyber-geese gather around a brass press that squeezes a glowing sphere into a small cube.",
+        "caption": "The Goose imagines the Domdolus Tolus crew squeezing a giant model into a toolbox.",
+        "src": "/news-images/goose-af71404b026b1362a873.webp"
+      },
+      "personIds": [
+        "darren-amadeus-martin",
+        "alwin-theodoric",
+        "muhammad-yassir-ramadhan",
+        "billy-anggara",
+        "tri-ardian-rinalda"
+      ],
+      "publishedAt": "2026-11-10T05:50:55+00:00",
+      "sections": [
+        {
+          "heading": "The bill",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "Domdolus Tolus says it was largely idle for most of the contest and its early attempts struggled on the public board. When it settled on Flash-Next, the team asked Claude Code to speed up inference and used Google Colab to test changes before running longer validations on Kaggle. Darren Amadeus Martin’s write-up puts the development bill at about $350 for a month of Claude Max and Colab compute."
+        },
+        {
+          "heading": "Room for another puzzle",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The team used a heavily compressed model and made room for more tasks to run concurrently by reducing the memory used for their conversations. The agent saw puzzle images and could write Python. Its harness checked a proposed rule against the training examples, then ran a second independent attempt and sought a different answer if both attempts agreed. Those checks helped the agent choose what to submit, while the hidden puzzles still decided whether it was right."
+        },
+        {
+          "heading": "One more wait",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "Martin’s write-up credits Alwin Theodoric, Muhammad Yassir Ramadhan, Billy Anggara and Tri Ardian Rinalda. The team reported reaching fourth on the public leaderboard, a provisional place. The next test is whether the notebooks that rose on the visible puzzles hold up on the private set."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-10T05:44:18+00:00",
+          "id": "writeup",
+          "title": "Domdolus Tolus’s ARC-AGI-2 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/Domdolus-Tolus-Solution"
+        }
+      ]
+    },
+    "storyId": "domdolus-tolus-flash-next",
+    "storySha256": "ac4dc9c01801a57e26cdfe5410e9ed7e71ceb5e000d7c509f9da853694597a47",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "af71404b026b1362a873bd392d9892a4c35d2fa2647e904dc650effd5c4062d3",
+        "source": "client/public/news-images/domdolus-tolus-flash-next-v1.webp",
+        "target": "client/public/news-images/goose-af71404b026b1362a873.webp"
+      }
+    ],
+    "checks": [
+      "art-continuity",
+      "art-reuse",
+      "copy",
+      "facts",
+      "identity-and-roster"
+    ],
+    "notes": "Clarified early inactivity, the four L4s and independent attempts. Confirmed Claude Code and the monthly plan in the primary source. Compared the new scene to the filed visual references and inspected the single nameplate at phone width.",
+    "reviewedAt": "2026-11-10T05:46:06+00:00",
+    "reviewedBy": "GPT-6.1 Sol Medium; separate Claude CLI read",
+    "storySha256": "ac4dc9c01801a57e26cdfe5410e9ed7e71ceb5e000d7c509f9da853694597a47"
+  }
+}

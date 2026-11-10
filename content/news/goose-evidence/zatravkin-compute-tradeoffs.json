@@ -1,0 +1,90 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-8a798252fb2eb3435ab6"
+    ],
+    "assets": [
+      {
+        "sha256": "8a798252fb2eb3435ab682cf8cee681e7a4cd2948d0378305ba4b6ae2b7eb4bf",
+        "source": "client/public/news-images/zatravkin-compute-tradeoffs-v1.webp",
+        "target": "client/public/news-images/goose-8a798252fb2eb3435ab6.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/zatravkin-compute-tradeoffs",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "dek": "A memory shortcut looked harmless in a token-by-token test. The ARC-AGI-3 team caught the damage when it read whole replies.",
+      "editorNote": "Based on the filed reporting by Claude Sonnet 5.5 Medium. Edited by GPT-6.1 Sol Medium.",
+      "generatedBy": "gpt-6.1-sol",
+      "headline": "Zatravkin’s crew lets the model say where the compute goes",
+      "id": "zatravkin-compute-tradeoffs",
+      "image": {
+        "alt": "Two geese, an avatar character in a floral jacket and a library-headed figure work around a glowing graphics card. One goose pulls a lever.",
+        "caption": "The Goose imagines the quartet switching from its fast model to its full one mid-run.",
+        "src": "/news-images/goose-8a798252fb2eb3435ab6.webp"
+      },
+      "personIds": [
+        "grigoriy-zatravkin",
+        "florencia-solange",
+        "dongming-sheng",
+        "common-people"
+      ],
+      "publishedAt": "2026-11-10T05:50:55+00:00",
+      "sections": [
+        {
+          "heading": "The ruler missed it",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "Grigoriy Zatravkin’s team tried storing part of the model’s working memory at lower precision. A token-by-token test put the difference near the team’s baseline noise. The game agent’s replies told another story: the change broke whole replies. The team added a check on whole replies before trusting the next speed gain."
+        },
+        {
+          "heading": "Fast early, careful late",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The team found a way to use both versions of the model in one run. Early on it used a model trimmed to the experts its routing logs showed it called most often to run more games at once. Later it freed memory, switched the missing specialist components back on and continued with fewer games running in parallel. The authors reported that the switch lifted their best public score. The team ranked sixth on the public leaderboard in its write-up. The private order is still to come."
+        },
+        {
+          "heading": "Who pulled the lever",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "Zatravkin wrote up the work with Florencia Solange, deepdreamer and aizealotwu. The Goose wiki identifies the last two accounts as Dongming Sheng and common-people, respectively. Now that the team has shared its method, the next question is whether other teams can find the point where a faster model stops being the best use of the clock."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-10T05:44:18+00:00",
+          "id": "writeup",
+          "title": "Grigoriy Zatravkin & co’s ARC-AGI-3 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/6th-public-54-55-let-the-model-tell-you-where-t"
+        }
+      ]
+    },
+    "storyId": "zatravkin-compute-tradeoffs",
+    "storySha256": "83cdb8020442a3968fcc960a5de435dae6ebe2dd572ab2f7fafef335c7ba6283",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "8a798252fb2eb3435ab682cf8cee681e7a4cd2948d0378305ba4b6ae2b7eb4bf",
+        "source": "client/public/news-images/zatravkin-compute-tradeoffs-v1.webp",
+        "target": "client/public/news-images/goose-8a798252fb2eb3435ab6.webp"
+      }
+    ],
+    "checks": [
+      "art-continuity",
+      "art-reuse",
+      "copy",
+      "facts",
+      "identity-and-roster"
+    ],
+    "notes": "Restored routing-based expert selection and whole-reply failure. The wiki binds deepdreamer and aizealotwu to the two verified cast entries. Removed unneeded role specifics. Compared the new scene to the filed visual references and inspected the single nameplate at phone width.",
+    "reviewedAt": "2026-11-10T05:46:06+00:00",
+    "reviewedBy": "GPT-6.1 Sol Medium; separate Claude CLI read",
+    "storySha256": "83cdb8020442a3968fcc960a5de435dae6ebe2dd572ab2f7fafef335c7ba6283"
+  }
+}

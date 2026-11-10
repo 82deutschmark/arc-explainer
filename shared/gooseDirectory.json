@@ -2577,6 +2577,20 @@
       "url": "https://www.kaggle.com/competitions/petfinder-pawpularity-score",
       "wikiId": "competitions/petfinder-pawpularity-score"
     },
+    "physical-engineerings-last-exam": {
+      "closeAt": null,
+      "format": "scored",
+      "label": "physical-engineerings-last-exam",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "physical-engineerings-last-exam",
+      "url": "https://kaggle.com/competitions/physical-engineerings-last-exam",
+      "wikiId": "competitions/physical-engineerings-last-exam"
+    },
     "physionet-ecg-image-digitization": {
       "closeAt": null,
       "format": "scored",

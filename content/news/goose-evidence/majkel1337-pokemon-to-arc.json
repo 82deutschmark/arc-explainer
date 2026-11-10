@@ -1,0 +1,96 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-654cb20986a0bffccd38"
+    ],
+    "assets": [
+      {
+        "sha256": "654cb20986a0bffccd387c444d5da6d9cd8e676022334b76be47d80ed5f38619",
+        "source": "client/public/news-images/majkel1337-pokemon-to-arc-v1.webp",
+        "target": "client/public/news-images/goose-654cb20986a0bffccd38.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/majkel1337-pokemon-to-arc",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "After local practice runs in both ARC contests, Michał Gromadzki asked the model what helped, what got in the way and what to try next.",
+      "editorNote": "Based on the filed reporting by Claude Sonnet 5.5 Medium. Edited by GPT-6.1 Sol Medium.",
+      "generatedBy": "gpt-6.1-sol",
+      "headline": "Michał Gromadzki asks the model what went wrong",
+      "id": "majkel1337-pokemon-to-arc",
+      "image": {
+        "alt": "A grey cyber-goose in a copper-trimmed blazer takes notes beside a glowing console and a puzzle-grid machine.",
+        "caption": "The Goose imagines Majkel1337’s workshop, where the model is asked for notes after practice.",
+        "src": "/news-images/goose-654cb20986a0bffccd38.webp"
+      },
+      "personIds": [
+        "michal-gromadzki"
+      ],
+      "publishedAt": "2026-11-10T05:50:55+00:00",
+      "sections": [
+        {
+          "heading": "The debrief",
+          "sourceIds": [
+            "arc2",
+            "arc3"
+          ],
+          "text": "Michał Gromadzki, who competes as Majkel1337, had an unusual question for Qwen after each local practice run: what made the job harder? The same model that had just tried to solve the puzzle got a chance to tell its builder what it needed. Gromadzki used the replies to decide what to test next, alongside comparisons by score and Claude’s review of the run traces."
+        },
+        {
+          "heading": "The thinking behind the notes",
+          "sourceIds": [
+            "arc2",
+            "arc3"
+          ],
+          "text": "In the grid contest, the model kept a workspace where it could test a proposed rule against the examples. When the conversation grew too long, it rewrote its notes before the harness trimmed the history. Gromadzki found that keeping the model’s reasoning from that rewrite mattered more than keeping the rewritten notes alone. The game entry used the same idea, keeping notes about controls, rules and failed attempts as it moved between levels."
+        },
+        {
+          "heading": "Stuck? Restart",
+          "sourceIds": [
+            "arc2",
+            "arc3"
+          ],
+          "text": "In the game contest, Gromadzki scheduled restarts around the tokens spent on a level and restarted with what the earlier attempts had learned. Gromadzki calls the reasoning from the notes rewrite critical to the game entry. The fresh start gave the model another shot without carrying the entire old conversation. The write-ups report eighth on the public leaderboard in each contest. Those are provisional places. The question for the next run is which of the model’s own suggestions will still help when it meets a game it has never seen."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-10T05:44:18+00:00",
+          "id": "arc2",
+          "title": "Majkel1337’s ARC-AGI-2 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/8th-public-place-solution-writeup"
+        },
+        {
+          "accessedAt": "2026-11-10T05:44:18+00:00",
+          "id": "arc3",
+          "title": "Majkel1337’s ARC-AGI-3 solution",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-paper-track/writeups/new-writeup-1794070358037"
+        }
+      ]
+    },
+    "storyId": "majkel1337-pokemon-to-arc",
+    "storySha256": "04659a6d5f0e0744e85d6904d03e6b42ca9100e7833525c6e754b2549c46001c",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "654cb20986a0bffccd387c444d5da6d9cd8e676022334b76be47d80ed5f38619",
+        "source": "client/public/news-images/majkel1337-pokemon-to-arc-v1.webp",
+        "target": "client/public/news-images/goose-654cb20986a0bffccd38.webp"
+      }
+    ],
+    "checks": [
+      "art-continuity",
+      "art-reuse",
+      "copy",
+      "facts",
+      "identity-and-roster"
+    ],
+    "notes": "Named Claude, explained token-aware restarts, and checked the notes rewrite in both Kaggle sources. Compared the new scene to the filed visual references and inspected the single nameplate at phone width.",
+    "reviewedAt": "2026-11-10T05:46:06+00:00",
+    "reviewedBy": "GPT-6.1 Sol Medium; separate Claude CLI read",
+    "storySha256": "04659a6d5f0e0744e85d6904d03e6b42ca9100e7833525c6e754b2549c46001c"
+  }
+}
