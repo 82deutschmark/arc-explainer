@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
  * Date: 03-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -29,12 +30,14 @@ export const collectionArtSchema = z.object({
 export const cardDefinitionSchema = z.object({
   id, kind: z.enum(['person', 'team']), name: z.string().min(1),
   season: z.string().regex(/^\d{4}$/), issuedAt: stamp, personId: id.optional(),
-  setId: id.optional(),
+  setId: id.optional(), previousTeamCardId: id.optional(),
   entries: z.array(entry), art: collectionArtSchema.optional(), backArt: collectionArtSchema.optional(), artNotes: z.array(z.string()),
   // A shared historical team picture can remain in the archive without becoming an individual front.
   artFallback: z.literal('none').optional(),
   description: z.string().optional(), biography: z.string().min(1).max(1000).optional(),
-}).strict().refine(card => card.kind === 'person' ? !!card.personId : !card.personId && card.entries.length > 0, 'Card subject is incomplete');
+}).strict()
+  .refine(card => card.kind === 'person' ? !!card.personId : !card.personId && card.entries.length > 0, 'Card subject is incomplete')
+  .refine(card => !card.previousTeamCardId || (card.kind === 'team' && card.entries.length === 1 && card.previousTeamCardId !== card.id), 'Only a separate contest team card can replace a shared team card');
 export const cardSnapshotSchema = z.object({
   competition, competitionId: z.string(), teamId: z.string().regex(/^\d+$/),
   observedAt: stamp, teamName: z.string(), rank: z.number().int().positive(), score: z.number().finite(),
@@ -143,6 +146,8 @@ export interface CollectionStory {
 export interface CollectionCard {
   id: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
   setId?: string;
+  /** The former shared URL when a team now has separate contest cards. */
+  previousTeamCardId?: string;
   /** Authored wiki card copy, separate from the newsroom briefing. */
   biography?: string;
   /** What the card is: a Kaggle competitor, a competition sponsor, or a team. Nobody is a "player". */
@@ -192,7 +197,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 8;   // 05-Nov-2026: portrait front and ledger back
+export const RENDER_VERSION = 9;   // Team standings carry their own dates and status.
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';
@@ -204,16 +209,14 @@ export function collectionLeadEntry(card: Pick<CollectionCard, 'entries'>): Coll
   const ranked = card.entries.filter(entry => entry.status !== 'unavailable' && entry.rank != null);
   return ranked.find(entry => entry.status === 'final') ?? [...ranked].sort((a, b) => a.rank! - b.rank!)[0] ?? card.entries[0];
 }
-/** The one date a card's standings carry: the newest observation, as a short UTC day ("Oct 29"). */
-export function collectionAsOfLabel(card: Pick<CollectionCard, 'entries'>): string | null {
-  const stamps = card.entries.filter(entry => entry.status !== 'unavailable' && entry.observedAt).map(entry => Date.parse(entry.observedAt!)).filter(Number.isFinite);
-  return stamps.length ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'short', day: 'numeric' }).format(new Date(Math.max(...stamps))) : null;
+const standingDate = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short', year: 'numeric' });
+/** Each label describes the evidence behind one contest's numbers. */
+export function collectionStandingLabel(entry: Pick<CollectionEntry, 'status' | 'observedAt'>): string {
+  if (entry.status === 'unavailable') return 'Standings at Kaggle';
+  const basis = entry.status === 'final' ? 'Final result' : 'Public snapshot';
+  const time = Date.parse(entry.observedAt ?? '');
+  return Number.isFinite(time) ? `${basis} · ${standingDate.format(time)} UTC` : basis;
 }
-/** LIVE while any contest on the card is still being decided, FINAL once all are official results. */
-export const collectionStatus = (card: Pick<CollectionCard, 'entries'>): 'live' | 'final' | null => {
-  const known = card.entries.filter(entry => entry.status !== 'unavailable');
-  return !known.length ? null : known.every(entry => entry.status === 'final') ? 'final' : 'live';
-};
 const ordinalWord = (n: number) => {
   const suffix = n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th';
   return `${n.toLocaleString('en-US')}${suffix}`;
@@ -229,7 +232,12 @@ export function collectionEarnedLine(card: CollectionCard): string | null {
   const lead = collectionLeadEntry(card);
   return lead && lead.status !== 'unavailable' && lead.rank != null ? `${ordinalWord(lead.rank)} in ${competitionName(lead.competition)}${card.kind === 'person' ? ` with ${lead.teamName}` : ''}` : null;
 }
-export const collectionTitle = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card)} card | ${NEWS_NAME}`;
+export const collectionTeamCompetition = (card: CollectionCard) =>
+  card.kind === 'team' && card.entries.length === 1 ? competitionName(card.entries[0].competition) : null;
+export const splitTeamCards = (cards: CollectionCard[], previousId: string) =>
+  cards.filter(card => card.previousTeamCardId === previousId);
+export const collectionTitle = (card: CollectionCard) =>
+  `${card.name} — ${collectionTeamCompetition(card) ?? collectionRoleLabel(card)} card | ${NEWS_NAME}`;
 export { collectionTitle as collectionCardTitle };
 export function collectionCardDescription(card: CollectionCard): string {
   const lead = collectionLeadEntry(card);

@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
  * Date: 09-November-2026
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Shareable competitor, sponsor and team card pages with front/back downloads, artwork-led landscape previews, linked rosters,
  *          sourced team and Kaggle history, Cabinet discovery, and server-readable newspaper features,
  *          illustrated article and profile HTML plus genuine NewsArticle
@@ -37,7 +38,7 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionRoleLabel, collectionShareAlt, collectionSharePath,
+import { collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
 import { getNewsIndex, loadNewsArchive } from './newsStore';
@@ -188,11 +189,10 @@ function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]):
 }
 /** Card pages and the collection list share the same sourced record and links, drawn here as plain HTML for readers and crawlers. */
 function collectionEntryHtml(entry: CollectionEntry): string {
-  if (entry.status === 'unavailable') return `<section><h3>${esc(competitionName(entry.competition))} · ${esc(entry.teamName)}</h3><p><a href="${esc(entry.sourceUrl ?? entry.profileUrl)}">Current standings at Kaggle ↗</a></p></section>`;
   const teamUrl = entry.cardUrl ?? entry.profileUrl;
   const roster = entry.members.length ? `<ul>${entry.members.map(member => `<li><a href="${esc(member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`))}">${esc(member.name || member.handle)}</a></li>`).join('')}</ul>` : '';
   const standing = entry.rank == null ? '' : `Rank ${entry.rank}${entry.score != null ? `, score ${entry.score}` : ''} · `;
-  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${standing}${entry.status === 'final' ? 'Final result' : entry.rank == null ? 'Current standings at Kaggle' : 'Public standing'}${entry.observedAt ? ` as of ${esc(newsDate(entry.observedAt))}` : ''}</p>${entry.sourceUrl ? `<p><a href="${esc(entry.sourceUrl)}">Leaderboard</a></p>` : ''}${roster}</section>`;
+  return `<section><h3>${esc(competitionName(entry.competition))} · <a href="${esc(teamUrl)}">${esc(entry.teamName)}</a></h3><p>${standing}<a href="${esc(entry.sourceUrl ?? entry.profileUrl)}">${esc(collectionStandingLabel(entry))} ↗</a></p>${roster}</section>`;
 }
 function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const heading = standalone ? 'h1' : 'h2';
@@ -208,7 +208,7 @@ function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const rows = career?.rows.length ? `<section><h3>Completed Kaggle competitions</h3><ul>${[...career.rows].sort((a, b) => a.rank / a.fieldSize - b.rank / b.fieldSize).slice(0, 14).map(row => `<li><a href="${esc(row.competitionUrl)}">${esc(row.competition)}</a>${row.year ? ` (${row.year})` : ''} · ${row.rank} of ${row.fieldSize}${row.medal ? ` · ${row.medal} medal` : ''}</li>`).join('')}</ul></section>` : '';
   const highlights = standalone && card.highlights.length ? `<section><h3>On the record</h3><ul>${card.highlights.map(fact => `<li>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">Source</a> · as of ${esc(newsDate(fact.checkedAt))}</li>`).join('')}</ul></section>` : '';
   const stories = card.stories.length ? `<section><h3>In the Digest</h3><ul>${card.stories.map(story => `<li><a href="${esc(story.url)}">${esc(story.headline)}</a> · ${esc(newsDate(story.publishedAt))}</li>`).join('')}</ul></section>` : '';
-  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.name)}</a></${heading}><p>${esc(collectionRoleLabel(card))} · ${esc(card.season)}${earned ? ` · Earned this card: ${esc(earned)}` : ''}</p>${card.art ? `<img src="${esc(encodeURI(card.art.src))}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${profile}${highlights}${past}${history}${card.entries.map(collectionEntryHtml).join('')}${rows}${stories}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Profile in the Digest' : 'Team profile'}</a> · <a href="${esc(card.cardUrl)}">Share this card</a></p></article>`;
+  return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.name)}</a></${heading}><p>${esc(collectionRoleLabel(card))} · ${esc(collectionTeamCompetition(card) ?? card.season)}${earned ? ` · Earned this card: ${esc(earned)}` : ''}</p>${card.art ? `<img src="${esc(encodeURI(card.art.src))}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${profile}${highlights}${past}${history}${card.entries.map(collectionEntryHtml).join('')}${rows}${stories}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Profile in the Digest' : 'Team profile'}</a> · <a href="${esc(card.cardUrl)}">Share this card</a></p></article>`;
 }
 function collectionCardMeta(card: CollectionCard): RouteMetaTags {
   const title = collectionCardTitle(card);
@@ -260,8 +260,17 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
   if (cardRoute) {
-    const card = getNewsCollection().cards.find(item => item.id === cardRoute[1]);
+    const { cards } = getNewsCollection();
+    const card = cards.find(item => item.id === cardRoute[1]);
     if (card) return { status: 200, tags: collectionCardMeta(card) };
+    const separated = splitTeamCards(cards, cardRoute[1]);
+    if (separated.length) {
+      const heading = `${separated[0].name} competition cards`;
+      return { status: 200, tags: completeMeta({
+        title: `${heading} | ${NEWS_NAME}`, description: 'Choose a competition to see its team roster and standings.', url: SITE_ORIGIN + route,
+        bodyHtml: `<main><h1>${esc(heading)}</h1><ul>${separated.map(entry => `<li><a href="${esc(entry.cardUrl)}">${esc(collectionTeamCompetition(entry) ?? entry.name)}</a></li>`).join('')}</ul></main>`,
+      }) };
+    }
     return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
       bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse the Card Cabinet</a></p></main>' }) };
   }

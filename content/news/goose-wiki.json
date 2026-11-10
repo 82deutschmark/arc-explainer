@@ -11996,7 +11996,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "1f49b4e916aa95139fd3b969703651c4f5da5aab06d97ee6fc953ca459750703",
+  "fingerprint": "ef065d405726852193bc44afc27e7e1b09f3d7cf48e9c8967c59b08274027d7b",
   "people": [
     {
       "accounts": [
@@ -21421,18 +21421,44 @@
             "competition": "arc-2",
             "competitionId": "arc-prize-2026-arc-agi-2",
             "teamId": "15501171"
-          },
+          }
+        ],
+        "id": "team-yi-chia-chen-arc-2-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "Yi-Chia Chen",
+        "previousTeamCardId": "team-yi-chia-chen-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
+          "artworkId": "2026-10-12-chen-bunnies-character-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z",
+          "credit": "Commissioned ARC Daily character artwork",
+          "src": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp"
+        },
+        "artNotes": [
+          "Chen’s grey-brown lop has BOTH ears down beside its cheeks; keep its rounded face, grey coat and white rear toes.",
+          "Chen’s second rabbit has tall dark upright ears, a dark eye mask and a broad irregular white forehead/nose blaze, with white cheeks, chest and paws.",
+          "Always exactly two recognizable bunnies; the owner photo governs anatomy and markings. Giant scale is a scene choice."
+        ],
+        "description": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
+        "entries": [
           {
             "competition": "arc-3",
             "competitionId": "arc-prize-2026-arc-agi-3",
             "teamId": "15499660"
           }
         ],
-        "id": "team-yi-chia-chen-2026",
+        "id": "team-yi-chia-chen-arc-3-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Yi-Chia Chen",
-        "season": "2026"
+        "previousTeamCardId": "team-yi-chia-chen-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
       },
       {
         "art": {
@@ -21453,18 +21479,44 @@
             "competition": "arc-2",
             "competitionId": "arc-prize-2026-arc-agi-2",
             "teamId": "16756524"
-          },
+          }
+        ],
+        "id": "team-tufa-labs-arc-2-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "Tufa Labs",
+        "previousTeamCardId": "team-tufa-labs-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Five friendly black Tufa spider mascots and Dries Smit oversee two server racks in a vast imagined GPU citadel; distant rival strongholds appear through the arch.",
+          "artworkId": "2026-10-19-tufa-citadel-interior-v2-base",
+          "commissionedAt": "2026-10-19T22:07:13Z",
+          "credit": "Commissioned ARC Daily team illustration; original clean native base.",
+          "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp"
+        },
+        "artNotes": [
+          "The five friendly black spiders are Tufa mascots, not a literal member count. Dries is the individual engineer shown; the illustration does not claim to portray every human teammate.",
+          "The two racks, immense citadel, machinery and distant rival strongholds are editorial fantasy. They do not establish real hardware, spending or current competition method.",
+          "Use the approved clean native citadel interior, which contains no rank, score, observation date or headline. Card names, dated statistics and honors are drawn separately; preserve the original image unchanged."
+        ],
+        "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
+        "entries": [
           {
             "competition": "arc-3",
             "competitionId": "arc-prize-2026-arc-agi-3",
             "teamId": "15486995"
           }
         ],
-        "id": "team-tufa-labs-2026",
+        "id": "team-tufa-labs-arc-3-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Tufa Labs",
-        "season": "2026"
+        "previousTeamCardId": "team-tufa-labs-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
       },
       {
         "art": {
@@ -21562,21 +21614,46 @@
         "description": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
         "entries": [
           {
-            "competition": "arc-3",
-            "competitionId": "arc-prize-2026-arc-agi-3",
-            "teamId": "16153655"
-          },
-          {
             "competition": "arc-2",
             "competitionId": "arc-prize-2026-arc-agi-2",
             "teamId": "16153654"
           }
         ],
-        "id": "team-mtg-team-2026",
+        "id": "team-mtg-team-arc-2-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "mtg / Michael — Two-board Rook",
-        "season": "2026"
+        "previousTeamCardId": "team-mtg-team-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+          "artworkId": "2026-10-29-mtg-avatar-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z",
+          "credit": "Commissioned ARC Daily character artwork",
+          "src": "/news-images/references/2026-10-29-mtg-avatar-v1-base.webp"
+        },
+        "artNotes": [
+          "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+          "Own profile supplies Michael only. The mascot is not his human likeness; no surname or career biography is inferred from michaeltgao."
+        ],
+        "description": "Original fictional account mascot with two ARC grids, representing the same handle’s separate entries. Preserve its rook-like silhouette and fantasy costume.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16153655"
+          }
+        ],
+        "id": "team-mtg-team-arc-3-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "mtg / Michael — Two-board Rook",
+        "previousTeamCardId": "team-mtg-team-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
       },
       {
         "art": {
@@ -21672,21 +21749,74 @@
         "description": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
         "entries": [
           {
-            "competition": "arc-3",
-            "competitionId": "arc-prize-2026-arc-agi-3",
-            "teamId": "16958599"
-          },
-          {
             "competition": "arc-2",
             "competitionId": "arc-prize-2026-arc-agi-2",
             "teamId": "16373916"
           }
         ],
-        "id": "team-majkel1337-team-2026",
+        "id": "team-majkel1337-team-arc-2-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Majkel1337 — copper fox",
-        "season": "2026"
+        "previousTeamCardId": "team-majkel1337-team-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+          "artworkId": "2026-10-29-majkel1337-avatar-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z",
+          "credit": "Commissioned ARC Daily character artwork",
+          "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp"
+        },
+        "artNotes": [
+          "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+          "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
+        ],
+        "description": "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16958599"
+          }
+        ],
+        "id": "team-majkel1337-team-arc-3-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "Majkel1337 — copper fox",
+        "previousTeamCardId": "team-majkel1337-team-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
+      },
+      {
+        "art": {
+          "alt": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+          "artworkId": "2026-10-29-aquaursa-avatar-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z",
+          "credit": "Commissioned ARC Daily character artwork",
+          "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp"
+        },
+        "artNotes": [
+          "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+          "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
+        ],
+        "description": "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+        "entries": [
+          {
+            "competition": "arc-2",
+            "competitionId": "arc-prize-2026-arc-agi-2",
+            "teamId": "15488773"
+          }
+        ],
+        "id": "team-aquaursa-team-arc-2-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "AquaUrsa Research — aqua polar bear",
+        "previousTeamCardId": "team-aquaursa-team-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
       },
       {
         "art": {
@@ -21706,18 +21836,15 @@
             "competition": "arc-3",
             "competitionId": "arc-prize-2026-arc-agi-3",
             "teamId": "15488763"
-          },
-          {
-            "competition": "arc-2",
-            "competitionId": "arc-prize-2026-arc-agi-2",
-            "teamId": "15488773"
           }
         ],
-        "id": "team-aquaursa-team-2026",
+        "id": "team-aquaursa-team-arc-3-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "AquaUrsa Research — aqua polar bear",
-        "season": "2026"
+        "previousTeamCardId": "team-aquaursa-team-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
       },
       {
         "art": {
@@ -21766,18 +21893,45 @@
             "competition": "arc-2",
             "competitionId": "arc-prize-2026-arc-agi-2",
             "teamId": "16559402"
-          },
+          }
+        ],
+        "id": "team-domdolus-tolus-arc-2-2026",
+        "issuedAt": "2026-10-30T00:23:50.049Z",
+        "kind": "team",
+        "name": "Domdolus Tolus",
+        "previousTeamCardId": "team-domdolus-tolus-2026",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+          "artworkId": "2026-10-29-domdolus-tolus-avatar-v1-base",
+          "commissionedAt": "2026-10-30T00:23:50.049Z",
+          "credit": "Commissioned ARC Daily character artwork",
+          "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp"
+        },
+        "artNotes": [
+          "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+          "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+          "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+          "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+        ],
+        "description": "Darren’s two own-avatar dogs with Alwin/Yassir own-face characters and fictional Billy/Tri helmeted stand-ins: six figures represent five roster accounts.",
+        "entries": [
           {
             "competition": "arc-3",
             "competitionId": "arc-prize-2026-arc-agi-3",
             "teamId": "16534961"
           }
         ],
-        "id": "team-domdolus-tolus-2026",
+        "id": "team-domdolus-tolus-arc-3-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
         "kind": "team",
         "name": "Domdolus Tolus",
-        "season": "2026"
+        "previousTeamCardId": "team-domdolus-tolus-2026",
+        "season": "2026",
+        "setId": "arc-3-2026"
       },
       {
         "art": {
@@ -24741,7 +24895,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-10T00:40:09+00:00",
+    "updatedAt": "2026-11-10T03:13:32+00:00",
     "version": 1
   },
   "results": [],

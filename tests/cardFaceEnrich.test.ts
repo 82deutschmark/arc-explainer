@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
  * Date: 02-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): combined team-card roster label.
  * PURPOSE: Invariants for the Card Cabinet adapter (cardFace/enrich.ts) and the set registry (cardFace/sets.ts) over the
  *          REAL collection: every card enriches, only the three kinds exist, no banned word reaches a printed string,
  *          solo entries carry no team name, each face has one as-of day, numbers are consistent, sponsor lines are all
@@ -133,12 +134,15 @@ describe('review fixes (30-Oct-2026)', () => {
     for (const c of cards.filter(x => x.kind === 'team')) expect(c.name, c.id).not.toMatch(/\s[\u2014\u2013]\s/);
   });
 
-  it('prints one team size everywhere: every account on the roster', () => {
-    const tufa = cards.find(c => c.id === 'team-tufa-labs-2026')!;
-    const vm = viewModel(tufa);
-    expect(vm.teamSize).toBe(tufa.roster.length || null);
-    expect(vm.sizeLabel).toBe(tufa.roster.length ? `${tufa.roster.length} ACCOUNTS` : null);
-    if (tufa.roster.length) expect(tufa.bio).toContain(`${tufa.roster.length}-account`);
+  it('uses the contest roster count on each Tufa card', () => {
+    for (const [contest, count] of [['arc-2', 4], ['arc-3', 6]] as const) {
+      const tufa = cards.find(c => c.id === `team-tufa-labs-${contest}-2026`)!;
+      const vm = viewModel(tufa);
+      expect(tufa.contests).toHaveLength(1);
+      expect(tufa.roster).toHaveLength(count);
+      expect(vm.teamSize).toBe(count);
+      expect(vm.sizeLabel).toBe(`${count} ACCOUNTS`);
+    }
   });
 
   it('never calls a partial career list the whole record, and ranks best finish and the table by place', () => {

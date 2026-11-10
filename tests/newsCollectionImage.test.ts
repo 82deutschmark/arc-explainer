@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
  * Date: 02-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: The route-facing image functions (buildCollectionCardImage / buildCollectionCardThumb): portable 750 x 1050
  *          fronts and backs, both contest teams and the dated standings on a competitor's face, Japanese lettering, a card
  *          with no art, the unchanged source artwork, and the art-address boundary (no URLs, encoded paths, traversal or a
@@ -87,4 +88,24 @@ describe('Card Cabinet PNG export', () => {
       await fs.rm(outside, { recursive: true, force: true });
     }
   });
+});
+
+it('prints only the matching contest status and date on each Tufa card', async () => {
+  const fixtures = [
+    { id: 'team-tufa-labs-arc-2-2026', status: 'public' as const, observedAt: '2026-11-10T02:00:00Z', label: 'Public snapshot · 10 Nov 2026 UTC', otherContest: 'ARC-AGI-3' },
+    { id: 'team-tufa-labs-arc-3-2026', status: 'final' as const, observedAt: '2026-11-11T02:00:00Z', label: 'Final result · 11 Nov 2026 UTC', otherContest: 'ARC-AGI-2' },
+  ];
+  for (const { id, status, observedAt, label, otherContest } of fixtures) {
+    const tufa = collection.cards.find(item => item.id === id)!;
+    const fixture = { ...tufa, entries: tufa.entries.map(entry => ({ ...entry, status, observedAt, rank: 1 })) };
+    const fixtureCollection = { ...collection, cards: collection.cards.map(item => item.id === id ? fixture : item) };
+    const front = drawn(await cardFaceNode(fixture, fixtureCollection));
+    const { model, names } = cardFaceModel(fixture, fixtureCollection);
+    const reverse = drawn(await backNode(model, { namesById: names }));
+    for (const text of [front, reverse]) {
+      expect(text).toContain(label);
+      expect(text).not.toContain(otherContest);
+      expect(text).not.toContain('AS OF');
+    }
+  }
 });

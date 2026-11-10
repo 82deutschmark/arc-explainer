@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
  * Date: 03-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): label team rosters that span multiple contests.
  * PURPOSE: The REVERSE of the TOPPS card, 750 x 1050: grey cardboard in two inks (the tier colour darkened to print
  *          on grey, and near-black), like a 1987 Topps back. Exports back(card, opts) -> image buffer (png, webp or
  *          jpeg) and backNode(card, opts) -> Satori node tree. What may be printed is decided in backModel.ts; this
@@ -269,7 +270,7 @@ async function teammates(gs: MateGroup[], ink1: string): Promise<Node> {
 
 // ---- team roster ----
 const ROSTER_CHROME = 26 + 22 + 4, TOTAL_H = 32;
-function rosterTable(rows: RosterRow[], total: MedalsVM | null, ink1: string, rowH: number, note: string | null, known: { n: number; of: number }): Node {
+function rosterTable(rows: RosterRow[], total: MedalsVM | null, ink1: string, rowH: number, note: string | null, known: { n: number; of: number }, title: string): Node {
   const medalCell = (m: MedalsVM | null, k: 'gold' | 'silver' | 'bronze') => box({ width: 56, justifyContent: 'flex-end', alignItems: 'center', paddingRight: 8 }, m ? box({ alignItems: 'center' }, dot(MEDAL[k], 12), mono(String(m[k]), 16, INK2, 700, { marginLeft: 4 })) : null);
   const body = rows.map((r, i) => {
     const t = r.tier ? TIERS[r.tier] : null;
@@ -281,7 +282,7 @@ function rosterTable(rows: RosterRow[], total: MedalsVM | null, ink1: string, ro
       medalCell(r.medals, 'gold'), medalCell(r.medals, 'silver'), medalCell(r.medals, 'bronze'),
       box({ width: 92, justifyContent: 'flex-end' }, r.hasCard ? box({ border: `1.5px solid ${INK2}`, padding: '2px 5px 1px 5px', background: '#fff' }, bebas('HAS A CARD', 12, INK2, { letterSpacing: 1.2 })) : null));
   });
-  return tableFrame(titleBar(ink1, 'TEAM ROSTER', `${rows.length} ACCOUNT${rows.length === 1 ? '' : 'S'}`),
+  return tableFrame(titleBar(ink1, title, `${rows.length} ACCOUNT${rows.length === 1 ? '' : 'S'}`),
     box({ height: 22, alignItems: 'center', padding: '0 10px', borderBottom: `1.5px solid ${INK2}` },
       box({ flexGrow: 1, paddingLeft: 31 }, bebas('MEMBER', 14, ink1, { letterSpacing: 1.6 })), colHead('KAGGLE TIER', 112, ink1), colHead('GOLD', 56, ink1), colHead('SILVER', 56, ink1), colHead('BRONZE', 56, ink1), box({ width: 92 })),
     ...body,
@@ -546,7 +547,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
       if (n < bm.roster.length) { n = Math.min(bm.roster.length, Math.max(1, Math.floor((avail - NOTE_H) / 20))); note = `${bm.roster.length - n} MORE ACCOUNT${bm.roster.length - n === 1 ? '' : 'S'} NOT LISTED`; }
       tableRowH = clamp(Math.floor((avail - (note ? NOTE_H : 0)) / n), 20, 40);
       const th = chrome + (note ? NOTE_H : 0) + n * tableRowH;
-      table = { node: rosterTable(bm.roster.slice(0, n), total, ink1, tableRowH, note, { n: bm.rosterKnown, of: bm.roster.length }), h: th };
+      table = { node: rosterTable(bm.roster.slice(0, n), total, ink1, tableRowH, note, { n: bm.rosterKnown, of: bm.roster.length }, vm.contests.length > 1 ? 'ROSTER ACROSS CONTESTS' : 'TEAM ROSTER'), h: th };
       spend(th);
     }
 

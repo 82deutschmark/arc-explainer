@@ -2,6 +2,7 @@
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
  * Date: 03-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -29,9 +30,11 @@ const webUrl = z.string().url().refine(value => /^https:\/\//.test(value), 'Sour
 const competition = z.string().refine(competitionRegistered, 'Competition is not in the publication directory');
 const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
+const castIds = z.array(safeId).refine(ids => new Set(ids).size === ids.length, 'Cast IDs must be unique');
+const archiveCastSchema = z.object({ id: safeId, personIds: castIds }).strict();
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, headline: text.max(240), dek: text.max(700).optional(),
-  personIds: z.array(safeId).refine(ids => new Set(ids).size === ids.length, 'Dispatch cast IDs must be unique').optional(),
+  personIds: castIds.optional(),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
@@ -51,7 +54,7 @@ export const newsDispatchSchema = z.object({
 export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   competitionDisplay: text.max(100).optional(), editionDisplay: text.max(100).optional(),
-  frontPageFeatureId: safeId.optional(),
+  frontPageFeatureId: safeId.optional(), personIds: castIds.optional(),
   image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: text.max(700), caption: text.max(700), artworkId: safeId }).strict().optional(),
   headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700), layout: z.literal("inset").optional() }).strict().optional(), standings: z.object({ caption: text.max(300), observedAt: stamp, rows: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite() }).strict()).min(1).max(100) }).strict().optional() })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), verifiedTeamNames: z.array(text.max(200)).max(100).optional(), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
@@ -241,10 +244,17 @@ export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex;
     leaveOut(skipped, { file: 'goose-wiki.json', record: String(position), reason: parsed.error.message });
     return [];
   });
+  // Historical display corrections are separate from the immutable issue and its release proof.
+  const archiveCasts = new Map(readLedger(directory, 'archive-casts.json', archiveCastSchema, row => row.id, skipped)
+    .map(row => [row.id, row.personIds]));
+  const applyArchiveCast = <T extends { id: string; personIds?: string[] }>(story: T): T =>
+    story.personIds === undefined && archiveCasts.has(story.id) ? { ...story, personIds: archiveCasts.get(story.id) } : story;
   const articles: NewsArticle[] = readStoryFolder(directory, 'articles', newsArticleSchema, skipped)
+    .map(applyArchiveCast)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition));
   const competitors: CompetitorRecord[] = mergeWikiRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema));
   const dispatches: NewsDispatch[] = readStoryFolder(directory, 'dispatches', newsDispatchSchema, skipped)
+    .map(applyArchiveCast)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
   // A verified account names one person; a later record claiming an earlier person's account is left out whole.
   const claimed = new Set<string>();

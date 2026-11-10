@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
  * Date: 02-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: ADAPTER from the production collection (shared/newsCollection.ts CollectionCard / NewsCollection) to the
  *          ENRICHED CARD MODEL that cardFace/model.ts viewModel() consumes. The TypeScript port of the design
  *          scratch's Python enrichment, so the renderer never touches raw collection data.
@@ -45,7 +46,7 @@ import path from 'node:path';
 import { SITE_ORIGIN } from '../../../../shared/seo';
 import { loadWikiInputs } from '../wikiInputs';
 import { KAGGLE_COMPETITIONS } from '../../../../shared/kaggleCompetitions';
-import { KAGGLE_TIERS, type BoardHistory, type CollectionCard, type CollectionCareer, type CollectionEntry, type NewsCollection, boardHistorySchema, careersFileSchema } from '../../../../shared/newsCollection';
+import { KAGGLE_TIERS, type BoardHistory, type CollectionCard, type CollectionCareer, type CollectionEntry, type NewsCollection, boardHistorySchema, careersFileSchema, collectionStandingLabel } from '../../../../shared/newsCollection';
 import { contestTitle, setById, setForSeason, sponsorProfile, type SetDesign } from './sets';
 
 const LADDER: readonly string[] = KAGGLE_TIERS;
@@ -281,6 +282,7 @@ function contestFor(ctx: Context, card: CollectionCard, entry: CollectionEntry, 
     zone: entry.zone, score: entry.score, submissions: entry.submissions,
     asOf: stamp, asOfDate: stamp ? localDay(stamp, set.timeZone) : null,
     status: entry.status === 'final' ? 'final' : entry.status === 'unavailable' ? 'observed' : 'live',
+    standingLabel: collectionStandingLabel(entry),
     closesAt: KAGGLE_COMPETITIONS[entry.competition]?.closeAt ?? null,
     url: `https://www.kaggle.com/competitions/${slug}/leaderboard`, roster,
   };

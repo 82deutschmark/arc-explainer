@@ -1,3 +1,8 @@
+### Version 9.164.35 · November 9, 2026
+
+- Issue one team card for each contest. Split the six shared team cards into twelve and linked the old pages to their replacements. Tufa’s ARC-AGI-2 card shows four members and its ARC-AGI-3 card shows six.
+- Use verified cast IDs on article pages and in initial HTML. Audited 157 editions and dispatches and filled archive casts from cited people, dated rosters and individual story review. Removed the small team status badge and put the date and source status beside each contest. Team card pages show separate contest rosters. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.164.34 · November 9, 2026
 
 - The Story archive replaces the October roundup at `/news/community`. It lists published features and editions by month, newest first, with search and a competition filter. New stories appear with their existing links as soon as the paper publishes them. The plain server page uses the same list. Author: GPT-6 / Codex (reasoning effort not exposed).

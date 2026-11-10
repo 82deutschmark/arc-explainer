@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high
  * Date: 03-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: The ARC Daily Digest's Card Cabinet, rebuilt as a collector's binder and a price-guide checklist.
  *          The rendered cards ARE the page: a grid of real card faces (front and back) and a dense checklist
  *          of the same cards, filtered by Kaggle tier, role and contest. Each card page puts the card beside
@@ -21,8 +22,8 @@ import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { uncardedCast } from '@shared/cardCast';
 import { competitionName, personPath, competitorPath, type NewsIndex } from '@shared/news';
 import {
-  COLLECTION_SHARE_HEIGHT, COLLECTION_SHARE_WIDTH, KAGGLE_TIERS, collectionAsOfLabel, collectionCardDescription, collectionCardPath,
-  collectionCardTitle, collectionEarnedLine, collectionLeadEntry, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionShareVersion, collectionStatus,
+  COLLECTION_SHARE_HEIGHT, COLLECTION_SHARE_WIDTH, KAGGLE_TIERS, collectionStandingLabel, collectionCardDescription, collectionCardPath,
+  collectionCardTitle, collectionEarnedLine, collectionLeadEntry, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionShareVersion, collectionTeamCompetition, splitTeamCards,
   type CollectionArchiveCard, type CollectionCard, type CollectionEntry, type KaggleTier, type NewsCollection,
 } from '@shared/newsCollection';
 import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
@@ -88,7 +89,7 @@ export function Tile({ card, index, contest = 'all' }: { card: CollectionCard; i
     <div className="cb-caption">
       <div className="cb-caption-top"><span className="cb-no">{catalogSubjectLabel(card)}</span><TierBadge card={card} /></div>
       <h2><Link href={card.cardUrl}>{card.name}</Link></h2>
-      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionEarnedLine(card) ?? ''}</p>}
+      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionTeamCompetition(card) ?? collectionEarnedLine(card) ?? ''}</p>}
     </div>
   </article>;
 }
@@ -290,19 +291,12 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const [stage, setStage] = useState('current');
   const version = useMemo(() => collectionShareVersion(card), [card]);
   const career = card.career;
-  const asOf = collectionAsOfLabel(card);
-  const status = collectionStatus(card);
   const earned = collectionEarnedLine(card);
+  const competition = collectionTeamCompetition(card);
+  const otherContestCards = card.previousTeamCardId ? splitTeamCards(all, card.previousTeamCardId).filter(other => other.id !== card.id) : [];
   const careerRows = career ? [...career.rows].sort((a, b) => a.rank / a.fieldSize - b.rank / b.fieldSize) : [];
   const entries = card.entries.filter(entry => entry.status !== 'unavailable');
-  // Include independently recorded memberships as well as the roster on this edition.
-  // These are observations at different dates, not a claim that everyone competed together.
-  const roster = [...new Map([
-    ...all.filter(other => other.kind === 'person' && other.personId && other.teamHistory.some(team =>
-      team.season === card.season && card.entries.some(entry => entry.competitionId === team.competitionId && entry.teamId === team.teamId)))
-      .map(other => ({ personId: other.personId, handle: other.teamHistory.find(team => team.season === card.season && card.entries.some(entry => entry.competitionId === team.competitionId && entry.teamId === team.teamId))!.memberHandle, name: other.name, cardUrl: other.cardUrl })),
-    ...card.entries.flatMap(entry => entry.members),
-  ].map(member => [member.personId ?? member.handle, member])).values()];
+  const rosters = card.entries.filter(entry => entry.members.length > 0);
   const medals = career?.medals;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
@@ -318,7 +312,8 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link></nav>
-    <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
+    <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{competition ?? card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
+    {otherContestCards.length > 0 && <p className="cb-note">Other contest cards {otherContestCards.map(other => <Link key={other.id} href={other.cardUrl}>{collectionTeamCompetition(other)} → </Link>)}</p>}
     <div className="cb-dgrid is-paired">
       <div className="cb-dcard">
         {stage === 'current' || !staged ? <CardPair card={card} /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
@@ -340,9 +335,8 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
         {card.entries.some(entry => entry.status === 'unavailable') && <p className="cb-note">{card.entries.filter(entry => entry.status === 'unavailable').map(entry => <a key={`${entry.competitionId}-${entry.teamId}`} href={entry.sourceUrl ?? entry.profileUrl}>{competitionName(entry.competition)}: current standings at Kaggle ↗ </a>)}</p>}
         {!!entries.length && <Panel title={card.role === 'team' ? 'Team standings' : 'Standings'}>
           <table className="cb-table"><thead><tr><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Best</th><th scope="col">Score</th><th scope="col">Entries</th></tr></thead>
-            <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
+            <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}<small><a href={entry.sourceUrl ?? entry.profileUrl}>{collectionStandingLabel(entry)} ↗</a></small>{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
               <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num pl">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num pl">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num sc">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table>
-          <p className="cb-note">{status === 'final' ? 'Final results' : 'Live'}{asOf ? `, as of ${asOf}` : ''}. {entries.some(entry => entry.sourceUrl) && <a href={entries.find(entry => entry.sourceUrl)!.sourceUrl}>Leaderboard ↗</a>}</p>
         </Panel>}
         {card.role === 'competitor' && !!careerRows.length && <Panel title="Completed Kaggle competitions" wide>
           <table className="cb-table"><thead><tr><th scope="col">Year</th><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Finish</th><th scope="col">Medal</th></tr></thead>
@@ -356,11 +350,15 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
         {!!card.stories.length && <Panel title="In the paper">
           <ul className="cb-list">{card.stories.map(story => <li key={story.id}><Link href={story.url}>{story.headline}</Link><small>{story.kind === 'wire' ? 'The wire' : 'Edition'} · {newsDate(story.publishedAt)}</small></li>)}</ul>
         </Panel>}
-    {card.kind === 'team' && roster.length > 0 && <nav className="cb-relations" aria-label="Team members">
-      <h2>Team members</h2><ul>{roster.map(member => <li key={member.handle}>
-        <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
-        <small>@{member.handle}</small>
-      </li>)}</ul><p>Recorded competition memberships may be from different dates. Open a name for their individual card or profile.</p>
+    {card.kind === 'team' && rosters.length > 0 && <nav className="cb-relations" aria-label="Recorded competition rosters">
+      <h2>Recorded competition rosters</h2>
+      {rosters.map(entry => <section key={`${entry.competitionId}-${entry.teamId}`}>
+        <h3>{competitionName(entry.competition)}</h3>
+        <ul>{entry.members.map(member => <li key={member.handle}>
+          <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
+          <small>@{member.handle}</small>
+        </li>)}</ul>
+      </section>)}
     </nav>}
     {card.kind === 'person' && card.teamHistory.length > 0 && <nav className="cb-relations" aria-label="Competition teams">
       <h2>Competition teams</h2><ul>{card.teamHistory.map(team => <li key={`${team.season}-${team.competitionId}-${team.teamId}`}>
@@ -391,18 +389,28 @@ export default function NewsCards() {
     },
   });
   const selected = query.data?.cards.find(card => card.id === cardId);
+  const separated = cardId && query.data ? splitTeamCards(query.data.cards, cardId) : [];
+  const groupTitle = separated.length ? `${separated[0].name} competition cards` : null;
   const sectionImage = useNewsCardImage();
   usePageMeta({
-    title: selected ? collectionCardTitle(selected) : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Kaggle card catalog | ${NEWS_NAME}`,
+    title: selected ? collectionCardTitle(selected) : groupTitle ? `${groupTitle} | ${NEWS_NAME}` : cardId && query.data ? `Card not found | ${NEWS_NAME}` : `Kaggle card catalog | ${NEWS_NAME}`,
     description: selected ? collectionCardDescription(selected) : `${NEWS_NAME} cards: illustrated competitors and teams, linked history and original Kaggle sources for current standings.`,
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
-    noindex: !!cardId && !!query.data && !selected,
+    noindex: !!cardId && !!query.data && !selected && !groupTitle,
     image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
   });
   return <CabinetShell cardProof={!!selected}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
-      ? selected ? <Detail card={selected} all={query.data.cards} sets={query.data.sets} /> : <main className="cb"><div className="cb-empty"><h1>Card not found</h1><p>This card isn’t in the collection.</p><Link href="/news/cards">Browse the card catalog →</Link></div></main>
+      ? selected ? <Detail card={selected} all={query.data.cards} sets={query.data.sets} />
+        : <main className="cb"><div className="cb-empty">
+          {groupTitle ? <>
+            <h1>{groupTitle}</h1>
+            <p>Choose a contest to see its roster and standings.</p>
+            <ul>{separated.map(card => <li key={card.id}><Link href={card.cardUrl}>{collectionTeamCompetition(card)} →</Link></li>)}</ul>
+          </> : <><h1>Card not found</h1><p>This card isn’t in the collection.</p></>}
+          <Link href="/news/cards">Browse the card catalog →</Link>
+        </div></main>
       : <Cabinet collection={query.data} />)}
   </CabinetShell>;
 }

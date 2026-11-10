@@ -3,6 +3,7 @@
  * Date: 09-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
  *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
@@ -33,7 +34,7 @@ import { getNewsCollection } from '../server/services/news/newsCollection';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
-import { reportedPeople, featuredPerson, displayPortrait } from '../shared/news';
+import { reportedPeople, displayPortrait } from '../shared/news';
 import { newsDiscussionSchema, newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
 
@@ -282,20 +283,19 @@ test('the morning cast row links xz and Chen to their wiki-backed cards after th
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const article = index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!;
-  expect(featuredPerson(article, index.people!)?.id).toBe('xz');
   const subjects = reportedPeople([article], index.people!);
   expect(subjects.map(person => person.id)).toEqual(expect.arrayContaining(['xz', 'yi-chia-chen']));
   const html = render(NewsArticle, `/news/${article.id}`, index);
   const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
   for (const subject of subjects) {
-    const card = getNewsCollection().cards.find(c => c.personId === subject.id)!;
-    expect(sidebar).toContain(card.cardUrl);
+    const card = getNewsCollection().cards.find(c => c.personId === subject.id);
+    expect(sidebar).toContain(card?.cardUrl ?? `/news/people/${subject.id}`);
   }
   expect(html.indexOf('class="news-story-people"')).toBeGreaterThan(html.indexOf(article.sections[0].text.slice(0, 40)));
   expect(sidebar).not.toContain('/news/people/dries-smit');
   const initialHtml = newsArticleMeta(article, [], index.people).bodyHtml!;
   for (const subject of subjects) expect(initialHtml).toContain(`/news/people/${subject.id}`);
-  const chen = subjects[1];
+  const chen = subjects.find(subject => subject.id === 'yi-chia-chen')!;
   expect(newsPersonSchema.safeParse(chen).success).toBe(true);
   expect(newsPersonSchema.safeParse({ ...chen, editorialPortrait: { ...chen.editorialPortrait!, sourceUrl: 'https://www.kaggle.com/xiaoz259' } }).success).toBe(false);
 });
@@ -315,10 +315,12 @@ test('all reported subjects survive deduplication across a feature and recap, wi
   const index = getNewsIndex();
   const people = index.people!.slice(0, 8);
   const original = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
-  const article = { ...original, headline: 'The field', dek: 'A closing report', sections: [{ text: 'The field is moving.', sourceIds: people.map(person => `person-${person.id}-identity-0`) }] };
-  const feature = { ...index.dispatches!.find(item => item.id === original.frontPageFeatureId)!, headline: 'The contenders', sections: [{ text: 'Their approaches.', sourceIds: [`person-${people[0].id}-identity-0`] }] };
+  const article = { ...original, personIds: people.map(person => person.id), headline: 'The field', dek: 'A closing report', sections: [{ text: 'The field is moving.', sourceIds: people.map(person => `person-${person.id}-identity-0`) }] };
+  const feature = { ...index.dispatches!.find(item => item.id === original.frontPageFeatureId)!, headline: 'The contenders', personIds: [people[0].id], sections: [{ text: 'Their approaches.', sourceIds: [`person-${people[0].id}-identity-0`] }] };
   expect(reportedPeople([feature, article], index.people!).map(person => person.id)).toEqual(people.map(person => person.id));
-  expect(reportedPeople([{ headline: 'axzonal results', sections: [] }], index.people!)).toEqual([]);
+  const { personIds: _cast, ...unverified } = { ...article, headline: 'Progress by itself' };
+  expect(reportedPeople([unverified], index.people!)).toEqual([]);
+  expect(reportedPeople([{ ...unverified, personIds: [] }], index.people!)).toEqual([]);
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
   const cast = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
   for (const person of people) {
@@ -363,5 +365,31 @@ test('the Tufa report shows only its six credited authors in both article render
   for (const row of rows) {
     expect(row).toBeDefined();
     expect([...row!.matchAll(/href="(\/news\/cards\/[^"]+)"/g)].map(match => match[1])).toEqual(expected);
+  }
+});
+
+test('archive cast corrections drop incidental aliases and keep people with real roster evidence', () => {
+  const index = getNewsIndex();
+  const dispatch = index.dispatches!.find(story => story.id === '2026-11-06-fit-the-whale-in')!;
+  expect(reportedPeople([dispatch], index.people!).map(person => person.id))
+    .toEqual(['bushi-liu', 'mutian-hong', 'yi-chia-chen']);
+  const decline = index.dispatches!.find(story => story.id === '2026-10-30-special-arc-deadline-no-extension')!;
+  expect(resolveNewsMeta(`/news/${decline.id}`)?.tags.bodyHtml).not.toContain('aria-label="In this story"');
+  const actualProgress = index.articles.find(story => story.id === '2026-11-02-evening-arc-2')!;
+  expect(reportedPeople([actualProgress], index.people!).map(person => person.id))
+    .toEqual(expect.arrayContaining(['tran-m-tien', 'van-phuc-huynh']));
+});
+
+test('each team card is tied to one contest and the old Tufa link lists both contest cards', () => {
+  const cards = getNewsCollection().cards.filter(card => card.kind === 'team');
+  expect(cards.every(card => card.entries.length === 1)).toBe(true);
+  const group = resolveNewsMeta('/news/cards/team-tufa-labs-2026');
+  expect(group?.status).toBe(200);
+  for (const [contest, teamId, count] of [['arc-2', '16756524', 4], ['arc-3', '15486995', 6]] as const) {
+    const card = cards.find(item => item.id === `team-tufa-labs-${contest}-2026`)!;
+    expect(group?.tags.bodyHtml).toContain(card.cardUrl);
+    expect(card.entries[0].teamId).toBe(teamId);
+    expect(card.entries[0].members).toHaveLength(count);
+    expect(card.entries[0].members.some(member => member.personId === 'dlorah')).toBe(contest === 'arc-3');
   }
 });

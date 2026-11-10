@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
  * Date: 09-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -54,6 +55,8 @@ export function articleFigureStats(article: Pick<NewsArticle, 'sections' | 'stat
 /** Native editorial art with an immutable, edition-bound composition record. */
 export interface NewsIllustration { src: string; alt: string; caption: string; artworkId: string }
 export interface NewsArticle {
+  /** Ordered, verified people selected for the card row. */
+  personIds?: string[];
   id: string; date: string; edition: NewsEdition; competition: NewsCompetition;
   competitionDisplay?: string; editionDisplay?: string;
   headline: string; dek: string; sections: NewsSection[]; teamIds: string[];
@@ -216,54 +219,11 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
   const ids = sections.flatMap(section => section.sourceIds).map(id => PERSON_SOURCE_ID.exec(id)?.[1]).filter((id): id is string => !!id);
   return [...new Set(ids)].map(id => people.find(person => person.id === id)).filter((person): person is NewsPerson => !!person);
 }
-/**
- * The one person a story features: the person named in its headline, else in its dek, else the
- * first person its sections cite. Nobody named or cited, nobody featured.
- */
-export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
-  return namedPeople(story.headline, people)[0] ?? namedPeople(story.dek, people)[0] ?? citedPeople(story.sections, people)[0];
-}
-type ReportedStory = { headline: string; dek?: string; sections: NewsSection[]; competition?: NewsCompetition; dataAsOf?: string; publishedAt?: string; personIds?: string[] };
-/** Whole names only: handles such as xz also match title case, never a substring in another word. */
-function namedPeople(text: string | undefined, people: NewsPerson[]): NewsPerson[] {
-  if (!text) return [];
-  return people.map(person => {
-    const name = shortPersonName(person.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const match = new RegExp(`(^|[^\\p{L}\\p{N}_])${name}(?=$|[^\\p{L}\\p{N}_])`, 'iu').exec(text);
-    return { person, position: match?.index ?? -1 };
-  }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person);
-}
-/** People in a passage include the verified cast of a named team in this contest.
- * A later team move must not attach a historical teammate to the wrong story. */
-function passagePeople(text: string | undefined, story: ReportedStory, people: NewsPerson[]): NewsPerson[] {
-  if (!text) return [];
-  const direct = namedPeople(text, people);
-  const at = story.dataAsOf ?? story.publishedAt;
-  const members = story.competition ? people.map(person => {
-    const roster = person.memberships.filter(m => m.competition === story.competition && (!at || m.firstObservedAt <= at))
-      .sort((a, b) => b.lastObservedAt.localeCompare(a.lastObservedAt))[0];
-    if (!roster) return { person, position: -1 };
-    const team = roster.teamName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const match = new RegExp(`(^|[^\\p{L}\\p{N}_])${team}(?=$|[^\\p{L}\\p{N}_])`, 'iu').exec(text);
-    return { person, position: match?.index ?? -1 };
-  }).filter(item => item.position >= 0).sort((a, b) => a.position - b.position).map(item => item.person) : [];
-  return [...new Map([...members, ...direct].map(person => [person.id, person])).values()];
-}
-/** An editorial cast wins; older stories use the sourced names and teams in their prose. */
-export function reportedPeople(stories: ReportedStory[], people: NewsPerson[]): NewsPerson[] {
+/** The browser and server use the same ordered editorial cast. */
+export function reportedPeople(stories: { personIds?: readonly string[] }[], people: NewsPerson[]): NewsPerson[] {
   const byId = new Map(people.map(person => [person.id, person]));
-  const subjects = stories.flatMap(story => {
-    if (story.personIds !== undefined) {
-      return story.personIds.map(id => byId.get(id)).filter((person): person is NewsPerson => !!person);
-    }
-    return [
-      ...passagePeople(story.headline, story, people),
-      ...passagePeople(story.sections[0]?.text, story, people),
-      ...passagePeople(story.dek, story, people),
-      ...story.sections.flatMap(section => [...passagePeople(section.text, story, people), ...citedPeople([section], people)]),
-    ];
-  });
-  return [...new Map(subjects.map(person => [person.id, person])).values()];
+  const ids = new Set(stories.flatMap(story => story.personIds ?? []));
+  return [...ids].map(id => byId.get(id)).filter((person): person is NewsPerson => !!person);
 }
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
 export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {

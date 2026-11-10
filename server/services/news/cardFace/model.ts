@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
  * Date: 03-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: DATA -> VIEW MODEL for the TOPPS card design. Turns an enriched card (see sample-cards.json
  *          _doc) into exactly the strings and numbers the layout may print, and decides what is never
  *          printed. No coordinates, no colours beyond picking a tier style: those live in render.ts and
@@ -38,8 +39,9 @@ export interface ContestVM {
   tag: string;
   /** a solo entry: no team, flagged solo, a team of one, or a team named after the competitor */
   solo: boolean;
-  /** the line printed under the tag on a competitor card: SOLO ENTRY, or the team's name; null on a team card (the card is the team) */
+  /** The team or entry context printed below the competition name. */
   entryLine: string | null;
+  standingLabel: string | null;
 }
 export interface MedalsVM { gold: number; silver: number; bronze: number }
 export interface CareerRowVM { name: string; place: string; of: string; top: string; medal: 'gold' | 'silver' | 'bronze' | null; team: string | null; year: number | null }
@@ -111,7 +113,8 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     return {
     short: c.shortName ?? c.name, full, team: teamName, size,
     tag: String(full || c.shortName || '').replace(/\s+[-\u2013\u2014]\s+/g, ' \u00b7 '), solo,
-    entryLine: family === 'team' ? null : c.status === 'observed' ? 'TEAM · SEE KAGGLE' : solo ? 'SOLO ENTRY' : teamName,
+    entryLine: family === 'team' ? (c.standingLabel ?? null) : c.status === 'observed' ? 'TEAM · SEE KAGGLE' : solo ? 'SOLO ENTRY' : teamName,
+    standingLabel: c.standingLabel ?? null,
     rank: hash(c.rank), peak: hash(c.peakRank), score: typeof c.score === 'number' ? String(c.score) : null,
     subs: typeof c.submissions === 'number' ? num(c.submissions) : null, status: c.status,
   }; });
@@ -121,7 +124,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
   const allClosed = (card.contests ?? []).length > 0 && (card.contests ?? []).every((c: any) => c.closesAt && Date.parse(c.closesAt) <= (opts.now ?? Date.now()));
   const status = allFinal || card.status === 'final' ? 'FINAL' : card.status === 'live' ? (allClosed ? 'PUBLIC' : 'LIVE') : null;
   const date = dayLabel(card.asOfDate);
-  const stamp = status && date ? { word: status as 'LIVE' | 'PUBLIC' | 'FINAL', date } : null;
+  const stamp = family !== 'team' && status && date ? { word: status as 'LIVE' | 'PUBLIC' | 'FINAL', date } : null;
 
   const roster = (card.roster ?? []).map((r: any) => ({ name: printableName(r.name ?? r.handle, r.handle), tier: tierByName(r.tier)?.key ?? null, medals: medalsOf(r.medals), handle: r.handle }));
   const withMedals = roster.filter((r: any) => r.medals);
@@ -153,7 +156,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     tierLine: tierName ? `KAGGLE ${tierName.toUpperCase()}` : null, tierWord: tierStyle ? tierStyle.label.toUpperCase() : null,
     handleLine: handleName ? `@${handleName}${platformLabel(card.handle?.platform) ? ` on ${platformLabel(card.handle?.platform)}` : ''}` : null,
     showPeak: status === 'LIVE',
-    sizeLabel: family === 'team' && teamSize ? `${teamSize} ${teamSize === 1 ? 'ACCOUNT' : 'ACCOUNTS'}` : null, teamSize: family === 'team' ? teamSize : null, bare,
+    sizeLabel: family === 'team' && teamSize ? `${teamSize} ${teamSize === 1 ? 'ACCOUNT' : 'ACCOUNTS'}${contests.length > 1 ? ' ACROSS CONTESTS' : ''}` : null, teamSize: family === 'team' ? teamSize : null, bare,
     wordmark: card.series?.name ?? card.series?.set ?? '', publisher: card.series?.publisher ?? null, season: String(card.series?.season ?? ''),
     stamp, contests, medals: family === 'competitor' ? medalsOf(card.medals) : null,
     overall: card.rank?.current ? { rank: hash(card.rank.current)!, outOf: card.rank.outOf ? num(card.rank.outOf) : null, best: hash(card.rank.best) } : null,

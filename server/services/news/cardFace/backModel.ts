@@ -1,6 +1,7 @@
 /**
  * Author: Claude Sonnet 5.5 Medium
  * Date: 30-Oct-2026
+ * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: DATA DECISIONS for the REVERSE of a card. Takes the front's view model (model.ts) plus the same
  *          enriched card and returns exactly what the back may print, in card language, with nothing said twice:
  *            - facts and the biography are filtered against what the tables already show (best finish, best rank,
@@ -45,6 +46,7 @@ const norm = (s: string | null | undefined) => (s ?? '').toLowerCase().replace(/
 const RESTATES_TABLE = [
   /^best (recorded )?finish\b/i,               // the CAREER row
   /^reached #[\d,]+ on\b/i,                    // vitals (best rank) and the rank ticker
+  /^\d[\d,]* submissions so far in\b/i,     // the dated submissions column
   /^peak position\b/i,                         // the PEAK column
   /\baccounts? on the roster\b/i,              // the roster and the vitals strip
   /\bwith a kaggle medal record\b/i,           // the TEAM TOTAL row
@@ -108,7 +110,8 @@ function standingRows(vm: VM): StandingRow[] {
     else if (size && size > 1) sub.push(`TEAM OF ${size}`);
     // Off-peak note: only while the contest AND the card's stamp are LIVE, and only when both numbers are real.
     let note: string | null = null;
-    if (c.status === 'live' && vm.card.status === 'live' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
+    if (vm.family === 'team') note = c.standingLabel;
+    else if (c.status === 'live' && vm.card.status === 'live' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
       note = rc.rank > rc.peakRank ? `${num(rc.rank - rc.peakRank)} OFF PEAK` : rc.rank === rc.peakRank ? 'AT PEAK' : null;
     }
     return { title: c.full.replace(/\s+-\s+/, ' · ').toUpperCase(), sub: sub.length ? sub.join(' · ') : null, note, rank: c.rank, peak: c.peak, score: c.score, subs: c.subs };
@@ -168,7 +171,7 @@ function vitalCells(vm: VM, accounts: number): VitalCell[] {
     add('ORGANISATION', vm.organisation, 1.5);
     add('PICTURED WITH', vm.sharedWith.join(' · ') || null, 1.5);
   } else {
-    add('TEAM SIZE', accounts ? `${accounts} ACCOUNT${accounts === 1 ? '' : 'S'}` : null, 1.1);
+    add(vm.contests.length > 1 ? 'ACROSS CONTESTS' : 'TEAM SIZE', accounts ? `${accounts} ACCOUNT${accounts === 1 ? '' : 'S'}` : null, 1.1);
     const best = [...vm.roster.map(r => r.tier)].filter(Boolean).sort((a, b) => tierRank(b) - tierRank(a))[0];
     add('BEST KAGGLE TIER', best ? best.toUpperCase() : null, 1.4);
     add('ENTERED', vm.contests.length ? vm.contests.map(c => c.short).join(' · ') : null, 1.6);
