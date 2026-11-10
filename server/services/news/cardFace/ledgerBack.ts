@@ -1,14 +1,14 @@
 /**
  * Author: Claude Sonnet 5.5 Medium
  * Date: 05-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): document the competitor ledger footer rule.
  * PURPOSE: The LEDGER REVERSE for competitor cards (the Boss's rule, 5 November 2026). The back is a record sheet, not a second
  *          portrait: a solid sheet of green-grid ledger paper with a red margin, laid over the card's SECOND picture
  *          (backPicture: a team or action image) or, when there is no second picture, over a blank designed backdrop in the
  *          tier colours. It is never a repeat of the front.
  *          The career record takes as much of the card as it can. Rows grow with the room (up to a comfortable size), and a long
  *          career grows the sheet upward until only a strip of the picture shows. Trivia (vitals, bio, "did you know" facts,
- *          teammates) sits under the record on the same sheet. The web address and copyright are printed on the sheet at a
- *          readable size, never over the picture.
+ *          teammates) sits under the record on the same sheet. The card page carries its permanent share address.
  *          Row budget is arithmetic only: fixed blocks are summed, then the career rows get what is left.
  * SRP/DRY check: Pass. Layout only; data decisions are backModel.ts, vocabulary and fonts are kit.ts, the front is render.ts.
  *          Does not import back.ts (which delegates here), so there is no cycle.

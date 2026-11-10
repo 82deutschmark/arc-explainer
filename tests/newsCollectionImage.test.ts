@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
  * Date: 02-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: The route-facing image functions (buildCollectionCardImage / buildCollectionCardThumb): portable 750 x 1050
  *          fronts and backs, both contest teams and the dated standings on a competitor's face, Japanese lettering, a card
  *          with no art, the unchanged source artwork, and the art-address boundary (no URLs, encoded paths, traversal or a
@@ -55,11 +56,14 @@ describe('Card Cabinet PNG export', () => {
     expect(await sharp(await buildCollectionCardImage(person, collection)).metadata()).toMatchObject({ format: 'png', width: 750, height: 1050 });
   });
 
-  it('draws the reverse with the career, the teammates and the card’s own address', { timeout: 30_000 }, async () => {
+  it('draws the competitor ledger with career and teammates while retaining its share address', { timeout: 30_000 }, async () => {
     const person = collection.cards.find(item => item.personId === 'mark-barney')!;
     const { model, names } = cardFaceModel(person, collection);
     const text = drawn(await backNode(model, { namesById: names }));
-    expect(text.replace(/\s+/g, '')).toContain(`arc.markbarney.net${person.cardUrl}`);
+    expect(model.urlAbsolute).toBe(`https://arc.markbarney.net${person.cardUrl}`);
+    expect(text).toContain('KAGGLE COMPETITIONS');
+    expect(text).toContain('Team Turducken');
+    expect(text).not.toContain('arc.markbarney.net');
     expect(model.pastTeams.some((team: any) => team.team === 'Team Turducken')).toBe(true);
     const reverse = await buildCollectionCardImage(person, collection, 'back');
     expect(await sharp(reverse).metadata()).toMatchObject({ format: 'png', width: 750, height: 1050 });

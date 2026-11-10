@@ -3,6 +3,7 @@
  * Date: 02-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: ADAPTER from the production collection (shared/newsCollection.ts CollectionCard / NewsCollection) to the
  *          ENRICHED CARD MODEL that cardFace/model.ts viewModel() consumes. The TypeScript port of the design
  *          scratch's Python enrichment, so the renderer never touches raw collection data.
@@ -271,7 +272,7 @@ function contestFor(ctx: Context, card: CollectionCard, entry: CollectionEntry, 
       medals: career?.medals ?? null, cardUrl: m.cardUrl ?? null, self: ownHandles.has(lowerHandle(m.handle)) };
   });
   const teamSize = entry.members.length || null;
-  // A solo entry: one account, or a team that only carries the competitor's own handle as its name.
+  // A name or a missing roster cannot establish a solo entry.
   const solo = teamSize === 1 && roster.some(member => member.self);
   return {
     competition: slug, name, shortName: label, season: yearIn(name) ?? yearIn(slug),
@@ -350,9 +351,10 @@ function enrichOne(ctx: Context, card: CollectionCard) {
   const tier = kind === 'competitor' && card.personId ? ctx.tierByPerson.get(card.personId) ?? null : null;
   const handle = kind === 'team' ? null : handleOf(card);
   const joinedYear = kind === 'competitor' ? career?.joinedYear ?? (extra.joinedMonth ? Number(extra.joinedMonth.slice(0, 4)) : null) : null;
-  // One as-of day per face: the newest of the standings read and (for a competitor) the Kaggle career read, so the rank and
-  // medals on the card are never newer than the date printed on it.
-  const stamps = [...contests.map(c => c.asOf), kind === 'competitor' ? career?.checkedAt : null].filter(Boolean) as string[];
+  // Date the measured standings and career data. A roster observation can be newer
+  // without making the ranking or career data any fresher.
+  const standings = contests.filter(contest => contest.status !== 'observed');
+  const stamps = [...standings.map(c => c.asOf), kind === 'competitor' ? career?.checkedAt : null].filter(Boolean) as string[];
   const asOf = stamps.length ? stamps.reduce((a, b) => (Date.parse(b) > Date.parse(a) ? b : a)) : null;
   const statuses = new Set(contests.map(c => c.status).filter(Boolean));
 

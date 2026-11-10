@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
  * Date: 06-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
  *          NT's ARC3 card preference preserves his separate verified ARC2 membership.
@@ -100,6 +101,25 @@ describe('Card Cabinet identity and statistics', () => {
     expect(cards[2].entries.map(row => row.competition)).toEqual(['arc-3']);
     expect(cards[0].entries[0].members[0].personId).toBe('alpha');
     expect(cards[1].entries[0].members[0].personId).toBe('beta');
+  });
+
+  it('keeps each contest’s roster and result when a board omits its member list', () => {
+    const ledger = index([person('alpha'), person('beta')]);
+    ledger.competitors = (['arc-2', 'arc-3'] as const).map((competition, i) => ({
+      id: `${competition}-100`, competition, teamId: '100', name: 'Same team name',
+      aliases: [], members: [i === 0 ? 'alpha' : 'beta'], firstObservedAt: checkedAt, lastObservedAt: checkedAt, facts: [],
+    }));
+    const boards = [snapshot('arc-2', '100', []), { ...snapshot('arc-3', '100', []), rank: 9, score: 77 }];
+    const official = result({ ...entry('arc-3'), rank: 3, score: 80, creditedHandles: ['beta'] });
+    const [arc2, arc3] = buildNewsCollection(registry([teamCard('arc-2'), teamCard('arc-3')], boards), ledger, [official]).cards;
+    expect(arc2.entries).toEqual([expect.objectContaining({
+      ...entry('arc-2'), rank: 1, score: 50, submissions: 12, status: 'public', sourceUrl: boards[0].sourceUrl,
+      members: [expect.objectContaining({ personId: 'alpha' })],
+    })]);
+    expect(arc3.entries).toEqual([expect.objectContaining({
+      ...entry('arc-3'), rank: 3, score: 80, submissions: null, status: 'final', sourceUrl: official.sourceUrl,
+      members: [expect.objectContaining({ personId: 'beta' })],
+    })]);
   });
 
   it('uses exact verified handles rather than a similar name or handle substring', () => {
@@ -500,6 +520,7 @@ describe('the real permanent commissioned collection', () => {
     expect(individuals.some(card => card.personId === 'mike-knoop')).toBe(false);
     expect(individuals.length).toBeGreaterThanOrEqual(65);
     expect(teams.length).toBeGreaterThanOrEqual(16);
+    for (const team of teams) expect(team.entries, team.id).toHaveLength(1);
     expect(new Set(collection.cards.map(card => card.id)).size).toBe(collection.cards.length);
     const commissioned = [
       ['yktori-team', 'yktori'], ['mtg-team', 'mtg'], ['grigoriy-team', 'grigoriy'],
@@ -508,21 +529,24 @@ describe('the real permanent commissioned collection', () => {
       ['nvbanana-arc2-team', 'nvbanana'], ['domdolus-tolus', 'domdolus-tolus'],
     ];
     for (const [subject, asset] of commissioned) {
-      const card = collection.cards.find(item => item.id === `team-${subject}-2026`);
-      expect(card, subject).toBeDefined();
-      if (subject === 'artificial-agency-team') {
-        // The wiki replaced the old four-person commission after its cast was corrected.
-        expect(card!.art?.artworkId).toBe('artificial-agency-team-arc3-v2');
-        const wiki = JSON.parse(fs.readFileSync('content/news/goose-wiki.json', 'utf8'));
-        const bytes = fs.readFileSync(path.join('client/public', card!.art!.src));
-        expect(createHash('sha256').update(bytes).digest('hex')).toBe(wiki.assetDigests[card!.art!.src]);
-        continue;
+      const id = `team-${subject}-2026`;
+      const editions = teams.filter(team => team.id === id || team.previousTeamCardId === id);
+      expect(editions.length, subject).toBeGreaterThan(0);
+      for (const card of editions) {
+        if (subject === 'artificial-agency-team') {
+          // The wiki replaced the old four-person commission after its cast was corrected.
+          expect(card.art?.artworkId).toBe('artificial-agency-team-arc3-v2');
+          const wiki = JSON.parse(fs.readFileSync('content/news/goose-wiki.json', 'utf8'));
+          const bytes = fs.readFileSync(path.join('client/public', card.art!.src));
+          expect(createHash('sha256').update(bytes).digest('hex')).toBe(wiki.assetDigests[card.art!.src]);
+          continue;
+        }
+        expect(card.art?.artworkId).toBe(`2026-10-29-${asset}-avatar-v1-base`);
+        const artwork = JSON.parse(fs.readFileSync(path.join('content/news/artwork', `${card.art!.artworkId}.json`), 'utf8'));
+        expect(artwork.rawSrc).toBe(card.art!.src);
+        const bytes = fs.readFileSync(path.join('client/public', card.art!.src));
+        expect(createHash('sha256').update(bytes).digest('hex')).toBe(artwork.rawSha256);
       }
-      expect(card!.art?.artworkId).toBe(`2026-10-29-${asset}-avatar-v1-base`);
-      const artwork = JSON.parse(fs.readFileSync(path.join('content/news/artwork', `${card!.art!.artworkId}.json`), 'utf8'));
-      expect(artwork.rawSrc).toBe(card!.art!.src);
-      const bytes = fs.readFileSync(path.join('client/public', card!.art!.src));
-      expect(createHash('sha256').update(bytes).digest('hex')).toBe(artwork.rawSha256);
     }
   });
 
@@ -541,20 +565,23 @@ describe('the real permanent commissioned collection', () => {
 
   it('keeps Darren’s two dogs as one account, and keeps his individual avatar out of the team group image', () => {
     const cards = getNewsCollection().cards;
-    const team = cards.find(card => card.id === 'team-domdolus-tolus-2026')!;
+    const teams = cards.filter(card => card.previousTeamCardId === 'team-domdolus-tolus-2026');
     const individual = cards.find(card => card.kind === 'person' && card.accounts.some(account => account.label === 'darrenamadeusmartin'))!;
     const roster = ['alwintheodoric', 'billyanggara', 'darrenamadeusmartin', 'rinnnntt', 'yassirramadhan'];
-    expect(team.entries).toHaveLength(2);
-    for (const row of team.entries) {
-      const recorded = getNewsIndex().competitors.find(c => c.id === row.competition + '-' + row.teamId);
-      expect(row.members.map(member => member.handle).sort()).toEqual([...(recorded?.members ?? [])].sort());
+    const competitors = getNewsIndex().competitors;
+    expect(teams.map(team => team.entries[0].competition).sort()).toEqual(['arc-2', 'arc-3']);
+    expect(individual.art).not.toBeNull();
+    for (const team of teams) {
+      expect(team.entries).toHaveLength(1);
+      const [row] = team.entries;
+      const recorded = competitors.find(team => team.competition === row.competition && team.teamId === row.teamId);
+      expect([...(recorded?.members ?? [])].sort()).toEqual(roster);
+      expect(row.members.map(member => member.handle).sort()).toEqual(roster);
       expect(row.rank).toBeNull(); expect(row.score).toBeNull();
       expect(row.sourceUrl).toContain('/leaderboard');
+      expect(team.artNotes.join(' ')).toMatch(/five|5/i);
+      expect(team.artNotes.join(' ')).toMatch(/six|6/i);
+      expect(individual.art!.src).not.toBe(team.art!.src);
     }
-    expect(getNewsIndex().competitors.find(c => c.id === team.entries[0].competition + '-' + team.entries[0].teamId)?.members.sort()).toEqual(roster);
-    expect(team.artNotes.join(' ')).toMatch(/five|5/i);
-    expect(team.artNotes.join(' ')).toMatch(/six|6/i);
-    expect(individual.art).not.toBeNull();
-    expect(individual.art!.src).not.toBe(team.art!.src);
   });
 });

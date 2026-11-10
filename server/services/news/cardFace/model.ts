@@ -2,6 +2,7 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
  * Date: 03-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: DATA -> VIEW MODEL for the TOPPS card design. Turns an enriched card (see sample-cards.json
  *          _doc) into exactly the strings and numbers the layout may print, and decides what is never
  *          printed. No coordinates, no colours beyond picking a tier style: those live in render.ts and
@@ -108,7 +109,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
 
   const contests: ContestVM[] = (card.contests ?? []).map((c: any) => {
     const teamName: string | null = c.team?.name ?? null, size: number | null = c.team?.size ?? null;
-    const solo = c.solo === true || size === 1;
+    const solo = family === 'competitor' && c.solo === true;
     const full: string = c.name ?? c.shortName ?? '';
     return {
     short: c.shortName ?? c.name, full, team: teamName, size,

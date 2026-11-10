@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
  * Date: 03-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
  * premiere gate and brand-aware share-card versions against production boundaries.
  * Fictional rows remain in tests.
@@ -12,7 +13,8 @@ import { newsBrandAt, type NewsBrandConfig } from '../shared/newsBrand';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 import { newsDispatchSchema } from '../server/services/news/newsStore';
 import { loadWikiInputs } from '../server/services/news/wikiInputs';
-import { boardFreshAt, snapshotsFromBoard } from '../server/services/news/cardBoards';
+import { boardFreshAt, cardBoardCache, freshCardRows, snapshotsFromBoard } from '../server/services/news/cardBoards';
+import { kaggleBoardRepository } from '../server/repositories/KaggleBoardRepository';
 import { cardFaceModel } from '../server/services/news/cardFace';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { resolveNewsMeta } from '../server/services/news/newsPresentation';
@@ -64,6 +66,28 @@ describe('fresh source boundary', () => {
     expect(snapshotsFromBoard('arc-2', latest, new Set(['123']), now)).toEqual([]);
     expect(snapshotsFromBoard('arc-3', { ...latest, rows: [...latest.rows, ...latest.rows] }, new Set(['123']), now)).toEqual([]);
   });
+  it('keeps the valid contest board when another contest document fails', async () => {
+    const fetched = new Date().toISOString();
+    const wiki = loadWikiInputs('content/news')!;
+    const slug = KAGGLE_COMPETITIONS['arc-3'].slug;
+    const loadBoard = vi.spyOn(kaggleBoardRepository, 'getDocuments').mockImplementation(async competition => {
+      if (competition === KAGGLE_COMPETITIONS['arc-2'].slug) throw new Error('Fixture board failure');
+      if (competition !== slug) return [];
+      return [{ name: 'latest', capturedAt: fetched, body: JSON.stringify({
+        competition: slug, fetched, rows: [[2, '15486995', 'Tufa Labs', '', 70.24, 180, 'driessmit1,jeroencottaar']],
+      }) }];
+    });
+    try {
+      const cache = cardBoardCache('fixture-contest-board-isolation', wiki.registry, getNewsIndex());
+      await cache.pending;
+      expect(freshCardRows(cache)).toEqual([expect.objectContaining({
+        competition: 'arc-3', teamId: '15486995', rank: 2, score: 70.24, members: ['driessmit1', 'jeroencottaar'],
+      })]);
+    } finally {
+      loadBoard.mockRestore();
+    }
+  });
+
 });
 it('holds the prepared identity until time and every official closing check pass', () => {
   const value: NewsBrandConfig = { ...config, enabled: true, closeChecks: config.requiredCompetitions.map(competition => ({ competition, status: 'closed',

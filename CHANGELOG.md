@@ -1,3 +1,7 @@
+### Version 9.164.36 · November 9, 2026
+
+- Keep contest standings independent when a board fails, and use a recorded roster for the same entry when a board omits its members. Final results carry their own data and competitor card dates reflect measured evidence. Fixed the card checks for confirmed solo entries, set design, roster-only dates and the current ledger back. Author: GPT-6 / Codex (reasoning effort not exposed).
+
 ### Version 9.164.35 · November 9, 2026
 
 - Issue one team card for each contest. Split the six shared team cards into twelve and linked the old pages to their replacements. Tufa’s ARC-AGI-2 card shows four members and its ARC-AGI-3 card shows six.

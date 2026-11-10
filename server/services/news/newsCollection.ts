@@ -2,6 +2,7 @@
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5
  * Date: 03-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
  * people, dated board snapshots, linked player/team histories and explicitly official final
  * results. Never exposes desk drafts or infers a player's departure from roster absence.
@@ -229,13 +230,15 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
         if (result.medal) honors.push({ ...credit, label: `${result.medal[0].toUpperCase()}${result.medal.slice(1)} medal`, kind: 'kaggle-medal' });
         honors.push(...result.awards.map(award => ({ ...credit, label: award.label, kind: award.kind })));
       }
-      const roster = result?.creditedHandles ?? snapshot?.members ?? notebook?.members ?? [];
+      // An empty board roster supplies no membership evidence. Keep the recorded roster
+      // for this exact entry when the board only provides standings.
+      const roster = result?.creditedHandles ?? (snapshot?.members.length ? snapshot.members : notebook?.members ?? []);
       const cardUrl = teamCard(ref, definition.season, definition.setId);
       return { competition: ref.competition, competitionId: ref.competitionId, teamId: ref.teamId,
         teamName: snapshot?.teamName ?? rosterObservation?.teamName ?? index.competitors.find(team => team.teamId === ref.teamId && team.competition === ref.competition)?.name ?? definition.name,
         observedAt: result?.confirmedAt ?? snapshot?.observedAt ?? rosterObservation?.lastObservedAt ?? notebook?.lastObservedAt ?? null, rank: result?.rank ?? snapshot?.rank ?? null,
-        score: result ? result.score : snapshot?.score ?? null, submissions: snapshot?.submissions ?? null,
-        fieldSize: boardNear(board, ref.competition, snapshot?.observedAt ?? null)?.teams ?? null,
+        score: result ? result.score : snapshot?.score ?? null, submissions: result ? null : snapshot?.submissions ?? null,
+        fieldSize: result ? null : boardNear(board, ref.competition, snapshot?.observedAt ?? null)?.teams ?? null,
         peakRank: (() => { const peak = board?.peaks[`${ref.competition}:${ref.teamId}`]?.rank; const now = result?.rank ?? snapshot?.rank; return peak != null && now != null && peak < now ? peak : null; })(),
         zone: result ? null : zoneOf(snapshot?.score ?? null, boardNear(board, ref.competition, snapshot?.observedAt ?? null)),
         sourceUrl: result?.sourceUrl ?? snapshot?.sourceUrl ?? rosterObservation?.sourceUrl ?? `https://www.kaggle.com/competitions/${encodeURIComponent(ref.competitionId)}/leaderboard?teamId=${encodeURIComponent(ref.teamId)}`,

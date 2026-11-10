@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed)
  * Date: 02-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Warm a bounded in-memory view of the existing board data store for
  * wiki-backed cards. Standings never enter the wiki; unavailable/stale readings
  * leave cards with source links. No Kaggle login, collector or scheduled job.
@@ -50,7 +51,7 @@ export function cardBoardCache(directory: string, registry: CardRegistry, index:
   const current = cache;
   // Warm once for every data-store generation; image requests can reuse the same
   // synchronous collection. Missing database rows are an honest unavailable state.
-  current.pending = Promise.all(competitions.map(async competition => {
+  current.pending = Promise.allSettled(competitions.map(async competition => {
     const info = KAGGLE_COMPETITIONS[competition];
     if (!info || info.format === 'judged') return [];
     const docs = await kaggleBoardRepository.getDocuments(info.slug, ['latest']);
@@ -59,8 +60,11 @@ export function cardBoardCache(directory: string, registry: CardRegistry, index:
     const latest = JSON.parse(body);
     return snapshotsFromBoard(competition, latest,
       new Set(refs.filter(row => row.competition === competition).map(row => row.teamId)));
-  })).then(rows => { current.rows = rows.flat(); current.generation++; current.error = undefined; })
-    .catch(() => { current.rows = []; current.generation++; current.error = 'Board source unavailable; use the linked Kaggle board.'; })
+  })).then(results => {
+    current.rows = results.flatMap(result => result.status === 'fulfilled' ? result.value : []);
+    current.generation++;
+    current.error = results.some(result => result.status === 'rejected') ? 'A contest board is unavailable; use its linked Kaggle board.' : undefined;
+  })
     .finally(() => { current.pending = undefined; });
   return current;
 }

@@ -2,9 +2,10 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
  * Date: 02-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): combined team-card roster label.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Invariants for the Card Cabinet adapter (cardFace/enrich.ts) and the set registry (cardFace/sets.ts) over the
  *          REAL collection: every card enriches, only the three kinds exist, no banned word reaches a printed string,
- *          solo entries carry no team name, each face has one as-of day, numbers are consistent, sponsor lines are all
+ *          verified solo entries carry no team name, standings dates follow their evidence, numbers are consistent, sponsor lines are all
  *          backed by the card's own highlights, and a season with no registry row is refused. Fast: one collection load.
  * SRP/DRY check: Pass. Reads the production collection and the same model the renderer uses; draws nothing.
  *
@@ -17,7 +18,7 @@ import { describe, expect, it } from 'vitest';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { enrichCollection, teamTitle } from '../server/services/news/cardFace/enrich';
 import { viewModel, printableName } from '../server/services/news/cardFace/model';
-import { loadSeriesFile, lookForSeason, setForSeason, sponsorProfile } from '../server/services/news/cardFace/sets';
+import { loadSeriesFile, lookForSeason, setById, setForSeason, sponsorProfile } from '../server/services/news/cardFace/sets';
 
 const collection = getNewsCollection();
 const cards = enrichCollection(collection);
@@ -65,35 +66,49 @@ describe('card face adapter over the real collection', () => {
     }
   });
 
-  it('gives a solo entry no team name and flags it', () => {
-    let solo = 0;
-    for (const c of cards) {
-      const own = new Set(collection.cards.find(x => x.id === c.id)!.accounts.map(a => a.label.toLowerCase()));
-      for (const k of c.contests) {
-        if (k.teamSize <= 1 || (c.kind !== 'team' && own.has(String(k.team?.name ?? k.roster[0]?.handle).toLowerCase()) && k.team === null)) { expect(k.team, c.id).toBeNull(); expect(k.solo).toBe(true); solo++; }
-        if (k.team) { expect(k.solo).toBe(false); expect(k.team.size).toBeGreaterThan(1); expect(own.has(k.team.name.toLowerCase()), `${c.id} prints its own handle as a team`).toBe(false); }
+  it('marks only a verified one-account competitor entry as solo', () => {
+    let soloCount = 0;
+    for (const [position, card] of cards.entries()) {
+      const source = collection.cards[position];
+      const handles = new Set(source.accounts.map(account => account.label.toLowerCase()));
+      const vm = viewModel(card);
+      for (const [index, entry] of source.entries.entries()) {
+        const model = card.contests[index];
+        const solo = card.kind === 'competitor' && entry.members.length === 1
+          && handles.has(entry.members[0].handle.toLowerCase());
+        expect(model.teamSize, card.id).toBe(entry.members.length || null);
+        expect(model.solo, card.id).toBe(solo);
+        expect(vm.contests[index].solo, card.id).toBe(solo);
+        expect(model.team?.id ?? null, card.id).toBe(solo ? null : entry.teamId);
+        if (solo) soloCount++;
       }
     }
-    expect(solo).toBeGreaterThan(0);
+    expect(soloCount).toBeGreaterThan(0);
   });
 
-  it('carries one as-of day per face, matching the newest standing', () => {
-    for (const c of cards) {
-      // One day per face: the newest standing, or the Kaggle career read when that is newer (30-Oct-2026: rank and medals are never newer than the date).
-      const stamps = [...c.contests.map((k: any) => k.asOf), c.kind === 'competitor' ? collection.cards.find(x => x.id === c.id)!.career?.checkedAt : null].filter(Boolean) as string[];
-      if (!stamps.length) { expect(c.asOfDate, c.id).toBeNull(); expect(c.status, c.id).toBeNull(); continue; }
-      expect(c.asOfDate, c.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      expect(c.asOf).toBe(stamps.reduce((a, b) => (Date.parse(b) > Date.parse(a) ? b : a)));
-      if (!c.contests.length) { expect(c.status, c.id).toBeNull(); continue; }     // a career read alone carries a date but no LIVE / FINAL stamp
-      expect(['live', 'final']).toContain(c.status);
-      const vm = viewModel(c, { now: Date.parse('2026-10-30T12:00:00Z') });        // before the close, so LIVE stays LIVE
-      expect(vm.stamp?.word.toLowerCase()).toBe(c.status);
+  it('dates measured standings and career data and leaves roster-only entries unstamped', () => {
+    for (const [position, card] of cards.entries()) {
+      const source = collection.cards[position];
+      const measured = source.entries.filter(entry => entry.status !== 'unavailable');
+      const stamps = [...measured.map(entry => entry.observedAt), card.kind === 'competitor' ? source.career?.checkedAt : null]
+        .filter((stamp): stamp is string => !!stamp);
+      const latest = stamps.sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
+      expect(card.asOf, card.id).toBe(latest);
+      if (latest) expect(card.asOfDate, card.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      else expect(card.asOfDate, card.id).toBeNull();
+
+      const status = measured.some(entry => entry.status === 'public') ? 'live'
+        : source.entries.length > 0 && source.entries.every(entry => entry.status === 'final') ? 'final' : null;
+      expect(card.status, card.id).toBe(status);
+      const vm = viewModel(card, { now: 0 });
+      expect(vm.stamp?.word ?? null, card.id).toBe(card.kind === 'team' ? null : status?.toUpperCase() ?? null);
     }
   });
 
-  it('draws series text from the set registry and sponsor lines only from cited highlights', () => {
-    for (const c of cards) {
-      const set = setForSeason(c.series.season)!;
+  it('uses the assigned set design and backs sponsor lines with cited highlights', () => {
+    for (const [position, c] of cards.entries()) {
+      const source = collection.cards[position];
+      const set = (source.setId ? setById(source.setId) : setForSeason(source.season))!;
       expect(c.series).toEqual({ name: set.name, publisher: set.publisher, set: set.setName, season: set.season });
       expect(c.look).toBe(set.look);
     }

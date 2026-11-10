@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex
  * Date: 02-November-2026
+ * 09-Nov-2026 (GPT-6 / Codex): verify distinct contest card routes.
  * PURPOSE: Exercise shareable competitor/team pages, linked records, artwork-led social previews and front/back PNG downloads,
  *          missing-card metadata and the crawlable Cabinet through production middleware
  * without exposing source-generation prompts, private paths or held manuscripts.
@@ -28,7 +29,7 @@ beforeAll(async () => {
   origin = `http://127.0.0.1:${address.port}`;
 });
 afterAll(async () => { await new Promise<void>(resolve => server.close(() => resolve())); });
-it('serves numbered individual/team cards independently of held article publication', async () => {
+it('serves individual and contest team cards independently of held article publication', async () => {
   const response = await fetch(`${origin}/api/news/cards`);
   expect(response.status).toBe(200);
   const text = await response.text();
@@ -36,10 +37,14 @@ it('serves numbered individual/team cards independently of held article publicat
   expect(data.cards.filter((card: { kind: string }) => card.kind === 'person').length).toBeGreaterThanOrEqual(65);
   expect(data.cards.filter((card: { kind: string }) => card.kind === 'team').length).toBeGreaterThanOrEqual(16);
   expect(text).not.toMatch(/\/Users\/|toolArguments|nativeToolArguments|feature-draft\.json/);
-  expect(data.cards.find((card: { id: string }) => card.id === 'team-domdolus-tolus-2026').honors).toEqual([]);
+  for (const [contest, teamId] of [['arc-2', '16559402'], ['arc-3', '16534961']]) {
+    const card = data.cards.find((card: { id: string }) => card.id === `team-domdolus-tolus-${contest}-2026`);
+    expect(card.entries).toEqual([expect.objectContaining({ competition: contest, teamId })]);
+    expect(card.honors).toEqual([]);
+  }
 });
 it('provides the exact selected card, a real PNG and a missing-card response', async () => {
-  const id = 'team-domdolus-tolus-2026';
+  const id = 'team-domdolus-tolus-arc-2-2026';
   const card = await (await fetch(`${origin}/api/news/cards/${id}`)).json();
   expect(card.id).toBe(id);
   const response = await fetch(`${origin}/api/news/cards/${id}/image.png`);
@@ -69,8 +74,8 @@ it('publishes the Cabinet in initial HTML and sitemap with complete names and ap
   expect(newsSitemapEntries().some(entry => entry.url.endsWith('/news/cards'))).toBe(true);
 });
 
-it('shares a team card with its own canonical page, exact preview and linked players', async () => {
-  const id = 'team-domdolus-tolus-2026';
+it('shares the team’s contest card with its own canonical page, preview and roster', async () => {
+  const id = 'team-domdolus-tolus-arc-2-2026';
   const card = getNewsCollection().cards.find(item => item.id === id)!;
   const preview = `${SITE_ORIGIN}${collectionSharePath(card)}`;
   const response = await fetch(`${origin}/news/cards/${id}`);
@@ -82,10 +87,9 @@ it('shares a team card with its own canonical page, exact preview and linked pla
   expect(html).toContain('name="twitter:card" content="summary_large_image"');
   expect(html).toContain('property="og:image:width" content="1200"');
   expect(html).toContain('property="og:image:height" content="630"');
-  expect(html).toContain('Domdolus Tolus — Team card');
-  expect(html).toContain('Team card');
-  expect(html).toContain('Current standings at Kaggle');
-  expect(html).toContain('/leaderboard?teamId=');
+  expect(html).toContain('Domdolus Tolus — ARC-AGI-2 card');
+  expect(html).toContain('Standings at Kaggle');
+  expect(html).toContain('/arc-prize-2026-arc-agi-2/leaderboard?teamId=16559402');
   expect(html).not.toMatch(/<article id="card-team-last-dance-2026"/);
   expect(html).not.toContain('content="noindex');
   expect(newsSitemapEntries().some(entry => entry.url === `${SITE_ORIGIN}/news/cards/${id}`)).toBe(true);

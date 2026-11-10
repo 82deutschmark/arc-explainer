@@ -3,6 +3,7 @@
  * Date: 03-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -197,7 +198,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 9;   // Team standings carry their own dates and status.
+export const RENDER_VERSION = 10;  // Card dates follow their measured evidence.
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';
