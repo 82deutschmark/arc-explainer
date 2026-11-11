@@ -1,3 +1,7 @@
+### Version 9.164.38 · November 11, 2026
+
+- Removed 27 old ARC draft/tool/archive pages and 32 public draft sources/builders, rather than leaving a findable archive. Git history retains the writing. Retired URLs and the technical draft comments API now return HTTP 410 with noindex before uploaded overlays, baked files or SPA fallbacks; removed the evidence page's stale draft link. Kept evidence, shared figures and unrelated published work. Explicit removal and merge authorized by the Boss; inventory and policy in `docs/arc-drafts.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.164.37 · November 9, 2026
 
 - Updated three competitor-card checks for Michal Tešnar’s commissioned character, Ivan Sorokin’s roster-only entry and the ledger’s career overflow notice. Verified the reverse still shows the saved standings and intact artwork. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).

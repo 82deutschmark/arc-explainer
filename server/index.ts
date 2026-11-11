@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
- * Date: 2026-10-27
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below
+ * Date: 11-November-2026
  * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -30,6 +30,7 @@ import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
 import { syncContributors } from './scripts/seedContributors.ts';
 import { metaTagInjector, seoRouting, seoHostPolicy } from './middleware/metaTagInjector.js';
+import { retiredArcDrafts } from './middleware/retiredArcDrafts';
 import { specialsOverlay } from './middleware/specialsOverlay';
 import { pruneOldOverlays } from './services/specialsOverlay';
 import './services/poetiq/PoetiqAgentsRunner.ts';
@@ -70,6 +71,8 @@ if (streamingConfig.frontendAdvertises && !streamingConfig.enabled) {
 
 const app = express();
 app.use(seoHostPolicy);
+// Retirement must win over uploaded overlays, static files and both SPA fallbacks.
+app.use(retiredArcDrafts);
 
 // Human ARC is a separate frontend, mounted before either SPA catch-all.
 mountHumanArc(app);
