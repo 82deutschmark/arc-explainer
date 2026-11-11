@@ -36,3 +36,15 @@ Static HTML has no compilation impact. Check internal links against actual publi
 - Chrome inspection confirmed the desktop reading layout, a narrow phone-width layout, the expandable essay archive, and the latest saved essay’s notice/link back to the desk. The old essay’s game images still loaded.
 - `git diff --check` passed. No application build or broad tests were needed for static HTML/navigation-only changes.
 - The temporary local static server was stopped and the browser viewport override reset; the test tab was closed.
+
+## Superseding order — November 11, 2026
+
+The Boss explicitly directed removal of the old drafts, not a public archive, and authorized merging. Remove the essay previews, technical draft/layout alternatives, paragraph pickers and public draft sources/builders. Git history is the recovery mechanism. Delete the writing desk. Keep evidence pages and shared figures; remove their draft links. Return HTTP 410 and noindex for retired URLs before overlay/static/SPA serving, including the retired document's comments API. Verify retirement against a stale overlay, encoded paths and preserved assets, build, then push the revised PR for parent review and authorized merge.
+
+### Retirement verification
+
+- Removed 27 draft/tool/desk HTML pages and 32 public draft source/build files; all 59 absent from the built static tree.
+- Four retirement HTTP checks exercise all 59 URLs, HEAD, encoded/case/trailing-slash requests, retired review API writes, and preserved evidence/media routes ahead of a simulated stale overlay/SPA handler.
+- Existing special overlay tests (22) and review comment storage tests (6) pass; 32 focused tests total.
+- Production build completed successfully, including Human ARC, Vite frontend and bundled Express server. Existing dependency-age and bundle-size warnings only.
+- Shared evidence and media preserved; removed stale draft hyperlink and outdated public chart README reference. No unrelated newsroom work, branches or worktrees changed.

@@ -1,6 +1,6 @@
 ### Version 9.164.38 · November 11, 2026
 
-- Organized ARC writing drafts behind one unlisted writing desk at `/specials/arc-drafts.html`: the current simple-language essay brief, saved essay archive, separate technical team-article references, editing tools and evidence links. Added small status/navigation notices to historical pages without changing original prose, sources, assets or addresses. The latest numbered essay is explicitly historical, not approved; no old text was deleted or published as a new essay. Source map and maintenance notes: `docs/arc-drafts.md`. Author: GPT-6.1 Sol.
+- Removed 27 old ARC draft/tool/archive pages and 32 public draft sources/builders, rather than leaving a findable archive. Git history retains the writing. Retired URLs and the technical draft comments API now return HTTP 410 with noindex before uploaded overlays, baked files or SPA fallbacks; removed the evidence page's stale draft link. Kept evidence, shared figures and unrelated published work. Explicit removal and merge authorized by the Boss; inventory and policy in `docs/arc-drafts.md`. Author: GPT-6.1 Sol.
 
 ### Version 9.164.37 · November 9, 2026
 

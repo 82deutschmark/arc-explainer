@@ -1,6 +1,6 @@
 /*
-Author: Claude Opus 5.5 Medium
-Date: 08-November-2026
+Author: GPT-6.1 Sol; Claude Opus 5.5 Medium
+Date: 11-November-2026
 PURPOSE: Storage for shared review comments on special pages (Google-Docs-style comments on the
          Turducken write-up first, so Son, the Boss and other reviewers all see the same notes).
          The HTTP layer is routes/reviewComments.ts; the page is
@@ -34,7 +34,7 @@ import { randomUUID } from 'node:crypto';
 export const REVIEW_DOCUMENTS: Record<string, { title: string; page: string }> = {
   'turducken-2026-11-06': {
     title: 'Stuffing the Turducken',
-    page: '/specials/2026-11-06-arc3-solution-draft.html',
+    page: '', // Retired; HTTP access is blocked by retiredArcDrafts middleware.
   },
 };
 
