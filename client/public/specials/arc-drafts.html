@@ -1,0 +1,90 @@
+<!doctype html>
+<!--
+Author: GPT-6.1 Sol
+Date: 11-November-2026
+PURPOSE: One unlisted desk for the ARC essay brief, archived essay drafts, technical article references and editing tools. Existing pages and sources remain intact; no publication or approval implied.
+SRP/DRY check: Pass — static navigation reuses existing special pages without duplicating article bodies.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ARC writing desk</title>
+<meta name="description" content="The current essay direction and an organized archive of ARC drafts.">
+<style>
+:root {color-scheme: light; font-family: Georgia, 'Times New Roman', serif; color: #242725; background: #faf8f2;}
+* {box-sizing: border-box;}
+body {max-width: 790px; margin: 0 auto; padding: 40px 22px 64px; line-height: 1.65;}
+h1 {font-size: clamp(2.1rem, 7vw, 3.1rem); line-height: 1.1; font-weight: normal; margin: 12px 0 24px;}
+h2 {font-size: 1.45rem; line-height: 1.3; margin-top: 0;}
+a {color: #205447; text-underline-offset: 3px;}
+a:hover {color: #913c22;}
+a:focus-visible, summary:focus-visible {outline: 3px solid #ae552e; outline-offset: 4px;}
+.kicker {font: .8rem/1.5 system-ui, sans-serif; text-transform: uppercase; letter-spacing: .13em; color: #595d57;}
+.brief {border-top: 3px solid #205447; border-bottom: 1px solid #ccc8ba; padding: 24px 0 18px; margin: 30px 0;}
+.status {font: .9rem/1.6 system-ui, sans-serif; color: #555b55;}
+section {margin: 32px 0;}
+details {border-top: 1px solid #ccc8ba; padding: 19px 0;}
+summary {font-size: 1.2rem; cursor: pointer;}
+ul {list-style: none; padding: 0;}
+li {margin: 16px 0;}
+small {display: block; font: .77rem/1.6 system-ui, sans-serif; color: #62665f; overflow-wrap: anywhere;}
+footer {border-top: 1px solid #ccc8ba; margin-top: 32px; padding-top: 16px;}
+</style>
+</head>
+<body>
+<header><p class="kicker">ARC Explainer · unlisted working material</p>
+<h1>ARC writing desk</h1>
+<p>Start here. The essay, the technical team article and their older versions are kept separate below.</p></header>
+<main>
+<section class="brief" aria-labelledby="direction">
+<p class="kicker">Current essay direction · November 11, 2026</p>
+<h2 id="direction">Intelligence, slop and creativity</h2>
+<p>Write simply about intelligence as the capacity to acquire capacity: learning how to do something you could not do before.</p>
+<p>AI lets us make things we could not make before. But being able to produce something does not mean we have made something worth making. What makes the work creative rather than slop?</p>
+<p>Personal experience can support the argument, but should not be the subject. Keep the focus on learning and creativity, not an autobiography.</p>
+<p class="status">This is the working brief, not a finished or approved essay. No saved draft below yet incorporates the latest direction in full.</p>
+</section>
+<section aria-labelledby="saved"><h2 id="saved">Latest saved essay</h2>
+<p><a href="2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html">Out of My Depth — version 13</a> is the latest numbered essay in the repository. It is saved for reference, not selected as the current or approved text. Its personal framing still needs to change.</p>
+<p><a href="arc3-paper-out-of-my-depth-v13-preview/article.md">Read its editable source</a>.</p></section>
+<details><summary>Essay draft archive</summary>
+<p class="status">Historical versions, retained unchanged beneath their archive notices. Titles can repeat; the dated filenames identify each version.</p>
+<ul><li><a href="2026-11-09-arc3-paper-out-of-my-depth-v13-preview.html">Out of My Depth</a><small>Draft 13</small></li>
+<li><a href="2026-11-09-arc3-paper-out-of-my-depth-v12-preview.html">Out of My Depth</a><small>Draft 12</small></li>
+<li><a href="2026-11-09-arc3-paper-out-of-my-depth-v11-preview.html">Out of My Depth</a><small>Draft 11</small></li>
+<li><a href="2026-11-09-arc3-paper-ruler-v10-preview.html">The Ruler Is a Person</a><small>Draft 10</small></li>
+<li><a href="2026-11-09-arc3-paper-human-learning-v9-preview.html">The Capacity to Acquire Capacity: Learning a New Domain with AI</a><small>Draft 9</small></li>
+<li><a href="2026-11-09-arc3-paper-human-learning-v8-preview.html">The Capacity to Acquire Capacity: Learning a New Domain with AI</a><small>Draft 8</small></li>
+<li><a href="2026-11-09-arc3-paper-track-boss-v6-preview.html">Slop Breaks a Rule: Letting the Game Say No</a><small>Draft 6</small></li>
+<li><a href="2026-11-09-arc3-paper-track-boss-v5-preview.html">Slop Breaks a Rule: Letting the Game Say No</a><small>Draft 5</small></li>
+<li><a href="2026-11-09-arc3-paper-track-boss-v4-preview.html">Slop Breaks a Rule: Letting the Game Say No</a><small>Draft 4</small></li>
+<li><a href="2026-11-08-arc3-paper-track-boss-preview.html">Fifth Is Evidence: An Outsider&#x27;s Field Notes from the ARC-AGI-3 Frontier</a><small>Draft 3</small></li>
+<li><a href="2026-11-08-arc3-paper-track-concept-preview.html">Check, Don&#x27;t Predict: Cheap Falsification Tools for an ARC-AGI-3 Agent</a><small>Alternative concept</small></li>
+<li><a href="2026-11-08-arc3-paper-track-preview.html">Universal hands, disposable languages: A small model writes its own tool language for every ARC-AGI-3 game</a><small>Draft 2</small></li>
+<li><a href="2026-11-08-arc-paper-track-draft.html">Universal hands, disposable languages: A small model writes its own DSL for every ARC-AGI-3 game</a><small>Draft 1</small></li></ul></details>
+<details><summary>Technical team article and design variants</summary>
+<p class="status">Stuffing the Turducken is the team’s technical write-up, not the same essay. These saved layouts, opening and thanks alternatives, and review copies remain reference material; this cleanup does not select a final design.</p>
+<ul><li><a href="2026-11-06-arc3-solution-draft-1950s.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up (1950s science-fiction version)</a><small>1950s science-fiction layout</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-cat.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up (cat version)</a><small>Cat illustration layout</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-classic.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up (classic illustrated version)</a><small>Classic illustrated layout</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-kaggle.html">Stuffing the Turducken: Markdown for Kaggle</a><small>Kaggle export</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-review.html">Review: Stuffing the Turducken</a><small>Editorial review</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-videos.html">Stuffing the Turducken: the two animated figures as video</a><small>Video figures</small></li>
+<li><a href="2026-11-06-arc3-solution-draft-white.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up (white-background version)</a><small>White-background layout</small></li>
+<li><a href="2026-11-06-arc3-solution-draft.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up</a><small>Original restored layout</small></li>
+<li><a href="2026-11-08-turducken-opening-pass.html">Stuffing the Turducken — Team Turducken’s ARC-AGI-3 Write-up</a><small>Opening alternative</small></li>
+<li><a href="2026-11-08-turducken-team-thanks-versions.html">Turducken: team and thanks versions</a><small>Team and thanks alternatives</small></li></ul></details>
+<details><summary>Editing tools and comparisons</summary>
+<p class="status">Older paragraph-selection workspaces. They are not current essay drafts.</p>
+<ul><li><a href="2026-11-09-arc3-paper-v5-desloppify-picker.html">Desloppifier · v5-body.md</a><small>Editing tool · version 5</small></li>
+<li><a href="2026-11-09-arc3-paper-v6-desloppify-picker.html">Desloppifier · v6-body.md</a><small>Editing tool · version 6</small></li></ul></details>
+<details><summary>Evidence and supporting material</summary>
+<p class="status">Support pages, not archived draft opinions. Their measurements retain the dates and qualifications stated in the pages; this cleanup does not reverify them.</p>
+<ul><li><a href="arc-paper-evidence.html">Paper evidence notes</a></li>
+<li><a href="arc-paper-sk48-trace-note.html">Saved game-trace note</a></li>
+<li><a href="arc3-solution-draft/article-draft.md">Technical article source</a></li>
+<li><a href="arc3-solution-draft/article-review-notes.md">Technical article review notes</a></li></ul></details>
+</main><footer><p class="status">Older writing and assets have not been deleted or moved. Existing links still work. These materials remain unlisted working copies.</p></footer>
+</body></html>

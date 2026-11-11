@@ -1,3 +1,7 @@
+### Version 9.164.38 · November 11, 2026
+
+- Organized ARC writing drafts behind one unlisted writing desk at `/specials/arc-drafts.html`: the current simple-language essay brief, saved essay archive, separate technical team-article references, editing tools and evidence links. Added small status/navigation notices to historical pages without changing original prose, sources, assets or addresses. The latest numbered essay is explicitly historical, not approved; no old text was deleted or published as a new essay. Source map and maintenance notes: `docs/arc-drafts.md`. Author: GPT-6.1 Sol.
+
 ### Version 9.164.37 · November 9, 2026
 
 - Updated three competitor-card checks for Michal Tešnar’s commissioned character, Ivan Sorokin’s roster-only entry and the ledger’s career overflow notice. Verified the reverse still shows the saved standings and intact artwork. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).
