@@ -80,6 +80,7 @@
     "/news-images/cards/2026/michael-poluektov-comic-v1.webp": "acc82d3660e5a270756bae96defdd3085e630bc80aca12613d6eac27153fddc2",
     "/news-images/cards/2026/michal-tesnar-tufa-card-v1.webp": "33f0dd19d41045b90b3171ccb34916bdcc07e71aff69dd1bb6c44fa4744ef125",
     "/news-images/cards/2026/minhtu123-comic-v1.webp": "d4aacf6e67bcbbe95272b3871488bc782c1272de6f9ed8647bdec8c263398cd9",
+    "/news-images/cards/2026/mithil-a-vakde-arc2-v4.webp": "b2a0c2cc5988a1a316758892117177df88e116957748982031d9086a468b8391",
     "/news-images/cards/2026/muhammad-yassir-comic-v1.webp": "28e8e219c6c52b8d37a98519f2e32cde94192f44e4c891dbb346819d1568030b",
     "/news-images/cards/2026/mutian-hong-explorer-v1.webp": "da13c40f186f3ee468f06ce87f03c34c0560c9f6b035decb0d91e8e695c3b294",
     "/news-images/cards/2026/name-x-team-v1.webp": "7cd383e50249752b99495ebae3b159130dd70eea22af553f5276f5e431d0195d",
@@ -6882,6 +6883,18 @@
           "sourceTitle": "Mithil A Vakde — Kaggle mdlARC model",
           "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
           "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "sourceTitle": "Mithil Vakde announces Looped mdlARC on X",
+          "sourceUrl": "https://x.com/evilmathkid/status/2120581574584582301",
+          "text": "Vakde reported scoring about 37% on ARC-AGI-2 with a roughly 100M-parameter looped transformer trained from scratch. He described a late improvement after adding loops."
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "sourceTitle": "Mithil Vakde’s Looped mdlARC write-up and competition appendix",
+          "sourceUrl": "https://mvakde.github.io/blog/looped-mdlarc/",
+          "text": "Vakde reports 37.08% for submission 57908007, scored after the board froze, and 35.69% for his earlier frozen-board submission. His competition recipe trains the solver on grids and credits LLM coding agents with writing training puzzle generators."
         }
       ],
       "firstObservedAt": "2026-10-09T03:21:39Z",
@@ -11996,7 +12009,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "a3fa1933090970fca2ffcc75afac7348649c1fa8cf641916dda10cac4eed339a",
+  "fingerprint": "d7dae6e11b2926dadef4cc547c12bc184882579e26c493e4c0170e412cec61e6",
   "people": [
     {
       "accounts": [
@@ -17102,9 +17115,17 @@
           "sourceTitle": "Mithil A Vakde — mdlARC model owner",
           "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
           "url": "https://www.kaggle.com/mithilavakde"
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "handle": "evilmathkid",
+          "platform": "x",
+          "sourceTitle": "Mithil Vakde’s homepage links to his X account",
+          "sourceUrl": "https://mvakde.github.io/",
+          "url": "https://x.com/evilmathkid"
         }
       ],
-      "briefing": "Mithil A Vakde's public Kaggle account, mithilavakde, dates its joining to December 2019 and describes itself as quietly working away.",
+      "briefing": "Mithil A Vakde competes on Kaggle as mithilavakde and posts as @evilmathkid. His Looped mdlARC project trains a transformer from scratch on ARC puzzle grids and reuses the same blocks across multiple passes.",
       "facts": [
         {
           "checkedAt": "2026-10-30T14:33:20Z",
@@ -17125,16 +17146,28 @@
           "text": "His profile counts two competitions, both entered solo and none in a team."
         },
         {
-          "checkedAt": "2026-10-30T14:33:20Z",
-          "sourceTitle": "Mithil A Vakde, active ARC Prize 2026 ARC-AGI-2 entry",
-          "sourceUrl": "https://www.kaggle.com/mithilavakde/competitions",
-          "text": "He is also entered in the active ARC Prize 2026 ARC-AGI-2 competition; any public standing there is provisional until the final close."
-        },
-        {
           "checkedAt": "2026-10-09T03:23:31Z",
           "sourceTitle": "Mithil A Vakde — Kaggle mdlARC model",
           "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
           "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "sourceTitle": "Looped mdlARC",
+          "sourceUrl": "https://mvakde.github.io/blog/looped-mdlarc/",
+          "text": "Vakde’s ARC-AGI-2 submission used a transformer trained from scratch on puzzle grids, with the same middle blocks reused across passes."
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "sourceTitle": "Mithil Vakde announces Looped mdlARC on X",
+          "sourceUrl": "https://x.com/evilmathkid/status/2120581574584582301",
+          "text": "Vakde reported scoring about 37% on ARC-AGI-2 with a roughly 100M-parameter looped transformer trained from scratch. He described a late improvement after adding loops."
+        },
+        {
+          "checkedAt": "2026-11-11T18:37:51+00:00",
+          "sourceTitle": "Mithil Vakde’s Looped mdlARC write-up and competition appendix",
+          "sourceUrl": "https://mvakde.github.io/blog/looped-mdlarc/",
+          "text": "Vakde reports 37.08% for submission 57908007, scored after the board froze, and 35.69% for his earlier frozen-board submission. His competition recipe trains the solver on grids and credits LLM coding agents with writing training puzzle generators."
         }
       ],
       "hallOfFame": [],
@@ -20333,8 +20366,17 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
-        "description": "Mithil A Vakde's public Kaggle account, mithilavakde, dates its joining to December 2019 and describes itself as quietly working away.",
+        "art": {
+          "alt": "Mithil A Vakde — ARC-AGI-2 chalkboard portrait",
+          "artworkId": "asset-b2a0c2cc5988a1a31675",
+          "commissionedAt": "2026-11-11T18:44:11+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/mithil-a-vakde-arc2-v4.webp"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-b2a0c2cc5988a1a31675.md"
+        ],
+        "description": "Mithil A Vakde competes on Kaggle as mithilavakde and posts as @evilmathkid. His Looped mdlARC project trains a transformer from scratch on ARC puzzle grids and reuses the same blocks across multiple passes.",
         "entries": [],
         "id": "person-mithil-a-vakde-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
@@ -24895,7 +24937,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-10T03:13:32+00:00",
+    "updatedAt": "2026-11-11T18:44:11+00:00",
     "version": 1
   },
   "results": [],

@@ -1,0 +1,79 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "dek": "The ARC-AGI-2 competitor reused the middle of his decoder six times. His write-up shows where the extra depth paid off, and where the right grid still got outvoted.",
+  "editorNote": "Reported and written by GPT-6.1 Sol (reasoning effort not exposed).",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Mithil Vakde puts his transformer on a loop",
+  "id": "mithil-looped-mdlarc",
+  "image": {
+    "alt": "Mithil Vakde works a grid console beside four ARC processors joined by a glowing loop.",
+    "caption": "Mithil Vakde sends a grid cell through the looped processor.",
+    "src": "/news-images/goose-a1818b5bffade044c9a9.webp"
+  },
+  "personIds": [
+    "mithil-a-vakde"
+  ],
+  "publishedAt": "2026-11-11T18:59:31+00:00",
+  "sections": [
+    {
+      "heading": "The middle goes round again",
+      "sourceIds": [
+        "writeup",
+        "code",
+        "announcement"
+      ],
+      "text": "Mithil Vakde’s unlooped ARC-AGI-2 models had gone as high as a billion parameters. In the final week of the competition he tried a different bet. He looped four blocks inside two much smaller models, both under a hundred million parameters. Each beat his best unlooped entry on its first submission, he writes.\n\nIn Looped mdlARC, the first two blocks run once, the middle four run six times, and the last two run once. That is 28 block applications from eight sets of weights. Every pass still costs compute. The loop works on the hidden state for the next token, so once the decoder writes a cell it moves on. During training, Vakde also scores early exits to give intermediate passes a learning signal."
+    },
+    {
+      "heading": "The test worth stealing",
+      "sourceIds": [
+        "writeup",
+        "data-squeeze"
+      ],
+      "text": "The Kaggle runs changed data, fine-tuning and decoding as well as architecture. Vakde’s separate ARC-AGI-1 experiment held the training set and parameter count fixed for the loop comparison. Training included the evaluation demonstrations with the test answers withheld. The unlooped 8.4-million-parameter model scored 47.44% top two. Six passes through the middle, with early-exit supervision, scored 66.25% and 62.00% across two seeds. A deeper unlooped stack also trailed both runs. The baselines were not tuned separately, so the useful bet for another solver is to try shared depth and measure it on its own data."
+    },
+    {
+      "heading": "Keep the demos. Cut the cross-talk.",
+      "sourceIds": [
+        "writeup",
+        "code"
+      ],
+      "text": "Vakde’s decoder sees colored grid cells and a handful of structural tokens. He trained it from random weights. For the competition model, large language models wrote generators that varied or combined solved public ARC-AGI-2 tasks, including public evaluation tasks. The decoder learned from the resulting grids. Vakde did not isolate the effect of those variations. His separate fixed-data runs used human-made tasks.\n\nLong demos were a separate engineering problem. In hub-and-spoke attention, each demonstration can see itself and the test input. The test tokens look back at all the demos through a separate attention operation. Skipping direct attention between demos lets the cost grow linearly as you add demos of comparable length. That helped fit the run on the L4s. Vakde did not measure its effect on accuracy against full attention."
+    },
+    {
+      "heading": "The right grid can still lose the vote",
+      "sourceIds": [
+        "writeup",
+        "data-squeeze"
+      ],
+      "text": "On Kaggle, the notebook fine-tunes the whole model on the hidden tasks’ demo pairs under a time cap. It then decodes a quick eight-view pass and goes to 40 views if the clock allows. Each view transforms the grid and leaves one demo out. The notebook reverses the transformations, discards copies of the input and votes on the remaining grids.\n\nIn the separate fixed-data experiments, the right answer often turned up somewhere in the pool and still missed the top two. Vakde already improved an ARC-AGI-2 Data Squeeze run by reranking candidates using the model’s own likelihoods. The competition submission used voting. For the next entrant, the experiment is to hold the decoder fixed and see whether the reranker keeps helping across seeds."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-11T18:37:51+00:00",
+      "id": "writeup",
+      "title": "Mithil Vakde’s Looped mdlARC write-up",
+      "url": "https://mvakde.github.io/blog/looped-mdlarc/"
+    },
+    {
+      "accessedAt": "2026-11-11T18:37:51+00:00",
+      "id": "code",
+      "title": "Released mdlARC layer schedule",
+      "url": "https://github.com/mvakde/mdlARC/blob/7b618bb11230d09bc8b8a0b62932cc9a09cf854c/src/tinytransformer.py#L1325-L1334"
+    },
+    {
+      "accessedAt": "2026-11-11T18:37:51+00:00",
+      "id": "announcement",
+      "title": "Mithil Vakde’s Looped mdlARC announcement",
+      "url": "https://x.com/evilmathkid/status/2120581574584582301"
+    },
+    {
+      "accessedAt": "2026-11-11T18:37:51+00:00",
+      "id": "data-squeeze",
+      "title": "ARC Data Squeeze benchmark and candidate-ranking rules",
+      "url": "https://github.com/mvakde/arc-data-squeeze"
+    }
+  ]
+}
