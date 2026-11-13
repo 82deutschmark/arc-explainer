@@ -1,0 +1,111 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-abdf1693cb72a26f88d3"
+    ],
+    "assets": [
+      {
+        "sha256": "abdf1693cb72a26f88d3c05626a3e6bcd477a9cc9169dd2ab64d89a2b6af4565",
+        "source": "client/public/news-images/last-dance-reasoning-researchers-v1.webp",
+        "target": "client/public/news-images/goose-abdf1693cb72a26f88d3.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/last-dance-reasoning-researchers",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "dek": "The Austrian research crew trimmed a giant model, gave its games a turn in the chair, and found the hardest puzzle was learning the rules.",
+      "editorNote": "The Loose Goose sports desk · manuscript Claude Sonnet 5.5 Medium; edited GPT-6 / Codex (reasoning effort not exposed).",
+      "generatedBy": "gpt-6-codex",
+      "headline": "The Last Dance shrinks a giant to fit the floor",
+      "id": "last-dance-reasoning-researchers",
+      "image": {
+        "alt": "Three grid-suited dancers and a grey goose measure a glowing puzzle creature on a graphics card in a retro-futurist workshop.",
+        "caption": "The Goose imagines The Last Dance trimming a giant model while their games take turns.",
+        "src": "/news-images/goose-abdf1693cb72a26f88d3.webp"
+      },
+      "personIds": [
+        "fses91",
+        "lukas-aichberger",
+        "mykyta-ielanskyi",
+        "gklambauer"
+      ],
+      "publishedAt": "2026-11-13T23:00:00+00:00",
+      "sections": [
+        {
+          "heading": "A giant takes the floor",
+          "sourceIds": [
+            "writeup",
+            "board"
+          ],
+          "text": "The Last Dance took a giant model to the ARC-AGI-3 floor and started cutting it down to size. Then the researchers gave its games a rota. Their verdict: the model solved most games once it knew the rules, while some still resisted. Finding those rules is the fight.\n\nFlorian Sestak, Lukas Aichberger, Mykyta Ielanskyi and Günter Klambauer signed the team’s write-up from the Institute for Machine Learning at Johannes Kepler University in Linz. The Last Dance finished seventh on the public leaderboard. The private board will have its own say."
+        },
+        {
+          "heading": "A very large model, a very small room",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The crew began with NVIDIA’s Qwen3.8-Flash-Next, a model with hundreds of specialist parts. They watched the full model play through their own game harness, tried different ways to prune it and kept the best-performing recipe. More than a third of the specialists went. The smaller model left more room for game memory on the graphics card.\n\nThe team credits roughly half its progress to fitting more model and memory on the card, and half to the harness around it. In its timeline, the largest listed jump came from memory changes."
+        },
+        {
+          "heading": "Memory first, then manners",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The dancers started from Tufa Labs’ Duck harness and kept its idea of one Python tool that lives through the game. They cut their instructions back and removed a request to use as few moves as possible. When they put that request back, the team reports, the agent took fewer moves but cleared fewer levels.\n\nOne reminder survived at the end of each game message: use code for counts and positions instead of reading the frame by eye."
+        },
+        {
+          "heading": "Musical chairs for games",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The server could run 25 games at once. Each game got an opening stretch; later, a stalled game could yield its seat to a waiting or more promising one, then return with its conversation and notes intact. The team weighted priority by the score still available and the chance of clearing the current level soon."
+        },
+        {
+          "heading": "The model that needed a rulebook",
+          "sourceIds": [
+            "writeup"
+          ],
+          "text": "The team wrote down the rules of each public game and gave the model a short hint for each level. Its score jumped. The researchers’ reading: playing the games was less of a problem once the model understood them; working out the rules was the bigger gap.\n\nEven the rulebook could not fix everything. In two scrolling games, the agent lost track of the scene as the camera moved. The team tried stitching views into a map. It helped on the first scrolling level, but the overall score did not change, and the map stayed out of the final entry.\n\nOther experiments came up short: three attempts at building game models did not clear more levels, and about a third of model-written summary requests returned nothing usable. The team continued stuck conversations with a question about what the model believed and what blocked it.\n\nThe Last Dance has put its notes on the table. Who will teach the next model to discover the rules for itself?"
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-13T17:57:00+00:00",
+          "id": "writeup",
+          "title": "The Last Dance — public leaderboard solution overview",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-7-short-overview"
+        },
+        {
+          "accessedAt": "2026-11-13T17:57:00+00:00",
+          "id": "board",
+          "title": "ARC-AGI-3 public leaderboard",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+        }
+      ]
+    },
+    "storyId": "last-dance-reasoning-researchers",
+    "storySha256": "84cb3184cb0e6bc62a3d2fda006299c2796accb59d0f109a2b221726623fb5fd",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "abdf1693cb72a26f88d3c05626a3e6bcd477a9cc9169dd2ab64d89a2b6af4565",
+        "source": "client/public/news-images/last-dance-reasoning-researchers-v1.webp",
+        "target": "client/public/news-images/goose-abdf1693cb72a26f88d3.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "The read-only independent Claude session checked this manuscript against the full public Kaggle write-up. Its four findings were checked against that source: the opening now says most games while some resisted; the largest listed jump is explicitly attributed to the timeline, which differs from the summary; the summary failure rate and stuck-conversation method were corrected. Kaggle CLI confirmed the team byline, source and seventh public place; public leaderboard corroborated team 16021367. The write-up byline does not establish the human identity of the gklambauer Kaggle account; its card is the reviewed goose stand-in. The ordered card row matches the filed personIds. New clean image was compared with each character reference and inspected at phone width: three distinct dancers and the account goose, no invented human or Grandmaster regalia. The single nameplate matches the registry and the sourced public place; the scene is a metaphor. This review binds the exact story and finished artwork.",
+    "reviewedAt": "2026-11-13T18:06:53.439236+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed); separate Claude CLI editorial review",
+    "storySha256": "84cb3184cb0e6bc62a3d2fda006299c2796accb59d0f109a2b221726623fb5fd"
+  }
+}

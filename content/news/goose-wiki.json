@@ -14,14 +14,12 @@
     "/news-images/2026-11-02-infinity-lightning-leap-v1.webp": "c2324aaa8bbd199bbef47ca209d5aa8b2b445b8f17fb7c66ffc72ab3e3511c3c",
     "/news-images/cards/2026/2026-10-30-darragh-hanley-nvidia-tactician-v3.webp": "35f7a424c3d1068ae754ad072b9048b90e1c7b69ce531fe40087468085ce6873",
     "/news-images/cards/2026/2026-10-30-dz-retro-space-v1.webp": "064050acbc5deeeefb1d888cedd6b068b3758f71266353715b4830aecdd6dd0e",
-    "/news-images/cards/2026/2026-10-30-fses91-cyber-face-v2.webp": "c95e30453d3f4a54ccbdba37f5b100cd91af764caf5d5b9d4bde4e46e8f3869e",
     "/news-images/cards/2026/2026-10-30-gal-kaplun-nvidia-grid-pilot-v1.webp": "8693024ddcea429c7d286884af14fd58aea0364cf923f0fd2865022f9519c405",
     "/news-images/cards/2026/2026-10-30-isaka-tsuyoshi-retro-space-v2.webp": "d0dd64765c6a993eca0c62c148db7c1e48698f758582f4f8505005ecabb2c507",
     "/news-images/cards/2026/2026-10-30-ivan-sorokin-nvidia-prism-architect-v1.webp": "13d7715e411beba175c9d68dc978a321c9c08514e39d639346d904db6dadfeb5",
     "/news-images/cards/2026/2026-10-30-jean-francois-puget-cpmp-ponytail-v3.webp": "1ee58454399676dabbaae4ca43c13205830045c5cfda7cde1af9091e52845737",
     "/news-images/cards/2026/2026-10-30-jeroen-cottaar-tufa-citadel-v4.webp": "a0fa111fa7e5e2bb4f4dd1269ca57e23ccd2544a83893e3f041b9007bbb74e9d",
     "/news-images/cards/2026/2026-10-30-lukas-aichberger-retro-space-v1.webp": "5a55166c0e3de4d5a873a2cc08d7d8e9640911074d653a081f93a8729d986005",
-    "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2.webp": "2165b99acfbb53dd7a6cd683396d54f48fd3bc3c0f52e46d0fed48591c5e9a69",
     "/news-images/cards/2026/2026-10-30-punkcyber-retro-space-v2.webp": "72e1f19c4f2ecc247aa8565d4db8eb967c8261c1d22b546bcdc731c1a5fa2c5b",
     "/news-images/cards/2026/2026-10-31-chan-kha-vu-arc-climb-v3.webp": "23b3faa6ae967397920a78191635ff2b04537b10f0a52f4737eff67f702428cb",
     "/news-images/cards/2026/2026-11-04-david-sarrat-gemma-v1.webp": "1c6b5d87866ea4eb8434e03331f29bc63c5c89f99f7e2737311970924c88cda7",
@@ -50,6 +48,7 @@
     "/news-images/cards/2026/elad-sarafian-flame-v1.webp": "d5d7055789e12b8fabdf3844edd75c66509218e453a4f50e1e6bfb5eb06e3c9c",
     "/news-images/cards/2026/eneskulak-comic-v1.webp": "95baebde50614f820ef1801957ffd8fbcd3cb75e511c846c4d920ea2e9c91d54",
     "/news-images/cards/2026/florencia-goose-v1.webp": "f6e8cba1ea091a293c25a6fe4fa3a9d3710dbb2dc20f5599c7f6df04a99cdcb1",
+    "/news-images/cards/2026/florian-sestak-grid-dancer.png": "00564f849263bc1c421418e46aa7995b56a55da1696c0cc97ea3848c6c3b95d8",
     "/news-images/cards/2026/fshindo-comic-v1.webp": "663f5753ef8d0272d6af2231b35b214df1ebe64c8ddcded88e53abb76bd94c08",
     "/news-images/cards/2026/gilberto-titericz-comic-v1.webp": "77a9d58e5b6bc6ae1c4a2e549132abfb5b5c6b8a9b09062bfbf36b73724d4aa2",
     "/news-images/cards/2026/gklambauer-goose-v1.webp": "f87196ae1e7b8f2a26ef898b327e5764bdefdce03776957a2ba73b53a53640a4",
@@ -83,6 +82,7 @@
     "/news-images/cards/2026/mithil-a-vakde-arc2-v4.webp": "b2a0c2cc5988a1a316758892117177df88e116957748982031d9086a468b8391",
     "/news-images/cards/2026/muhammad-yassir-comic-v1.webp": "28e8e219c6c52b8d37a98519f2e32cde94192f44e4c891dbb346819d1568030b",
     "/news-images/cards/2026/mutian-hong-explorer-v1.webp": "da13c40f186f3ee468f06ce87f03c34c0560c9f6b035decb0d91e8e695c3b294",
+    "/news-images/cards/2026/mykyta-ielanskyi-grid-dancer.png": "960656bcd1efaaff8a3c94857966f8733a126841abf72078f3b61bd3ad2b2614",
     "/news-images/cards/2026/name-x-team-v1.webp": "7cd383e50249752b99495ebae3b159130dd70eea22af553f5276f5e431d0195d",
     "/news-images/cards/2026/natalia-turtle-v1.webp": "30a0af78edce4c82a1fa80e26cc01cdf93b5593736a8aea56ef099f65ced6207",
     "/news-images/cards/2026/nguyennguyen599-cats-v1.webp": "199ea8280aacc1ba89db10b3ff93b2ef477df895cfcfaa93e4d2813fa0243fda",
@@ -12009,7 +12009,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "d7dae6e11b2926dadef4cc547c12bc184882579e26c493e4c0170e412cec61e6",
+  "fingerprint": "4fbe208cc8d1db262c90b57786718bb03cf54f6e7678284356d0d7d9710cb38f",
   "people": [
     {
       "accounts": [
@@ -20852,13 +20852,15 @@
       },
       {
         "art": {
-          "alt": "FSES91 as a cyberpunk illustration: a cap, goggles and a cyber-rig with a glowing holographic shark and puzzle grids",
-          "artworkId": "2026-10-30-fses91-cyber-face-v2",
-          "commissionedAt": "2026-10-30T19:12:00.000Z",
-          "credit": "Commissioned ARC Daily character illustration",
-          "src": "/news-images/cards/2026/2026-10-30-fses91-cyber-face-v2.webp"
+          "alt": "Florian Sestak grid dancer",
+          "artworkId": "asset-00564f849263bc1c4214",
+          "commissionedAt": "2026-11-13T18:03:01+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/florian-sestak-grid-dancer.png"
         },
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-00564f849263bc1c4214.md"
+        ],
         "description": "Florian Sestak competes on Kaggle as @fses91. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
         "entries": [],
         "id": "person-fses91-2026",
@@ -21022,13 +21024,15 @@
       },
       {
         "art": {
-          "alt": "Mykyta Ielanskyi as a bearded cyberpunk engineer with a graphics-card rig and puzzle-grid panels",
-          "artworkId": "2026-10-30-mykyta-ielanskyi-cyber-face-v2",
-          "commissionedAt": "2026-10-30T19:12:00.000Z",
-          "credit": "Commissioned ARC Daily character illustration",
-          "src": "/news-images/cards/2026/2026-10-30-mykyta-ielanskyi-cyber-face-v2.webp"
+          "alt": "Mykyta Ielanskyi grid dancer",
+          "artworkId": "asset-960656bcd1efaaff8a3c",
+          "commissionedAt": "2026-11-13T18:03:02+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/mykyta-ielanskyi-grid-dancer.png"
         },
-        "artNotes": [],
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-960656bcd1efaaff8a3c.md"
+        ],
         "description": "Kaggle shows Mykyta Ielanskyi (handle dwellement0baser) as a Research Scientist at IML JKU in Linz, Upper Austria, and dates his account joining to April 2020.",
         "entries": [],
         "id": "person-mykyta-ielanskyi-2026",
@@ -24937,7 +24941,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-11T18:44:11+00:00",
+    "updatedAt": "2026-11-13T18:03:02+00:00",
     "version": 1
   },
   "results": [],
