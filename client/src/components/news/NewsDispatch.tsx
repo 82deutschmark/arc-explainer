@@ -12,6 +12,17 @@ import { competitionName, newsDate, reportedPeople, writerCredit, NEWS_NAME } fr
 import { StoryPeopleCards } from './NewsPeople';
 import { NewsEditorCredit } from './NewsEditorCredit';
 import { useEffect, useRef } from 'react';
+import { ON_THE_PRIVATE_ART } from '@shared/onThePrivateArt';
+
+function VideoArtGallery() {
+  return <section className="news-video-art" aria-label="Art from On the Private">
+    <h3>Inside the nightclub</h3>
+    <p>The original stills behind the video, from Dries at the microphone to the last dance.</p>
+    <div className="news-video-art-grid">{ON_THE_PRIVATE_ART.map(item => <figure key={item.src}>
+      <a href={item.src}><img src={item.src} alt={item.caption} loading="lazy" /></a><figcaption>{item.caption}</figcaption>
+    </figure>)}</div>
+  </section>;
+}
 
 /** Keep the scene book in the article's scroll flow as its lazy images load. */
 function SceneBook() {
@@ -53,7 +64,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [], showPeopl
         const source = dispatch.sources.find(item => item.id === id);
         return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;
       })}</div>
-      {dispatch.id === 'on-the-private' && index === 0 && <SceneBook />}
+      {dispatch.id === 'on-the-private' && index === 0 && <><VideoArtGallery /><SceneBook /></>}
     </section>)}
     {dispatch.interpretation && <p className="news-dispatch-take"><strong>{NEWS_NAME}’s take</strong> {dispatch.interpretation}</p>}
     {dispatch.commissionedBy && <NewsEditorCredit note={dispatch.editorNote} />}

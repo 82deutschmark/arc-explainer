@@ -2,7 +2,7 @@
   "package": {
     "version": 1,
     "storyId": "on-the-private",
-    "storySha256": "8a9cc4713f3d206bd05b3066c83a168ea87afd151098fb0adfdcdcc4d02fa85a",
+    "storySha256": "df36e3a3cecacd92101d47ba8c3bac633445b73f3f530677b897b440cf9ab347",
     "canonicalUrl": "https://arc.markbarney.net/news/on-the-private",
     "dispatch": {
       "id": "on-the-private",
@@ -39,14 +39,33 @@
           "url": "https://www.youtube.com/watch?v=rXnfAxmIZO8",
           "accessedAt": "2026-11-13T16:24:09+00:00"
         }
-      ]
+      ],
+      "image": {
+        "src": "/news-images/goose-2042ae585076eddc486d.jpg",
+        "alt": "The band performs in a neon club as competitors, two dogs and farm animals watch from the rail.",
+        "caption": "The band takes the stage: an original still made for On the Private."
+      }
     },
-    "assets": [],
-    "artworkRecords": []
+    "assets": [
+      {
+        "source": "client/public/news-images/on-the-private-gallery/ensemble-rail-cyber-biker-animals.jpg",
+        "target": "client/public/news-images/goose-2042ae585076eddc486d.jpg",
+        "sha256": "2042ae585076eddc486de6c1aecd1763532de02daaca795877484ea9c06c75a3"
+      }
+    ],
+    "artworkRecords": [
+      "artwork/asset-2042ae585076eddc486d"
+    ]
   },
   "review": {
-    "storySha256": "8a9cc4713f3d206bd05b3066c83a168ea87afd151098fb0adfdcdcc4d02fa85a",
-    "assets": [],
+    "storySha256": "df36e3a3cecacd92101d47ba8c3bac633445b73f3f530677b897b440cf9ab347",
+    "assets": [
+      {
+        "source": "client/public/news-images/on-the-private-gallery/ensemble-rail-cyber-biker-animals.jpg",
+        "target": "client/public/news-images/goose-2042ae585076eddc486d.jpg",
+        "sha256": "2042ae585076eddc486de6c1aecd1763532de02daaca795877484ea9c06c75a3"
+      }
+    ],
     "checks": [
       "facts",
       "identity-and-roster",
@@ -55,7 +74,7 @@
       "copy"
     ],
     "reviewedBy": "GPT-6.1 Terra / Codex (reasoning effort not exposed); independent Claude editorial review",
-    "reviewedAt": "2026-11-13T19:28:55+00:00",
-    "notes": "Independent Claude review checked the revised feature against the supplied video description, end-card credits and the Boss’s explicit correction and band concept. Reviewer asked to make the fictional framing clear, verify Dries’s identity and show the scene book promised by the text. The dek now says this is imagined; Dries Smit is verified in the wiki and tagged, and the host embeds the existing scene book. End card visually checked: Lyria 3 Pro, Wan 3.0, HeyGen Avatar IV and Claude Fable 5.2 Medium are credited as stated; Boss corrected the Codex model identification to GPT-6.1 Terra. The scene book is the existing owner-supplied widescreen book and has its own production review; historical public board frames are labelled as such. Original illustrated article art was removed at the Boss’s direction; no new scene or overlay is substituted. The closing explanation was shortened at the Boss’s request; the public score reflects part of the test set and final results a separate hidden part."
+    "reviewedAt": "2026-11-13T19:36:22+00:00",
+    "notes": "Independent Claude review checked the revised feature against the supplied video description, end-card credits and the Boss’s explicit correction and band concept. Reviewer asked to make the fictional framing clear, verify Dries’s identity and show the scene book promised by the text. The dek now says this is imagined; Dries Smit is verified in the wiki and tagged, and the host embeds the existing scene book. End card visually checked: Lyria 3 Pro, Wan 3.0, HeyGen Avatar IV and Claude Fable 5.2 Medium are credited as stated; Boss corrected the Codex model identification to GPT-6.1 Terra. The scene book is the existing owner-supplied widescreen book and has its own production review; historical public board frames are labelled as such. Original illustrated article art was removed at the Boss’s direction; no new scene or overlay is substituted. The closing explanation was shortened at the Boss’s request; the public score reflects part of the test set and final results a separate hidden part. The Boss requested the actual video stills as the focus. The lead is the original corrected rail scene used for the video, from the existing production handoff; the frame was checked visually and contains no leaderboard scores. The gallery uses the published video production stills, not the explicitly rejected rail and flirt drafts. Original PNGs remain on T4; public JPEGs are registered. The existing scene book stays intact."
   }
 }

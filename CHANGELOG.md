@@ -1,3 +1,7 @@
+### Version 9.164.40 · November 13, 2026
+
+- Lead the On the Private feature with its original band artwork and show the video’s clean stills in a gallery ahead of the scene book. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).
+
 ### Version 9.164.39 · November 13, 2026
 
 - Put the complete On the Private scene book and its production-model credits on the existing Friday feature, and corrected the writer credit. The public-board frames remain identified as production-era images. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).

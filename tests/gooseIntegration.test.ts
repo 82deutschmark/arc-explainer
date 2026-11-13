@@ -10,6 +10,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { ON_THE_PRIVATE_ART } from '../shared/onThePrivateArt';
 import config from '../shared/newsBrand.json';
 import { newsBrandAt, type NewsBrandConfig } from '../shared/newsBrand';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
@@ -134,6 +135,11 @@ it('keeps the music feature, credits and complete scene book together', () => {
   const html = resolveNewsMeta('/news/on-the-private')!.tags.bodyHtml!;
   expect(html).toContain('GPT-6.1 Terra / Codex');
   expect(html).toContain('Lyria 3 Pro');
+  expect(html).toContain('Inside the nightclub');
+  expect(html).toContain('ensemble-formation.jpg');
+  expect(ON_THE_PRIVATE_ART).toHaveLength(10);
+  expect(ON_THE_PRIVATE_ART.every(item => existsSync(join(process.cwd(), 'client/public', item.src)))).toBe(true);
+  expect(html).toContain('goose-2042ae585076eddc486d.jpg');
   expect(html).toContain('/news-scene-books/on-the-private/index.html');
   const book = join(process.cwd(), 'client/public/news-scene-books/on-the-private');
   const markup = readFileSync(join(book, 'index.html'), 'utf8');
