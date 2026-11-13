@@ -1,3 +1,7 @@
+### Version 9.164.41 · November 13, 2026
+
+- Stop the music-video production gallery and expanding scene-book iframe from flooding the news page. Both client and initial server HTML keep the story’s single cover, video link and an optional standalone scene-book link. Author: GPT-6.1 Sol / Codex.
+
 ### Version 9.164.40 · November 13, 2026
 
 - Lead the On the Private feature with its original band artwork and show the video’s clean stills in a gallery ahead of the scene book. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).

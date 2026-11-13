@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
+ * Date: 13-November-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -392,4 +392,28 @@ test('each team card is tied to one contest and the old Tufa link lists both con
     expect(card.entries[0].members).toHaveLength(count);
     expect(card.entries[0].members.some(member => member.personId === 'dlorah')).toBe(contest === 'arc-3');
   }
+});
+
+// Use the published archive: the shared dispatch used to inject the entire production
+// gallery and a growing iframe wherever it appeared, including closed older stories.
+test('music production stills stay behind a link on the front page and permanent story', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const dispatch = index.dispatches!.find(story => story.id === 'on-the-private')!;
+  expect(dispatch).toBeDefined();
+  const clientFront = render(News, '/news', index);
+  const clientStory = render(NewsArticle, '/news/on-the-private', index);
+  const serverStory = resolveNewsMeta('/news/on-the-private')!.tags.bodyHtml!;
+  const serverFront = resolveNewsMeta('/news')!.tags.bodyHtml!;
+  for (const html of [clientFront, clientStory, serverStory]) {
+    expect(html).toContain('href="/news-scene-books/on-the-private/index.html"');
+    expect(html).toContain('rXnfAxmIZO8');
+    expect(html).toContain(dispatch.image!.src);
+  }
+  for (const html of [clientFront, clientStory, serverStory, serverFront]) {
+    expect(html).not.toContain('<iframe');
+    expect(html).not.toContain('news-video-art-grid');
+    expect(html).not.toContain('/news-images/on-the-private-gallery/');
+  }
+  expect(clientStory.match(new RegExp(dispatch.image!.src, 'g'))?.length).toBe(2); // one image, linked to itself
 });
