@@ -1,8 +1,9 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Date: 13-November-2026
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
+ * Updated by GPT-6.1 Terra / Codex (reasoning effort not exposed).
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -250,6 +251,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6-codex': 'GPT-6 / Codex',
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
+  'gpt-6.1-terra': 'GPT-6.1 Terra / Codex',
   'gpt-6.1-terra-extra-high': 'GPT-6.1 Terra Extra High',
   'gpt-6-astra-extra-high': 'GPT-6 Astra Extra high',
   'gpt-6-luna': 'GPT-6 Luna',

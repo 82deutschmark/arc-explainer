@@ -1,40 +1,37 @@
 {
-  "commissionedBy": "mark-barney",
-  "competition": "arc-3",
-  "dek": "A Friday love song for everyone who has stared at a beautiful public leaderboard score and wondered whether it will survive meeting the unseen data.",
-  "editorNote": "The Loose Goose sports desk · GPT-6 / Codex (reasoning effort not exposed)",
-  "generatedBy": "gpt-6-codex",
-  "headline": "Will your score love you on the private?",
   "id": "on-the-private",
-  "image": {
-    "alt": "A microphone faces a glowing heart-shaped computer chip in a neon nightclub, with a locked door beyond.",
-    "caption": "A love song, a leaderboard score and a locked door: the Goose imagines the private test.",
-    "src": "/news-images/goose-8f2dd0e6af4b85d96bde.jpg"
-  },
-  "personIds": [],
+  "competition": "arc-3",
   "publishedAt": "2026-11-13T16:24:09+00:00",
+  "generatedBy": "gpt-6.1-terra",
+  "commissionedBy": "mark-barney",
+  "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra / Codex (reasoning effort not exposed)",
+  "headline": "Will you love me on the private?",
+  "dek": "A Friday fun day music video imagines the boys from Tufa as a boy band, with Dries Smit at the microphone.",
+  "personIds": [
+    "dries-smit"
+  ],
   "sections": [
     {
-      "heading": "A love song for your submission",
+      "heading": "The song and the scene book",
+      "text": "What if the boys from Tufa Labs were a boy band? Put their charismatic lead singer Dries Smit on the microphone, give him a public score to fall for, and let the private leaderboard play hard to get. Welcome to On the Private, our Friday fun day love song. Watch the full video, then explore the scene book below, shot by shot.\n\nMark Barney produced the video. Lyria 3 Pro made the music and voice; GPT-6.1 Terra / Codex created the stills; Wan 3.0 and HeyGen Avatar IV animated the scenes; and Claude Fable 5.2 Medium drew the graphics in code and cut the video. The characters come from The Loose Goose, an Autoresearch-Arena publication.",
       "sourceIds": [
         "video"
-      ],
-      "text": "You check your submission. You check it again. The score is gorgeous, the leaderboard is glowing, and you are already imagining a future together.\n\nBut there is another board waiting behind the velvet rope.\n\nFor Friday fun day, we bring you On the Private, the full widescreen music video: a love song to a Kaggle leaderboard score, with one very nervous question at its heart. Will that lovely public result still be there for you when the unseen test data gets its turn?"
+      ]
     },
     {
-      "heading": "The private board stays locked",
+      "heading": "New to Kaggle?",
+      "text": "Kaggle’s public leaderboard shows scores on part of the test data; final results use a separate hidden part. A model that shines on the public board may not do as well on the private one.",
       "sourceIds": [
         "video"
-      ],
-      "text": "The setting is a nightclub for the ARC-AGI-3 interactive AI competition, populated by competitors and their mascots. The public leaderboard shines; the private board stays locked. The video mixes AI-generated artwork and animation with lyrics and leaderboard graphics made with computer code. Mark Barney produced it for Autoresearch-Arena / VoynichLabs.\n\nAnyone who has watched a promising score wobble on fresh data knows the fear. Repeatedly choosing submissions by their public leaderboard scores can make a team’s choices fit that visible slice too closely. A score that shines there may not hold up on the separate private test data: that is the worry behind overfitting. The singer isn’t asking for forever, just for the relationship to make it through the holdout. Until the private evaluation is revealed, the song leaves the big question unanswered.\n\nPut on the full video, spare a thought for your favourite submission, and hope the relationship generalises."
+      ]
     }
   ],
   "sources": [
     {
-      "accessedAt": "2026-11-13T16:24:09+00:00",
       "id": "video",
       "title": "Watch On the Private — full widescreen music video",
-      "url": "https://www.youtube.com/watch?v=rXnfAxmIZO8"
+      "url": "https://www.youtube.com/watch?v=rXnfAxmIZO8",
+      "accessedAt": "2026-11-13T16:24:09+00:00"
     }
   ]
 }

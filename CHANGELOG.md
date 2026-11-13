@@ -1,3 +1,7 @@
+### Version 9.164.39 · November 13, 2026
+
+- Put the complete On the Private scene book and its production-model credits on the existing Friday feature, and corrected the writer credit. The public-board frames remain identified as production-era images. Author: GPT-6.1 Terra / Codex (reasoning effort not exposed).
+
 ### Version 9.164.38 · November 11, 2026
 
 - Removed 27 old ARC draft/tool/archive pages and 32 public draft sources/builders, rather than leaving a findable archive. Git history retains the writing. Retired URLs and the technical draft comments API now return HTTP 410 with noindex before uploaded overlays, baked files or SPA fallbacks; removed the evidence page's stale draft link. Kept evidence, shared figures and unrelated published work. Explicit removal and merge authorized by the Boss; inventory and policy in `docs/arc-drafts.md`. Author: GPT-6.1 Sol.

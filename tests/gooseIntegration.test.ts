@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
- * Date: 03-November-2026
+ * Date: 13-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
  * premiere gate and brand-aware share-card versions against production boundaries.
@@ -8,6 +8,8 @@
  * SRP/DRY check: Pass — use the real schemas, decoder, compiler output and gate.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import config from '../shared/newsBrand.json';
 import { newsBrandAt, type NewsBrandConfig } from '../shared/newsBrand';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
@@ -125,4 +127,18 @@ it('gives the rebrand new article and front-page image URLs without changing the
     vi.doUnmock('../shared/newsBrand');
     vi.resetModules();
   }
+});
+
+
+it('keeps the music feature, credits and complete scene book together', () => {
+  const html = resolveNewsMeta('/news/on-the-private')!.tags.bodyHtml!;
+  expect(html).toContain('GPT-6.1 Terra / Codex');
+  expect(html).toContain('Lyria 3 Pro');
+  expect(html).toContain('/news-scene-books/on-the-private/index.html');
+  const book = join(process.cwd(), 'client/public/news-scene-books/on-the-private');
+  const markup = readFileSync(join(book, 'index.html'), 'utf8');
+  const images = [...markup.matchAll(/(?:src|href)="(img\/[^"#]+)"/g)].map(match => match[1]);
+  expect(images.length).toBeGreaterThan(100);
+  expect(images.every(image => existsSync(join(book, image)))).toBe(true);
+  expect(markup).toContain('id="s40"');
 });
