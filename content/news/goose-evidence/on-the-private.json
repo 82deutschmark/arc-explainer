@@ -1,0 +1,78 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-8f2dd0e6af4b85d96bde"
+    ],
+    "assets": [
+      {
+        "sha256": "8f2dd0e6af4b85d96bde50c73de7e0448aea2fbea425c5adcc50ee5a9bce8208",
+        "source": "client/public/news-images/on-the-private.jpg",
+        "target": "client/public/news-images/goose-8f2dd0e6af4b85d96bde.jpg"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/on-the-private",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-3",
+      "dek": "A Friday love song for everyone who has stared at a beautiful public leaderboard score and wondered whether it will survive meeting the unseen data.",
+      "editorNote": "The Loose Goose sports desk · GPT-6 / Codex (reasoning effort not exposed)",
+      "generatedBy": "gpt-6-codex",
+      "headline": "Will your score love you on the private?",
+      "id": "on-the-private",
+      "image": {
+        "alt": "A microphone faces a glowing heart-shaped computer chip in a neon nightclub, with a locked door beyond.",
+        "caption": "A love song, a leaderboard score and a locked door: the Goose imagines the private test.",
+        "src": "/news-images/goose-8f2dd0e6af4b85d96bde.jpg"
+      },
+      "personIds": [],
+      "publishedAt": "2026-11-13T16:24:09+00:00",
+      "sections": [
+        {
+          "heading": "A love song for your submission",
+          "sourceIds": [
+            "video"
+          ],
+          "text": "You check your submission. You check it again. The score is gorgeous, the leaderboard is glowing, and you are already imagining a future together.\n\nBut there is another board waiting behind the velvet rope.\n\nFor Friday fun day, we bring you On the Private, the full widescreen music video: a love song to a Kaggle leaderboard score, with one very nervous question at its heart. Will that lovely public result still be there for you when the unseen test data gets its turn?"
+        },
+        {
+          "heading": "The private board stays locked",
+          "sourceIds": [
+            "video"
+          ],
+          "text": "The setting is a nightclub for the ARC-AGI-3 interactive AI competition, populated by competitors and their mascots. The public leaderboard shines; the private board stays locked. The video mixes AI-generated artwork and animation with lyrics and leaderboard graphics made with computer code. Mark Barney produced it for Autoresearch-Arena / VoynichLabs.\n\nAnyone who has watched a promising score wobble on fresh data knows the fear. Repeatedly choosing submissions by their public leaderboard scores can make a team’s choices fit that visible slice too closely. A score that shines there may not hold up on the separate private test data: that is the worry behind overfitting. The singer isn’t asking for forever, just for the relationship to make it through the holdout. Until the private evaluation is revealed, the song leaves the big question unanswered.\n\nPut on the full video, spare a thought for your favourite submission, and hope the relationship generalises."
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-13T16:24:09+00:00",
+          "id": "video",
+          "title": "Watch On the Private — full widescreen music video",
+          "url": "https://www.youtube.com/watch?v=rXnfAxmIZO8"
+        }
+      ]
+    },
+    "storyId": "on-the-private",
+    "storySha256": "e08424799b74376b1f63385b0258f3d9e9634da48f7dc2825d5ecff4ab3db7f9",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "8f2dd0e6af4b85d96bde50c73de7e0448aea2fbea425c5adcc50ee5a9bce8208",
+        "source": "client/public/news-images/on-the-private.jpg",
+        "target": "client/public/news-images/goose-8f2dd0e6af4b85d96bde.jpg"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Separate Claude CLI read-only review checked the manuscript against the supplied public video description and original lyrics; its first pass requested a clearer explanation of public-board overfitting, verification of the lyrics and a competition explanation. The release editor checked the original lyrics and revised the explanation. A second Claude pass recommended publication after plain-language edits: ARC-AGI-3 is identified as an interactive AI competition and the wording about computer code was simplified. Public video page and producer credit checked. New symbolic illustration generated for this feature from the video stage concept as palette reference; actual final image visually reviewed against that reference for style, composition and story, with no people, invented scores, text or implied private result. Identity, leaderboard-place overlays and tier checks are not applicable to this character-free image. The thumbnail with inconsistent historic numbers was not used. Writer ID adjusted to the host’s GPT-6 Codex identifier; prose and artwork unchanged.",
+    "reviewedAt": "2026-11-13T16:25:02+00:00",
+    "reviewedBy": "GPT-6 / Codex (reasoning effort not exposed); separate Claude CLI editorial review",
+    "storySha256": "e08424799b74376b1f63385b0258f3d9e9634da48f7dc2825d5ecff4ab3db7f9"
+  }
+}
