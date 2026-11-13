@@ -2,7 +2,7 @@
   "package": {
     "version": 1,
     "storyId": "on-the-private",
-    "storySha256": "df36e3a3cecacd92101d47ba8c3bac633445b73f3f530677b897b440cf9ab347",
+    "storySha256": "cab53ae2626f0b3bfa254124336fc9d0faec7de72b9d61805cced884c22fda31",
     "canonicalUrl": "https://arc.markbarney.net/news/on-the-private",
     "dispatch": {
       "id": "on-the-private",
@@ -12,14 +12,21 @@
       "commissionedBy": "mark-barney",
       "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra / Codex (reasoning effort not exposed)",
       "headline": "Will you love me on the private?",
-      "dek": "A Friday fun day music video imagines the boys from Tufa as a boy band, with Dries Smit at the microphone.",
+      "dek": "A leaderboard love song and a Friday experiment in what the latest music, image and video models can do together.",
       "personIds": [
-        "dries-smit"
+        "dries-smit",
+        "jeroen-cottaar",
+        "stefano-viel",
+        "yi-chia-chen",
+        "jean-francois-puget",
+        "darragh-hanley",
+        "son-pham",
+        "mark-barney"
       ],
       "sections": [
         {
-          "heading": "The song and the scene book",
-          "text": "What if the boys from Tufa Labs were a boy band? Put their charismatic lead singer Dries Smit on the microphone, give him a public score to fall for, and let the private leaderboard play hard to get. Welcome to On the Private, our Friday fun day love song. Watch the full video, then explore the scene book below, shot by shot.\n\nMark Barney produced the video. Lyria 3 Pro made the music and voice; GPT-6.1 Terra / Codex created the stills; Wan 3.0 and HeyGen Avatar IV animated the scenes; and Claude Fable 5.2 Medium drew the graphics in code and cut the video. The characters come from The Loose Goose, an Autoresearch-Arena publication.",
+          "heading": "The model test",
+          "text": "Mark Barney likes to try new models as they drop. This time the test was a music video about falling for your public leaderboard score. Dries Smit gets the mic, with a little boy-band nod to Tufa Labs. Thanks to Dries, Tufa Labs and Yi-Chia Chen for being such great sports.\n\nLyria 3 Pro made the song and vocals. GPT-6.1 Terra / Codex made the stills, and Wan 3.0 animated the other clips. HeyGen Avatar IV was used only for the late close-up where Dries sings the final hook. Claude Fable 5.2 Medium drew the leaderboard and lyrics in code and cut the video. The scene book shows how those pieces came together.",
           "sourceIds": [
             "video"
           ]
@@ -58,7 +65,7 @@
     ]
   },
   "review": {
-    "storySha256": "df36e3a3cecacd92101d47ba8c3bac633445b73f3f530677b897b440cf9ab347",
+    "storySha256": "cab53ae2626f0b3bfa254124336fc9d0faec7de72b9d61805cced884c22fda31",
     "assets": [
       {
         "source": "client/public/news-images/on-the-private-gallery/ensemble-rail-cyber-biker-animals.jpg",
@@ -74,7 +81,7 @@
       "copy"
     ],
     "reviewedBy": "GPT-6.1 Terra / Codex (reasoning effort not exposed); independent Claude editorial review",
-    "reviewedAt": "2026-11-13T19:36:22+00:00",
-    "notes": "Independent Claude review checked the revised feature against the supplied video description, end-card credits and the Boss’s explicit correction and band concept. Reviewer asked to make the fictional framing clear, verify Dries’s identity and show the scene book promised by the text. The dek now says this is imagined; Dries Smit is verified in the wiki and tagged, and the host embeds the existing scene book. End card visually checked: Lyria 3 Pro, Wan 3.0, HeyGen Avatar IV and Claude Fable 5.2 Medium are credited as stated; Boss corrected the Codex model identification to GPT-6.1 Terra. The scene book is the existing owner-supplied widescreen book and has its own production review; historical public board frames are labelled as such. Original illustrated article art was removed at the Boss’s direction; no new scene or overlay is substituted. The closing explanation was shortened at the Boss’s request; the public score reflects part of the test set and final results a separate hidden part. The Boss requested the actual video stills as the focus. The lead is the original corrected rail scene used for the video, from the existing production handoff; the frame was checked visually and contains no leaderboard scores. The gallery uses the published video production stills, not the explicitly rejected rail and flirt drafts. Original PNGs remain on T4; public JPEGs are registered. The existing scene book stays intact."
+    "reviewedAt": "2026-11-13T20:15:08+00:00",
+    "notes": "Independent Claude review checked the revised feature against the supplied video description, end-card credits and the Boss’s explicit correction and band concept. Reviewer asked to make the fictional framing clear, verify Dries’s identity and show the scene book promised by the text. The dek now says this is imagined; Dries Smit is verified in the wiki and tagged, and the host embeds the existing scene book. End card visually checked: Lyria 3 Pro, Wan 3.0, HeyGen Avatar IV and Claude Fable 5.2 Medium are credited as stated; Boss corrected the Codex model identification to GPT-6.1 Terra. The scene book is the existing owner-supplied widescreen book and has its own production review; historical public board frames are labelled as such. Original illustrated article art was removed at the Boss’s direction; no new scene or overlay is substituted. The closing explanation was shortened at the Boss’s request; the public score reflects part of the test set and final results a separate hidden part. The Boss requested the actual video stills as the focus. The lead is the original corrected rail scene used for the video, from the existing production handoff; the frame was checked visually and contains no leaderboard scores. The gallery uses the published video production stills, not the explicitly rejected rail and flirt drafts. Original PNGs remain on T4; public JPEGs are registered. The existing scene book stays intact. The refreshed copy was independently reviewed against the producer’s notes and the end card. The production handoff credits Wan for the other clips and identifies the rail cameos. The scene book identifies the singing close-up at shot 37 and Mark and Son at shot 40. Chen’s two rabbits represent one person. The cast was checked against the Cabinet. The producer’s GPT-6.1 Terra credit correction still applies."
   }
 }

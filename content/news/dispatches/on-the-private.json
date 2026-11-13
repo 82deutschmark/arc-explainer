@@ -6,14 +6,21 @@
   "commissionedBy": "mark-barney",
   "editorNote": "The Loose Goose sports desk · GPT-6.1 Terra / Codex (reasoning effort not exposed)",
   "headline": "Will you love me on the private?",
-  "dek": "A Friday fun day music video imagines the boys from Tufa as a boy band, with Dries Smit at the microphone.",
+  "dek": "A leaderboard love song and a Friday experiment in what the latest music, image and video models can do together.",
   "personIds": [
-    "dries-smit"
+    "dries-smit",
+    "jeroen-cottaar",
+    "stefano-viel",
+    "yi-chia-chen",
+    "jean-francois-puget",
+    "darragh-hanley",
+    "son-pham",
+    "mark-barney"
   ],
   "sections": [
     {
-      "heading": "The song and the scene book",
-      "text": "What if the boys from Tufa Labs were a boy band? Put their charismatic lead singer Dries Smit on the microphone, give him a public score to fall for, and let the private leaderboard play hard to get. Welcome to On the Private, our Friday fun day love song. Watch the full video, then explore the scene book below, shot by shot.\n\nMark Barney produced the video. Lyria 3 Pro made the music and voice; GPT-6.1 Terra / Codex created the stills; Wan 3.0 and HeyGen Avatar IV animated the scenes; and Claude Fable 5.2 Medium drew the graphics in code and cut the video. The characters come from The Loose Goose, an Autoresearch-Arena publication.",
+      "heading": "The model test",
+      "text": "Mark Barney likes to try new models as they drop. This time the test was a music video about falling for your public leaderboard score. Dries Smit gets the mic, with a little boy-band nod to Tufa Labs. Thanks to Dries, Tufa Labs and Yi-Chia Chen for being such great sports.\n\nLyria 3 Pro made the song and vocals. GPT-6.1 Terra / Codex made the stills, and Wan 3.0 animated the other clips. HeyGen Avatar IV was used only for the late close-up where Dries sings the final hook. Claude Fable 5.2 Medium drew the leaderboard and lyrics in code and cut the video. The scene book shows how those pieces came together.",
       "sourceIds": [
         "video"
       ]
