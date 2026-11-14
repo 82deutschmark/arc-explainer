@@ -1,6 +1,9 @@
 /*
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild)
- * Date: 2026-10-30
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the card page's data flows in two balanced columns (wide panels span both) instead of a
+ *          ragged auto-fit grid; panel tables scroll inside their panel; the checklist scrolls sideways only on narrow
+ *          screens, so its column headers stick to the top of the page on wide ones.
  * PURPOSE: The Card Cabinet as a collector's binder and price-guide checklist, on a dark card-shop table.
  *          The cards are the page: faces sit in sleeves in a tight grid, controls are one dense bar, data is
  *          monospaced and ruled like a price guide. Tier colours (Novice green, Contributor blue, Expert
@@ -109,7 +112,10 @@
 .cb-medal { font: 700 10px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
 
 /* The checklist: a price guide. */
-.cb-sheet-wrap { margin-top: 8px; overflow-x: auto; border: 1px solid var(--cb-line); border-radius: 4px; }
+.cb-sheet-wrap { margin-top: 8px; border: 1px solid var(--cb-line); border-radius: 4px; }
+/* A sideways scroller would trap the sticky headers, so the checklist only scrolls sideways where it cannot fit. */
+@media (max-width: 1100px) { .cb-sheet-wrap { overflow-x: auto; } }
+@media (min-width: 1101px) { .cb-sheet td { white-space: normal; } }
 .cb-sheet { width: 100%; border-collapse: collapse; font: 12px/1.35 var(--sans); }
 .cb-sheet th, .cb-sheet td { padding: 4px 8px; border-bottom: 1px solid var(--cb-line); text-align: left; vertical-align: top; white-space: nowrap; }
 .cb-sheet thead th { position: sticky; top: 0; background: var(--cb-panel2); color: var(--cb-dim); font: 700 10px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
@@ -141,9 +147,15 @@
 .cb-actions a, .cb-actions button { color: var(--cb-ink); text-decoration: underline; text-underline-offset: 3px; }
 .cb-copy button { padding: 0; border: 0; background: none; color: var(--cb-ink); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .cb-copy input { width: 100%; margin-top: 4px; padding: 4px; border: 1px solid var(--cb-line2); background: var(--cb-bg2); color: var(--cb-ink); font: 11px var(--mono); }
-.cb-data { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; align-items: start; }
+.cb-data { columns: 2 320px; column-gap: 10px; }
+.cb-data > * { break-inside: avoid; margin: 0 0 10px; }
 .cb-panel { padding: 8px 10px 10px; border: 1px solid var(--cb-line2); border-top: 3px solid var(--tone, var(--cb-ink)); background: var(--cb-panel); border-radius: 3px; min-width: 0; }
-.cb-panel.is-wide, .cb-shelf { grid-column: 1 / -1; }
+.cb-panel.is-wide, .cb-shelf { column-span: all; }
+/* Tables inside a panel scroll inside it rather than spilling out of it. */
+.cb-panel .cb-sheet-wrap { margin: 0; overflow-x: auto; border: 0; border-radius: 0; }
+.cb-panel .cb-table { min-width: 460px; }
+.cb-standing-links { margin-top: 6px; }
+.cb-standing-links a { text-decoration: underline; text-underline-offset: 3px; }
 .cb-panel h2, .cb-shelf h2 { margin: 0 0 6px; color: var(--cb-dim); font: 700 10px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
 .cb-shelf h2 i { margin-left: 6px; color: var(--cb-amber); font: normal 11px var(--mono); }
 .cb-vitals { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px 12px; margin: 0; }

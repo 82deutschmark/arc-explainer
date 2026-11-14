@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): pages are served from the source shell, so the suite runs without a production build.
+ *          Share addresses are computed with the collection, as the routes compute them (team cards print their teammates).
  * 09-Nov-2026 (GPT-6 / Codex): verify distinct contest card routes.
  * PURPOSE: Exercise shareable competitor/team pages, linked records, artwork-led social previews and front/back PNG downloads,
  *          missing-card metadata and the crawlable Cabinet through production middleware
@@ -14,7 +16,7 @@ import sharp from 'sharp';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { mountNews } from '../server/routes/news';
 import { resolveNewsMeta, newsSitemapEntries } from '../server/services/news/newsPresentation';
-import { metaTagInjector } from '../server/middleware/metaTagInjector';
+import { sourceShellMetaTagInjector } from './helpers/pageShell';
 import { SITE_ORIGIN } from '../shared/seo';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { collectionShareAlt, collectionSharePath } from '../shared/newsCollection';
@@ -22,7 +24,7 @@ let server: Server;
 let origin: string;
 beforeAll(async () => {
   const app = express(); mountNews(app);
-  app.use(metaTagInjector);
+  app.use(sourceShellMetaTagInjector);
   await new Promise<void>(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
   const address = server.address();
   if (!address || typeof address === 'string') throw Error('No collection test server');
@@ -77,7 +79,7 @@ it('publishes the Cabinet in initial HTML and sitemap with complete names and ap
 it('shares the team’s contest card with its own canonical page, preview and roster', async () => {
   const id = 'team-domdolus-tolus-arc-2-2026';
   const card = getNewsCollection().cards.find(item => item.id === id)!;
-  const preview = `${SITE_ORIGIN}${collectionSharePath(card)}`;
+  const preview = `${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}`;
   const response = await fetch(`${origin}/news/cards/${id}`);
   expect(response.status).toBe(200);
   const html = await response.text();
@@ -96,7 +98,7 @@ it('shares the team’s contest card with its own canonical page, preview and ro
 });
 it('serves the actual team artwork preview inline at landscape size and refreshes stale versions', async () => {
   const card = getNewsCollection().cards.find(item => item.id === 'team-turducken-2026')!;
-  const response = await fetch(`${origin}${collectionSharePath(card)}`);
+  const response = await fetch(`${origin}${collectionSharePath(card, getNewsCollection())}`);
   expect(response.status).toBe(200);
   expect(response.headers.get('content-type')).toContain('image/png');
   expect(response.headers.get('content-disposition')).toContain('inline');
@@ -104,7 +106,7 @@ it('serves the actual team artwork preview inline at landscape size and refreshe
   expect(await sharp(Buffer.from(await response.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
   const stale = await fetch(`${origin}/api/news/cards/${card.id}/share.png?v=old`, { redirect: 'manual' });
   expect(stale.status).toBe(302);
-  expect(stale.headers.get('location')).toBe(collectionSharePath(card));
+  expect(stale.headers.get('location')).toBe(collectionSharePath(card, getNewsCollection()));
   expect((await fetch(`${origin}/api/news/cards/unknown/share.png`)).status).toBe(404);
 }, 20_000);
 it('competitor links use that competitor’s portrait preview and sourced career description', async () => {
@@ -113,11 +115,11 @@ it('competitor links use that competitor’s portrait preview and sourced career
   const html = await response.text();
   expect(response.status).toBe(200);
   expect(html).toContain('Son Pham — Kaggle Expert card');
-  expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
-  expect(html).toContain(`name="twitter:image" content="${SITE_ORIGIN}${collectionSharePath(card)}"`);
+  expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}"`);
+  expect(html).toContain(`name="twitter:image" content="${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}"`);
   expect(html).toContain(collectionShareAlt(card).replaceAll('&', '&amp;').replaceAll('"', '&quot;'));
   expect(html).toContain('Competitions Expert');
-  const preview = await fetch(`${origin}${collectionSharePath(card)}`);
+  const preview = await fetch(`${origin}${collectionSharePath(card, getNewsCollection())}`);
   expect(await sharp(Buffer.from(await preview.arrayBuffer())).metadata()).toMatchObject({ width: 1200, height: 630 });
 }, 20_000);
 it('shares competitor history and links current and earlier teams to their cards', async () => {

@@ -1,6 +1,8 @@
 /**
  * Author: Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 2026-11-01
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 2026-11-01
+ * 14-Nov-2026 (Claude Opus 5.5): headlines link to each story's permanent page (wirePath), which prints the
+ *          headline as its <h1>; with nothing filed this week What's News says when the desk paused.
  * PURPOSE: The wire desk on the page. GPT-6 Luna files short sourced stories several times a day
  *          (scripts/newsroom_wire.py, docs/newsroom/WIRE_DESK.md); the front page's What's News
  *          column runs the newest ones as briefs, topped up with the editions' summaries while
@@ -12,7 +14,7 @@
  *          clockUtc, edition summaries through the shared edition helpers.
  */
 import { Link } from 'wouter';
-import { competitionName, competitorPath, editionLabel, newsArticlePath, newsDate, personPath, wirePath, writerCredit,
+import { competitionName, competitorPath, editionLabel, newsArticlePath, newsDate, personPath, wireDeskPausedSince, wirePath, writerCredit,
   type NewsArticle, type NewsIndex, type NewsPerson, type NewsWireStory } from '@shared/news';
 import { sortedArticles } from './NewsDesk';
 import { clockUtc } from './NewsMarkets';
@@ -55,23 +57,24 @@ export function WhatsNews({ index }: { index: NewsIndex }) {
   const wire = sortedWire(index.wire ?? []).slice(0, 7);
   const editions = (['arc-3', 'arc-2'] as const).map(competition => sortedArticles(index.articles).find(article => article.competition === competition))
     .filter((article): article is NewsArticle => !!article);
+  const pausedSince = wireDeskPausedSince(index);
   return <>
     <h2 className="news-flag"><span>What’s news</span><em>The wire</em></h2>
     {wire.map(story => <WireBrief key={story.id} story={story} people={people} />)}
     {wire.length < 4 && editions.map(article => <EditionBrief key={article.id} article={article} />)}
-    {!wire.length && <p className="news-muted">The wire desk files short stories on the boards several times a day.</p>}
+    {!wire.length && <p className="news-muted">{pausedSince ? `The wire desk paused after its ${newsDate(pausedSince)} filing.` : 'The wire desk files short stories on the boards several times a day.'}</p>}
     <Link href={wirePath()} className="news-read">The full wire →</Link>
   </>;
 }
 
-/** One wire story in full, with its picture, sources and the teams and people it names. */
-export function WireStory({ story, index }: { story: NewsWireStory; index: NewsIndex }) {
+/** One wire story in full, with its picture, sources and the teams and people it names. On its own page the headline is the <h1>. */
+export function WireStory({ story, index, permalink = false }: { story: NewsWireStory; index: NewsIndex; permalink?: boolean }) {
   const people = (index.people ?? []).filter(person => story.personIds.includes(person.id));
   const teams = index.competitors.filter(record => record.competition === story.competition && story.teamIds.includes(record.teamId));
   return <article id={story.id} className="news-story news-wire-story">
     <StoryPicture story={story} people={index.people ?? []} />
     <div className="news-kicker"><span>{competitionName(story.competition)}</span><span>The wire · {filedAt(story.publishedAt)}</span></div>
-    <h2><a href={`#${story.id}`}>{story.headline}</a></h2>
+    {permalink ? <h1 className="news-article-title">{story.headline}</h1> : <h2><Link href={wirePath(story.id)}>{story.headline}</Link></h2>}
     {story.sections.map((section, number) => <section key={number}>
       {section.heading && <h3>{section.heading}</h3>}
       <p className="news-dispatch-text">{section.text}</p>

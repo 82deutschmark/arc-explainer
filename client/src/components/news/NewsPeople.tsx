@@ -1,18 +1,23 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 02-November-2026; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards)
+ * Date: 02-November-2026; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards); 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): story strips and team rosters read the shared useNewsCollection() query and show each
+ *          person's card for that contest (their ARC-3 set card on ARC-3 pages) through cardForPerson().
+ * 14-Nov-2026 (Claude Opus 5.5, front): "In this story" holds each card's place while the card list loads,
+ *          as TeamRosterCards does, instead of flashing portrait tiles that then jump to cards.
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): removed PersonCard, used only by the retired /news/people directory.
  * PURPOSE: Reusable person pieces for competition reporting: faces (Hall of Fame crop or saved
  *          Kaggle picture, initials when a person has neither), roster chips, the "in this story"
- *          subject cards for every reported person, directory cards and honors that link to the person's Hall of Fame cards.
+ *          subject cards for every reported person and honors that link to the person's Hall of Fame cards.
  *          Used by the people pages, team rosters, editions, dispatches and the community desk.
  * SRP/DRY check: Pass — exact verified account matches reuse the shared identity ledger; every
  *          view draws a person through PersonPortrait so a face looks the same everywhere.
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { collectionRoleLabel, collectionShareVersion, type NewsCollection } from '@shared/newsCollection';
-import { displayPortrait, personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { cardForPerson, collectionRoleLabel, collectionShareVersion } from '@shared/newsCollection';
+import { useNewsCollection } from '@/hooks/useNewsCollection';
+import { displayPortrait, personPath, peopleForTeam, newsDate, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
 
@@ -36,16 +41,14 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
  * tile. Selection is shared with the initial HTML, not inferred from team rosters.
  */
 export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]; competition: NewsCompetition }) {
-  const cabinet = useQuery<NewsCollection>({
-    queryKey: ['/api/news/cards'], staleTime: 60_000,
-    queryFn: async () => {
-      const response = await fetch('/api/news/cards');
-      if (!response.ok) throw new Error('The cards could not be loaded.');
-      return response.json() as Promise<NewsCollection>;
-    },
-  });
+  const cabinet = useNewsCollection();
   if (!people.length) return null;
-  const cardOf = (person: NewsPerson) => cabinet.data?.cards.find(card => card.kind === 'person' && card.personId === person.id);
+  // While the card list loads, hold each card's place so the strip does not jump from tiles to cards.
+  if (cabinet.isLoading) return <section className="news-story-people" aria-label="In this story" aria-busy="true">
+    <h2 className="news-story-people-label">In this story</h2>
+    <div className="news-story-cards">{people.map(person => <span key={person.id} className="news-story-card" aria-hidden="true"><span className="news-story-card-skeleton" /><span className="news-story-card-name">{person.name}</span></span>)}</div>
+  </section>;
+  const cardOf = (person: NewsPerson) => cabinet.data && cardForPerson(cabinet.data.cards, person.id, competition, cabinet.data.sets);
   const carded = people.map(person => ({ person, card: cardOf(person) }));
   const withCard = carded.filter(item => item.card), without = carded.filter(item => !item.card);
   return <section className="news-story-people" aria-label="In this story">
@@ -96,18 +99,11 @@ export function TeamPeople({ team, people = [] }: { team: CompetitorRecord; peop
  * gets a plain profile link. Reads the same cabinet query as StoryPeopleCards.
  */
 export function TeamRosterCards({ team, people = [] }: { team: CompetitorRecord; people?: NewsPerson[] }) {
-  const cabinet = useQuery<NewsCollection>({
-    queryKey: ['/api/news/cards'], staleTime: 60_000,
-    queryFn: async () => {
-      const response = await fetch('/api/news/cards');
-      if (!response.ok) throw new Error('The cards could not be loaded.');
-      return response.json() as Promise<NewsCollection>;
-    },
-  });
+  const cabinet = useNewsCollection();
   const known = peopleForTeam(people, team);
   return <ul className="cp-roster" aria-label={`${team.name} roster`}>{team.members.map(handle => {
     const person = known.find(item => item.accounts.some(account => account.platform === 'kaggle' && account.handle === handle));
-    const card = person && cabinet.data?.cards.find(item => item.kind === 'person' && item.personId === person.id);
+    const card = person && cabinet.data && cardForPerson(cabinet.data.cards, person.id, team.competition, cabinet.data.sets);
     // while the card list loads, hold the card's place so the page does not jump or flash a plain tile
     if (person && cabinet.isLoading) return <li key={handle}><span className="cp-card" aria-hidden="true"><span className="cp-skeleton" /><span className="cp-card-name">{person.name}</span></span></li>;
     if (card && person) return <li key={handle}><Link href={card.cardUrl} className="cp-card">
@@ -127,22 +123,6 @@ export function TeamFaces({ team, people = [] }: { team: CompetitorRecord; peopl
 export function PersonHonors({ person, linked = false }: { person: NewsPerson; linked?: boolean }) {
   if (!person.hallOfFame.length) return null;
   return <ul className="news-honors">{person.hallOfFame.map(card => <li key={card.path}>{linked ? <Link href={card.path}>{card.label}</Link> : card.label}</li>)}</ul>;
-}
-
-/** Directory card: face, name, honors, current teams and the first sourced fact. */
-export function PersonCard({ person }: { person: NewsPerson }) {
-  return <article className="news-person-card">
-    <div className="news-person-card-top">
-      <Link href={personPath(person.id)} tabIndex={-1} aria-hidden="true"><PersonPortrait person={person} size="card" decorative /></Link>
-      <div>
-        <h2><Link href={personPath(person.id)}>{person.name}</Link></h2>
-        <PersonHonors person={person} />
-      </div>
-    </div>
-    {!!person.memberships.length && <p className="news-card-members">{person.memberships.map(member => `${member.teamName} — ${competitionName(member.competition)} ${member.season}`).join(' · ')}</p>}
-    {person.facts[0] && <p>{person.facts[0].text}</p>}
-    <Link href={personPath(person.id)} className="news-read">Open the profile →</Link>
-  </article>;
 }
 
 /** Where a face came from, printed under the profile portrait. */

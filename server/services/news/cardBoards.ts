@@ -1,13 +1,16 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
+ * 14-Nov-2026 (Claude Opus 5.5): boardFreshAt now lives in shared/newsMarkets.ts (re-exported here) so the
+ * newspaper's ticker and movers share the rule.
  * PURPOSE: Warm a bounded in-memory view of the existing board data store for
  * wiki-backed cards. Standings never enter the wiki; unavailable/stale readings
  * leave cards with source links. No Kaggle login, collector or scheduled job.
  * SRP/DRY check: Pass — reuse KaggleBoardRepository and the existing snapshot schema.
  */
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
+import { boardFreshAt } from '../../../shared/newsMarkets';
 import { cardSnapshotSchema, type CardSnapshot, type CardRegistry } from '../../../shared/newsCollection';
 import type { NewsIndex } from '../../../shared/news';
 import { kaggleBoardRepository } from '../../repositories/KaggleBoardRepository';
@@ -16,11 +19,8 @@ type Cache = { generation: number; checkedAt: number; pending?: Promise<void>; r
 const caches = new Map<string, Cache>();
 const TTL = 60_000;
 
-export function boardFreshAt(fetched: string, closeAt: string | null, now = Date.now()): boolean {
-  const at = Date.parse(fetched), close = closeAt ? Date.parse(closeAt) : NaN;
-  const closing = Number.isFinite(close) && close - now >= 0 && close - now <= 24 * 3_600_000;
-  return Number.isFinite(at) && at <= now && now - at <= (closing ? 35 : 90) * 60_000;
-}
+// The freshness rule lives with the market digest so the newspaper's board labels use the same one.
+export { boardFreshAt };
 
 /** Decode only the requested competition and teams; ambiguous rows stay unavailable. */
 export function snapshotsFromBoard(competition: string, latest: any, teams: Set<string>, now = Date.now()): CardSnapshot[] {

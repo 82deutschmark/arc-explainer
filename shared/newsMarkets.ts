@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
- * Date: 02-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): boardFreshAt moved here from server/services/news/cardBoards.ts so the
+ *          front page's ticker and movers can say when a board stopped updating (the cards keep using it).
  * PURPOSE: The ARC Daily Digest's market digest: a compact, dated summary of one Kaggle board
  *          for the newspaper's ticker, standings and movers tables, and the evidence the wire
  *          desk's reporters write from (scripts/newsroom_wire.py reads GET /api/news/markets).
@@ -195,6 +197,17 @@ export function buildMarketBoard(competition: NewsCompetition, latest: KaggleBoa
     newcomerCount: covered.filter(row => row.isNew).length,
     watch: rows.filter(row => wanted.has(row[1])).slice(0, WATCH_LIMIT).map(rowFor),
   };
+}
+
+/**
+ * Whether a board save is recent enough to read as current: within 90 minutes (the snapshot job saves
+ * every half hour), or 35 minutes in the final day before the close. Cards drop stale standings with
+ * it; the newspaper labels a stale board with its save date instead of passing it off as today's.
+ */
+export function boardFreshAt(fetched: string, closeAt: string | null, now = Date.now()): boolean {
+  const at = Date.parse(fetched), close = closeAt ? Date.parse(closeAt) : NaN;
+  const closing = Number.isFinite(close) && close - now >= 0 && close - now <= DAY_MS;
+  return Number.isFinite(at) && at <= now && now - at <= (closing ? 35 : 90) * 60_000;
 }
 
 /** Whole days left before a board closes, from its latest save; null when the close is unknown. */

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, cleanup): the seeded random comes from kit.ts instead of a private copy.
  * 14-Nov-2026 (Claude Opus 5.5): full-bleed fronts crop around the centre (or the card art's focusX)
  *          instead of sharp's attention strategy, which pushed every square source to one edge.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
@@ -25,7 +26,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { mix, type TierStyle } from './kit';
+import { mix, rng, type TierStyle } from './kit';
 import { W, H, PICTURE_WINDOW, type Rect } from './zones';
 
 export { W, H } from './zones';
@@ -100,10 +101,6 @@ export function artMtime(card: any, override?: ArtOverride): number {
 // ---------------------------------------------------------------------------------------------
 // Placeholder
 // ---------------------------------------------------------------------------------------------
-function rng(seed: number) {
-  let s = seed >>> 0;
-  return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
-}
 function hash(text: string) {
   let h = 0x811c9dc5;
   for (const ch of text) { h ^= ch.codePointAt(0) ?? 0; h = Math.imul(h, 0x01000193) >>> 0; }

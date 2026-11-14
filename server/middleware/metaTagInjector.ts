@@ -5,14 +5,16 @@
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-08
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026
  * PURPOSE: Serve canonical URLs, generated sitemap, accurate HTTP status and initial
  *          HTML metadata/content for the SPA. Uses the same policy as client navigation.
  *          08-Oct-2026 (Claude Opus 5.5): social tags come from shared socialMetaEntries().
  *          Codex: serve the published audit at the canonical /feedback address.
  *          10-Oct-2026 (Claude Sonnet 5.5): leaderboard pages get live standings in their crawler
  *          text, and the sitemap dates them by their latest saved snapshot (leaderboardSeo.ts).
+ *          14-Nov-2026 (Claude Opus 5.5): createMetaTagInjector(indexHtmlPath) lets tests serve the
+ *          source shell (client/index.html) without a production build; production keeps dist/public.
  * SRP/DRY check: Pass — page content and shared SEO policy live in their own modules.
  */
 import type { Request, Response, NextFunction } from 'express';
@@ -89,7 +91,17 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   }
   next();
 }
-export async function metaTagInjector(req: Request, res: Response, next: NextFunction): Promise<void> {
+/** The built SPA shell served in production; resolved per request so the working directory decides. */
+const builtIndexHtmlPath = () => path.join(process.cwd(), 'dist/public/index.html');
+/**
+ * Build the page middleware around an HTML shell. Production uses the built dist/public/index.html;
+ * tests pass the source shell (client/index.html), which carries the same META_TAGS and root markers.
+ */
+export function createMetaTagInjector(indexHtmlPath: () => string = builtIndexHtmlPath) {
+  return (req: Request, res: Response, next: NextFunction): Promise<void> => injectPage(req, res, next, indexHtmlPath);
+}
+export const metaTagInjector = createMetaTagInjector();
+async function injectPage(req: Request, res: Response, next: NextFunction, indexHtmlPath: () => string): Promise<void> {
   if (!['GET', 'HEAD'].includes(req.method) || req.path === '/api' || req.path.startsWith('/api/')) return next();
   try {
   const resolved = await resolvePublicPageMeta(normalizePath(req.path));
@@ -103,7 +115,7 @@ export async function metaTagInjector(req: Request, res: Response, next: NextFun
     // Leaderboard pages carry the current top of their boards, so crawlers see fresh content.
     const tags = await withLiveStandings(normalizePath(req.path), resolved.tags);
     if ((req.get('host') || '').split(':')[0] === 'arc-explainer-staging.up.railway.app') tags.noindex = true;
-    const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
+    const html = await fs.readFile(indexHtmlPath(), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
     if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');
     res.type('html').send(injectPageHtml(html, tags));

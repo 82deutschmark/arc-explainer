@@ -5,8 +5,10 @@
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-11
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-11; 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): team and person profile breadcrumbs point at /news/cards, not at
+ *          the redirected /news/competitors directory.
  * PURPOSE: Shared URL, indexing, safe HTML and structured-data policy for server responses
  *          and SPA navigation. Content remains in the existing route and game registries.
  *          08-Oct-2026 (Claude Opus 5.5): short ARC Daily breadcrumb names, the newspaper
@@ -63,7 +65,8 @@ export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: strin
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
   if (route.startsWith('/news/')) items.push({ name: NEWS_NAME, url: `${SITE_ORIGIN}/news` });
-  if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor profiles', url: `${SITE_ORIGIN}/news/competitors` });
+  // Team and person profiles sit under the card catalog; /news/competitors and /news/people only redirect there.
+  if (route.startsWith('/news/competitors/') || route.startsWith('/news/people/')) items.push({ name: 'Cards', url: `${SITE_ORIGIN}/news/cards` });
   const name = route === '/news' ? NEWS_NAME : LEADERBOARD_CRUMBS[route] ?? tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
   items.push({ name: game ? game[1] : name, url: tags.url });
   return items;

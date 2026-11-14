@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 02-November-2026 (GPT-6 / Codex: publication and loading states; earlier GPT-6.1 Sol lookup)
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026 (GPT-6 / Codex: publication and loading states; earlier GPT-6.1 Sol lookup)
  * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
  *          public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
@@ -14,6 +14,9 @@
  *          record the store left out, for the desk watchdog's Discord alert.
  *          30-Oct-2026 (Claude Sonnet 5.5 Low): card image, thumbnail and share routes pass the collection to the new cardFace pipeline.
  *          30-Oct-2026 (Claude Sonnet 5.5 Medium): the thumbnail route takes its width limits from the renderer instead of repeating them.
+ *          14-Nov-2026 (Claude Opus 5.5): GET /api/news/wire/:id, one wire story for its permanent page, whatever its age.
+ *          14-Nov-2026 (Claude Opus 5.5, card faces): card share and thumbnail versions are computed with the collection
+ *          (teammates, shared art, set tier counts, stamp phase), the same key the renderer's memo caches use.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
 import { mountNewsHost } from '../services/news/newsHost';
@@ -21,7 +24,7 @@ import { mountNewsFonts } from '../services/news/newsFonts';
 import type { Express, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getNewsIndex, loadNewsArchive, NEWS_DIRECTORY, WIRE_ID } from '../services/news/newsStore';
+import { getNewsIndex, loadNewsArchive, loadWireStory, NEWS_DIRECTORY, WIRE_ID } from '../services/news/newsStore';
 import { newsRss } from '../services/news/newsPresentation';
 import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
 import { marketsResponse } from '../services/news/newsMarkets';
@@ -44,8 +47,8 @@ export function mountNews(app: Express) {
       const collection = getNewsCollection();
       const card = collection.cards.find(item => item.id === req.params.id);
       if (!card) return res.status(404).set('Cache-Control', 'no-store').json({ error: 'Collection share image not found' });
-      const version = collectionShareVersion(card);
-      if (req.query.v && req.query.v !== version) return res.set('Cache-Control', 'no-store').redirect(302, collectionSharePath(card));
+      const version = collectionShareVersion(card, collection);
+      if (req.query.v && req.query.v !== version) return res.set('Cache-Control', 'no-store').redirect(302, collectionSharePath(card, collection));
       return res.type('image/png').set('Content-Disposition', `inline; filename="${card.id}-share.png"`)
         .set('Cache-Control', req.query.v === version ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
         .send(await buildCollectionShareImage(card, collection));
@@ -72,7 +75,7 @@ export function mountNews(app: Express) {
       const collection = getNewsCollection();
       const card = collection.cards.find(item => item.id === req.params.id);
       if (!card) return res.status(404).json({ error: 'Collection card not found' });
-      const version = collectionShareVersion(card);
+      const version = collectionShareVersion(card, collection);
       const fresh = req.query.v === version;
       return res.type('image/webp').set('Cache-Control', fresh ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
         .send(await buildCollectionCardThumb(card, collection, side, width, version));
@@ -144,6 +147,23 @@ export function mountNews(app: Express) {
       const file = path.join(NEWS_DIRECTORY, 'evidence', `${req.params.id}.json`);
       if (!fs.existsSync(file)) return res.status(404).json({ error: 'Reporting evidence not found' });
       res.set('Cache-Control', 'public, max-age=3600').type('json').send(fs.readFileSync(file, 'utf8'));
+    } catch (error) { next(error); }
+  });
+  // A wire story's permanent page reads it here, so links keep working after it leaves the index's week.
+  // The payload is NewsIndex-shaped (the story plus the people and teams it names) for WireStory.
+  app.get('/api/news/wire/:id', (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      const { story, rejected } = loadWireStory(String(req.params.id));
+      if (!story) return rejected
+        ? res.status(503).json({ code: 'story-load-failed', error: 'The published wire story could not be loaded' })
+        : res.status(404).json({ code: 'story-not-published', error: 'No wire story has been published at this address' });
+      const index = getNewsIndex();
+      return res.json({
+        articles: [], wire: [story],
+        competitors: index.competitors.filter(record => record.competition === story.competition && story.teamIds.includes(record.teamId)),
+        people: (index.people ?? []).filter(person => story.personIds.includes(person.id)),
+      });
     } catch (error) { next(error); }
   });
   app.get('/api/news/wire/:id/evidence', (req, res, next) => {

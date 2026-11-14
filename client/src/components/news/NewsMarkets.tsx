@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the ticker and movers print each board's save with its full date; a board
+ *          that stopped updating (boardFreshAt) says "not updated since" and its movers cover the day before that
+ *          save, so a frozen board can no longer pass for today's.
  * PURPOSE: The ARC Daily Digest's market pages, drawn from the live digest (GET /api/news/markets,
  *          shared/newsMarkets.ts): the ticker of both boards, the standings in agate type, the
  *          past day's movers, where the past prize winners stand now, and the index of the rest
@@ -15,8 +18,8 @@
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
-import { NEWS_ARCHIVE, competitorPath, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
-import { daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
+import { NEWS_ARCHIVE, competitorPath, newsDate, personPath, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { boardFreshAt, daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { formatOptionalNumber } from '@shared/utils/formatters';
 import { ARC_DISCORD_URL } from './NewsDesk';
@@ -46,6 +49,9 @@ const differenceFigure = (value: number, precision?: number) => {
 };
 const count = (value: number) => value.toLocaleString('en-US');
 const ordinal = (n: number) => `#${n.toLocaleString('en-US')}`;
+/** A board's save as a reader should see it: its full UTC date and time, flagged when the board has stopped updating. */
+export const boardSaved = (board: MarketBoard, now = Date.now()) =>
+  boardFreshAt(board.fetched, board.closeAt, now) ? `${board.label} saved ${newsDate(board.fetched, true)}` : `${board.label} not updated since ${newsDate(board.fetched, true)}`;
 /** One 24-hour UTC clock for every reader. */
 export const clockUtc = (iso: string) => new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso)) + ' UTC';
 
@@ -99,7 +105,7 @@ export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
           : days != null ? <div><dt>Close</dt><dd><b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div> : null}
       </dl>;
     })}
-    <p className="news-ticker-note">Public boards saved {clockUtc(boards[0].fetched)} · change over the past day · medals settle on the private board</p>
+    <p className="news-ticker-note">{boards.map(board => boardSaved(board)).join(' · ')} · change over the day before each save · medals settle on the private board</p>
   </section>;
 }
 
@@ -144,11 +150,13 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
   const boards = marketBoards(markets);
   if (!boards.length) return null;
   return <section className="news-movers" aria-label="The past day's movers">
-    <h2 className="news-flag"><span>Market movers</span><em>Past day, both boards</em></h2>
+    <h2 className="news-flag"><span>Market movers</span><em>The day before each board’s latest save</em></h2>
     {boards.map(board => {
       const gold = board.lines.gold.now;
+      const fresh = boardFreshAt(board.fetched, board.closeAt);
       return <div key={board.competition} className="news-movers-board">
         <h3><a href={board.boardPath}>{board.label}</a></h3>
+        {!fresh && <p className="news-board-stale" role="note">Board not updated since {newsDate(board.fetched, true)}. These moves cover the day before {newsDate(board.fetched)}, not today.</p>}
         <div className="news-movers-grid">
           <MoverList title="Biggest gains" board={board} links={links} rows={board.gainers} empty="No supported score gains."
             value={row => <><Change value={marketGain(row)} precision={differencePrecision(row.score, row.scoreThen)} /> <small>to <span className="sc">{fig(row.score)}</span></small></>} />
@@ -164,7 +172,7 @@ export function MoversBand({ markets, links }: { markets?: MarketsPayload; links
           {!!board.outOfGold.length && <><strong>Out of gold:</strong> {board.outOfGold.map((row, index) => <span key={row.teamId}>{index ? ', ' : ''}<TeamName row={row} competition={board.competition} links={links} /> ({ordinal(row.rank)})</span>)}.</>}
         </p>}
         <p className="news-muted">{board.since
-          ? <>{count(board.improved)} teams with comparison evidence raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {clockUtc(board.since)} the day before.</>
+          ? <>{count(board.improved)} teams with comparison evidence raised their score{board.teamsThen != null ? <> and the field grew by {count(Math.max(0, board.teams - board.teamsThen))}</> : null} since the save at {newsDate(board.since, true)}.</>
           : 'No save from a day earlier, so the past day’s changes are unknown.'}</p>
       </div>;
     })}

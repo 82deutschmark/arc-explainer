@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 03-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the note prints each board's full save date, and a board past the
+ *          freshness window says "not updated since" (W4).
  * PURPOSE: Check that the newspaper's board ticker distinguishes an upcoming
  *          submission cutoff from closed submissions at the current UTC deadline,
  *          even when the saved board observation predates the close,
@@ -14,6 +16,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { MarketTicker } from '../client/src/components/news/NewsMarkets';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 import { buildMarketBoard, type MarketBoard } from '../shared/newsMarkets';
+import { newsDate } from '../shared/news';
 
 const cutoff = KAGGLE_COMPETITIONS['arc-3'].closeAt!;
 const cutoffMs = Date.parse(cutoff);
@@ -73,6 +76,14 @@ it('closes stale pre-deadline standings using the current clock while preserving
   const text = tickerText(board, new Date(cutoffMs + 60_000).toISOString());
   expect(text).toContain('Submissions closed');
   expect(text).not.toContain('Close 1 day');
-  expect(text).toContain('Public boards saved 22:59 UTC');
+  expect(text).toContain(`ARC-AGI-3 saved ${newsDate(savedAt, true)}`);
+  expect(text).toContain('22:59 UTC');
   expect(board.fetched).toBe(savedAt);
+});
+
+it('dates a board that stopped updating instead of passing it off as current', () => {
+  const savedAt = new Date(cutoffMs - 3 * 24 * 3_600_000).toISOString();
+  const text = tickerText(boardAt(savedAt), new Date(cutoffMs - 2 * 24 * 3_600_000).toISOString());
+  expect(text).toContain(`ARC-AGI-3 not updated since ${newsDate(savedAt, true)}`);
+  expect(text).not.toContain('ARC-AGI-3 saved');
 });

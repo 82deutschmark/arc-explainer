@@ -1,6 +1,7 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): removed the unused ART_SCALE and RATIO constants (zonesAt takes the scale).
  * PURPOSE: The artist contract for a Card Cabinet front, as numbers. ONE module so the renderer (render.ts), the
  *          picture pipeline (art.ts) and the art desk's template (which works at 2x, 1500 x 2100) can never
  *          drift apart. Everything is stated at the 750 x 1050 card scale; zonesAt(2) gives the art desk's scale.
@@ -16,10 +17,6 @@
 /** Card size in px at the production scale. */
 export const W = 750;
 export const H = 1050;
-/** The art desk draws at this multiple of the card size (1500 x 2100). */
-export const ART_SCALE = 2;
-/** Width : height of every card. */
-export const RATIO = '5:7';
 /** Tier border thickness. Identical for every tier so the art window never moves. */
 export const BORDER = 26;
 /** The badge band: nothing but badges is drawn between the border and this y. */

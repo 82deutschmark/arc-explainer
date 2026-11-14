@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; existing contributors credited below
- * Date: 03-November-2026; 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; existing contributors credited below
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026; 02-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): /news/wire/:storyId, each wire story's permanent page.
  * PURPOSE: Register the Goose tip line alongside the existing newspaper, card and ARC application routes.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -217,6 +218,7 @@ function Router() {
         <Route path="/news/how-this-is-made" component={NewsMethod} />
         <Route path="/news/staff" component={NewsStaff} />
         <Route path="/news/wire" component={NewsWire} />
+        <Route path="/news/wire/:storyId" component={NewsWire} />
         <Route path="/news/:articleId" component={NewsArticle} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />

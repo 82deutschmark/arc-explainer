@@ -2,6 +2,12 @@
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
  * Date: 14-Nov-2026
  * 14-Nov-2026 (Claude Opus 5.5): From X posts older than a week leave the index, like discussions and wire.
+ * 14-Nov-2026 (Claude Opus 5.5): loadWireStory reads one wire story by ID for its permanent page, whatever its
+ *          age; while the desk has filed nothing for a week the index carries its newest filings (wireLatest).
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): editions may name further competitions; editions published from
+ *          1 Nov 2026 must cite every source; revision records (content/news/corrections and the editorial/reporting
+ *          revision evidence) load into revisions/updatedAt; an edition whose board or sources postdate both its
+ *          publication and its latest revision is left out; file-name alt text is rejected; socialArchive removed.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
@@ -23,9 +29,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import type { NewsArticle, NewsIndex, NewsDispatch, CompetitorRecord, NewsWireStory } from '../../../shared/news';
-import { NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS } from '../../../shared/news';
+import { NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS, WIRE_WINDOW_MS, WIRE_PAUSED_LIMIT, isFilenameAlt, type NewsRevision } from '../../../shared/news';
 import { KAGGLE_COMPETITIONS, competitionRegistered } from '../../../shared/kaggleCompetitions';
-import { loadWikiInputs, mergeWikiRows } from './wikiInputs';
+import { loadWikiInputs, mergeWikiRows, mergeCompetitorRows } from './wikiInputs';
 const stamp = z.string().datetime({ offset: true });
 const webUrl = z.string().url().refine(value => /^https:\/\//.test(value), 'Sources must use HTTPS');
 const competition = z.string().refine(competitionRegistered, 'Competition is not in the publication directory');
@@ -33,6 +39,13 @@ const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
 const castIds = z.array(safeId).refine(ids => new Set(ids).size === ids.length, 'Cast IDs must be unique');
 const archiveCastSchema = z.object({ id: safeId, personIds: castIds }).strict();
+/** Alt text must describe the picture; a file name or asset slug ("keith-tyser.webp") describes nothing. */
+const readableAlt = text.max(700).refine(alt => !isFilenameAlt(alt), 'Alt text must describe the picture, not name its file');
+/** Editions published from the 1 Nov 2026 source clean-up on must cite every source they list. Older editions
+ *  keep their brief catalogues on file; readers only ever see the cited ones (shared/news.ts citedSources). */
+export const CITED_SOURCES_REQUIRED_FROM = '2026-11-01T00:00:00Z';
+/** Stories record publication to the second while brief tools stamp sources to the microsecond, so compare whole seconds. */
+const notAfter = (value: string, limit: number) => Math.floor(Date.parse(value) / 1000) <= Math.floor(limit / 1000);
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, headline: text.max(240), dek: text.max(700).optional(),
   personIds: castIds.optional(),
@@ -41,7 +54,7 @@ export const newsDispatchSchema = z.object({
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
   sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   interpretation: text.max(700).optional(),
-  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700) }).optional(),
+  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: readableAlt, caption: text.max(700) }).optional(),
 }).strict().superRefine((dispatch, context) => {
   const sources = new Set(dispatch.sources.map(source => source.id));
   if (sources.size !== dispatch.sources.length || dispatch.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) {
@@ -55,9 +68,9 @@ export const newsDispatchSchema = z.object({
 export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   competitionDisplay: text.max(100).optional(), editionDisplay: text.max(100).optional(),
-  frontPageFeatureId: safeId.optional(), personIds: castIds.optional(),
-  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: text.max(700), caption: text.max(700), artworkId: safeId }).strict().optional(),
-  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700), layout: z.literal("inset").optional() }).strict().optional(), standings: z.object({ caption: text.max(300), observedAt: stamp, rows: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite() }).strict()).min(1).max(100) }).strict().optional() })).min(1),
+  frontPageFeatureId: safeId.optional(), personIds: castIds.optional(), competitions: z.array(competition).max(10).optional(),
+  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: readableAlt, caption: text.max(700), artworkId: safeId }).strict().optional(),
+  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: readableAlt, caption: text.max(700), layout: z.literal("inset").optional() }).strict().optional(), standings: z.object({ caption: text.max(300), observedAt: stamp, rows: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite() }).strict()).min(1).max(100) }).strict().optional() })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), verifiedTeamNames: z.array(text.max(200)).max(100).optional(), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(NEWS_EDITION_WRITERS),
   stats: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite(), rankChange: z.number().int().nullable(), scoreChange: z.number().finite().nullable() })),
@@ -66,13 +79,34 @@ export const newsArticleSchema = z.object({
   const sources = new Set(article.sources.map(source => source.id));
   if (sources.size !== article.sources.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate source IDs' });
   if (article.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Unknown source citation' });
+  if (Date.parse(article.publishedAt) > Date.now()) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Edition publication cannot be in the future' });
+  if (Date.parse(article.publishedAt) >= Date.parse(CITED_SOURCES_REQUIRED_FROM)) {
+    const cited = new Set(article.sections.flatMap(section => section.sourceIds));
+    const uncited = article.sources.filter(source => !cited.has(source.id)).map(source => source.id);
+    if (uncited.length) context.addIssue({ code: z.ZodIssueCode.custom, message: `Sources no section cites: ${uncited.slice(0, 5).join(', ')}` });
+  }
 });
+/**
+ * Time order, as dispatches and wire stories already check it: the board (dataAsOf), every standings table and
+ * every source must have been read by the time the edition went out, or by its latest recorded revision when it
+ * was revised afterwards (the Mostik investigation and the 2 Nov morning edition gained later readings that way).
+ * Returns why the edition is out of order, or null.
+ */
+export function articleTimeOrderIssue(article: Pick<NewsArticle, 'publishedAt' | 'dataAsOf' | 'baselineAt' | 'sources' | 'sections'>, revisions: NewsRevision[] = []): string | null {
+  const limit = Math.max(Date.parse(article.publishedAt), ...revisions.map(revision => Date.parse(revision.at)).filter(Number.isFinite));
+  if (!notAfter(article.dataAsOf, limit)) return `board read ${article.dataAsOf} after publication and every revision`;
+  if (article.baselineAt && Date.parse(article.baselineAt) > Date.parse(article.dataAsOf)) return 'comparison board is newer than the board it compares';
+  const late = article.sources.find(source => !notAfter(source.accessedAt, limit));
+  if (late) return `source ${late.id} read ${late.accessedAt} after publication and every revision`;
+  const table = article.sections.find(section => section.standings && !notAfter(section.standings.observedAt, limit));
+  return table ? `standings observed ${table.standings!.observedAt} after publication and every revision` : null;
+}
 export const competitorSchema = z.object({
   id: safeId, competition, teamId: z.string().regex(/^\d+$/), name: text,
   briefing: text.optional(),
   aliases: z.array(z.string()), members: z.array(z.string()), firstObservedAt: stamp, lastObservedAt: stamp,
   facts: z.array(z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp })),
-  art: z.object({ src: z.string().regex(/^\/news-images\/[A-Za-z0-9_\/.-]+\.(?:webp|png|jpe?g)$/), alt: text, caption: text }).optional(),
+  art: z.object({ src: z.string().regex(/^\/news-images\/[A-Za-z0-9_\/.-]+\.(?:webp|png|jpe?g)$/), alt: readableAlt, caption: text }).optional(),
 }).refine(record => record.id === `${record.competition}-${record.teamId}`, 'Competitor IDs must include competition');
 export const NEWS_DIRECTORY = path.join(process.cwd(), 'content/news');
 const factSchema = z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict();
@@ -137,7 +171,6 @@ export const newsDiscussionSchema = z.object({
   .refine(thread => !!(thread.postedAt || thread.latestActivityAt), 'Discussion needs an observed source date')
   .refine(thread => Date.parse(thread.checkedAt) <= Date.now() && [thread.postedAt, thread.latestActivityAt].every(value => !value || Date.parse(value) <= Date.parse(thread.checkedAt)), 'Future discussion source time')
   .refine(thread => !thread.postedAt || !thread.latestActivityAt || Date.parse(thread.postedAt) <= Date.parse(thread.latestActivityAt), 'Reversed discussion dates');
-const WIRE_WINDOW_MS = 7 * 24 * 3_600_000;
 const WIRE_LIMIT = 40;
 /** Wire story IDs: Eastern date and time of filing, competition, then a slug ("2026-10-10-0905-arc-3-mtg-climbs"). */
 export const WIRE_ID = /^\d{4}-\d{2}-\d{2}-\d{4}-arc-[23]-[a-z0-9][a-z0-9-]{0,59}$/;
@@ -188,18 +221,30 @@ const describeIssues = (error: z.ZodError) => {
 function readStoryFolder<T extends { id: string }>(directory: string, folder: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, skipped: NewsSkip[]): T[] {
   const root = path.join(directory, folder);
   if (!fs.existsSync(root)) return [];
-  return fs.readdirSync(root).filter(file => file.endsWith('.json')).flatMap(file => {
-    const label = `${folder}/${file}`;
-    try {
-      const parsed = schema.safeParse(JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')));
-      if (!parsed.success) leaveOut(skipped, { file: label, reason: describeIssues(parsed.error) });
-      else if (`${parsed.data.id}.json` !== file) leaveOut(skipped, { file: label, reason: 'filename does not match its ID' });
-      else return [parsed.data];
-    } catch (error) {
-      leaveOut(skipped, { file: label, reason: `unreadable: ${describeError(error)}` });
-    }
-    return [];
-  });
+  return fs.readdirSync(root).filter(file => file.endsWith('.json')).flatMap(file => readStoryFile(directory, folder, file, schema, skipped));
+}
+/** One story file, checked like every file in its folder; an invalid file is left out and reported. */
+function readStoryFile<T extends { id: string }>(directory: string, folder: string, file: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, skipped: NewsSkip[]): T[] {
+  const label = `${folder}/${file}`;
+  try {
+    const parsed = schema.safeParse(JSON.parse(fs.readFileSync(path.join(directory, folder, file), 'utf8')));
+    if (!parsed.success) leaveOut(skipped, { file: label, reason: describeIssues(parsed.error) });
+    else if (`${parsed.data.id}.json` !== file) leaveOut(skipped, { file: label, reason: 'filename does not match its ID' });
+    else return [parsed.data];
+  } catch (error) {
+    leaveOut(skipped, { file: label, reason: `unreadable: ${describeError(error)}` });
+  }
+  return [];
+}
+/**
+ * One wire story by ID for its permanent page (/news/wire/<id>), whatever its age: the index keeps
+ * only a week. `rejected` means the file exists but failed its checks, a loading problem rather
+ * than an unpublished story.
+ */
+export function loadWireStory(id: string, directory = NEWS_DIRECTORY): { story: NewsWireStory | null; rejected: boolean } {
+  if (!WIRE_ID.test(id) || !fs.existsSync(path.join(directory, 'wire', `${id}.json`))) return { story: null, rejected: false };
+  const story = readStoryFile(directory, 'wire', `${id}.json`, newsWireSchema, [])[0] ?? null;
+  return { story, rejected: !story };
 }
 /** Ledger files holding a JSON array: every valid record, keeping the first of any duplicate key. */
 function readLedger<T>(directory: string, file: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, keyOf: (record: T) => string, skipped: NewsSkip[]): T[] {
@@ -233,6 +278,51 @@ function readLedger<T>(directory: string, file: string, schema: z.ZodType<T, z.Z
     return [parsed.data];
   });
 }
+/**
+ * A dated revision of a published story. The records come in several historical shapes: an edition correction
+ * names `articleId`, a feature revision keeps the `original` story, and the revision evidence keeps the
+ * `previousArticle` or `previousFeature`. The time is `revisedAt`, else the record's `date`, else the date its
+ * filename starts with. A record that names no story (the special-page corrections) is not a story revision.
+ */
+const revisionRecordSchema = z.object({
+  articleId: safeId.optional(),
+  original: z.object({ id: safeId }).passthrough().optional(),
+  previousArticle: z.object({ id: safeId }).passthrough().optional(),
+  previousFeature: z.object({ id: safeId }).passthrough().optional(),
+  revisedAt: stamp.optional(), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  reason: text.max(2000).optional(),
+}).passthrough();
+/** Correction records, plus the editorial and reporting revision evidence (illustration swaps are not revisions of the reporting). */
+const REVISION_FOLDERS: [string, RegExp][] = [['corrections', /\.json$/], ['evidence', /-(?:editorial|reporting)-revision-[a-z0-9-]+\.json$/]];
+function readRevisions(directory: string, skipped: NewsSkip[]): Map<string, NewsRevision[]> {
+  const byStory = new Map<string, NewsRevision[]>();
+  for (const [folder, pattern] of REVISION_FOLDERS) {
+    const root = path.join(directory, folder);
+    if (!fs.existsSync(root)) continue;
+    for (const file of fs.readdirSync(root).filter(name => pattern.test(name))) {
+      try {
+        const parsed = revisionRecordSchema.safeParse(JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')));
+        if (!parsed.success) { leaveOut(skipped, { file: `${folder}/${file}`, reason: describeIssues(parsed.error) }); continue; }
+        const record = parsed.data;
+        const storyId = record.articleId ?? record.original?.id ?? record.previousArticle?.id ?? record.previousFeature?.id;
+        const at = record.revisedAt ?? record.date ?? /^\d{4}-\d{2}-\d{2}/.exec(file)?.[0];
+        if (!storyId || !at) continue;
+        byStory.set(storyId, [...(byStory.get(storyId) ?? []), { at, ...(record.reason ? { reason: record.reason } : {}) }]);
+      } catch (error) {
+        leaveOut(skipped, { file: `${folder}/${file}`, reason: `unreadable: ${describeError(error)}` });
+      }
+    }
+  }
+  // A date-only record sorts as the end of its day, after any timed revision on the same day.
+  const instant = (value: string) => Date.parse(value.length === 10 ? `${value}T23:59:59Z` : value);
+  for (const revisions of byStory.values()) revisions.sort((a, b) => instant(a.at) - instant(b.at));
+  return byStory;
+}
+/** Attach a story's revisions, oldest first, and the latest as updatedAt. */
+const withRevisions = <T extends { id: string }>(story: T, revisions: Map<string, NewsRevision[]>): T & { revisions?: NewsRevision[]; updatedAt?: string } => {
+  const found = revisions.get(story.id);
+  return found?.length ? { ...story, revisions: found, updatedAt: found[found.length - 1].at } : story;
+};
 /** The public archive plus anything that had to be left out of it. */
 export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex; skipped: NewsSkip[] } {
   const skipped: NewsSkip[] = [];
@@ -250,12 +340,18 @@ export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex;
     .map(row => [row.id, row.personIds]));
   const applyArchiveCast = <T extends { id: string; personIds?: string[] }>(story: T): T =>
     story.personIds === undefined && archiveCasts.has(story.id) ? { ...story, personIds: archiveCasts.get(story.id) } : story;
+  const revisions = readRevisions(directory, skipped);
   const articles: NewsArticle[] = readStoryFolder(directory, 'articles', newsArticleSchema, skipped)
-    .map(applyArchiveCast)
+    .map(article => withRevisions(applyArchiveCast(article), revisions))
+    .filter(article => {
+      const issue = articleTimeOrderIssue(article, article.revisions);
+      if (issue) leaveOut(skipped, { file: `articles/${article.id}.json`, reason: issue });
+      return !issue;
+    })
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition));
-  const competitors: CompetitorRecord[] = mergeWikiRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema));
+  const competitors: CompetitorRecord[] = mergeCompetitorRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema));
   const dispatches: NewsDispatch[] = readStoryFolder(directory, 'dispatches', newsDispatchSchema, skipped)
-    .map(applyArchiveCast)
+    .map(dispatch => withRevisions(applyArchiveCast(dispatch), revisions))
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
   // A verified account names one person; a later record claiming an earlier person's account is left out whole.
   const claimed = new Set<string>();
@@ -274,17 +370,16 @@ export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex;
   // instead of presenting weeks-old posts as the latest. social.json stays in git unchanged.
   const social = readLedger(directory, 'social.json', newsSocialSchema, post => post.id, skipped)
     .filter(post => Date.now() - Date.parse(post.postedAt ?? post.checkedAt) <= WIRE_WINDOW_MS);
-  // Only the explicitly exported public archive is served. The private research state is never read here.
-  const socialArchive = readLedger(directory, 'social-archive.json', newsSocialSchema, post => post.id, skipped)
-    .filter(post => post.postedAt && Date.now() - Date.parse(post.postedAt) <= 30 * 24 * 3_600_000);
   const discussions = readLedger(directory, 'discussions.json', newsDiscussionSchema, thread => `${thread.competition}:${thread.id}`, skipped)
     .filter(thread => Date.now() - Date.parse(thread.latestActivityAt ?? thread.postedAt!) <= WIRE_WINDOW_MS);
   // The index the front page refetches every minute carries the past week of wire, at most 40 stories;
   // the files stay in git as the permanent record and keep their evidence route.
-  const wire: NewsWireStory[] = readStoryFolder(directory, 'wire', newsWireSchema, skipped)
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))
-    .filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT);
-  return { index: { articles, competitors, dispatches, people, social, socialArchive, discussions, wire }, skipped };
+  const filed: NewsWireStory[] = readStoryFolder(directory, 'wire', newsWireSchema, skipped)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
+  const wire = filed.filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT);
+  // A desk silent for over a week still has a record: its newest filings let the wire page date the pause.
+  const wireLatest = wire.length ? [] : filed.slice(0, WIRE_PAUSED_LIMIT);
+  return { index: { articles, competitors, dispatches, people, social, discussions, wire, ...(wireLatest.length ? { wireLatest } : {}) }, skipped };
 }
 export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   return loadNewsArchive(directory).index;

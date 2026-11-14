@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the after-close stamp word is CLOSED (StampWord from model.ts), not the banned old word.
  * PURPOSE: The two round badges of a front, as SVG: the TIER MEDALLION (the circle where an 80s card prints the
  *          position) and the LIVE / FINAL starburst STAMP. The medallion is drawn from the tier's
  *          MedallionRecipe (tiers.ts): a shape picked by name from a table, a heavy flag for thicker outlines,
@@ -15,6 +16,7 @@
  *          badge-band size.
  */
 import type { TierStyle } from './tiers';
+import type { StampWord } from './model';
 import { LADDER_LENGTH } from './tiers';
 import { foil, metal, mix, f, starburst, gear, svgDoc } from './svgShapes';
 
@@ -61,7 +63,7 @@ export function medallionSvg(T: TierStyle, size = 120): string {
  * STAMPS: LIVE / FINAL starbursts (the "All-Star" burst of an 80s card), 120 unit grid, `size` px square.
  * LIVE is red and white, FINAL navy and gold.
  */
-export function stampSvg(word: 'LIVE' | 'PUBLIC' | 'FINAL', size = 120): string {
+export function stampSvg(word: StampWord, size = 120): string {
   const live = word === 'LIVE';
   const a = live ? '#e0262c' : '#14306e', b = live ? '#ffffff' : '#f2c230', c = live ? '#8e1218' : '#0a1a44';
   const body = `<polygon points="${starburst(63, 64, 16, 58, 48)}" fill="#000" opacity=".5"/><polygon points="${starburst(60, 60, 16, 58, 48)}" fill="${a}" stroke="#000" stroke-width="3" stroke-linejoin="round"/><circle cx="60" cy="60" r="43" fill="none" stroke="${b}" stroke-width="2.6"/><circle cx="60" cy="60" r="39.5" fill="${c}" opacity=".55"/>`;

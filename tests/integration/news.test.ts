@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 09-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low; Claude Opus 5.5
+ * Date: 14-Nov-2026
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
  *          public news delivery, search-readable articles, evidence and rejection
@@ -21,6 +21,8 @@
  *          left out) and the store leaving out one bad edition, dispatch or ledger record, with
  *          /api/news/health reporting it, instead of failing the whole paper.
  *          30-Oct-2026 (Claude Sonnet 5.5 Low): the Card Cabinet face routes (front, back, thumbnail, share preview, cache headers).
+ *          14-Nov-2026 (Claude Opus 5.5): pages are served from the source shell (client/index.html), so no production build is needed.
+ *          Structured-data citations are the sources a section actually cites (citedSources); card versions use the collection.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -33,11 +35,12 @@ import { mountNews } from '../../server/routes/news';
 import { getNewsCollection } from '../../server/services/news/newsCollection';
 import { collectionShareVersion } from '../../shared/newsCollection';
 import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
-import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
+import { seoRouting } from '../../server/middleware/metaTagInjector';
+import { sourceShellMetaTagInjector } from '../helpers/pageShell';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import { NEWS_BRAND } from '../../shared/newsBrand';
 import sharp from 'sharp';
-import { articleCardPath, articleTitle, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople, NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS, WRITER_CREDITS } from '../../shared/news';
+import { articleCardPath, articleTitle, citedSources, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople, NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS, WRITER_CREDITS } from '../../shared/news';
 import { ARC_COLORS_TUPLES } from '../../shared/config/colors';
 import { articleCardSvg, cardText, renderArticleCard, renderSectionCard } from '../../server/services/news/newsCardImage';
 import { puzzleOfTheDay } from '../../server/services/news/newsCardPuzzle';
@@ -64,7 +67,7 @@ beforeAll(async () => {
   const app = express();
   mountNews(app);
   app.use(seoRouting);
-  app.use(metaTagInjector);
+  app.use(sourceShellMetaTagInjector);
   await new Promise<void>(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
   const address = server.address();
   if (!address || typeof address === 'string') throw Error('Missing listener');
@@ -87,7 +90,7 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     const story = schema['@graph'].find((node: Record<string, unknown>) => node['@type'] === 'NewsArticle');
     expect(story.headline).toBe(article.headline);
     expect(story.datePublished).toBe(article.publishedAt);
-    expect(story.citation).toEqual([...new Set(article.sources.map(source => source.url))]);
+    expect(story.citation).toEqual(citedSources(article).map(source => source.url));
     const card = `${SITE_ORIGIN}${articleCardPath(article)}`;
     expect(story.image[0]).toMatchObject({ url: card, width: 1200, height: 630 });
     expect(story.publisher.logo.url).toBe(`${SITE_ORIGIN}${NEWS_BRAND.logo ?? "/android-chrome-512x512.png"}`);
@@ -453,7 +456,8 @@ it('serves the reserved evening feature and cover in the permanent edition’s i
 
 it('serves the Card Cabinet faces: front and back PNG, versioned thumbnails and the share preview, with the right cache headers', { timeout: 60_000 }, async () => {
   const card = getNewsCollection().cards.find(item => item.id === 'person-ivan-sorokin-2026')!;
-  const version = collectionShareVersion(card);
+  // The routes version a card with its collection (team cards print their teammates), so the test does too.
+  const version = collectionShareVersion(card, getNewsCollection());
   const png = (await fetch(`${base}/api/news/cards/${card.id}/image.png`));
   expect(png.status).toBe(200);
   expect(png.headers.get('content-type')).toBe('image/png');

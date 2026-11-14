@@ -1,6 +1,7 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the off-peak note follows the printed stamp (LIVE only), so it never sits under CLOSED or FINAL.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: DATA DECISIONS for the REVERSE of a card. Takes the front's view model (model.ts) plus the same
  *          enriched card and returns exactly what the back may print, in card language, with nothing said twice:
@@ -108,10 +109,11 @@ function standingRows(vm: VM): StandingRow[] {
     if (teamName) sub.push(teamName);
     if (entrySolo) sub.push('SOLO ENTRY');
     else if (size && size > 1) sub.push(`TEAM OF ${size}`);
-    // Off-peak note: only while the contest AND the card's stamp are LIVE, and only when both numbers are real.
+    // Off-peak note: only while the contest is live AND the stamp printed on the card says LIVE (not CLOSED or FINAL),
+    // and only when both numbers are real.
     let note: string | null = null;
     if (vm.family === 'team') note = c.standingLabel;
-    else if (c.status === 'live' && vm.card.status === 'live' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
+    else if (c.status === 'live' && vm.stamp?.word === 'LIVE' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
       note = rc.rank > rc.peakRank ? `${num(rc.rank - rc.peakRank)} OFF PEAK` : rc.rank === rc.peakRank ? 'AT PEAK' : null;
     }
     return { title: c.full.replace(/\s+-\s+/, ' · ').toUpperCase(), sub: sub.length ? sub.join(' · ') : null, note, rank: c.rank, peak: c.peak, score: c.score, subs: c.subs };

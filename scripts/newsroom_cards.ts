@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-11-01
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-11-01; 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): warns when it writes cards.json or card-results.json while
+ *          content/news/goose-wiki.json exists (the site reads the wiki registry and results, not these files), and
+ *          snapshots cite the human leaderboard page instead of the board JSON API.
  * PURPOSE: Maintain stable card identities (no invented numbers) and dated board snapshots; import explicitly
  * official results idempotently without changing clean art, identities or earlier result revisions.
  * Explicit seasonal omissions survive refresh; historical people and results stay in their ledgers.
@@ -16,7 +19,14 @@ import type { NewsCompetition } from '../shared/news';
 import type { KaggleBoardPayload } from '../shared/types';
 
 const read = (name: string) => JSON.parse(fs.readFileSync(path.join(NEWS_DIRECTORY, name), 'utf8'));
-const save = (name: string, value: unknown) => fs.writeFileSync(path.join(NEWS_DIRECTORY, name), JSON.stringify(value, null, 2) + '\n');
+/** Files the site no longer reads while goose-wiki.json exists: newsCollection takes the wiki registry and results instead. */
+const SHADOWED_BY_WIKI = new Set(['cards.json', 'card-results.json']);
+const save = (name: string, value: unknown) => {
+  if (SHADOWED_BY_WIKI.has(name) && fs.existsSync(path.join(NEWS_DIRECTORY, 'goose-wiki.json'))) {
+    console.warn(`Warning: writing ${name}, but the site reads content/news/goose-wiki.json instead. This change will not appear on the site until it reaches the wiki (docs/newsroom/README.md).`);
+  }
+  fs.writeFileSync(path.join(NEWS_DIRECTORY, name), JSON.stringify(value, null, 2) + '\n');
+};
 const command = process.argv[2] ?? 'check';
 const now = new Date().toISOString();
 if (command === 'import-results') {
@@ -77,12 +87,14 @@ if (command === 'import-results') {
   }
   for (const competition of ['arc-2', 'arc-3'] as const) {
     const url = `https://arc.markbarney.net/api/kaggle/${KAGGLE_COMPETITIONS[competition].slug}/board`;
+    // Readers follow a snapshot's source link, so it names the leaderboard page; the JSON API is only how we read it.
+    const page = `https://arc.markbarney.net${KAGGLE_COMPETITIONS[competition].path}`;
     const response = await fetch(url);
     if (!response.ok) throw Error(`Board unavailable: ${competition}, HTTP ${response.status}`);
     const board = await response.json() as KaggleBoardPayload;
     const wanted = new Set([...registry.cards.flatMap(card => card.entries.filter(ref => ref.competition === competition).map(ref => ref.teamId)), ...(index.people ?? []).flatMap(person => person.memberships.filter(member => member.competition === competition).map(member => member.teamId))]);
     const snapshots: CardSnapshot[] = board.latest.rows.filter(row => wanted.has(row[1])).map(row => ({ competition, competitionId: KAGGLE_COMPETITIONS[competition].slug, teamId: row[1], observedAt: board.latest.fetched,
-      teamName: row[2], rank: row[0], score: row[4], submissions: row[5], members: row[6].split(',').filter(Boolean), sourceUrl: url }));
+      teamName: row[2], rank: row[0], score: row[4], submissions: row[5], members: row[6].split(',').filter(Boolean), sourceUrl: page }));
     registry.snapshots = [...registry.snapshots.filter(row => row.competition !== competition), ...snapshots];
   }
   registry.updatedAt = now;

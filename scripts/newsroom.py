@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 02-November-2026
+# Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
+# Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026
+# 14-Nov-2026 (Claude Opus 5.5): dispatch and wire citations point at their permanent pages, not index anchors.
 # 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
@@ -335,7 +336,8 @@ def add_edition_intake(item, competition, actual_now, root=ROOT):
                 if story['competition'] != competition or published > cutoff or not (published > since or source_id in deferred):
                     continue
                 stories[field].append({**story, 'sourceId': source_id})
-                story_url = f"{SITE}/news/wire#{story['id']}" if kind == 'wire' else f"{SITE}/news#{story['id']}"
+                # Permanent pages (shared/news.ts wirePath / newsArticlePath): an anchor on an index page dies with the index.
+                story_url = f"{SITE}/news/wire/{story['id']}" if kind == 'wire' else f"{SITE}/news/{story['id']}"
                 base['sources'].append({'id': source_id, 'title': story['headline'], 'url': story_url, 'accessedAt': iso(actual_now)})
             except (ValueError, KeyError, TypeError, OSError) as error:
                 limits.append(f'{path.name}: {error}')

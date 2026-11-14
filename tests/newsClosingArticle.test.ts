@@ -1,8 +1,11 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed)
- * Date: 03-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); Claude Opus 5.5
+ * Date: 14-Nov-2026
  * PURPOSE: Verify the actual closing story survives validation and retains both dated
- * standings and pictures in client sections, permanent-route HTML and the front page.
+ * standings and pictures in client sections and permanent-route HTML.
+ * 14-Nov-2026 (Claude Opus 5.5): dropped the front-page assertions. The front page leads with
+ * whatever is newest, so this archived story leaves it as the paper moves on; its permanent
+ * route is the stable place readers receive it.
  * SRP/DRY check: Pass — exercises the shared article contract and production renderers.
  */
 import { readFileSync } from 'node:fs';
@@ -27,7 +30,6 @@ describe('closing story as readers receive it', () => {
     const sections = article.sections.filter(section => section.standings);
     expect(sections).toHaveLength(2);
     const initial = resolveNewsMeta(`/news/${article.id}`)!.tags.bodyHtml!;
-    const front = resolveNewsMeta('/news')!.tags.bodyHtml!;
     for (const [section, competition] of sections.map((value, index) => [value, index === 0 ? 'arc-3' : 'arc-2'] as const)) {
       const board = section.standings!;
       const client = renderToStaticMarkup(React.createElement(NewsArticleSectionExtras, { section }));
@@ -35,7 +37,6 @@ describe('closing story as readers receive it', () => {
       expect(board.observedAt).toBe(evidence.observations[competition].dataAsOf);
       expect(client).toContain(board.observedAt);
       expect(initial).toContain(board.observedAt);
-      expect(front).toContain(board.observedAt);
       for (const row of board.rows) {
         expect(initial).toContain(row.name.replaceAll('&', '&amp;'));
         expect(client).toContain(row.name.replaceAll('&', '&amp;'));
@@ -43,7 +44,6 @@ describe('closing story as readers receive it', () => {
     }
     for (const path of [article.image!.src, sections[1].image!.src]) {
       expect(initial).toContain(path);
-      expect(front).toContain(path);
     }
     expect(initial).toContain('news-team-name');
     expect(initial).not.toContain('From the box score</h2><table');

@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): every render cache (front memo, reverse memo, thumbnails) is sized from the collection
+ *          (cards x 1.2, so a full crawl hits); a competitor's reverse no longer renders a front it never shows (only team and
+ *          sponsor backs carry the miniature); the reverse memo key includes the stamp word through frontKey.
  * PURPOSE: The public entry points the site uses to draw a Card Cabinet card. renderCardFace() turns a CollectionCard
  *          into its 750 x 1050 front or back PNG: it checks the art address, enriches the card once (enrich.ts, cached
  *          per collection content, never per request), picks the look named by the card's set (sets.ts -> looks.ts) and
@@ -25,7 +28,7 @@ import { assertCollectionArtPath } from './art';
 import { lookFor, LOOKS, type LookOpts } from './looks';
 import { setDesigns, setForSeason } from './sets';
 import { lintNode, careerNames } from './lint';
-import { frontKey } from './render';
+import { frontKey, sizeFrontMemo } from './render';
 import type { Node } from './kit';
 import { cardFrameRepair } from '../../../../shared/cardFrameRepair';
 
@@ -54,6 +57,7 @@ function cacheFor(collection: NewsCollection): Cached {
   if (!fingerprint) seen.set(collection, fingerprint = fnv(JSON.stringify([collection.season, collection.updatedAt, collection.cards])));
   if (current?.fingerprint === fingerprint) return current;
   const names = Object.fromEntries(collection.cards.map(card => [card.id, card.name]));
+  sizeCaches(collection.cards.length);
   return current = { fingerprint, collection, names, models: new Map() };
 }
 
@@ -71,7 +75,7 @@ export function cardFaceModel(card: CollectionCard, collection: NewsCollection):
       model = enrichCard({ ...card, season: newest.season }, cache.collection);
       model.series = { ...model.series, season: card.season };
     }
-    if (cache.models.size >= 400) cache.models.delete(cache.models.keys().next().value as string);
+    if (cache.models.size >= Math.max(400, cacheLimit)) cache.models.delete(cache.models.keys().next().value as string);
     cache.models.set(key, model);
   }
   return { model, names: cache.names };
@@ -92,14 +96,28 @@ export async function renderCardFace(card: CollectionCard, collection: NewsColle
   const key = `${look.key}|${lookOpts.backPicture ?? ''}|${frontKey(model, lookOpts)}`;
   let hit = BACK_MEMO.get(key);
   if (hit) { BACK_MEMO.delete(key); BACK_MEMO.set(key, hit); return hit; }
-  hit = look.frontBuffer(model, lookOpts).then(front => look.back(model, { ...lookOpts, frontBuffer: front }));
+  // Only team and sponsor reverses print a miniature of the front; a competitor's ledger reverse never shows it, so it is not drawn.
+  hit = model.kind === 'competitor' ? look.back(model, lookOpts)
+    : look.frontBuffer(model, lookOpts).then(front => look.back(model, { ...lookOpts, frontBuffer: front }));
   BACK_MEMO.set(key, hit);
   hit.catch(() => BACK_MEMO.delete(key));            // a failed render is never remembered
-  while (BACK_MEMO.size > BACK_MEMO_LIMIT) BACK_MEMO.delete(BACK_MEMO.keys().next().value as string);
+  while (BACK_MEMO.size > cacheLimit) BACK_MEMO.delete(BACK_MEMO.keys().next().value as string);
   return hit;
 }
 const BACK_MEMO = new Map<string, Promise<Buffer>>();
-const BACK_MEMO_LIMIT = 60;
+/** Faces each render cache keeps: the whole set with headroom (cards x 1.2), so a full crawl hits instead of evicting itself. */
+let cacheLimit = 120;
+/** Thumbnails per card the Cabinet asks for (front and back, each at a couple of widths). */
+const THUMBS_PER_CARD = 4;
+const limitFor = (cards: number) => Math.max(1, Math.ceil(cards * 1.2));
+function sizeCaches(cards: number): void {
+  cacheLimit = limitFor(cards);
+  sizeFrontMemo(cacheLimit);
+  while (BACK_MEMO.size > cacheLimit) BACK_MEMO.delete(BACK_MEMO.keys().next().value as string);
+  while (THUMB_CACHE.size > cacheLimit * THUMBS_PER_CARD) THUMB_CACHE.delete(THUMB_CACHE.keys().next().value as string);
+}
+/** The render cache size for a collection (cards x 1.2); the share preview cache uses the same number. */
+export const renderCacheLimit = (collection: NewsCollection): number => limitFor(collection.cards.length);
 
 /** The Satori tree of a front, for the wording lint (see cardFaceLint). */
 export async function cardFaceNode(card: CollectionCard, collection: NewsCollection): Promise<Node> {
@@ -114,12 +132,13 @@ export async function cardFaceLint(card: CollectionCard, collection: NewsCollect
 }
 
 const THUMB_CACHE = new Map<string, Buffer>();
-const THUMB_CACHE_LIMIT = 300;
 /** Smallest and largest thumbnail width the site serves. */
 export const THUMB_MIN_WIDTH = 120, THUMB_MAX_WIDTH = 750;
 /**
  * A small WebP of a card face for the Cabinet grid, so ninety cards do not mean ninety full PNGs. `version` is the card's
- * content version (it includes RENDER_VERSION); a changed card or design gets a fresh key and the old entry ages out.
+ * image version, collectionShareVersion(card, collection): it covers RENDER_VERSION, the card, what it prints about other
+ * cards (teammates' tiers and medals, shared-art names, the set's tier count) and the stamp phase, so a change to any of
+ * them gets a fresh key and the old entry ages out.
  */
 export async function renderCardThumb(card: CollectionCard, collection: NewsCollection, side: CardSide, width: number, version: string): Promise<Buffer> {
   const w = Math.min(THUMB_MAX_WIDTH, Math.max(THUMB_MIN_WIDTH, Math.round(width)));
@@ -127,7 +146,7 @@ export async function renderCardThumb(card: CollectionCard, collection: NewsColl
   const hit = THUMB_CACHE.get(key);
   if (hit) { THUMB_CACHE.delete(key); THUMB_CACHE.set(key, hit); return hit; }   // refresh recency
   const thumb = await sharp(await renderCardFace(card, collection, side)).resize({ width: w }).webp({ quality: 82 }).toBuffer();
-  if (THUMB_CACHE.size >= THUMB_CACHE_LIMIT) THUMB_CACHE.delete(THUMB_CACHE.keys().next().value as string);
+  while (THUMB_CACHE.size >= cacheLimit * THUMBS_PER_CARD) THUMB_CACHE.delete(THUMB_CACHE.keys().next().value as string);
   THUMB_CACHE.set(key, thumb);
   return thumb;
 }

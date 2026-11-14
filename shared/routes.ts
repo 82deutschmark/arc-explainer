@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; existing contributors credited below; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
+ * Date: 14-Nov-2026; 09-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): removed the /news/competitors and /news/people route meta; both
+ *          addresses redirect to /news/cards, so they no longer reach the sitemap or the discovery lists.
  * PURPOSE: Describe public routes and provide consistent gallery search/social metadata with the boss-selected authentic DZ01 preview.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
@@ -102,8 +104,6 @@ const ARC3_GAME_CARD = { image: `${SITE}/api/arc3/og-image/r11l`, imageAlt: 'Ope
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news': { title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
   '/news/wire': { title: 'The wire | The ARC Daily Digest', description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', url: `${SITE}/news/wire`, ...NEWS_CARD },
-  '/news/competitors': { title: 'Competitor profiles | The ARC Daily Digest', description: 'Meet the ARC-AGI competitors: team backgrounds, members and coverage from The ARC Daily Digest.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
-  '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/cards': { title: 'Kaggle card catalog | The ARC Daily Digest', description: 'Competition card sets for individual Kaggle competitors, teams and sponsors, with permanent editions, Kaggle medals, tiers and career records.', url: `${SITE}/news/cards`, ...NEWS_CARD },
   [NEWS_ARCHIVE.path]: { title: `${NEWS_ARCHIVE.heading} | ${NEWS_NAME}`, description: NEWS_ARCHIVE.description, url: SITE + NEWS_ARCHIVE.path, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
@@ -367,8 +367,6 @@ if (NEWS_BRAND.goose) {
   const sections: Record<string, [string, string]> = {
     '/news': ['The sports tabloid of the Kaggleverse', 'Major Kaggle competitions, meaningful moves, public methods and the people behind the teams. Current standings remain at the linked original sources.'],
     '/news/wire': ['The wire', 'Source-linked competition developments, with each story’s date and writer.'],
-    '/news/competitors': ['Competitor profiles', 'Competition-specific teams, dated identity context and original Kaggle links.'],
-    '/news/people': ['People behind the teams', 'The recurring cast across Kaggle competitions, with verified public profiles and linked history.'],
     '/news/cards': ['Kaggle card catalog', 'Competition card sets for individual competitors, teams and sponsors, with approved art, Kaggle medals and linked career history.'],
   };
   for (const [route, [title, description]] of Object.entries(sections)) {

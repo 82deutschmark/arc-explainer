@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 (Bubba)
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 (Bubba); Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): kickers print articleCompetitionLabel (a joint report names both contests, as its page does);
+ *          the site address in the footer and the puzzle link comes from SITE_ORIGIN instead of a hard-coded host.
  * PURPOSE: Renders The ARC Daily's 1200x630 link-preview cards: one per article (masthead,
  *          competition and edition, headline, top three of that edition's own box score)
  *          and one section card for /news and the other ARC Daily pages (the latest headline
@@ -39,8 +41,9 @@ import sharp from 'sharp';
 import { ARC_COLORS_TUPLES } from '../../../shared/config/colors';
 import {
   type NewsArticle, type NewsStat, NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_BRAND,
-  articleCardVersion, cardStandings, competitionName, easternDay, editionLabel, newsDate, sectionCardArticles, sectionCardVersion,
+  articleCardVersion, articleCompetitionLabel, cardStandings, easternDay, editionLabel, newsDate, sectionCardArticles, sectionCardVersion,
 } from '../../../shared/news';
+import { SITE_ORIGIN } from '../../../shared/seo';
 import { getNewsIndex } from './newsStore';
 import { type CardPuzzle, puzzleOfTheDay } from './newsCardPuzzle';
 import { logger } from '../../utils/logger';
@@ -55,6 +58,8 @@ const SERIF = 'IBM Plex Serif';
 const SANS = 'IBM Plex Sans Condensed';
 const MONO = 'IBM Plex Mono';
 const FONT_DIRECTORY = path.join(process.cwd(), 'server', 'assets', 'fonts', 'news-card');
+/** The site's host as printed on a card ("arc.markbarney.net"), from the one canonical origin. */
+const SITE_HOST = new URL(SITE_ORIGIN).host;
 
 type Node = { type: string; props: Record<string, unknown> };
 type Style = Record<string, string | number>;
@@ -86,7 +91,7 @@ const headlineSize = (text: string) => text.length <= 42 ? 72 : text.length <= 6
 
 const kicker = (text: string, style: Style = {}) => box({ fontFamily: SANS, fontWeight: 700, fontSize: 22, letterSpacing: 2.5, textTransform: 'uppercase', color: RED, ...style }, text);
 const footer = (right: string) => box({ justifyContent: 'space-between', fontFamily: SANS, fontWeight: 500, fontSize: 20, color: MUTED, letterSpacing: 1 },
-  box({}, 'arc.markbarney.net/news'), box({}, right));
+  box({}, `${SITE_HOST}/news`), box({}, right));
 const dek = (text: string, size: number, lines: number, style: Style = {}) =>
   box({ fontFamily: SERIF, fontWeight: 400, fontSize: size, lineHeight: 1.35, color: MUTED, ...clamp(lines), ...style }, cardText(text));
 function masthead(size: number, centred = false): Node {
@@ -114,7 +119,7 @@ function articleCard(article: NewsArticle): Node {
   const standings = cardStandings(article);
   return box({ width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, flexDirection: 'column', background: PAPER, padding: '34px 60px 30px' },
     masthead(50),
-    kicker(`${competitionName(article.competition)}  ·  ${editionLabel(article)}  ·  ${newsDate(article.date)}`, { marginTop: 24 }),
+    kicker(`${articleCompetitionLabel(article)}  ·  ${editionLabel(article)}  ·  ${newsDate(article.date)}`, { marginTop: 24 }),
     headlineBlock(headline, headlineSize(headline), 3, { marginTop: 14 }),
     dek(article.dek, 26, headline.length <= 64 ? 2 : 1, { marginTop: 16 }),
     box({ flexGrow: 1 }),
@@ -148,7 +153,7 @@ function puzzleColumn(puzzle: CardPuzzle): Node {
     kicker('ARC puzzle of the day', { fontSize: 19 }),
     box({ marginTop: 16, alignItems: 'center', justifyContent: 'space-between' }, gridNode(puzzle.input, cell), pixelArrow(), gridNode(puzzle.output, cell)),
     dek('Input on the left, output on the right. What is the rule?', 20, 3, { marginTop: 16 }),
-    box({ fontFamily: SANS, fontWeight: 700, fontSize: 18, letterSpacing: 1, color: RED, marginTop: 8 }, `arc.markbarney.net/puzzle/${puzzle.id}`));
+    box({ fontFamily: SANS, fontWeight: 700, fontSize: 18, letterSpacing: 1, color: RED, marginTop: 8 }, `${SITE_HOST}/puzzle/${puzzle.id}`));
 }
 
 /** What the paper is: shown beside one fresh edition (short form), or alone when no edition is fresh. */
@@ -159,7 +164,7 @@ const identityColumn = (short: boolean): Node[] => [
     : 'Source-linked competition stories, meaningful moves, public methods and the people behind the teams. Dates and observation clocks use UTC.', short ? 20 : 26, 4, { marginTop: 12 }),
 ];
 const articleColumn = (article: NewsArticle): Node[] => [
-  kicker(`${competitionName(article.competition)}  ·  ${newsDate(article.date)}`, { fontSize: 19 }),
+  kicker(`${articleCompetitionLabel(article)}  ·  ${newsDate(article.date)}`, { fontSize: 19 }),
   headlineBlock(cardText(article.headline), 32, 4, { marginTop: 10 }),
   dek(article.dek, 20, 4, { marginTop: 12 }),
 ];

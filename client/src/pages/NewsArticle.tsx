@@ -1,6 +1,11 @@
 /**
- * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 03-November-2026
+ * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): a dispatch page prints its headline as the <h1> and takes its title and
+ *          description from dispatchTitle/dispatchDescription, like the server-rendered head.
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): the Sources rail lists only cited, de-duplicated links;
+ *          "Updated <date>: <reason>" notices sit under the byline; a joint report lists teams and leaderboard links
+ *          for every contest it covers; box-score movement uses the shared rank/score change wording.
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
  *          with evidence timestamps, linked section
@@ -21,13 +26,12 @@ import { StoryPeopleCards, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { articleCompetitionLabel, articleFigureStats, competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_STORY_MISSING, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { articleCompetitionLabel, articleCompetitions, articleCoversTeam, citedSources, rankChangeLabel, scoreChangeLabel, articleFigureStats, competitorPath, editionFeature, reportedPeople, writerCredit, articleStructuredData, dispatchStructuredData, articleTitle, articleDescription, dispatchTitle, dispatchDescription, articleCardPath, articleCardAlt, competitionName, NEWS_NAME, NEWS_STORY_MISSING, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles } from '@/components/news/NewsDesk';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
-const points = (value: number) => String(value);
 
 export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
@@ -39,23 +43,24 @@ export default function NewsArticle() {
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : dispatch ? dispatchStructuredData(dispatch, SITE_ORIGIN) : undefined, [article, dispatch]);
   const missing = query.isSuccess && query.data === null;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : dispatch ? `${dispatch.headline} | ${NEWS_NAME}` : `Story | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch?.dek ?? dispatch?.sections[0]?.text, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
+  usePageMeta({ title: article ? articleTitle(article) : dispatch ? dispatchTitle(dispatch) : `Story | ${NEWS_NAME}`, description: article ? articleDescription(article) : dispatch ? dispatchDescription(dispatch) : undefined, canonicalPath: `/news/${articleId}`, noindex: !article && !dispatch, type: 'article', jsonLd,
     image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : dispatch?.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : undefined,
     article: article ? { publishedTime: article.publishedAt, section: articleCompetitionLabel(article) } : dispatch ? { publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition) } : undefined });
-  const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
+  const competitors = article ? (query.data?.competitors ?? []).filter(record => articleCoversTeam(article, record)) : [];
 
   return <NewsPaper date={article?.date}>
     <Link className="news-back" href="/news">← Back to the front page</Link>
     <NewsStatus loading={query.isLoading} error={false} retry={() => void query.refetch()} />
     {query.isError && !query.data && <section className="news-status" role="alert"><h1 className="news-article-title">We couldn’t load this story</h1><p>The site is temporarily unable to retrieve this article. This is a loading problem; publication status could not be checked.</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Trying…' : 'Try again'}</Button><p><Link href="/news" className="news-read">Back to the front page →</Link></p></section>}
     {missing && !query.isError && <section className="news-status" role="status"><h1 className="news-article-title">{NEWS_STORY_MISSING.heading}</h1><p>{NEWS_STORY_MISSING.description}</p><Button variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()}>{query.isFetching ? 'Checking…' : 'Check again'}</Button><p><Link href="/news" className="news-read">Read the latest stories →</Link></p></section>}
-    {dispatch && <DispatchPreview dispatch={dispatch} lead people={query.data?.people} />}
+    {dispatch && <DispatchPreview dispatch={dispatch} lead permalink people={query.data?.people} />}
     {article && <article>
       <header className="news-article-header">
         <EditionLabel article={article} />
         <h1 className="news-article-title"><SportsText text={article.headline} stats={figureStats} teamNames={article.verifiedTeamNames} /></h1>
         <p className="news-dek"><SportsText text={article.dek} stats={figureStats} teamNames={article.verifiedTeamNames} /></p>
         <p className="news-byline">{NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        {!!article.revisions?.length && <div className="news-revisions" role="note" aria-label="Revisions">{article.revisions.map((revision, index) => <p key={`${revision.at}-${index}`} className="news-muted">Updated <time dateTime={revision.at}>{newsDate(revision.at)}</time>{revision.reason ? `: ${revision.reason}` : ''}</p>)}</div>}
       </header>
       {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
       {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
@@ -73,10 +78,10 @@ export default function NewsArticle() {
           </section>)}</div>
           {!!article.stats.length && <><NumberKey stats={article.stats} competition={article.competition} /><div className="news-boxscore-wrap" tabIndex={0} role="region" aria-label="Scrollable edition box score">
             <table className="news-boxscore"><caption>The box score</caption><thead><tr><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Score</th><th scope="col">Rank change</th><th scope="col">Score change</th></tr></thead>
-              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td className="pl">#{stat.rank.toLocaleString('en-US')}</td><td className="sc">{String(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td className="sd">{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
+              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td className="pl">#{stat.rank.toLocaleString('en-US')}</td><td className="sc">{String(stat.score)}</td><td>{rankChangeLabel(stat.rankChange)}</td><td className="sd">{scoreChangeLabel(stat.scoreChange)}</td></tr>)}</tbody>
             </table><p className="news-muted">Scores and movement recorded for this edition, not live standings.</p>
           </div></>}
-          <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
+          {articleCompetitions(article).map(competition => KAGGLE_COMPETITIONS[competition] && <Link key={competition} className="news-read" href={KAGGLE_COMPETITIONS[competition].path}>{articleCompetitions(article).length > 1 ? `Explore the full ${competitionName(competition)} leaderboard →` : 'Explore the full leaderboard →'}</Link>)}
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
           <h2 className="news-section-title">How this report was checked</h2>
@@ -84,7 +89,7 @@ export default function NewsArticle() {
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>
           <SponsorPlacement format="rail" />
           <h2 className="news-section-title">Sources</h2>
-          <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt)}</span></li>)}</ol>
+          <ol className="news-source-list">{citedSources(article).map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt)}</span></li>)}</ol>
           {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link><TeamPeople team={competitor} people={query.data?.people} /></li>)}</ul></>}
         </aside>
       </div>

@@ -1,6 +1,16 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 13-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): wire stories get their own permalink (wirePath, wireTitle,
+ *          wireDescription, wireDeskPausedSince, NewsIndex.wireLatest); dispatches get dispatchTitle,
+ *          dispatchDescription and dispatchLabel; snippet() is the one 160-character trim; editionLabel
+ *          reads editionDisplay first and no longer carries the dead preview branch.
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): citedSources, displayAliases, rank/score change
+ *          labels, personDescription, personTeams, rosterSourceHref, joinNames, isFilenameAlt, optional
+ *          article competitions[] and revisions/updatedAt (dateModified); socialArchive and
+ *          chronologicalSocialPosts removed.
+ * 14-Nov-2026 (Claude Opus 5.5, card faces): articleCardVersion also hashes the dek, the printed competition label and the
+ *          edition label, so editing any of them gives the link preview a fresh address.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * Updated by GPT-6.1 Terra / Codex (reasoning effort not exposed).
@@ -49,6 +59,27 @@ export interface NewsSection {
   standings?: { caption: string; observedAt: string; rows: { teamId: string; name: string; rank: number; score: number }[] };
 }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
+/** One wording for a box-score movement, shared by the article page, its server HTML and the share card. */
+export const rankChangeLabel = (change: number | null, missing = 'Not available') =>
+  change == null ? missing : change === 0 ? 'Unchanged' : `${change > 0 ? 'Up' : 'Down'} ${Math.abs(change)}`;
+export const scoreChangeLabel = (change: number | null, missing = 'Not available') =>
+  change == null ? missing : `${change > 0 ? '+' : ''}${change}`;
+/**
+ * The sources a reader is shown: only those some section cites, in first-citation order, one per URL.
+ * Older editions carried their whole brief catalogue (hundreds of uncited, repeated links).
+ */
+export function citedSources(story: { sections: Pick<NewsSection, 'sourceIds'>[]; sources: NewsSource[] }): NewsSource[] {
+  const byId = new Map(story.sources.map(source => [source.id, source]));
+  const seen = new Set<string>();
+  return story.sections.flatMap(section => section.sourceIds).flatMap(id => {
+    const source = byId.get(id);
+    if (!source || seen.has(source.url)) return [];
+    seen.add(source.url);
+    return [source];
+  });
+}
+/** A dated revision of a published story, read from content/news/corrections and the revision evidence. */
+export interface NewsRevision { at: string; reason?: string }
 /** Use the story's own dated tables for semantic team and score typography. */
 export function articleFigureStats(article: Pick<NewsArticle, 'sections' | 'stats'>): NewsStat[] {
   return [...article.stats, ...article.sections.flatMap(section => (section.standings?.rows ?? []).map(row => ({ ...row, rankChange: null, scoreChange: null })))];
@@ -69,7 +100,17 @@ export interface NewsArticle {
   coverageNote: string; discord: string;
   /** A commissioned feature reserved for this issue's front page. */
   frontPageFeatureId?: string;
+  /** Further contests a joint report covers (the closing bell covers both); `competition` stays the primary one. */
+  competitions?: NewsCompetition[];
+  /** Set by the store from the revision records, oldest first; updatedAt is the latest revision. */
+  revisions?: NewsRevision[]; updatedAt?: string;
 }
+/** Every contest an edition covers, primary first. */
+export const articleCompetitions = (article: Pick<NewsArticle, 'competition' | 'competitions'>): NewsCompetition[] =>
+  [...new Set([article.competition, ...(article.competitions ?? [])])];
+/** Whether an edition names this competition team. */
+export const articleCoversTeam = (article: NewsArticle, team: Pick<CompetitorRecord, 'competition' | 'teamId'>) =>
+  articleCompetitions(article).includes(team.competition) && article.teamIds.includes(team.teamId);
 export interface CompetitorFact { text: string; sourceUrl: string; sourceTitle: string; checkedAt: string }
 export interface CompetitorRecord {
   id: string; competition: NewsCompetition; teamId: string; name: string;
@@ -79,6 +120,24 @@ export interface CompetitorRecord {
   /** An approved team picture shown on the profile page (set from the wiki entry's featureArt). */
   art?: { src: string; alt: string; caption: string };
 }
+/** Names a team was observed under, without its internal profile id or its current name, each once. */
+export function displayAliases(record: Pick<CompetitorRecord, 'id' | 'name' | 'aliases'>): string[] {
+  const hidden = new Set([record.id.toLowerCase(), record.name.trim().toLowerCase()]);
+  return record.aliases.filter(alias => {
+    const key = alias.trim().toLowerCase();
+    if (!key || hidden.has(key)) return false;
+    hidden.add(key);
+    return true;
+  });
+}
+/** "A", "A and B", "A, B and C": reader-facing name lists. */
+const NAME_LIST = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+export const joinNames = (names: string[]) => NAME_LIST.format(names);
+/**
+ * Alt text that is really a file name or an asset slug ("keith-tyser.webp", "2026-10-29-nt-avatar-v2")
+ * describes nothing. Real alt text is words: it has a space.
+ */
+export const isFilenameAlt = (alt: string) => !/\s/.test(alt.trim()) && /[-_.]/.test(alt);
 export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
   dek?: string;
@@ -90,6 +149,8 @@ export interface NewsDispatch {
   commissionedBy?: 'mark-barney';
   editorNote?: string;
   image?: { src: string; alt: string; caption: string };
+  /** Set by the store from the revision records, oldest first; updatedAt is the latest revision. */
+  revisions?: NewsRevision[]; updatedAt?: string;
 }
 /** Resolve the same immutable feature for the front page, permalink and initial HTML. */
 export function editionFeature(article: NewsArticle, dispatches: NewsDispatch[] = []): NewsDispatch | undefined {
@@ -122,6 +183,32 @@ export interface NewsPerson {
   editorialPortrait?: NewsEditorialPortrait;
 }
 export const displayPortrait = (person: NewsPerson) => person.editorialPortrait ?? person.portrait;
+/** A profile's own search snippet: the briefing, else the first sourced fact, else a plain line naming them. */
+export const personDescription = (person: NewsPerson) =>
+  snippet(person.briefing ?? person.facts[0]?.text ?? `${person.name}: verified public accounts, observed competition teams and Hall of Fame history in ${NEWS_NAME}.`);
+export type NewsMembership = NewsPerson['memberships'][number];
+/**
+ * Every competition team a person was observed on: their own ledger memberships, plus any competitor
+ * record whose saved roster lists one of their verified Kaggle handles (the reverse of peopleForTeam),
+ * so a profile and the team page it links to never disagree. Newest observation first.
+ */
+export function personTeams(person: NewsPerson, competitors: CompetitorRecord[]): NewsMembership[] {
+  const handles = new Set(person.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
+  const rows = new Map(person.memberships.map(member => [`${member.competition}:${member.teamId}`, member]));
+  for (const team of competitors) {
+    const key = `${team.competition}:${team.teamId}`, handle = team.members.find(member => handles.has(member));
+    if (!handle || rows.has(key)) continue;
+    const competition = KAGGLE_COMPETITIONS[team.competition];
+    rows.set(key, { competition: team.competition, competitionId: competition?.slug ?? team.competition, season: competition?.season ?? team.firstObservedAt.slice(0, 4),
+      teamId: team.teamId, teamName: team.name, memberHandle: handle, firstObservedAt: team.firstObservedAt, lastObservedAt: team.lastObservedAt,
+      sourceUrl: competitorPath(team.id), sourceTitle: `${team.name} team profile` });
+  }
+  return [...rows.values()].sort((a, b) => b.lastObservedAt.localeCompare(a.lastObservedAt) || a.teamName.localeCompare(b.teamName));
+}
+/** Our saved-board JSON API (…/api/kaggle/<slug>/board) is a data feed, not a page; readers get the leaderboard page. */
+const BOARD_API = /^https:\/\/arc\.markbarney\.net\/api\/kaggle\/[^/]+\/board$/;
+export const rosterSourceHref = (member: Pick<NewsMembership, 'competition' | 'sourceUrl'>) =>
+  BOARD_API.test(member.sourceUrl) ? KAGGLE_COMPETITIONS[member.competition]?.path ?? '/news' : member.sourceUrl;
 export interface NewsSocialPost {
   id: string; author: string; authorName: string; url: string; postedAt: string | null; checkedAt: string;
   visibility: 'public'; summary: string; whyItMatters: string; competitions: NewsCompetition[]; personIds: string[];
@@ -134,9 +221,6 @@ export interface NewsDiscussion {
   postedAt: string | null; latestActivityAt: string | null; commentCount: number; checkedAt: string;
   visibility: 'public'; bodyRead: true; summary: string; decision: 'paper-lead'; reason: string; personIds: string[];
 }
-/** Catch-up archive order is chronological, independent of the front page's editorial priorities. */
-export const chronologicalSocialPosts = (posts: NewsSocialPost[]) => [...posts].sort((a, b) =>
-  (b.postedAt ?? b.checkedAt).localeCompare(a.postedAt ?? a.checkedAt) || b.id.localeCompare(a.id));
 export const recentDiscussions = (threads: NewsDiscussion[]) => [...threads].sort((a, b) =>
   (b.latestActivityAt ?? b.postedAt ?? b.checkedAt).localeCompare(a.latestActivityAt ?? a.postedAt ?? a.checkedAt)
   || b.id.localeCompare(a.id));
@@ -171,7 +255,19 @@ export interface NewsWireStory {
   /** Claude Haiku 5.5 (or Sonnet 5.5 before 21 Oct 2026) when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
   generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
-export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; socialArchive?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[] }
+export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[];
+  /** Only when `wire` (the past week) is empty: the desk's newest filings, whatever their age, so the
+   *  wire page can say when the desk paused instead of claiming it never filed. */
+  wireLatest?: NewsWireStory[] }
+/** The index carries one week of wire; older stories keep their permalinks. */
+export const WIRE_WINDOW_MS = 7 * 24 * 3_600_000;
+/** How many of the newest filings the index carries while the desk is paused. */
+export const WIRE_PAUSED_LIMIT = 7;
+/** The newest filing's time when the desk has filed nothing inside the week, else null. */
+export function wireDeskPausedSince(index: Pick<NewsIndex, 'wire' | 'wireLatest'>): string | null {
+  if (index.wire?.length) return null;
+  return [...(index.wireLatest ?? [])].map(story => story.publishedAt).sort().at(-1) ?? null;
+}
 /** The permanent archive is fed by the same published editions and features as RSS. */
 export const NEWS_ARCHIVE = {
   path: '/news/community',
@@ -200,7 +296,7 @@ export function archiveMonths(stories: ReturnType<typeof publishedStories>) {
 /** One publication order for browser and initial HTML; no fixed competition slate. */
 export function competitionStories(articles: NewsArticle[], dispatches: NewsDispatch[], competition: NewsCompetition) {
   return [
-    ...articles.filter(article => article.competition === competition).map(article => ({ publishedAt: article.publishedAt, id: article.id, article })),
+    ...articles.filter(article => articleCompetitions(article).includes(competition)).map(article => ({ publishedAt: article.publishedAt, id: article.id, article })),
     ...dispatches.filter(dispatch => dispatch.competition === competition).map(dispatch => ({ publishedAt: dispatch.publishedAt, id: dispatch.id, dispatch })),
   ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
 }
@@ -229,7 +325,7 @@ export function reportedPeople(stories: { personIds?: readonly string[] }[], peo
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
 export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {
   const onTeams = article.teamIds.flatMap(teamId => {
-    const team = competitors.find(record => record.competition === article.competition && record.teamId === teamId);
+    const team = competitors.find(record => articleCompetitions(article).includes(record.competition) && record.teamId === teamId);
     return team ? peopleForTeam(people, team) : [];
   });
   return [...new Map([...citedPeople(article.sections, people), ...onTeams].map(person => [person.id, person])).values()];
@@ -261,16 +357,17 @@ export const WRITER_CREDITS: Record<string, string> = {
 };
 export const writerCredit = (generatedBy: NewsWriter) =>
   WRITER_CREDITS[generatedBy] ?? generatedBy;
-/** Wire stories live on one page, each at its own anchor. */
-export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
+/** The wire index, or one story's permanent page (it outlives the index's one-week window). */
+export const wirePath = (id?: string) => id ? `/news/wire/${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key]?.label ?? key;
 export const articleCompetitionLabel = (article: NewsArticle) => article.competitionDisplay ?? competitionName(article.competition);
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
-/** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
-export const editionLabel = (article: NewsArticle) => article.editionDisplay ?? (article.id.endsWith('-preview') ? `${editionName(article.edition)} edition`
-  : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`);
+/** A special's own label is recorded as editionDisplay; routine issues print Early or Late edition. */
+export const editionLabel = (article: NewsArticle) => article.editionDisplay ?? `${editionName(article.edition)} edition`;
+/** A dispatch's kicker: an editor-commissioned analysis, or reporting from the contenders. */
+export const dispatchLabel = (dispatch: Pick<NewsDispatch, 'commissionedBy'>) => dispatch.commissionedBy ? 'Commissioned analysis' : 'From the contenders';
 
 /** Newspaper dates and clocks are UTC. Date-only edition labels must not roll back a day. */
 export function newsDate(value: string, withTime = false): string {
@@ -289,11 +386,17 @@ export function newsDate(value: string, withTime = false): string {
 export const TITLE_BUDGET = 65;
 export const newsTitle = (name: string) => `${name} | ${NEWS_NAME}`.length <= TITLE_BUDGET ? `${name} | ${NEWS_NAME}` : name;
 export const articleTitle = (article: NewsArticle) => newsTitle(article.headline);
+/** Search snippets show about 160 characters; longer text is cut at a word and marked. */
+export const snippet = (text: string) => text.length <= 160 ? text : text.slice(0, 157).replace(/\s+\S*$/, '') + '…';
 /** Dated lead-in when it fits a snippet (~160 characters), so each edition reads distinctly. */
 export function articleDescription(article: NewsArticle): string {
   const dated = `${articleCompetitionLabel(article)} ${editionLabel(article).toLowerCase()}, ${newsDate(article.date)}: ${article.dek}`;
-  return dated.length <= 160 ? dated : article.dek.length <= 160 ? article.dek : article.dek.slice(0, 157).replace(/\s+\S*$/, '') + '…';
+  return dated.length <= 160 ? dated : snippet(article.dek);
 }
+export const dispatchTitle = (dispatch: NewsDispatch) => newsTitle(dispatch.headline);
+export const dispatchDescription = (dispatch: NewsDispatch) => snippet(dispatch.dek ?? dispatch.sections[0]?.text ?? dispatch.headline);
+export const wireTitle = (story: NewsWireStory) => newsTitle(story.headline);
+export const wireDescription = (story: NewsWireStory) => snippet(story.sections[0]?.text ?? story.headline);
 export const competitorTitle = (record: CompetitorRecord) => newsTitle(`${record.name} — ${competitionName(record.competition)} competitor`);
 export const competitorDescription = (record: CompetitorRecord) =>
   `Explore ${record.name} in ${competitionName(record.competition)}: team background, observed members and source-linked competition coverage.`;
@@ -324,9 +427,10 @@ function shortHash(value: string): string {
 }
 /** Changes whenever anything drawn on the article's card changes, so the URL can be immutable. */
 export function articleCardVersion(article: NewsArticle): string {
-  // The masthead is drawn into the image; a rebrand must receive a new immutable URL.
-  return shortHash(JSON.stringify([NEWS_CARD_DESIGN, NEWS_NAME, article.headline, article.competition, article.edition, article.date,
-    cardStandings(article).map(stat => [stat.rank, stat.name, stat.score, stat.rankChange])]));
+  // The masthead is drawn into the image; a rebrand must receive a new immutable URL. The kicker prints the competition label
+  // and the edition label (either can be an editor's display override) and the card prints the dek, so all three are hashed.
+  return shortHash(JSON.stringify([NEWS_CARD_DESIGN, NEWS_NAME, NEWS_BRAND.goose, article.headline, article.dek, articleCompetitionLabel(article), editionLabel(article),
+    article.competition, article.edition, article.date, cardStandings(article).map(stat => [stat.rank, stat.name, stat.score, stat.rankChange])]));
 }
 /**
  * The front-page card prints headlines only while a contest's newest edition is this recent (one
@@ -376,12 +480,12 @@ export function articleStructuredData(article: NewsArticle, origin: string): Rec
   const url = `${origin}${newsArticlePath(article.id)}`;
   return { '@context': 'https://schema.org', '@graph': [{
     '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: article.headline, description: article.dek,
-    datePublished: article.publishedAt, dateModified: article.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
+    datePublished: article.publishedAt, dateModified: article.updatedAt ?? article.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
     image: [{ '@type': 'ImageObject', url: `${origin}${articleCardPath(article)}`, width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, caption: articleCardAlt(article) },
       ...(article.image ? [{ '@type': 'ImageObject', url: `${origin}${article.image.src}`, caption: article.image.caption }] : [])],
     articleSection: articleCompetitionLabel(article),
     author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news` },
-    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: [...new Set(article.sources.map(source => source.url))],
+    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: citedSources(article).map(source => source.url),
     isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },
   }] };
 }
@@ -392,10 +496,10 @@ export function dispatchStructuredData(dispatch: NewsDispatch, origin: string): 
   return { '@context': 'https://schema.org', '@graph': [{
     '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: dispatch.headline,
     description: dispatch.dek ?? dispatch.sections[0]?.text ?? dispatch.headline,
-    datePublished: dispatch.publishedAt, dateModified: dispatch.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
+    datePublished: dispatch.publishedAt, dateModified: dispatch.updatedAt ?? dispatch.publishedAt, inLanguage: 'en', isAccessibleForFree: true,
     ...(dispatch.image ? { image: [{ '@type': 'ImageObject', url: `${origin}${dispatch.image.src}`, caption: dispatch.image.caption }] } : {}),
     articleSection: competitionName(dispatch.competition), author: { '@type': 'Organization', name: `${NEWS_NAME} sports desk`, url: `${origin}/news/staff` },
-    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: [...new Set(dispatch.sources.map(source => source.url))],
+    publisher: newsPublisher(origin), mainEntityOfPage: url, citation: citedSources(dispatch).map(source => source.url),
     isPartOf: { '@type': 'WebSite', name: 'ARC Explainer', url: `${origin}/` },
   }] };
 }

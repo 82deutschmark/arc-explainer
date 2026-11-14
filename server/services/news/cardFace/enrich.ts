@@ -1,7 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, card faces): the publisher printed on every card is the paper's current name (NEWS_BRAND);
+ *          "One of N <tier>s" counts distinct people within the card's own set, and the line names that set.
  * 14-Nov-2026 (Claude Opus 5.5): passes the card art's optional focusX through to the full-bleed crop in art.ts.
+ * 14-Nov-2026 (Claude Opus 5.5): a career with no Kaggle account has a null profile URL; skip it (was "kaggle.com/None").
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -46,10 +49,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { SITE_ORIGIN } from '../../../../shared/seo';
+import { NEWS_BRAND } from '../../../../shared/newsBrand';
 import { loadWikiInputs } from '../wikiInputs';
 import { KAGGLE_COMPETITIONS } from '../../../../shared/kaggleCompetitions';
 import { KAGGLE_TIERS, type BoardHistory, type CollectionCard, type CollectionCareer, type CollectionEntry, type NewsCollection, boardHistorySchema, careersFileSchema, collectionStandingLabel } from '../../../../shared/newsCollection';
 import { contestTitle, setById, setForSeason, sponsorProfile, type SetDesign } from './sets';
+import { seasonedName } from './model';
 
 const LADDER: readonly string[] = KAGGLE_TIERS;
 const COLOURS = ['gold', 'silver', 'bronze'] as const;
@@ -194,7 +199,9 @@ interface Context {
   origin: string; wiki: boolean; extras: Record<string, CareerExtra>; careers: Record<string, CollectionCareer>; board: BoardHistory | null;
   cardsById: Map<string, CollectionCard>;
   tierByPerson: Map<string, string | null>; personByHandle: Map<string, string>;
-  sharedArt: Map<string, string[]>; titleBySlug: Map<string, string>; tierCounts: Record<string, number>;
+  sharedArt: Map<string, string[]>; titleBySlug: Map<string, string>;
+  /** Distinct competitors per tier within each set: set id -> tier -> person ids. */
+  tierCounts: Map<string, Map<string, Set<string>>>;
   contractFiles: Map<string, Map<string, string[]>>;
 }
 const contexts = new WeakMap<NewsCollection, Context>();
@@ -208,7 +215,7 @@ function buildContext(collection: NewsCollection, opts: EnrichOptions): Context 
     : loadCareers(root));
   const personByHandle = new Map<string, string>();
   for (const card of cards) if (card.personId) for (const a of card.accounts) { const h = handleOfUrl(a.url); if (h) personByHandle.set(lowerHandle(h), card.personId); }
-  for (const [pid, career] of Object.entries(careers)) { const h = handleOfUrl(career.profileUrl); if (h) personByHandle.set(lowerHandle(h), pid); }
+  for (const [pid, career] of Object.entries(careers)) { const h = career.profileUrl ? handleOfUrl(career.profileUrl) : null; if (h) personByHandle.set(lowerHandle(h), pid); }
   // A tier is the Kaggle ladder name on the saved career; failing that, one named in a sourced fact. Never inferred.
   const tierByPerson = new Map<string, string | null>();
   for (const card of cards) if (card.personId) {
@@ -223,8 +230,15 @@ function buildContext(collection: NewsCollection, opts: EnrichOptions): Context 
   }
   const titleBySlug = new Map<string, string>();
   for (const career of Object.values(careers)) for (const row of career.rows) if (!titleBySlug.has(slugOf(row.competitionUrl).toLowerCase())) titleBySlug.set(slugOf(row.competitionUrl).toLowerCase(), row.competition);
-  const tierCounts: Record<string, number> = {};
-  for (const card of cards) if (card.kind === 'person' && card.role === 'competitor') { const t = tierByPerson.get(card.personId!); if (t) tierCounts[t] = (tierCounts[t] ?? 0) + 1; }
+  // A tier is counted once per person (a person with two cards in a set is one competitor) and only within the card's own set.
+  const tierCounts = new Map<string, Map<string, Set<string>>>();
+  for (const card of cards) if (card.kind === 'person' && card.role === 'competitor' && card.personId) {
+    const t = tierByPerson.get(card.personId);
+    const set = setOf(card);
+    if (!t || !set) continue;
+    const byTier = tierCounts.get(set.id) ?? tierCounts.set(set.id, new Map()).get(set.id)!;
+    (byTier.get(t) ?? byTier.set(t, new Set()).get(t)!).add(card.personId);
+  }
   const origin = opts.origin ?? SITE_ORIGIN;
   return { opts: { publicDir: opts.publicDir ?? path.join(root, 'client/public'), discoverContractArt: !!opts.discoverContractArt },
     origin, wiki: !!wiki, extras: opts.extras ?? (wiki ? {} : loadCareerExtras(root)), careers, board: opts.board === undefined ? (wiki ? null : loadBoard(root)) : opts.board,
@@ -305,7 +319,7 @@ function careerFor(ctx: Context, card: CollectionCard) {
   const complete = isNum(listed) && rows.length >= listed && medalsAdd;
   const best = rows[0];
   return {
-    asOf: c.checkedAt, profileUrls: [c.profileUrl], completedListed: isNum(listed) ? listed : rows.length, rowsRecorded: rows.length, complete,
+    asOf: c.checkedAt, profileUrls: c.profileUrl ? [c.profileUrl] : [], completedListed: isNum(listed) ? listed : rows.length, rowsRecorded: rows.length, complete,
     medalsListed: rows.length && complete ? Object.fromEntries(COLOURS.map(k => [k, rows.filter(r => r.medal === k).length])) : null,
     bestFinish: best ? { competition: best.competition, rank: best.rank, fieldSize: best.fieldSize, medal: best.medal } : null, rows,
   };
@@ -340,8 +354,11 @@ export function teamTitle(name: string, boardNames: string[] = []): string {
 }
 const article = (n: number) => (n === 8 || n === 11 || n === 18 ? 'an' : 'a');
 
+/** The set a card belongs to: its own set id, else the set registered for its season. */
+const setOf = (card: CollectionCard): SetDesign | null => (card.setId ? setById(card.setId) : setForSeason(card.season));
+
 function enrichOne(ctx: Context, card: CollectionCard) {
-  const set = card.setId ? setById(card.setId) : setForSeason(card.season);
+  const set = setOf(card);
   if (!set) throw Error(`No set design registered for season ${card.season} (card ${card.id})`);
   const kind: 'competitor' | 'sponsor' | 'team' = card.kind === 'team' ? 'team' : card.role === 'sponsor' ? 'sponsor' : 'competitor';
   const career = card.career;
@@ -394,7 +411,8 @@ function enrichOne(ctx: Context, card: CollectionCard) {
 
   const out: any = {
     id: card.id, url: card.cardUrl, urlAbsolute: ctx.origin + card.cardUrl,
-    series: { name: set.name, publisher: set.publisher, set: set.setName, season: card.season }, look: set.look,
+    // The publisher is the paper as it is called today, not the name a set row was first written with.
+    series: { name: set.name, publisher: NEWS_BRAND.name, set: set.setName, season: card.season }, look: set.look,
     kind, name: kind === 'team' ? teamTitle(card.name, card.entries.map(e => e.teamName)) : card.name, handle, kaggleDisplayName: kind === 'competitor' ? extra.displayName ?? null : null,
     role: kind === 'sponsor' ? card.pastCards[0]?.label ?? null : null,
     organisation: kind === 'sponsor' ? sponsor?.organisation ?? null : kind === 'competitor' ? career?.organisation ?? null : null,
@@ -408,7 +426,7 @@ function enrichOne(ctx: Context, card: CollectionCard) {
     honors: kind === 'team' ? [] : honors, previousCards, art: artFor(ctx, card), roster,
   };
   out.bio = card.biography ?? bioFor(out, sponsor);
-  out.facts = factsFor(ctx, out, card, sponsor);
+  out.facts = factsFor(ctx, out, card, sponsor, set);
   return out;
 }
 
@@ -463,7 +481,7 @@ function contestLines(c: any): Fact[] {
   return out;
 }
 
-function factsFor(ctx: Context, c: any, card: CollectionCard, sponsor: ReturnType<typeof sponsorProfile>): Fact[] {
+function factsFor(ctx: Context, c: any, card: CollectionCard, sponsor: ReturnType<typeof sponsorProfile>, set: SetDesign): Fact[] {
   if (c.kind === 'sponsor') {
     // No invented facts: a hand-written line only stands if its cited page is among the card's own highlights.
     const cited = new Set(card.highlights.map(h => h.sourceUrl));
@@ -506,7 +524,8 @@ function factsFor(ctx: Context, c: any, card: CollectionCard, sponsor: ReturnTyp
   const whole = !!career.complete; // rate lines are only honest over a complete list
   if (whole && golds >= 2) cand.push(line(`Gold in ${golds} of ${rows.length} completed competitions.`, 'career.rows[].medal'));
   else if (whole && medalled) cand.push(line(`Medalled in ${medalled} of ${rows.length} completed competitions.`, 'career.rows[].medal'));
-  if (c.tier && (ctx.tierCounts[c.tier] ?? 0) > 1) cand.push(line(`One of ${ctx.tierCounts[c.tier]} ${c.tier}s in the ${c.series.season} set.`, 'set.tierCounts'));
+  const peers = c.tier ? ctx.tierCounts.get(set.id)?.get(c.tier)?.size ?? 0 : 0;
+  if (peers > 1) cand.push(line(`One of ${peers} ${c.tier}s in the ${seasonedName(set.name, c.series.season)} set.`, 'set.tierCounts'));
   if (c.joinedMonth) cand.push(line(`Joined Kaggle in ${monthLabel(c.joinedMonth)}.`, 'joinedMonth'));
   if (r?.outOf) {
     const pct = r.current / r.outOf * 100;

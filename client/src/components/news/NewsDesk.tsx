@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the masthead prints the edition label it is given (editionTitle) instead of
+ *          rebuilding it from morning/evening; a story preview shows its own art, else same-day companion art,
+ *          never a picture already printed by its feature; the archive labels each issue with editionLabel.
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -29,7 +32,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_ARCHIVE, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_ARCHIVE, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
@@ -97,7 +100,8 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
 }
 
 export const NewsBrandContext = createContext(NEWS_BRAND);
-export function NewsPaper({ children, frontPage = false, date, edition, issue, brand: explicitBrand }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number; brand?: typeof NEWS_BRAND }) {
+/** `date` is the dateline (a date or an instant); `editionTitle` is the leading story's edition label, when it is an edition. */
+export function NewsPaper({ children, frontPage = false, date, editionTitle, issue, brand: explicitBrand }: { children: ReactNode; frontPage?: boolean; date?: string; editionTitle?: string; issue?: number; brand?: typeof NEWS_BRAND }) {
   const inheritedBrand = useContext(NewsBrandContext);
   const brand = explicitBrand ?? inheritedBrand;
   const close = theClose();
@@ -112,9 +116,9 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue, b
           
           <div className="news-brand-type"><p className="news-brand-overline">The sports tabloid of the Kaggleverse</p>
             {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}
-            <div className="news-brand-dateline">{edition && <strong>{editionName(edition)} edition · </strong>}{date && datelineDate(date)}</div>
+            <div className="news-brand-dateline">{editionTitle && <strong>{editionTitle} · </strong>}{date && datelineDate(date)}</div>
           </div></div>
-        </div> : <div className="news-brand-row"><div className="news-ear"><strong>{edition ? `${editionName(edition)} edition` : 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
+        </div> : <div className="news-brand-row"><div className="news-ear"><strong>{editionTitle ?? 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
           {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}<MastheadAd /></div>}
         <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Competition news · All times UTC</span>}</div>
         <NewsNav brand={brand} />
@@ -186,7 +190,8 @@ export function StoryPreview({ article, feature, lead = false, people = [], sect
     <p className="news-dek"><SportsText text={article.dek} stats={figureStats} teamNames={article.verifiedTeamNames} /></p>
     <div className="news-byline">By {publication.name} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
     {feature && <DispatchPreview dispatch={feature} stats={figureStats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
-    {feature?.image?.src !== article.image?.src && (article.image ? <EditionArtwork article={article} lead={lead} /> : art)}
+    {/* The edition's own picture unless its feature already printed it; else the same-day companion art. */}
+    {article.image ? article.image.src !== feature?.image?.src && <EditionArtwork article={article} lead={lead} /> : art}
     {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={figureStats} teamNames={article.verifiedTeamNames} /></div>}
     {!feature && <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />}
     {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} stats={figureStats} teamNames={article.verifiedTeamNames} />)}</div>}
@@ -217,7 +222,7 @@ export function ArticleArchive({ articles, heading = 'From the archive' }: { art
   return <section className="news-archive" aria-label={heading}>
     <h2 className="news-section-title">{heading}</h2>
     {articles.length ? <ol>{articles.map(article => <li key={article.id}>
-      <div className="news-archive-date"><time dateTime={article.publishedAt}>{newsDate(article.date)}</time><span>{article.editionDisplay ?? editionName(article.edition)} · {articleCompetitionLabel(article)}</span></div>
+      <div className="news-archive-date"><time dateTime={article.publishedAt}>{newsDate(article.date)}</time><span>{editionLabel(article)} · {articleCompetitionLabel(article)}</span></div>
       <Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={article.stats} /></Link>
     </li>)}</ol> : <p className="news-muted">No earlier editions have been published.</p>}
   </section>;

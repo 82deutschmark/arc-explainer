@@ -1,6 +1,8 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 05-November-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the back ink, coin, border and JPEG helpers come from kit.ts (no private copies); the
+ *          unused MEDAL_WORD table is gone.
  * 09-Nov-2026 (GPT-6 / Codex): document the competitor ledger footer rule.
  * PURPOSE: The LEDGER REVERSE for competitor cards (the Boss's rule, 5 November 2026). The back is a record sheet, not a second
  *          portrait: a solid sheet of green-grid ledger paper with a red margin, laid over the card's SECOND picture
@@ -19,7 +21,7 @@
  * 05-Nov-2026 v1 (Claude Sonnet 5.5 Medium): first version.
  */
 import sharp from 'sharp';
-import { FONT, ff, box, at, pic, svgPic, svgDoc, textWidth, frameSvg, medallionSvg, alpha, mix, MEDAL, fitNameLines, type Node, type Style } from './kit';
+import { FONT, ff, box, at, pic, svgPic, svgDoc, textWidth, alpha, mix, MEDAL, fitNameLines, coinSvg, INK1, jpegUri, backBorderSvg, type Node, type Style } from './kit';
 import { num, type VM } from './model';
 import type { BackModel } from './backModel';
 import { W, H } from './zones';
@@ -27,13 +29,9 @@ import { W, H } from './zones';
 const INK = '#15161d';
 const COL = 690, MARGIN = 30, BOTTOM = H - MARGIN;
 const PAPER = '#f8f3dc', GRID = '#b9cdb2', RULE = '#5d82b4', MARGIN_RED = '#d2403f';
-/** A medal coin for the margin (gold / silver / bronze). */
-const coinSvg = (c: string) => svgDoc(40, 40, `<circle cx="20" cy="20" r="18" fill="${c}" stroke="#000" stroke-width="2.6"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.8"/><path d="M10 12 A13 13 0 0 1 22 6" stroke="#fff" stroke-opacity=".8" stroke-width="2.6" fill="none" stroke-linecap="round"/>`);
-const coin = (c: string, d = 38): Node => box({ width: d, height: d, position: 'relative', flexShrink: 0 }, svgPic(coinSvg(c), 0, 0, d, d, { position: 'relative' }));
+/** A medal coin for the margin (gold / silver / bronze), d px across. */
+const coin = (c: string, d = 38): Node => box({ width: d, height: d, position: 'relative', flexShrink: 0 }, svgPic(coinSvg(c, d), 0, 0, d, d, { position: 'relative' }));
 const HEADER_H = 112;
-/** Tier colours darkened until they print on cream paper. */
-const INK1: Record<string, string> = { Novice: '#1b7d38', Contributor: '#1d55bd', Expert: '#5a27bd', Master: '#b04800', Grandmaster: '#a8121b', none: '#4f596b', sponsor: '#16306e', team: '#0a766e' };
-const MEDAL_WORD: Record<string, string> = { gold: 'GOLD', silver: 'SILVER', bronze: 'BRONZE' };
 const LEFT_PAD = 62;                         // the margin column: it carries each row's medal coin
 
 const bebas = (text: string, size: number, color: string, style: Style = {}): Node =>
@@ -41,13 +39,6 @@ const bebas = (text: string, size: number, color: string, style: Style = {}): No
 const mono = (text: string, size: number, color = INK, weight = 700, style: Style = {}): Node =>
   box({ fontFamily: ff(FONT.mono), fontWeight: weight, fontSize: size, color, lineHeight: 1, letterSpacing: -0.3, ...style }, text);
 const clip = (w: number): Style => ({ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: w });
-const dot = (c: string, d: number): Node => box({ width: d, height: d, borderRadius: d / 2, background: c, border: '2px solid #000' });
-const jpegUri = (b: Buffer) => `data:image/jpeg;base64,${b.toString('base64')}`;
-
-/** The tier border at half weight, as the rest of the backs draw it (even-odd so the middle stays open). */
-export function borderSvg(vm: VM): string {
-  return frameSvg(vm.T, W, H, 0.5).replace(/(<path d="M0 0H[^"]*")( fill="#f2ead4")/, (m, a, b) => (/fill-rule/.test(m) ? m : `${a} fill-rule="evenodd"${b}`));
-}
 
 /** Greedy line count for running text, measured with the real font (no guessing). */
 async function lineCount(text: string, size: number, width: number, weight = 500): Promise<number> {
@@ -222,5 +213,5 @@ export async function ledgerNode({ vm, bm, second, blank }: LedgerInput): Promis
     ...emblem,
     at(MARGIN, MARGIN, COL, HEADER_H, {}, head),
     sheet,
-    svgPic(borderSvg(vm), 0, 0, W, H));
+    svgPic(backBorderSvg(vm.T), 0, 0, W, H));
 }

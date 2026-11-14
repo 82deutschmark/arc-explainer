@@ -1,25 +1,28 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): competitors are drawn by ledgerBack.ts, so the old competitor career table, teammates block,
+ *          rank ticker and art-led competitor branch are deleted; shared helpers come from kit.ts; the series line prints
+ *          the season once; the footer is one line per piece (copyright left, address right) with an ellipsis.
  * 09-Nov-2026 (GPT-6 / Codex): label team rosters that span multiple contests.
  * PURPOSE: The REVERSE of the TOPPS card, 750 x 1050: grey cardboard in two inks (the tier colour darkened to print
  *          on grey, and near-black), like a 1987 Topps back. Exports back(card, opts) -> image buffer (png, webp or
  *          jpeg) and backNode(card, opts) -> Satori node tree. What may be printed is decided in backModel.ts; this
  *          file only lays it out.
- *          Top to bottom: number box, name, handle and a miniature of the front; vitals strip; season standings with
- *          the stamp and the single as-of date; career table with the bold CAREER row; teammates in tier colours;
- *          rank ticker; "did you know" strip (only when it has something new); bio (only when it has something
- *          new); copyright line and the card's own URL. Sponsors get a big picture and bio, teams a roster table
- *          with a TEAM TOTAL row.
+ *          Competitor backs are the ledger reverse (ledgerBack.ts); this file draws team and sponsor backs.
+ *          Top to bottom: name, handle and a miniature of the front; vitals strip; season standings with the stamp
+ *          and the single as-of date; the team roster table with a TEAM TOTAL row (sponsors: a big picture and bio);
+ *          "did you know" strip (only when it has something new); bio (only when it has something new); copyright
+ *          line and the card's own URL.
  *          ROW BUDGET (arithmetic only, no shrink loops): fixed blocks are summed, optional blocks are admitted in a
- *          fixed priority while they fit, and whatever height is still unspent goes, in order, to taller career or
- *          roster rows, a cover-crop picture strip of the card's own art, bigger standings rows, a bigger "did you
+ *          fixed priority while they fit, and whatever height is still unspent goes, in order, to taller
+ *          roster rows, a picture strip of a second picture, bigger standings rows, a bigger "did you
  *          know" strip and finally slightly wider gaps. A sparse card therefore gets a bigger picture or bigger
  *          numerals, never a half-empty plate. Text heights come from measuring, never from guessing.
  *          Performance: the cardboard is built once per process (a small tiled fibre texture, few colours); the
  *          miniature reuses a front buffer when the caller passes one (opts.frontBuffer) and only otherwise renders
  *          the front lazily; the PNG is palette-quantised so it stays far below 500 KB.
- *          A selected framing repair contains the whole picture while preserving the existing career-row budget.
+ *          A selected framing repair contains the whole picture behind the generated record.
  * SRP/DRY check: Pass. Data decisions: backModel.ts; vocabulary and fonts: kit.ts; art: art.ts; the front: render.ts
  *          (imported lazily, so there is no import cycle).
  *
@@ -39,9 +42,9 @@ import satori from 'satori';
 import sharp from 'sharp';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, frameSvg, starburst, halftone, alpha, textWidth, fitNameLines, MEDAL, TIERS, svgUri, type Node, type Style } from './kit';
-import { viewModel, num, type VM, type CareerRowVM, type MedalsVM } from './model';
-import { backModel, type BackModel, type StandingRow, type RosterRow, type MateGroup, type VitalCell } from './backModel';
+import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, starburst, halftone, alpha, textWidth, fitNameLines, MEDAL, TIERS, INK1, jpegUri, rng, backBorderSvg, type Node, type Style } from './kit';
+import { viewModel, type VM, type MedalsVM } from './model';
+import { backModel, type BackModel, type StandingRow, type RosterRow, type VitalCell } from './backModel';
 import { artLayer, assertCollectionArtPath, W, H, ZONE, type ArtResult } from './art';
 import { ledgerNode, blankBackdrop } from './ledgerBack';
 
@@ -59,18 +62,13 @@ export interface BackOpts {
 }
 
 const INK2 = '#15161d';
-/** First ink: the tier colour, darkened until it prints legibly on grey cardboard. */
-const INK1: Record<string, string> = { Novice: '#1b7d38', Contributor: '#1d55bd', Expert: '#5a27bd', Master: '#b04800', Grandmaster: '#a8121b', none: '#4f596b', sponsor: '#16306e', team: '#0a766e' };
 const STOCK = '#c9c5b8';
 const COL_W = 690, COL_H = H - 60, GAP = 8, FOOT = 26;
-const MEDAL_WORD: Record<string, string> = { gold: 'GOLD', silver: 'SILVER', bronze: 'BRONZE' };
 
 // ---------------------------------------------------------------------------------------------
 // Cardboard: built once per process. Base colour, a few soft mottles and a darker edge, then a small seamless tile of
 // fibres and specks. Few colours and no turbulence filter, so it renders fast and compresses well.
 // ---------------------------------------------------------------------------------------------
-function rng(seed: number) { let s = seed >>> 0; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
-
 function fibreTile(size = 256): Buffer {
   const rand = rng(7), px = Buffer.alloc(size * size * 4);   // RGBA, fully transparent
   const put = (x: number, y: number, r: number, g: number, b: number, a: number) => {
@@ -135,7 +133,6 @@ async function textHeight(text: string, family: string, weight: number, size: nu
   heightCache.set(key, found);
   return found;
 }
-const jpegUri = (buf: Buffer) => `data:image/jpeg;base64,${buf.toString('base64')}`;
 /** One-line cell text: never wraps, ends in an ellipsis when it cannot fit. */
 const clip = (style: Style): Style => ({ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...style });
 
@@ -169,7 +166,7 @@ function header(vm: VM, ink1: string, mini: Buffer, nameFit: { size: number; lin
       box({ height: 40, alignItems: 'center' },
         box({ alignItems: 'center', justifyContent: 'space-between' },
           vm.handle ? box({ alignItems: 'baseline' }, mono(vm.handle, 17, INK2, 700), platform ? mono(`on ${platform}`, 14, '#4a4a55', 500, { marginLeft: 8 }) : null) : box({}),
-          bebas(`${vm.wordmark.toUpperCase()} ${vm.season}`, 17, ink1, { letterSpacing: 1.8 })))),
+          bebas(vm.seriesLabel.toUpperCase(), 17, ink1, { letterSpacing: 1.8, ...clip({ maxWidth: 330 }) })))),
     // right: miniature of the front
     box({ width: 110, justifyContent: 'flex-end', alignItems: 'flex-start' },
       box({ width: MINI.w + 6, height: MINI.h + 6, border: `3px solid ${INK2}`, boxShadow: `4px 4px 0 ${ink1}`, background: '#000', position: 'relative' }, pic(jpegUri(mini), 0, 0, MINI.w, MINI.h))));
@@ -215,61 +212,8 @@ function standings(rows: StandingRow[], vm: VM, ink1: string, rowH: number): Nod
       numCell(c.rank, cw.rank, rankF, '#2453a6'), peak ? numCell(c.peak, cw.peak, auxF, '#2453a6') : null, numCell(c.score, cw.score, scoreF, '#17703f', 600), subs ? numCell(c.subs, cw.subs, auxF, ink1) : null)));
 }
 
-/** Career table: header, the n best rows, a plain note when more contests exist than are listed, then the bold CAREER row. */
-const CAREER_CHROME = 26 + 22 + 32 + 4, NOTE_H = 20;
-function careerTable(cb: NonNullable<BackModel['career']>, ink1: string, n: number, rowH: number, note: string | null): Node {
-  const rows: CareerRowVM[] = cb.rows.slice(0, n);
-  const cw = { place: 72, of: 72, top: 70, medal: 92 };
-  const fs = rowH >= 30 ? 18 : rowH >= 24 ? 16 : 14.5;
-  const body = rows.map((r, i) => box({ height: rowH, alignItems: 'center', padding: '0 10px', background: i % 2 ? 'rgba(0,0,0,0.065)' : 'transparent' },
-    box({ flexGrow: 1, minWidth: 0, fontFamily: ff(FONT.cond), fontWeight: r.medal ? 700 : 500, fontSize: fs, color: INK2, ...clip({ width: 360 }) }, r.name),
-    numCell('#' + r.place, cw.place, fs - 1, '#2453a6'), numCell(r.of, cw.of, fs - 1, '#4a4a55', 500), numCell(r.top, cw.top, fs - 1, ink1),
-    box({ width: cw.medal, justifyContent: 'flex-start', alignItems: 'center', paddingLeft: 10 }, r.medal ? box({ alignItems: 'center' }, dot(MEDAL[r.medal], rowH >= 26 ? 16 : 13), bebas(MEDAL_WORD[r.medal], rowH >= 26 ? 17 : 14, INK2, { marginLeft: 5, letterSpacing: 1 })) : null)));
-  const careerRow = box({ height: 32, alignItems: 'center', justifyContent: 'space-between', padding: '0 10px', background: INK2, borderTop: `3px double ${STOCK}` },
-    box({ alignItems: 'baseline' }, bebas('CAREER', 22, '#fff', { letterSpacing: 2.4 }), bebas(`${num(cb.completed)} CONTEST${cb.completed === 1 ? "" : "S"}`, 15, '#c8cbd6', { marginLeft: 10, letterSpacing: 1.4 })),
-    box({ alignItems: 'center' }, cb.bestFinish ? bebas(`BEST FINISH ${cb.bestFinish}`, 17, '#ffd24a', { letterSpacing: 1.2 }) : null, cb.medals ? coinRow(cb.medals) : null));
-  return tableFrame(
-    titleBar(ink1, 'KAGGLE COMPETITIONS · CAREER RECORD', 'BEST FINISHES FIRST'),
-    box({ height: 22, alignItems: 'center', padding: '0 10px', borderBottom: `1.5px solid ${INK2}` },
-      box({ flexGrow: 1 }, bebas('COMPETITION', 14, ink1, { letterSpacing: 1.6 })), colHead('PLACE', cw.place, ink1), colHead('FIELD', cw.of, ink1), colHead('TOP %', cw.top, ink1), box({ width: cw.medal, paddingLeft: 10 }, bebas('MEDAL', 14, ink1, { letterSpacing: 1.6 }))),
-    ...body,
-    note ? box({ height: NOTE_H, alignItems: 'center', padding: '0 10px', borderTop: `1.5px solid ${INK2}` }, bebas(note, 14, ink1, { letterSpacing: 1.6 })) : null,
-    careerRow);
-}
-
-// ---- teammates: measured, so the block height is exact ----
-const CHIP_PAD = 4 + 10 + 4 + 6 + 3 + 7;                       // dot box + margins + padding + borders + gap, per chip
-const CHIP_ROW_H = 24;
-async function mateLines(g: MateGroup): Promise<number> {
-  let lines = 1, used = 0;
-  for (const m of g.mates) {
-    const w = (await textWidth(m.name, FONT.cond, 500, 13.5)) + CHIP_PAD;
-    if (used + w > 666 && used > 0) { lines++; used = 0; }
-    used += w;
-  }
-  return lines;
-}
-const mateGroupHeight = (lines: number) => 6 + 17 + 4 + lines * CHIP_ROW_H + 4;
-async function teammatesHeight(gs: MateGroup[]): Promise<number> {
-  let h = 26 + 4;
-  for (const g of gs) h += mateGroupHeight(await mateLines(g));
-  return h;
-}
-async function teammates(gs: MateGroup[], ink1: string): Promise<Node> {
-  const heights = await Promise.all(gs.map(async g => mateGroupHeight(await mateLines(g))));
-  return tableFrame(titleBar(ink1, 'TEAMMATES THIS SEASON', null),
-    ...gs.map((g, i) => box({ height: heights[i], padding: '6px 10px 4px 10px', flexDirection: 'column', background: i % 2 ? 'rgba(0,0,0,0.06)' : 'transparent' },
-      box({ alignItems: 'baseline' }, bebas(g.contest, 17, ink1, { letterSpacing: 1.4 }), g.team ? box({ marginLeft: 8, fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 15, color: INK2 }, g.team) : null),
-      box({ flexWrap: 'wrap', marginTop: 4 }, ...g.mates.map(m => {
-        const t = m.tier ? TIERS[m.tier] : null;
-        return box({ alignItems: 'center', marginRight: 7, height: 21, marginBottom: 3, padding: '0 6px 0 4px', border: `1.5px solid ${INK2}`, background: '#fff' },
-          box({ width: 10, height: 10, borderRadius: 5, background: t ? t.main : '#8a909c', border: '1.5px solid #000', marginRight: 4 }),
-          box({ fontFamily: ff(FONT.cond), fontWeight: 500, fontSize: 13.5, color: INK2, lineHeight: 1.1 }, m.name));
-      })))));
-}
-
 // ---- team roster ----
-const ROSTER_CHROME = 26 + 22 + 4, TOTAL_H = 32;
+const NOTE_H = 20, ROSTER_CHROME = 26 + 22 + 4, TOTAL_H = 32;
 function rosterTable(rows: RosterRow[], total: MedalsVM | null, ink1: string, rowH: number, note: string | null, known: { n: number; of: number }, title: string): Node {
   const medalCell = (m: MedalsVM | null, k: 'gold' | 'silver' | 'bronze') => box({ width: 56, justifyContent: 'flex-end', alignItems: 'center', paddingRight: 8 }, m ? box({ alignItems: 'center' }, dot(MEDAL[k], 12), mono(String(m[k]), 16, INK2, 700, { marginLeft: 4 })) : null);
   const body = rows.map((r, i) => {
@@ -288,39 +232,6 @@ function rosterTable(rows: RosterRow[], total: MedalsVM | null, ink1: string, ro
     ...body,
     note ? box({ height: NOTE_H, alignItems: 'center', padding: '0 10px', borderTop: `1.5px solid ${INK2}` }, bebas(note, 14, ink1, { letterSpacing: 1.6 })) : null,
     total ? box({ height: TOTAL_H, alignItems: 'center', justifyContent: 'space-between', padding: '0 10px', background: INK2, borderTop: `3px double ${STOCK}` }, bebas(known.n === known.of ? 'TEAM TOTAL' : `KNOWN MEMBERS · ${known.n} OF ${known.of}`, known.n === known.of ? 21 : 18, '#fff', { letterSpacing: 2.4 }), coinRow(total)) : null);
-}
-
-/** Kaggle rank ticker: a log-scale track from #1 to the size of the field with NOW and BEST markers. */
-const LADDER_H = 26 + 58 + 4;
-function ladder(vm: VM, ink1: string): Node | null {
-  const r = vm.card.rank;
-  if (!r?.current || !r?.outOf) return null;
-  const L = Math.log10(r.outOf), pos = (n: number) => Math.min(1, Math.max(0, Math.log10(n) / L));
-  const TW = 580, X0 = 22, trackY = 18, trackH = 18;
-  const nowX = X0 + pos(r.current) * TW, bestX = r.best ? X0 + pos(r.best) * TW : null;
-  const top = (r.current / r.outOf) * 100;
-  const topText = top < 1 ? top.toFixed(2) : top.toFixed(1);
-  const tri = (x: number, down: boolean, c: string) => down
-    ? `<polygon points="${x - 8},${trackY - 14} ${x + 8},${trackY - 14} ${x},${trackY - 1}" fill="${c}" stroke="#000" stroke-width="2" stroke-linejoin="round"/>`
-    : `<polygon points="${x - 8},${trackY + trackH + 12} ${x + 8},${trackY + trackH + 12} ${x},${trackY + trackH + 1}" fill="${c}" stroke="#000" stroke-width="2" stroke-linejoin="round"/>`;
-  let svg = `<rect x="${X0}" y="${trackY}" width="${TW}" height="${trackH}" fill="#fff" fill-opacity=".55" stroke="${INK2}" stroke-width="2"/>`;
-  const ticks = [10, 100, 1000, 10000, 100000].filter(t => t < r.outOf);
-  for (const t of ticks) svg += `<line x1="${X0 + pos(t) * TW}" y1="${trackY}" x2="${X0 + pos(t) * TW}" y2="${trackY + trackH}" stroke="${INK2}" stroke-width="1.2" stroke-opacity=".6"/>`;
-  svg += tri(nowX, true, ink1) + (bestX != null && Math.abs(bestX - nowX) > 14 ? tri(bestX, false, '#fff') : '');
-  // labels sit beside their marker (right-aligned to its left, or left-aligned to its right near the left edge)
-  const lab = (t: string, x: number, left: boolean, y: number, col: string) => at(left ? x + 13 : x - 213, y, 200, 16, { justifyContent: left ? 'flex-start' : 'flex-end' }, bebas(t, 15, col, { letterSpacing: 1.2, whiteSpace: 'nowrap' }));
-  const near = bestX != null && Math.abs(bestX - nowX) < 150;
-  const nowLabel = near && r.best ? `BEST ${vm.overall?.best} · NOW ${vm.overall?.rank}` : `NOW ${vm.overall?.rank}`;
-  const nowLeft = nowX < X0 + 150;
-  return tableFrame(
-    titleBar(ink1, 'KAGGLE COMPETITIONS RANK TICKER', `TOP ${topText}% OF ${vm.overall?.outOf}`),
-    box({ height: 58, position: 'relative' },
-      svgPic(svgDoc(690, 58, svg), 0, 0, 690, 58),
-      ...ticks.map(t => at(X0 + pos(t) * TW + 3, trackY + 3, 60, 14, {}, mono(t >= 1000 ? `#${t / 1000}K` : `#${t}`, 10, '#3d3d46', 500))),
-      at(X0 + 4, trackY + 3, 30, 14, {}, mono('#1', 11, '#3d3d46', 500)),
-      lab(nowLabel, nowX, nowLeft, 3, ink1),
-      r.best && !near ? lab(`BEST ${vm.overall?.best}`, bestX!, bestX! < X0 + 150, 40, INK2) : null,
-      at(X0 + TW + 8, trackY + 2, 100, 16, {}, mono(`#${vm.overall?.outOf}`, 12, '#3d3d46', 700))));
 }
 
 // ---- the cartoon strip: exactly as tall as its captions ----
@@ -361,11 +272,13 @@ async function bioBlock(text: string, ink1: string): Promise<{ node: Node; h: nu
       box({ width: w, fontFamily: ff(FONT.cond), fontWeight: 500, fontSize: 15.5, lineHeight: 1.22, color: INK2 }, text))) };
 }
 
+/** Copyright (season and publisher; the series is already in the header) on the left, the card's address on the right. One line each. */
 function footer(vm: VM): Node {
-  const left = `© ${vm.season} ${vm.publisher ?? ''} · ${vm.wordmark}`.replace(/\s+/g, ' ').replace(/^© (?=·)/, '').trim().toUpperCase();
+  const left = `© ${vm.season} ${vm.publisher ?? ''}`.replace(/\s+/g, ' ').trim().toUpperCase();
+  const address = String(vm.card.urlAbsolute ?? '').replace(/^https?:\/\//, '');
   return at(30, 30 + COL_H - FOOT, COL_W, FOOT, { alignItems: 'center', justifyContent: 'space-between' },
-    box({ fontFamily: ff(FONT.cond), fontWeight: 500, fontSize: 12, color: '#3d3d46', letterSpacing: 0.6 }, left),
-    mono(String(vm.card.urlAbsolute ?? '').replace(/^https?:\/\//, ''), 11.5, '#3d3d46', 500));
+    box({ fontFamily: ff(FONT.cond), fontWeight: 500, fontSize: 12, color: '#3d3d46', letterSpacing: 0.6, flexShrink: 1, minWidth: 0, marginRight: 12, ...clip({ maxWidth: Math.round(COL_W * 0.42) }) }, left),
+    mono(address, 11.5, '#3d3d46', 500, { flexShrink: 1, minWidth: 0, ...clip({ maxWidth: Math.round(COL_W * 0.56) }) }));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -477,27 +390,6 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   // Preserve the whole approved image behind the generated record; contain never trims its edges.
   const backdrop = opts.backPicture ? await pictureCrop(art, W, H, true, opts.backPicture) : null;
   const [mini, nameFit, boardSrc] = await Promise.all([miniature(card, opts, art), fitNameSafe(vm.name), backdrop ? Promise.resolve(jpegUri(backdrop)) : cardboardUri()]);
-  // Art-led reverses keep the complete image in view. The existing career table is
-  // drawn over its lower edge; its row budget and omitted-count note stay truthful.
-  if (backdrop && (vm.family as string) === 'competitor' && bm.career && bm.standings.length <= 3) {
-    const career = bm.career;
-    const count = Math.min(career.rows.length, 14);
-    const note = count < career.completed ? `${num(career.completed - count)} MORE CONTEST${career.completed - count === 1 ? '' : 'S'} NOT LISTED` : null;
-    const height = CAREER_CHROME + count * 24 + (note ? NOTE_H : 0);
-    const top = H - 30 - FOOT - 12 - height;
-    // Only show the compact standings panel when it has real measured values.
-    const measured = bm.standings.some(row => row.rank || row.score || row.subs);
-    const standingsPanel = measured ? standings(bm.standings, vm, ink1, 32) : null;
-    const standingsH = measured ? standingsHeight(bm.standings.length, 32) : 0;
-    const careerPanel = careerTable(career, ink1, count, 24, note);
-    return box({ width: W, height: H, position: 'relative', background: STOCK, overflow: 'hidden' },
-      pic(boardSrc, 0, 0, W, H),
-      at(30, 30, COL_W, HEADER_H, { background: 'rgba(255,250,235,0.88)' }, header(vm, ink1, mini, nameFit)),
-      standingsPanel ? at(30, top - standingsH - GAP, COL_W, standingsH, { background: 'rgba(255,250,235,0.88)' }, standingsPanel) : null,
-      at(30, top, COL_W, height, { background: 'rgba(255,250,235,0.88)' }, careerPanel),
-      at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.88)' }),
-      footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));
-  }
   const head: Placed[] = [{ node: header(vm, ink1, mini, nameFit), h: HEADER_H }];
   // Leave the upper part of the full illustration open; career and standings remain generated below.
   if (backdrop) head.push({ node: box({ height: 150 }), h: 150, transparent: true });
@@ -519,47 +411,18 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
     let left = COL_H - FOOT - GAP - [...blocks.map(b => b.h), nS ? standingsHeight(nS, sRow) : 0, slabInfo?.h ?? 0, bio?.h ?? 0].reduce((a, b) => a + b, 0) - GAP * (count - 1);
     const spend = (h: number) => { left -= h + GAP; count++; };
 
-    let table: Placed | null = null;        // career table or roster table
-    let mates: Placed | null = null, tick: Placed | null = null;
-    let tableRowH = 21;
-    if ((vm.family as string) === 'competitor' && bm.career) {
-      const cb = bm.career, k0 = Math.min(cb.rows.length, 14);
-      const reserve = CAREER_CHROME + NOTE_H + k0 * 21 + GAP;
-      const mH = bm.mates.length ? await teammatesHeight(bm.mates) : 0;
-      if (mH && left - reserve >= mH + GAP) { mates = { node: await teammates(bm.mates, ink1), h: mH }; spend(mH); }
-      const lad = ladder(vm, ink1);
-      if (lad && left - reserve >= LADDER_H + GAP) { tick = { node: lad, h: LADDER_H }; spend(LADDER_H); }
-      const avail = left - GAP - CAREER_CHROME;
-      let n = Math.min(cb.rows.length, Math.max(1, Math.floor(avail / 21)));
-      let note: string | null = null;
-      if (n < cb.completed) { n = Math.min(cb.rows.length, Math.max(1, Math.floor((avail - NOTE_H) / 21))); }
-      if (n < cb.completed) note = `${num(cb.completed - n)} MORE CONTEST${cb.completed - n === 1 ? '' : 'S'} NOT LISTED`;
-      tableRowH = clamp(Math.floor((avail - (note ? NOTE_H : 0)) / n), 21, 30);
-      const th = CAREER_CHROME + (note ? NOTE_H : 0) + n * tableRowH;
-      table = { node: careerTable(cb, ink1, n, tableRowH, note), h: th };
-      spend(th);
-    } else if (vm.family === 'team' && bm.roster.length) {
+    let table: Placed | null = null;        // the roster table
+    if (vm.family === 'team' && bm.roster.length) {
       const total = bm.roster.length > 1 ? bm.rosterTotal : null;
       const chrome = ROSTER_CHROME + (total ? TOTAL_H : 0);
       const avail = left - GAP - chrome;
       let n = Math.min(bm.roster.length, Math.max(1, Math.floor(avail / 20)));
       let note: string | null = null;
       if (n < bm.roster.length) { n = Math.min(bm.roster.length, Math.max(1, Math.floor((avail - NOTE_H) / 20))); note = `${bm.roster.length - n} MORE ACCOUNT${bm.roster.length - n === 1 ? '' : 'S'} NOT LISTED`; }
-      tableRowH = clamp(Math.floor((avail - (note ? NOTE_H : 0)) / n), 20, 40);
+      const tableRowH = clamp(Math.floor((avail - (note ? NOTE_H : 0)) / n), 20, 40);
       const th = chrome + (note ? NOTE_H : 0) + n * tableRowH;
       table = { node: rosterTable(bm.roster.slice(0, n), total, ink1, tableRowH, note, { n: bm.rosterKnown, of: bm.roster.length }, vm.contests.length > 1 ? 'ROSTER ACROSS CONTESTS' : 'TEAM ROSTER'), h: th };
       spend(th);
-    }
-
-    // A competitor with no standings, medals or career gets a real panel saying so, ahead of the picture.
-    let none: Placed | null = null;
-    if (vm.bare) {
-      const nsH = 118;
-      none = { h: nsH, node: tableFrame(titleBar(ink1, 'KAGGLE COMPETITIONS · STANDINGS', null),
-        box({ height: nsH - 30, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
-          bebas('STANDINGS AT KAGGLE', 46, ink1, { letterSpacing: 3 }),
-          vm.handleLine ? mono(vm.handleLine, 15, INK2, 700, { marginTop: 8 }) : null)) };
-      spend(nsH);
     }
 
     // Leftover height, spent in a fixed order. A strip of the card's own picture first (cover crop, the picture grows),
@@ -597,11 +460,8 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
 
     // ---- build in reading order ----
     if (nS) blocks.push({ node: standings(bm.standings, vm, ink1, sRow)!, h: standingsHeight(nS, sRow) });
-    if (none) blocks.push(none);
     if (strip) blocks.push(strip);
     if (table) blocks.push(table);
-    if (mates) blocks.push(mates);
-    if (tick) blocks.push(tick);
     if (slabInfo) blocks.push({ node: slab(bm.facts, ink1, bigSlab, slabH), h: slabH });
     if (bio) blocks.push({ node: bio.node, h: bio.h });
   }
@@ -609,15 +469,7 @@ export async function backNode(cardOrVm: any, optsOrArt: any = {}): Promise<Node
   for (const b of blocks) b.node.props.style.flexShrink = 0;          // a block is never squeezed into its neighbour
   const content = box({ position: 'absolute', left: 30, top: 30, width: COL_W, height: COL_H - FOOT, flexDirection: 'column', gap }, ...blocks.map(b => backdrop && !b.transparent ? box({ width: COL_W, height: b.h, flexShrink: 0, flexDirection: 'column', background: 'rgba(255,250,235,0.86)' }, b.node) : b.node));
   return box({ width: W, height: H, position: 'relative', background: STOCK, overflow: 'hidden' },
-    pic(boardSrc, 0, 0, W, H), content, backdrop ? at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.86)' }) : null, footer(vm), svgPic(borderSvg(vm), 0, 0, W, H));
-}
-
-/**
- * The tier border at half weight (the back's margin is slim). The card-stock path in frameSvg is a full rectangle with
- * a rounded hole; it needs the even-odd rule to stay a frame. If kit's frameSvg already says so this is a no-op.
- */
-function borderSvg(vm: VM): string {
-  return frameSvg(vm.T, W, H, 0.5).replace(/(<path d="M0 0H[^"]*")( fill="#f2ead4")/, (m, a, b) => (/fill-rule/.test(m) ? m : `${a} fill-rule="evenodd"${b}`));
+    pic(boardSrc, 0, 0, W, H), content, backdrop ? at(30, 30 + COL_H - FOOT, COL_W, FOOT, { background: 'rgba(255,250,235,0.86)' }) : null, footer(vm), svgPic(backBorderSvg(vm.T), 0, 0, W, H));
 }
 
 // ---------------------------------------------------------------------------------------------

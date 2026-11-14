@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: Claude Sonnet 5.5 Medium
-# Date: 31-October-2026
+# Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+# Date: 14-Nov-2026 (Claude Opus 5.5); 31-October-2026
+# 14-Nov-2026 (Claude Opus 5.5): "from the desk" links open each dispatch and wire story on its own permanent page.
 # PURPOSE: Keeps the ARC Daily Digest Weekend Magazine (client/public/specials/weekend*.html) current without hand-editing
 # HTML. The pages are hand-written; the volatile parts sit between <!-- BEGIN:name --> and <!-- END:name --> markers and
 # are regenerated here from the public ARC-2 and ARC-3 boards (top-ten tables with the time each score landed, the field
@@ -245,7 +246,7 @@ def feed_region(now, limit=10):
     for kind, folder in (('dispatch', 'dispatches'), ('wire', 'wire'), ('article', 'articles')):
         for path in (NEWS / folder).glob('*.json'):
             d = read_json(path)
-            url = {'dispatch': f'/news#{d["id"]}', 'wire': f'/news/wire#{d["id"]}', 'article': f'/news/{d["id"]}'}[kind]
+            url = {'dispatch': f'/news/{d["id"]}', 'wire': f'/news/wire/{d["id"]}', 'article': f'/news/{d["id"]}'}[kind]
             items.append((parse_utc(d['publishedAt']), d['headline'], url))
     items.sort(reverse=True)
     out = [f'<li><time>{pretty_et(when, now)} ET</time><div><a href="{url}">{html.escape(headline)}</a></div></li>' for when, headline, url in items[:limit]]

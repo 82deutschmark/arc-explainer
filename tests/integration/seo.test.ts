@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-27
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): runs against the source shell and client/public, so no production build is
+ *          needed; routes whose metadata the news desk resolves (such as /news/tips) count as covered,
+ *          and permanently redirected aliases are not checked as hubs.
  * PURPOSE: Verify research and collection sitemap targeting, continued game access, existing article delivery and hostname indexing policy.
  * SRP/DRY check: Pass — exercise actual registries, catalog and HTTP middleware.
  */
@@ -26,7 +29,8 @@ import { getAllGames } from '../../shared/arc3Games';
 import { puzzleLoader } from '../../server/services/puzzleLoader';
 import { Arc3TrainableCatalog, trainablePlayId } from '../../server/services/arc3Mirror/Arc3TrainableCatalog';
 import { generateSitemap, resolvePageMeta, sitemapUrls } from '../../server/services/seo/pageContent';
-import { generateMetaTags, injectPageHtml, metaTagInjector, seoRouting, seoHostPolicy } from '../../server/middleware/metaTagInjector';
+import { generateMetaTags, injectPageHtml, seoRouting, seoHostPolicy } from '../../server/middleware/metaTagInjector';
+import { sourceShellMetaTagInjector } from '../helpers/pageShell';
 
 let server: Server;
 let base: string;
@@ -34,8 +38,9 @@ beforeAll(async () => {
   const app = express();
   app.use(seoHostPolicy);
   app.use(seoRouting);
-  app.use(express.static('dist/public', { index: false }));
-  app.use(metaTagInjector);
+  // client/public is Vite's publicDir: the build copies it verbatim into dist/public.
+  app.use(express.static('client/public', { index: false }));
+  app.use(sourceShellMetaTagInjector);
   app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   await new Promise<void>(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
   server.keepAliveTimeout = 60000; // The registry-wide assertions can occupy the event loop beyond Node's default idle timeout.
@@ -60,13 +65,14 @@ describe('SEO delivery', () => {
     for (const match of app.matchAll(/<Route path="([^"]+)"/g)) {
       const route = match[1];
       if (route.includes(':') || route.startsWith('/dev/')) continue;
-      expect(Object.hasOwn(ROUTE_META_TAGS, route) || Object.hasOwn(REDIRECTS, route), route).toBe(true);
+      expect(Object.hasOwn(ROUTE_META_TAGS, route) || Object.hasOwn(REDIRECTS, route) || resolvePageMeta(route).status === 200, route).toBe(true);
     }
   });
   it('serves unique, crawlable initial HTML for every public SPA hub', async () => {
     const titles = new Set<string>();
     const descriptions = new Set<string>();
-    for (const [route, tags] of Object.entries(ROUTE_META_TAGS).filter(([route, tags]) => !tags.noindex && route !== '/feedback')) {
+    for (const [route, tags] of Object.entries(ROUTE_META_TAGS).filter(([route, tags]) => !tags.noindex && route !== '/feedback' && !Object.hasOwn(REDIRECTS, route))) {
+      // A permanently redirected alias (e.g. /news/competitors -> /news/cards) is not a hub of its own.
       const response = await fetch(`${base}${route}?utm_source=test`);
       expect(response.status, route).toBe(200);
       const html = await response.text();

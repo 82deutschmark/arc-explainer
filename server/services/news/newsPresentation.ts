@@ -1,6 +1,16 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5
- * Date: 13-November-2026
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): dispatch permalinks print an <h1> with dispatchTitle/dispatchDescription (front-page
+ *          dispatch headlines link to them); /news/wire/<id> renders one wire story; a paused wire desk shows its newest
+ *          filings and the pause date; section standings print a readable UTC time.
+ * 14-Nov-2026 (Claude Opus 5.5, integration): card og:image/twitter:image and story-sidebar thumbnails carry the
+ *          collection-aware image version the card routes serve, so link previews no longer hit a stale-version redirect.
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): article Sources list only cited, de-duplicated links; box-score
+ *          team links only where a competitor record exists; joint reports link every contest's board; revision
+ *          notices under the byline; team pages drop the id and own name from "Observed names"; person pages get
+ *          their own description, roster-derived teams, a Sponsors label and human leaderboard links; the
+ *          redirected /news/people and /news/competitors directory branches are gone.
  * Permanent special-report links repaired by GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * Updated by GPT-6.1 Terra / Codex (reasoning effort not exposed).
@@ -24,6 +34,8 @@
  *          its versioned address (cardFor), so link-preview services refetch it with each new
  *          day and edition; the front page links to the ARC leaderboards hub.
  *          Crawler HTML mirrors the story archive and the front-page Kaggle discussion column.
+ *          14-Nov-2026 (Claude Opus 5.5): story card strips pick the contest's set card (cardForPerson), "Their cards"
+ *          names cards by set, and a career with no Kaggle account prints no profile link.
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
@@ -31,18 +43,19 @@ import { NEWS_CONTACT, NEWS_TIPS_PATH } from '../../../shared/newsContact';
 import { figuresHtml, statScores, statTeamNames } from '../../../shared/newsFigures';
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
-  type NewsArticle, type NewsDispatch, type NewsSection, type CompetitorRecord, type NewsStat, articleCompetitionLabel, articleFigureStats, newsArticlePath, competitorPath, NEWS_NAME, NEWS_STORY_MISSING, articleStructuredData, dispatchStructuredData, newsPublisher,
+  type NewsArticle, type NewsDispatch, type NewsSection, type CompetitorRecord, articleCompetitionLabel, articleCompetitions, articleCoversTeam, citedSources, displayAliases, rankChangeLabel, scoreChangeLabel, personDescription, personTeams, rosterSourceHref, articleFigureStats, newsArticlePath, competitorPath, NEWS_NAME, NEWS_STORY_MISSING, articleStructuredData, dispatchStructuredData, newsPublisher,
   articleTitle, articleDescription, editionFeature, reportedPeople, displayPortrait, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit, publishedCompetitionOrder, competitionStories,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
-  type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, recentDiscussions, NEWS_ARCHIVE, publishedStories, archiveMonths,
+  type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, dispatchTitle, dispatchDescription, wireTitle, wireDescription, sectionCardAlt, sectionCardPath, frontPageSocialPosts, recentDiscussions, NEWS_ARCHIVE, publishedStories, archiveMonths,
 } from '../../../shared/news';
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
+import { catalogSetLabel } from '../../../shared/cardCatalog';
+import { cardForPerson, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
 import { getNewsCollection } from './newsCollection';
-import { getNewsIndex, loadNewsArchive } from './newsStore';
+import { getNewsIndex, loadNewsArchive, loadWireStory } from './newsStore';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
 import { NEWS_BRAND } from '../../../shared/newsBrand';
 import { uncardedCast } from '../../../shared/cardCast';
@@ -50,19 +63,20 @@ export const boardPath = (competition: string) => KAGGLE_COMPETITIONS[competitio
 /** The front-page share card under today's address: ARC Daily pages without a card of their own use it. */
 const cardFor = (articles: NewsArticle[]) => ({ image: `${SITE_ORIGIN}${sectionCardPath(articles)}`, imageAlt: sectionCardAlt(articles) });
 const articleLink = (article: NewsArticle) => `<a href="${newsArticlePath(article.id)}">${esc(article.headline)}</a>`;
-const sourceList = (article: NewsArticle) => `<ol>${article.sources.map(source => `<li id="source-${esc(source.id)}"><a href="${esc(source.url)}">${esc(source.title)}</a></li>`).join('')}</ol>`;
+const sourceList = (article: NewsArticle) => `<ol>${citedSources(article).map(source => `<li id="source-${esc(source.id)}"><a href="${esc(source.url)}">${esc(source.title)}</a></li>`).join('')}</ol>`;
 const illustrationHtml = (article: Pick<NewsDispatch, 'image'>) => article.image ? `<figure><img src="${esc(article.image.src)}" alt="${esc(article.image.alt)}"/><figcaption>${esc(article.image.caption)}</figcaption></figure>` : '';
 /** Match the article and front-page section order for non-JavaScript readers. */
 function sectionExtrasHtml(section: NewsSection): string {
   const picture = section.image ? `<figure><img src="${esc(section.image.src)}" alt="${esc(section.image.alt)}"/><figcaption>${esc(section.image.caption)}</figcaption></figure>` : '';
-  const table = section.standings ? `<table><caption>${esc(section.standings.caption)} · <time datetime="${esc(section.standings.observedAt)}">${esc(section.standings.observedAt.replace('T', ' ').replace('Z', ' UTC'))}</time> · provisional</caption><thead><tr><th scope="col">Place</th><th scope="col">Team</th><th scope="col">Score</th></tr></thead><tbody>${section.standings.rows.map(row => `<tr><td class="pl">#${row.rank}</td><td><strong class="news-team-name">${esc(row.name)}</strong></td><td class="sc">${row.score}</td></tr>`).join('')}</tbody></table>` : '';
+  const table = section.standings ? `<table><caption>${esc(section.standings.caption)} · ${timeTag(section.standings.observedAt)} · provisional</caption><thead><tr><th scope="col">Place</th><th scope="col">Team</th><th scope="col">Score</th></tr></thead><tbody>${section.standings.rows.map(row => `<tr><td class="pl">#${row.rank}</td><td><strong class="news-team-name">${esc(row.name)}</strong></td><td class="sc">${row.score}</td></tr>`).join('')}</tbody></table>` : '';
   return picture + table;
 }
 const newlineText = (text: string) => text.split(/\n\n+/).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
 const timeTag = (value: string, withTime = true) => `<time datetime="${esc(value)}">${esc(newsDate(value, withTime))}</time>`;
 const kicker = (article: NewsArticle) => `${esc(articleCompetitionLabel(article))} · ${esc(editionLabel(article))} · ${timeTag(article.date, false)}`;
-const rankChange = (stat: NewsStat) => stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? 'Up' : 'Down'} ${Math.abs(stat.rankChange)}`;
-const scoreChange = (stat: NewsStat) => stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${stat.scoreChange}`;
+/** "Updated <date>: <reason>" for each recorded revision, printed under the byline. */
+const revisionsHtml = (story: Pick<NewsArticle, 'revisions'>) => story.revisions?.length
+  ? `<ul class="news-revisions">${story.revisions.map(revision => `<li>Updated ${timeTag(revision.at, false)}${revision.reason ? `: ${esc(revision.reason)}` : ''}</li>`).join('')}</ul>` : '';
 /** A CollectionPage whose ItemList names each linked entry, for the two index pages. */
 function collection(tags: RouteMetaTags, items: { name: string; path: string }[]): Record<string, unknown> {
   return { '@context': 'https://schema.org', '@graph': [{
@@ -72,23 +86,29 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
       itemListElement: items.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: `${SITE_ORIGIN}${item.path}` })) },
   }] };
 }
-/** The full dispatch, including its own art and sources, stays identical across server views. */
-function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = []): string {
-  return `<article id="${esc(dispatch.id)}"><h2>${esc(dispatch.headline)}</h2>${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition) : ''}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
+/** The full dispatch, including its own art and sources, stays identical across server views. Its own page prints the headline as the <h1>; elsewhere it links there. */
+function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = [], permalink = false): string {
+  const headline = permalink ? `<h1>${esc(dispatch.headline)}</h1>` : `<h2><a href="${esc(newsArticlePath(dispatch.id))}">${esc(dispatch.headline)}</a></h2>`;
+  return `<article id="${esc(dispatch.id)}">${headline}${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition) : ''}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
 }
 
-export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = [], people: NewsPerson[] = []): RouteMetaTags {
+/** `competitors` decides which box-score teams link to a profile: only those with a record, never a 404. */
+export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = [], people: NewsPerson[] = [], competitors: CompetitorRecord[] = []): RouteMetaTags {
+  const teamCell = (stat: NewsArticle['stats'][number]) => {
+    const record = competitors.find(item => item.teamId === stat.teamId && articleCompetitions(article).includes(item.competition));
+    return record ? `<a href="${competitorPath(record.id)}">${esc(stat.name)}</a>` : esc(stat.name);
+  };
   const url = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const feature = editionFeature(article, dispatches);
   const figures = articleFigureStats(article);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
-    <h1>${figuresHtml(article.headline, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</h1><p>${figuresHtml(article.dek, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>
+    <h1>${figuresHtml(article.headline, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</h1><p>${figuresHtml(article.dek, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>${revisionsHtml(article)}
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, true)}. Exact source observations remain in the archived reporting data.</p>
     ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people)) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
     ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])]).replace(/\n/g, '<br/>')}${sectionExtrasHtml(section)}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
-    ${article.stats.length ? `<h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChange(stat)}</td><td class="sd">${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>` : ''}
-    <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/cards">Cards</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
+    ${article.stats.length ? `<h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td>${teamCell(stat)}</td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChangeLabel(stat.rankChange)}</td><td class="sd">${scoreChangeLabel(stat.scoreChange)}</td></tr>`).join('')}</tbody></table>` : ''}
+    <p>${esc(article.coverageNote)}</p><p>${articleCompetitions(article).map(competition => `<a href="${boardPath(competition)}">Full live ${esc(competitionName(competition))} box score</a>`).join(' · ')} ·<a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/cards">Cards</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;
   return completeMeta({ title: articleTitle(article), description: articleDescription(article), url, type: 'article', jsonLd, bodyHtml,
     image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT,
@@ -101,8 +121,8 @@ function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competi
   return people.length ? `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
     const portrait = displayPortrait(person);
     const team = [...person.memberships].reverse().find(member => member.competition === competition);
-    const card = cabinet.cards.find(item => item.kind === 'person' && item.personId === person.id);
-    if (card) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
+    const card = cardForPerson(cabinet.cards, person.id, competition, cabinet.sets);
+    if (card) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card, cabinet))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
     return `<article>${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="76" height="88"/>` : ''}${personLink(person)}${team ? `<p>${esc(team.teamName)}</p>` : ''}${person.hallOfFame[0] ? `<p>${esc(person.hallOfFame[0].label)}</p>` : ''}${person.editorialPortrait ? '<p>AI editorial portrait</p>' : ''}</article>`;
   }).join('')}</aside>` : '';
 }
@@ -112,24 +132,34 @@ const rosterHtml = (record: CompetitorRecord, people: NewsPerson[]) => `<ul>${re
 }).join('')}</ul>`;
 function competitorMeta(record: CompetitorRecord, articles: NewsArticle[], people: NewsPerson[]): RouteMetaTags {
   const description = competitorDescription(record);
-  const coverage = articles.filter(article => article.competition === record.competition && article.teamIds.includes(record.teamId));
-  return completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles), title: competitorTitle(record), description,
+  const coverage = articles.filter(article => articleCoversTeam(article, record));
+  const aliases = displayAliases(record);
+  return completeMeta({ ...cardFor(articles), title: competitorTitle(record), description,
     url: `${SITE_ORIGIN}${competitorPath(record.id)}`, bodyHtml: `<main><h1>${esc(record.name)}</h1><p>${esc(description)}</p>
     <p>Competition: ${esc(competitionName(record.competition))}. Team ID: ${esc(record.teamId)}.</p>
     <h2>Public team roster</h2>${rosterHtml(record, people)}
-    ${record.aliases.length ? `<h2>Observed names</h2><p>${record.aliases.map(esc).join(', ')}</p>` : ''}
+    ${aliases.length ? `<h2>Observed names</h2><p>${aliases.map(esc).join(', ')}</p>` : ''}
     <h2>What is on the record</h2>${record.facts.length ? record.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a> (checked ${timeTag(fact.checkedAt, false)})</p>`).join('') : '<p>No sourced background notes have been added yet.</p>'}
     <h2>In the paper</h2>${coverage.length ? `<ul>${coverage.map(article => `<li>${articleLink(article)}</li>`).join('')}</ul>` : '<p>Not yet named in an edition.</p>'}
     <p><a href="${boardPath(record.competition)}">Live ${esc(competitionName(record.competition))} box score</a> · <a href="/news/cards">Cards</a> · <a href="/news">The ARC Daily Digest front page</a></p></main>` });
 }
-function peopleMeta(people: NewsPerson[], articles: NewsArticle[], person?: NewsPerson): RouteMetaTags {
-  const base = ROUTE_META_TAGS['/news/people'];
-  const portrait = person && displayPortrait(person);
-  const personCards = person ? getNewsCollection().cards.filter(card => card.personId === person.id) : [];
-  const cardsHtml = personCards.length ? `<h2>Their cards</h2><ul>${personCards.map(card => `<li><a href="${esc(card.cardUrl)}">${esc(card.season)} card</a></li>`).join('')}</ul>` : '';
-  const tags = completeMeta({ ...base, ...cardFor(articles), ...(person ? { title: `${person.name} | ${NEWS_NAME}`, url: `${SITE_ORIGIN}${personPath(person.id)}` } : {}) });
-  return { ...tags, jsonLd: collection(tags, (person ? [person] : people).map(item => ({ name: item.name, path: personPath(item.id) }))),
-    bodyHtml: `<main><h1>${esc(person?.name ?? 'People behind the teams')}</h1><p>Verified people and dated competition rosters. Observations do not establish joining dates or credit for particular submissions.</p>${person ? `${cardsHtml}${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="176" height="176"/>${person.editorialPortrait ? `<p>AI editorial portrait based on <a href="${esc(portrait.sourceUrl)}">${esc(portrait.sourceTitle)}</a>.</p>` : ""}` : ''}${person.hallOfFame.length ? `<ul>${person.hallOfFame.map(card => `<li><a href="${esc(card.path)}">${esc(card.label)}</a></li>`).join('')}</ul>` : ''}${person.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></p>`).join('')}<h2>Observed teams</h2><ul>${person.memberships.map(member => `<li>${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)}) · ${esc(member.memberHandle)} · observed ${timeTag(member.firstObservedAt, false)}–${timeTag(member.lastObservedAt, false)} <a href="${esc(member.sourceUrl)}">Roster source</a></li>`).join('')}</ul><h2>Public accounts</h2><ul>${person.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.handle)}</a> · <a href="${esc(account.sourceUrl)}">Identity source</a></li>`).join('')}</ul>${person.hallOfFame.map(card => `<figure><a href="${esc(card.path)}">${card.image ? `<img src="${esc(card.image.src)}" alt="${esc(card.image.alt)}"/>` : ''}${esc(card.label)}</a><figcaption>Historical ARC Hall of Fame artwork.</figcaption></figure>`).join('')}` : `<ul>${people.map(item => `<li>${personLink(item)}${item.hallOfFame.length ? ` · ${item.hallOfFame.map(card => esc(card.label)).join('; ')}` : ''}${item.memberships.length ? ` · ${item.memberships.map(member => `${esc(member.teamName)} (${esc(competitionName(member.competition))}, ${esc(member.season)})`).join('; ')}` : ''}</li>`).join('')}</ul>`}<p><a href="/news">Front page</a> · <a href="/news/cards">All cards</a></p></main>` };
+/** One person's profile. Sponsors (the ARC Prize co-founders) run the contest, so they get no competition-teams list. */
+function personMeta(person: NewsPerson, articles: NewsArticle[], competitors: CompetitorRecord[]): RouteMetaTags {
+  const portrait = displayPortrait(person);
+  const cabinet = getNewsCollection();
+  const personCards = cabinet.cards.filter(card => card.personId === person.id);
+  const cardsHtml = personCards.length ? `<h2>Their cards</h2><ul>${personCards.map(card => `<li><a href="${esc(card.cardUrl)}">${esc(catalogSetLabel(card, cabinet.sets))} card</a></li>`).join('')}</ul>` : '';
+  const sponsor = person.role === 'sponsor';
+  const teams = sponsor ? [] : personTeams(person, competitors);
+  // A team links to its profile only when one is published; otherwise its name is plain text.
+  const teamName = (member: NewsPerson['memberships'][number]) => {
+    const id = `${member.competition}-${member.teamId}`;
+    return competitors.some(team => team.id === id) ? `<a href="${competitorPath(id)}">${esc(member.teamName)}</a>` : esc(member.teamName);
+  };
+  const teamsHtml = sponsor ? '' : `<h2>Observed competition teams</h2>${teams.length ? `<ul>${teams.map(member => `<li>${teamName(member)} (${esc(competitionName(member.competition))}, ${esc(member.season)}) · ${esc(member.memberHandle)} · observed ${timeTag(member.firstObservedAt, false)}–${timeTag(member.lastObservedAt, false)} <a href="${esc(rosterSourceHref(member))}">Roster source</a></li>`).join('')}</ul>` : '<p>No observed competition roster lists this person’s verified accounts.</p>'}`;
+  const tags = completeMeta({ ...cardFor(articles), title: `${person.name} | ${NEWS_NAME}`, description: personDescription(person), url: `${SITE_ORIGIN}${personPath(person.id)}` });
+  return { ...tags, jsonLd: collection(tags, [{ name: person.name, path: personPath(person.id) }]),
+    bodyHtml: `<main><p>${sponsor ? 'Sponsors' : 'Contestants and contenders'}</p><h1>${esc(person.name)}</h1>${person.briefing ? `<p>${esc(person.briefing)}</p>` : ''}<p>Verified accounts${sponsor ? '' : ' and dated competition rosters. Observations do not establish joining dates or credit for particular submissions'}.</p>${cardsHtml}${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="176" height="176"/>${person.editorialPortrait ? `<p>AI editorial portrait based on <a href="${esc(portrait.sourceUrl)}">${esc(portrait.sourceTitle)}</a>.</p>` : ''}` : ''}${person.hallOfFame.length ? `<ul>${person.hallOfFame.map(card => `<li><a href="${esc(card.path)}">${esc(card.label)}</a></li>`).join('')}</ul>` : ''}${person.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a></p>`).join('')}${teamsHtml}<h2>Public accounts</h2><ul>${person.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.handle)}</a> · <a href="${esc(account.sourceUrl)}">Identity source</a></li>`).join('')}</ul>${person.hallOfFame.map(card => `<figure><a href="${esc(card.path)}">${card.image ? `<img src="${esc(card.image.src)}" alt="${esc(card.image.alt)}"/>` : ''}${esc(card.label)}</a><figcaption>Historical ARC Hall of Fame artwork.</figcaption></figure>`).join('')}<p><a href="/news">Front page</a> · <a href="/news/cards">All cards</a></p></main>` };
 }
 const discussionsHtml = (threads: NewsDiscussion[]) => `<section id="kaggle-boards"><h2>From the Kaggle boards</h2>${recentDiscussions(threads).map(thread => `<article><h3><a href="${esc(thread.url)}">${esc(thread.title)}</a></h3><p>${esc(competitionName(thread.competition))} · @${esc(thread.author)}</p><p>${esc(thread.summary)}</p><p>Activity ${timeTag(thread.latestActivityAt ?? thread.postedAt!)} · ${thread.commentCount} replies</p></article>`).join('')}</section>`;
 function storyArchiveMeta(articles: NewsArticle[], dispatches: NewsDispatch[]): RouteMetaTags {
@@ -158,12 +188,31 @@ function staffMeta(): RouteMetaTags {
     <section id="standards"><h2>Our reporting standards</h2>${NEWS_METHOD.map(section => `<h3>${esc(section.heading)}</h3><p>${esc(section.text)}</p>`).join('')}</section>
     <section id="contact"><h2>Reach the editor</h2><p>Send a story tip, correction, retraction request or complaint to Mark on <a href="${esc(NEWS_EDITOR_CONTACT.xUrl)}">X</a> or in the <a href="${esc(NEWS_EDITOR_CONTACT.discordUrl)}">ARC Discord</a>. Please include the story link and any supporting source.</p><p><a href="/feedback">ARC Explainer feedback</a></p></section><p><a href="/news">Front page</a></p></main>` });
 }
-function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags {
-  const tags = completeMeta({ ...ROUTE_META_TAGS['/news/wire'], ...cardFor(articles) });
-  return { ...tags, jsonLd: collection(tags, wire.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
-    bodyHtml: `<main><h1>The wire</h1><p>Source-linked competition developments, dated and credited to their writer. Each story credits its writer. Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)} · ${esc(writerCredit(story.generatedBy))}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
+/** One wire story; on its own page the headline is the <h1>, in the index it links there. */
+function wireStoryHtml(story: NewsWireStory, permalink = false): string {
+  const headline = permalink ? `<h1>${esc(story.headline)}</h1>` : `<h2><a href="${esc(wirePath(story.id))}">${esc(story.headline)}</a></h2>`;
+  return `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)} · ${esc(writerCredit(story.generatedBy))}</p>${headline}${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p><p><a href="/api/news/wire/${esc(story.id)}/evidence">Evidence</a></p></article>`;
 }
-function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[], social: NewsSocialPost[], discussions: NewsDiscussion[], people: NewsPerson[] = []): RouteMetaTags {
+/** The past week of wire; when the desk filed nothing that week, its newest filings and the date it paused. */
+function wireMeta(wire: NewsWireStory[], articles: NewsArticle[], latest: NewsWireStory[] = []): RouteMetaTags {
+  const tags = completeMeta({ ...ROUTE_META_TAGS['/news/wire'], ...cardFor(articles) });
+  const shown = wire.length ? wire : latest;
+  const paused = !wire.length && latest[0] ? `<p>Desk paused since ${timeTag(latest[0].publishedAt)}. Latest filings:</p>` : '';
+  return { ...tags, jsonLd: collection(tags, shown.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
+    bodyHtml: `<main><h1>The wire</h1><p>Source-linked competition developments, dated and credited to their writer. Every figure is checked against the saved board before publication.</p>${paused}${shown.map(story => wireStoryHtml(story)).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
+}
+/** A wire story's permanent page. */
+function wireStoryMeta(story: NewsWireStory, articles: NewsArticle[]): RouteMetaTags {
+  const url = `${SITE_ORIGIN}${wirePath(story.id)}`;
+  return completeMeta({ ...cardFor(articles), title: wireTitle(story), description: wireDescription(story), url, type: 'article',
+    publishedTime: story.publishedAt, section: competitionName(story.competition),
+    jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'NewsArticle', '@id': `${url}#article`, url, headline: story.headline, description: wireDescription(story),
+      datePublished: story.publishedAt, dateModified: story.publishedAt, inLanguage: 'en', isAccessibleForFree: true, articleSection: competitionName(story.competition),
+      author: { '@type': 'Organization', name: `${NEWS_NAME} wire desk`, url: `${SITE_ORIGIN}/news/wire` }, publisher: newsPublisher(SITE_ORIGIN), mainEntityOfPage: url,
+      citation: [...new Set(story.sources.map(source => source.url))] }] },
+    bodyHtml: `<main><p><a href="/news/wire">The wire</a></p>${wireStoryHtml(story, true)}<a href="/news">Front page</a></main>` });
+}
+function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[], social: NewsSocialPost[], discussions: NewsDiscussion[], people: NewsPerson[] = [], competitors: CompetitorRecord[] = []): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });
   const posts = frontPageSocialPosts(social);
   const socialHtml = posts.length ? `<section><h2>From X</h2><p>Research and reactions around the contests</p>${posts.map(post => `<article><h3><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h3><p>${esc(post.summary)}</p>${post.postedAt ? `<p>${timeTag(post.postedAt, false)}</p>` : ''}</article>`).join('')}</section>` : '';
@@ -171,7 +220,7 @@ function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire
     const stories = competitionStories(articles, dispatches, competition), first = stories[0];
     const feature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
     const storyHtml = 'article' in first
-      ? newsArticleMeta(first.article, dispatches, people).bodyHtml!.replace(/^<main>|<\/main>$/g, '').replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>').replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
+      ? newsArticleMeta(first.article, dispatches, people, competitors).bodyHtml!.replace(/^<main>|<\/main>$/g, '').replace(/<h2>/g, '<h3>').replace(/<\/h2>/g, '</h3>').replace(/<h1>/g, '<h2>').replace(/<\/h1>/g, '</h2>')
       : dispatchHtml(first.dispatch, reportedPeople([first.dispatch], people));
     // The server-rendered lead needs the same permanent headline link as the
     // client; the wrapper also marks the actual lead, independently of source links.
@@ -182,11 +231,6 @@ function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire
   }).join('');
   return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: newsArticlePath(dispatch.id) })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
     bodyHtml: `<main><h1>${NEWS_NAME}: ${NEWS_BRAND.goose ? "the sports tabloid of the Kaggleverse" : "ARC-AGI-3 and ARC-AGI-2 contest reporting"}</h1><p>Source-linked competition reporting, meaningful moves and the people behind the teams. Each report preserves its dates and evidence; the linked Kaggle pages provide current standings.</p><p><a href="/news/wire">The wire</a> · <a href="${NEWS_ARCHIVE.path}">${NEWS_ARCHIVE.heading}</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/cards">Cards</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${leadsHtml || '<p>The first edition is being prepared.</p>'}</main>` };
-}
-function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]): RouteMetaTags {
-  const tags = completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles) });
-  return { ...tags, jsonLd: collection(tags, competitors.map(record => ({ name: `${record.name} (${competitionName(record.competition)})`, path: competitorPath(record.id) }))),
-    bodyHtml: `<main><h1>Competitor profiles</h1><p>Meet the teams, follow their progress, and explore their stories across competitions.</p><ul>${competitors.map(record => `<li><a href="${competitorPath(record.id)}">${esc(record.name)}</a> — ${esc(competitionName(record.competition))}</li>`).join('')}</ul><p><a href="/news">Back to the sports page</a></p></main>` };
 }
 /** Card pages and the collection list share the same sourced record and links, drawn here as plain HTML for readers and crawlers. */
 function collectionEntryHtml(entry: CollectionEntry): string {
@@ -203,7 +247,7 @@ function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const profile = career && (career.tier || medals || career.rank?.current || career.joinedYear || career.organisation)
     ? `<section><h3>Kaggle profile</h3><ul>${[career.tier ? `Competitions tier: ${career.tier}` : '', medals ? `Medals: ${medals.gold} gold, ${medals.silver} silver, ${medals.bronze} bronze` : '',
       career.rank?.current ? `Overall rank: ${career.rank.current}${career.rank.outOf ? ` of ${career.rank.outOf}` : ''}${career.rank.best ? `, best ${career.rank.best}` : ''}` : '',
-      career.joinedYear ? `On Kaggle since ${career.joinedYear}` : '', career.organisation ? `Organisation: ${career.organisation}` : ''].filter(Boolean).map(line => `<li>${esc(line)}</li>`).join('')}<li><a href="${esc(career.profileUrl)}">Kaggle profile</a></li></ul></section>` : '';
+      career.joinedYear ? `On Kaggle since ${career.joinedYear}` : '', career.organisation ? `Organisation: ${career.organisation}` : ''].filter(Boolean).map(line => `<li>${esc(line)}</li>`).join('')}${career.profileUrl ? `<li><a href="${esc(career.profileUrl)}">Kaggle profile</a></li>` : ''}</ul></section>` : '';
   const past = card.pastCards.length ? `<section><h3>Earlier cards</h3><ul>${card.pastCards.map(item => `<li><a href="${esc(item.hallOfFameUrl)}">${esc(item.season ?? 'Earlier')} · ${esc(item.label)}</a>${item.imageSrc ? ` <img src="${esc(encodeURI(item.imageSrc))}" alt="${esc(item.imageAlt)}" loading="lazy"/>` : ''}</li>`).join('')}</ul></section>` : '';
   const history = card.teamHistory.length ? `<section><h3>Teams</h3><ul>${card.teamHistory.map(team => `<li><a href="${esc(team.cardUrl ?? team.profileUrl)}">${esc(team.teamName)}</a> · ${esc(competitionName(team.competition))} ${esc(team.season)}${team.status === 'previous' ? ' · earlier team' : ''}</li>`).join('')}</ul></section>` : '';
   const rows = career?.rows.length ? `<section><h3>Completed Kaggle competitions</h3><ul>${[...career.rows].sort((a, b) => a.rank / a.fieldSize - b.rank / b.fieldSize).slice(0, 14).map(row => `<li><a href="${esc(row.competitionUrl)}">${esc(row.competition)}</a>${row.year ? ` (${row.year})` : ''} · ${row.rank} of ${row.fieldSize}${row.medal ? ` · ${row.medal} medal` : ''}</li>`).join('')}</ul></section>` : '';
@@ -215,7 +259,8 @@ function collectionCardMeta(card: CollectionCard): RouteMetaTags {
   const title = collectionCardTitle(card);
   const description = collectionCardDescription(card);
   const url = `${SITE_ORIGIN}${card.cardUrl}`;
-  const image = `${SITE_ORIGIN}${collectionSharePath(card)}`;
+  // The same collection-aware version the share route checks; a card-only version would 302 on every crawl.
+  const image = `${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}`;
   return completeMeta({ title, description, url, image, imageAlt: collectionShareAlt(card), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT,
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
       isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
@@ -243,14 +288,19 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     if (storyRoute) return unavailableStoryMeta(route, true);
     throw error;
   }
-  const { articles, competitors, dispatches = [], people = [], social = [], discussions = [], wire = [] } = archive.index;
+  const { articles, competitors, dispatches = [], people = [], social = [], discussions = [], wire = [], wireLatest = [] } = archive.index;
   if (route === '/news') {
-    const tags = frontPageMeta(articles, dispatches, wire, social, discussions, people);
+    const tags = frontPageMeta(articles, dispatches, wire, social, discussions, people, competitors);
     return { status: 200, tags };
   }
   if (route === NEWS_TIPS_PATH) return { status: 200, tags: completeMeta({ title: `Talk to me, Goose | ${NEWS_NAME}`, description: 'Send the newsroom a hot tip, an original source or a correction.', url: SITE_ORIGIN + NEWS_TIPS_PATH,
     bodyHtml: `<main><h1>Talk to me, Goose.</h1><p>An upset brewing? A surprise alliance? A bit of public code that changes the race?</p><p>Send us the original link, tell us what changed and when, and point us toward the people who know the story.</p><p><a href="${esc(NEWS_CONTACT.tipUrl)}">${esc(NEWS_CONTACT.tipLabel)}</a></p><p>Corrections are welcome too. Include the story address and the detail we should check.</p><p><a href="${esc(NEWS_CONTACT.communityUrl)}">${esc(NEWS_CONTACT.communityLabel)}</a></p><a href="/news">Back to the paper</a></main>` }) };
-  if (route === '/news/wire') return { status: 200, tags: wireMeta(wire, articles) };
+  if (route === '/news/wire') return { status: 200, tags: wireMeta(wire, articles, wireLatest) };
+  const wireRoute = route.match(/^\/news\/wire\/([a-z0-9-]+)$/);
+  if (wireRoute) {
+    const { story, rejected } = loadWireStory(wireRoute[1]);
+    return story ? { status: 200, tags: wireStoryMeta(story, articles) } : unavailableStoryMeta(route, rejected);
+  }
   if (route === '/news/cards') {
     const cabinet = getNewsCollection();
     const { people: otherPeople, teams: otherTeams } = uncardedCast({ people, competitors }, cabinet.cards);
@@ -275,22 +325,20 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     return { status: 404, tags: completeMeta({ title: `Card not found | ${NEWS_NAME}`, description: 'This card could not be found. Visit the Card Cabinet to browse the collection.', url: `${SITE_ORIGIN}${route}`, noindex: true,
       bodyHtml: '<main><h1>Card not found</h1><p><a href="/news/cards">Browse the Card Cabinet</a></p></main>' }) };
   }
-  if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors, articles) };
-  if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };
   if (route === NEWS_ARCHIVE.path) return { status: 200, tags: storyArchiveMeta(articles, dispatches) };
   if (route === NEWS_STAFF_PATH || route === '/news/how-this-is-made') return { status: 200, tags: staffMeta() };
   const personRoute = route.match(/^\/news\/people\/([a-z0-9-]+)$/);
-  if (personRoute) { const person = people.find(item => item.id === personRoute[1]); if (person) return { status: 200, tags: peopleMeta(people, articles, person) }; }
+  if (personRoute) { const person = people.find(item => item.id === personRoute[1]); if (person) return { status: 200, tags: personMeta(person, articles, competitors) }; }
   const profile = route.match(/^\/news\/competitors\/([a-z0-9-]+)$/);
   if (profile) { const record = competitors.find(record => record.id === profile[1]); if (record) return { status: 200, tags: competitorMeta(record, articles, people) }; }
   const article = articles.find(article => newsArticlePath(article.id) === route);
-  if (article) return { status: 200, tags: newsArticleMeta(article, dispatches, people) };
+  if (article) return { status: 200, tags: newsArticleMeta(article, dispatches, people, competitors) };
   const dispatch = dispatches.find(item => newsArticlePath(item.id) === route);
   if (dispatch) return { status: 200, tags: completeMeta({
-    title: `${dispatch.headline} | ${NEWS_NAME}`, description: dispatch.dek ?? dispatch.sections[0]?.text ?? dispatch.headline,
+    title: dispatchTitle(dispatch), description: dispatchDescription(dispatch),
     url: `${SITE_ORIGIN}${route}`, type: 'article', publishedTime: dispatch.publishedAt, section: competitionName(dispatch.competition),
     ...(dispatch.image ? { image: `${SITE_ORIGIN}${dispatch.image.src}`, imageAlt: dispatch.image.alt } : cardFor(articles)),
-    jsonLd: dispatchStructuredData(dispatch, SITE_ORIGIN), bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people))}</main>`,
+    jsonLd: dispatchStructuredData(dispatch, SITE_ORIGIN), bodyHtml: `<main>${dispatchHtml(dispatch, reportedPeople([dispatch], people), true)}</main>`,
   }) };
 
   if (storyRoute) {

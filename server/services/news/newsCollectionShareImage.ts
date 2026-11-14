@@ -1,6 +1,9 @@
 /**
- * Author: Claude Sonnet 5.5 Low (replaces GPT-6 / Codex's preview of 29-Oct-2026)
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Low (replaces GPT-6 / Codex's preview of 29-Oct-2026); Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the series strip prints the season once (vm.seriesLabel); RANK and SCORE figures are measured
+ *          and sized to their boxes (clipped as a backstop); the preview cache is keyed by the collection-aware image version
+ *          (teammates, shared art, tier counts, stamp phase) and holds the whole set (cards x 1.2).
  * PURPOSE: The 1200 x 630 link preview (og:image / twitter:image) for a shared card URL, in the same Topps look as the
  *          card. Left: the real front render, scaled (never re-drawn). Right: a grey-cardboard, two-ink panel with the
  *          series wordmark and card number, the name in Alfa Slab One, the tier line ("KAGGLE GRANDMASTER"), the lead
@@ -17,8 +20,8 @@
 import satori from 'satori';
 import sharp from 'sharp';
 import { COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, collectionLeadEntry, collectionShareVersion, type CollectionCard, type NewsCollection } from '../../../shared/newsCollection';
-import { cardFaceModel, renderCardFace } from './cardFace';
-import { FONT, ff, box, loadFonts, fitNameLines, MEDAL, type Node, type Style, type Kid } from './cardFace/kit';
+import { cardFaceModel, renderCardFace, renderCacheLimit } from './cardFace';
+import { FONT, ff, box, loadFonts, fitNameLines, fitOneLine, MEDAL, type Node, type Style, type Kid } from './cardFace/kit';
 import { viewModel, type VM } from './cardFace/model';
 
 const STOCK = '#c9c5b8';
@@ -34,11 +37,17 @@ const INNER_W = PANEL_W - 2 * 22;                    // text column inside the p
 const text = (value: string, style: Style = {}): Node => box({ whiteSpace: 'nowrap', ...style }, value);
 const clip = (style: Style): Style => ({ overflow: 'hidden', textOverflow: 'ellipsis', ...style });
 
-/** One stat box: a dark label strip over a big value. */
+/** One stat box: a dark label strip over a big value. `size` is already fitted to the box (statSize). */
 function stat(label: string, value: string, vm: VM, grow: number, size: number): Node {
-  return box({ flexDirection: 'column', flexGrow: grow, flexBasis: 0, border: `3px solid ${INK}`, background: PAPER_LIGHT },
+  return box({ flexDirection: 'column', flexGrow: grow, flexBasis: 0, border: `3px solid ${INK}`, background: PAPER_LIGHT, overflow: 'hidden' },
     box({ background: vm.T.deep, color: '#ffffff', justifyContent: 'center', padding: '3px 0', fontFamily: ff(FONT.bebas), fontSize: 26, letterSpacing: 2 }, label),
-    box({ flexGrow: 1, alignItems: 'center', justifyContent: 'center', color: INK, fontFamily: ff(FONT.slab), fontSize: size, lineHeight: 1 }, value));
+    box({ flexGrow: 1, alignItems: 'center', justifyContent: 'center', color: INK, fontFamily: ff(FONT.slab), fontSize: size, lineHeight: 1, whiteSpace: 'nowrap', overflow: 'hidden' }, value));
+}
+const STAT_GAP = 10, STAT_BORDER = 6, STAT_PAD = 16;
+/** The size at which a stat value fits its box: the row's width shared by flex-grow (basis 0), less borders and a margin. */
+async function statSize(value: string, grow: number, grows: number[], max: number): Promise<number> {
+  const width = (INNER_W - STAT_GAP * (grows.length - 1)) * grow / grows.reduce((a, b) => a + b, 0) - STAT_BORDER - STAT_PAD;
+  return fitOneLine(value, FONT.slab, 400, width, max, 20);
 }
 /** Medal coins for a competitor, or the roster's summed medals on a team card (labelled as such). */
 function coins(vm: VM, grow: number): Node | null {
@@ -67,9 +76,10 @@ export async function buildCollectionShareNode(card: CollectionCard, collection:
   const nameFit = await fitNameLines(vm.name, FONT.slab, 400, INNER_W, 190, { max: 92, min: 44, twoLineMax: 74, twoLineMin: 40 }, 1.02);
 
   const stats: Node[] = [];
-  if (contest?.rank) stats.push(stat('RANK', contest.rank, vm, 1.5, contest.rank.length > 6 ? 76 : 100));
-  if (contest?.score) stats.push(stat('SCORE', contest.score, vm, 1, 56));
   const medals = coins(vm, 1.1);
+  const grows = [contest?.rank ? 1.5 : 0, contest?.score ? 1 : 0, medals ? 1.1 : 0].filter(Boolean);
+  if (contest?.rank) stats.push(stat('RANK', contest.rank, vm, 1.5, await statSize(contest.rank, 1.5, grows, 100)));
+  if (contest?.score) stats.push(stat('SCORE', contest.score, vm, 1, await statSize(contest.score, 1, grows, 56)));
   if (medals) stats.push(medals);
   const body: Kid[] = [];
   if (contest && stats.length) {
@@ -100,7 +110,7 @@ export async function buildCollectionShareNode(card: CollectionCard, collection:
     box({ position: 'absolute', left: PANEL_X, top: 0, width: PANEL_W, height: H, background: STOCK, borderLeft: `4px solid ${INK}`, flexDirection: 'column', padding: '18px 22px 16px', color: INK },
       // Wordmark strip: series and season from the set registry, then the card number.
       box({ justifyContent: 'space-between', alignItems: 'center', height: 42, flexShrink: 0 },
-        text(`${vm.wordmark} ${vm.season}`.trim().toUpperCase(), clip({ fontFamily: ff(FONT.bebas), fontSize: 36, letterSpacing: 2, color: ink1, maxWidth: INNER_W * 0.7 })),
+        text(vm.seriesLabel.toUpperCase(), clip({ fontFamily: ff(FONT.bebas), fontSize: 36, letterSpacing: 2, color: ink1, maxWidth: INNER_W })),
         null),   // no card number on the share face (Boss, 5 Nov 2026)
       box({ flexDirection: 'column', marginTop: 8, flexShrink: 0 },
         ...nameFit.lines.map(line => text(line, { fontFamily: ff(FONT.slab), fontSize: nameFit.size, lineHeight: 1.02, color: INK }))),
@@ -111,10 +121,10 @@ export async function buildCollectionShareNode(card: CollectionCard, collection:
         text(asOf ?? (vm.publisher ?? '').toUpperCase()), text(host.toUpperCase(), { color: INK }))));
 }
 
-// Finished previews by content version (the version includes RENDER_VERSION, so a new design never serves an old image).
+// Finished previews by image version (it includes RENDER_VERSION, so a new design never serves an old image, and what the card
+// prints about other cards and the stamp phase, so a teammate's new medals or a closed contest never serve an old one either).
 // The map holds promises, so two requests for one address share a single render; it keeps a whole crawl's worth.
 const previews = new Map<string, Promise<Buffer>>();
-const PREVIEW_LIMIT = 120;
 async function drawShareImage(card: CollectionCard, collection: NewsCollection): Promise<Buffer> {
   // The real front, scaled; its rounded corners are flattened onto the preview's own page colour.
   const front = await sharp(await renderCardFace(card, collection, 'front', { flatten: '#f7f0df' })).resize(CARD_W, CARD_H, { kernel: 'lanczos3' }).png().toBuffer();
@@ -122,12 +132,12 @@ async function drawShareImage(card: CollectionCard, collection: NewsCollection):
   return sharp(Buffer.from(svg)).flatten({ background: '#f7f0df' }).png({ compressionLevel: 9 }).toBuffer();
 }
 export function buildCollectionShareImage(card: CollectionCard, collection: NewsCollection): Promise<Buffer> {
-  const version = collectionShareVersion(card);
+  const version = collectionShareVersion(card, collection);
   let hit = previews.get(version);
   if (hit) return hit;
   hit = drawShareImage(card, collection);
   previews.set(version, hit);
   hit.catch(() => previews.delete(version));          // a failed render is never remembered
-  while (previews.size > PREVIEW_LIMIT) previews.delete(previews.keys().next().value!);
+  while (previews.size > renderCacheLimit(collection)) previews.delete(previews.keys().next().value!);
   return hit;
 }

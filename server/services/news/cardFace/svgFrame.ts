@@ -1,6 +1,7 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): removed cornerReach, which only an old scratch renderer called.
  * PURPOSE: THE TIER BORDER. One SVG, W x H, transparent in the middle, drawn over the art. It is built entirely
  *          from the tier's BorderRecipe flags (tiers.ts): ground fill, mid stripe, pinstripes, mid line, sheen,
  *          rivets, sparkles, holo hairline, inner rule and a corner piece chosen from a table of corner drawers.
@@ -110,6 +111,3 @@ export function frameSvg(T: TierStyle, W: number, H: number, s = 1): string {
   layers.push(`<path d="M${i0} ${i0}H${W - i0}V${H - i0}H${i0}Z" fill="none" stroke="#000" stroke-width="${k(1.6)}"/><path d="${rr(i1, i1, W - 2 * i1, H - 2 * i1, rad)}" fill="none" stroke="#000" stroke-width="${k(1.6)}"/><path d="${rr(t, t, W - 2 * t, H - 2 * t, rad + k(3))}" fill="none" stroke="#000" stroke-width="${k(2.4)}"/>`);
   return svgDoc(W, H, layers.join(''), defs);
 }
-
-/** Exported for the corner-clearance check in the scratch renderer. */
-export const cornerReach = (T: TierStyle) => T.border.cornerSize + (T.border.corner === 'burst' ? 26 : 0);

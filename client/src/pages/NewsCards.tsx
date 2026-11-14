@@ -1,6 +1,13 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, integration): the page's og:image uses the collection-aware share version, as the server meta does.
+ * 14-Nov-2026 (Claude Opus 5.5): card page data laid out in balanced columns with every table in a scroll wrapper, the
+ *          unavailable-standings links inside the Standings panel and the roster/team lists as ordinary panels; empty Team and
+ *          Year career columns hidden; account links name their site; the Hall of Fame link only where it is relevant and no
+ *          internal illustration credit; same-art editions linked once instead of shown twice; Detail keyed by card;
+ *          contest-filtered tile captions stay in that contest; "Show every card" resets a rank sort; pages scroll back to
+ *          the controls and survive a view switch; responsive srcSet on card faces; shared useNewsCollection() query.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: The ARC Daily Digest's Card Cabinet, rebuilt as a collector's binder and a price-guide checklist.
  *          The rendered cards ARE the page: a grid of real card faces (front and back) and a dense checklist
@@ -14,9 +21,8 @@
  *          lays out and links. Wording helpers live in shared/newsCollection.ts so the server HTML, the share
  *          images and this page say the same thing.
  */
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
 import { SITE_ORIGIN } from '@shared/seo';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { uncardedCast } from '@shared/cardCast';
@@ -30,8 +36,9 @@ import { NEWS_NAME, NEWS_BRAND } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { NewsStatus, newsDate, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { CabinetShell } from '@/components/news/CabinetShell';
-import { CardPair } from '@/components/news/CardPair';
-import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '@shared/cardCatalog';
+import { CardPair, cardFaceSrcSet, cardFaceThumb } from '@/components/news/CardPair';
+import { useNewsCollection } from '@/hooks/useNewsCollection';
+import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
 import '@/components/news/cardRelationships.css';
 
@@ -58,8 +65,9 @@ function Go({ href, className, children }: { href: string; className?: string; c
     ? <a href={href} className={className}>{children}</a> : <Link href={href} className={className}>{children}</Link>;
 }
 
-const faceSrc = (card: CollectionCard, side: 'front' | 'back', width: number, version: string) =>
-  `/api/news/cards/${encodeURIComponent(card.id)}/thumb.webp?side=${side}&w=${width}&v=${version}`;
+const faceSrc = cardFaceThumb;
+/** A binder tile is about half the phone width, a quarter of a tablet, and at most ~260px on a desktop grid. */
+const TILE_SIZES = '(max-width: 560px) 46vw, (max-width: 900px) 24vw, 260px';
 
 /** Tier or role badge. The Boss's rule: every tier gets its due, in Kaggle's own words. */
 function TierBadge({ card, full = false }: { card: CollectionCard; full?: boolean }) {
@@ -74,8 +82,8 @@ function FlipFace({ card, width, priority = false, openHref }: { card: Collectio
   const flip = () => { setSeenBack(true); setSide(side === 'front' ? 'back' : 'front'); };
   return <div className={`cb-face tone-${toneOf(card)}${side === 'back' ? ' is-back' : ''}`}>
     <div className="cb-face-inner">
-      <img className="cb-front" src={faceSrc(card, 'front', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, ${collectionRoleLabel(card).toLowerCase()} card, front`} loading={priority ? 'eager' : 'lazy'} decoding="async" />
-      {seenBack && <img className="cb-reverse" src={faceSrc(card, 'back', width, version)} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, back: the career record`} decoding="async" />}
+      <img className="cb-front" src={faceSrc(card, 'front', width, version)} srcSet={cardFaceSrcSet(card, 'front', version)} sizes={TILE_SIZES} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, ${collectionRoleLabel(card).toLowerCase()} card, front`} loading={priority ? 'eager' : 'lazy'} decoding="async" />
+      {seenBack && <img className="cb-reverse" src={faceSrc(card, 'back', width, version)} srcSet={cardFaceSrcSet(card, 'back', version)} sizes={TILE_SIZES} width={width} height={Math.round(width * 1.4)} alt={`${card.name}, back: the career record`} decoding="async" />}
     </div>
     {openHref && <Link href={openHref} className="cb-open-card" aria-label={`Open ${card.name} ${catalogSubjectLabel(card).toLowerCase()}`} />}
     <button type="button" className="cb-flip" onClick={flip} aria-pressed={side === 'back'} aria-label={`Turn the ${card.name} card over to see the ${side === 'front' ? 'back' : 'front'}`}>{side === 'front' ? 'Back ↻' : 'Front ↻'}</button>
@@ -89,7 +97,7 @@ export function Tile({ card, index, contest = 'all' }: { card: CollectionCard; i
     <div className="cb-caption">
       <div className="cb-caption-top"><span className="cb-no">{catalogSubjectLabel(card)}</span><TierBadge card={card} /></div>
       <h2><Link href={card.cardUrl}>{card.name}</Link></h2>
-      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{collectionTeamCompetition(card) ?? collectionEarnedLine(card) ?? ''}</p>}
+      {lead && lead.status !== 'unavailable' ? <p className="cb-line"><span>{competitionName(lead.competition)}</span><span className="cb-num pl">{rankText(lead)}</span><span className="cb-num sc">{scoreText(lead)}</span></p> : <p className="cb-line cb-dim">{catalogFallbackLine(card, contest)}</p>}
     </div>
   </article>;
 }
@@ -209,11 +217,15 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     if (sort === 'medals') return medalScore(b) - medalScore(a) || byNumber;
     return byNumber;
   }), [cards, role, tier, contest, needle, sort, season, edition, collection.sets]);
-  const filterKey = JSON.stringify([role, tier, contest, needle, sort, season, edition, view]);
+  // The binder and the checklist show the same cards, so switching view keeps the page; a new filter starts at page 1.
+  const filterKey = JSON.stringify([role, tier, contest, needle, sort, season, edition]);
   const pages = Math.max(1, Math.ceil(shown.length / CATALOG_PAGE_SIZE));
   const page = pageChoice.key === filterKey ? Math.min(pageChoice.page, pages - 1) : 0;
   const visible = shown.slice(page * CATALOG_PAGE_SIZE, (page + 1) * CATALOG_PAGE_SIZE);
-  const pagination = pages > 1 && <nav className="cb-pagination" aria-label="Card pages"><button type="button" disabled={page === 0} onClick={() => setPageChoice({key: filterKey, page: page - 1})}>← Previous</button><span>Page {page + 1} of {pages}</span><button type="button" disabled={page + 1 === pages} onClick={() => setPageChoice({key: filterKey, page: page + 1})}>Next →</button></nav>;
+  const controls = useRef<HTMLFormElement>(null);
+  // The lower pager sits below a full page of cards: bring the controls and the new page's first cards back into view.
+  const turnTo = (next: number) => { setPageChoice({ key: filterKey, page: next }); controls.current?.scrollIntoView({ block: 'start' }); };
+  const pagination = pages > 1 && <nav className="cb-pagination" aria-label="Card pages"><button type="button" disabled={page === 0} onClick={() => turnTo(page - 1)}>← Previous</button><span>Page {page + 1} of {pages}</span><button type="button" disabled={page + 1 === pages} onClick={() => turnTo(page + 1)}>Next →</button></nav>;
   const chip = <T extends string>(current: T, set: (value: T) => void, value: T, label: string, count?: number) =>
     <button key={value} type="button" aria-pressed={current === value} onClick={() => set(value)}>{label}{count != null ? <i>{count}</i> : null}</button>;
   return <main className="cb">
@@ -229,7 +241,7 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
       </div>}
     </header>
     {set === 'archive' && collection.archive ? <Archive archive={collection.archive} /> : <>
-    <form className="cb-controls" onSubmit={event => event.preventDefault()} aria-label="Find cards">
+    <form ref={controls} className="cb-controls" onSubmit={event => event.preventDefault()} aria-label="Find cards">
       <label className="cb-search"><span className="sr-only">Find a card</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a name, team or Kaggle handle" /></label>
       <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{chip(role, setRole, 'competitor', 'People', counts.competitors)}{chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
       <div className="cb-chips" role="group" aria-label="Individual Kaggle tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
@@ -245,14 +257,22 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     {pagination}
     {news.data && <UncardedCast index={news.data} cards={cards} needle={needle} role={role} contest={contest} season={season} filtered={tier !== 'all' || edition !== 'all'} />}
     {news.isError && !news.data && <p className="cb-note">People and teams without cards could not be loaded. <button type="button" onClick={() => void news.refetch()}>Try again</button></p>}
-    {!shown.length && <div className="cb-empty"><h2>No cards match.</h2><button type="button" onClick={() => { setSearch(''); setRole('all'); setTier('all'); setContest('all'); setSeason('all'); setEdition('all'); }}>Show every card →</button></div>}
+    {!shown.length && <div className="cb-empty"><h2>No cards match.</h2><button type="button" onClick={() => { setSearch(''); setRole('all'); setTier('all'); setContest('all'); setSeason('all'); setEdition('all'); if (sort === 'rank') setSort('name'); }}>Show every card →</button></div>}
     </>}
     <footer className="cb-colophon"><p>Collection commissioned by {collection.commissionedBy} and updated {newsDate(collection.updatedAt)}. Every card has its own link and share image. Individual cards follow competitors across contests; team cards represent a specific competition entry. Current standings come from dated Kaggle readings when available.</p></footer>
   </main>;
 }
 
-function Panel({ title, children, wide = false }: { title: string; children: ReactNode; wide?: boolean }) {
-  return <section className={`cb-panel${wide ? ' is-wide' : ''}`}><h2>{title}</h2>{children}</section>;
+function Panel({ title, children, wide = false, className = '' }: { title: string; children: ReactNode; wide?: boolean; className?: string }) {
+  return <section className={`cb-panel${wide ? ' is-wide' : ''}${className ? ` ${className}` : ''}`}><h2>{title}</h2>{children}</section>;
+}
+
+/** Which site an account link opens, so a bare handle never reads as the person's name. */
+function accountSite(url: string): string | null {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, '');
+    return host === 'kaggle.com' ? 'Kaggle' : host === 'x.com' || host === 'twitter.com' ? 'X' : host;
+  } catch { return null; }
 }
 
 export function CopyCardLink({ card }: { card: CollectionCard }) {
@@ -298,12 +318,23 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const entries = card.entries.filter(entry => entry.status !== 'unavailable');
   const rosters = card.entries.filter(entry => entry.members.length > 0);
   const medals = career?.medals;
+  // Career columns Kaggle left blank for every row (no team names, no dates) are not printed as empty columns.
+  const shownRows = careerRows.slice(0, 14);
+  const showTeam = shownRows.some(row => row.team), showYear = shownRows.some(row => row.year != null);
+  const unavailable = card.entries.filter(entry => entry.status === 'unavailable');
+  // The ARC Hall of Fame is relevant to someone with earlier ARC cards or an ARC Prize entry, not to every card.
+  const arcRelated = card.pastCards.length > 0 || [...card.entries, ...card.teamHistory].some(row => row.competitionId.startsWith('arc-prize-'));
+  // A season already in an honour's label ("2025 ARC Prize champion") is not printed twice.
+  const pastName = (past: CollectionCard['pastCards'][number]) => past.season && !past.label.includes(past.season) ? `${past.season} · ${past.label}` : past.label;
+  // Their other editions. One printed with the very same art would show the same picture twice, so it is linked by name instead.
+  const editions = all.filter(other => card.kind === 'person' && other.kind === 'person' && other.personId === card.personId && other.id !== card.id);
+  const sameArt = (other: CollectionCard) => !!card.art && other.art?.src === card.art.src;
   // Every card we hold for them: this season's, the Hall of Fame cards, and the Cabinet cards of their teams.
   const shelf: ShelfItem[] = [
-    { key: 'current', kind: 'current', label: catalogSet(card, sets)?.name ?? card.season, sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${card.season} card` },
-    ...all.filter(other => card.kind === 'person' && other.kind === 'person' && other.personId === card.personId && other.id !== card.id)
-      .map(other => ({ key: other.id, kind: 'edition' as const, label: catalogSet(other, sets)?.name ?? other.season, sub: 'Edition', src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, card`, href: other.cardUrl })),
-    ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: past.season ?? 'Earlier', sub: past.label, src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
+    { key: 'current', kind: 'current', label: catalogSetLabel(card, sets), sub: `${NEWS_BRAND.goose ? 'The Loose Goose' : 'ARC Prize'}`, src: faceSrc(card, 'front', 260, version), alt: `${card.name}, ${catalogSetLabel(card, sets)} card` },
+    ...editions.filter(other => !sameArt(other))
+      .map(other => ({ key: other.id, kind: 'edition' as const, label: catalogSetLabel(other, sets), sub: 'Edition', src: faceSrc(other, 'front', 260, collectionShareVersion(other)), alt: `${other.name}, ${catalogSetLabel(other, sets)} card`, href: other.cardUrl })),
+    ...card.pastCards.filter(past => past.imageSrc).map((past, index) => ({ key: `past-${index}`, kind: 'past' as const, label: pastName(past), sub: '', src: encodeURI(past.imageSrc!), alt: past.imageAlt, href: past.hallOfFameUrl })),
     ...(card.kind === 'person' ? [...new Map(card.teamHistory.filter(team => team.cardUrl).map(team => [team.cardUrl!, team])).values()].flatMap(team => {
       const teamCard = all.find(item => item.cardUrl === team.cardUrl);
       return teamCard ? [{ key: teamCard.id, kind: 'team' as const, label: teamCard.name, sub: 'Team', src: faceSrc(teamCard, 'front', 260, collectionShareVersion(teamCard)), alt: `${teamCard.name}, team card`, href: teamCard.cardUrl }] : [];
@@ -314,9 +345,10 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link></nav>
     <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{competition ?? card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
     {otherContestCards.length > 0 && <p className="cb-note">Other contest cards {otherContestCards.map(other => <Link key={other.id} href={other.cardUrl}>{collectionTeamCompetition(other)} → </Link>)}</p>}
+    {editions.some(sameArt) && <p className="cb-note">Also issued in {editions.filter(sameArt).map(other => <Link key={other.id} href={other.cardUrl}>{catalogSetLabel(other, sets)} → </Link>)}</p>}
     <div className="cb-dgrid is-paired">
       <div className="cb-dcard">
-        {stage === 'current' || !staged ? <CardPair card={card} /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{staged.season ?? 'Earlier'} · {staged.label} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
+        {stage === 'current' || !staged ? <CardPair card={card} /> : <figure className="cb-stage"><img src={encodeURI(staged.imageSrc!)} alt={staged.imageAlt} /><figcaption>{pastName(staged)} · <a href={staged.hallOfFameUrl}>In the Hall of Fame ↗</a></figcaption></figure>}
         <div className="cb-actions"><CopyCardLink card={card} /><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png`} download>Front PNG ↓</a><a href={`/api/news/cards/${encodeURIComponent(card.id)}/image.png?side=back`} download>Back PNG ↓</a></div>
       </div>
       <div className="cb-data">
@@ -330,19 +362,21 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
             {career.joinedYear && <div><dt>On Kaggle since</dt><dd>{career.joinedYear}</dd></div>}
             {career.organisation && <div><dt>Organisation</dt><dd>{career.organisation}</dd></div>}
           </dl>
-          <p className="cb-note"><a href={career.profileUrl}>Kaggle profile ↗</a></p>
+          {career.profileUrl && <p className="cb-note"><a href={career.profileUrl}>Kaggle profile ↗</a></p>}
         </Panel>}
-        {card.entries.some(entry => entry.status === 'unavailable') && <p className="cb-note">{card.entries.filter(entry => entry.status === 'unavailable').map(entry => <a key={`${entry.competitionId}-${entry.teamId}`} href={entry.sourceUrl ?? entry.profileUrl}>{competitionName(entry.competition)}: current standings at Kaggle ↗ </a>)}</p>}
-        {!!entries.length && <Panel title={card.role === 'team' ? 'Team standings' : 'Standings'}>
-          <table className="cb-table"><thead><tr><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Best</th><th scope="col">Score</th><th scope="col">Entries</th></tr></thead>
+        {(!!entries.length || !!unavailable.length) && <Panel title={card.role === 'team' ? 'Team standings' : 'Standings'} wide>
+          {!!entries.length && <div className="cb-sheet-wrap"><table className="cb-table"><thead><tr><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Best</th><th scope="col">Score</th><th scope="col">Entries</th></tr></thead>
             <tbody>{entries.map(entry => <tr key={`${entry.competitionId}-${entry.teamId}`}><td>{competitionName(entry.competition)}<small><a href={entry.sourceUrl ?? entry.profileUrl}>{collectionStandingLabel(entry)} ↗</a></small>{entry.zone && <small className={`cb-zone ${entry.zone}`}>{entry.zone} zone</small>}</td>
-              <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num pl">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num pl">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num sc">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table>
+              <td><Go href={entry.cardUrl ?? entry.profileUrl}>{entry.teamName} →</Go></td><td className="cb-num pl">{rankText(entry)}<small>{fieldText(entry).trim()}</small></td><td className="cb-num pl">{entry.peakRank ? `#${entry.peakRank}` : ''}</td><td className="cb-num sc">{scoreText(entry)}</td><td className="cb-num">{entry.submissions?.toLocaleString('en-US') ?? ''}</td></tr>)}</tbody></table></div>}
+          {!!unavailable.length && <ul className="cb-list cb-standing-links">{unavailable.map(entry => <li key={`${entry.competitionId}-${entry.teamId}`}><a href={entry.sourceUrl ?? entry.profileUrl}>{competitionName(entry.competition)}: current standings at Kaggle ↗</a></li>)}</ul>}
         </Panel>}
         {card.role === 'competitor' && !!careerRows.length && <Panel title="Completed Kaggle competitions" wide>
-          <table className="cb-table"><thead><tr><th scope="col">Year</th><th scope="col">Competition</th><th scope="col">Team</th><th scope="col">Finish</th><th scope="col">Medal</th></tr></thead>
-            <tbody>{careerRows.slice(0, 14).map(row => <tr key={row.competitionUrl}><td className="cb-num">{row.year ?? ''}</td><td><a href={row.competitionUrl}>{row.competition} ↗</a></td><td>{row.team ?? ''}</td>
-              <td className="cb-num"><span className="pl">#{row.rank.toLocaleString('en-US')}</span> of {row.fieldSize.toLocaleString('en-US')}</td><td>{row.medal ? <span className={`cb-medal ${row.medal}`}>{row.medal}</span> : ''}</td></tr>)}</tbody></table>
-          <p className="cb-note">Best finishes first. {careerRows.length > 14 ? `${careerRows.length - 14} more on ` : 'Full list on '}<a href={`${career!.profileUrl}/competitions`}>Kaggle ↗</a></p>
+          <div className="cb-sheet-wrap"><table className="cb-table"><thead><tr>{showYear && <th scope="col">Year</th>}<th scope="col">Competition</th>{showTeam && <th scope="col">Team</th>}<th scope="col">Finish</th><th scope="col">Medal</th></tr></thead>
+            <tbody>{shownRows.map(row => <tr key={row.competitionUrl}>{showYear && <td className="cb-num">{row.year ?? ''}</td>}<td><a href={row.competitionUrl}>{row.competition} ↗</a></td>{showTeam && <td>{row.team ?? ''}</td>}
+              <td className="cb-num"><span className="pl">#{row.rank.toLocaleString('en-US')}</span> of {row.fieldSize.toLocaleString('en-US')}</td><td>{row.medal ? <span className={`cb-medal ${row.medal}`}>{row.medal}</span> : ''}</td></tr>)}</tbody></table></div>
+          <p className="cb-note">Best finishes first.{career!.profileUrl
+            ? <> {careerRows.length > 14 ? `${careerRows.length - 14} more on ` : 'Full list on '}<a href={`${career!.profileUrl}/competitions`}>Kaggle ↗</a></>
+            : careerRows.length > 14 ? ` ${careerRows.length - 14} more not listed here.` : ''}</p>
         </Panel>}
         {!!card.highlights.length && <Panel title="On the record">
           <ul className="cb-list">{card.highlights.map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}>{fact.text} <a href={fact.sourceUrl}>Source ↗</a><small>As of {newsDate(fact.checkedAt)}</small></li>)}</ul>
@@ -350,28 +384,26 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
         {!!card.stories.length && <Panel title="In the paper">
           <ul className="cb-list">{card.stories.map(story => <li key={story.id}><Link href={story.url}>{story.headline}</Link><small>{story.kind === 'wire' ? 'The wire' : 'Edition'} · {newsDate(story.publishedAt)}</small></li>)}</ul>
         </Panel>}
-    {card.kind === 'team' && rosters.length > 0 && <nav className="cb-relations" aria-label="Recorded competition rosters">
-      <h2>Recorded competition rosters</h2>
-      {rosters.map(entry => <section key={`${entry.competitionId}-${entry.teamId}`}>
-        <h3>{competitionName(entry.competition)}</h3>
-        <ul>{entry.members.map(member => <li key={member.handle}>
-          <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
-          <small>@{member.handle}</small>
-        </li>)}</ul>
-      </section>)}
-    </nav>}
-    {card.kind === 'person' && card.teamHistory.length > 0 && <nav className="cb-relations" aria-label="Competition teams">
-      <h2>Competition teams</h2><ul>{card.teamHistory.map(team => <li key={`${team.season}-${team.competitionId}-${team.teamId}`}>
-        <Go href={team.cardUrl ?? team.profileUrl}>{team.teamName} →</Go><small>{competitionName(team.competition)} · {team.season}{team.status === 'previous' ? ' · earlier team' : ''}</small>
-      </li>)}</ul>
-    </nav>}
+        {card.kind === 'team' && rosters.length > 0 && <Panel title="Recorded competition rosters" className="cb-relations">
+          {rosters.map(entry => <section key={`${entry.competitionId}-${entry.teamId}`}>
+            <h3>{competitionName(entry.competition)}</h3>
+            <ul>{entry.members.map(member => <li key={member.handle}>
+              <Go href={member.cardUrl ?? (member.personId ? personPath(member.personId) : `https://www.kaggle.com/${encodeURIComponent(member.handle)}`)}>{member.name || member.handle} →</Go>
+              <small>@{member.handle}</small>
+            </li>)}</ul>
+          </section>)}
+        </Panel>}
+        {card.kind === 'person' && card.teamHistory.length > 0 && <Panel title="Competition teams" className="cb-relations">
+          <ul>{card.teamHistory.map(team => <li key={`${team.season}-${team.competitionId}-${team.teamId}`}>
+            <Go href={team.cardUrl ?? team.profileUrl}>{team.teamName} →</Go><small>{competitionName(team.competition)} · {team.season}{team.status === 'previous' ? ' · earlier team' : ''}</small>
+          </li>)}</ul>
+        </Panel>}
         <Panel title="Everything else">
           <ul className="cb-list">
             <li><Go href={card.profileUrl}>{card.kind === 'person' ? 'More about this person →' : 'The team profile →'}</Go></li>
-            {card.accounts.slice(0, 6).map(account => <li key={account.url}><a href={account.url}>{account.label} ↗</a></li>)}
-            <li><a href="/hall-of-fame">The ARC Hall of Fame ↗</a></li>
+            {card.accounts.slice(0, 6).map(account => { const site = accountSite(account.url); return <li key={account.url}><a href={account.url}>{site ? `${site} · ` : ''}{site === 'X' ? '@' : ''}{account.label} ↗</a></li>; })}
+            {arcRelated && <li><a href="/hall-of-fame">The ARC Hall of Fame ↗</a></li>}
           </ul>
-          {card.art && <p className="cb-note">Illustration: {card.art.credit}.</p>}
         </Panel>
       </div>
     </div>
@@ -380,14 +412,7 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
 
 export default function NewsCards() {
   const { cardId } = useParams<{ cardId?: string }>();
-  const query = useQuery<NewsCollection>({
-    queryKey: ['/api/news/cards'], staleTime: 60_000,
-    queryFn: async () => {
-      const response = await fetch('/api/news/cards');
-      if (!response.ok) throw new Error('The cards could not be loaded.');
-      return response.json() as Promise<NewsCollection>;
-    },
-  });
+  const query = useNewsCollection();
   const selected = query.data?.cards.find(card => card.id === cardId);
   const separated = cardId && query.data ? splitTeamCards(query.data.cards, cardId) : [];
   const groupTitle = separated.length ? `${separated[0].name} competition cards` : null;
@@ -397,12 +422,13 @@ export default function NewsCards() {
     description: selected ? collectionCardDescription(selected) : `${NEWS_NAME} cards: illustrated competitors and teams, linked history and original Kaggle sources for current standings.`,
     canonicalPath: cardId ? collectionCardPath(cardId) : '/news/cards',
     noindex: !!cardId && !!query.data && !selected && !groupTitle,
-    image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
+    image: selected ? { image: `${SITE_ORIGIN}${collectionSharePath(selected, query.data)}`, imageAlt: collectionShareAlt(selected), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT } : sectionImage,
   });
   return <CabinetShell cardProof={!!selected}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && (cardId
-      ? selected ? <Detail card={selected} all={query.data.cards} sets={query.data.sets} />
+      // Keyed by card: moving to another card's page starts on its own card, not the last page's staged Hall of Fame card.
+      ? selected ? <Detail key={selected.id} card={selected} all={query.data.cards} sets={query.data.sets} />
         : <main className="cb"><div className="cb-empty">
           {groupTitle ? <>
             <h1>{groupTitle}</h1>

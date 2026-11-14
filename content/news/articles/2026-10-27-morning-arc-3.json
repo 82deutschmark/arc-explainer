@@ -5,7 +5,7 @@
   "dataAsOf": "2026-10-27T09:44:32Z",
   "date": "2026-10-27",
   "dek": "Staff acknowledge cache failures and say some rescores ran, but no remedy or deadline decision has been found, while Yi-Chia Chen's lead grows to 75.56.",
-  "discord": "ARC-AGI-3 Early edition: Kaggle admits run problems. Who gives teams their lost week back? Staff have acknowledged regional cache failures, said some rescores ran, and asked competitors to hold off on individual reports. No rerun scope, remedy or deadline decision has been found, and the last verified deadline is November 2 at 23:59 UTC. On the board, Yi-Chia Chen @ Fields Model extends the lead to 75.56, ahead of Tufa Labs at 68.91. Read it: https://arc.markbarney.net/news/2026-10-27-morning-arc-3 Full investigation: https://arc.markbarney.net/news#2026-10-27-kaggle-run-failures-investigation",
+  "discord": "ARC-AGI-3 Early edition: Kaggle admits run problems. Who gives teams their lost week back? Staff have acknowledged regional cache failures, said some rescores ran, and asked competitors to hold off on individual reports. No rerun scope, remedy or deadline decision has been found, and the last verified deadline is November 2 at 23:59 UTC. On the board, Yi-Chia Chen @ Fields Model extends the lead to 75.56, ahead of Tufa Labs at 68.91. Read it: https://arc.markbarney.net/news/2026-10-27-morning-arc-3 Full investigation: https://arc.markbarney.net/news/2026-10-27-kaggle-run-failures-investigation",
   "edition": "morning",
   "generatedBy": "claude-sonnet-5-5",
   "headline": "Kaggle admits run problems. Who gives teams their lost week back?",
@@ -1025,25 +1025,25 @@
       "accessedAt": "2026-10-27T10:53:04Z",
       "id": "wire-2026-10-27-0401-arc-3-yi-chia-chen-adds-to-arc-3-lead-again",
       "title": "Yi-Chia Chen adds 4.08 to ARC-3 lead",
-      "url": "https://arc.markbarney.net/news/wire#2026-10-27-0401-arc-3-yi-chia-chen-adds-to-arc-3-lead-again"
+      "url": "https://arc.markbarney.net/news/wire/2026-10-27-0401-arc-3-yi-chia-chen-adds-to-arc-3-lead-again"
     },
     {
       "accessedAt": "2026-10-27T10:53:04Z",
       "id": "wire-2026-10-26-1957-arc-3-zhangzibo54-climbs-to-twenty-third",
       "title": "zhangzibo54 climbs to 23rd on ARC-3",
-      "url": "https://arc.markbarney.net/news/wire#2026-10-26-1957-arc-3-zhangzibo54-climbs-to-twenty-third"
+      "url": "https://arc.markbarney.net/news/wire/2026-10-26-1957-arc-3-zhangzibo54-climbs-to-twenty-third"
     },
     {
       "accessedAt": "2026-10-27T10:53:04Z",
       "id": "wire-2026-10-26-2201-arc-3-fshindo-returns-to-gold-places",
       "title": "fshindo returns to ARC-3 gold places",
-      "url": "https://arc.markbarney.net/news/wire#2026-10-26-2201-arc-3-fshindo-returns-to-gold-places"
+      "url": "https://arc.markbarney.net/news/wire/2026-10-26-2201-arc-3-fshindo-returns-to-gold-places"
     },
     {
       "accessedAt": "2026-10-27T10:53:04Z",
       "id": "dispatch-2026-10-26-architects-superteam-enters-gold",
       "title": "The 2026 ARChitects: the dream team comes together",
-      "url": "https://arc.markbarney.net/news#2026-10-26-architects-superteam-enters-gold"
+      "url": "https://arc.markbarney.net/news/2026-10-26-architects-superteam-enters-gold"
     }
   ],
   "stats": [

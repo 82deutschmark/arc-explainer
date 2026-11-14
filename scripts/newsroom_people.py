@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; Claude Sonnet 5.5
-# Date: 2026-10-30 (portrait kind 'web': a public page that names the person; Boss, 30-Oct-2026)
+# Date: 14-Nov-2026; 2026-10-30 (portrait kind 'web': a public page that names the person; Boss, 30-Oct-2026)
+# 14-Nov-2026 (Claude Opus 5.5, profiles-articles): roster observations cite the human leaderboard page, never the
+# board JSON API; writing people.json warns when content/news/goose-wiki.json holds the same people (the site
+# reads the wiki row, so the change would not show; see docs/newsroom/README.md).
 # PURPOSE: Validate persistent public identities and preserve sourced roster observations
 # across competition teams. Called by newsroom preparation/publication; no model calls.
 # 09-Oct-2026 (Claude Opus 5.5): optional person portraits, and the `portrait` command that
@@ -11,12 +14,46 @@
 import argparse
 import copy
 import io
+import json
 from datetime import datetime
 import re
+import sys
 import unicodedata
 import urllib.request
 from pathlib import Path
 from newsroom import ROOT, UTC, iso, load, write, text, web_source, contract_stamp
+
+# Our saved-board JSON API is a data feed, not a page a reader can use. Roster sources name the leaderboard page
+# instead; these are the board routes of shared/kaggleCompetitions.ts (path), kept in step by hand.
+BOARD_API = re.compile(r'https://arc\.markbarney\.net/api/kaggle/[^/]+/board')
+BOARD_PAGES = {'arc-3': '/kaggle-leaderboard', 'arc-2': '/kaggle-leaderboard/arc-2'}
+WIKI_PROJECTION = 'content/news/goose-wiki.json'
+
+
+def roster_source(competition, source_url):
+    """The reader-facing page for a roster observation: the leaderboard page when the source is the board API."""
+    if BOARD_API.fullmatch(source_url) and competition in BOARD_PAGES:
+        return HALL_OF_FAME_ORIGIN + BOARD_PAGES[competition]
+    return source_url
+
+
+def warn_if_wiki_shadows(root, person_ids):
+    """people.json rows lose to goose-wiki.json rows with the same ID when the site reads the ledger
+    (server/services/news/newsStore.ts mergeWikiRows). Say so whenever such a row is changed here."""
+    wiki = Path(root) / WIKI_PROJECTION
+    if not wiki.exists():
+        return
+    rows = json.loads(wiki.read_text(encoding='utf-8')).get('people', [])
+    shadowed = sorted({row.get('id') for row in rows if isinstance(row, dict)} & set(person_ids))
+    if shadowed:
+        print(f"Warning: {len(shadowed)} people written to people.json are overridden by {WIKI_PROJECTION} on the site "
+              f"(for example {', '.join(shadowed[:3])}). Change the wiki for the site to show it.", file=sys.stderr)
+
+
+def write_people(root, people, changed_ids):
+    """Validate and save the people ledger, warning when the wiki projection shadows a changed person."""
+    warn_if_wiki_shadows(root, changed_ids)
+    write(Path(root) / 'content/news/people.json', validate_people(people))
 
 PERSON_FIELDS = {'id', 'name', 'accounts', 'facts', 'memberships', 'hallOfFame'}
 HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net'
@@ -177,11 +214,11 @@ def observed_people(people, competition, season, observations, source_url):
                 if found:
                     found['firstObservedAt'] = min(found['firstObservedAt'], when)
                     if contract_stamp(when) >= contract_stamp(found['lastObservedAt']):
-                        found.update(teamName=observation['name'], lastObservedAt=when, sourceUrl=source_url)
+                        found.update(teamName=observation['name'], lastObservedAt=when, sourceUrl=roster_source(competition, source_url))
                 else:
                     person['memberships'].append({'competition': competition, 'competitionId': competition_id, 'season': season, 'teamId': team_id,
                         'teamName': observation['name'], 'memberHandle': handle, 'firstObservedAt': when, 'lastObservedAt': when,
-                        'sourceUrl': source_url, 'sourceTitle': f'{competition.upper()} public roster observation'})
+                        'sourceUrl': roster_source(competition, source_url), 'sourceTitle': f'{competition.upper()} public roster observation'})
     return validate_people(result)
 
 
@@ -260,7 +297,7 @@ def save_kaggle_portrait(person_id, root=ROOT, fetch=_get, now=None):
         if person.get('portrait', {}).get('kind') == 'kaggle':
             del person['portrait']
             target.unlink(missing_ok=True)
-            write(Path(root) / 'content/news/people.json', validate_people(people))
+            write_people(root, people, [person_id])
             return f'{person_id}: Kaggle picture removed by its owner; removed the saved copy'
         return f'{person_id}: no Kaggle picture (default avatar); the page shows initials'
     with Image.open(io.BytesIO(fetch(avatar, 5_000_000))) as picture:
@@ -272,7 +309,7 @@ def save_kaggle_portrait(person_id, root=ROOT, fetch=_get, now=None):
     person['portrait'] = {'src': f'/news-images/people/{person_id}.webp', 'alt': f'{person["name"]}’s Kaggle profile picture',
                           'kind': 'kaggle', 'sourceUrl': account['url'], 'sourceTitle': f'{person["name"]} — Kaggle profile picture',
                           'checkedAt': iso(now or datetime.now(UTC))}
-    write(Path(root) / 'content/news/people.json', validate_people(people))
+    write_people(root, people, [person_id])
     return f'{person_id}: saved {target.relative_to(root)} from {account["url"]}'
 
 

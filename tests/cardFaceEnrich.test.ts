@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the publisher is the paper's current name (NEWS_BRAND, S7) and a closed public reading
+ *          stamps CLOSED (W24).
  * 09-Nov-2026 (GPT-6 / Codex): combined team-card roster label.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Invariants for the Card Cabinet adapter (cardFace/enrich.ts) and the set registry (cardFace/sets.ts) over the
@@ -17,6 +19,7 @@
 import { describe, expect, it } from 'vitest';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { enrichCollection, teamTitle } from '../server/services/news/cardFace/enrich';
+import { NEWS_BRAND } from '../shared/newsBrand';
 import { viewModel, printableName } from '../server/services/news/cardFace/model';
 import { loadSeriesFile, lookForSeason, setById, setForSeason, sponsorProfile } from '../server/services/news/cardFace/sets';
 
@@ -109,7 +112,7 @@ describe('card face adapter over the real collection', () => {
     for (const [position, c] of cards.entries()) {
       const source = collection.cards[position];
       const set = (source.setId ? setById(source.setId) : setForSeason(source.season))!;
-      expect(c.series).toEqual({ name: set.name, publisher: set.publisher, set: set.setName, season: set.season });
+      expect(c.series).toEqual({ name: set.name, publisher: NEWS_BRAND.name, set: set.setName, season: set.season });
       expect(c.look).toBe(set.look);
     }
     for (const c of cards.filter(x => x.kind === 'sponsor')) {
@@ -183,7 +186,7 @@ describe('review fixes (30-Oct-2026)', () => {
     const close = Date.parse('2026-11-02T23:59:00Z');
     const reading = { ...cards[0], status: 'live', asOfDate: '2026-11-02', contests: [{ name: 'Fixture Cup', status: 'live', closesAt: '2026-11-02T23:59:00Z', score: 0.123456789, rank: 900 }] };
     expect(viewModel(reading, { now: close - 60_000 }).stamp?.word).toBe('LIVE');
-    expect(viewModel(reading, { now: close + 60_000 }).stamp?.word).toBe('PUBLIC');
+    expect(viewModel(reading, { now: close + 60_000 }).stamp?.word).toBe('CLOSED');
     expect(viewModel(reading).contests[0].score).toBe('0.123456789');
     expect(viewModel({ ...reading, status: 'final', contests: reading.contests.map((c: any) => ({ ...c, status: 'final' })) }).stamp?.word).toBe('FINAL');
   });

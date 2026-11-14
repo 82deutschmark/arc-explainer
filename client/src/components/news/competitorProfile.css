@@ -1,18 +1,20 @@
 /*
- * Author: Claude Sonnet 5.5 Medium
- * Date: 05-November-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026; 05-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): rosters of three or more wrap inside a roster column capped at 520px
+ *          instead of running off the page; on phones the roster scrolls sideways, card by card.
  * PURPOSE: Layout of a team's competitor profile (/news/competitors/:id), redesigned on the Boss's direction: the roster's real
  *          cards are the hero, facts read as editorial text, and the raw identifiers (team ID, observation dates) are fine print.
  * SRP/DRY check: Pass. Layout only; colours and type come from the shared news.css variables.
  */
-.cp-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 36px; align-items: center; padding: 22px 0 26px; border-bottom: 3px double var(--ink); }
+.cp-hero { display: grid; grid-template-columns: minmax(0, 1fr) fit-content(520px); gap: 36px; align-items: center; padding: 22px 0 26px; border-bottom: 3px double var(--ink); }
 .cp-kicker { margin-bottom: 6px; }
 .cp-hero h1 { margin: 0; font: 800 clamp(38px, 6vw, 68px)/1.02 var(--serif); letter-spacing: -.025em; }
 .cp-byline { margin: 10px 0 0; font: italic 20px/1.4 var(--serif); color: var(--ink-2); }
 .cp-aka { margin: 4px 0 0; font: 600 12px/1.5 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .cp-actions { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 18px; }
 .cp-actions .news-read { margin-top: 0; }
-.cp-roster { display: flex; gap: 22px; margin: 0; padding: 0; list-style: none; }
+.cp-roster { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 22px; margin: 0; padding: 0; list-style: none; }
 .cp-roster li { flex: 0 0 auto; }
 .cp-card { display: block; width: 230px; color: var(--ink); text-decoration: none; }
 .cp-card img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 12px; box-shadow: 0 10px 22px rgba(23, 21, 18, .28), 0 2px 0 var(--ink); transition: transform .15s; }
@@ -38,7 +40,8 @@
 .cp-paper { margin-top: 30px; }
 @media (max-width: 760px) {
   .cp-hero { grid-template-columns: 1fr; gap: 22px; }
-  .cp-roster { gap: 14px; }
+  .cp-roster { flex-wrap: nowrap; justify-content: flex-start; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+  .cp-roster li { scroll-snap-align: start; }
   .cp-card { width: calc((100vw - 32px - 14px) / 2); max-width: 230px; }
   .cp-main { grid-template-columns: 1fr; gap: 22px; }
   .cp-facts p { font-size: 18px; }

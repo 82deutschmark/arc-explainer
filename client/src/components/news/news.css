@@ -1,5 +1,10 @@
 /* Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 13-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 13-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): merged the late override blocks into the rules they overrode (one focus ring,
+ * one place/score face, the single-column story body, one story-card row with a 76px phone size), removed
+ * dead selectors and the old two-column story rules, and stopped the score-difference colour from turning
+ * falling scores green (it now applies only to unsigned differences). Stale-board and paused-wire notes and
+ * the story-card loading placeholder added.
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
  * articles, story archive, notebook, people and unified masthead, semantic team-name emphasis,
  * and disclosed VoynichLabs units.
@@ -44,7 +49,7 @@
 .news-paper { max-width: 1320px; margin: auto; padding: 10px 26px 28px; background: var(--paper); box-shadow: 0 1px 0 #0000000d, 0 8px 28px #2a221514; }
 .arc-daily a { color: inherit; text-decoration: none; }
 .arc-daily a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
-.arc-daily a:focus-visible, .arc-daily button:focus-visible, .arc-daily input:focus-visible, .arc-daily summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.arc-daily a:focus-visible, .arc-daily button:focus-visible, .arc-daily input:focus-visible, .arc-daily summary:focus-visible { outline: 3px solid #2453a6; outline-offset: 3px; }
 .arc-daily h1, .arc-daily h2, .arc-daily h3, .arc-daily h4 { color: var(--ink); }
 .arc-daily .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -53,12 +58,6 @@
 .news-topline a { text-decoration: underline; text-underline-offset: 2px; }
 .news-brand-row { display: grid; grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr); align-items: center; gap: 18px; padding: 10px 0 9px; }
 .news-name { display: block; margin: 0; font: 700 clamp(28px, 3.4vw, 44px)/1 var(--display); letter-spacing: -.01em; text-align: center; white-space: nowrap; }
-.news-goose-logo { display: block; width: 96px; height: 96px; object-fit: contain; }
-.arc-daily .pl, .arc-daily .news-place { color: #2453a6; font-family: system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
-.arc-daily .sc, .arc-daily .news-score { color: #17703f; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 600; font-variant-numeric: tabular-nums; }
-.news-story-people .news-story-cards { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 10px; scroll-snap-type: x proximity; }
-.news-story-people .news-story-card { flex: 0 0 96px; width: 96px; max-width: 96px; scroll-snap-align: start; }
-.news-story-people .news-story-card img { display: block; width: 96px; height: auto; }
 /* Sized so the nameplate always fits between its two ears above 900px. */
 .is-front .news-name { font-size: clamp(36px, 4.6vw, 64px); }
 .arc-daily a.news-name:hover { color: var(--ink); text-decoration: none; }
@@ -85,7 +84,6 @@
 .news-section-title { margin: 0 0 12px; padding: 4px 0 3px; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); font: 800 12px/1.25 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
 .news-kicker { display: flex; flex-wrap: wrap; gap: 8px; color: var(--accent); font: 700 10px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
 .news-kicker span + span { padding-left: 8px; border-left: 1px solid var(--hair); }
-.news-eyebrow { display: block; color: var(--accent); font: 700 10px/1.5 var(--sans); letter-spacing: .12em; text-transform: uppercase; }
 .news-dek { margin: 0 0 8px; color: var(--ink-2); font: italic 17px/1.42 var(--serif); }
 .news-byline { margin: 8px 0 10px; padding: 4px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font: 700 10px/1.5 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-byline span { color: var(--muted); font-weight: 400; }
@@ -145,13 +143,11 @@
 .news-story h2 { margin: 5px 0 7px; font: 700 26px/1.08 var(--serif); letter-spacing: -.01em; overflow-wrap: anywhere; }
 .news-lead h2 { font-size: clamp(30px, 3.4vw, 46px); line-height: 1.02; letter-spacing: -.02em; }
 .news-story h2 a:hover { text-decoration: none; }
-.news-story-body { margin-top: 6px; columns: 2 250px; column-gap: 22px; column-rule: 1px solid var(--hair); font: 15.5px/1.5 var(--serif); }
+.news-story-body { max-width: 72ch; margin-top: 6px; font: 17px/1.55 var(--serif); }
 .news-story-body section { margin: 0 0 6px; }
-.news-story-body h3 { margin: 8px 0 3px; font: 800 10.5px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; break-after: avoid; }
+.news-story-body h3 { margin: 8px 0 3px; font: 800 10.5px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-story-body section:first-child h3 { margin-top: 0; }
-.news-story-body p { margin: 0 0 6px; text-align: justify; hyphens: auto; white-space: pre-line; overflow-wrap: anywhere; }
-/* Full-width illustrations and scrollable tables stay readable in the lead's desktop columns. */
-.news-story-body .news-edition-art, .news-story-body .news-boxscore-wrap { column-span: all; break-inside: avoid; }
+.news-story-body p { margin: 0 0 6px; text-align: start; hyphens: manual; white-space: pre-line; overflow-wrap: break-word; }
 .news-lead .news-story-body > section:first-child p::first-letter { float: left; margin: 5px 6px 0 0; font: 700 3.4em/.78 var(--serif); }
 .news-dispatch-art { margin: 6px 0 10px; }
 .news-dispatch-art img { display: block; width: 100%; height: auto; border: 1px solid var(--ink); }
@@ -167,8 +163,6 @@
 .news-latest-list li { padding: 5px 0 6px; border-bottom: 1px solid var(--hair); }
 .news-latest-list span { display: block; color: var(--muted); font: 700 9.5px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-latest-list a { font: 700 15px/1.25 var(--serif); }
-.news-older-dispatch { margin-top: 10px; }
-.news-older-dispatch summary { cursor: pointer; font: 700 13px/1.4 var(--serif); }
 .news-section-sources { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 5px; color: var(--muted); font: 11px/1.45 var(--sans); }
 .news-section-sources a { text-decoration: underline; text-underline-offset: 2px; }
 
@@ -178,10 +172,13 @@
 .news-story-people .news-subject-card { flex: 0 0 220px; }
 /* Optional and secondary to the reporting: a small label and thumbnail-sized cards. */
 .news-story-people-label, .news-story .news-story-people-label { margin: 0 0 8px; padding-top: 4px; border-top: 1px solid var(--ink); color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
-.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 112px)); gap: 8px; margin-bottom: 8px; }
-.news-sidebar .news-story-cards { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+.news-story-cards { display: flex; flex-wrap: nowrap; gap: 10px; overflow-x: auto; margin-bottom: 8px; padding: 2px 2px 10px; scroll-snap-type: x proximity; }
+.news-story-card { flex: 0 0 96px; scroll-snap-align: start; }
 .arc-daily .news-story-card { display: block; line-height: 0; }
-.news-story-card img { width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 6px; box-shadow: 1px 2px 0 var(--ink); transition: transform .12s; }
+.news-story-card img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 6px; box-shadow: 1px 2px 0 var(--ink); transition: transform .12s; }
+.news-story-card-name { display: block; padding-top: 4px; font: 600 11px/1.3 var(--sans); color: var(--ink); overflow-wrap: break-word; }
+/* Holds each card's place while the card list loads, so the strip does not jump from tiles to cards. */
+.news-story-card-skeleton { display: block; width: 100%; aspect-ratio: 5 / 7; border: 1px solid var(--hair); border-radius: 6px; background: var(--paper-edge); }
 .arc-daily .news-story-card:hover img { transform: translateY(-3px) rotate(-.6deg); }
 .news-story-people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 8px; }
 .arc-daily .news-subject-card { display: flex; align-items: center; gap: 11px; padding: 7px; border: 1px solid var(--ink); border-left: 3px solid var(--accent); background: var(--paper); color: var(--ink); }
@@ -232,6 +229,7 @@
 .news-movers-gold { margin: 6px 0 2px; font: 13px/1.45 var(--serif); }
 .news-movers-gold strong { font: 800 9.5px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-movers-board > .news-muted { margin: 4px 0 0; }
+.news-board-stale { margin: 0 0 6px; color: var(--down); font: 700 11px/1.45 var(--sans); }
 
 /* ── Lower front page: past winners | inside ──────────────────────────────────────────── */
 .news-lower { display: grid; grid-template-columns: minmax(0, 5.2fr) minmax(190px, 2.6fr); margin-top: 22px; }
@@ -263,13 +261,7 @@
 .news-inside strong { font: 800 10px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-inside span { color: var(--muted); font-style: italic; }
 
-/* ── Notebook columns and the archive ────────────────────────────────────────────────────── */
-.news-notebook { margin-top: 22px; }
-.news-notebook-list { columns: 3 280px; column-gap: 22px; column-rule: 1px solid var(--hair); }
-.news-notebook-line { break-inside: avoid; padding: 5px 0 7px; border-bottom: 1px solid var(--hair); }
-.news-notebook-line h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 2px; font: 700 15px/1.2 var(--serif); }
-.news-notebook-line h3 .num { flex: none; color: var(--muted); font: 10.5px/1.2 var(--mono); }
-.news-notebook-line p { margin: 0; color: var(--ink-2); font: 12.5px/1.42 var(--serif); }
+/* ── The archive ─────────────────────────────────────────────────────────────────────────── */
 .news-card-source { color: var(--accent) !important; font: 700 10px/1.4 var(--sans); white-space: nowrap; }
 .news-archive { margin-top: 24px; }
 .news-archive ol { margin: 0; padding: 0; list-style: none; columns: 2 380px; column-gap: 24px; column-rule: 1px solid var(--hair); }
@@ -353,7 +345,7 @@
 .news-source-list { padding-left: 18px; list-style: decimal; font: 12px/1.6 var(--sans); }
 .news-source-list li { margin-bottom: 10px; overflow-wrap: anywhere; }
 .news-source-list span { display: block; color: var(--muted); font-size: 10px; }
-.news-source-list a, .news-fact-source a { text-decoration: underline; }
+.news-source-list a { text-decoration: underline; }
 .news-boxscore-wrap { margin: 24px 0; overflow-x: auto; }
 .news-boxscore { width: 100%; min-width: 470px; border-collapse: collapse; font: 12px/1.3 var(--sans); }
 .news-boxscore caption { margin-bottom: 0; padding-bottom: 3px; border-bottom: 2px solid var(--ink); font: 800 12px/1.3 var(--sans); letter-spacing: .12em; text-align: left; text-transform: uppercase; }
@@ -366,23 +358,17 @@
 .news-wire-story { display: flow-root; padding: 14px 0 16px; border-bottom: 1px solid var(--ink); scroll-margin-top: 16px; }
 .news-wire-story .news-brief-art img { width: 84px; height: 84px; }
 .news-wire-story h2 { font-size: 24px; }
+.news-wire-paused { margin: 0 0 14px; padding: 8px 0; border-bottom: 1px solid var(--ink); font: 14px/1.5 var(--serif); }
 
 /* ── Directory, notebook, people and community pages ─────────────────────────────────────── */
 .news-directory-header { max-width: 840px; padding: 16px 0 14px; }
 .news-directory-header h1 { margin: 4px 0 8px; font: 700 clamp(30px, 4vw, 46px)/1.08 var(--serif); letter-spacing: -.02em; }
 .news-directory-header p { font: italic 16px/1.55 var(--serif); color: var(--ink-2); }
 .news-directory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 22px; margin: 14px 0; }
-.news-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font: 700 11px var(--sans); letter-spacing: .06em; text-transform: uppercase; }
-.news-filter input { max-width: 310px; color: var(--ink); background: var(--paper); border-color: var(--ink); border-radius: 0; text-transform: none; letter-spacing: 0; }
-.news-filter button { color: var(--ink); background: transparent; border-radius: 0; font: 700 11px var(--sans); }
-.news-filter button[aria-pressed='true'] { color: var(--paper); background: var(--ink); }
-.news-identity { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-bottom: 18px; padding: 10px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font: 11px/1.6 var(--sans); }
-.news-identity code { overflow-wrap: anywhere; }
 .news-facts { margin: 0; padding: 0; list-style: none; }
 .news-facts li { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--hair); }
 .news-facts p { font: 17px/1.6 var(--serif); }
 .news-facts h3 { font: 700 18px/1.25 var(--serif); }
-.news-fact-source { margin-top: 6px; color: var(--muted); font: 11px/1.6 var(--sans); }
 .news-observations { font: 15px/1.6 var(--serif); }
 .news-observations h3 { margin: 16px 0 6px; font: 700 17px/1.25 var(--serif); }
 .news-observations ul { padding-left: 18px; list-style: disc; overflow-wrap: anywhere; }
@@ -511,10 +497,6 @@
   .news-front .news-around { margin: 18px 0 0; }
   .news-col-wire { margin: 18px 0 0; }
   .news-col-board { margin-top: 18px; padding-left: 0; border-left: 0; }
-  .news-story-body { columns: 1; }
-  .news-story-body p { text-align: left; }
-  .news-lower { grid-template-columns: minmax(0, 1fr); }
-  .news-lower > * { padding: 0; border-left: 0; }
 }
 @media (max-width: 600px) {
   .news-around ul { grid-template-columns: minmax(0, 1fr); }
@@ -535,9 +517,8 @@
   .news-ad-body { display: block; padding: 12px; }
   .news-ad-thumb { margin-bottom: 10px; }
   .news-ad-actions { margin-top: 10px; }
-  /* Phones: one swipeable row of small cards, never a stack of full-size ones. */
-  .news-story-cards, .news-sidebar .news-story-cards { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 4px; scroll-snap-type: x proximity; }
-  .news-story-card { flex: 0 0 76px; scroll-snap-align: start; }
+  /* Phones: one swipeable row of smaller cards. */
+  .news-story-card { flex-basis: 76px; }
   .news-ad-actions a { flex: 1 1 140px; }
   .news-person-header { flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 8px; }
   .news-portrait-hero { width: 132px; height: 132px; }
@@ -590,29 +571,15 @@
 /* Semantic sporting values retain their own faces even in numeric table cells. */
 .arc-daily .pl, .arc-daily .news-place, .arc-daily .news-agate .num.pl, .arc-daily .news-boxscore td.pl { color: #2453a6; font-family: system-ui, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
 .arc-daily .sc, .arc-daily .news-score, .arc-daily .news-agate .num.sc, .arc-daily .news-boxscore td.sc { color: #17703f; font-family: 'News Mono', ui-monospace, monospace; font-weight: 600; font-variant-numeric: tabular-nums; }
-.arc-daily .sd, .arc-daily .news-score-difference, .arc-daily .news-chg.sd, .arc-daily .news-boxscore td.sd { color: #496e43; font-family: 'News Difference', 'News Japanese', sans-serif; font-weight: 500; font-style: italic; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.arc-daily .sd, .arc-daily .news-score-difference, .arc-daily .news-boxscore td.sd { font-family: 'News Difference', 'News Japanese', sans-serif; font-weight: 500; font-style: italic; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Unsigned differences only: a .news-chg marked is-up or is-down keeps its rising or falling colour. */
+.arc-daily .sd:not(.is-up):not(.is-down), .arc-daily .news-score-difference, .arc-daily .news-boxscore td.sd { color: #496e43; }
 .arc-daily .pl, .arc-daily .sc { white-space: nowrap; font-size: .94em; }
 .news-number-key { display: flex; flex-wrap: wrap; gap: 5px 14px; margin: 12px 0; padding: 5px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); font: 10px/1.4 var(--sans); color: var(--muted); }
 .news-ticker .sc, .news-ticker .pl { background: var(--paper); padding: 0 3px; }
 .arc-daily .cb-num.pl small { color: var(--muted); font-weight: 400; font-family: var(--sans); }
 .arc-daily :lang(ja) { font-family: 'News Japanese', 'Yu Gothic', sans-serif; letter-spacing: normal; text-transform: none; }
-.arc-daily a:focus-visible, .arc-daily button:focus-visible { outline: 3px solid #2453a6; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .arc-daily *, .arc-daily *::before, .arc-daily *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
 
-/* Keep each opening with its picture and its cast in a single swipeable row. */
-.news-story-body { columns: auto; max-width: 72ch; font-size: 17px; line-height: 1.55; }
-.news-story-body p { text-align: start; hyphens: manual; overflow-wrap: break-word; }
-.news-story-cards { display: flex; flex-wrap: nowrap; gap: 10px; overflow-x: auto; padding: 2px 2px 10px; scroll-snap-type: x proximity; }
-.news-story-card { flex: 0 0 96px; scroll-snap-align: start; }
-.news-story-card img { width: 96px; height: auto; }
-.news-story-card-name { display: block; padding-top: 4px; font: 600 11px/1.3 var(--sans); color: var(--ink); overflow-wrap: break-word; }
 .news-tips { max-width: 760px; margin: 28px auto 45px; font: 18px/1.6 var(--serif); }
 .news-tip-action { display: inline-block; padding: 10px 16px; border: 2px solid var(--ink); font: 700 14px/1.4 var(--sans); }
-
-/* Original video stills are the feature: full-width lead, then an easy-to-scan gallery. */
-.news-video-art { margin: 24px 0; }
-.news-video-art-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.news-video-art-grid figure { margin: 0; }
-.news-video-art-grid img { display: block; width: 100%; height: auto; }
-.news-video-art-grid figcaption { margin-top: 5px; font: italic 13px/1.4 var(--serif); color: var(--muted); }
-@media (max-width: 650px) { .news-video-art-grid { grid-template-columns: 1fr; } }

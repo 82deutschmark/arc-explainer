@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
- * Date: 06-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): --import loaders are passed as file:// URLs so the CLI subprocesses run on Windows too.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
  *          isolated CLI imports, dated player/team links and the newsroom's real commissioned-art collection.
@@ -15,6 +16,7 @@ import os from 'node:os';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 import type { NewsCompetition, NewsIndex, NewsPerson } from '../shared/news';
 import { cardRegistrySchema, collectionCardPath, finalCardResultSchema, type CardDefinition, type CardRegistry, type CardSnapshot, type FinalCardResult } from '../shared/newsCollection';
@@ -421,10 +423,12 @@ function importFixture() {
   fs.copyFileSync(path.resolve('content/news/series.json'), path.join(news, 'series.json'));
   return { root, news };
 }
+/** Node's --import takes a URL; a bare Windows path (C:\...) is rejected as an unknown scheme. */
+const tsxLoader = () => pathToFileURL(require.resolve('tsx')).href;
 function runImport(root: string, incoming: FinalCardResult[]) {
   const input = path.join(root, 'incoming-official-results.json');
   fs.writeFileSync(input, JSON.stringify(incoming));
-  return spawnSync(process.execPath, ['--import', require.resolve('tsx'),
+  return spawnSync(process.execPath, ['--import', tsxLoader(),
     path.resolve('scripts/newsroom_cards.ts'), 'import-results', input],
   { cwd: root, encoding: 'utf8', timeout: 20_000 });
 }
@@ -438,7 +442,7 @@ describe('current card omissions during refresh', () => {
     // Both board calls are local fixtures: this tests the actual refresh command without fetching standings.
     const preload = path.join(root, 'board-fixture.mjs');
     fs.writeFileSync(preload, `globalThis.fetch = async () => ({ ok: true, json: async () => ({ latest: { fetched: '${checkedAt}', rows: [] } }) });`);
-    const refreshed = spawnSync(process.execPath, ['--import', require.resolve('tsx'), '--import', preload,
+    const refreshed = spawnSync(process.execPath, ['--import', tsxLoader(), '--import', pathToFileURL(preload).href,
       path.resolve('scripts/newsroom_cards.ts'), 'refresh'], { cwd: root, encoding: 'utf8', timeout: 20_000 });
     expect(refreshed.status, refreshed.stderr).toBe(0);
     const saved = cardRegistrySchema.parse(JSON.parse(fs.readFileSync(path.join(news, 'cards.json'), 'utf8')));

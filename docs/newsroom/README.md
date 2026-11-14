@@ -4,7 +4,8 @@
 
 Author: Claude Opus 5.5 Max · 15 October 2026 · written at the Boss's request after the pipeline
 sanity check (`docs/2026-10-14-arc-daily-pipeline-sanity-check.md`); GPT-6.1 Sol's review is queued in
-the configuration conversation.
+the configuration conversation. Updated 14-Nov-2026 by Claude Opus 5.5: the Card Cabinet section now names
+`content/news/goose-wiki.json` as the source of truth the site reads.
 
 This is the map. Every desk reads it first. The rules each desk follows live in one guide per
 desk (below); the Codex job instructions only point at them, so a rule is written once.
@@ -72,13 +73,20 @@ text is the article's own `discord` field and the relay announces the edition, s
 save separate Discord draft files. One-run briefs and drafts may live in `/tmp` (the backup desk
 uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100 SSD/`.
 
-The permanent [Card Cabinet](https://arc.markbarney.net/news/cards) is maintained through three core files:
-`content/news/people.json` keeps verified source identities, `cards.json` keeps stable card
-numbers, commissioned artwork bindings and dated snapshots, and `card-results.json` keeps
-explicitly official final honors. Follow [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) for their links
-to competitor facts, character mappings and artwork usage. Authorized maintenance uses
-`node --import tsx scripts/newsroom_cards.ts` with `refresh`, `check`, or
-`import-results <official.json>`; research-only desks leave changes to the publishing desk.
+The permanent [Card Cabinet](https://arc.markbarney.net/news/cards), the people pages and the team
+pages are read from **`content/news/goose-wiki.json`, the source of truth**. It is the generated
+projection of the Loose Goose wiki: verified people, competitor records, the card registry (stable card
+numbers and commissioned artwork bindings), careers and official final results. Where the wiki has a
+row, the site uses it and ignores the older ledgers: a person or team in the wiki overrides the row with
+the same ID in `content/news/people.json` or `competitors.json` (except that a team's roster comes from
+whichever record observed it last), and the wiki's registry and results replace `cards.json` and
+`card-results.json` entirely. Those older files are still written by the edition tools and kept as
+history, but an edit there does not reach the site; change the wiki and regenerate the projection.
+`scripts/newsroom_cards.ts` and `scripts/newsroom_people.py` print a warning whenever they write a file
+or a row the wiki shadows. Follow [TEAM_PLAYBOOK.md](TEAM_PLAYBOOK.md) for competitor facts,
+character mappings and artwork usage. `node --import tsx scripts/newsroom_cards.ts check` validates the
+collection the site actually serves; `refresh` and `import-results <official.json>` only update the
+shadowed files. Research-only desks leave changes to the publishing desk.
 Preserve native art and its inputs/provenance, held manuscripts and existing send receipts.
 Only verified official results supply final medals or awards; a public band does not.
 

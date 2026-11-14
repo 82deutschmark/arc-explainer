@@ -3,6 +3,10 @@
   "date": "2026-11-03",
   "edition": "morning",
   "competition": "arc-3",
+  "competitions": [
+    "arc-3",
+    "arc-2"
+  ],
   "headline": "The bell has rung. Now comes the reckoning",
   "dek": "Submissions are closed. Chen and Tufa held the two public summits in our post-deadline snapshot, and the private boards have the final word.",
   "image": {
@@ -336,7 +340,17 @@
     "16021367",
     "16958599",
     "15494354",
-    "16760837"
+    "16760837",
+    "16756524",
+    "15501171",
+    "15486939",
+    "16559402",
+    "16442485",
+    "15789060",
+    "17021430",
+    "16373916",
+    "16797706",
+    "16297545"
   ],
   "verifiedTeamNames": [
     "Datatech Club",

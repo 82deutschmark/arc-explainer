@@ -1,6 +1,9 @@
 /**
- * Author: Claude Sonnet 5.5 Medium
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): now the one home of the helpers the faces had copied (back ink per tier, medal coin, the
+ *          backs' half-weight border, JPEG data URI, seeded random) and of fitOneLine(), which sizes a figure or label to
+ *          its box; the unused pngUri is gone.
  * PURPOSE: The card design's shared vocabulary that is not a picture: font loading (cached, read from the site's
  *          font folder under the current working directory), the Satori node helpers (box, at, pic), text
  *          measurement, and name fitting (one line, else a measured two-line split that breaks at spaces and
@@ -20,6 +23,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
+import { frameSvg } from './svgFrame';
+import { svgDoc } from './svgShapes';
+import { W as CARD_W, H as CARD_H } from './zones';
+import type { TierStyle } from './tiers';
 
 export * from './svgShapes';
 export { frameSvg } from './svgFrame';
@@ -74,12 +81,28 @@ export const box = (style: Style, ...kids: Kid[]): Node => ({
 export const at = (x: number, y: number, w: number | null, h: number | null, style: Style, ...kids: Kid[]): Node =>
   box({ position: 'absolute', left: x, top: y, ...(w == null ? {} : { width: w }), ...(h == null ? {} : { height: h }), ...style }, ...kids);
 export const svgUri = (svg: string) => `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-export const pngUri = (buf: Buffer) => `data:image/png;base64,${buf.toString('base64')}`;
+export const jpegUri = (buf: Buffer) => `data:image/jpeg;base64,${buf.toString('base64')}`;
 /** Full-size or positioned picture node; Satori demands explicit pixel sizes on images. */
 export const pic = (src: string, x: number, y: number, w: number, h: number, style: Style = {}): Node =>
   ({ type: 'img', props: { src, width: w, height: h, style: { position: 'absolute', left: x, top: y, width: w, height: h, ...style } } });
 export const svgPic = (svg: string, x: number, y: number, w: number, h: number, style: Style = {}) => pic(svgUri(svg), x, y, w, h, style);
 export const MEDAL = { gold: '#f2b600', silver: '#c5ccd6', bronze: '#c9772f' };
+/** A medal coin (gold / silver / bronze) drawn on a 36-unit grid, `size` px square. */
+export const coinSvg = (colour: string, size = 36) => svgDoc(size, size, `<circle cx="18" cy="18" r="16.5" fill="${colour}" stroke="#000" stroke-width="2.4"/><circle cx="18" cy="18" r="11.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"/><path d="M9 11 A12 12 0 0 1 20 6" stroke="#fff" stroke-opacity=".8" stroke-width="2.4" fill="none" stroke-linecap="round"/>`, '', [36, 36]);
+/** First ink of a card back: the tier colour darkened until it prints legibly on grey cardboard or cream paper (keyed by TierStyle.key). */
+export const INK1: Record<string, string> = { Novice: '#1b7d38', Contributor: '#1d55bd', Expert: '#5a27bd', Master: '#b04800', Grandmaster: '#a8121b', none: '#4f596b', sponsor: '#16306e', team: '#0a766e' };
+/**
+ * The tier border at half weight, as every back draws it. The card-stock path in frameSvg is a full rectangle with a rounded
+ * hole; it needs the even-odd rule to stay a frame (a no-op if frameSvg already says so).
+ */
+export function backBorderSvg(T: TierStyle): string {
+  return frameSvg(T, CARD_W, CARD_H, 0.5).replace(/(<path d="M0 0H[^"]*")( fill="#f2ead4")/, (m, a, b) => (/fill-rule/.test(m) ? m : `${a} fill-rule="evenodd"${b}`));
+}
+/** Seeded linear congruential generator in [0, 1): the same seed always draws the same texture or placeholder. */
+export function rng(seed: number): () => number {
+  let s = seed >>> 0;
+  return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+}
 
 // ---------------------------------------------------------------------------------------------
 // Text measurement. Width scales linearly with font size, so each string is measured once at 100px.
@@ -95,6 +118,16 @@ export async function textWidth(text: string, family: string, weight: number, si
     w = found; w100.set(key, w);
   }
   return (w * size) / 100 + letterSpacing * Array.from(text).length;
+}
+/**
+ * The largest size from `max` down to `min` at which `text` fits one line of `maxWidth` (width is linear in size, so this is
+ * measured once, not stepped). Below `min` it returns `min`: the caller's box clips as the backstop.
+ */
+export async function fitOneLine(text: string, family: string, weight: number, maxWidth: number, max: number, min: number, letterSpacing = 0): Promise<number> {
+  const at100 = await textWidth(text, family, weight, 100);
+  if (!at100) return max;
+  const room = maxWidth - letterSpacing * Array.from(text).length;
+  return Math.max(min, Math.min(max, Math.floor((room / at100) * 100 * 2) / 2));
 }
 /** Height of `text` wrapped to `maxWidth` (used for the two-line name fallback). */
 export async function wrappedHeight(text: string, family: string, weight: number, size: number, lineHeight: number, maxWidth: number): Promise<number> {

@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026); Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): a dated public reading is labelled "Snapshot", the card lint's wording (W24).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: The route-facing image functions (buildCollectionCardImage / buildCollectionCardThumb): portable 750 x 1050
@@ -96,7 +97,7 @@ describe('Card Cabinet PNG export', () => {
 
 it('prints only the matching contest status and date on each Tufa card', async () => {
   const fixtures = [
-    { id: 'team-tufa-labs-arc-2-2026', status: 'public' as const, observedAt: '2026-11-10T02:00:00Z', label: 'Public snapshot · 10 Nov 2026 UTC', otherContest: 'ARC-AGI-3' },
+    { id: 'team-tufa-labs-arc-2-2026', status: 'public' as const, observedAt: '2026-11-10T02:00:00Z', label: 'Snapshot · 10 Nov 2026 UTC', otherContest: 'ARC-AGI-3' },
     { id: 'team-tufa-labs-arc-3-2026', status: 'final' as const, observedAt: '2026-11-11T02:00:00Z', label: 'Final result · 11 Nov 2026 UTC', otherContest: 'ARC-AGI-2' },
   ];
   for (const { id, status, observedAt, label, otherContest } of fixtures) {

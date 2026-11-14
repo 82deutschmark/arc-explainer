@@ -1,8 +1,15 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, front): wire links open each story's own page (/news/wire/<id>), which also
+ *          renders a not-found state; a paused desk shows its latest filings; the early-evening special reads its
+ *          recorded editionDisplay; older dispatches are no longer copied in full onto the front page.
+ * 14-Nov-2026 (Claude Opus 5.5): story-cast checks expect each person's card for the story's contest (cardForPerson).
+ * 14-Nov-2026 (Claude Opus 5.5, integration): the uncast story passes personIds: undefined explicitly (fixes TS2559).
  * 14-Nov-2026 (Claude Opus 5.5): reading-order test seeds the committed From X export, since the
  *          store now drops posts older than a week.
+ * 14-Nov-2026 (Claude Opus 5.5): the special-report test checks every dispatch against one archive
+ *          load and serves and fully renders a fixed sample, so it finishes well inside 10 seconds.
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -31,9 +38,12 @@ import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { NewsFrontPage } from '../client/src/components/news/NewsFrontPage';
 import { ArticleArchive, EditionLabel } from '../client/src/components/news/NewsDesk';
 import { newsArticleMeta, resolveNewsMeta } from '../server/services/news/newsPresentation';
+import { escapeHtml } from '../shared/seo';
 import fs from 'node:fs';
+import path from 'node:path';
 import { getNewsCollection } from '../server/services/news/newsCollection';
-import { getNewsIndex } from '../server/services/news/newsStore';
+import { cardForPerson } from '../shared/newsCollection';
+import { getNewsIndex, loadNewsArchive } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
 import { reportedPeople, displayPortrait } from '../shared/news';
@@ -227,12 +237,30 @@ test('wire stories run in What’s News and in full on the wire page', () => {
   };
   const index = { ...getNewsIndex(), wire: [story] };
   const front = render(News, '/news', index, markets(index));
-  expect(front).toContain('href="/news/wire#2026-10-09-2020-arc-3-chen-takes-the-lead"');
+  expect(front).toContain('href="/news/wire/2026-10-09-2020-arc-3-chen-takes-the-lead"');
   expect(front).toContain(displayPortrait(index.people!.find(person => person.id === 'yi-chia-chen')!)!.src);
   const page = render(NewsWire, '/news/wire', index);
   expect(page).toContain('id="2026-10-09-2020-arc-3-chen-takes-the-lead"');
   expect(page).toContain('Yi-Chia Chen gained 3.40 points to 59.17% and moved to 1st.');
   expect(page).toContain('/api/news/wire/2026-10-09-2020-arc-3-chen-takes-the-lead/evidence');
+  expect(page).toContain('href="/news/wire/2026-10-09-2020-arc-3-chen-takes-the-lead"');
+  // Nothing filed this week: the latest filings run under the date the desk paused.
+  const paused = render(NewsWire, '/news/wire', { ...index, wire: [], wireLatest: [story] });
+  expect(paused).toContain('Desk paused since');
+  expect(paused).toContain(story.headline);
+  expect(paused).not.toContain('has not filed yet');
+});
+
+test('a wire story has its own page, and an unknown one says so', () => {
+  vi.stubGlobal('React', React);
+  const story = [...fs.readdirSync('content/news/wire')].filter(file => file.endsWith('.json')).sort()[0].replace(/\.json$/, '');
+  const found = resolveNewsMeta(`/news/wire/${story}`)!;
+  expect(found.status).toBe(200);
+  expect(found.tags.bodyHtml).toContain('<h1>');
+  expect(found.tags.url).toContain(`/news/wire/${story}`);
+  const missing = resolveNewsMeta('/news/wire/2026-10-09-2020-arc-3-never-filed')!;
+  expect(missing.status).toBe(404);
+  expect(missing.tags.noindex).toBe(true);
 });
 
 test('an edition-bound illustration runs with its headline and dated caption', () => {
@@ -292,8 +320,10 @@ test('the morning cast row links xz and Chen to their wiki-backed cards after th
   expect(subjects.map(person => person.id)).toEqual(expect.arrayContaining(['xz', 'yi-chia-chen']));
   const html = render(NewsArticle, `/news/${article.id}`, index);
   const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
+  const collection = getNewsCollection();
   for (const subject of subjects) {
-    const card = getNewsCollection().cards.find(c => c.personId === subject.id);
+    // An ARC-3 story shows the person's ARC-3 set card where they have one.
+    const card = cardForPerson(collection.cards, subject.id, article.competition, collection.sets);
     expect(sidebar).toContain(card?.cardUrl ?? `/news/people/${subject.id}`);
   }
   expect(html.indexOf('class="news-story-people"')).toBeGreaterThan(html.indexOf(article.sections[0].text.slice(0, 40)));
@@ -308,7 +338,7 @@ test('the morning cast row links xz and Chen to their wiki-backed cards after th
 test('the commissioned four o’clock special is an early evening edition in browser and initial HTML', () => {
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
-  const article = { ...index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!, id: '2026-10-29-special-early-evening-xz', edition: 'evening' as const };
+  const article = index.articles.find(item => item.id === '2026-10-29-special-early-evening-xz')!;
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article] });
   expect(html).toContain('Early evening edition');
   expect(newsArticleMeta(article).bodyHtml).toContain('Early evening edition');
@@ -324,25 +354,48 @@ test('all reported subjects survive deduplication across a feature and recap, wi
   const feature = { ...index.dispatches!.find(item => item.id === original.frontPageFeatureId)!, headline: 'The contenders', personIds: [people[0].id], sections: [{ text: 'Their approaches.', sourceIds: [`person-${people[0].id}-identity-0`] }] };
   expect(reportedPeople([feature, article], index.people!).map(person => person.id)).toEqual(people.map(person => person.id));
   const { personIds: _cast, ...unverified } = { ...article, headline: 'Progress by itself' };
-  expect(reportedPeople([unverified], index.people!)).toEqual([]);
+  expect(reportedPeople([{ ...unverified, personIds: undefined }], index.people!)).toEqual([]);
   expect(reportedPeople([{ ...unverified, personIds: [] }], index.people!)).toEqual([]);
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
   const cast = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
+  const collection = getNewsCollection();
   for (const person of people) {
-    const card = getNewsCollection().cards.find(c => c.personId === person.id);
+    const card = cardForPerson(collection.cards, person.id, article.competition, collection.sets);
     expect(cast).toContain(card?.cardUrl ?? `/news/people/${person.id}`);
   }
 });
 
 // GPT-6 / Codex, 2026-11-01: previously shared special-report URLs must render directly.
+// 14-Nov-2026 (Claude Opus 5.5): each server page reloads the whole archive (~200 ms), so checking
+// all of them that way alone ran past 10 seconds. Every dispatch is checked against one archive
+// load (accepted, routable, artwork on disk, text present); a fixed sample is served and fully rendered.
+const SPECIAL_REPORT_RENDER_SAMPLE = ['tufa-general-approaches', '2026-11-06-fit-the-whale-in', '2026-10-28-beyond-arc1-ceiling'];
 test('every special report opens at its permanent URL with its full text and artwork', () => {
   vi.stubGlobal('React', React);
-  const index = getNewsIndex();
-  for (const dispatch of index.dispatches ?? []) {
-    const html = render(NewsArticle, `/news/${dispatch.id}`, index);
+  const { index, skipped } = loadNewsArchive();
+  const dispatches = index.dispatches ?? [];
+  expect(dispatches.length).toBeGreaterThan(0);
+  expect(skipped.filter(item => item.file.startsWith('dispatches/'))).toEqual([]);
+  expect(new Set(dispatches.map(dispatch => dispatch.id)).size).toBe(dispatches.length);
+  for (const dispatch of dispatches) {
+    // The same permanent-story pattern resolveNewsMeta and the client route accept.
+    expect(dispatch.id, dispatch.id).toMatch(/^[a-z0-9][a-z0-9-]{0,99}$/);
+    expect(dispatch.sections.some(section => section.text.trim()), dispatch.id).toBe(true);
+    if (dispatch.image) expect(fs.existsSync(path.join('client/public', dispatch.image.src)), dispatch.image.src).toBe(true);
+  }
+  for (const id of SPECIAL_REPORT_RENDER_SAMPLE) {
+    const dispatch = dispatches.find(item => item.id === id);
+    expect(dispatch, id).toBeDefined();
+    const page = resolveNewsMeta(`/news/${id}`);
+    expect(page?.status, id).toBe(200);
+    expect(page!.tags.bodyHtml, id).toContain(escapeHtml(dispatch!.headline));
+    const html = render(NewsArticle, `/news/${id}`, index);
     expect(html).not.toContain('Dispatch not found');
-    expect(html).toContain(dispatch.id);
-    if (dispatch.image) expect(html).toContain(dispatch.image.src);
+    expect(html).toContain(id);
+    if (dispatch!.image) {
+      expect(page!.tags.bodyHtml).toContain(escapeHtml(dispatch!.image.src));
+      expect(html).toContain(dispatch!.image.src);
+    }
     expect(html).toContain('news-dispatch-text');
   }
 });
@@ -410,7 +463,8 @@ test('music production stills stay behind a link on the front page and permanent
   const clientStory = render(NewsArticle, '/news/on-the-private', index);
   const serverStory = resolveNewsMeta('/news/on-the-private')!.tags.bodyHtml!;
   const serverFront = resolveNewsMeta('/news')!.tags.bodyHtml!;
-  for (const html of [clientFront, clientStory, serverStory]) {
+  // The front page lists older dispatches as links to their own pages; the story itself carries the scene book.
+  for (const html of [clientStory, serverStory]) {
     expect(html).toContain('href="/news-scene-books/on-the-private/index.html"');
     expect(html).toContain('rXnfAxmIZO8');
     expect(html).toContain(dispatch.image!.src);

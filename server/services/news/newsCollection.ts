@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 03-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): highlights no longer repeat Hall of Fame honours or completed-competition rows; team
+ *          cards carry no account list (their rosters are listed with names).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Resolve the permanent Card Cabinet from curated card/art bindings, existing verified
@@ -260,17 +262,21 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
     const art = definition.art ?? (definition.artFallback === 'none' ? null : lastYearArt(person)
       ?? (editorial ? { src: editorial.src, alt: editorial.alt, credit: editorial.sourceTitle, artworkId: editorial.artworkId } : null));
     const facts = person?.facts ?? index.competitors.filter(team => definition.entries.some(ref => ref.teamId === team.teamId && ref.competition === team.competition)).flatMap(team => team.facts);
-    const careerHonors = person?.hallOfFame.map(honor => ({ text: honor.label, sourceUrl: honor.sourceUrl, sourceTitle: honor.sourceTitle, checkedAt: honor.checkedAt })) ?? [];
+    const career = person ? careers[person.id] ?? null : null;
+    // Hall of Fame honours already show as earlier cards and the earned line, so they are not restated as facts; a fact
+    // that only repeats a completed-competition row (same contest, same "of N" field) is already in the career table.
+    const restatesCareerRow = (text: string) => !!career?.rows.some(row => text.includes(row.competition) && text.includes(`of ${row.fieldSize.toLocaleString('en-US')}`));
+    const highlights = facts.filter(fact => !restatesCareerRow(fact.text));
     return { id: definition.id, kind: definition.kind, setId: definition.setId, ...(definition.previousTeamCardId ? { previousTeamCardId: definition.previousTeamCardId } : {}), role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
       season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art, backArt: definition.backArt,
       description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
       biography: definition.biography,
       profileUrl: person ? personPath(person.id) : entries[0].profileUrl,
-      highlights: [...careerHonors, ...facts], accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url }))
-        : [...new Set(entries.flatMap(ref => ref.members.map(member => member.handle)))].map(handle => ({ label: handle, url: `https://www.kaggle.com/${encodeURIComponent(handle)}` })),
+      // A team card's roster is already listed (with names and cards) under its recorded rosters; it has no accounts of its own.
+      highlights, accounts: person ? person.accounts.map(account => ({ label: account.handle, url: account.url })) : [],
       entries, honors, artNotes: definition.artNotes, teamHistory: person ? playerTeamHistory(person, registry, teamCard, notebooks, final, index.competitors, definition.setId) : [],
       pastCards: pastCardsFor(person), stories: storiesFor(index, articlePeople, person, entries),
-      career: person ? careers[person.id] ?? null : null,
+      career,
     };
   });
   const archive: CollectionArchive | null = hallOfFame ? {

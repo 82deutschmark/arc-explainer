@@ -1,6 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the pennant's set name is measured and steps down, wraps to two lines below its smallest
+ *          size and is clipped as a backstop; rank, peak, score and submission figures are sized to their columns; the front
+ *          memo key carries the stamp word (LIVE / CLOSED / FINAL) and is sized from the set (sizeFrontMemo); the unused
+ *          back() renderer and its back.ts import are gone (looks.ts draws the reverse); the coin comes from kit.ts.
  * PURPOSE: FRONT LAYOUT of the Card Cabinet card (the 1986-88 Topps baseball card look): cream card stock, tier-colour
  *          band, ribbon name bar, round season logo and pennant, number box, starburst LIVE / FINAL stamp, round tier
  *          medallion, price-guide stats table, medal coins. Exports:
@@ -8,7 +12,6 @@
  *            frontNode(card, opts)    -> the Satori node tree (lint it without rendering)
  *            frontBuffer(card, opts)  -> memoised front(), keyed by card id, as-of date, art mtime (+ a content digest),
  *                                        so the reverse's miniature never re-renders the front
- *            back(card, opts)         -> the reverse (layout is back.ts; this only renders its node)
  *            finishCard(png, flatten) -> rounded outer corners, flattened onto the page paper colour (or kept transparent)
  *          LAYOUT lives here (coordinates, what sits where); DATA decisions in model.ts; VISUAL vocabulary in kit.ts,
  *          tiers.ts, svgFrame.ts, svgBadges.ts; PICTURES in art.ts; zone numbers in zones.ts.
@@ -40,10 +43,9 @@
 import crypto from 'node:crypto';
 import satori from 'satori';
 import sharp from 'sharp';
-import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, fitName, fitNameLines, textWidth, wrappedHeight, frameSvg, medallionSvg, stampSvg, starburst, halftone, mix, alpha, rr, MEDAL, TIERS, type Node, type Style } from './kit';
+import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, fitName, fitNameLines, fitOneLine, textWidth, wrappedHeight, frameSvg, medallionSvg, stampSvg, starburst, halftone, mix, alpha, rr, coinSvg, MEDAL, TIERS, type Node, type Style } from './kit';
 import { artLayer, artMtime, type ArtResult, type ArtOverride } from './art';
-import { viewModel, num, type VM, type ContestVM } from './model';
-import { backNode } from './back';
+import { viewModel, stampWord, num, type VM, type ContestVM } from './model';
 import { W, H, BORDER, BAND_BOTTOM } from './zones';
 import { TIER_LADDER } from './tiers';
 
@@ -85,9 +87,6 @@ export const FL = {
  * minimal text: the badges, the name ribbon and the tier line. The record, club and trivia live on the back.
  */
 export const PORTRAIT_LAYOUT = { ribbon: { ...FL.ribbon, y: 912 }, sub: { y: 976, h: 42 }, scrim: 300 };
-
-/** Coin for the medal strip (gold / silver / bronze), 36 px. */
-const coinSvg = (c: string) => svgDoc(36, 36, `<circle cx="18" cy="18" r="16.5" fill="${c}" stroke="#000" stroke-width="2.4"/><circle cx="18" cy="18" r="11.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.6"/><path d="M9 11 A12 12 0 0 1 20 6" stroke="#fff" stroke-opacity=".8" stroke-width="2.4" fill="none" stroke-linecap="round"/>`);
 
 /** Everything drawn under the text: scrims, badge-band header, top badges, ribbon, sub strip and panel. One transparent SVG. */
 function furnitureSvg(vm: VM, art: ArtResult, portrait = false): string {
@@ -160,8 +159,13 @@ async function contestTable(vm: VM, y: number, h: number): Promise<Node[]> {
     // the full contest name (series and season come from data); the short name when the long one would not fit
     const longTag = c.tag.toUpperCase();
     const tag = (await textWidth(longTag, FONT.bebas, 400, tagSize, tagSize * 0.06)) + 22 <= labelW - 8 ? longTag : c.short.toUpperCase();
-    const cell = (v: string | null, w: number, size: number, fam: string, wt: number, color: string) =>
-      box({ width: w, justifyContent: 'flex-end', alignItems: 'center', height: rowH }, v ? box({ fontFamily: ff(fam), fontWeight: wt, fontSize: size, color, ...(['#2453a6', '#17703f'].includes(color) ? { background: '#f5f0e5', padding: '2px 3px' } : {}), letterSpacing: fam === FONT.slab ? 0 : -0.5, lineHeight: 1 }, v) : null);
+    // A figure is sized to its column (a long score or a four-digit rank steps down) and clipped as the backstop.
+    const cell = async (v: string | null, w: number, size: number, fam: string, wt: number, color: string) => {
+      const chip = ['#2453a6', '#17703f'].includes(color);
+      const spacing = fam === FONT.slab ? 0 : -0.5;
+      const fitted = v ? await fitOneLine(v, fam, wt, w - (chip ? 6 : 0) - 4, size, Math.min(size, 12), spacing) : size;
+      return box({ width: w, justifyContent: 'flex-end', alignItems: 'center', height: rowH, overflow: 'hidden' }, v ? box({ fontFamily: ff(fam), fontWeight: wt, fontSize: fitted, color, ...(chip ? { background: '#f5f0e5', padding: '2px 3px' } : {}), letterSpacing: spacing, lineHeight: 1, whiteSpace: 'nowrap' }, v) : null);
+    };
     const entry = c.entryLine == null ? null
       : c.solo ? label(c.entryLine, tall ? 19 : 14, T.light, { marginTop: tall ? 6 : 2, letterSpacing: 1.8 })
       : nowrap({ marginTop: tall ? 5 : 2, fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: tall ? 20 : 15, color: WHITE, lineHeight: 1.1, overflow: 'hidden', textOverflow: 'ellipsis', width: labelW - 10 }, c.entryLine);
@@ -169,16 +173,16 @@ async function contestTable(vm: VM, y: number, h: number): Promise<Node[]> {
       box({ width: labelW, flexDirection: 'column', justifyContent: 'center', paddingRight: 8 },
         nowrap({ alignSelf: 'flex-start', background: T.main, color: T.ink, fontFamily: ff(FONT.bebas), fontSize: tagSize, lineHeight: 1, letterSpacing: tagSize * 0.06, padding: tall ? '3px 10px 2px 10px' : '2px 7px 1px 7px', border: '2px solid #000', boxShadow: '2px 2px 0 #000' }, tag),
         entry),
-      cell(c.rank, col.rankW, big, FONT.cond, 700, '#2453a6'),
-      col.peak ? cell(c.peak, col.peakW, mid, FONT.cond, 700, '#2453a6') : null,
-      cell(c.score, col.scoreW, mid, FONT.mono, 600, '#17703f'),
-      col.subs ? cell(c.subs, col.subsW, mid, FONT.mono, 700, T.light) : null));
+      await cell(c.rank, col.rankW, big, FONT.cond, 700, '#2453a6'),
+      col.peak ? await cell(c.peak, col.peakW, mid, FONT.cond, 700, '#2453a6') : null,
+      await cell(c.score, col.scoreW, mid, FONT.mono, 600, '#17703f'),
+      col.subs ? await cell(c.subs, col.subsW, mid, FONT.mono, 700, T.light) : null));
   }
   return nodes;
 }
 
 const medalCell = (c: string, n: number, size = 28): Node =>
-  box({ alignItems: 'center', marginRight: 12 }, { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(coinSvg(c)).toString('base64')}`, width: 36, height: 36 } } as Node,
+  box({ alignItems: 'center', marginRight: 12 }, { type: 'img', props: { src: `data:image/svg+xml;base64,${Buffer.from(coinSvg(c, 36)).toString('base64')}`, width: 36, height: 36 } } as Node,
     box({ fontFamily: ff(FONT.slab), fontSize: size, color: WHITE, marginLeft: 6, lineHeight: 1 }, num(n)));
 
 /** The roster of a team card, by name with the tier word in the tier's colour, two columns, on a dark plate in the blurred band. */
@@ -232,15 +236,21 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   // The ARC Prize mark (white blocky name with a magenta and a yellow cell after the first word) is drawn for the ARC Prize set;
   // any other series name falls through to the plain Bebas wordmark below.
   const arcMark = wm === 'ARC PRIZE';
-  const wmSize = (await textWidth(wm, FONT.bebas, 400, 28, 1.6)) <= 285 ? 28 : 22;
+  // The set name is measured: one line from 28 px down to 18 px; below that it wraps to two lines (breaking at spaces) and
+  // the box clips as the backstop, so a long name (the Gemma set) never runs off the pennant or over the season logo.
+  const WM_W = 285, WM_SPACING = 1.6;
+  const wmOne = await fitOneLine(wm, FONT.bebas, 400, WM_W, 28, 18, WM_SPACING);
+  const wmFits = (await textWidth(wm, FONT.bebas, 400, wmOne, WM_SPACING)) <= WM_W;
+  const wmFit = wmFits ? { size: wmOne, lines: [wm] }
+    : await fitNameLines(wm, FONT.bebas, 400, WM_W - 20, FL.pennant.h - (vm.publisher ? 16 : 6), { max: 17, min: 17, twoLineMax: 17, twoLineMin: 11 }, 1);
   if (arcMark) kids.push(at(FL.pennant.x + 14, FL.pennant.y, FL.pennant.w - 44, FL.pennant.h, { alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' },
     box({ alignItems: 'center' },
       nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, 'ARC'),
       box({ width: 15, height: 15, backgroundColor: '#F012BE', marginLeft: 5, border: '1.5px solid #000' }),
       box({ width: 15, height: 15, backgroundColor: '#FFDC00', marginLeft: 3, border: '1.5px solid #000' })),
     nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, marginTop: 1, textShadow: '1.5px 1.5px 0 #000' }, 'PRIZE')));
-  else kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center' },
-    nowrap({ fontFamily: ff(FONT.bebas), fontSize: wmSize, color: WHITE, letterSpacing: 1.6, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, wm),
+  else kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' },
+    ...wmFit.lines.map(line => nowrap({ fontFamily: ff(FONT.bebas), fontSize: wmFit.size, color: WHITE, letterSpacing: wmFit.lines.length > 1 ? 0.8 : WM_SPACING, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000', maxWidth: WM_W, overflow: 'hidden' }, line)),
     vm.publisher ? nowrap({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 10.5, color: T.light, letterSpacing: 0.8, marginTop: 2 }, vm.publisher.toUpperCase()) : null));
   if (vm.stamp) {
     // the one as-of date on the face: inside the burst, in the badge band, clear of the subject zone
@@ -397,11 +407,17 @@ export async function front(card: any, opts: RenderOpts = {}): Promise<Buffer> {
 // Memo: the reverse shows a miniature of the front art and must not re-render the front. Keyed by card id, as-of date and the
 // art file's mtime, plus a digest of the card's own data so a same-day data change is never served stale.
 const memo = new Map<string, Promise<Buffer>>();
-const MEMO_MAX = 90;                // a whole crawl of the set, so a sequential pass hits instead of missing every time
+let memoMax = 90;                   // a whole crawl of the set (index.ts sizes it from the collection), so a sequential pass hits
+/** Size the front memo to hold a whole crawl of the set (index.ts calls this with the collection's card count, with headroom). */
+export function sizeFrontMemo(entries: number): void {
+  memoMax = Math.max(1, Math.ceil(entries));
+  while (memo.size > memoMax) memo.delete(memo.keys().next().value as string);
+}
+/** The memo key of a drawn face: the enriched card, the names it prints, the overrides and the stamp the clock gives it now. */
 export function frontKey(card: any, opts: RenderOpts = {}): string {
   const shared = (card?.art?.sharedWith ?? []).map((id: string) => opts.namesById?.[id] ?? '');
   const digest = crypto.createHash('md5').update(JSON.stringify([card, shared, opts.tierOverride ?? null, opts.artOverride ?? null])).digest('hex').slice(0, 12);
-  return [card?.id, card?.asOfDate ?? '', artMtime(card, opts.artOverride), opts.flatten === undefined ? PAPER : opts.flatten ?? 'none', digest].join('|');
+  return [card?.id, card?.asOfDate ?? '', stampWord(card) ?? '', artMtime(card, opts.artOverride), opts.flatten === undefined ? PAPER : opts.flatten ?? 'none', digest].join('|');
 }
 export function frontBuffer(card: any, opts: RenderOpts = {}): Promise<Buffer> {
   const key = frontKey(card, opts);
@@ -410,17 +426,6 @@ export function frontBuffer(card: any, opts: RenderOpts = {}): Promise<Buffer> {
   hit = front(card, opts);
   memo.set(key, hit);
   hit.catch(() => memo.delete(key));
-  while (memo.size > MEMO_MAX) memo.delete(memo.keys().next().value as string);
+  while (memo.size > memoMax) memo.delete(memo.keys().next().value as string);
   return hit;
-}
-
-// ----------------------------------------------------------------------------------------------
-// BACK (layout lives in back.ts; this just renders its node)
-// ----------------------------------------------------------------------------------------------
-export async function back(card: any, opts: RenderOpts = {}): Promise<Buffer> {
-  const flatten = opts.flatten === undefined ? PAPER : opts.flatten;
-  const vm = viewModel(card, opts);
-  const art = await artLayer(card, vm.T, opts.artOverride);
-  const root = await backNode(vm, art);
-  return finishCard(await rasterise(root), flatten);
 }

@@ -1,6 +1,8 @@
 /*
-Author: GPT-6 / Codex (reasoning effort not exposed)
-Date: 02-November-2026
+Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
+Date: 14-Nov-2026
+14-Nov-2026 (Claude Opus 5.5): the 440px cap on the paired card area lifts at the 900px breakpoint where it is set, so
+tablets get full-width faces (it lifted only below 700px).
 PURPOSE: Fit two complete existing card faces on screen, with records below and accessible enlargement.
 SRP/DRY check: Pass — scope the change to selected paired card pages; keep the newspaper and card designs.
 */
@@ -22,5 +24,6 @@ SRP/DRY check: Pass — scope the change to selected paired card pages; keep the
 .card-pair-scroll.is-full img { width: 750px; max-width: none; max-height: none; }
 .is-card-proof .cb-bar { padding: 9px 14px; gap: 7px 20px; }
 .is-card-proof .cb-nav { flex: 1 1 600px; }
-@media (max-width: 700px) { .card-pair { width: 100%; gap: 12px; } .card-pair figcaption span { display: none; } .is-paired .cb-dcard { max-width: none; } }
+@media (max-width: 900px) { .is-paired .cb-dcard { max-width: none; } }
+@media (max-width: 700px) { .card-pair { width: 100%; gap: 12px; } .card-pair figcaption span { display: none; } }
 @media print { .card-pair { width: 100%; } .cb-actions { display: none; } }

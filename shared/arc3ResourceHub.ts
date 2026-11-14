@@ -1,6 +1,8 @@
 /*
-Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 High
-Date: 09-November-2026
+Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 High; Claude Opus 5.5
+Date: 14-Nov-2026; 09-November-2026
+14-Nov-2026 (Claude Opus 5.5, profiles-articles): dropped the Competitor profiles and People behind the teams rows,
+         whose addresses only redirect to the card catalog.
 PURPOSE: The ARC-AGI-3 resource directory behind /home, and the outside ARC-1/2 reading behind
          /arc2. Every entry was opened and checked on 1-Nov-2026: dead links, sign-in walls and
          descriptions the page did not support were dropped. Descriptions stay plain, with no
@@ -1665,20 +1667,6 @@ export const ARC3_HUB_SECTIONS: HubSection[] = [
     "by": "Son Pham",
     "date": "",
     "desc": "An analysis of how much one public notebook's score varied across many participants' one-time submissions, and what that implies for judging improvements."
-   },
-   {
-    "title": "Competitor profiles",
-    "url": "/news/competitors",
-    "by": "The ARC Daily Digest",
-    "date": "",
-    "desc": "Team backgrounds, members and ARC Daily coverage for each competition."
-   },
-   {
-    "title": "People behind the teams",
-    "url": "/news/people",
-    "by": "The ARC Daily Digest",
-    "date": "",
-    "desc": "Verified people and the dated team rosters they appear on across the ARC competitions."
    },
    {
     "title": NEWS_ARCHIVE.heading,

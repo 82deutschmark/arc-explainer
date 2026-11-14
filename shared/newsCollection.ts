@@ -1,7 +1,11 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, card faces): RENDER_VERSION 12; collectionShareVersion also covers what a card prints about
+ *          other cards (teammates' tiers and medals, shared-art names, its set's tier count) when given the collection, and
+ *          the stamp phase (every contest closed or not); a standing that is not final reads "Snapshot", not the banned word.
  * 14-Nov-2026 (Claude Opus 5.5): optional art.focusX for full-bleed crops; RENDER_VERSION 11 for centred fronts.
+ * 14-Nov-2026 (Claude Opus 5.5): cardForPerson picks a person's set card for a contest; career profileUrl may be null.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -129,7 +133,8 @@ export type KaggleTier = typeof KAGGLE_TIERS[number];
 const medalSchema = z.enum(['gold', 'silver', 'bronze']);
 /** One person's Kaggle career as the card back prints it (content/news/careers.json, built from verified evidence). */
 export const careerSchema = z.object({
-  checkedAt: stamp, profileUrl: z.string().url(), tier: z.enum(KAGGLE_TIERS).nullable(),
+  // Null for a person with no Kaggle account: there is no profile to link (14-Nov-2026, was "kaggle.com/None").
+  checkedAt: stamp, profileUrl: z.string().url().nullable(), tier: z.enum(KAGGLE_TIERS).nullable(),
   medals: z.object({ gold: z.number().int().nonnegative(), silver: z.number().int().nonnegative(), bronze: z.number().int().nonnegative() }).strict().nullable(),
   rank: z.object({ current: z.number().int().positive().nullable(), outOf: z.number().int().positive().nullable(), best: z.number().int().positive().nullable() }).strict().nullable(),
   joinedYear: z.number().int().nullable(), organisation: z.string().nullable(), location: z.string().nullable(),
@@ -202,7 +207,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 11;  // Full-bleed fronts crop around the centre, not sharp's attention guess.
+export const RENDER_VERSION = 12;  // CLOSED stamp, measured set names and figures, NEWS_BRAND publisher, season printed once.
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';
@@ -218,7 +223,8 @@ const standingDate = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'n
 /** Each label describes the evidence behind one contest's numbers. */
 export function collectionStandingLabel(entry: Pick<CollectionEntry, 'status' | 'observedAt'>): string {
   if (entry.status === 'unavailable') return 'Standings at Kaggle';
-  const basis = entry.status === 'final' ? 'Final result' : 'Public snapshot';
+  // Card faces print this label and their lint bans the word "public": a dated reading that is not final is a snapshot.
+  const basis = entry.status === 'final' ? 'Final result' : 'Snapshot';
   const time = Date.parse(entry.observedAt ?? '');
   return Number.isFinite(time) ? `${basis} · ${standingDate.format(time)} UTC` : basis;
 }
@@ -236,6 +242,18 @@ export function collectionEarnedLine(card: CollectionCard): string | null {
   if (card.pastCards[0]) return card.pastCards[0].label;
   const lead = collectionLeadEntry(card);
   return lead && lead.status !== 'unavailable' && lead.rank != null ? `${ordinalWord(lead.rank)} in ${competitionName(lead.competition)}${card.kind === 'person' ? ` with ${lead.teamName}` : ''}` : null;
+}
+/**
+ * The one card to show for a person (14-Nov-2026, Claude Opus 5.5). In a contest's context (a team page, a story) the card
+ * from a set issued for that contest leads; otherwise their general card (no set, or a set with no contest scope); otherwise
+ * any card of theirs. `sets` comes from the same NewsCollection; without it only cards with no set count as general.
+ */
+export function cardForPerson(cards: CollectionCard[], personId: string, competition?: string | null, sets: NewsCollection['sets'] = []): CollectionCard | undefined {
+  const own = cards.filter(card => card.kind === 'person' && card.personId === personId);
+  if (own.length < 2) return own[0];
+  const scope = (card: CollectionCard) => card.setId ? sets.find(set => set.id === card.setId)?.competitionIds : [];
+  const slug = competition ? KAGGLE_COMPETITIONS[competition]?.slug : undefined;
+  return (slug ? own.find(card => scope(card)?.includes(slug)) : undefined) ?? own.find(card => scope(card)?.length === 0) ?? own[0];
 }
 export const collectionTeamCompetition = (card: CollectionCard) =>
   card.kind === 'team' && card.entries.length === 1 ? competitionName(card.entries[0].competition) : null;
@@ -260,10 +278,48 @@ export function collectionCardDescription(card: CollectionCard): string {
   return `${card.name}’s ${card.season} card. ${parts.length > 1 ? `${parts.join('; ')}.` : career}`;
 }
 export const collectionShareAlt = (card: CollectionCard) => `${card.name} — ${collectionRoleLabel(card).toLowerCase()} card, ${card.season}. ${card.art?.alt ?? 'The ARC Daily Digest ARC Prize cards.'}`;
-/** Public-content fingerprint: a corrected identity, roster or immutable artwork gets a fresh image URL. */
-export function collectionShareVersion(card: CollectionCard): string {
+/** Whether every contest a card stands in has passed its close time at `now`: the moment its LIVE stamp becomes CLOSED. */
+export function collectionCardClosed(card: Pick<CollectionCard, 'entries'>, now = Date.now()): boolean {
+  return card.entries.length > 0 && card.entries.every(entry => {
+    const close = Date.parse(KAGGLE_COMPETITIONS[entry.competition]?.closeAt ?? '');
+    return Number.isFinite(close) && close <= now;
+  });
+}
+const kaggleHandleOf = (url: string | null | undefined) => /kaggle\.com\/([^/?#]+)/i.exec(url ?? '')?.[1]?.toLowerCase() ?? null;
+const highlightTier = (card: CollectionCard) => card.highlights.map(fact => /Kaggle Competitions (Novice|Contributor|Expert|Master|Grandmaster)\b/.exec(fact.text)?.[1]).find(Boolean) ?? null;
+/**
+ * What a card's images print about OTHER cards (the renderer's enrichment reads the same things): each teammate's name, tier
+ * and medals (matched by person id or Kaggle handle), the names of cards sharing its Hall of Fame picture, and how many
+ * distinct competitors of its tier its set holds.
+ */
+function collectionShareContext(card: CollectionCard, collection: Pick<NewsCollection, 'cards' | 'sets'>): unknown[] {
+  const ids = new Set<string>(), handles = new Set<string>();
+  for (const entry of card.entries) for (const member of entry.members) { if (member.personId) ids.add(member.personId); handles.add(member.handle.toLowerCase()); }
+  const tierOf = (other: CollectionCard) => other.career?.tier ?? highlightTier(other);
+  const teammates = collection.cards.filter(other => other.id !== card.id && other.personId && (ids.has(other.personId)
+    || other.accounts.some(account => handles.has(kaggleHandleOf(account.url) ?? '')) || handles.has(kaggleHandleOf(other.career?.profileUrl) ?? '')))
+    .map(other => [other.personId, other.name, tierOf(other), other.career?.medals ?? null]);
+  const pictures = new Set(card.pastCards.map(past => past.imageSrc).filter(Boolean));
+  const sharing = card.art && pictures.has(card.art.src)
+    ? collection.cards.filter(other => other.id !== card.id && other.pastCards.some(past => past.imageSrc === card.art!.src)).map(other => [other.id, other.name])
+    : [];
+  const setOf = (other: CollectionCard) => other.setId ?? collection.sets?.find(set => set.season === other.season)?.id ?? other.season;
+  const tier = card.kind === 'person' && card.role === 'competitor' ? tierOf(card) : null;
+  const peers = tier ? new Set(collection.cards.filter(other => other.kind === 'person' && other.role === 'competitor' && other.personId
+    && setOf(other) === setOf(card) && tierOf(other) === tier).map(other => other.personId)).size : 0;
+  return [teammates, sharing, peers];
+}
+/**
+ * The image version of a card: a corrected identity, roster or immutable artwork, a new design, the stamp turning from LIVE to
+ * CLOSED and (given the collection) a change to what the card prints about other cards all get a fresh image URL. Server
+ * routes and memo caches pass the collection; a caller without it still gets a version that is right about the card itself.
+ */
+export function collectionShareVersion(card: CollectionCard, collection?: Pick<NewsCollection, 'cards' | 'sets'>, now = Date.now()): string {
   const repair = cardFrameRepair(card);
-  const text = JSON.stringify(repair ? [RENDER_VERSION, card, repair.version] : [RENDER_VERSION, card]);
+  const inputs: unknown[] = [RENDER_VERSION, card, collectionCardClosed(card, now)];
+  if (repair) inputs.push(repair.version);
+  if (collection) inputs.push(collectionShareContext(card, collection));
+  const text = JSON.stringify(inputs);
   let hash = 0x811c9dc5;
   for (let index = 0; index < text.length; index++) {
     hash ^= text.charCodeAt(index);
@@ -271,4 +327,4 @@ export function collectionShareVersion(card: CollectionCard): string {
   }
   return hash.toString(36);
 }
-export const collectionSharePath = (card: CollectionCard) => `/api/news/cards/${encodeURIComponent(card.id)}/share.png?v=${collectionShareVersion(card)}`;
+export const collectionSharePath = (card: CollectionCard, collection?: Pick<NewsCollection, 'cards' | 'sets'>) => `/api/news/cards/${encodeURIComponent(card.id)}/share.png?v=${collectionShareVersion(card, collection)}`;

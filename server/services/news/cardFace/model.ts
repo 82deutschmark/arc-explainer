@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): the after-close stamp says CLOSED (the lint bans the old word); stampWord() is the one
+ *          stamp rule, shared with the render memo keys; seriesLabel prints the set name with its season only once.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: DATA -> VIEW MODEL for the TOPPS card design. Turns an enriched card (see sample-cards.json
@@ -59,7 +61,9 @@ export interface VM {
   /** team size as printed: "7 ACCOUNTS", "1 ACCOUNT" */
   sizeLabel: string | null;
   wordmark: string; publisher: string | null; season: string;
-  stamp: { word: 'LIVE' | 'PUBLIC' | 'FINAL'; date: string } | null;
+  /** the wordmark with the season appended only when the wordmark does not already carry it ("ARC PRIZE 2026 · ARC-AGI-2") */
+  seriesLabel: string;
+  stamp: { word: StampWord; date: string } | null;
   contests: ContestVM[]; medals: MedalsVM | null;
   overall: { rank: string; outOf: string | null; best: string | null } | null;
   honour: string | null; bestFinish: string | null; bestFinishParts: { place: string; competition: string } | null;
@@ -92,6 +96,22 @@ export function printableName(name: string, handle: string | null | undefined): 
   if (handle && !UNDRAWABLE.test(handle)) return handle;
   return name.replace(new RegExp(UNDRAWABLE.source, 'g'), '').replace(/\s+/g, ' ').trim() || handle || name;
 }
+/** A set name followed by its season, unless the name already says the season ("ARC Prize 2026 — ARC-AGI-2" stays as is). */
+export function seasonedName(name: string, season: string | number | null | undefined): string {
+  const year = String(season ?? '').trim();
+  return (year && !new RegExp(`(^|\\D)${year}(\\D|$)`).test(name) ? `${name} ${year}` : name).trim();
+}
+export type StampWord = 'LIVE' | 'CLOSED' | 'FINAL';
+/**
+ * The stamp of an enriched card at `now`. A deadline ends submissions, never awards a result: a cached reading after
+ * every contest has closed is CLOSED until an explicit official-final result exists. Null when the card has no status.
+ */
+export function stampWord(card: any, now = Date.now()): StampWord | null {
+  const contests: any[] = card?.contests ?? [];
+  const allFinal = contests.length > 0 && contests.every(c => c.status === 'final');
+  const allClosed = contests.length > 0 && contests.every(c => c.closesAt && Date.parse(c.closesAt) <= now);
+  return allFinal || card?.status === 'final' ? 'FINAL' : card?.status === 'live' ? (allClosed ? 'CLOSED' : 'LIVE') : null;
+}
 const hash = (n: number | null | undefined) => (n == null ? null : `#${num(n)}`);
 const nz = <T,>(v: T | null | undefined) => (v === undefined ? null : v);
 
@@ -119,13 +139,9 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     rank: hash(c.rank), peak: hash(c.peakRank), score: typeof c.score === 'number' ? String(c.score) : null,
     subs: typeof c.submissions === 'number' ? num(c.submissions) : null, status: c.status,
   }; });
-  // A deadline ends submissions, never awards a result. A cached public reading
-  // after the close stays PUBLIC until an explicit official-final result exists.
-  const allFinal = (card.contests ?? []).length > 0 && (card.contests ?? []).every((c: any) => c.status === 'final');
-  const allClosed = (card.contests ?? []).length > 0 && (card.contests ?? []).every((c: any) => c.closesAt && Date.parse(c.closesAt) <= (opts.now ?? Date.now()));
-  const status = allFinal || card.status === 'final' ? 'FINAL' : card.status === 'live' ? (allClosed ? 'PUBLIC' : 'LIVE') : null;
+  const status = stampWord(card, opts.now ?? Date.now());
   const date = dayLabel(card.asOfDate);
-  const stamp = family !== 'team' && status && date ? { word: status as 'LIVE' | 'PUBLIC' | 'FINAL', date } : null;
+  const stamp = family !== 'team' && status && date ? { word: status, date } : null;
 
   const roster = (card.roster ?? []).map((r: any) => ({ name: printableName(r.name ?? r.handle, r.handle), tier: tierByName(r.tier)?.key ?? null, medals: medalsOf(r.medals), handle: r.handle }));
   const withMedals = roster.filter((r: any) => r.medals);
@@ -159,6 +175,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     showPeak: status === 'LIVE',
     sizeLabel: family === 'team' && teamSize ? `${teamSize} ${teamSize === 1 ? 'ACCOUNT' : 'ACCOUNTS'}${contests.length > 1 ? ' ACROSS CONTESTS' : ''}` : null, teamSize: family === 'team' ? teamSize : null, bare,
     wordmark: card.series?.name ?? card.series?.set ?? '', publisher: card.series?.publisher ?? null, season: String(card.series?.season ?? ''),
+    seriesLabel: seasonedName(card.series?.name ?? card.series?.set ?? '', card.series?.season),
     stamp, contests, medals: family === 'competitor' ? medalsOf(card.medals) : null,
     overall: card.rank?.current ? { rank: hash(card.rank.current)!, outOf: card.rank.outOf ? num(card.rank.outOf) : null, best: hash(card.rank.best) } : null,
     honour, bestFinish, bestFinishParts: bf && bf.rank && bf.fieldSize ? { place: `${ord(bf.rank)} OF ${num(bf.fieldSize)}`, competition: bf.competition } : null, bio: card.bio ?? null, facts: (card.facts ?? []).map((x: any) => x.text),

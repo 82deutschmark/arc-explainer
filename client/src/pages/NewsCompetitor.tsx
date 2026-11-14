@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; GPT-6 Astra Extra high; Claude Sonnet 5.5 Medium
- * Date: 05-November-2026; 03-November-2026; 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 Sol / Codex; GPT-6 Astra Extra high; Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026; 05-November-2026; 03-November-2026; 02-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): "Also entered as" uses the shared displayAliases() (no internal id,
+ *          no repeat of the team's own name), the member byline is an Intl.ListFormat list, and joint reports that
+ *          name the team in another contest count as coverage (articleCoversTeam).
  * PURPOSE: Competition-scoped competitor profile showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
  *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
@@ -15,7 +18,7 @@
 import { TeamRosterCards } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
-import { NEWS_NAME, competitorTitle, competitorDescription, peopleForTeam } from '@shared/news';
+import { NEWS_NAME, articleCoversTeam, competitorTitle, competitorDescription, displayAliases, joinNames, peopleForTeam } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, NewsPaper, NewsStatus, competitionName, newsDate, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import '@/components/news/competitorProfile.css';
@@ -25,10 +28,10 @@ export default function NewsCompetitor() {
   const query = useNews();
   const competitor = query.data?.competitors.find(record => record.id === competitorId);
   const missing = !!query.data && !competitor;
-  const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => article.competition === competitor.competition && article.teamIds.includes(competitor.teamId)) : [];
+  const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => articleCoversTeam(article, competitor)) : [];
   usePageMeta({ title: competitor ? competitorTitle(competitor) : `Competitor profiles | ${NEWS_NAME}`, description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor, image: useNewsCardImage() });
-  // The internal profile id (for example "arc-2-16442485") is an address, not a name the team ever used: keep it out of the aliases.
-  const aliases = competitor ? competitor.aliases.filter(alias => alias.toLowerCase() !== competitor.id.toLowerCase()) : [];
+  // Same list as the server-rendered "Observed names": never the internal profile id or the team's own current name.
+  const aliases = competitor ? displayAliases(competitor) : [];
   const names = competitor ? peopleForTeam(query.data?.people ?? [], competitor).map(person => person.name) : [];
   const board = competitor ? KAGGLE_COMPETITIONS[competitor.competition] : null;
   return <NewsPaper>
@@ -40,7 +43,7 @@ export default function NewsCompetitor() {
         <div>
           <div className="news-kicker cp-kicker">{competitionName(competitor.competition)} · Team</div>
           <h1>{competitor.name}</h1>
-          {!!names.length && <p className="cp-byline">{names.join(' and ')}</p>}
+          {!!names.length && <p className="cp-byline">{joinNames(names)}</p>}
           {!!aliases.length && <p className="cp-aka">Also entered as {aliases.join(', ')}</p>}
           <div className="cp-actions"><Link href={board.path} className="news-read">See the {competitionName(competitor.competition)} board →</Link></div>
         </div>

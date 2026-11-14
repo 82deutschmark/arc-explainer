@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 09-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5): older dispatches are listed once, as links to their own pages (the collapsed
+ *          full-text copies are gone); commissioned pieces are labelled as such; same-day companion art runs
+ *          unless it is the edition's own feature.
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the newest contest report printed in full, the other contest under it)
@@ -14,7 +17,7 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { newsDate, newsArticlePath, editionFeature, editionLabel, personForXHandle, personPath, frontPageSocialPosts, publishedCompetitionOrder, competitionStories } from '@shared/news';
+import { newsDate, newsArticlePath, editionFeature, editionLabel, dispatchLabel, personForXHandle, personPath, frontPageSocialPosts, publishedCompetitionOrder, competitionStories } from '@shared/news';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
@@ -32,16 +35,16 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
   // Same-day artwork keeps its dated caption when an edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
   const reservedFeature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
+  // The feature prints its own picture; companion art is only ever a different dispatch's.
+  const art = lead && companionArt && companionArt.id !== reservedFeature?.id ? <DispatchArt dispatch={companionArt} lead /> : undefined;
   return <div className={`news-desk${lead ? ' is-lead' : ''}`}>
     {'article' in first
-      ? <StoryPreview article={first.article} feature={reservedFeature} lead={lead} people={people} sections={lead ? first.article.sections.length : 2} art={lead && companionArt ? <DispatchArt dispatch={companionArt} lead /> : undefined} />
+      ? <StoryPreview article={first.article} feature={reservedFeature} lead={lead} people={people} sections={lead ? first.article.sections.length : 2} art={art} />
       : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
     {stories.length > 1 && <ul className="news-latest-list">{stories.slice(1).filter(story => story.id !== reservedFeature?.id).slice(0, 3).map(story => <li key={story.id}>
-      <span>{'article' in story ? editionLabel(story.article) : 'From the contenders'} · {newsDate(story.publishedAt)}</span>
+      <span>{'article' in story ? editionLabel(story.article) : dispatchLabel(story.dispatch)} · {newsDate(story.publishedAt)}</span>
       {'article' in story ? <Link href={newsArticlePath(story.id)}>{story.article.headline}</Link> : <Link href={newsArticlePath(story.id)}>{story.dispatch.headline}</Link>}
     </li>)}</ul>}
-    {/* Older dispatches keep their permanent front-page anchors after a new edition leads. */}
-    {stories.slice(1).filter(story => 'dispatch' in story && story.id !== reservedFeature?.id).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} people={people} /></details>)}
   </div>;
 }
 

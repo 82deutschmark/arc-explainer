@@ -1,6 +1,9 @@
 /**
- * Author: Claude Sonnet 5.5 Low
- * Date: 30-Oct-2026
+ * Author: Claude Sonnet 5.5 Low; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): cards with a public (not final) standing, before and after the close, print clean wording
+ *          (CLOSED stamp, "Snapshot" label); the image version follows teammates' careers and the close; tier counts are per
+ *          set and per person; a long set name fits the pennant and long figures fit their columns.
  * PURPOSE: The whole-set checks for the Card Cabinet card faces (cardFace/): every real card draws a front and a back
  *          without throwing, with clean wording (lintNode over every Satori tree); PNG signatures and sizes; the share
  *          preview size; the tier recipes really differ at the pixel level (mean border colour, not a golden image);
@@ -13,13 +16,18 @@
 import { describe, expect, it, vi } from 'vitest';
 import sharp from 'sharp';
 import { getNewsCollection } from '../server/services/news/newsCollection';
-import { cardFaceLint, cardFaceModel, lookFor, registeredLooks, renderCardFace, renderCardThumb, RENDER_VERSION } from '../server/services/news/cardFace';
+import { cardFaceLint, cardFaceModel, cardFaceNode, lookFor, registeredLooks, renderCardFace, renderCardThumb, RENDER_VERSION } from '../server/services/news/cardFace';
 import { backNode } from '../server/services/news/cardFace/back';
-import { lintNode, careerNames } from '../server/services/news/cardFace/lint';
+import { lintNode, careerNames, textOf } from '../server/services/news/cardFace/lint';
+import { FONT, textWidth, type Node } from '../server/services/news/cardFace/kit';
+import { viewModel } from '../server/services/news/cardFace/model';
+import { backModel } from '../server/services/news/cardFace/backModel';
+import { setById, setForSeason } from '../server/services/news/cardFace/sets';
 import { tierByName } from '../server/services/news/cardFace/tiers';
 import { BORDER } from '../server/services/news/cardFace/zones';
 import { buildCollectionShareImage, buildCollectionShareNode } from '../server/services/news/newsCollectionShareImage';
-import { collectionShareVersion } from '../shared/newsCollection';
+import { collectionShareVersion, type CollectionCard } from '../shared/newsCollection';
+import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 
 const collection = getNewsCollection();
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
@@ -137,5 +145,111 @@ describe('looks, sets and caches', () => {
     }
     expect(await renderCardThumb(card, collection, 'front', 360, version)).toBe(await renderCardThumb(card, collection, 'front', 360, version));
     expect(await sharp(await renderCardThumb(card, collection, 'back', 240, version)).metadata()).toMatchObject({ format: 'webp', width: 240 });
+  });
+});
+
+/** A card whose every standing is a dated public reading (no final result yet), as the next board snapshot will make them. */
+function withPublicStanding(card: CollectionCard): CollectionCard {
+  return { ...structuredClone(card), entries: card.entries.map((entry, index) => ({ ...structuredClone(entry), status: 'public' as const,
+    observedAt: '2026-11-10T02:00:00Z', rank: 12 + index, score: 0.4166, submissions: 31, peakRank: 9 + index })) };
+}
+const closeOf = (card: CollectionCard) => Math.max(...card.entries.map(entry => Date.parse(KAGGLE_COMPETITIONS[entry.competition]?.closeAt ?? '')));
+
+describe('public standings and the close', () => {
+  const person = cardById('person-ivan-sorokin-2026'), team = cardById('team-turducken-2026');
+
+  it('prints clean wording on a competitor and a team with a public standing (front, back, share preview)', { timeout: 60_000 }, async () => {
+    for (const card of [withPublicStanding(person), withPublicStanding(team)]) {
+      expect(card.entries.length, card.id).toBeGreaterThan(0);
+      expect(await cardFaceLint(card, collection), `${card.id} front`).toEqual([]);
+      const { model, names } = cardFaceModel(card, collection);
+      expect(lintNode(await backNode(model, { namesById: names }), careerNames(model)), `${card.id} back`).toEqual([]);
+      expect(lintNode(await buildCollectionShareNode(card, collection, null), careerNames(model)), `${card.id} share`).toEqual([]);
+    }
+  });
+
+  it('stamps a public reading LIVE before the close and CLOSED after it, with the off-peak note only under LIVE', () => {
+    const { model } = cardFaceModel(withPublicStanding(person), collection);
+    const close = closeOf(person);
+    expect(Number.isFinite(close)).toBe(true);
+    const before = viewModel(model, { now: close - 60_000 }), after = viewModel(model, { now: close + 60_000 });
+    expect(before.stamp?.word).toBe('LIVE');
+    expect(after.stamp?.word).toBe('CLOSED');
+    expect(backModel(before).standings.some(row => /OFF PEAK/.test(row.note ?? ''))).toBe(true);
+    expect(backModel(after).standings.some(row => /OFF PEAK|AT PEAK/.test(row.note ?? ''))).toBe(false);
+  });
+
+  it('gives a card a new image version when it closes', () => {
+    const card = withPublicStanding(person), close = closeOf(person);
+    expect(collectionShareVersion(card, collection, close - 1)).not.toBe(collectionShareVersion(card, collection, close + 1));
+    expect(collectionShareVersion(card, collection, close + 1)).toBe(collectionShareVersion(card, collection, close + 2));
+  });
+});
+
+describe('what a card prints about other cards', () => {
+  it('changes the image version when a teammate\'s tier or medals change', () => {
+    const mate = collection.cards.find(card => card.kind === 'person' && card.personId && card.career)!;
+    expect(mate, 'a person with a saved career').toBeTruthy();
+    const base = collection.cards.find(card => card.kind === 'team' && card.entries.length)!;
+    const team: CollectionCard = { ...structuredClone(base), entries: [{ ...structuredClone(base.entries[0]), members: [{ handle: 'teammate-handle', name: mate.name, personId: mate.personId }] }] };
+    const cards = collection.cards;
+    const before = collectionShareVersion(team, { cards, sets: collection.sets });
+    const medals = mate.career!.medals ?? { gold: 0, silver: 0, bronze: 0 };
+    const medalled = cards.map(card => card.id === mate.id ? { ...card, career: { ...card.career!, medals: { ...medals, gold: medals.gold + 1 } } } : card);
+    expect(collectionShareVersion(team, { cards: medalled, sets: collection.sets })).not.toBe(before);
+    expect(collectionShareVersion(team, { cards, sets: collection.sets })).toBe(before);
+  });
+
+  it('counts each tier once per person, within the card\'s own set, and names that set', () => {
+    for (const card of collection.cards.filter(item => item.kind === 'person' && item.role === 'competitor')) {
+      const { model } = cardFaceModel(card, collection);
+      const line = (model.facts as { text: string }[]).map(fact => fact.text).find(text => /^One of \d+ /.test(text));
+      if (!line) continue;
+      const [, count, tier, setName] = /^One of (\d+) (\w+)s in the (.+) set\.$/.exec(line)!;
+      const setOf = (item: CollectionCard) => (item.setId ? setById(item.setId) : setForSeason(item.season))?.id;
+      const setId = setOf(card);
+      expect(setName.startsWith(setById(setId!)!.name), `${card.id}: ${line}`).toBe(true);
+      const people = new Set(collection.cards.filter(other => other.kind === 'person' && other.role === 'competitor' && other.personId
+        && setOf(other) === setId
+        && cardFaceModel(other, collection).model.tier === tier).map(other => other.personId));
+      expect(Number(count), `${card.id}: ${line}`).toBe(people.size);
+    }
+  });
+});
+
+describe('measured lettering', () => {
+  /** Every text node in a tree with its font family, size and letter spacing (inherited from the nearest styled ancestor). */
+  function runs(node: unknown, inherited: Record<string, any> = {}, out: { text: string; style: Record<string, any> }[] = []) {
+    if (typeof node === 'string') { out.push({ text: node, style: inherited }); return out; }
+    if (Array.isArray(node)) { for (const kid of node) runs(kid, inherited, out); return out; }
+    const props = (node as Node | null)?.props;
+    if (props?.children !== undefined) runs(props.children, { ...inherited, ...(props.style ?? {}) }, out);
+    return out;
+  }
+
+  it('fits a long set name on the pennant (one line or two, each within the pennant)', { timeout: 30_000 }, async () => {
+    const card = collection.cards.find(item => item.setId?.startsWith('gemma'))!;
+    expect(card, 'a card in the Gemma set').toBeTruthy();
+    const { model } = cardFaceModel(card, collection);
+    const name = String(model.series.name).toUpperCase();
+    const tree = await cardFaceNode(card, collection);
+    const lines = runs(tree).filter(run => run.text && name.includes(run.text) && String(run.style.fontFamily ?? '').startsWith(FONT.bebas) && run.text.length > 3);
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines.map(run => run.text).join(' ')).toBe(name);
+    for (const run of lines) expect(await textWidth(run.text, FONT.bebas, 400, run.style.fontSize, run.style.letterSpacing ?? 0), run.text).toBeLessThanOrEqual(285);
+  });
+
+  it('sizes a long rank and score to their columns on the front', { timeout: 30_000 }, async () => {
+    const card = withPublicStanding(cardById('team-turducken-2026'));
+    card.entries = card.entries.map(entry => ({ ...entry, rank: 12_345, score: 0.41666666 }));
+    const tree = await cardFaceNode(card, collection);
+    const figures = runs(tree).filter(run => run.text === '#12,345' || run.text === '0.41666666');
+    expect(figures.length).toBeGreaterThan(0);
+    for (const run of figures) {
+      const family = String(run.style.fontFamily).split(',')[0];
+      const width = run.text.startsWith('#') ? 140 : 108;
+      expect(await textWidth(run.text, family, run.style.fontWeight ?? 400, run.style.fontSize, run.style.letterSpacing ?? 0), run.text).toBeLessThanOrEqual(width);
+    }
+    expect(textOf(tree)).toContain('#12,345');
   });
 });
