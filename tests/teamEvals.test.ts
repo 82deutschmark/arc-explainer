@@ -9,6 +9,10 @@
  *          answers 503 rather than claiming success). Also the sign-in return path
  *          (teamAuth.ts safeNext), which now lets an eval link's ?o=<output> survive sign-in
  *          while still refusing anything outside the team pages.
+ *          2026-10-21 (Claude Opus 5.5), the runs API: version 2 documents of every kind
+ *          (accuracy needs rows; speed / kernel / profile need arms with unique names, a known
+ *          status and numeric metrics), unknown versions and kinds refused, and the token-checked
+ *          schema route.
  *          No database: storage is BaseRepository's, unconnected here.
  * SRP/DRY check: Pass - exercises the real middleware and router with minimal stand-ins, as
  *          tests/teamSession.test.ts does.
@@ -63,7 +67,7 @@ test('output keys: an 8-hex task id, an underscore and a one- or two-digit test 
 test('a run upload must be this run\'s document, with rows, under 4 MB', () => {
   const doc = { apiVersion: 1, key: 'arc2-k340', title: 'x', rows: [], extra: { kept: true } };
   const ok = checkRunUpload('arc2-k340', doc);
-  expect(ok).toEqual({ ok: true, body: JSON.stringify(doc) });
+  expect(ok).toEqual({ ok: true, body: JSON.stringify(doc), kind: 'accuracy' });
   expect(checkRunUpload('Arc2', { ...doc, key: 'Arc2' })).toMatchObject({ ok: false, status: 400, code: 'bad_key' });
   expect(checkRunUpload('arc2-k340', { ...doc, key: 'other' })).toMatchObject({ ok: false, status: 400, code: 'bad_document' });
   expect(checkRunUpload('arc2-k340', { key: 'arc2-k340', rows: {} })).toMatchObject({ ok: false, code: 'bad_document' });
@@ -71,6 +75,33 @@ test('a run upload must be this run\'s document, with rows, under 4 MB', () => {
   expect(checkRunUpload('arc2-k340', undefined)).toMatchObject({ ok: false, code: 'bad_document' });
   const big = { ...doc, notes: 'x'.repeat(MAX_RUN_BYTES) };
   expect(checkRunUpload('arc2-k340', big)).toMatchObject({ ok: false, status: 413, code: 'too_large' });
+});
+
+test('version 2 names its kind: accuracy runs carry rows, speed / kernel / profile runs carry arms', () => {
+  const arms = [
+    { name: 'marlin', status: 'ok', metrics: { genTokS: 448.4, stepMs: 75.8, kvTokens: null }, profile: { familiesMs: { moe: 30.1 } } },
+    { name: 'triton', status: 'failed', error: 'bench check failed' },
+  ];
+  for (const kind of ['speed', 'kernel', 'profile']) {
+    const doc = { apiVersion: 2, kind, key: 'arc2fnx-int8k', arms };
+    expect(checkRunUpload('arc2fnx-int8k', doc), kind).toEqual({ ok: true, body: JSON.stringify(doc), kind });
+  }
+  const acc = { apiVersion: 2, kind: 'accuracy', key: 'arc2-acc', rows: [] };
+  expect(checkRunUpload('arc2-acc', acc)).toMatchObject({ ok: true, kind: 'accuracy' });
+  expect(checkRunUpload('arc2-acc', { ...acc, rows: undefined })).toMatchObject({ ok: false, code: 'bad_document' });
+
+  const speed = { apiVersion: 2, kind: 'speed', key: 'arc2-s', arms };
+  expect(checkRunUpload('arc2-s', { ...speed, apiVersion: 3 })).toMatchObject({ ok: false, status: 400, code: 'unsupported_version' });
+  expect(checkRunUpload('arc2-s', { ...speed, apiVersion: '2' })).toMatchObject({ ok: false, code: 'unsupported_version' });
+  expect(checkRunUpload('arc2-s', { ...speed, kind: undefined })).toMatchObject({ ok: false, code: 'bad_kind' });
+  expect(checkRunUpload('arc2-s', { ...speed, kind: 'bench' })).toMatchObject({ ok: false, code: 'bad_kind' });
+  expect(checkRunUpload('arc2-s', { ...speed, apiVersion: 1 })).toMatchObject({ ok: false, code: 'bad_kind' });
+  for (const bad of [undefined, [], {}, Array.from({ length: 65 }, (_, i) => ({ name: `a${i}` })),
+    [{ name: '' }], [{ name: 'x'.repeat(81) }], [{ metrics: {} }], [{ name: 'a' }, { name: 'a' }],
+    [{ name: 'a', status: 'done' }], [{ name: 'a', metrics: [1] }], [{ name: 'a', metrics: { genTokS: '448' } }],
+    [{ name: 'a', metrics: { genTokS: Number.NaN } }]]) {
+    expect(checkRunUpload('arc2-s', { ...speed, arms: bad }), JSON.stringify(bad)).toMatchObject({ ok: false, status: 400, code: 'bad_arms' });
+  }
 });
 
 test('a trace upload must be this output\'s trace, under 3 MB', () => {
@@ -156,6 +187,15 @@ test('machine routes check the token first, then the address and document, then 
   expect((await call('put', '/arc2-evals/machine/runs/:key', req({}, { key: 'arc2-k340' }, doc))).statusCode).toBe(401);
 
   const auth = { 'x-arc2-eval-token': TOKEN };
+  expect((await call('get', '/arc2-evals/machine/schema', req())).statusCode).toBe(401);
+  const schema = await call('get', '/arc2-evals/machine/schema', req(auth));
+  expect(schema.statusCode).toBe(200);
+  expect(schema.body).toMatchObject({ success: true, data: { apiVersions: [1, 2], kinds: ['accuracy', 'speed', 'kernel', 'profile'] } });
+
+  const badArms = await call('put', '/arc2-evals/machine/runs/:key', req(auth, { key: 'arc2-k340' }, { apiVersion: 2, kind: 'speed', key: 'arc2-k340', arms: [] }));
+  expect(badArms.statusCode).toBe(400);
+  expect(badArms.body).toMatchObject({ error: 'bad_arms' });
+
   const badKey = await call('put', '/arc2-evals/machine/runs/:key', req(auth, { key: 'BAD' }, doc));
   expect(badKey.statusCode).toBe(400);
   expect(badKey.body).toMatchObject({ error: 'bad_key' });

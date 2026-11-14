@@ -18,6 +18,12 @@
  *          rows; they are picked out in Node rather than with a jsonb cast, because JSON.stringify
  *          may write escapes (\u0000, a lone surrogate) that jsonb refuses, and one such run
  *          would otherwise break the whole list.
+ *
+ *          2026-10-21 (Claude Opus 5.5), the runs API: the same tables hold every kind of
+ *          internal run (accuracy, speed, kernel, profile; routes/teamEvals.ts checks them). The
+ *          list adds each run's kind (accuracy when a version 1 document has none), author, box,
+ *          verdict, headline metric and its arms' names, statuses and metrics, never their
+ *          profiles or details.
  * SRP/DRY check: Pass - storage only; HTTP in routes/teamEvals.ts, the machine token in
  *          middleware/arc2EvalToken.ts. Reuses BaseRepository's pool, transaction and
  *          isConnected guard; tables are created in DatabaseSchema.ts with all the others.
@@ -26,15 +32,29 @@
 import { BaseRepository } from './base/BaseRepository.js';
 import { logger } from '../utils/logger.js';
 
-/** What the runs list needs; the per-output rows and notes stay on the run page. */
+/** An arm as the runs list shows it: no profile, config or details. */
+export interface EvalArmIndex {
+  name: unknown;
+  label: unknown;
+  status: unknown;
+  metrics: unknown;
+}
+
+/** What the runs list needs; the per-output rows, arm details and notes stay on the run page. */
 export interface EvalRunIndexRow {
   key: string;
+  kind: string;
   title: unknown;
   createdAt: unknown;
+  author: unknown;
   model: unknown;
   panel: unknown;
   summary: unknown;
   reference: unknown;
+  box: unknown;
+  verdict: unknown;
+  headline: unknown;
+  arms: EvalArmIndex[] | null;
   updatedAt: string;
 }
 
@@ -53,6 +73,14 @@ function parseObject(body: string): Record<string, unknown> | null {
   } catch {
     return null;
   }
+}
+
+/** The arms' names, statuses and metrics, for the list's side-by-side headline. */
+function armIndex(arms: unknown): EvalArmIndex[] | null {
+  if (!Array.isArray(arms)) return null;
+  return arms
+    .filter((arm): arm is Record<string, unknown> => typeof arm === 'object' && arm !== null)
+    .map((arm) => ({ name: arm.name ?? null, label: arm.label ?? null, status: arm.status ?? null, metrics: arm.metrics ?? null }));
 }
 
 export class TeamEvalRepository extends BaseRepository {
@@ -102,12 +130,18 @@ export class TeamEvalRepository extends BaseRepository {
       if (!doc) continue;
       runs.push({
         key: r.run_key,
+        kind: typeof doc.kind === 'string' ? doc.kind : 'accuracy',
         title: doc.title ?? null,
         createdAt: doc.createdAt ?? null,
+        author: doc.author ?? null,
         model: doc.model ?? null,
         panel: doc.panel ?? null,
         summary: doc.summary ?? null,
         reference: doc.reference ?? null,
+        box: doc.box ?? null,
+        verdict: doc.verdict ?? null,
+        headline: doc.headline ?? null,
+        arms: armIndex(doc.arms),
         updatedAt: new Date(r.updated_at).toISOString(),
       });
     }
