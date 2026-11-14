@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low
- * Date: 02-November-2026
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): passes the card art's optional focusX through to the full-bleed crop in art.ts.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -327,7 +328,7 @@ function artFor(ctx: Context, card: CollectionCard) {
     return artRecord(dir, art.src, 'last-year-hall-of-fame', others, true, art.alt, art.credit);
   }
   const source = art.src.startsWith('/news-images/cards/') ? 'registered' : art.artworkId ? 'editorial-portrait' : 'registered';
-  return { ...artRecord(dir, art.src, source, [], null, art.alt, art.credit), registered: source === 'registered', framing: art.framing };
+  return { ...artRecord(dir, art.src, source, [], null, art.alt, art.credit), registered: source === 'registered', framing: art.framing, focusX: art.focusX };
 }
 
 /** A team's Kaggle name without the art-brief suffix some cards carry ("yktori - Silver Comet" -> "yktori"). */

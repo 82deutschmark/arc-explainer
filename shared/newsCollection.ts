@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): optional art.focusX for full-bleed crops; RENDER_VERSION 11 for centred fronts.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -27,6 +28,9 @@ export const collectionArtSchema = z.object({
   src: z.string().regex(/^\/news-images\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(?:webp|png|jpg|jpeg)$/),
   alt: z.string().min(1), credit: z.string().min(1), artworkId: id.optional(), commissionedAt: stamp.optional(),
   framing: z.literal('upper-body').optional(),
+  // Horizontal point to keep centred when a full-bleed front crops the art: 0 = left edge, 1 = right edge.
+  // Omit for the middle; set it only for a source whose subject genuinely stands to one side.
+  focusX: z.number().min(0).max(1).optional(),
 }).strict();
 export const cardDefinitionSchema = z.object({
   id, kind: z.enum(['person', 'team']), name: z.string().min(1),
@@ -198,7 +202,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 10;  // Card dates follow their measured evidence.
+export const RENDER_VERSION = 11;  // Full-bleed fronts crop around the centre, not sharp's attention guess.
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';

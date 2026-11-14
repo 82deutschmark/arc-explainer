@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): full-bleed fronts crop around the centre (or the card art's focusX)
+ *          instead of sharp's attention strategy, which pushed every square source to one edge.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * PURPOSE: Fit registered original card artwork into the existing card design without cutting
  *          off the subject. A blurred background fills unused space; original files stay untouched.
@@ -184,7 +186,17 @@ async function artLayerUnsafe(card: any, T: TierStyle, override?: ArtOverride): 
         portrait.extract({ left: Math.floor((meta.width - width) / 2), top: 0, width, height })
           .resize(W, H - headroom, { fit: 'fill' }).extend({ top: headroom, bottom: 0, left: 0, right: 0, extendWith: 'copy' });
       } else {
-        portrait.resize(W, H, { fit: 'cover', position: sharp.strategy.attention });
+        // Cover the card, centred on the art's focus point (default: the middle). sharp's `attention`
+        // strategy used to choose the crop; on every square source it shoved the window the full slack
+        // to one edge (150px of 750), so the subject sat visibly off-centre. `focusX` (0 = left edge,
+        // 1 = right edge) is for the rare source whose subject genuinely stands to one side.
+        const scale = Math.max(W / meta.width, H / meta.height);
+        const scaledW = Math.max(W, Math.round(meta.width * scale));
+        const scaledH = Math.max(H, Math.round(meta.height * scale));
+        const focusX = typeof art.focusX === 'number' ? art.focusX : 0.5;
+        const left = Math.min(scaledW - W, Math.max(0, Math.round(focusX * scaledW - W / 2)));
+        const top = Math.round((scaledH - H) / 2);
+        portrait.resize(scaledW, scaledH, { fit: 'fill' }).extract({ left, top, width: W, height: H });
       }
       const png = await jpeg(portrait);
       return { png, mime: 'image/jpeg', kind: 'contract', mode: 'full-bleed', plate: null, freeBand: null };
