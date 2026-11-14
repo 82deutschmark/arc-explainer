@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
- * Date: 03-November-2026
+ * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): From X posts older than a week leave the index, like discussions and wire.
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
@@ -268,7 +269,11 @@ export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex;
     accounts.forEach(account => claimed.add(account));
     return true;
   });
-  const social = readLedger(directory, 'social.json', newsSocialSchema, post => post.id, skipped);
+  // The From X strip is current reporting, so it keeps the same one-week window as discussions and the wire.
+  // When the edition desk stops exporting (as it did from 22-Oct-2026), the strip empties and hides itself
+  // instead of presenting weeks-old posts as the latest. social.json stays in git unchanged.
+  const social = readLedger(directory, 'social.json', newsSocialSchema, post => post.id, skipped)
+    .filter(post => Date.now() - Date.parse(post.postedAt ?? post.checkedAt) <= WIRE_WINDOW_MS);
   // Only the explicitly exported public archive is served. The private research state is never read here.
   const socialArchive = readLedger(directory, 'social-archive.json', newsSocialSchema, post => post.id, skipped)
     .filter(post => post.postedAt && Date.now() - Date.parse(post.postedAt) <= 30 * 24 * 3_600_000);

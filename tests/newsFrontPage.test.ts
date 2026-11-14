@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 13-November-2026
+ * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5): reading-order test seeds the committed From X export, since the
+ *          store now drops posts older than a week.
  * Special-report permalink regression: GPT-6 / Codex, 2026-11-01.
  * 09-Nov-2026: Verified Tufa cast regression by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -75,7 +77,10 @@ afterEach(() => vi.unstubAllGlobals());
 
 test('the lead precedes social and wire in reading order with or without a market board', () => {
   vi.stubGlobal('React', React);
-  const index = getNewsIndex();
+  // The store drops From X posts older than a week, so seed the committed export directly:
+  // this test is about reading order, not about whether the newsroom exported recently.
+  const exportedSocial = JSON.parse(fs.readFileSync('content/news/social.json', 'utf8'));
+  const index = { ...getNewsIndex(), social: exportedSocial };
   for (const marketData of [markets(index), undefined]) {
     const html = render(() => createElement(NewsFrontPage, { index, markets: marketData }), '/news', index, marketData);
     const lead = html.indexOf('aria-label="Lead stories"');

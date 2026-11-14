@@ -1,3 +1,7 @@
+### Version 9.164.42 · November 14, 2026
+
+- **Fixed the front page's From X strip, which had been frozen since 20 Oct.** What: the strip showed the same posts for over three weeks. Why: on 22 Oct scheduled editions moved to `docs/newsroom/SCHEDULED_EDITIONS.md`, which dropped REPORTER.md's step that runs `newsroom_social.py export-public` / `discussion-export`, so `content/news/social.json` was never refreshed (and editions since then cited no social sources). How: restored the export as step 6 of the publish pass; the store now drops From X posts older than one week, the same window discussions and the wire already use, so a missed export hides the strip instead of presenting stale posts as current. Files: `server/services/news/newsStore.ts`, `docs/newsroom/SCHEDULED_EDITIONS.md`, `tests/newsSocialFreshness.test.ts`. Author: Claude Opus 5.5.
+
 ### Version 9.164.41 · November 13, 2026
 
 - Stop the music-video production gallery and expanding scene-book iframe from flooding the news page. Both client and initial server HTML keep the story’s single cover, video link and an optional standalone scene-book link. Author: GPT-6.1 Sol / Codex.
