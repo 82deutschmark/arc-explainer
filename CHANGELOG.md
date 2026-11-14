@@ -1,3 +1,12 @@
+### Version 9.164.45 · November 14, 2026
+
+- **Loose Goose server resilience and speed (second audit pass).** What/why/how:
+  - The archive is memoised on file mtimes/sizes (30 s TTL, so the one-week windows still move): a cached load drops from ~110 ms to ~6 ms, and the card collection checks its memo before touching the archive (~105 ms → ~0.07 ms). Board generation moves only when rows change; each artwork is hashed once per path/mtime/size instead of ~140 MB every rebuild. Found stories get `max-age=60`.
+  - One bad person, artwork file or wiki row no longer 500s the front page, articles, Cabinet or sitemap: the card is left out and recorded, the last good collection is served, pages fall back to portraits/plain markup, and `/api/news/health` reports `degraded` with the reason instead of "ok". A duplicate team on a saved board drops only that team; board read errors and wiki problems are reported in one line with the row id and the real file.
+  - `/api/news/markets` builds each board separately, serves the last good digest when a rebuild fails, and shares one in-flight rebuild. Share cards answer 503 (not 404) when rendering fails, redirect stale `?v`, don't cache a puzzle-less front card, and evict old article versions.
+  - Newsroom docs: README's desk table now says what actually runs (only the leaderboard collector; every other desk retired 1 Nov per CONSOLIDATION.md), so the From X strip, discussions and wire stay paused until a desk is restarted. Freeze date corrected to 20 Oct. `board-history.json` rebuilt from saved evidence (was stale since 31 Oct).
+  - Files: `server/routes/news.ts`, `server/services/news/{newsStore,newsCollection,cardBoards,newsPresentation,newsMarkets,newsCardImage,newsCardPuzzle}.ts`, `docs/newsroom/{README,SCHEDULED_EDITIONS}.md`, `content/news/board-history.json`, tests `newsArchiveCollectionResilience`, `newsCardResilience`, `newsMarketsResilience`, `newsCollection`, `newsStoryRoute`. Author: Claude Opus 5.5 (with Claude Opus 5.5 subagents).
+
 ### Version 9.164.44 · November 14, 2026
 
 - **Loose Goose audit fixes (code-only adversarial audit: 86 confirmed findings, 55 fixes).** Why: the section had accumulated stale, duplicated and broken behaviour. How, by area:

@@ -97,7 +97,7 @@ and character rules; this change does not alter another desk's schedule or send 
    browser:
    `python3.13 scripts/newsroom_social.py export-public --directory /Users/macmini/bubba-workspace/reports/arc-daily-social`
    and `python3.13 scripts/newsroom_social.py discussion-export --directory /Users/macmini/bubba-workspace/reports/arc-daily-social`.
-   Skipping this froze the front page's From X strip from 22 Oct to 14 Nov 2026; the site now
+   Skipping this froze the front page's From X strip from 20 Oct to 14 Nov 2026; the site now
    hides posts older than a week, so a missed export empties the strip rather than dating it.
 7. Validate, publish, stage exact intended paths (including `social.json`, `social-archive.json`
    and `discussions.json` when changed), run `git diff --check`, commit, safely fetch/rebase

@@ -17,6 +17,11 @@
  *          14-Nov-2026 (Claude Opus 5.5): GET /api/news/wire/:id, one wire story for its permanent page, whatever its age.
  *          14-Nov-2026 (Claude Opus 5.5, card faces): card share and thumbnail versions are computed with the collection
  *          (teammates, shared art, set tier counts, stamp phase), the same key the renderer's memo caches use.
+ *          14-Nov-2026 (Claude Opus 5.5, card resilience): share cards answer 503 + no-store when rendering fails (404 only for
+ *          a missing article), and an article card with a missing or stale ?v redirects to articleCardPath.
+ *          14-Nov-2026 (Claude Opus 5.5, archive-collection): /api/news/health also reports Card Cabinet cards left out, a
+ *          failed Cabinet build and a failed board read (status "degraded"); a found story is cached publicly for a
+ *          minute, a miss stays no-store.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
 import { mountNewsHost } from '../services/news/newsHost';
@@ -28,14 +33,16 @@ import { getNewsIndex, loadNewsArchive, loadWireStory, NEWS_DIRECTORY, WIRE_ID }
 import { newsRss } from '../services/news/newsPresentation';
 import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
 import { marketsResponse } from '../services/news/newsMarkets';
-import { getNewsCollection } from '../services/news/newsCollection';
+import { getNewsCollection, newsCollectionHealth } from '../services/news/newsCollection';
 import { buildCollectionCardImage, buildCollectionCardThumb } from '../services/news/newsCollectionImage';
 import { buildCollectionShareImage } from '../services/news/newsCollectionShareImage';
 import { THUMB_MIN_WIDTH, THUMB_MAX_WIDTH } from '../services/news/cardFace';
 import { collectionSharePath, collectionShareVersion } from '../../shared/newsCollection';
+import { articleCardPath, articleCardVersion } from '../../shared/news';
+/** A rendered share card, or a 503 that nobody caches when rendering failed (the card exists; drawing it did not work). */
 const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => card
   ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
-  : res.status(404).set('Cache-Control', 'no-store').json({ error: 'Preview image not found' });
+  : res.status(503).set('Cache-Control', 'no-store').json({ error: 'Preview image could not be rendered' });
 export function mountNews(app: Express) {
   mountNewsFonts(app);
   mountNewsHost(app);
@@ -107,7 +114,8 @@ export function mountNews(app: Express) {
       }
       const related = index.articles.filter(item => item.id !== article?.id)
         .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 8);
-      return res.json({
+      // A published story changes only by a revision; a minute of public caching spares the archive read.
+      return res.set('Cache-Control', 'public, max-age=60').json({
         articles: article ? [article, ...related] : related,
         dispatches: (index.dispatches ?? []).filter(item => item.id === dispatch?.id || item.id === article?.frontPageFeatureId),
         competitors: index.competitors.filter(item => article?.competition === item.competition && article.teamIds.includes(item.teamId)),
@@ -119,9 +127,14 @@ export function mountNews(app: Express) {
   // (bubba-workspace/tools/arc_daily_announce.py) reads this and raises it in Discord.
   app.get('/api/news/health', (_req, res, next) => {
     try {
-      const { index, skipped } = loadNewsArchive();
+      const { index, skipped: archiveSkipped } = loadNewsArchive();
+      // The Card Cabinet is built from the same files: cards it left out join the list, and a failed build or
+      // board read is a problem of its own. Any of them makes the paper "degraded".
+      const cards = newsCollectionHealth();
+      const skipped = [...archiveSkipped, ...cards.skipped];
+      const problems = [cards.error, cards.boards].filter((problem): problem is string => !!problem);
       res.set('Cache-Control', 'no-store').json({
-        status: skipped.length ? 'degraded' : 'ok', checkedAt: new Date().toISOString(), skipped,
+        status: skipped.length || problems.length ? 'degraded' : 'ok', checkedAt: new Date().toISOString(), skipped, problems,
         counts: { articles: index.articles.length, dispatches: index.dispatches?.length ?? 0, wire: index.wire?.length ?? 0, people: index.people?.length ?? 0 },
       });
     } catch (error) { next(error); }
@@ -138,8 +151,15 @@ export function mountNews(app: Express) {
   app.get('/api/news/og-image.png', async (_req, res, next) => {
     try { sendCard(res, await buildSectionCard(), 'public, max-age=3600'); } catch (error) { next(error); }
   });
+  // 404 only for an article that does not exist; a missing or stale ?v goes to the current address (as share.png does),
+  // so only a matching version is ever served as immutable.
   app.get('/api/news/og-image/:id.png', async (req, res, next) => {
-    try { sendCard(res, await buildArticleCard(req.params.id), 'public, max-age=31536000, immutable'); } catch (error) { next(error); }
+    try {
+      const article = getNewsIndex().articles.find(item => item.id === req.params.id);
+      if (!article) return res.status(404).set('Cache-Control', 'no-store').json({ error: 'Article not found' });
+      if (req.query.v !== articleCardVersion(article)) return res.set('Cache-Control', 'no-store').redirect(302, articleCardPath(article));
+      return sendCard(res, await buildArticleCard(article), 'public, max-age=31536000, immutable');
+    } catch (error) { next(error); }
   });
   app.get('/api/news/:id/evidence', (req, res, next) => {
     try {

@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, archive-collection): a person card with no verified person is now left out and recorded,
+ *          not thrown, so one bad person cannot take down the Cabinet.
  * 14-Nov-2026 (Claude Opus 5.5): --import loaders are passed as file:// URLs so the CLI subprocesses run on Windows too.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Protect collectible identity joins, officially credited honors, result revisions,
@@ -323,8 +325,11 @@ describe('Card Cabinet identity and statistics', () => {
     }
   });
 
-  it('rejects a person card whose identity is absent from the verified ledger', () => {
-    expect(() => buildNewsCollection(registry([personCard('missing')], []), index())).toThrow(/verified person/i);
+  it('leaves out and records a person card whose identity is absent from the verified ledger', () => {
+    const skipped: { file: string; record?: string; reason: string }[] = [];
+    const collection = buildNewsCollection(registry([personCard('missing'), teamCard()], []), index(), [], {}, null, null, [], { skipped, file: 'cards.json' });
+    expect(collection.cards.map(card => card.id)).toEqual(['team-arc-3-100']);
+    expect(skipped).toEqual([{ file: 'cards.json', record: 'person-missing', reason: expect.stringMatching(/verified person/i) }]);
   });
 
   it('rejects duplicate card identities, duplicate snapshots and mismatched contest keys', () => {

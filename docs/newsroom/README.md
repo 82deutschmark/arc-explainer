@@ -25,19 +25,28 @@ rule applies to manual work as well as scheduled shifts and overrides older wait
 
 ## The desks
 
+> **Current state (14-Nov-2026, from [CONSOLIDATION.md](CONSOLIDATION.md)):** only the leaderboard
+> collector runs (launchd `com.arc3.leaderboard`, every 30 minutes, from
+> `tools/leaderboard-collector/`). Every other desk in the table below is **retired** since 1 Nov:
+> no editions, wire, research, social export, X recap, relay, backup or check-in runs until Mark
+> gives a new explicit instruction. Consequences on the site: the wire shows "Desk paused since"
+> its last filing (1 Nov), and the From X strip and Kaggle discussion leads are hidden because
+> nothing has exported them since 20 Oct and 27 Oct. The table records how the desks ran so they
+> can be restarted as they were.
+
 All times America/New_York. Codex is the engine; Claude is the backup and the plumbing.
 
 | Desk | Who | When | Folder | Follows | May publish or send |
 |---|---|---|---|---|---|
 | Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
 | Late edition | Codex, GPT-6.1 Sol | 5:00 pm artwork prepress; 6:00 pm release | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
-| Wire | Codex, GPT-6 Luna | every two hours (running; the Claude wire checks below only fill a missed shift) | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
-| Research | Codex, GPT-6.1 Sol | running (resumed by Mark; check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
-| Personal briefing | Codex, GPT-6.1 Sol | running (check `automations.status` for the live state) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
+| Wire | Codex, GPT-6 Luna | every two hours (retired 1 Nov; last filing 2026-11-01 17:30) | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
+| Research | Codex, GPT-6.1 Sol | retired 1 Nov (was resumed 24 Oct) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
+| Personal briefing | Codex, GPT-6.1 Sol | retired 1 Nov | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
 | Afternoon X recap | Codex, GPT-6.1 Sol | 2:20 pm | newsroom checkout, read-only | [X_POSTING.md](X_POSTING.md) | one afternoon X post |
 | Backup desk | Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire (launchd `com.arcdaily.fallback`) | 6:50 am/pm; wire checks 9:40 am, 12:40, 3:40, 9:40 pm | fallback checkout | [FALLBACK.md](FALLBACK.md) | only what Codex missed |
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |
-| Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
+| Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes (the only desk running) | `tools/leaderboard-collector/` in this repository | this page | uploads both boards to the site |
 | Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 7:05 am, after the morning edition | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |
 
 The Late automation has two passes: 5 pm prepares reference-based artwork before 6, and

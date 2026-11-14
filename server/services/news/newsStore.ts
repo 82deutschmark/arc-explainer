@@ -1,6 +1,10 @@
 /**
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, archive-collection): loadNewsArchive is memoised per directory on the modified time and
+ *          size of every file it reads, for at most ARCHIVE_TTL_MS so the one-week and future-date windows still move;
+ *          goose-wiki.json problems are reported with describeIssues and the row's id, and a conflicting person is
+ *          reported under the file it actually came from (people.json or goose-wiki.json).
  * 14-Nov-2026 (Claude Opus 5.5): From X posts older than a week leave the index, like discussions and wire.
  * 14-Nov-2026 (Claude Opus 5.5): loadWireStory reads one wire story by ID for its permanent page, whatever its
  *          age; while the desk has filed nothing for a week the index carries its newest filings (wireLatest).
@@ -217,6 +221,11 @@ const describeIssues = (error: z.ZodError) => {
   const issue = error.issues[0];
   return issue ? `${issue.path.length ? `${issue.path.join('.')}: ` : ''}${issue.message}` : 'invalid record';
 };
+/** One short line for any read or validation failure: the first zod issue, or the error message. Never a raw issue dump. */
+export const describeProblem = (error: unknown): string => error instanceof z.ZodError ? describeIssues(error) : describeError(error);
+/** A ledger row's own id when it has one, else its position, so a report names the record a person can find. */
+const rowLabel = (item: unknown, position: number) =>
+  item && typeof item === 'object' && typeof (item as { id?: unknown }).id === 'string' ? (item as { id: string }).id : `item ${position}`;
 /** One-story-per-file folders (articles, dispatches, wire): every valid file whose name matches its ID. */
 function readStoryFolder<T extends { id: string }>(directory: string, folder: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, skipped: NewsSkip[]): T[] {
   const root = path.join(directory, folder);
@@ -263,7 +272,7 @@ function readLedger<T>(directory: string, file: string, schema: z.ZodType<T, z.Z
   }
   const seen = new Set<string>();
   return raw.flatMap((item, position) => {
-    const label = item && typeof item === 'object' && typeof (item as { id?: unknown }).id === 'string' ? (item as { id: string }).id : `item ${position}`;
+    const label = rowLabel(item, position);
     const parsed = schema.safeParse(item);
     if (!parsed.success) {
       leaveOut(skipped, { file, record: label, reason: describeIssues(parsed.error) });
@@ -323,16 +332,54 @@ const withRevisions = <T extends { id: string }>(story: T, revisions: Map<string
   const found = revisions.get(story.id);
   return found?.length ? { ...story, revisions: found, updatedAt: found[found.length - 1].at } : story;
 };
-/** The public archive plus anything that had to be left out of it. */
-export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex; skipped: NewsSkip[] } {
+/**
+ * The archive is read on every news page, card image and API call, so it is memoised per directory. The memo is
+ * keyed on the modified time and size of every file loadNewsArchive reads (a commit or a desk write shows at once)
+ * and lives at most ARCHIVE_TTL_MS, because the result also depends on the clock: the one-week windows for wire,
+ * discussions and From X, and the "not in the future" publication checks. Callers share the returned object and
+ * must not mutate it.
+ */
+const ARCHIVE_TTL_MS = 30_000;
+const ARCHIVE_MEMO_LIMIT = 4;               // the live directory plus a few test or script directories
+const ARCHIVE_LEDGERS = ['goose-wiki.json', 'archive-casts.json', 'competitors.json', 'people.json', 'social.json', 'discussions.json'];
+const ARCHIVE_FOLDERS: [string, RegExp][] = [['articles', /\.json$/], ['dispatches', /\.json$/], ['wire', /\.json$/]];
+type NewsArchive = { index: NewsIndex; skipped: NewsSkip[] };
+const archiveMemo = new Map<string, { stamp: string; at: number; archive: NewsArchive }>();
+const fileStamp = (file: string) => { try { const stat = fs.statSync(file); return `${stat.mtimeMs}:${stat.size}`; } catch { return '-'; } };
+/** Fingerprint of every file the archive is read from: the ledgers, each story folder and the revision records. */
+function archiveStamp(directory: string): string {
+  const parts = ARCHIVE_LEDGERS.map(file => `${file}=${fileStamp(path.join(directory, file))}`);
+  for (const [folder, pattern] of [...ARCHIVE_FOLDERS, ...REVISION_FOLDERS]) {
+    const root = path.join(directory, folder);
+    let names: string[] = [];
+    try { names = fs.readdirSync(root).filter(name => pattern.test(name)).sort(); } catch { /* an absent folder reads as empty, as the loader treats it */ }
+    parts.push(`${folder}:${names.map(name => `${name}=${fileStamp(path.join(root, name))}`).join(',')}`);
+  }
+  return parts.join('|');
+}
+/** The public archive plus anything that had to be left out of it (memoised; see ARCHIVE_TTL_MS). */
+export function loadNewsArchive(directory = NEWS_DIRECTORY): NewsArchive {
+  const stamp = archiveStamp(directory);
+  const now = Date.now();
+  const hit = archiveMemo.get(directory);
+  // A clock moved backwards (tests, NTP) counts as expired rather than as forever fresh.
+  if (hit && hit.stamp === stamp && now >= hit.at && now - hit.at < ARCHIVE_TTL_MS) return hit.archive;
+  const archive = readNewsArchive(directory);
+  archiveMemo.delete(directory);
+  archiveMemo.set(directory, { stamp, at: now, archive });
+  while (archiveMemo.size > ARCHIVE_MEMO_LIMIT) archiveMemo.delete(archiveMemo.keys().next().value!);
+  return archive;
+}
+function readNewsArchive(directory: string): NewsArchive {
   const skipped: NewsSkip[] = [];
   let wiki: ReturnType<typeof loadWikiInputs> = null;
   try { wiki = loadWikiInputs(directory); }
-  catch (error) { leaveOut(skipped, { file: 'goose-wiki.json', reason: String(error) }); }
-  const wikiRows = <T,>(rows: unknown[], validator: z.ZodType<T>): T[] => rows.flatMap((row, position) => {
+  catch (error) { leaveOut(skipped, { file: 'goose-wiki.json', reason: `unreadable: ${describeProblem(error)}` }); }
+  // Wiki rows are reported like ledger rows: by the row's id and its first issue, under the wiki's own file name.
+  const wikiRows = <T,>(rows: unknown[], validator: z.ZodType<T>, kind: string): T[] => rows.flatMap((row, position) => {
     const parsed = validator.safeParse(row);
     if (parsed.success) return [parsed.data];
-    leaveOut(skipped, { file: 'goose-wiki.json', record: String(position), reason: parsed.error.message });
+    leaveOut(skipped, { file: 'goose-wiki.json', record: `${kind} ${rowLabel(row, position)}`, reason: describeIssues(parsed.error) });
     return [];
   });
   // Historical display corrections are separate from the immutable issue and its release proof.
@@ -349,24 +396,26 @@ export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex;
       return !issue;
     })
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition));
-  const competitors: CompetitorRecord[] = mergeCompetitorRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema));
+  const competitors: CompetitorRecord[] = mergeCompetitorRows(readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped), wikiRows(wiki?.competitors ?? [], competitorSchema, 'competitor'));
   const dispatches: NewsDispatch[] = readStoryFolder(directory, 'dispatches', newsDispatchSchema, skipped)
     .map(dispatch => withRevisions(applyArchiveCast(dispatch), revisions))
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
   // A verified account names one person; a later record claiming an earlier person's account is left out whole.
   const claimed = new Set<string>();
-  const people = mergeWikiRows(readLedger(directory, 'people.json', newsPersonSchema, person => person.id, skipped), wikiRows(wiki?.people ?? [], newsPersonSchema)).filter(person => {
+  // A wiki row replaces the ledger row with the same id (mergeWikiRows), so the merged row's origin is known by identity.
+  const wikiPeople = new Set(wikiRows(wiki?.people ?? [], newsPersonSchema, 'person'));
+  const people = mergeWikiRows(readLedger(directory, 'people.json', newsPersonSchema, person => person.id, skipped), [...wikiPeople]).filter(person => {
     const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
     const taken = accounts.find(account => claimed.has(account));
     if (taken) {
-      leaveOut(skipped, { file: 'people.json', record: person.id, reason: `verified account ${taken} already belongs to another person` });
+      leaveOut(skipped, { file: wikiPeople.has(person) ? 'goose-wiki.json' : 'people.json', record: person.id, reason: `verified account ${taken} already belongs to another person` });
       return false;
     }
     accounts.forEach(account => claimed.add(account));
     return true;
   });
   // The From X strip is current reporting, so it keeps the same one-week window as discussions and the wire.
-  // When the edition desk stops exporting (as it did from 22-Oct-2026), the strip empties and hides itself
+  // When the edition desk stops exporting (the last export was 20-Oct-2026), the strip empties and hides itself
   // instead of presenting weeks-old posts as the latest. social.json stays in git unchanged.
   const social = readLedger(directory, 'social.json', newsSocialSchema, post => post.id, skipped)
     .filter(post => Date.now() - Date.parse(post.postedAt ?? post.checkedAt) <= WIRE_WINDOW_MS);

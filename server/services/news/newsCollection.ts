@@ -1,6 +1,11 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, archive-collection): getNewsCollection checks its memo (watched files, board generation,
+ *          TTL) before reading the news index; each artwork is hashed once per path, modified time and size; a person
+ *          card with no verified person, or a card whose artwork is missing or fails its digest, is left out and
+ *          recorded instead of failing the whole Cabinet; goose-wiki.json read failures are caught; a failed rebuild
+ *          serves the last good collection; tryNewsCollection and newsCollectionHealth serve pages and /api/news/health.
  * 14-Nov-2026 (Claude Opus 5.5): highlights no longer repeat Hall of Fame honours or completed-competition rows; team
  *          cards carry no account list (their rosters are listed with names).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -23,10 +28,10 @@ import { createHash } from 'node:crypto';
 import { boardHistorySchema, cardRegistrySchema, careersFileSchema, hallOfFameSchema, type BoardHistory, type HallOfFameFile, type CollectionArchive, collectionCardPath, type CollectionCareer, finalCardResultSchema, type CardRegistry, type CollectionArt, type CollectionCard, type CollectionPastCard, type CollectionStory, type CollectionTeamHistory, type FinalCardResult, type NewsCollection } from '../../../shared/newsCollection';
 import { competitionName, personPath, competitorPath, newsArticlePath, wirePath, reportedPeople, type NewsIndex, type NewsPerson } from '../../../shared/news';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
-import { getNewsIndex, NEWS_DIRECTORY } from './newsStore';
+import { describeProblem, getNewsIndex, NEWS_DIRECTORY, type NewsSkip } from './newsStore';
 import { loadSeriesFile } from './cardFace/sets';
 import { loadWikiInputs } from './wikiInputs';
-import { cardBoardCache, freshCardRows } from './cardBoards';
+import { cardBoardCache, cardBoardStatus, freshCardRows } from './cardBoards';
 
 export function activeCardResults(results: FinalCardResult[]): FinalCardResult[] {
   const ids = new Set<string>();
@@ -149,10 +154,20 @@ function zoneOf(score: number | null, saved: ReturnType<typeof boardNear>): 'gol
   return saved.gold != null && score >= saved.gold ? 'gold' : saved.silver != null && score >= saved.silver ? 'silver' : saved.bronze != null && score >= saved.bronze ? 'bronze' : null;
 }
 
-export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, results: FinalCardResult[] = [], careers: Record<string, CollectionCareer> = {}, board: BoardHistory | null = null, hallOfFame: HallOfFameFile | null = null, sets: NewsCollection['sets'] = []): NewsCollection {
-  cardRegistrySchema.parse(registry);
+/** Where buildNewsCollection records a card it leaves out, and the registry file to name in that record. */
+export interface CollectionReport { skipped: NewsSkip[]; file: string }
+
+export function buildNewsCollection(source: CardRegistry, index: NewsIndex, results: FinalCardResult[] = [], careers: Record<string, CollectionCareer> = {}, board: BoardHistory | null = null, hallOfFame: HallOfFameFile | null = null, sets: NewsCollection['sets'] = [], report?: CollectionReport): NewsCollection {
+  cardRegistrySchema.parse(source);
   const final = activeCardResults(results);
   const people = index.people ?? [];
+  // newsStore leaves out an invalid or conflicting person on its own. That person's card is left out and recorded
+  // here, before any lookup is built, so no other card links to it and the rest of the Cabinet still renders.
+  const registry: CardRegistry = { ...source, cards: source.cards.filter(card => {
+    if (card.kind !== 'person' || people.some(person => person.id === card.personId)) return true;
+    report?.skipped.push({ file: report.file, record: card.id, reason: `card has no verified person (${card.personId ?? 'none named'})` });
+    return false;
+  }) };
   // Match each edition's verified cast once for the card cabinet's story links.
   const articlePeople = new Map(index.articles.map(article => [article.id, new Set(reportedPeople([article], people).map(item => item.id))] as const));
   const byHandle = new Map(people.flatMap(person => person.accounts.filter(account => account.platform === 'kaggle').map(account => [account.handle.toLowerCase(), person] as const)));
@@ -180,7 +195,6 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
   const notebooks = new Map<string, string>(index.competitors.map(team => [`${KAGGLE_COMPETITIONS[team.competition].slug}:${team.teamId}`, competitorPath(team.id)] as const));
   const cards: CollectionCard[] = registry.cards.map(definition => {
     const person = people.find(item => item.id === definition.personId);
-    if (definition.kind === 'person' && !person) throw Error('Card has no verified person: ' + definition.id);
     const handles = new Set(person?.accounts.filter(account => account.platform === 'kaggle').map(account => account.handle));
     const set = definition.setId ? sets.find(row => row.id === definition.setId) : undefined;
     // A general set has no contest restriction. An unknown set must not acquire unrelated results.
@@ -290,39 +304,120 @@ export function buildNewsCollection(registry: CardRegistry, index: NewsIndex, re
 /** Files the collection is built from, besides the news index; a change to any of them rebuilds the memo at once. */
 const WATCHED = ['goose-wiki.json', 'cards.json', 'card-results.json', 'careers.json', 'board-history.json', 'hall-of-fame.json', 'series.json'];
 const MEMO_TTL_MS = 15_000;                   // the news index (stories on cards) is not watched file by file: it is re-read this often
-let memo: { directory: string; stamp: string; at: number; collection: NewsCollection } | null = null;
+const MEMO_LIMIT = 4;                         // the live directory plus a few test or script directories
+type Memo = { stamp: string; generation: number | null; at: number; collection: NewsCollection; skipped: NewsSkip[] };
+/** The last good build per directory, and the last failed one (so a broken input is not rebuilt on every request). */
+const memos = new Map<string, Memo>();
+const failures = new Map<string, { stamp: string; generation: number | null; at: number; error: string }>();
 const statStamp = (file: string) => { try { const s = fs.statSync(file); return `${s.mtimeMs}:${s.size}`; } catch { return '-'; } };
+const fresh = (at: number, now: number) => now >= at && now - at < MEMO_TTL_MS;
+const remember = <T,>(map: Map<string, T>, directory: string, value: T) => {
+  map.delete(directory);
+  map.set(directory, value);
+  while (map.size > MEMO_LIMIT) map.delete(map.keys().next().value!);
+};
 
 /** Fingerprint of everything outside a card that its picture prints: the set's size, tier counts, series rows and career extras. */
-function setKeyOf(directory: string, cards: CollectionCard[]): string {
+function setKeyOf(directory: string, cards: CollectionCard[], wiki: ReturnType<typeof loadWikiInputs>): string {
   const tiers: Record<string, number> = {};
   for (const card of cards) if (card.career?.tier) tiers[card.career.tier] = (tiers[card.career.tier] ?? 0) + 1;
   const kinds: Record<string, number> = {};
   for (const card of cards) kinds[card.kind] = (kinds[card.kind] ?? 0) + 1;
   const extrasDir = path.join(directory, 'evidence', 'kaggle-careers');
   const extras = fs.existsSync(extrasDir) ? fs.readdirSync(extrasDir).sort().map(f => `${f}:${statStamp(path.join(extrasDir, f))}`) : [];
-  const series = loadWikiInputs(directory)?.series ?? (fs.existsSync(path.join(directory, 'series.json')) ? fs.readFileSync(path.join(directory, 'series.json'), 'utf8') : '');
-  const text = JSON.stringify([cards.length, tiers, kinds, extras, series, loadWikiInputs(directory)?.fingerprint]);
+  const series = wiki?.series ?? (fs.existsSync(path.join(directory, 'series.json')) ? fs.readFileSync(path.join(directory, 'series.json'), 'utf8') : '');
+  const text = JSON.stringify([cards.length, tiers, kinds, extras, series, wiki?.fingerprint]);
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return h.toString(36);
 }
 
+/**
+ * The Card Cabinet, memoised per directory. The memo is checked before anything is read: it holds while the watched
+ * files and the board generation are unchanged and it is younger than MEMO_TTL_MS. A failed rebuild is recorded for
+ * /api/news/health and the last good collection is served; with no good build yet, the error is thrown.
+ */
 export function getNewsCollection(directory = NEWS_DIRECTORY): NewsCollection {
-  const wiki = loadWikiInputs(directory);
-  const boards = wiki ? cardBoardCache(directory, wiki.registry, getNewsIndex(directory)) : null;
-  const stamp = WATCHED.map(f => statStamp(path.join(directory, f))).join('|') + '|' + (boards?.generation ?? 'archive');
-  if (memo && memo.directory === directory && memo.stamp === stamp && Date.now() - memo.at < MEMO_TTL_MS) return memo.collection;
-  const collection = buildCollectionFromFiles(directory);
-  const setKey = setKeyOf(directory, collection.cards);
-  for (const card of collection.cards) card.setKey = setKey;
-  memo = { directory, stamp, at: Date.now(), collection };
-  return collection;
+  const stamp = WATCHED.map(f => statStamp(path.join(directory, f))).join('|');
+  const now = Date.now();
+  const memo = memos.get(directory);
+  const generation = cardBoardStatus(directory).generation;
+  if (memo && memo.stamp === stamp && memo.generation === generation && fresh(memo.at, now)) return memo.collection;
+  const failed = failures.get(directory);
+  if (failed && failed.stamp === stamp && failed.generation === generation && fresh(failed.at, now)) {
+    if (memo) return memo.collection;
+    throw Error(failed.error);
+  }
+  try {
+    const skipped: NewsSkip[] = [];
+    const wiki = wikiInputsOrThrow(directory);
+    const collection = buildCollectionFromFiles(directory, wiki, skipped);
+    const setKey = setKeyOf(directory, collection.cards, wiki);
+    for (const card of collection.cards) card.setKey = setKey;
+    // Read the generation after the build: the build is what creates the board cache for a new directory.
+    remember(memos, directory, { stamp, generation: cardBoardStatus(directory).generation, at: now, collection, skipped });
+    failures.delete(directory);
+    return collection;
+  } catch (error) {
+    const reason = `The Card Cabinet could not be built: ${describeProblem(error)}`;
+    if (failed?.error !== reason) console.warn(`[news] ${reason}`);
+    remember(failures, directory, { stamp, generation: cardBoardStatus(directory).generation, at: now, error: reason });
+    if (memo) return memo.collection;
+    throw Error(reason);
+  }
 }
 
-function buildCollectionFromFiles(directory: string): NewsCollection {
-  const wiki = loadWikiInputs(directory);
+/** The collection, or null when it cannot be built. For pages that can render without cards (stories, profiles, sitemap). */
+export function tryNewsCollection(directory = NEWS_DIRECTORY): NewsCollection | null {
+  try { return getNewsCollection(directory); } catch { return null; }
+}
+
+/** What /api/news/health reports about the Cabinet: cards left out, a failed build and a failed board read. */
+export function newsCollectionHealth(directory = NEWS_DIRECTORY): { skipped: NewsSkip[]; error?: string; boards?: string } {
+  tryNewsCollection(directory);
+  const failed = failures.get(directory);
+  const boards = cardBoardStatus(directory).error;
+  return { skipped: memos.get(directory)?.skipped ?? [], ...(failed ? { error: failed.error } : {}), ...(boards ? { boards } : {}) };
+}
+
+/** goose-wiki.json, named in the error when it cannot be read; newsStore reports the same file for the index. */
+function wikiInputsOrThrow(directory: string): ReturnType<typeof loadWikiInputs> {
+  try { return loadWikiInputs(directory); }
+  catch (error) { throw Error(`goose-wiki.json: ${describeProblem(error)}`); }
+}
+
+/** SHA-256 of an artwork file, computed once per path, modified time and size (cards often share one file). */
+const artworkDigests = new Map<string, { stamp: string; digest: string }>();
+const warnedCards = new Set<string>();       // each left-out card is logged once, not on every rebuild
+function artworkDigest(image: string): string | null {
+  let stamp: string;
+  try { const stat = fs.statSync(image); stamp = `${stat.mtimeMs}:${stat.size}`; } catch { return null; }
+  const known = artworkDigests.get(image);
+  if (known?.stamp === stamp) return known.digest;
+  const digest = createHash('sha256').update(fs.readFileSync(image)).digest('hex');
+  artworkDigests.set(image, { stamp, digest });
+  return digest;
+}
+
+/** Why a card's artwork cannot be shown, or null when it checks out. */
+function artworkProblem(card: CollectionCard, wiki: ReturnType<typeof loadWikiInputs>, directory: string): string | null {
+  if (!card.art) return null;
+  const image = path.join(process.cwd(), 'client/public', card.art.src);
+  const actual = artworkDigest(image);
+  if (actual === null) return `missing collectible artwork ${card.art.src}`;
+  if (wiki) return wiki.assetDigests[card.art.src] === actual ? null : `artwork digest mismatch for ${card.art.src}`;
+  if (!card.art.artworkId) return null;
+  try {
+    const record = JSON.parse(fs.readFileSync(path.join(directory, 'artwork', `${card.art.artworkId}.json`), 'utf8'));
+    return record.rawSrc === card.art.src ? null : `wrong collectible artwork binding for ${card.art.src}`;
+  } catch (error) {
+    return `artwork record ${card.art.artworkId} unreadable: ${describeProblem(error)}`;
+  }
+}
+
+function buildCollectionFromFiles(directory: string, wiki: ReturnType<typeof loadWikiInputs>, skipped: NewsSkip[]): NewsCollection {
   const index = getNewsIndex(directory);
+  const registryFile = wiki ? 'goose-wiki.json' : 'cards.json';
   const registry = wiki ? { ...wiki.registry, snapshots: freshCardRows(cardBoardCache(directory, wiki.registry, index)) }
     : cardRegistrySchema.parse(JSON.parse(fs.readFileSync(path.join(directory, 'cards.json'), 'utf8')));
   const resultFile = path.join(directory, 'card-results.json');
@@ -334,18 +429,22 @@ function buildCollectionFromFiles(directory: string): NewsCollection {
   const hofFile = path.join(directory, 'hall-of-fame.json');
   const hallOfFame = fs.existsSync(hofFile) ? hallOfFameSchema.parse(JSON.parse(fs.readFileSync(hofFile, 'utf8'))) : null;
   const sets = loadSeriesFile(directory).sets.map(set => ({ id: set.id, name: set.setName, season: set.season, competitionIds: set.competitionIds ?? [] }));
-  const collection = buildNewsCollection(registry, index, results, careers, board, hallOfFame, sets);
-  collection.sets = sets;
-  for (const card of collection.cards) if (card.art) {
-    const image = path.join(process.cwd(), 'client/public', card.art.src);
-    if (!fs.existsSync(image)) throw Error('Missing collectible artwork: ' + card.art.src);
-    if (wiki) {
-      const actual = createHash('sha256').update(fs.readFileSync(image)).digest('hex');
-      if (wiki.assetDigests[card.art.src] !== actual) throw Error('Wiki artwork digest mismatch: ' + card.id);
-    } else if (card.art.artworkId) {
-      const record = JSON.parse(fs.readFileSync(path.join(directory, 'artwork', `${card.art.artworkId}.json`), 'utf8'));
-      if (record.rawSrc !== card.art.src) throw Error('Wrong collectible artwork binding: ' + card.id);
-    }
+  const build = (source: CardRegistry, report: NewsSkip[]) => buildNewsCollection(source, index, results, careers, board, hallOfFame, sets, { skipped: report, file: registryFile });
+  let report: NewsSkip[] = [];
+  let collection = build(registry, report);
+  // A card whose artwork is missing or is not the approved file is left out. The rebuild without it keeps every
+  // other card's links (teammates, team history) from pointing at a card that is not there.
+  const bad = new Map(collection.cards.flatMap(card => { const problem = artworkProblem(card, wiki, directory); return problem ? [[card.id, problem] as const] : []; }));
+  if (bad.size) {
+    report = [];
+    collection = build({ ...registry, cards: registry.cards.filter(card => !bad.has(card.id)) }, report);
+    for (const [id, reason] of bad) report.push({ file: registryFile, record: id, reason });
   }
+  skipped.push(...report);
+  for (const entry of report) {
+    const key = `${entry.record}|${entry.reason}`;
+    if (!warnedCards.has(key)) { warnedCards.add(key); console.warn(`[news] left out card ${entry.record}: ${entry.reason}`); }
+  }
+  collection.sets = sets;
   return collection;
 }

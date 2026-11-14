@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex
- * Date: 03-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 14-Nov-2026; 03-November-2026
+ * 14-Nov-2026 (Claude Opus 5.5, archive-collection): a found story is now cached publicly for a minute.
  * PURPOSE: Verify direct story lookup serves both publication types and never caches misses.
  * SRP/DRY check: Pass — real routes and committed archive, no duplicate resolver.
  */
@@ -25,7 +26,7 @@ const request = (_app: typeof app) => ({ get: (path: string) => ({ expect: async
 it('serves the morning edition and the previously broken special at permanent IDs', async () => {
   for (const id of ['2026-11-02-evening-arc-2', '2026-11-02-morning-arc-3', '2026-10-31-saturday-nvbanana-grandmasters']) {
     const result = await request(app).get(`/api/news/stories/${id}`).expect(200);
-    expect(result.headers['cache-control']).toBe('no-store');
+    expect(result.headers['cache-control']).toBe('public, max-age=60');
     expect([...result.body.articles, ...result.body.dispatches].some(story => story.id === id)).toBe(true);
   }
 });

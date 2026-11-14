@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 (Bubba); Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, card resilience): buildArticleCard takes the article (the route owns the lookup,
+ *          404 and ?v redirect) and null now means only "render failed"; storing an article card evicts that
+ *          article's older versions; a front-page card drawn without its puzzle because loading failed is not cached.
  * 14-Nov-2026 (Claude Opus 5.5): kickers print articleCompetitionLabel (a joint report names both contests, as its page does);
  *          the site address in the footer and the puzzle link comes from SITE_ORIGIN instead of a hard-coded host.
  * PURPOSE: Renders The ARC Daily's 1200x630 link-preview cards: one per article (masthead,
@@ -45,7 +48,7 @@ import {
 } from '../../../shared/news';
 import { SITE_ORIGIN } from '../../../shared/seo';
 import { getNewsIndex } from './newsStore';
-import { type CardPuzzle, puzzleOfTheDay } from './newsCardPuzzle';
+import { type CardPuzzle, pickPuzzleOfTheDay } from './newsCardPuzzle';
 import { logger } from '../../utils/logger';
 
 /** Same palette as client/src/components/news/news.css, so a card looks like the page. */
@@ -194,14 +197,24 @@ export const renderSectionCard = (articles: NewsArticle[], puzzle: CardPuzzle | 
 export const articleCardSvg = (article: NewsArticle) => renderSvg(articleCard(article));
 
 const cache = new Map<string, Buffer>();
-async function cached(key: string, node: () => Node | Promise<Node>, label: string): Promise<Buffer | null> {
+/** A card to draw, and whether the drawing may be kept (false when an input failed to load and a retry may do better). */
+type CardPlan = { node: Node; cacheable: boolean };
+/**
+ * Renders under `family + version`, keeping one version per family: a newer version of an article's
+ * card, or the next day's front-page card, replaces the older entry instead of piling up in memory.
+ * Returns null only when rendering failed (logged here).
+ */
+async function cached(family: string, version: string, plan: () => CardPlan | Promise<CardPlan>, label: string): Promise<Buffer | null> {
+  const key = family + version;
   const hit = cache.get(key);
   if (hit) return hit;
   try {
-    const card = await render(await node());
-    // The front-page card changes address every day; only the current one is worth keeping.
-    if (key.startsWith('section:')) for (const old of [...cache.keys()]) if (old.startsWith('section:')) cache.delete(old);
-    cache.set(key, card);
+    const { node, cacheable } = await plan();
+    const card = await render(node);
+    if (cacheable) {
+      for (const old of [...cache.keys()]) if (old.startsWith(family)) cache.delete(old);
+      cache.set(key, card);
+    }
     return card;
   } catch (error) {
     logger.error(`news og-image: failed to render ${label} - ${error instanceof Error ? error.message : String(error)}`, 'news');
@@ -209,15 +222,16 @@ async function cached(key: string, node: () => Node | Promise<Node>, label: stri
   }
 }
 
-/** The card for one published article, or null when the article does not exist. */
-export async function buildArticleCard(id: string): Promise<Buffer | null> {
-  const article = getNewsIndex().articles.find(item => item.id === id);
-  if (!article) return null;
-  return cached(`article:${article.id}:${articleCardVersion(article)}`, () => articleCard(article), article.id);
+/** The card for one published article, or null when rendering failed. The caller looks the article up. */
+export async function buildArticleCard(article: NewsArticle): Promise<Buffer | null> {
+  return cached(`article:${article.id}:`, articleCardVersion(article), () => ({ node: articleCard(article), cacheable: true }), article.id);
 }
 
-/** The front-page card, keyed by its versioned address (day plus the fresh editions it shows). */
+/** The front-page card, keyed by its versioned address (day plus the fresh editions it shows), or null when rendering failed. */
 export async function buildSectionCard(now = Date.now()): Promise<Buffer | null> {
   const { articles } = getNewsIndex();
-  return cached(`section:${sectionCardVersion(articles, now)}`, async () => sectionCard(articles, await puzzleOfTheDay(easternDay(now)), now), 'section card');
+  return cached('section:', sectionCardVersion(articles, now), async () => {
+    const { puzzle, failed } = await pickPuzzleOfTheDay(easternDay(now));
+    return { node: sectionCard(articles, puzzle, now), cacheable: !failed };
+  }, 'section card');
 }

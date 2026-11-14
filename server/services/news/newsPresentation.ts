@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 14-Nov-2026 (Claude Opus 5.5, archive-collection): story "In this story" asides, person pages and the sitemap use
+ *          tryNewsCollection, so a Card Cabinet that cannot be built falls back to portraits and plain links instead of
+ *          a 500; the aside no longer builds the Cabinet when a story names nobody; a card page reuses its collection.
  * 14-Nov-2026 (Claude Opus 5.5): dispatch permalinks print an <h1> with dispatchTitle/dispatchDescription (front-page
  *          dispatch headlines link to them); /news/wire/<id> renders one wire story; a paused wire desk shows its newest
  *          filings and the pause date; section standings print a readable UTC time.
@@ -53,8 +56,8 @@ import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITO
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
 import { catalogSetLabel } from '../../../shared/cardCatalog';
 import { cardForPerson, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
-  COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry } from '../../../shared/newsCollection';
-import { getNewsCollection } from './newsCollection';
+  COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry, type NewsCollection } from '../../../shared/newsCollection';
+import { getNewsCollection, tryNewsCollection } from './newsCollection';
 import { getNewsIndex, loadNewsArchive, loadWireStory } from './newsStore';
 import { KAGGLE_COMPETITIONS } from '../../../shared/kaggleCompetitions';
 import { NEWS_BRAND } from '../../../shared/newsBrand';
@@ -117,14 +120,16 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
 const personLink = (person: NewsPerson) => `<a href="${personPath(person.id)}">${esc(person.name)}</a>`;
 /** The crawler gets the same subjects and disclosed portrait choices as the browser sidebar. */
 function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition']): string {
-  const cabinet = getNewsCollection();
-  return people.length ? `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
+  if (!people.length) return '';
+  // Without a Cabinet (it failed to build), each person falls back to their portrait and profile link.
+  const cabinet = tryNewsCollection();
+  return `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
     const portrait = displayPortrait(person);
     const team = [...person.memberships].reverse().find(member => member.competition === competition);
-    const card = cardForPerson(cabinet.cards, person.id, competition, cabinet.sets);
-    if (card) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card, cabinet))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
+    const card = cabinet ? cardForPerson(cabinet.cards, person.id, competition, cabinet.sets) : undefined;
+    if (card && cabinet) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card, cabinet))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
     return `<article>${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="76" height="88"/>` : ''}${personLink(person)}${team ? `<p>${esc(team.teamName)}</p>` : ''}${person.hallOfFame[0] ? `<p>${esc(person.hallOfFame[0].label)}</p>` : ''}${person.editorialPortrait ? '<p>AI editorial portrait</p>' : ''}</article>`;
-  }).join('')}</aside>` : '';
+  }).join('')}</aside>`;
 }
 const rosterHtml = (record: CompetitorRecord, people: NewsPerson[]) => `<ul>${record.members.map(handle => {
   const person = peopleForTeam(people, record).find(item => item.accounts.some(account => account.platform === 'kaggle' && account.handle === handle));
@@ -146,9 +151,10 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[], peopl
 /** One person's profile. Sponsors (the ARC Prize co-founders) run the contest, so they get no competition-teams list. */
 function personMeta(person: NewsPerson, articles: NewsArticle[], competitors: CompetitorRecord[]): RouteMetaTags {
   const portrait = displayPortrait(person);
-  const cabinet = getNewsCollection();
-  const personCards = cabinet.cards.filter(card => card.personId === person.id);
-  const cardsHtml = personCards.length ? `<h2>Their cards</h2><ul>${personCards.map(card => `<li><a href="${esc(card.cardUrl)}">${esc(catalogSetLabel(card, cabinet.sets))} card</a></li>`).join('')}</ul>` : '';
+  // A Cabinet that cannot be built leaves the profile without its card list rather than failing the page.
+  const cabinet = tryNewsCollection();
+  const personCards = cabinet?.cards.filter(card => card.personId === person.id) ?? [];
+  const cardsHtml = cabinet && personCards.length ? `<h2>Their cards</h2><ul>${personCards.map(card => `<li><a href="${esc(card.cardUrl)}">${esc(catalogSetLabel(card, cabinet.sets))} card</a></li>`).join('')}</ul>` : '';
   const sponsor = person.role === 'sponsor';
   const teams = sponsor ? [] : personTeams(person, competitors);
   // A team links to its profile only when one is published; otherwise its name is plain text.
@@ -255,12 +261,12 @@ function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const stories = card.stories.length ? `<section><h3>In the Digest</h3><ul>${card.stories.map(story => `<li><a href="${esc(story.url)}">${esc(story.headline)}</a> · ${esc(newsDate(story.publishedAt))}</li>`).join('')}</ul></section>` : '';
   return `<article id="card-${esc(card.id)}"><${heading}><a href="${esc(card.cardUrl)}">${esc(card.name)}</a></${heading}><p>${esc(collectionRoleLabel(card))} · ${esc(collectionTeamCompetition(card) ?? card.season)}${earned ? ` · Earned this card: ${esc(earned)}` : ''}</p>${card.art ? `<img src="${esc(encodeURI(card.art.src))}" alt="${esc(card.art.alt)}" loading="lazy"/>` : ''}<p>${esc(card.description)}</p>${profile}${highlights}${past}${history}${card.entries.map(collectionEntryHtml).join('')}${rows}${stories}${card.honors.map(honor => `<p><a href="${esc(honor.sourceUrl)}">${esc(honor.label)}</a> · ${esc(honor.season)}</p>`).join('')}${card.accounts.length ? `<section><h3>Accounts</h3><ul>${card.accounts.map(account => `<li><a href="${esc(account.url)}">${esc(account.label)}</a></li>`).join('')}</ul></section>` : ''}<p><a href="${esc(card.profileUrl)}">${card.kind === 'person' ? 'Profile in the Digest' : 'Team profile'}</a> · <a href="${esc(card.cardUrl)}">Share this card</a></p></article>`;
 }
-function collectionCardMeta(card: CollectionCard): RouteMetaTags {
+function collectionCardMeta(card: CollectionCard, cabinet: NewsCollection): RouteMetaTags {
   const title = collectionCardTitle(card);
   const description = collectionCardDescription(card);
   const url = `${SITE_ORIGIN}${card.cardUrl}`;
   // The same collection-aware version the share route checks; a card-only version would 302 on every crawl.
-  const image = `${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}`;
+  const image = `${SITE_ORIGIN}${collectionSharePath(card, cabinet)}`;
   return completeMeta({ title, description, url, image, imageAlt: collectionShareAlt(card), imageWidth: COLLECTION_SHARE_WIDTH, imageHeight: COLLECTION_SHARE_HEIGHT,
     jsonLd: { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage', '@id': url, url, name: title, description,
       isPartOf: { '@id': `${SITE_ORIGIN}/news/cards` }, primaryImageOfPage: { '@type': 'ImageObject', url: image, width: COLLECTION_SHARE_WIDTH, height: COLLECTION_SHARE_HEIGHT },
@@ -311,9 +317,10 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
   if (cardRoute) {
-    const { cards } = getNewsCollection();
+    const cabinet = getNewsCollection();
+    const { cards } = cabinet;
     const card = cards.find(item => item.id === cardRoute[1]);
-    if (card) return { status: 200, tags: collectionCardMeta(card) };
+    if (card) return { status: 200, tags: collectionCardMeta(card, cabinet) };
     const separated = splitTeamCards(cards, cardRoute[1]);
     if (separated.length) {
       const heading = `${separated[0].name} competition cards`;
@@ -351,12 +358,13 @@ const latest = (values: string[]) => values.reduce<string | undefined>((max, val
 /** News URLs with a real last-change time: publication for editions, last check for notebooks. */
 export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
   const { articles, competitors, dispatches = [], people = [], wire = [] } = getNewsIndex();
-  const cabinet = getNewsCollection();
+  // The sitemap still lists every story and profile when the Cabinet cannot be built; only the card URLs drop out.
+  const cabinet = tryNewsCollection();
   return [
     { url: `${SITE_ORIGIN}/news`, lastmod: latest([...articles.map(article => article.publishedAt), ...dispatches.map(dispatch => dispatch.publishedAt), ...wire.map(story => story.publishedAt)]) },
     { url: `${SITE_ORIGIN}/news/wire`, lastmod: latest(wire.map(story => story.publishedAt)) },
-    { url: `${SITE_ORIGIN}/news/cards`, lastmod: cabinet.updatedAt },
-    ...cabinet.cards.map(card => ({ url: `${SITE_ORIGIN}${collectionCardPath(card.id)}`, lastmod: cabinet.updatedAt })),
+    { url: `${SITE_ORIGIN}/news/cards`, lastmod: cabinet?.updatedAt },
+    ...(cabinet?.cards ?? []).map(card => ({ url: `${SITE_ORIGIN}${collectionCardPath(card.id)}`, lastmod: cabinet!.updatedAt })),
     { url: `${SITE_ORIGIN}${NEWS_ARCHIVE.path}`, lastmod: publishedStories(articles, dispatches)[0]?.publishedAt },
     { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
     { url: `${SITE_ORIGIN}${NEWS_TIPS_PATH}` },
