@@ -1,0 +1,179 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/asset-2c3e61faef2be7602b77"
+    ],
+    "assets": [
+      {
+        "sha256": "2c3e61faef2be7602b77aaa21f6e1934e6711b90f946008fa96379ca63470caa",
+        "source": "client/public/news-images/alexnot-symbolic-solver-duo-v1.webp",
+        "target": "client/public/news-images/goose-2c3e61faef2be7602b77.webp"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/alexnot-symbolic-solver",
+    "dispatch": {
+      "commissionedBy": "mark-barney",
+      "competition": "arc-2",
+      "dek": "Interactive educator Nicky Case and collaborator Nora Danger bring a CPU-powered rule finder and GPU-powered NVARC together for ARC.",
+      "editorNote": "The Loose Goose sports desk · GPT-6 / Codex (reasoning effort inherited). Method feature; no current team roster or final award is asserted.",
+      "generatedBy": "gpt-6-codex",
+      "headline": "The playmakers enter the puzzle arena",
+      "id": "alexnot-symbolic-solver",
+      "image": {
+        "alt": "Nicky Case’s orange cat and Nora Danger’s cream and brown dog mascots experiment with shapes and puzzle grids in a retro-futurist laboratory.",
+        "caption": "Nicky and Nora’s Kaggle mascots take the controls in the Goose’s imagined puzzle laboratory.",
+        "src": "/news-images/goose-2c3e61faef2be7602b77.webp"
+      },
+      "personIds": [
+        "nicky-case",
+        "nora-danger"
+      ],
+      "publishedAt": "2026-11-17T06:15:15.937359+00:00",
+      "sections": [
+        {
+          "heading": "Play is the point",
+          "sourceIds": [
+            "profile",
+            "home",
+            "trust",
+            "anxiety",
+            "nora",
+            "paper",
+            "board",
+            "trustcode"
+          ],
+          "text": "Nicky Case and Nora Danger have brought a cat, a dog and a rule-finding machine to ARC. On the ARC-AGI-2 board, the two competed together as kittyhawkarc and irideon. Their Kaggle avatars are an orange cat and a floppy-eared dog; their project, AlexNot, searches for instructions that make puzzle grids behave.\n\nCase calls herself “an educational cat” on Kaggle. She builds things people can play with to understand ideas that are hard to see. Together, Case and Danger have brought that curiosity to the puzzle arena.\n\nThe Evolution of Trust is her interactive guide to the game theory of cooperation. It puts the controls in the reader’s hands. Case’s Adventures with Anxiety puts the player in the role of anxiety itself. Her tools make learning something you do, not just something you read."
+        },
+        {
+          "heading": "Triangles, squares and the shape of a society",
+          "sourceIds": [
+            "polygons",
+            "home",
+            "faq"
+          ],
+          "text": "In Parable of the Polygons, made with Vi Hart, Case lets readers move unhappy triangles and squares around a neighbourhood. Each shape follows a small preference about its neighbours. As the pieces move, the whole community can split apart. The point lands because the reader has just watched the rules at work.\n\nThat gift for turning an abstract system into a playground runs through her catalogue: news cycles in We Become What We Behold, game theory in The Evolution of Trust, and a tool called NUTSHELL for making explanations expand on demand. Case makes her projects available for others to reuse and remix."
+        },
+        {
+          "heading": "The CPU rule finder joins the team",
+          "sourceIds": [
+            "paper",
+            "notebook",
+            "code",
+            "tufa",
+            "domdolus"
+          ],
+          "text": "Case and Danger’s AlexNot is a symbolic rule finder. It searches for short programs that explain the example grids and runs on CPUs; the authors report about half a minute of CPU time per task on their test machine. On the ARC-AGI-2 public evaluation set, the authors report that AlexNot alone scored 13.33%. Tufa Labs put large models to work. Domdolus Tolus ran its model across four Kaggle L4 GPUs.\n\nTheir competition notebook hands the job to an orchestrator called the_boss.py. It runs AlexNot over the puzzles first, then sends the puzzles through their adapted version of the 2025 NVARC system by Ivan Sorokin and Jean-François Puget, running on four L4 GPUs. When AlexNot finds a program that gets every demonstration right, its answer takes the first attempt and NVARC’s top answer takes the second; otherwise NVARC supplies both. Case and Danger also give readers the code and an illustrated paper explaining their experiment.\n\nCase has spent years handing curious readers the controls. What will the educational cat make playable next?"
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "profile",
+          "title": "Nicky Case on Kaggle",
+          "url": "https://www.kaggle.com/kittyhawkarc"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "home",
+          "title": "Nicky Case’s projects",
+          "url": "https://ncase.me/"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "trust",
+          "title": "The Evolution of Trust",
+          "url": "https://ncase.me/trust/"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "anxiety",
+          "title": "Adventures with Anxiety",
+          "url": "https://ncase.me/anxiety/"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "nora",
+          "title": "Nora’s Kaggle profile and AlexNot write-ups",
+          "url": "https://www.kaggle.com/irideon/writeups"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "paper",
+          "title": "AlexNot paper",
+          "url": "https://github.com/ncase/alexnot/blob/main/paper/overleaf/main.tex"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "board",
+          "title": "ARC-AGI-2 leaderboard, test team please ignore",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard?teamId=15662198"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "trustcode",
+          "title": "The Evolution of Trust source",
+          "url": "https://github.com/ncase/trust"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "polygons",
+          "title": "Vi Hart and Nicky Case: Parable of the Polygons",
+          "url": "https://ncase.me/polygons/"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "faq",
+          "title": "Nicky Case FAQ and reuse",
+          "url": "https://ncase.me/faq/"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "notebook",
+          "title": "Submitted AlexNot and NVARC notebook",
+          "url": "https://www.kaggle.com/code/kittyhawkarc/alexnot-plus-nvarc"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "code",
+          "title": "Submitted orchestration and neural code",
+          "url": "https://www.kaggle.com/datasets/kittyhawkarc/alexnot-plus-nvarc-code"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "tufa",
+          "title": "Tufa Labs approach",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/757513"
+        },
+        {
+          "accessedAt": "2026-11-17T06:02:03.335307+00:00",
+          "id": "domdolus",
+          "title": "Domdolus Tolus write-up",
+          "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/writeups/Domdolus-Tolus-Solution"
+        }
+      ]
+    },
+    "storyId": "alexnot-symbolic-solver",
+    "storySha256": "a7cb90aa2ebd7d7105c6070d6a2263f51d946869f4a41f18d8db36d3e716975c",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "2c3e61faef2be7602b77aaa21f6e1934e6711b90f946008fa96379ca63470caa",
+        "source": "client/public/news-images/alexnot-symbolic-solver-duo-v1.webp",
+        "target": "client/public/news-images/goose-2c3e61faef2be7602b77.webp"
+      }
+    ],
+    "checks": [
+      "facts",
+      "identity-and-roster",
+      "art-reuse",
+      "art-continuity",
+      "copy"
+    ],
+    "notes": "Independent Claude review and follow-ups checked the manuscript against supplied public primary evidence and the actual Kaggle notebook and submitted code. Resolved CPU versus GPU framing, NVARC origin and adaptation, demonstration matching, Trust wording and explicit sources. Reviewer questioned team as possibly a test entry, but the dated closing public board explicitly records both accounts, place and score, and the submitted notebook matches the score; retained the accurate two-person team account. Reviewer requested discussion of NVARC modification gains; manuscript makes no improvement claim and the Boss explicitly directed against boilerplate caveats. Verified both profile avatars on Kaggle and compared both named characters at full and phone width; no capes or text. Nora is included in personIds and shared art. Last two copy edits name both people unambiguously and state NVARC was adapted, both verified against code. Story states no leaderboard place, so no overlay.",
+    "reviewedAt": "2026-11-17T06:13:13.491099+00:00",
+    "reviewedBy": "GPT-6 / Codex; separate Claude read-only source review and follow-ups",
+    "storySha256": "a7cb90aa2ebd7d7105c6070d6a2263f51d946869f4a41f18d8db36d3e716975c"
+  }
+}

@@ -87,6 +87,8 @@
     "/news-images/cards/2026/natalia-turtle-v1.webp": "30a0af78edce4c82a1fa80e26cc01cdf93b5593736a8aea56ef099f65ced6207",
     "/news-images/cards/2026/nguyennguyen599-cats-v1.webp": "199ea8280aacc1ba89db10b3ff93b2ef477df895cfcfaa93e4d2813fa0243fda",
     "/news-images/cards/2026/nguynhphan-comic-v1.webp": "64403d1b06f73134e445a2e3f0f82f99ecd3ff63a22e0303fa6a90984882527b",
+    "/news-images/cards/2026/nicky-case-cat-v1.webp": "43d9216b27cf30230ec47f6f290d1ab11a1896890c33e92d8ec561afbffef215",
+    "/news-images/cards/2026/nora-danger-dog-v1.webp": "b2a98abb575d1220d6f4dfffff30f44dd615aef4473962c837c41cfd00dbcf9e",
     "/news-images/cards/2026/notnitsuj-cat-v1.webp": "fa75c2a572dced69f823ba0079d2e87236363cf475119546a235638449c0ab9f",
     "/news-images/cards/2026/nvarc3-team-v1.webp": "b79bdfd88e1760c50703283331192b4d9d807fab8c53902b52968792c580e6f7",
     "/news-images/cards/2026/omprakash-patra-comic-v1.webp": "66234d07e92fd846a8925c36b3b299ab965fd6f4ae42cf7d52cb2efa83f73e77",
@@ -12014,7 +12016,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "b601bf8bd9f3d0a325acf7e43540e5d327a8791c2711c559793570dcdfeb4a22",
+  "fingerprint": "76cda57c18a17993af683357cd0bd38207eb5c830870d15def3f9e53b73f4492",
   "people": [
     {
       "accounts": [
@@ -17617,6 +17619,68 @@
         }
       ],
       "name": "Nguyễn Hà Phan"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-17T06:00:00Z",
+          "handle": "kittyhawkarc",
+          "platform": "kaggle",
+          "sourceTitle": "Nicky’s Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/kittyhawkarc",
+          "url": "https://www.kaggle.com/kittyhawkarc"
+        }
+      ],
+      "briefing": "Interactive educator and game maker; co-author of AlexNot, and a member of test team please ignore on the ARC-AGI-2 public board.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "nicky-case",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-11-03T00:16:35Z",
+          "lastObservedAt": "2026-11-03T00:16:35Z",
+          "memberHandle": "kittyhawkarc",
+          "season": "2026",
+          "sourceTitle": "ARC-AGI-2 closing public board",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+          "teamId": "15662198",
+          "teamName": "test team please ignore"
+        }
+      ],
+      "name": "Nicky Case"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-17T06:00:00Z",
+          "handle": "irideon",
+          "platform": "kaggle",
+          "sourceTitle": "Nora’s Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/irideon",
+          "url": "https://www.kaggle.com/irideon"
+        }
+      ],
+      "briefing": "AlexNot co-author; its Kaggle account is irideon on test team please ignore in ARC-AGI-2.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "nora-danger",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-11-03T00:16:35Z",
+          "lastObservedAt": "2026-11-03T00:16:35Z",
+          "memberHandle": "irideon",
+          "season": "2026",
+          "sourceTitle": "ARC-AGI-2 closing public board",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard",
+          "teamId": "15662198",
+          "teamName": "test team please ignore"
+        }
+      ],
+      "name": "Nora Danger"
     },
     {
       "accounts": [
@@ -24943,6 +25007,50 @@
         "name": "nvbanana",
         "season": "2026",
         "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Nicky Case — educational cat",
+          "artworkId": "asset-43d9216b27cf30230ec4",
+          "commissionedAt": "2026-11-17T06:02:02+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/nicky-case-cat-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-43d9216b27cf30230ec4.md"
+        ],
+        "description": "Interactive educator and game maker; co-author of AlexNot, and a member of test team please ignore on the ARC-AGI-2 public board.",
+        "entries": [],
+        "id": "person-nicky-case-arc-2-2026",
+        "issuedAt": "2026-11-17T06:00:00+00:00",
+        "kind": "person",
+        "name": "Nicky Case",
+        "personId": "nicky-case",
+        "season": "2026",
+        "setId": "arc-2-2026"
+      },
+      {
+        "art": {
+          "alt": "Nora Danger — ARC dog",
+          "artworkId": "asset-b2a98abb575d1220d6f4",
+          "commissionedAt": "2026-11-17T06:06:26+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/nora-danger-dog-v1.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-b2a98abb575d1220d6f4.md"
+        ],
+        "description": "AlexNot co-author; its Kaggle account is irideon on test team please ignore in ARC-AGI-2.",
+        "entries": [],
+        "id": "person-nora-danger-arc-2-2026",
+        "issuedAt": "2026-11-17T06:06:09+00:00",
+        "kind": "person",
+        "name": "Nora Danger",
+        "personId": "nora-danger",
+        "season": "2026",
+        "setId": "arc-2-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -24953,7 +25061,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-17T05:51:33+00:00",
+    "updatedAt": "2026-11-17T06:06:27+00:00",
     "version": 1
   },
   "results": [],
