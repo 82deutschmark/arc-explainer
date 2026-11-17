@@ -1,5 +1,9 @@
 ### Version 9.164.45 · November 14, 2026
 
+### Version 9.164.47 · November 17, 2026
+
+- Replaced xz’s individual card silhouette with a reviewed portrait based on the verified cat avatar. Author: GPT-6 / Codex.
+
 ### Version 9.164.46 · November 16, 2026
 
 - Hid empty competitor profile fallback faces from catalog results, counts and server index while preserving their direct pages, real portraits and cards with actual contest or career evidence. Selected distinct Tufa team artwork. This removes the oversized “Standings at Kaggle” placeholders. Author: GPT-6 / Codex.

@@ -121,6 +121,7 @@
     "/news-images/cards/2026/xie-zejian-dinosaur-v1.webp": "9965c792a3de8f4153cb9f7ff3887970e5759de86abd58f007680ec678ea3b93",
     "/news-images/cards/2026/xinhao642-comic-v1.webp": "17607e21ad217fec41827463ebb442aea366a73c56b6fbfa493420499e827804",
     "/news-images/cards/2026/xinyuanzhu-comic-v1.webp": "7bc1148cc276fa469ea6c1f0d0ac15596d66204e1ec38b5c9ba79bfa93b44db5",
+    "/news-images/cards/2026/xz-cat-portrait-v1.jpg": "1397b8f0db45bed929ec03b25506b6f1b4cd0133326661bef63065ed17011aaa",
     "/news-images/cards/2026/ydi102143-abstract-v1.webp": "add4c03ad3b9d764cf36585d6135e6922a0a3b0f22ba8061602c0b021dce81e2",
     "/news-images/cards/2026/yeyin-zhu-goose-v1.webp": "5f7b8501ec8d78f9786ca2da17204bf3fa36f3e93440ae77acee37a66292266c",
     "/news-images/cards/2026/yuhua-ke-goose-v1.webp": "e4814872326cca9dc827775397375e1f51ed891a6ca991a684b9503420b71a21",
@@ -12013,7 +12014,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "4b7862637654b0ff79acfe4f145a06ebc63f07ef16d77b6f1f6844acffb03f8d",
+  "fingerprint": "b601bf8bd9f3d0a325acf7e43540e5d327a8791c2711c559793570dcdfeb4a22",
   "people": [
     {
       "accounts": [
@@ -21016,7 +21017,16 @@
         "season": "2026"
       },
       {
-        "artNotes": [],
+        "art": {
+          "alt": "xz — ARC cat portrait",
+          "artworkId": "asset-1397b8f0db45bed929ec",
+          "commissionedAt": "2026-11-17T05:51:33+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/xz-cat-portrait-v1.jpg"
+        },
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-1397b8f0db45bed929ec.md"
+        ],
         "description": "xz competes on Kaggle as @xiaoz259. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
         "entries": [],
         "id": "person-xz-2026",
@@ -24943,7 +24953,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-17T03:52:33+00:00",
+    "updatedAt": "2026-11-17T05:51:33+00:00",
     "version": 1
   },
   "results": [],
