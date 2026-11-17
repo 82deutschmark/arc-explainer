@@ -9,6 +9,10 @@
  *          useSignInRedirect exactly as the runs pages do.
  *          The publisher may add fields at any time; the server stores documents verbatim, so
  *          every field here except the keys is treated as optional by the pages.
+ *          2026-10-21 (Claude Opus 5.5), the runs API (version 2): a run names its kind.
+ *          accuracy runs are as before; speed / kernel / profile runs carry arms (metrics,
+ *          per-family profile ms, config and env) that the run page lays side by side. The
+ *          publishers' reference is docs/RUNS_API.md in the team's arc2026 repository.
  * SRP/DRY check: Pass - data only; pages in pages/team/Arc2Evals.tsx and Arc2Eval.tsx, figures
  *          and filters in evalStats.ts. Fetching, sign-in and the 401 rule are teamRunsApi.ts's
  *          own `call`, SignInRequired and helpers, not a second copy.
@@ -74,31 +78,99 @@ export interface EvalRow {
   error?: string;
 }
 
+/** accuracy: a panel scored output by output. The others compare arms side by side. */
+export type RunKind = 'accuracy' | 'speed' | 'kernel' | 'profile';
+export type ArmStatus = 'ok' | 'failed' | 'skipped';
+/** Metrics are numbers (the server refuses anything else) or null when an arm has no value. */
+export type ArmMetrics = Record<string, number | null>;
+
+export interface RunLink {
+  label?: string;
+  url: string;
+}
+
+export interface RunBox {
+  job?: string;
+  service?: string;
+  machine?: string;
+  costUsd?: number | null;
+  hours?: number | null;
+  [field: string]: unknown;
+}
+
+/** GPU time per decode step, split by kernel family (torch profiler, one rank). */
+export interface ArmProfile {
+  iterations?: number | null;
+  spanMsPerIter?: number | null;
+  gpuBusyFrac?: number | null;
+  familiesMs?: Record<string, number | null> | null;
+  [field: string]: unknown;
+}
+
+/** One arm of a speed / kernel / profile run. */
+export interface RunArm {
+  name: string;
+  label?: string | null;
+  status?: ArmStatus;
+  error?: string | null;
+  config?: ChipRecord | null;
+  env?: ChipRecord | null;
+  metrics?: ArmMetrics | null;
+  profile?: ArmProfile | null;
+  details?: unknown;
+  links?: RunLink[] | null;
+}
+
+/** How a metric reads: a label, a unit, and which way is better (no direction: not ranked). */
+export interface MetricInfo {
+  label?: string;
+  unit?: string;
+  better?: 'higher' | 'lower';
+}
+
 /** What the runs list carries per run. */
 export interface EvalRunIndex {
   key: string;
+  kind: RunKind | string;
   title: string | null;
   createdAt: string | null;
+  author: string | null;
   model: ChipRecord | null;
   panel: EvalPanel | null;
   summary: EvalSummary | null;
   reference: EvalReference[] | null;
+  box: RunBox | null;
+  verdict: string | null;
+  headline: string | null;
+  arms: Array<Pick<RunArm, 'name' | 'label' | 'status' | 'metrics'>> | null;
   updatedAt: string;
 }
 
 export interface EvalRunDocument {
   apiVersion?: number;
+  kind?: RunKind | string;
   key: string;
   title?: string;
   createdAt?: string;
+  author?: string | null;
+  question?: string | null;
+  verdict?: string | null;
   model?: ChipRecord | null;
+  env?: ChipRecord | null;
   panel?: EvalPanel | null;
-  box?: { job?: string; costUsd?: number | null; hours?: number | null; [field: string]: unknown } | null;
+  box?: RunBox | null;
   client?: ChipRecord | null;
   summary?: EvalSummary | null;
   reference?: EvalReference[] | null;
+  links?: RunLink[] | null;
   notes?: string | null;
-  rows: EvalRow[];
+  /** accuracy runs */
+  rows?: EvalRow[];
+  /** speed / kernel / profile runs */
+  arms?: RunArm[];
+  baseline?: string | null;
+  headline?: string | null;
+  metricInfo?: Record<string, MetricInfo> | null;
 }
 
 export interface EvalTrace {

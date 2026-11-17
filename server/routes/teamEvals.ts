@@ -22,8 +22,17 @@ PURPOSE: HTTP layer for the team-only ARC-AGI-2 eval runs and their reasoning tr
          A run key is the publisher's own name for the run (lowercase letters, digits, dot,
          underscore, dash; up to 100). An output key is "<task id>_<test index>", e.g.
          7b5033c1_0. Documents are stored and served verbatim; this file checks only the few
-         fields that tie a document to its address (key, outputKey, rows), so new fields from
-         the publisher pass straight through to the pages.
+         fields that tie a document to its address and its kind, so new fields from the
+         publisher pass straight through to the pages.
+
+         2026-10-21 (Claude Opus 5.5), the runs API: every internal ARC-2 run, not only scored
+         panels. A version 2 document names its `kind`: accuracy (a panel scored output by
+         output, `rows` plus traces), or speed / kernel / profile (`arms` compared side by side:
+         each a unique name, an ok / failed / skipped status and numeric metrics). Version 1
+         documents (the first eval box uploads, no kind) are still taken as accuracy runs.
+           GET    /arc2-evals/machine/schema   the versions, kinds and limits this site takes
+                                               (token-checked, writes nothing)
+         The reference for publishers is docs/RUNS_API.md in the team's arc2026 repository.
 SRP/DRY check: Pass - HTTP only. Storage in TeamEvalRepository, sign-in in teamSession.ts, the
          machine token in arc2EvalToken.ts, responses via formatResponse, limits via
          express-rate-limit, all as routes/teamRuns.ts does.
@@ -47,9 +56,18 @@ export const EVAL_OUTPUT_KEY = /^[0-9a-f]{8}_[0-9]{1,2}$/;
 export const MAX_RUN_BYTES = 4 * 1024 * 1024;
 /** A trace is one output's grids plus up to ~65k tokens of reasoning. */
 export const MAX_TRACE_BYTES = 3 * 1024 * 1024;
+/** accuracy: one panel scored output by output. speed / kernel / profile: arms side by side. */
+export const RUN_KINDS = ['accuracy', 'speed', 'kernel', 'profile'] as const;
+export type RunKind = (typeof RUN_KINDS)[number];
+/** 1: the first eval box documents (accuracy only, no kind field). 2: every kind, kind required. */
+export const API_VERSIONS = [1, 2] as const;
+/** Arms on one page; a bigger sweep reads better as several runs. */
+export const MAX_ARMS = 64;
+export const ARM_STATUSES = ['ok', 'failed', 'skipped'] as const;
+const MAX_ARM_NAME = 80;
 
 // One publish is a run document plus a trace per output (a few hundred writes at most), so this
-// is twice the Kaggle runs record's 300 an hour.
+// is twice the Kaggle runs record's 300 an hour. The schema check counts against it too.
 const machineWriteLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 600, standardHeaders: true, legacyHeaders: false });
 
 type JsonObject = Record<string, unknown>;
@@ -58,6 +76,7 @@ const isObject = (value: unknown): value is JsonObject =>
 
 type Refusal = { ok: false; status: number; code: string; message: string };
 export type UploadCheck = { ok: true; body: string } | Refusal;
+export type RunUploadCheck = { ok: true; body: string; kind: RunKind } | Refusal;
 
 const refuse = (status: number, code: string, message: string): Refusal => ({ ok: false, status, code, message });
 const reply = (res: Response, refusal: Refusal) =>
@@ -65,15 +84,60 @@ const reply = (res: Response, refusal: Refusal) =>
 const BAD_KEY = refuse(400, 'bad_key', 'Run keys are 1-100 lowercase letters, digits, dots, underscores or dashes.');
 const BAD_OUTPUT = refuse(400, 'bad_output', 'Output keys are an 8-hex task id, an underscore and the test index, e.g. 7b5033c1_0.');
 
-/** A run upload: the key must be well formed and the body this run's document, under 4 MB. */
-export function checkRunUpload(key: string, doc: unknown): UploadCheck {
+const isMetric = (value: unknown) => value === null || (typeof value === 'number' && Number.isFinite(value));
+
+/** Why these arms cannot be laid side by side on a run page, or null when they can. */
+export function armsProblem(arms: unknown): string | null {
+  if (!Array.isArray(arms) || arms.length === 0 || arms.length > MAX_ARMS) return `arms must be a list of 1 to ${MAX_ARMS} arms.`;
+  const names = new Set<string>();
+  for (const [i, arm] of arms.entries()) {
+    if (!isObject(arm) || typeof arm.name !== 'string' || !arm.name.trim() || arm.name.length > MAX_ARM_NAME) {
+      return `arms[${i}] needs a name of 1 to ${MAX_ARM_NAME} characters.`;
+    }
+    if (names.has(arm.name)) return `arms[${i}]: the name "${arm.name}" is used twice.`;
+    names.add(arm.name);
+    if (arm.status !== undefined && !(ARM_STATUSES as readonly unknown[]).includes(arm.status)) {
+      return `arms[${i}].status must be one of ${ARM_STATUSES.join(', ')}.`;
+    }
+    // Metrics become the rows of the side-by-side table, so they must compare as numbers.
+    if (arm.metrics !== undefined && arm.metrics !== null) {
+      if (!isObject(arm.metrics)) return `arms[${i}].metrics must be an object of numbers.`;
+      const bad = Object.entries(arm.metrics).find(([, value]) => !isMetric(value));
+      if (bad) return `arms[${i}].metrics.${bad[0]} must be a number or null.`;
+    }
+  }
+  return null;
+}
+
+/**
+ * A run upload: the key must be well formed and the body this run's document, under 4 MB, of a
+ * version and kind this site shows: an accuracy run carries its rows, the other kinds their arms.
+ */
+export function checkRunUpload(key: string, doc: unknown): RunUploadCheck {
   if (!EVAL_RUN_KEY.test(key)) return BAD_KEY;
-  if (!isObject(doc) || doc.key !== key || !Array.isArray(doc.rows)) {
-    return refuse(400, 'bad_document', 'The body must be the run document for this key, with a rows array.');
+  if (!isObject(doc) || doc.key !== key) {
+    return refuse(400, 'bad_document', 'The body must be the run document for this key.');
+  }
+  const version = doc.apiVersion ?? 1;
+  if (!(API_VERSIONS as readonly unknown[]).includes(version)) {
+    return refuse(400, 'unsupported_version', `apiVersion must be one of ${API_VERSIONS.join(', ')}.`);
+  }
+  const kind = doc.kind ?? (version === 1 ? 'accuracy' : undefined);
+  if (!(RUN_KINDS as readonly unknown[]).includes(kind)) {
+    return refuse(400, 'bad_kind', `kind must be one of ${RUN_KINDS.join(', ')}.`);
+  }
+  if (version === 1 && kind !== 'accuracy') {
+    return refuse(400, 'bad_kind', 'apiVersion 1 documents are accuracy runs; send apiVersion 2 for other kinds.');
+  }
+  if (kind === 'accuracy') {
+    if (!Array.isArray(doc.rows)) return refuse(400, 'bad_document', 'An accuracy run needs a rows array, one row per output.');
+  } else {
+    const problem = armsProblem(doc.arms);
+    if (problem) return refuse(400, 'bad_arms', problem);
   }
   const body = JSON.stringify(doc);
   if (Buffer.byteLength(body) > MAX_RUN_BYTES) return refuse(413, 'too_large', 'Run documents are capped at 4 MB.');
-  return { ok: true, body };
+  return { ok: true, body, kind: kind as RunKind };
 }
 
 /** A trace upload: both keys well formed, the body this output's trace, under 3 MB. */
@@ -99,6 +163,18 @@ function sendDocument(res: Response, field: 'run' | 'trace', body: string) {
 
 // ── machine routes (declared first so "machine" is never read as a run key) ────────────────
 
+/** Lets a publisher check its token and what this deployment takes before it sends anything. */
+router.get(
+  '/arc2-evals/machine/schema',
+  machineWriteLimiter,
+  requireArc2EvalToken,
+  (_req: Request, res: Response) =>
+    res.json(formatResponse.success({
+      apiVersions: API_VERSIONS, kinds: RUN_KINDS, armStatuses: ARM_STATUSES, maxArms: MAX_ARMS,
+      maxRunBytes: MAX_RUN_BYTES, maxTraceBytes: MAX_TRACE_BYTES, page: '/team/arc2-evals/<key>',
+    })),
+);
+
 router.put(
   '/arc2-evals/machine/runs/:key',
   machineWriteLimiter,
@@ -108,7 +184,7 @@ router.put(
     const checked = checkRunUpload(key, req.body);
     if (!checked.ok) return reply(res, checked);
     if (!(await teamEvalRepository.upsertRun(COMPETITION, key, checked.body))) return noDatabase(res);
-    return res.json(formatResponse.success({ key, stored: true }));
+    return res.json(formatResponse.success({ key, kind: checked.kind, stored: true, page: `/team/arc2-evals/${key}` }));
   }),
 );
 
