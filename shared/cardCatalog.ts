@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Date: 16-November-2026
+ * 16-Nov-2026 (GPT-6 / Codex): keep empty profile fallback faces out of the catalog.
  * 14-Nov-2026 (Claude Opus 5.5): catalogSetLabel names a card by its set without a repeated season; catalogFallbackLine keeps a
  *          contest-filtered tile caption to that contest instead of a standing from another one.
  * PURPOSE: Supply catalog competition membership and selected-board standings without depending
@@ -11,6 +12,14 @@ import type { CollectionCard, NewsCollection } from './newsCollection';
 import { collectionEarnedLine, collectionLeadEntry, collectionTeamCompetition } from './newsCollection';
 import { competitionName } from './news';
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
+
+/** A bare profile has no sporting record to make a card; keep its permanent page, but omit its placeholder face from the catalog. */
+export function catalogCardVisible(card: CollectionCard): boolean {
+  if (card.catalogVisible !== undefined) return card.catalogVisible;
+  if (card.kind !== 'person' || card.role !== 'competitor') return true;
+  return !!(card.entries.length || card.career?.tier || card.career?.medals || card.career?.rank?.current
+    || card.career?.rows.length || card.honors.length || card.pastCards.length);
+}
 
 export const CATALOG_PAGE_SIZE = 24;
 export function catalogSet(card: CollectionCard, sets: NewsCollection['sets'] = []) {

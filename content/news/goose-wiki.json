@@ -203,6 +203,7 @@
     "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp": "d59122a80960c65907dcb60cf0ffcc4c451048652bdaa05170fc8f9af51e52bf",
     "/news-images/references/2026-10-29-xz-kaggle-cat-v1.webp": "75f131d82d2d3f21b54c0d22550c797974eb9cdbd08b29282299b2bac8321d68",
     "/news-images/references/2026-10-29-yktori-avatar-v1-base.webp": "be0ffb53d096b9bbaf92bd769eff0ba238356cc1fd29a1aca9ac11b820eec17f",
+    "/news-images/tufa-general-approaches-clean-v1.webp": "d77bb41c77e379a250c501559a8208eda6b13167f7d4d9d1a213edd0fc4149d8",
     "/news-images/whale-feature-lab-v1.webp": "654ae6ca1812a89d511755b6c07c08525f1049daf88e2567b5c6ad063da33324"
   },
   "careers": {
@@ -12012,7 +12013,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "4fbe208cc8d1db262c90b57786718bb03cf54f6e7678284356d0d7d9710cb38f",
+  "fingerprint": "4b7862637654b0ff79acfe4f145a06ebc63f07ef16d77b6f1f6844acffb03f8d",
   "people": [
     {
       "accounts": [
@@ -21540,16 +21541,14 @@
       },
       {
         "art": {
-          "alt": "Five friendly black Tufa spider mascots and Dries Smit oversee two server racks in a vast imagined GPU citadel; distant rival strongholds appear through the arch.",
-          "artworkId": "2026-10-19-tufa-citadel-interior-v2-base",
-          "commissionedAt": "2026-10-19T22:07:13Z",
-          "credit": "Commissioned ARC Daily team illustration; original clean native base.",
-          "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp"
+          "alt": "The six Tufa Labs characters gather around a puzzle in their GPU citadel.",
+          "artworkId": "asset-d77bb41c77e379a250c5",
+          "commissionedAt": "2026-11-17T03:52:33+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/tufa-general-approaches-clean-v1.webp"
         },
         "artNotes": [
-          "The five friendly black spiders are Tufa mascots, not a literal member count. Dries is the individual engineer shown; the illustration does not claim to portray every human teammate.",
-          "The two racks, immense citadel, machinery and distant rival strongholds are editorial fantasy. They do not establish real hardware, spending or current competition method.",
-          "Use the approved clean native citadel interior, which contains no rank, score, observation date or headline. Card names, dated statistics and honors are drawn separately; preserve the original image unchanged."
+          "Approval and scene conditions: wiki/artwork/asset-d77bb41c77e379a250c5.md"
         ],
         "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
         "entries": [
@@ -24944,7 +24943,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-13T18:03:02+00:00",
+    "updatedAt": "2026-11-17T03:52:33+00:00",
     "version": 1
   },
   "results": [],

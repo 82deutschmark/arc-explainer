@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * 16-Nov-2026 (GPT-6 / Codex): omit bare fallback faces from the server-rendered catalog.
+ * Date: 16-November-2026
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): story "In this story" asides, person pages and the sitemap use
  *          tryNewsCollection, so a Card Cabinet that cannot be built falls back to portraits and plain links instead of
  *          a 500; the aside no longer builds the Cabinet when a story names nobody; a card page reuses its collection.
@@ -54,7 +55,7 @@ import {
 import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
-import { catalogSetLabel } from '../../../shared/cardCatalog';
+import { catalogCardVisible, catalogSetLabel } from '../../../shared/cardCatalog';
 import { cardForPerson, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry, type NewsCollection } from '../../../shared/newsCollection';
 import { getNewsCollection, tryNewsCollection } from './newsCollection';
@@ -312,8 +313,8 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
     const { people: otherPeople, teams: otherTeams } = uncardedCast({ people, competitors }, cabinet.cards);
     const otherCast = `<details><summary>More people and teams without cards</summary><ul>${otherPeople.map(person => `<li>${personLink(person)}</li>`).join('')}${otherTeams.map(team => `<li><a href="${esc(competitorPath(team.id))}">${esc(team.name)}</a> · ${esc(competitionName(team.competition))}</li>`).join('')}</ul></details>`;
     const tags = completeMeta({ ...ROUTE_META_TAGS['/news/cards'], ...cardFor(articles),
-      bodyHtml: `<main><h1>${NEWS_BRAND.goose ? 'Kaggleverse cards' : 'ARC Prize 2026 cards'}</h1><p>${esc(NEWS_NAME)}’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own numbered card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.map(card => collectionCardHtml(card)).join('')}${otherCast}<p><a href="/news">${esc(NEWS_NAME)}</a></p></main>` });
-    return { status: 200, tags: { ...tags, jsonLd: collection(tags, cabinet.cards.map(card => ({ name: card.name, path: card.cardUrl }))) } };
+      bodyHtml: `<main><h1>${NEWS_BRAND.goose ? 'Kaggleverse cards' : 'ARC Prize 2026 cards'}</h1><p>${esc(NEWS_NAME)}’s permanent ${esc(cabinet.season)} collection, commissioned by ${esc(cabinet.commissionedBy)}. Every Kaggle competitor, competition sponsor and team has its own card, with shareable links between their records. Standings move until a competition closes; final results come from the private leaderboard.</p>${cabinet.cards.filter(catalogCardVisible).map(card => collectionCardHtml(card)).join('')}${otherCast}<p><a href="/news">${esc(NEWS_NAME)}</a></p></main>` });
+    return { status: 200, tags: { ...tags, jsonLd: collection(tags, cabinet.cards.filter(catalogCardVisible).map(card => ({ name: card.name, path: card.cardUrl }))) } };
   }
   const cardRoute = route.match(/^\/news\/cards\/([a-z0-9-]+)$/);
   if (cardRoute) {

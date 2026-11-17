@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Date: 16-November-2026
+ * 16-Nov-2026 (GPT-6 / Codex): classify bare catalog faces using the same card model and art dimensions as the renderer.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): getNewsCollection checks its memo (watched files, board generation,
  *          TTL) before reading the news index; each artwork is hashed once per path, modified time and size; a person
  *          card with no verified person, or a card whose artwork is missing or fails its digest, is left out and
@@ -32,6 +33,10 @@ import { describeProblem, getNewsIndex, NEWS_DIRECTORY, type NewsSkip } from './
 import { loadSeriesFile } from './cardFace/sets';
 import { loadWikiInputs } from './wikiInputs';
 import { cardBoardCache, cardBoardStatus, freshCardRows } from './cardBoards';
+import { catalogCardVisible } from '../../../shared/cardCatalog';
+import { enrichCard } from './cardFace/enrich';
+import { viewModel } from './cardFace/model';
+import { cardFrameRepair } from '../../../shared/cardFrameRepair';
 
 export function activeCardResults(results: FinalCardResult[]): FinalCardResult[] {
   const ids = new Set<string>();
@@ -446,5 +451,19 @@ function buildCollectionFromFiles(directory: string, wiki: ReturnType<typeof loa
     if (!warnedCards.has(key)) { warnedCards.add(key); console.warn(`[news] left out card ${entry.record}: ${entry.reason}`); }
   }
   collection.sets = sets;
+  // The front renderer prints the large fallback only for bare profiles without a portrait.
+  // Resolve the same model once here so the browser and server can preserve real portraits.
+  for (const card of collection.cards) {
+    if (catalogCardVisible(card)) continue;
+    try {
+      const model = enrichCard(card, collection);
+      const art = model.art;
+      const portrait = !!(art?.file && art.width && art.height && (art.kind === 'contract-5x7' || art.width / art.height <= 1.05 || cardFrameRepair(card)));
+      card.catalogVisible = !viewModel(model).bare || portrait;
+    } catch {
+      // Unknown set designs keep the collection available; the catalog omits the uncertain fallback.
+      card.catalogVisible = false;
+    }
+  }
   return collection;
 }

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Date: 16-November-2026
+ * 16-Nov-2026 (GPT-6 / Codex): expose whether a bare profile has a real portrait for the catalog.
  * 14-Nov-2026 (Claude Opus 5.5, card faces): RENDER_VERSION 12; collectionShareVersion also covers what a card prints about
  *          other cards (teammates' tiers and medals, shared-art names, its set's tier count) when given the collection, and
  *          the stamp phase (every contest closed or not); a standing that is not final reads "Snapshot", not the banned word.
@@ -173,6 +174,8 @@ export interface CollectionCard {
   career: CollectionCareer | null;
   /** Fingerprint of the set-level inputs the card's picture uses (card count, tier counts, series rows, career extras). Part of the image address. */
   setKey?: string;
+  /** Server-checked visibility of otherwise bare profile faces in the catalog. */
+  catalogVisible?: boolean;
 }
 /** A set kept from an earlier season: last year's ARC Hall of Fame cards, every one preserved as it was issued. */
 export const hallOfFameSchema = z.object({

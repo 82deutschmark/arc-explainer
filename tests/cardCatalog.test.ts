@@ -1,13 +1,14 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 02-November-2026
+ * Date: 16-November-2026
+ * 16-Nov-2026 (GPT-6 / Codex): verify only empty profile fallbacks are excluded.
  * PURPOSE: Exercise unavailable standings, future seasons, non-ARC contests and explicit subject types.
  * SRP/DRY check: Pass — test catalog rules with isolated fixtures, never public invented records.
  */
 import { expect, it } from 'vitest';
-import { catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '../shared/cardCatalog';
+import { catalogCardVisible, catalogCompetitions, catalogEntry, catalogSubjectLabel, catalogSet } from '../shared/cardCatalog';
 import type { CollectionCard } from '../shared/newsCollection';
-const fixture = (fields: Partial<CollectionCard>) => ({ season: '2028', kind: 'person', role: 'competitor', entries: [], teamHistory: [], ...fields } as CollectionCard);
+const fixture = (fields: Partial<CollectionCard>) => ({ season: '2028', kind: 'person', role: 'competitor', entries: [], teamHistory: [], honors: [], pastCards: [], ...fields } as CollectionCard);
 it('keeps future non-ARC membership filterable without a fresh leaderboard', () => {
   const card = fixture({ teamHistory: [
     { season: '2028', competitionId: 'future-medicine', competition: 'future-medicine' },
@@ -46,4 +47,14 @@ it('keeps imported cards in their original season collection after new sets are 
   ];
   expect(catalogSet(fixture({}), sets)?.id).toBe('2028');
   expect(catalogSet(fixture({ setId: 'set-a-2028' }), sets)?.id).toBe('set-a-2028');
+});
+
+it('hides bare fallback profiles while retaining issued cards with sporting evidence', () => {
+  expect(catalogCardVisible(fixture({}))).toBe(false);
+  expect(catalogCardVisible(fixture({ catalogVisible: true }))).toBe(true);
+  expect(catalogCardVisible(fixture({ entries: [{ status: 'unavailable' }] as CollectionCard['entries'] }))).toBe(true);
+  expect(catalogCardVisible(fixture({ career: { checkedAt: '2026-11-16T00:00:00Z', profileUrl: null, tier: 'Master', medals: null, rank: null, joinedYear: null, organisation: null, location: null, rows: [] } }))).toBe(true);
+  expect(catalogCardVisible(fixture({ honors: [{ label: 'Winner' }] as CollectionCard['honors'] }))).toBe(true);
+  expect(catalogCardVisible(fixture({ kind: 'team', role: 'team' }))).toBe(true);
+  expect(catalogCardVisible(fixture({ role: 'sponsor' }))).toBe(true);
 });

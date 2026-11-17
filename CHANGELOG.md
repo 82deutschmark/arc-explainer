@@ -1,5 +1,9 @@
 ### Version 9.164.45 · November 14, 2026
 
+### Version 9.164.46 · November 16, 2026
+
+- Hid empty competitor profile fallback faces from catalog results, counts and server index while preserving their direct pages, real portraits and cards with actual contest or career evidence. Selected distinct Tufa team artwork. This removes the oversized “Standings at Kaggle” placeholders. Author: GPT-6 / Codex.
+
 - **Loose Goose server resilience and speed (second audit pass).** What/why/how:
   - The archive is memoised on file mtimes/sizes (30 s TTL, so the one-week windows still move): a cached load drops from ~110 ms to ~6 ms, and the card collection checks its memo before touching the archive (~105 ms → ~0.07 ms). Board generation moves only when rows change; each artwork is hashed once per path/mtime/size instead of ~140 MB every rebuild. Found stories get `max-age=60`.
   - One bad person, artwork file or wiki row no longer 500s the front page, articles, Cabinet or sitemap: the card is left out and recorded, the last good collection is served, pages fall back to portraits/plain markup, and `/api/news/health` reports `degraded` with the reason instead of "ok". A duplicate team on a saved board drops only that team; board read errors and wiki problems are reported in one line with the row id and the real file.

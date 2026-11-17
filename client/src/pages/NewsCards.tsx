@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Date: 16-November-2026
+ * 16-Nov-2026 (GPT-6 / Codex): omit empty profile fallback faces from catalog results and counts.
  * 14-Nov-2026 (Claude Opus 5.5, integration): the page's og:image uses the collection-aware share version, as the server meta does.
  * 14-Nov-2026 (Claude Opus 5.5): card page data laid out in balanced columns with every table in a scroll wrapper, the
  *          unavailable-standings links inside the Standings panel and the roster/team lists as ordinary panels; empty Team and
@@ -38,7 +39,7 @@ import { NewsStatus, newsDate, useNews, useNewsCardImage } from '@/components/ne
 import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair, cardFaceSrcSet, cardFaceThumb } from '@/components/news/CardPair';
 import { useNewsCollection } from '@/hooks/useNewsCollection';
-import { CATALOG_PAGE_SIZE, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
+import { CATALOG_PAGE_SIZE, catalogCardVisible, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
 import '@/components/news/cardRelationships.css';
 
@@ -188,7 +189,7 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
   const [season, setSeason] = useState('all');
   const [edition, setEdition] = useState('all');
   const [pageChoice, setPageChoice] = useState({ key: '', page: 0 });
-  const cards = collection.cards;
+  const cards = useMemo(() => collection.cards.filter(catalogCardVisible), [collection.cards]);
   const seasons = [...new Set(cards.map(card => card.season))].sort().reverse();
   const contests = useMemo(() => [...new Map(cards.flatMap(card => catalogCompetitions(card, collection.sets)).map(entry => [entry.id, entry.key] as const)).entries()]
     .map(([id, key]) => ({ id, label: competitionName(key) })), [cards, collection.sets]);
@@ -255,7 +256,7 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     {pagination}
     {view === 'binder' ? <div className="cb-grid">{visible.map((card, index) => <Tile key={card.id} card={card} index={index} contest={contest} />)}</div> : <Sheet cards={visible} sort={sort} setSort={setSort} contest={contest} />}
     {pagination}
-    {news.data && <UncardedCast index={news.data} cards={cards} needle={needle} role={role} contest={contest} season={season} filtered={tier !== 'all' || edition !== 'all'} />}
+    {news.data && <UncardedCast index={news.data} cards={collection.cards} needle={needle} role={role} contest={contest} season={season} filtered={tier !== 'all' || edition !== 'all'} />}
     {news.isError && !news.data && <p className="cb-note">People and teams without cards could not be loaded. <button type="button" onClick={() => void news.refetch()}>Try again</button></p>}
     {!shown.length && <div className="cb-empty"><h2>No cards match.</h2><button type="button" onClick={() => { setSearch(''); setRole('all'); setTier('all'); setContest('all'); setSeason('all'); setEdition('all'); if (sort === 'rank') setSort('name'); }}>Show every card →</button></div>}
     </>}
