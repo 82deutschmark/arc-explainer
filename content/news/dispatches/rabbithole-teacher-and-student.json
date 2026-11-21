@@ -1,0 +1,102 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "dek": "Yuhua Ke’s crew built grids that could expose a wrong guess, then had a bigger model show a smaller one how to work through the puzzles.",
+  "editorNote": "The Loose Goose sports desk · GPT-6.2 Sol Medium.",
+  "generatedBy": "gpt-6-codex",
+  "headline": "rabbithole puts its puzzles on trial",
+  "id": "rabbithole-teacher-and-student",
+  "image": {
+    "alt": "A goose in a plum jacket slides a puzzle grid onto a workbench as four teammates watch two paths split into different patterns.",
+    "caption": "The rabbithole crew watches two rival rules split at the workbench.",
+    "src": "/news-images/goose-c96f2ceef7a72ec41149.webp"
+  },
+  "personIds": [
+    "yuhua-ke",
+    "cookize-song",
+    "jiaxibi0220",
+    "xie-zejian",
+    "zhang-songxin"
+  ],
+  "publishedAt": "2026-11-21T22:28:41+00:00",
+  "sections": [
+    {
+      "heading": "Give the wrong rule a chance",
+      "sourceIds": [
+        "writeup",
+        "board",
+        "roster",
+        "ke",
+        "cookize",
+        "jiaxi",
+        "xie",
+        "zhang"
+      ],
+      "text": "Yuhua Ke and the rabbithole crew set a trap for the wrong answer. Give a solver a few coloured grids and it can find a rule that fits every example. The trouble starts when a second rule fits them too. Ke’s team built puzzles that made those rival rules part ways.\n\nThe public board’s team roster lists Ke alongside Cookize Song, jiaxi bi0220, Xie Zejian and Zhang Songxin. On 21 November, rabbithole sat at #6 on the public leaderboard for ARC-AGI-2. The private board gets the last word."
+    },
+    {
+      "heading": "A lesson with a sting",
+      "sourceIds": [
+        "writeup"
+      ],
+      "text": "Here’s the trick in Ke’s write-up. An agent picked a rule and wrote code to make grids and solve them. A challenger saw only the examples and proposed other programs that could explain them. The team’s pipeline searched for a fresh grid where those programs disagreed with the intended rule, then added examples that could tell them apart. A puzzle could now catch a convincing wrong guess.\n\nA larger in-house model worked through a pool that mixed those generated puzzles with human–AI co-designed tasks and the NVARC puzzle collection. The team screened the worked attempts, then removed duplicate puzzles to leave nearly 45,000 distinct tasks. The smaller model learned from those attempts. Another training pass used AI feedback to shorten its working without losing accuracy, the team reports. In the competition it could try a program in a Python notebook, check it against the demonstration grids and use it to produce an answer."
+    },
+    {
+      "heading": "Save a second shot",
+      "sourceIds": [
+        "writeup"
+      ],
+      "text": "The crew queued first tries ahead of second tries. For second tries, the puzzles that had produced no program or had failed their demonstrations got priority. The team also tuned its serving system so that returning sessions with a lot of work to redo could wait while active solves pressed on.\n\nA late experiment with a larger model never made it into a successful submission. Ke’s write-up singles out the ways rival teams squeezed bigger models onto the same hardware. Can rabbithole bring a bigger student to class next time?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-21T18:01:00+00:00",
+      "id": "writeup",
+      "title": "Yuhua Ke — Public sixth-place ARC-AGI-2 solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/757245"
+    },
+    {
+      "accessedAt": "2026-11-21T18:07:06+00:00",
+      "id": "board",
+      "title": "Kaggle ARC-AGI-2 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard"
+    },
+    {
+      "accessedAt": "2026-11-21T18:03:00+00:00",
+      "id": "roster",
+      "title": "Dated ARC-Explainer copy of the Kaggle team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-11-21T18:04:00+00:00",
+      "id": "ke",
+      "title": "Yuhua Ke — Kaggle profile",
+      "url": "https://www.kaggle.com/yuhuake240506"
+    },
+    {
+      "accessedAt": "2026-11-21T18:04:00+00:00",
+      "id": "cookize",
+      "title": "Cookize Song — Kaggle profile",
+      "url": "https://www.kaggle.com/cookizesong"
+    },
+    {
+      "accessedAt": "2026-11-21T18:04:00+00:00",
+      "id": "jiaxi",
+      "title": "jiaxi bi0220 — Kaggle profile",
+      "url": "https://www.kaggle.com/jiaxibi0220"
+    },
+    {
+      "accessedAt": "2026-11-21T18:04:00+00:00",
+      "id": "xie",
+      "title": "Xie Zejian — Kaggle profile",
+      "url": "https://www.kaggle.com/xiezejian"
+    },
+    {
+      "accessedAt": "2026-11-21T18:04:00+00:00",
+      "id": "zhang",
+      "title": "Zhang Songxin — Kaggle profile",
+      "url": "https://www.kaggle.com/zhangsongxin"
+    }
+  ]
+}
