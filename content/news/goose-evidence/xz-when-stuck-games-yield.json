@@ -82,21 +82,21 @@
           "url": "https://www.kaggle.com/xiaoz259"
         },
         {
-          "accessedAt": "2026-11-22T18:05:24.656136+00:00",
-          "id": "code",
-          "title": "xz — ARC-AGI-3 submission code, arc3-v12",
-          "url": "https://github.com/xz259/arc-prize-2026-solutions/tree/arc3-v12/arc3"
-        },
-        {
           "accessedAt": "2026-11-22T18:06:09.721672+00:00",
           "id": "project",
           "title": "xz — ARC Prize 2026 solution repository and submitted versions",
           "url": "https://github.com/xz259/arc-prize-2026-solutions"
+        },
+        {
+          "accessedAt": "2026-11-22T18:05:24.656136+00:00",
+          "id": "code",
+          "title": "xz — ARC-AGI-3 submission code, arc3-v12",
+          "url": "https://github.com/xz259/arc-prize-2026-solutions/tree/arc3-v12/arc3"
         }
       ]
     },
     "storyId": "xz-when-stuck-games-yield",
-    "storySha256": "345560b99a045803146f55ebe829281cd82accd67402d52e7bc61b5c2c4b189a",
+    "storySha256": "a87a587ffbde7aace0ac67af10547ba8f09e2aa21d27dba69a85f0b0b2e7cd60",
     "version": 1
   },
   "review": {
@@ -114,9 +114,9 @@
       "art-continuity",
       "copy"
     ],
-    "notes": "Three separate Claude passes checked the discussion post, public board and code extracts. The official Kaggle CLI read confirmed team 15487093 at #4 on 22 November. The separate ARC-Explainer roster mirror identifies xiaoz259 as the listed member. Its cache observation time differs from the independently recorded source access time. Replaced the unverified full name with the credited handle and separated the inherited Python functions from xz’s persistent variables. Clarified the refresh condition and made the solver the actor in the standfirst. The article gives the paired rehearsal’s level clears and keeps them distinct from Kaggle scoring the full entry. Restart-value ranking is described as a method without a claimed gain. The dispatch proof names only xz, matching the published host identity and personal card. Compared the second built-in image generation to the character portrait and avatar at full frame and phone width. It retains the face, plume tail and vest and shows both cassettes. No Grandmaster regalia. The lower-left team plate records xz and the exact sourced public place while clearing the tail, paw and console. The first composition is preserved on T4. The final copy and artwork bytes match this proof. The owner requested push ahead of the 2 p.m. Eastern X slot. Only the publication time changed.",
-    "reviewedAt": "2026-11-22T18:16:38+00:00",
+    "notes": "Three separate Claude passes checked the discussion post, public board and code extracts. The official Kaggle CLI read confirmed team 15487093 at #4 on 22 November. The separate ARC-Explainer roster mirror identifies xiaoz259 as the listed member. Its cache observation time differs from the independently recorded source access time. Replaced the unverified full name with the credited handle and separated the inherited Python functions from xz’s persistent variables. Clarified the refresh condition and made the solver the actor in the standfirst. The article gives the paired rehearsal’s level clears and keeps them distinct from Kaggle scoring the full entry. Restart-value ranking is described as a method without a claimed gain. The dispatch proof names only xz, matching the published host identity and personal card. Compared the second built-in image generation to the character portrait and avatar at full frame and phone width. It retains the face, plume tail and vest and shows both cassettes. No Grandmaster regalia. The lower-left team plate records xz and the exact sourced public place while clearing the tail, paw and console. The first composition is preserved on T4. The final copy and artwork bytes match this proof. The owner requested push ahead of the 2 p.m. Eastern X slot. Only the publication time changed. Ordered the source list by first citation to match the host’s existing article metadata contract. Source content, article copy, cast, publication time and artwork are identical.",
+    "reviewedAt": "2026-11-22T18:20:13+00:00",
     "reviewedBy": "GPT-6 / Codex, with independent read-only Claude CLI reviews",
-    "storySha256": "345560b99a045803146f55ebe829281cd82accd67402d52e7bc61b5c2c4b189a"
+    "storySha256": "a87a587ffbde7aace0ac67af10547ba8f09e2aa21d27dba69a85f0b0b2e7cd60"
   }
 }

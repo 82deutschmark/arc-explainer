@@ -69,16 +69,16 @@
       "url": "https://www.kaggle.com/xiaoz259"
     },
     {
-      "accessedAt": "2026-11-22T18:05:24.656136+00:00",
-      "id": "code",
-      "title": "xz — ARC-AGI-3 submission code, arc3-v12",
-      "url": "https://github.com/xz259/arc-prize-2026-solutions/tree/arc3-v12/arc3"
-    },
-    {
       "accessedAt": "2026-11-22T18:06:09.721672+00:00",
       "id": "project",
       "title": "xz — ARC Prize 2026 solution repository and submitted versions",
       "url": "https://github.com/xz259/arc-prize-2026-solutions"
+    },
+    {
+      "accessedAt": "2026-11-22T18:05:24.656136+00:00",
+      "id": "code",
+      "title": "xz — ARC-AGI-3 submission code, arc3-v12",
+      "url": "https://github.com/xz259/arc-prize-2026-solutions/tree/arc3-v12/arc3"
     }
   ]
 }
