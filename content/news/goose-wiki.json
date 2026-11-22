@@ -9507,7 +9507,14 @@
       ],
       "briefing": "xz in ARC Prize 2026 — ARC-AGI-3; roster last observed 2026-11-02T00:56:31Z.",
       "competition": "arc-3",
-      "facts": [],
+      "facts": [
+        {
+          "checkedAt": "2026-11-22T18:06:09.721672+00:00",
+          "sourceTitle": "xz — The Price of a Faster Token",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/758306",
+          "text": "In xz’s public ARC-AGI-3 write-up, when games reached a refresh while others waited, the solver could park a session, release its memory and let a game that had not started go first. xz reports more game starts and level clears in one paired rehearsal with parking."
+        }
+      ],
       "firstObservedAt": "2026-10-29T09:50:51Z",
       "id": "arc-3-15487093",
       "lastObservedAt": "2026-11-02T00:56:31Z",
@@ -12016,7 +12023,7 @@
       "teamId": "17157851"
     }
   ],
-  "fingerprint": "76cda57c18a17993af683357cd0bd38207eb5c830870d15def3f9e53b73f4492",
+  "fingerprint": "ce59e6516a3306c7eadda4fdc5574067029273b913aec1e5203444a066516bf1",
   "people": [
     {
       "accounts": [
@@ -19878,6 +19885,12 @@
           "sourceTitle": "xz — September 2, 2026 winning write-up",
           "sourceUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
           "text": "Published a first-place agent-security solution on September 2, 2026, describing throughput optimization under a fixed replay budget. This is a separate competition, not an ARC method disclosure."
+        },
+        {
+          "checkedAt": "2026-11-22T18:06:09.721672+00:00",
+          "sourceTitle": "xz — The Price of a Faster Token",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/758306",
+          "text": "In xz’s public ARC-AGI-3 write-up, when games reached a refresh while others waited, the solver could park a session, release its memory and let a game that had not started go first. xz reports more game starts and level clears in one paired rehearsal with parking."
         }
       ],
       "hallOfFame": [],

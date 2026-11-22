@@ -1,0 +1,84 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "dek": "When an ARC-AGI-3 game bogged down, xz’s solver saved its notes and gave the slot to a game still waiting to start.",
+  "editorNote": "The Loose Goose sports desk · GPT-6 / Codex (reasoning effort not exposed).",
+  "generatedBy": "gpt-6-codex",
+  "headline": "xz gives the waiting games a turn",
+  "id": "xz-when-stuck-games-yield",
+  "image": {
+    "alt": "A cream cat shelves a dim puzzle cassette as a bright cassette slides into an arcade console. A small plate labels team xz fourth on the public leaderboard.",
+    "caption": "xz shelves a stalled game and makes room for the next one.",
+    "src": "/news-images/goose-cd5dc77d9a919b22fd6e.webp"
+  },
+  "personIds": [
+    "xz"
+  ],
+  "publishedAt": "2026-11-22T18:16:38+00:00",
+  "sections": [
+    {
+      "heading": "Make room at the console",
+      "sourceIds": [
+        "writeup",
+        "board",
+        "roster",
+        "profile",
+        "project"
+      ],
+      "text": "The cat pulls a stalled game out of the arcade cabinet and waves the next one over. In xz’s ARC-AGI-3 write-up, the cabinet was a single graphics card with room for only a slice of the field at once. A game could sit on the same level while fresh ones waited. xz gave the queue a turn.\n\nOn 22 November, xz stood at #4 on the ARC-AGI-3 public leaderboard."
+    },
+    {
+      "heading": "Save the notes and free the slot",
+      "sourceIds": [
+        "writeup"
+      ],
+      "text": "After a long attempt at the same level, the solver wrote down what it had learned and what had failed. That fresh start gave the system a chance to park the game and free its memory when another game was waiting. Games that had never started got first call. When a parked game came back, the solver picked up play with a shorter record of what it had tried.\n\nIn one pair of rehearsals, the run with parking started more games and cleared 278 levels against 234 at about the two-hour mark. Those were rehearsal level counts, while Kaggle scored the full entry with all its changes."
+    },
+    {
+      "heading": "A lane for the next game",
+      "sourceIds": [
+        "writeup",
+        "code"
+      ],
+      "text": "The system also sent repeat stalls farther back in the queue. Within each group, it ranked returning games by what they might still earn in the time left. xz built on Tufa Labs’ Duck framework via @dfranzen’s milestone entry. The Python tool already carried functions from one turn to the next. xz made variables carry over too.\n\nPersistence had to share the clock. How far can the next ARC solver go by knowing when to give up its seat?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-22T18:05:26.016671+00:00",
+      "id": "writeup",
+      "title": "xz — The Price of a Faster Token",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/758306"
+    },
+    {
+      "accessedAt": "2026-11-22T18:05:26.598082+00:00",
+      "id": "board",
+      "title": "Kaggle ARC-AGI-3 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    },
+    {
+      "accessedAt": "2026-11-22T18:05:27.064249+00:00",
+      "id": "roster",
+      "title": "Dated ARC-Explainer copy of the Kaggle team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-11-22T18:06:09.721672+00:00",
+      "id": "profile",
+      "title": "xz — Kaggle profile",
+      "url": "https://www.kaggle.com/xiaoz259"
+    },
+    {
+      "accessedAt": "2026-11-22T18:05:24.656136+00:00",
+      "id": "code",
+      "title": "xz — ARC-AGI-3 submission code, arc3-v12",
+      "url": "https://github.com/xz259/arc-prize-2026-solutions/tree/arc3-v12/arc3"
+    },
+    {
+      "accessedAt": "2026-11-22T18:06:09.721672+00:00",
+      "id": "project",
+      "title": "xz — ARC Prize 2026 solution repository and submitted versions",
+      "url": "https://github.com/xz259/arc-prize-2026-solutions"
+    }
+  ]
+}
