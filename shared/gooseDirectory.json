@@ -1247,6 +1247,20 @@
       "url": "https://kaggle.com/competitions/gemma-4-developer-agent-paper",
       "wikiId": "competitions/gemma-4-developer-agent-paper"
     },
+    "generalist-gaming-agent": {
+      "closeAt": "2027-03-01T23:59:00.000Z",
+      "format": "scored",
+      "label": "Generalist Gaming Agent",
+      "officialHosts": [
+        "kaggle.com",
+        "www.kaggle.com"
+      ],
+      "scoreDirection": null,
+      "season": null,
+      "slug": "generalist-gaming-agent",
+      "url": "https://kaggle.com/competitions/generalist-gaming-agent",
+      "wikiId": "competitions/generalist-gaming-agent"
+    },
     "generative-dog-images": {
       "closeAt": null,
       "format": "scored",

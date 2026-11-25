@@ -12021,10 +12021,247 @@
       ],
       "name": "dastin0359",
       "teamId": "17157851"
+    },
+    {
+      "aliases": [],
+      "briefing": "Emre Cirak in Generalist Gaming Agent. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17430219",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "biohack44"
+      ],
+      "name": "Emre Cirak",
+      "teamId": "17430219"
+    },
+    {
+      "aliases": [],
+      "briefing": "Tong Hui Kang in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17430290",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "huikang"
+      ],
+      "name": "Tong Hui Kang",
+      "teamId": "17430290"
+    },
+    {
+      "aliases": [],
+      "briefing": "john in Generalist Gaming Agent. See the public leaderboard for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-25T00:34:25+00:00",
+      "id": "generalist-gaming-agent-17430354",
+      "lastObservedAt": "2026-11-25T00:34:25+00:00",
+      "members": [
+        "jaejohn"
+      ],
+      "name": "john",
+      "teamId": "17430354"
+    },
+    {
+      "aliases": [],
+      "briefing": "Dries @ Tufa Labs in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17430967",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "driessmit1"
+      ],
+      "name": "Dries @ Tufa Labs",
+      "teamId": "17430967"
+    },
+    {
+      "aliases": [],
+      "briefing": "Ray777 in Generalist Gaming Agent. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17431279",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "yangrui777"
+      ],
+      "name": "Ray777",
+      "teamId": "17431279"
+    },
+    {
+      "aliases": [],
+      "briefing": "Vladislav Lavrentev in Generalist Gaming Agent. See the public leaderboard for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-25T00:34:25+00:00",
+      "id": "generalist-gaming-agent-17431327",
+      "lastObservedAt": "2026-11-25T00:34:25+00:00",
+      "members": [
+        "lightningv08"
+      ],
+      "name": "Vladislav Lavrentev",
+      "teamId": "17431327"
+    },
+    {
+      "aliases": [],
+      "briefing": "Jack Cole in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17431668",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "jcole75"
+      ],
+      "name": "Jack Cole",
+      "teamId": "17431668"
+    },
+    {
+      "aliases": [],
+      "briefing": "Malyshev Danil in Generalist Gaming Agent. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17431730",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "malyshevdanil"
+      ],
+      "name": "Malyshev Danil",
+      "teamId": "17431730"
+    },
+    {
+      "aliases": [],
+      "briefing": "Logical Arbitrage in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17431944",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "markbarney",
+        "sonphamorg"
+      ],
+      "name": "Logical Arbitrage",
+      "teamId": "17431944"
+    },
+    {
+      "aliases": [],
+      "briefing": "matsu997 in Generalist Gaming Agent. See the public leaderboard for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-25T00:34:25+00:00",
+      "id": "generalist-gaming-agent-17432126",
+      "lastObservedAt": "2026-11-25T00:34:25+00:00",
+      "members": [
+        "mastu997"
+      ],
+      "name": "matsu997",
+      "teamId": "17432126"
+    },
+    {
+      "aliases": [],
+      "briefing": "DECEM in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17432339",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "zy1343930734"
+      ],
+      "name": "DECEM",
+      "teamId": "17432339"
+    },
+    {
+      "aliases": [],
+      "briefing": "M.J. in Generalist Gaming Agent. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17432755",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "wscmisx",
+        "jackvd"
+      ],
+      "name": "M.J.",
+      "teamId": "17432755"
+    },
+    {
+      "aliases": [],
+      "briefing": "Galaxy A55 in Generalist Gaming Agent. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17433207",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "galaxya55"
+      ],
+      "name": "Galaxy A55",
+      "teamId": "17433207"
+    },
+    {
+      "aliases": [],
+      "briefing": "Ahmed Berat Özer in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-24T20:59:00Z",
+      "id": "generalist-gaming-agent-17434745",
+      "lastObservedAt": "2026-11-24T20:59:00Z",
+      "members": [
+        "alperen5252525",
+        "ahmedberatozer"
+      ],
+      "name": "Ahmed Berat Özer",
+      "teamId": "17434745"
     }
   ],
-  "fingerprint": "ce59e6516a3306c7eadda4fdc5574067029273b913aec1e5203444a066516bf1",
+  "fingerprint": "6befff79f27d00dc1d8081a75a4a5cd938cc38691e65280b7a0b33c5aa1973b7",
   "people": [
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "handle": "ahmedberatozer",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/ahmedberatozer",
+          "url": "https://www.kaggle.com/ahmedberatozer"
+        }
+      ],
+      "briefing": "Ahmed Berat Özer shares game-agent work from Kaggriculture, including his reactive market coordination notebook.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "sourceTitle": "Public reporting source",
+          "sourceUrl": "https://www.kaggle.com/code/ahmedberatozer/kaggriculture-v47-reactive-market-coordination",
+          "text": "Ahmed Berat Özer shares game-agent work from Kaggriculture, including his reactive market coordination notebook."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "ahmed-berat-ozer",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "ahmedberatozer",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17434745",
+          "teamName": "Ahmed Berat Özer"
+        }
+      ],
+      "name": "Ahmed Berat Özer"
+    },
     {
       "accounts": [
         {
@@ -12152,6 +12389,44 @@
         "sourceUrl": "https://www.kaggle.com/alijs1",
         "src": "/news-images/people/alijs.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "handle": "alperen5252525",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/alperen5252525",
+          "url": "https://www.kaggle.com/alperen5252525"
+        }
+      ],
+      "briefing": "Alperen Aydın is listed alongside Ahmed Berat Özer on their Generalist Gaming Agent entry.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "sourceTitle": "Public reporting source",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "text": "Alperen Aydın is listed alongside Ahmed Berat Özer on their Generalist Gaming Agent entry."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "alperen-aydin",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "alperen5252525",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17434745",
+          "teamName": "Ahmed Berat Özer"
+        }
+      ],
+      "name": "Alperen Aydın"
     },
     {
       "accounts": [
@@ -13480,6 +13755,44 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "handle": "zy1343930734",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/zy1343930734",
+          "url": "https://www.kaggle.com/zy1343930734"
+        }
+      ],
+      "briefing": "DECEM published a seventh-place Kaggriculture solution using behavior cloning and two rules.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "sourceTitle": "Public reporting source",
+          "sourceUrl": "https://www.kaggle.com/competitions/kaggriculture/discussion/751681",
+          "text": "DECEM published a seventh-place Kaggriculture solution using behavior cloning and two rules."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "decem",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "zy1343930734",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17432339",
+          "teamName": "DECEM"
+        }
+      ],
+      "name": "DECEM"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-11-05T03:52:02+00:00",
           "handle": "deepios",
           "platform": "kaggle",
@@ -13807,6 +14120,18 @@
           "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
           "teamId": "15486995",
           "teamName": "Tufa Labs"
+        },
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "driessmit1",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17430967",
+          "teamName": "Dries @ Tufa Labs"
         }
       ],
       "name": "Dries Smit",
@@ -13925,6 +14250,37 @@
         "sourceUrl": "https://www.kaggle.com/eladsarafian",
         "src": "/news-images/people/elad-sarafian.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "biohack44",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/biohack44",
+          "url": "https://www.kaggle.com/biohack44"
+        }
+      ],
+      "briefing": "Emre Cirak is listed on the Emre Cirak entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "emre-cirak",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "biohack44",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17430219",
+          "teamName": "Emre Cirak"
+        }
+      ],
+      "name": "Emre Cirak"
     },
     {
       "accounts": [
@@ -14315,6 +14671,37 @@
         "sourceUrl": "https://www.kaggle.com/galkaplun",
         "src": "/news-images/people/gal-kaplun.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "galaxya55",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/galaxya55",
+          "url": "https://www.kaggle.com/galaxya55"
+        }
+      ],
+      "briefing": "Galaxy A55 is listed on the Galaxy A55 entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "galaxy-a55",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "galaxya55",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17433207",
+          "teamName": "Galaxy A55"
+        }
+      ],
+      "name": "Galaxy A55"
     },
     {
       "accounts": [
@@ -15355,6 +15742,18 @@
           "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
           "teamId": "17023174",
           "teamName": "ARC Mutants"
+        },
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "jcole75",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431668",
+          "teamName": "Jack Cole"
         }
       ],
       "name": "Jack Cole",
@@ -15366,6 +15765,68 @@
         "sourceUrl": "https://www.kaggle.com/jcole75",
         "src": "/news-images/people/jack-cole-v2.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "jackvd",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/jackvd",
+          "url": "https://www.kaggle.com/jackvd"
+        }
+      ],
+      "briefing": "Jack is listed on the M.J. entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "jackvd",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "jackvd",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17432755",
+          "teamName": "M.J."
+        }
+      ],
+      "name": "Jack"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-25T00:34:25+00:00",
+          "handle": "jaejohn",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle public leaderboard member link",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "url": "https://www.kaggle.com/jaejohn"
+        }
+      ],
+      "briefing": "g john rao is listed on the john entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "jaejohn",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-25T00:34:25+00:00",
+          "lastObservedAt": "2026-11-25T00:34:25+00:00",
+          "memberHandle": "jaejohn",
+          "season": "2026",
+          "sourceTitle": "Public Kaggle leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17430354",
+          "teamName": "john"
+        }
+      ],
+      "name": "g john rao"
     },
     {
       "accounts": [
@@ -16565,6 +17026,37 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "malyshevdanil",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/malyshevdanil",
+          "url": "https://www.kaggle.com/malyshevdanil"
+        }
+      ],
+      "briefing": "Malyshev Danil is listed on the Malyshev Danil entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "malyshev-danil",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "malyshevdanil",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431730",
+          "teamName": "Malyshev Danil"
+        }
+      ],
+      "name": "Malyshev Danil"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-11T20:33:19Z",
           "handle": "markbarney",
           "platform": "kaggle",
@@ -16626,6 +17118,18 @@
           "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
           "teamId": "15605182",
           "teamName": "Team Turducken"
+        },
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "markbarney",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431944",
+          "teamName": "Logical Arbitrage"
         }
       ],
       "name": "Mark Barney",
@@ -16675,6 +17179,37 @@
         }
       ],
       "name": "matin"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-25T00:34:25+00:00",
+          "handle": "mastu997",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle public leaderboard member link",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "url": "https://www.kaggle.com/mastu997"
+        }
+      ],
+      "briefing": "matsu997 is listed on the matsu997 entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "matsu997",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-25T00:34:25+00:00",
+          "lastObservedAt": "2026-11-25T00:34:25+00:00",
+          "memberHandle": "mastu997",
+          "season": "2026",
+          "sourceTitle": "Public Kaggle leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17432126",
+          "teamName": "matsu997"
+        }
+      ],
+      "name": "matsu997"
     },
     {
       "accounts": [
@@ -18261,6 +18796,37 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "yangrui777",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/yangrui777",
+          "url": "https://www.kaggle.com/yangrui777"
+        }
+      ],
+      "briefing": "Ray777 is listed on the Ray777 entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "ray777",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "yangrui777",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431279",
+          "teamName": "Ray777"
+        }
+      ],
+      "name": "Ray777"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-10-29T23:26:08.724960Z",
           "handle": "refv00",
           "platform": "kaggle",
@@ -18939,6 +19505,18 @@
           "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
           "teamId": "17023174",
           "teamName": "ARC Mutants"
+        },
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "sonphamorg",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431944",
+          "teamName": "Logical Arbitrage"
         }
       ],
       "name": "Son Pham",
@@ -19475,6 +20053,44 @@
     {
       "accounts": [
         {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "handle": "huikang",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/huikang",
+          "url": "https://www.kaggle.com/huikang"
+        }
+      ],
+      "briefing": "Tong Hui Kang built the ARC submission tracker and co-authored a Hungry Geese research project.",
+      "facts": [
+        {
+          "checkedAt": "2026-11-24T21:07:00Z",
+          "sourceTitle": "Public reporting source",
+          "sourceUrl": "https://github.com/tonghuikang/arc3/blob/master/leaderboard/leaderboard.py",
+          "text": "Tong Hui Kang built the ARC submission tracker and co-authored a Hungry Geese research project."
+        }
+      ],
+      "hallOfFame": [],
+      "id": "tong-hui-kang",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "huikang",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17430290",
+          "teamName": "Tong Hui Kang"
+        }
+      ],
+      "name": "Tong Hui Kang"
+    },
+    {
+      "accounts": [
+        {
           "checkedAt": "2026-11-02T19:15:00Z",
           "handle": "trnmtin",
           "platform": "kaggle",
@@ -19741,6 +20357,68 @@
         "sourceUrl": "https://www.kaggle.com/vineethsaivs",
         "src": "/news-images/people/vineeth-sai-varikuntla.webp"
       }
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-25T00:34:25+00:00",
+          "handle": "lightningv08",
+          "platform": "kaggle",
+          "sourceTitle": "Kaggle public leaderboard member link",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "url": "https://www.kaggle.com/lightningv08"
+        }
+      ],
+      "briefing": "Vladislav Lavrentev is listed on the Vladislav Lavrentev entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "vladislav-lavrentev",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-25T00:34:25+00:00",
+          "lastObservedAt": "2026-11-25T00:34:25+00:00",
+          "memberHandle": "lightningv08",
+          "season": "2026",
+          "sourceTitle": "Public Kaggle leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431327",
+          "teamName": "Vladislav Lavrentev"
+        }
+      ],
+      "name": "Vladislav Lavrentev"
+    },
+    {
+      "accounts": [
+        {
+          "checkedAt": "2026-11-24T20:59:00Z",
+          "handle": "wscmisx",
+          "platform": "kaggle",
+          "sourceTitle": "Public Kaggle profile",
+          "sourceUrl": "https://www.kaggle.com/wscmisx",
+          "url": "https://www.kaggle.com/wscmisx"
+        }
+      ],
+      "briefing": "wsc-MISX is listed on the M.J. entry in Generalist Gaming Agent.",
+      "facts": [],
+      "hallOfFame": [],
+      "id": "wscmisx",
+      "memberships": [
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-24T20:59:00Z",
+          "lastObservedAt": "2026-11-24T20:59:00Z",
+          "memberHandle": "wscmisx",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17432755",
+          "teamName": "M.J."
+        }
+      ],
+      "name": "wsc-MISX"
     },
     {
       "accounts": [
@@ -25064,6 +25742,227 @@
         "personId": "nora-danger",
         "season": "2026",
         "setId": "arc-2-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Tong Hui Kang built the ARC submission tracker and co-authored a Hungry Geese research project.",
+        "entries": [],
+        "id": "person-tong-hui-kang-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:11:58+00:00",
+        "kind": "person",
+        "name": "Tong Hui Kang",
+        "personId": "tong-hui-kang",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "ARC Prize lists Dries Smit as lead developer of StochasticGoose @ Tufa Labs, which won the 2025 ARC-AGI-3 Preview competition.",
+        "entries": [],
+        "id": "person-dries-smit-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:11:59+00:00",
+        "kind": "person",
+        "name": "Dries Smit",
+        "personId": "dries-smit",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Ahmed Berat Özer shares game-agent work from Kaggriculture, including his reactive market coordination notebook.",
+        "entries": [],
+        "id": "person-ahmed-berat-ozer-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:11:59+00:00",
+        "kind": "person",
+        "name": "Ahmed Berat Özer",
+        "personId": "ahmed-berat-ozer",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "DECEM published a seventh-place Kaggriculture solution using behavior cloning and two rules.",
+        "entries": [],
+        "id": "person-decem-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:12:00+00:00",
+        "kind": "person",
+        "name": "DECEM",
+        "personId": "decem",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Malyshev Danil is listed on the Malyshev Danil entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-malyshev-danil-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:39+00:00",
+        "kind": "person",
+        "name": "Malyshev Danil",
+        "personId": "malyshev-danil",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "wsc-MISX is listed on the M.J. entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-wscmisx-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:40+00:00",
+        "kind": "person",
+        "name": "wsc-MISX",
+        "personId": "wscmisx",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Jack is listed on the M.J. entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-jackvd-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:41+00:00",
+        "kind": "person",
+        "name": "Jack",
+        "personId": "jackvd",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Emre Cirak is listed on the Emre Cirak entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-emre-cirak-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:41+00:00",
+        "kind": "person",
+        "name": "Emre Cirak",
+        "personId": "emre-cirak",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Galaxy A55 is listed on the Galaxy A55 entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-galaxy-a55-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:42+00:00",
+        "kind": "person",
+        "name": "Galaxy A55",
+        "personId": "galaxy-a55",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Ray777 is listed on the Ray777 entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-ray777-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:42+00:00",
+        "kind": "person",
+        "name": "Ray777",
+        "personId": "ray777",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Alperen Aydın is listed alongside Ahmed Berat Özer on their Generalist Gaming Agent entry.",
+        "entries": [],
+        "id": "person-alperen-aydin-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:43+00:00",
+        "kind": "person",
+        "name": "Alperen Aydın",
+        "personId": "alperen-aydin",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "ARC Prize credits Jack Cole as adviser and reviewer for StochasticGoose @ Tufa Labs, the first-place agent in the 2025 ARC-AGI-3 Preview competition, whose lead developer was Dries Smit.",
+        "entries": [],
+        "id": "person-jack-cole-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:43+00:00",
+        "kind": "person",
+        "name": "Jack Cole",
+        "personId": "jack-cole",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "RSNA Knee Abnormality Detection — bronze medal; 412th of 6,299 teams with Son Pham.",
+        "entries": [],
+        "id": "person-mark-barney-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:44+00:00",
+        "kind": "person",
+        "name": "Mark Barney",
+        "personId": "mark-barney",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Kaggle Competitions Expert — one silver and one bronze competition medal.",
+        "entries": [],
+        "id": "person-son-pham-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-24T21:13:44+00:00",
+        "kind": "person",
+        "name": "Son Pham",
+        "personId": "son-pham",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "Vladislav Lavrentev is listed on the Vladislav Lavrentev entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-vladislav-lavrentev-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-25T00:35:01+00:00",
+        "kind": "person",
+        "name": "Vladislav Lavrentev",
+        "personId": "vladislav-lavrentev",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "matsu997 is listed on the matsu997 entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-matsu997-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-25T00:35:02+00:00",
+        "kind": "person",
+        "name": "matsu997",
+        "personId": "matsu997",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "artFallback": "none",
+        "artNotes": [],
+        "description": "g john rao is listed on the john entry in Generalist Gaming Agent.",
+        "entries": [],
+        "id": "person-jaejohn-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-25T00:35:02+00:00",
+        "kind": "person",
+        "name": "g john rao",
+        "personId": "jaejohn",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -25074,7 +25973,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-17T06:06:27+00:00",
+    "updatedAt": "2026-11-25T00:35:03+00:00",
     "version": 1
   },
   "results": [],
@@ -25141,6 +26040,18 @@
         "publisher": "The Loose Goose",
         "season": "2026",
         "setName": "ARC Prize 2026 — ARC-AGI-3 2026",
+        "timeZone": "UTC"
+      },
+      {
+        "competitionIds": [
+          "generalist-gaming-agent"
+        ],
+        "id": "generalist-gaming-agent-2026",
+        "look": "topps86",
+        "name": "Generalist Gaming Agent",
+        "publisher": "The Loose Goose",
+        "season": "2026",
+        "setName": "Generalist Gaming Agent 2026",
         "timeZone": "UTC"
       }
     ],
