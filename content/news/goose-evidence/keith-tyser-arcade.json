@@ -1,9 +1,9 @@
 {
   "package": {
     "artworkRecords": [
+      "artwork/asset-433d567d3a6c970e1cde",
       "artwork/asset-4f7c9c07c6fee139b8dd",
-      "artwork/asset-a050500d406e6c9c41e3",
-      "artwork/asset-a5a6e56800be7df51659"
+      "artwork/asset-a050500d406e6c9c41e3"
     ],
     "assets": [
       {
@@ -12,9 +12,9 @@
         "target": "client/public/news-images/goose-a050500d406e6c9c41e3.webp"
       },
       {
-        "sha256": "a5a6e56800be7df5165923498cda79cc88eb1505ad9a1442ea6b7cbec9447016",
-        "source": "client/public/news-images/keith-tyser-arcade-career-portrait.webp",
-        "target": "client/public/news-images/goose-a5a6e56800be7df51659.webp"
+        "sha256": "433d567d3a6c970e1cde424ffb1f677a3151fbae8e6069c19c08c603cce81520",
+        "source": "client/public/news-images/keith-tyser-arcade-medal-portrait.webp",
+        "target": "client/public/news-images/goose-433d567d3a6c970e1cde.webp"
       },
       {
         "sha256": "4f7c9c07c6fee139b8dd5b0e58b27404244f30dec29ce522728d270623f98092",
@@ -40,7 +40,7 @@
         "keith-tyser"
       ],
       "publishedAt": "2026-11-25T22:18:34+00:00",
-      "revisedAt": "2026-11-25T22:37:09+00:00",
+      "revisedAt": "2026-11-25T22:58:59+00:00",
       "sections": [
         {
           "sourceIds": [
@@ -51,9 +51,9 @@
         {
           "heading": "The mistakes he kept",
           "image": {
-            "alt": "Keith Tyser in a circuit-board coat holds a graphics-card cane between tall GPU racks.",
-            "caption": "Tyser’s career-card character in a circuit-board coat, with a GPU cane.",
-            "src": "/news-images/goose-a5a6e56800be7df51659.webp"
+            "alt": "Keith Tyser in a circuit-board coat with a GPU cane. Behind him hang one gold, three silver and six bronze medals.",
+            "caption": "Tyser’s career-card character, with a medal display based on his 30 October Kaggle profile.",
+            "src": "/news-images/goose-433d567d3a6c970e1cde.webp"
           },
           "sourceIds": [
             "training",
@@ -124,7 +124,7 @@
       ]
     },
     "storyId": "keith-tyser-arcade",
-    "storySha256": "f4fe7582e87e6207801642cfd58297d19a8ed7f7be23a4fbfcd296a789e11569",
+    "storySha256": "92f3f83750a543b8278b3cf633f8e9b29c851e80c9cd63720b283722573454fd",
     "version": 1
   },
   "review": {
@@ -135,9 +135,9 @@
         "target": "client/public/news-images/goose-a050500d406e6c9c41e3.webp"
       },
       {
-        "sha256": "a5a6e56800be7df5165923498cda79cc88eb1505ad9a1442ea6b7cbec9447016",
-        "source": "client/public/news-images/keith-tyser-arcade-career-portrait.webp",
-        "target": "client/public/news-images/goose-a5a6e56800be7df51659.webp"
+        "sha256": "433d567d3a6c970e1cde424ffb1f677a3151fbae8e6069c19c08c603cce81520",
+        "source": "client/public/news-images/keith-tyser-arcade-medal-portrait.webp",
+        "target": "client/public/news-images/goose-433d567d3a6c970e1cde.webp"
       },
       {
         "sha256": "4f7c9c07c6fee139b8dd5b0e58b27404244f30dec29ce522728d270623f98092",
@@ -152,9 +152,9 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "Read-only Claude identified five issues. Narrowed the headline, standfirst and closing to the public-board lead. Used the private-board caveat without a claim about overlap. Matched team 17431467 to the 25 November 20:18 UTC full official board and the public roster links, which listed Keith’s handle only and six scored entries. A second official leaderboard pull still showed him first at 0.408. Limited the Pokémon fallback to early submissions and replaced unsupported characterizations with his documented results. Disclosed Barney and Pham’s co-authorship of Turducken’s write-up and cited the team’s comparison with its base model. Reviewed the new story cover at 343 pixels and compared it with Keith’s established fish avatar and approved card art. Only Keith appears, with no Grandmaster regalia. Checked the label against the exact public place in the text. The separate human variant uses his public GitHub portrait. Verified the catalog model and rendered both fronts and the official reverse with the sourced #1 and 0.408. The owner advanced the release. Updated only the publication time and confirmed immediately before staging that Kaggle still showed team 17431467 at #1 with 0.408. Switched the writer field to the host’s registered identifier for the same displayed byline. Illustrated revision: retained lead image, original publication time and verified cast. Compared the owner-selected portrait with the approved human reference and checked the career reverse at 343px width against the dated Kaggle career record. Claude requested source substantiation for the existing paragraph, clearer caption and an updated profile label. Rechecked the existing prose against Tyser’s blog and Turducken’s Kaggle write-up. The new caption identifies the career-card character and the article links the public GitHub portrait reference. Preserved the supplied October profile as a dated historical print. The original commissioning disclosure is shown with the commissioning credit. The new medal paragraph matches the Kaggle career record.",
-    "reviewedAt": "2026-11-25T22:37:10+00:00",
+    "notes": "Read-only Claude identified five issues. Narrowed the headline, standfirst and closing to the public-board lead. Used the private-board caveat without a claim about overlap. Matched team 17431467 to the 25 November 20:18 UTC full official board and the public roster links, which listed Keith’s handle only and six scored entries. A second official leaderboard pull still showed him first at 0.408. Limited the Pokémon fallback to early submissions and replaced unsupported characterizations with his documented results. Disclosed Barney and Pham’s co-authorship of Turducken’s write-up and cited the team’s comparison with its base model. Reviewed the new story cover at 343 pixels and compared it with Keith’s established fish avatar and approved card art. Only Keith appears, with no Grandmaster regalia. Checked the label against the exact public place in the text. The separate human variant uses his public GitHub portrait. Verified the catalog model and rendered both fronts and the official reverse with the sourced #1 and 0.408. The owner advanced the release. Updated only the publication time and confirmed immediately before staging that Kaggle still showed team 17431467 at #1 with 0.408. Switched the writer field to the host’s registered identifier for the same displayed byline. Illustrated revision: retained lead image, original publication time and verified cast. Compared the owner-selected portrait with the approved human reference and checked the career reverse at 343px width against the dated Kaggle career record. Claude requested source substantiation for the existing paragraph, clearer caption and an updated profile label. Rechecked the existing prose against Tyser’s blog and Turducken’s Kaggle write-up. The new caption identifies the career-card character and the article links the public GitHub portrait reference. Preserved the supplied October profile as a dated historical print. The original commissioning disclosure is shown with the commissioning credit. The new medal paragraph matches the Kaggle career record. Owner-directed medal display in the human portrait only. Counted the one gold, three silver and six bronze medals in the image against the dated career record and rendered reverse. Compared the portrait at full and phone scale with the selected bareheaded coat-and-cane artwork. The reporting, disclosures, competition art and career card back match the previous independent review.",
+    "reviewedAt": "2026-11-25T22:58:59+00:00",
     "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
-    "storySha256": "f4fe7582e87e6207801642cfd58297d19a8ed7f7be23a4fbfcd296a789e11569"
+    "storySha256": "92f3f83750a543b8278b3cf633f8e9b29c851e80c9cd63720b283722573454fd"
   }
 }

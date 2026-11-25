@@ -15,7 +15,7 @@
     "keith-tyser"
   ],
   "publishedAt": "2026-11-25T22:18:34+00:00",
-  "revisedAt": "2026-11-25T22:37:09+00:00",
+  "revisedAt": "2026-11-25T22:58:59+00:00",
   "sections": [
     {
       "sourceIds": [
@@ -26,9 +26,9 @@
     {
       "heading": "The mistakes he kept",
       "image": {
-        "alt": "Keith Tyser in a circuit-board coat holds a graphics-card cane between tall GPU racks.",
-        "caption": "Tyser’s career-card character in a circuit-board coat, with a GPU cane.",
-        "src": "/news-images/goose-a5a6e56800be7df51659.webp"
+        "alt": "Keith Tyser in a circuit-board coat with a GPU cane. Behind him hang one gold, three silver and six bronze medals.",
+        "caption": "Tyser’s career-card character, with a medal display based on his 30 October Kaggle profile.",
+        "src": "/news-images/goose-433d567d3a6c970e1cde.webp"
       },
       "sourceIds": [
         "training",
