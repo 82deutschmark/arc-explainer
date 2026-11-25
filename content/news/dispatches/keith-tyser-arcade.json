@@ -1,4 +1,5 @@
 {
+  "commissionedBy": "mark-barney",
   "competition": "generalist-gaming-agent",
   "dek": "The Goose regular who published his own bot mishaps just put his name at the top of the Generalist Gaming public board.",
   "editorNote": "Mark Barney, publisher of The Loose Goose, and Son Pham competed alongside Keith Tyser in ARC-AGI-3 and co-wrote the Team Turducken write-up cited here.",
@@ -14,6 +15,7 @@
     "keith-tyser"
   ],
   "publishedAt": "2026-11-25T22:18:34+00:00",
+  "revisedAt": "2026-11-25T22:37:09+00:00",
   "sections": [
     {
       "sourceIds": [
@@ -23,11 +25,30 @@
     },
     {
       "heading": "The mistakes he kept",
+      "image": {
+        "alt": "Keith Tyser in a circuit-board coat holds a graphics-card cane between tall GPU racks.",
+        "caption": "Tyser’s career-card character in a circuit-board coat, with a GPU cane.",
+        "src": "/news-images/goose-a5a6e56800be7df51659.webp"
+      },
       "sourceIds": [
         "training",
-        "turducken"
+        "turducken",
+        "career",
+        "portrait"
       ],
       "text": "Tyser helped with reinforcement learning on Team Turducken in ARC-AGI-3, where the team wrote that its training runs fell short of its base model on Kaggle. He also spent months at a very different sort of workbench, building agents to steer fleets, play Pokémon cards and run farms. He wrote up what broke. His Orbit Wars simulator ran fast enough to rack up more than a billion simulated transitions, but the bot he built by hand still beat the strongest model he trained. He sent the hand-built bot and took bronze. In Pokémon, a bug made his early submissions pick the first available option until he caught it. He took silver there.\n\nPlenty of people will show you their medal case. Tyser will show you the busted parts on the bench."
+    },
+    {
+      "heading": "Tyser’s medal record",
+      "image": {
+        "alt": "The back of Keith Tyser’s career card lists one gold, three silver and six bronze medals on his dated Kaggle profile.",
+        "caption": "The reverse of Tyser’s career card, with his 30 October Kaggle profile tally and medal finishes.",
+        "src": "/news-images/goose-4f7c9c07c6fee139b8dd.webp"
+      },
+      "sourceIds": [
+        "career"
+      ],
+      "text": "Tyser’s gold came in ROGII’s wellbore geology competition. His medal record also includes NeuroGolf, Pokémon and Kaggriculture."
     },
     {
       "heading": "The next cabinet",
@@ -62,6 +83,18 @@
       "id": "organizer",
       "title": "Generalist Gaming benchmark and competition",
       "url": "https://generalistgaming.org/"
+    },
+    {
+      "accessedAt": "2026-10-30T11:23:25Z",
+      "id": "career",
+      "title": "Keith Tyser’s Kaggle profile and competition record",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-11-25T22:37:09+00:00",
+      "id": "portrait",
+      "title": "Keith Tyser’s GitHub portrait reference",
+      "url": "https://github.com/keithtyser"
     }
   ]
 }
