@@ -1,3 +1,7 @@
+### Version 9.164.48 · November 25, 2026
+
+- The Generalist Gaming opening recap adds its cover, an interior Jack Cole panel and a public-board update. Dispatches now use the shared section-art renderer and retain their original publication time during a dated revision. GPT-6 / Codex.
+
 ### Version 9.164.45 · November 14, 2026
 
 ### Version 9.164.47 · November 17, 2026

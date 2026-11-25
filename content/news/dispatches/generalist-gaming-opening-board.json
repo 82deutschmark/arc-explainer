@@ -1,118 +1,78 @@
 {
   "commissionedBy": "mark-barney",
   "competition": "generalist-gaming-agent",
-  "dek": "Dries Smit puts Tufa Labs in the opening chase, Vladislav Lavrentev elbows into second, and Tong Hui Kang keeps the lead as the board fills up.",
+  "dek": "Tong Hui Kang led the opening day. By the next afternoon Keith Tyser had the high score and a new top ten had swept in.",
   "editorNote": "The Loose Goose sports desk · GPT-6 / Codex.",
   "generatedBy": "gpt-6-codex",
-  "headline": "Dries takes a seat. Who follows?",
+  "headline": "The arcade fills up",
   "id": "generalist-gaming-opening-board",
+  "image": {
+    "alt": "Tong Hui Kang, Dries Smit, Mark Barney, and Son Pham work on four small robots at an arcade bench. Dries is fitting a leg to his spider robot.",
+    "caption": "Tong Hui Kang, Dries Smit, Mark Barney, and Son Pham at the arcade workbench.",
+    "src": "/news-images/goose-499df738a09644bb5c19.webp"
+  },
   "personIds": [],
   "publishedAt": "2026-11-25T00:35:01+00:00",
+  "revisedAt": "2026-11-25T20:21:25+00:00",
   "sections": [
     {
       "sourceIds": [
-        "dries-reply",
-        "board",
-        "preview",
-        "preview-method",
-        "mark-morning"
+        "board"
       ],
-      "text": "Dries Smit popped up in Mark Barney’s replies. “I’m jumping on this one as well,” he wrote. Dries @ Tufa Labs was second on the afternoon board. One scored entry. One name on the team sheet. By evening, Vladislav Lavrentev had slipped between Dries and leader Tong Hui Kang. The gap between second and third was a thousandth.\n\nARC fans remember Dries’s StochasticGoose. The agent learned which moves changed the screen and won the 2025 ARC-AGI-3 Preview. Jack Cole advised on that build. On opening day here, Jack and Dries are on different lines of the leaderboard. So is Loose Goose publisher Mark Barney, who is competing with Son Pham."
+      "text": "Tong Hui Kang had the high score when the arcade opened. Vladislav Lavrentev slipped a thousandth ahead of Dries Smit for second, and the rest of Tuesday’s top ten barely had time to get comfortable. By Wednesday afternoon every one of those names was out of the top ten. Keith Tyser, absent from Tuesday evening’s board, was #1 and the only entrant above 0.400.\n\nSalah Ibrahiemu went from twentieth to second. Lebxgue. came in third on the same displayed score. Akmal Azzam o'g'li and THIRUPATHI KANNAN K both climbed from outside Tuesday evening’s top fifty to round out the top five. The crowd behind them grew too. Kaggle showed 159 scored teams around this time on Tuesday and 304 on Wednesday."
     },
     {
-      "heading": "Who gets the next Tufa seat?",
-      "sourceIds": [
-        "tufa-staff",
-        "orbit-wars",
-        "duck"
-      ],
-      "text": "Stefano Viel studies how agents learn through trial and error. Isaiah Pressman won Orbit Wars with agents trained against themselves. Jeroen Cottaar and Michal Tešnar were on Tufa’s Duck Harness crew. And there’s Tommy He, who co-founded a start-up building investing agents. They’re the Goose’s watch list. Put any of them on this board and you’ve got a story. Put one beside Dries and you’ve got a different one. Which name shows up first?"
-    },
-    {
-      "heading": "The man who watched the queue is in front",
+      "heading": "Better runs, worse seats",
       "sourceIds": [
         "tong-tracker",
         "tong-tracker-use",
         "tong-profile",
-        "hungry-geese",
-        "mark-morning",
         "board",
-        "ahmed-kaggriculture",
+        "dries-reply",
+        "tufa-staff",
+        "duck",
         "decem-kaggriculture"
       ],
-      "text": "When ARC entrants were waiting for scores, Tong Hui Kang gave them a submission tracker to watch. Kaggle competitor mp linked it when the queue backed up. Now the Singapore undergraduate is the name they’re refreshing the board to see. He was already in front in Barney’s morning screenshot and raised his score by the afternoon. Tong is the sole member listed on his team. He built a Hungry Geese agent with three collaborators in 2021.\n\nThere’s a Kaggriculture reunion farther down. Ahmed Berat Özer, who published an agent for the farm game’s market, is in the top ten with Alperen Aydın. DECEM was tenth in the afternoon and slipped to fourteenth by evening with the same score. In Kaggriculture, DECEM wrote about setting aside weeks of hand-written strategy and teaching an agent from replays of the strongest players. DECEM finished seventh in the farm game. Keep an eye on how quickly DECEM changes course here."
+      "text": "Tong Hui Kang used to give ARC entrants a reason to refresh. When the queue backed up, Kaggle competitor mp sent readers to the tracker Tong built. Now it’s his name people look for. The solo entrant had nine scored submissions by Wednesday and beat his opening-day mark. He was down to twenty-fourth anyway.\n\nDries Smit put Tufa Labs on the board with a single scored entry on opening day. Now Kaggle shows seven scored entries and a higher score, good for thirty-ninth. Dries is still the only account listed under Dries @ Tufa Labs. Will Stefano Viel, Jeroen Cottaar, Isaiah Pressman, Michal Tešnar or Tommy He take a seat of their own?\n\nThe Kaggriculture crowd is moving too. Ahmed Berat Özer’s entry now goes by Pay-to-Compute. It sits eighteenth and lists Özer, Alperen Aydın and ulasdesouza. DECEM also improved and fell to eighty-second."
     },
     {
-      "heading": "Same score, worse seat",
+      "heading": "Jack builds from scratch",
+      "image": {
+        "alt": "Jack Cole wears a broad cyan visor while soldering a small copper robot in an arcade service booth.",
+        "caption": "Jack Cole at his own bench.",
+        "src": "/news-images/goose-1651df1d6b4e36564710.webp"
+      },
       "sourceIds": [
         "mark-morning",
-        "arc-roster",
         "board",
         "arc-history",
-        "preview"
+        "preview",
+        "arc-roster"
       ],
-      "text": "“I don’t expect this position to last long,” Barney wrote on X above a screenshot showing his entry in third. He and longtime teammate Son Pham were fifth under Logical Arbitrage in the afternoon and eighth by evening, with the same score. Barney tells the paper they hope to build on their ARC-AGI-3 work. They already have several models playing the public practice games while they think through what the hidden set might demand.\n\nJack Cole had a rougher ride. The joint winner of the 2023 ARCathon went from fourth in the morning to eighteenth by evening without losing a point. Cole told the Goose he started from scratch with an idea of his own. He was the adviser and reviewer on StochasticGoose in ARC. In this contest, the first thing out of his workshop is something new."
+      "text": "Jack Cole went from fourth in Mark Barney’s Tuesday morning post to ninety-third on Wednesday’s board, even as his score edged up. The joint winner of the 2023 ARCathon told the Goose at launch that he was starting from scratch with an idea of his own. He was an adviser on Dries’s StochasticGoose when it won the ARC-AGI-3 Preview. They have separate entries in this arcade.\n\n“I don’t expect this position to last long,” Barney had written when his entry was third. By Wednesday, he and Son Pham had improved their score and slipped to sixty-eighth under Logical Arbitrage. Barney publishes the Goose. Tyser competed alongside Barney and Pham on Team Turducken in ARC-AGI-3. Here Tyser has a separate, one-account entry, all the way at the top."
     },
     {
       "heading": "The game never waits",
       "sourceIds": [
         "overview",
-        "organizer",
-        "karten",
-        "goro",
+        "organizer"
+      ],
+      "text": "The cabinets in this arcade never wait. One offline agent gets a short brief, the screen, and a mouse and keyboard across 32 browser games. It might be lining up a jump while the platform has already moved. There’s $50,000 on the line and a final submission deadline of 1 March 2027.\n\nThe public board averages sixteen games, including the four teams can practice on. A separate sixteen decide who gets paid."
+    },
+    {
+      "heading": "The public board",
+      "sourceIds": [
         "board"
       ],
-      "text": "ARC’s interactive puzzles advance when you move. Here the platform can move while your agent is still deciding when to jump. One offline agent gets a short brief, the screen, and mouse and keyboard controls across 32 browser games. There’s $50,000 on the line and a final submission deadline of 1 March 2027.\n\nSeth Karten, one of the contest’s creators, pointed to the chatter among Japanese-speaking users on X and invited questions. One reader was already looking at the calendar, wondering if they could fit the new games in after Name That LLM and Kaggle’s Santa contest.\n\nThe public board counts the four practice games and a dozen hidden ones. A separate set of games decides who gets paid.\n\nThe evening board\nGeneralist Gaming Agent · Kaggle public top ten · 25 November 2026, 00:34 UTC (24 November, 7:34 p.m. Eastern). Higher scores are better.\n\n#1  Tong Hui Kang  ·  0.314\n#2  Vladislav Lavrentev  ·  0.294\n#3  Dries @ Tufa Labs  ·  0.293\n#4  matsu997  ·  0.221\n#5  john  ·  0.210\n#6  M.J.  ·  0.208\n#7  Malyshev Danil  ·  0.207\n#8  Logical Arbitrage  ·  0.187\n#9  Ahmed Berat Özer  ·  0.173\n#10  Emre Cirak  ·  0.172\n\nHow long can Tong hold the lead while the rest of the arcade fills up?"
+      "text": "Generalist Gaming Agent · Kaggle public top ten · 25 November 2026 at 20:18 UTC. Higher scores are better.\n\n#1  Keith Tyser  ·  0.408\n#2  Salah Ibrahiemu  ·  0.339\n#3  Lebxgue.  ·  0.339\n#4  Akmal Azzam o'g'li  ·  0.337\n#5  THIRUPATHI KANNAN K  ·  0.337\n#6  aboii  ·  0.336\n#7  吃白饭的大肥鱼  ·  0.333\n#8  cm391  ·  0.332\n#9  Yuxiao Wang  ·  0.332\n#10  Jules  ·  0.332\n\nTong and Dries kept sending better runs and lost ground in the rush. Who will be in the high-score window the next time the arcade fills up?"
     }
   ],
   "sources": [
     {
-      "accessedAt": "2026-11-24T21:07:00Z",
-      "id": "dries-reply",
-      "title": "Dries Smit’s reply",
-      "url": "https://x.com/DriesSmit1/status/2125327641842446822"
-    },
-    {
-      "accessedAt": "2026-11-25T00:34:25+00:00",
+      "accessedAt": "2026-11-25T20:18:16+00:00",
       "id": "board",
       "title": "Kaggle public leaderboard and linked team rosters",
       "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard"
-    },
-    {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "preview",
-      "title": "ARC Prize Preview results and StochasticGoose credits",
-      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
-    },
-    {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "preview-method",
-      "title": "ARC Prize on how StochasticGoose learned to explore",
-      "url": "https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings"
-    },
-    {
-      "accessedAt": "2026-11-24T21:07:00Z",
-      "id": "mark-morning",
-      "title": "Mark Barney’s morning post and screenshot",
-      "url": "https://x.com/82deutschmark/status/2125251857652027820"
-    },
-    {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "tufa-staff",
-      "title": "Tufa Labs staff",
-      "url": "https://tufalabs.ai/team/"
-    },
-    {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "orbit-wars",
-      "title": "Isaiah Pressman’s Orbit Wars write-up",
-      "url": "https://tufalabs.ai/research/orbit-wars/"
-    },
-    {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "duck",
-      "title": "Tufa Labs’ Duck Harness write-up",
-      "url": "https://tufalabs.ai/research/duck-harness/"
     },
     {
       "accessedAt": "2026-11-24T21:15:42Z",
@@ -133,16 +93,22 @@
       "url": "https://www.kaggle.com/huikang"
     },
     {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "hungry-geese",
-      "title": "Wild Goose Chase, co-authored by Tong Hui Kang",
-      "url": "https://tonghuikang.github.io/ai-project/report.pdf"
+      "accessedAt": "2026-11-24T21:07:00Z",
+      "id": "dries-reply",
+      "title": "Dries Smit’s reply",
+      "url": "https://x.com/DriesSmit1/status/2125327641842446822"
     },
     {
       "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "ahmed-kaggriculture",
-      "title": "Ahmed Berat Özer’s Kaggriculture notebook",
-      "url": "https://www.kaggle.com/code/ahmedberatozer/kaggriculture-v47-reactive-market-coordination"
+      "id": "tufa-staff",
+      "title": "Tufa Labs staff",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-11-24T21:15:42Z",
+      "id": "duck",
+      "title": "Tufa Labs’ Duck Harness write-up",
+      "url": "https://tufalabs.ai/research/duck-harness/"
     },
     {
       "accessedAt": "2026-11-24T21:15:42Z",
@@ -151,16 +117,28 @@
       "url": "https://www.kaggle.com/competitions/kaggriculture/discussion/751681"
     },
     {
-      "accessedAt": "2026-11-24T21:15:42Z",
-      "id": "arc-roster",
-      "title": "Team Turducken’s ARC-AGI-3 roster",
-      "url": "https://arc.markbarney.net/news/competitors/arc-3-15605182"
+      "accessedAt": "2026-11-24T21:07:00Z",
+      "id": "mark-morning",
+      "title": "Mark Barney’s morning post and screenshot",
+      "url": "https://x.com/82deutschmark/status/2125251857652027820"
     },
     {
       "accessedAt": "2026-11-24T21:15:42Z",
       "id": "arc-history",
       "title": "ARC Prize history and Cole’s joint first",
       "url": "https://arcprize.org/history"
+    },
+    {
+      "accessedAt": "2026-11-24T21:15:42Z",
+      "id": "preview",
+      "title": "ARC Prize Preview results and StochasticGoose credits",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-11-24T21:15:42Z",
+      "id": "arc-roster",
+      "title": "Team Turducken’s ARC-AGI-3 roster",
+      "url": "https://arc.markbarney.net/news/competitors/arc-3-15605182"
     },
     {
       "accessedAt": "2026-11-24T21:15:42Z",
@@ -173,18 +151,6 @@
       "id": "organizer",
       "title": "Organizer’s contest and benchmark explanation",
       "url": "https://generalistgaming.org/"
-    },
-    {
-      "accessedAt": "2026-11-24T21:07:00Z",
-      "id": "karten",
-      "title": "Seth Karten’s invitation to Japanese readers",
-      "url": "https://x.com/sethkarten/status/2125064937684791327"
-    },
-    {
-      "accessedAt": "2026-11-24T21:07:00Z",
-      "id": "goro",
-      "title": "ゴロ・イ on fitting the new contest into their Kaggle calendar",
-      "url": "https://x.com/gorbachev513/status/2125119024799567934"
     }
   ]
 }

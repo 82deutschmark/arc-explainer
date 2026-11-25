@@ -14,6 +14,7 @@ import type { NewsDispatch, NewsPerson, NewsStat } from '@shared/news';
 import { competitionName, dispatchLabel, newsArticlePath, newsDate, reportedPeople, writerCredit, NEWS_NAME } from '@shared/news';
 import { StoryPeopleCards } from './NewsPeople';
 import { NewsEditorCredit } from './NewsEditorCredit';
+import { NewsArticleSectionExtras } from './NewsArticleSectionExtras';
 export function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
   return dispatch.image ? <figure className="news-dispatch-art"><a href={dispatch.image.src} aria-label="Open the full editorial illustration"><img src={dispatch.image.src} alt={dispatch.image.alt} loading={lead ? 'eager' : 'lazy'} /></a><figcaption>{dispatch.image.caption}</figcaption></figure> : null;
 }
@@ -32,6 +33,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [], showPeopl
       {section.heading && <h3>{section.heading}</h3>}
       <p className="news-dispatch-text"><SportsText text={section.text} stats={stats} /></p>
       {index === 0 && showPeople && <StoryPeopleCards people={subjects ?? reportedPeople([dispatch], people)} competition={dispatch.competition} />}
+      <NewsArticleSectionExtras section={section} />
       <div className="news-section-sources">{section.sourceIds.map(id => {
         const source = dispatch.sources.find(item => item.id === id);
         return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;

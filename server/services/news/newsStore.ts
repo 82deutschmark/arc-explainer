@@ -50,23 +50,25 @@ const readableAlt = text.max(700).refine(alt => !isFilenameAlt(alt), 'Alt text m
 export const CITED_SOURCES_REQUIRED_FROM = '2026-11-01T00:00:00Z';
 /** Stories record publication to the second while brief tools stamp sources to the microsecond, so compare whole seconds. */
 const notAfter = (value: string, limit: number) => Math.floor(Date.parse(value) / 1000) <= Math.floor(limit / 1000);
+const dispatchImage = z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: readableAlt, caption: text.max(700) }).strict();
 export const newsDispatchSchema = z.object({
-  id: safeId, competition, publishedAt: stamp, headline: text.max(240), dek: text.max(700).optional(),
+  id: safeId, competition, publishedAt: stamp, revisedAt: stamp.optional(), headline: text.max(240), dek: text.max(700).optional(),
   personIds: castIds.optional(),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
-  sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
+  sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1), image: dispatchImage.optional() })).min(1).max(5),
   sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   interpretation: text.max(700).optional(),
-  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: readableAlt, caption: text.max(700) }).optional(),
+  image: dispatchImage.optional(),
 }).strict().superRefine((dispatch, context) => {
   const sources = new Set(dispatch.sources.map(source => source.id));
   if (sources.size !== dispatch.sources.length || dispatch.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'Dispatch requires unique sources and valid citations' });
   }
   const published = Date.parse(dispatch.publishedAt);
-  if (published > Date.now() || dispatch.sources.some(source => Date.parse(source.accessedAt) > published)) {
-    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Dispatch publication and source checks cannot be in the future' });
+  const revised = Date.parse(dispatch.revisedAt ?? dispatch.publishedAt);
+  if (revised < published || revised > Date.now() || dispatch.sources.some(source => Date.parse(source.accessedAt) > revised)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Dispatch publication, revision and source dates must be in order' });
   }
 });
 export const newsArticleSchema = z.object({
