@@ -131,6 +131,8 @@
     "/news-images/cards/2026/yuto0712-whale-v1.webp": "2d0df4aba7ce20dee6a1536b984feb1ad8254b56c3c6ddec5ee3bea489b27f4f",
     "/news-images/cards/2026/zhang-songxin-comic-v1.webp": "0ee14db199e1772d663e4a24aa7669ed04a8ad14c97ce105b717bbc9d3dad8b7",
     "/news-images/cards/2026/zilinlu1106-comic-v1.webp": "1123f7621a670923ae63952e24676619dd82d07db825a969059ea65eefeada6b",
+    "/news-images/keith-tyser-arcade-card.webp": "c58dacb019489dc3a45b31db7788b126bfcf67f0a21d0187f92c0336dd4579f1",
+    "/news-images/keith-tyser-arcade-human.webp": "7eed452a29d724166e914cd24b9693a13cc6245e7a5f098686d969fbf5e5de35",
     "/news-images/people/2026-11-01-daniel-franzen-own-portrait-v1.jpg": "4f4e6db184bb350013ff04d2f54cedc9269e4f32523b23fe2d13fb060a27aba7",
     "/news-images/people/2026-11-01-david-hartmann-own-portrait-v1.jpg": "3e626a5a0b45331e5ad19a6aeb14bf9af81af54f845930e50b7f3407d524856d",
     "/news-images/people/2026-11-01-jan-disselhoff-own-portrait-v1.jpg": "d65b611c472d7d2016ea8bed9aee7a72d7e2c9b04501e5103803a1b542891624",
@@ -12108,6 +12110,20 @@
     },
     {
       "aliases": [],
+      "briefing": "Keith Tyser’s listed Generalist Gaming Agent entry. See Kaggle for current standings.",
+      "competition": "generalist-gaming-agent",
+      "facts": [],
+      "firstObservedAt": "2026-11-25T20:18:16Z",
+      "id": "generalist-gaming-agent-17431467",
+      "lastObservedAt": "2026-11-25T20:18:16Z",
+      "members": [
+        "keithtyser"
+      ],
+      "name": "Keith Tyser",
+      "teamId": "17431467"
+    },
+    {
+      "aliases": [],
       "briefing": "Jack Cole in Generalist Gaming Agent. See the public leaderboard for the current roster and standings.",
       "competition": "generalist-gaming-agent",
       "facts": [],
@@ -12222,7 +12238,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "6befff79f27d00dc1d8081a75a4a5cd938cc38691e65280b7a0b33c5aa1973b7",
+  "fingerprint": "58ab2fc06d8718108273920c7fb53a9745533ac963f389d5de908a797ed84073",
   "people": [
     {
       "accounts": [
@@ -16398,6 +16414,18 @@
           "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
           "teamId": "15605182",
           "teamName": "Team Turducken"
+        },
+        {
+          "competition": "generalist-gaming-agent",
+          "competitionId": "generalist-gaming-agent",
+          "firstObservedAt": "2026-11-25T20:18:16Z",
+          "lastObservedAt": "2026-11-25T20:18:16Z",
+          "memberHandle": "keithtyser",
+          "season": "2026",
+          "sourceTitle": "Kaggle public leaderboard member links",
+          "sourceUrl": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+          "teamId": "17431467",
+          "teamName": "Keith Tyser"
         }
       ],
       "name": "Keith Tyser",
@@ -25963,6 +25991,35 @@
         "personId": "jaejohn",
         "season": "2026",
         "setId": "generalist-gaming-agent-2026"
+      },
+      {
+        "art": {
+          "alt": "Keith Tyser’s fish character tunes his arcade robot",
+          "artworkId": "asset-c58dacb019489dc3a45b",
+          "commissionedAt": "2026-11-25T20:49:07+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/keith-tyser-arcade-card.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-c58dacb019489dc3a45b.md"
+        ],
+        "backArt": {
+          "alt": "Keith Tyser tests his arcade robot, human-likeness variant",
+          "artworkId": "asset-7eed452a29d724166e91",
+          "commissionedAt": "2026-11-25T20:50:53+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/keith-tyser-arcade-human.webp"
+        },
+        "description": "Keith Tyser competes on Kaggle as @keithtyser. Background, earlier coverage and artwork are linked here; the Kaggle profile provides current rankings and medal totals.",
+        "entries": [],
+        "id": "person-keith-tyser-generalist-gaming-agent-2026",
+        "issuedAt": "2026-11-25T20:48:33+00:00",
+        "kind": "person",
+        "name": "Keith Tyser",
+        "personId": "keith-tyser",
+        "season": "2026",
+        "setId": "generalist-gaming-agent-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -25973,7 +26030,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-25T00:35:03+00:00",
+    "updatedAt": "2026-11-25T20:50:53+00:00",
     "version": 1
   },
   "results": [],
