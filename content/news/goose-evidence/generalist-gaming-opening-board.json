@@ -11,16 +11,7 @@
       "generatedBy": "gpt-6-codex",
       "headline": "Dries takes a seat. Who follows?",
       "id": "generalist-gaming-opening-board",
-      "personIds": [
-        "dries-smit",
-        "tong-hui-kang",
-        "vladislav-lavrentev",
-        "jack-cole",
-        "ahmed-berat-ozer",
-        "decem",
-        "mark-barney",
-        "son-pham"
-      ],
+      "personIds": [],
       "publishedAt": "2026-11-25T00:35:01+00:00",
       "sections": [
         {
@@ -203,7 +194,7 @@
       ]
     },
     "storyId": "generalist-gaming-opening-board",
-    "storySha256": "9f79e5f1fdb5f10c8b4e6a8b3d3da5eb8e9d123f0dec1826a33250f56bcc4868",
+    "storySha256": "fdb9ef95319bce0203a28e24d8065e19f66033262c1a1b068d13ea6644d8b959",
     "version": 1
   },
   "review": {
@@ -215,9 +206,9 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "The owner directed immediate publication of the text-first article for site feedback on 24 November Eastern. The earlier independent read-only Claude copy review raised issues about tracker uptake, historical roles and timing, the possible Tufa entrants and the deadline. Resolved by naming the public tracker link, using the organizer credits and 2023 ARCathon result, clearly identifying the Tufa watch list as editorial, citing the full deadline, and checking Hungry Geese against the dated author report. Checked the exact updated copy against the full official evening board, preserved native score precision, and compared it with the afternoon board and the morning public post. Verified roster profile links and the ordered cast against the Kaggle page and the wiki. Art reuse and continuity are inapplicable to this text-only release and the package has no artwork binding.",
-    "reviewedAt": "2026-11-25T00:35:27+00:00",
+    "notes": "The owner directed immediate publication of the text-first article for site feedback on 24 November Eastern. The earlier independent read-only Claude copy review raised issues about tracker uptake, historical roles and timing, the possible Tufa entrants and the deadline. Resolved by naming the public tracker link, using the organizer credits and 2023 ARCathon result, clearly identifying the Tufa watch list as editorial, citing the full deadline, and checking Hungry Geese against the dated author report. Checked the exact updated copy against the full official evening board, preserved native score precision, and compared it with the afternoon board and the morning public post. Verified roster profile links and the ordered cast against the Kaggle page and the wiki. Art reuse and continuity are inapplicable to this text-only release and the package has no artwork binding. Owner directed the unfinished card row to be fixed. Suppressed the row for this article pending reviewed artwork. The story text, source citations, time, edition address and card registry are unchanged.",
+    "reviewedAt": "2026-11-25T03:16:48+00:00",
     "reviewedBy": "GPT-6 / Codex, with independent read-only Claude review of the opening copy",
-    "storySha256": "9f79e5f1fdb5f10c8b4e6a8b3d3da5eb8e9d123f0dec1826a33250f56bcc4868"
+    "storySha256": "fdb9ef95319bce0203a28e24d8065e19f66033262c1a1b068d13ea6644d8b959"
   }
 }
