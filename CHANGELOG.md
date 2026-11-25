@@ -1,3 +1,7 @@
+### Version 9.164.49 · November 25, 2026
+
+- Competitor card backs lead with the dated Kaggle medal tally, tier and rank. The contest strip shows rank, and the career table orders verified medal finishes by medal colour and field share. Plain paper and fixed medal slots give long contest names room to wrap. Author: GPT-6 / Codex.
+
 ### Version 9.164.48 · November 25, 2026
 
 - The Generalist Gaming opening recap adds its cover, an interior Jack Cole panel and a public-board update. Dispatches now use the shared section-art renderer and retain their original publication time during a dated revision. GPT-6 / Codex.

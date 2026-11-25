@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
- * Date: 16-November-2026
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
+ * Date: 25-November-2026
  * 16-Nov-2026 (GPT-6 / Codex): expose whether a bare profile has a real portrait for the catalog.
  * 14-Nov-2026 (Claude Opus 5.5, card faces): RENDER_VERSION 12; collectionShareVersion also covers what a card prints about
  *          other cards (teammates' tiers and medals, shared-art names, its set's tier count) when given the collection, and
@@ -10,6 +10,7 @@
  * 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
+ * 25-Nov-2026 (GPT-6 / Codex): version 13 for the medal-first competitor reverse.
  * PURPOSE: Permanent ARC Daily collectible identities, dated public statistics and separately
  * sourced official results, linked player/team cards, dated membership history and shared
  * search/social-preview wording and artwork-aware image versions. Clean
@@ -210,7 +211,7 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 12;  // CLOSED stamp, measured set names and figures, NEWS_BRAND publisher, season printed once.
+export const RENDER_VERSION = 13;  // Medal-first competitor reverse.
 /** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';

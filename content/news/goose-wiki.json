@@ -216,10 +216,18 @@
       "checkedAt": "2026-10-30T11:54:05Z",
       "joinedYear": 2016,
       "location": "Riga, Latvia",
-      "medals": null,
+      "medals": {
+        "bronze": 13,
+        "gold": 11,
+        "silver": 19
+      },
       "organisation": "Gravity Team",
       "profileUrl": "https://www.kaggle.com/alijs1",
-      "rank": null,
+      "rank": {
+        "best": 9,
+        "current": 241,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Sberbank Russian Housing Market",
@@ -545,10 +553,18 @@
       "checkedAt": "2026-10-31T17:24:05Z",
       "joinedYear": 2018,
       "location": "Seattle, Washington, United States",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 2,
+        "silver": 5
+      },
       "organisation": "Microsoft",
       "profileUrl": "https://www.kaggle.com/chankhavu",
-      "rank": null,
+      "rank": {
+        "best": 271,
+        "current": 382,
+        "outOf": 225016
+      },
       "rows": [
         {
           "competition": "The 2026 NeuroGolf Championship",
@@ -631,10 +647,18 @@
       "checkedAt": "2026-10-30T14:03:47Z",
       "joinedYear": 2024,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 2,
+        "gold": 0,
+        "silver": 1
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/aizealotwu",
-      "rank": null,
+      "rank": {
+        "best": 1217,
+        "current": 1416,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "CAFA 6 Protein Function Prediction",
@@ -769,10 +793,18 @@
       "checkedAt": "2026-10-30T11:39:34Z",
       "joinedYear": 2018,
       "location": "Mainz, Rhineland-Palatinate, Germany",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 2,
+        "silver": 0
+      },
       "organisation": "University of Mainz",
       "profileUrl": "https://www.kaggle.com/dfranzen",
-      "rank": null,
+      "rank": {
+        "best": 77,
+        "current": 246,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2024",
@@ -826,10 +858,18 @@
       "checkedAt": "2026-10-30T12:21:41Z",
       "joinedYear": 2014,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 3,
+        "gold": 28,
+        "silver": 14
+      },
       "organisation": "NVIDIA",
       "profileUrl": "https://www.kaggle.com/darraghdog",
-      "rank": null,
+      "rank": {
+        "best": 4,
+        "current": 53,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Mathematical Olympiad - Progress Prize 2",
@@ -1369,10 +1409,18 @@
       "checkedAt": "2026-10-30T13:12:41Z",
       "joinedYear": 2022,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 1,
+        "silver": 1
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/darrenamadeusmartin",
-      "rank": null,
+      "rank": {
+        "best": 660,
+        "current": 889,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "NVIDIA Nemotron Model Reasoning Challenge",
@@ -1576,10 +1624,18 @@
       "checkedAt": "2026-10-30T12:59:34Z",
       "joinedYear": 2024,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 1,
+        "silver": 2
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/dawkopi",
-      "rank": null,
+      "rank": {
+        "best": 735,
+        "current": 923,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2024",
@@ -1645,10 +1701,18 @@
       "checkedAt": "2026-10-30T14:06:41Z",
       "joinedYear": 2017,
       "location": "Beijing, Beijing, China",
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 0,
+        "silver": 2
+      },
       "organisation": "Tsinghua University",
       "profileUrl": "https://www.kaggle.com/deepdreamer",
-      "rank": null,
+      "rank": {
+        "best": 803,
+        "current": 8743,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Corporación Favorita Grocery Sales Forecasting",
@@ -1792,10 +1856,18 @@
       "checkedAt": "2026-10-30T11:27:46Z",
       "joinedYear": 2018,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 1,
+        "silver": 1
+      },
       "organisation": "Tufa Labs",
       "profileUrl": "https://www.kaggle.com/driessmit1",
-      "rank": null,
+      "rank": {
+        "best": 917,
+        "current": 977,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2025",
@@ -1882,10 +1954,18 @@
       "checkedAt": "2026-10-30T12:48:08Z",
       "joinedYear": 2017,
       "location": "Vienna, Vienna, Austria",
-      "medals": null,
+      "medals": {
+        "bronze": 3,
+        "gold": 0,
+        "silver": 1
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/fses91",
-      "rank": null,
+      "rank": {
+        "best": 1226,
+        "current": 6819,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Santander Value Prediction Challenge",
@@ -2038,10 +2118,18 @@
       "checkedAt": "2026-10-30T12:09:21Z",
       "joinedYear": 2023,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 0,
+        "silver": 2
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/ffsscf",
-      "rank": null,
+      "rank": {
+        "best": 2947,
+        "current": 2980,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Kaggriculture",
@@ -2079,10 +2167,18 @@
       "checkedAt": "2026-10-30T13:03:39Z",
       "joinedYear": 2020,
       "location": "San Francisco, California, United States",
-      "medals": null,
+      "medals": {
+        "bronze": 3,
+        "gold": 4,
+        "silver": 10
+      },
       "organisation": "Solvea",
       "profileUrl": "https://www.kaggle.com/yeoyunsianggeremie",
-      "rank": null,
+      "rank": {
+        "best": 61,
+        "current": 103,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "The Learning Agency Lab - PII Data Detection",
@@ -2266,10 +2362,18 @@
       "checkedAt": "2026-10-30T11:56:14Z",
       "joinedYear": 2019,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 9,
+        "gold": 1,
+        "silver": 2
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/gromml",
-      "rank": null,
+      "rank": {
+        "best": 230,
+        "current": 598,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2024",
@@ -2638,10 +2742,18 @@
       "checkedAt": "2026-10-30T11:48:32Z",
       "joinedYear": 2018,
       "location": "Cleveland, Ohio, United States",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 5,
+        "silver": 3
+      },
       "organisation": "Tufa Labs",
       "profileUrl": "https://www.kaggle.com/pressman1",
-      "rank": null,
+      "rank": {
+        "best": 8,
+        "current": 14,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Orbit Wars",
@@ -2731,10 +2843,18 @@
       "checkedAt": "2026-10-30T13:36:36Z",
       "joinedYear": 2020,
       "location": "Osaka, Osaka, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 8,
+        "gold": 3,
+        "silver": 7
+      },
       "organisation": "Elith",
       "profileUrl": "https://www.kaggle.com/isakatsuyoshi",
-      "rank": null,
+      "rank": {
+        "best": 54,
+        "current": 78,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Agent Security - Multi-Step Tool Attacks",
@@ -2971,10 +3091,18 @@
       "checkedAt": "2026-10-30T11:15:23Z",
       "joinedYear": 2016,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 6,
+        "silver": 4
+      },
       "organisation": "NVIDIA",
       "profileUrl": "https://www.kaggle.com/sorokin",
-      "rank": null,
+      "rank": {
+        "best": 25,
+        "current": 104,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Mathematical Olympiad - Progress Prize 2",
@@ -3163,10 +3291,18 @@
       "checkedAt": "2026-10-30T11:18:45Z",
       "joinedYear": 2017,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 2,
+        "gold": 2,
+        "silver": 0
+      },
       "organisation": "Mindware Consulting, Inc.",
       "profileUrl": "https://www.kaggle.com/jcole75",
-      "rank": null,
+      "rank": {
+        "best": 333,
+        "current": 483,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2025",
@@ -3265,10 +3401,18 @@
       "checkedAt": "2026-10-30T11:34:45Z",
       "joinedYear": 2017,
       "location": "Germany",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 2,
+        "silver": 0
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/insanitycheck",
-      "rank": null,
+      "rank": {
+        "best": 79,
+        "current": 252,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2024",
@@ -3331,10 +3475,18 @@
       "checkedAt": "2026-10-30T11:11:01Z",
       "joinedYear": 2012,
       "location": "France",
-      "medals": null,
+      "medals": {
+        "bronze": 5,
+        "gold": 29,
+        "silver": 37
+      },
       "organisation": "NVIDIA",
       "profileUrl": "https://www.kaggle.com/cpmpml",
-      "rank": null,
+      "rank": {
+        "best": 6,
+        "current": 30,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Predict Student Performance from Game Play",
@@ -3523,10 +3675,18 @@
       "checkedAt": "2026-10-30T11:30:21Z",
       "joinedYear": 2023,
       "location": "Eindhoven, North Brabant, Netherlands",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 5,
+        "silver": 2
+      },
       "organisation": "Tufa Labs",
       "profileUrl": "https://www.kaggle.com/jeroencottaar",
-      "rank": null,
+      "rank": {
+        "best": 1,
+        "current": 6,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Santa 2025 - Christmas Tree Packing Challenge",
@@ -3598,10 +3758,18 @@
       "checkedAt": "2026-10-30T11:23:25Z",
       "joinedYear": 2019,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 6,
+        "gold": 1,
+        "silver": 3
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/keithtyser",
-      "rank": null,
+      "rank": {
+        "best": 291,
+        "current": 329,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ROGII - Wellbore Geology Prediction",
@@ -3961,10 +4129,18 @@
       "checkedAt": "2026-10-30T13:39:14Z",
       "joinedYear": 2026,
       "location": "Ebina, Kanagawa, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 0,
+        "silver": 9
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/konbu17",
-      "rank": null,
+      "rank": {
+        "best": null,
+        "current": 457,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Stanford RNA 3D Folding Part 2",
@@ -4129,10 +4305,18 @@
       "checkedAt": "2026-10-30T11:51:19Z",
       "joinedYear": null,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 5,
+        "gold": 1,
+        "silver": 5
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/lonnieqin",
-      "rank": null,
+      "rank": {
+        "best": 46,
+        "current": 101,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "ARC Prize 2025",
@@ -4403,10 +4587,18 @@
       "checkedAt": "2026-10-30T12:39:22Z",
       "joinedYear": 2019,
       "location": "Ames, Iowa, United States",
-      "medals": null,
+      "medals": {
+        "bronze": 5,
+        "gold": 0,
+        "silver": 3
+      },
       "organisation": "Iowa State University",
       "profileUrl": "https://www.kaggle.com/mbmmurad",
-      "rank": null,
+      "rank": {
+        "best": 349,
+        "current": 443,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Bengali.AI Speech Recognition",
@@ -4606,10 +4798,18 @@
       "checkedAt": "2026-10-30T14:11:54Z",
       "joinedYear": 2021,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 2,
+        "silver": 1
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/majkel1337",
-      "rank": null,
+      "rank": {
+        "best": 274,
+        "current": 290,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "The Pokémon Company - PTCG AI Battle Challenge Simulation",
@@ -4686,10 +4886,18 @@
       "checkedAt": "2026-10-30T14:29:33Z",
       "joinedYear": 2018,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 2,
+        "gold": 0,
+        "silver": 3
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/mitubant",
-      "rank": null,
+      "rank": {
+        "best": 1708,
+        "current": 1723,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "The 2026 NeuroGolf Championship",
@@ -4974,10 +5182,18 @@
       "checkedAt": "2026-10-30T13:41:53Z",
       "joinedYear": 2020,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 2,
+        "gold": 0,
+        "silver": 2
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/pompom555",
-      "rank": null,
+      "rank": {
+        "best": 3581,
+        "current": 3673,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Agent Security - Multi-Step Tool Attacks",
@@ -5049,10 +5265,18 @@
       "checkedAt": "2026-10-30T12:06:45Z",
       "joinedYear": 2021,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 0,
+        "gold": 0,
+        "silver": 4
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/tanakaai24",
-      "rank": null,
+      "rank": {
+        "best": 1449,
+        "current": 1512,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Santa 2024 - The Perplexity Permutation Puzzle",
@@ -5205,10 +5429,18 @@
       "checkedAt": "2026-10-30T13:46:00Z",
       "joinedYear": 2022,
       "location": "Sapporo, Hokkaido, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 2,
+        "silver": 2
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/refv00",
-      "rank": null,
+      "rank": {
+        "best": 58,
+        "current": 88,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "NVIDIA Nemotron Model Reasoning Challenge",
@@ -5289,10 +5521,18 @@
       "checkedAt": "2026-10-30T12:35:00Z",
       "joinedYear": 2023,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 2,
+        "gold": 1,
+        "silver": 3
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/ruichardliu",
-      "rank": null,
+      "rank": {
+        "best": 951,
+        "current": 1529,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Child Mind Institute — Problematic Internet Use",
@@ -5512,10 +5752,18 @@
       "checkedAt": "2026-10-30T03:44:27Z",
       "joinedYear": 2026,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 0,
+        "silver": 1
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/sonphamorg",
-      "rank": null,
+      "rank": {
+        "best": 2381,
+        "current": 2405,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Orbit Wars",
@@ -5563,10 +5811,18 @@
       "checkedAt": "2026-10-30T13:49:29Z",
       "joinedYear": 2025,
       "location": "Sendai, Miyagi, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 0,
+        "silver": 3
+      },
       "organisation": "Tohoku University",
       "profileUrl": "https://www.kaggle.com/tk256ailab",
-      "rank": null,
+      "rank": {
+        "best": 1222,
+        "current": 1281,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "The 2026 NeuroGolf Championship",
@@ -5656,10 +5912,18 @@
       "checkedAt": "2026-10-30T11:05:27Z",
       "joinedYear": 2016,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 4,
+        "gold": 0,
+        "silver": 1
+      },
       "organisation": "Honda R&D, Tokyo, Japan",
       "profileUrl": "https://www.kaggle.com/menphim",
-      "rank": null,
+      "rank": {
+        "best": 828,
+        "current": 2462,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "RSNA Knee Abnormality Detection",
@@ -5821,10 +6085,18 @@
       "checkedAt": "2026-10-30T13:52:54Z",
       "joinedYear": 2019,
       "location": "Minato City, Tokyo, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 1,
+        "gold": 1,
+        "silver": 9
+      },
       "organisation": "Honda",
       "profileUrl": "https://www.kaggle.com/ttyn4519",
-      "rank": null,
+      "rank": {
+        "best": 348,
+        "current": 366,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Kaggriculture",
@@ -6100,10 +6372,18 @@
       "checkedAt": "2026-10-30T13:15:19Z",
       "joinedYear": 2023,
       "location": null,
-      "medals": null,
+      "medals": {
+        "bronze": 5,
+        "gold": 1,
+        "silver": 3
+      },
       "organisation": null,
       "profileUrl": "https://www.kaggle.com/xiaoz259",
-      "rank": null,
+      "rank": {
+        "best": 10,
+        "current": 15,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Agent Security - Multi-Step Tool Attacks",
@@ -6303,10 +6583,18 @@
       "checkedAt": "2026-10-30T11:08:00Z",
       "joinedYear": 2022,
       "location": "Taipei, Taiwan",
-      "medals": null,
+      "medals": {
+        "bronze": 3,
+        "gold": 1,
+        "silver": 5
+      },
       "organisation": "Fields Model Initiative",
       "profileUrl": "https://www.kaggle.com/threerabbits",
-      "rank": null,
+      "rank": {
+        "best": 75,
+        "current": 335,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Eedi - Mining Misconceptions in Mathematics",
@@ -6495,10 +6783,18 @@
       "checkedAt": "2026-10-30T14:16:00Z",
       "joinedYear": 2019,
       "location": "Tokyo, Tokyo, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 4,
+        "gold": 0,
+        "silver": 1
+      },
       "organisation": "LY Corporation",
       "profileUrl": "https://www.kaggle.com/yktori",
-      "rank": null,
+      "rank": {
+        "best": 980,
+        "current": 2501,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "Drawing with LLMs",
@@ -6687,10 +6983,18 @@
       "checkedAt": "2026-10-30T13:57:09Z",
       "joinedYear": 2019,
       "location": "Tokyo, Tokyo, Japan",
-      "medals": null,
+      "medals": {
+        "bronze": 8,
+        "gold": 4,
+        "silver": 5
+      },
       "organisation": "Prox Industries",
       "profileUrl": "https://www.kaggle.com/yuto0712",
-      "rank": null,
+      "rank": {
+        "best": null,
+        "current": 54,
+        "outOf": 225021
+      },
       "rows": [
         {
           "competition": "AI Agent Security - Multi-Step Tool Attacks",
@@ -12238,7 +12542,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "f6952692cf068af5e5c5a63d4c326db45109a64103cce5560ce4a4b40109b7a0",
+  "fingerprint": "5f1ebd6fceff6423f6cca7df66f5e4db77745a486e634f5975fa639e43172f23",
   "people": [
     {
       "accounts": [

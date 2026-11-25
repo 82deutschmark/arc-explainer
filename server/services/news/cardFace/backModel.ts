@@ -1,6 +1,7 @@
 /**
- * Author: Claude Sonnet 5.5 Medium; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5
+ * Date: 25-Nov-2026
+ * 25-Nov-2026 (GPT-6 / Codex): the competitor reverse uses medal-only career rows and a dated rank strip.
  * 14-Nov-2026 (Claude Opus 5.5): the off-peak note follows the printed stamp (LIVE only), so it never sits under CLOSED or FINAL.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * PURPOSE: DATA DECISIONS for the REVERSE of a card. Takes the front's view model (model.ts) plus the same
@@ -8,7 +9,7 @@
  *            - facts and the biography are filtered against what the tables already show (best finish, best rank,
  *              peak, account count, medal totals, joined year) and against each other, so the "did you know"
  *              strip and the bio only carry what is genuinely extra; either may end up empty;
- *            - the career table is ordered best first (medal, then share of the field) so a cut keeps the best;
+ *            - the career table keeps medal finishes in colour and field-share order;
  *            - solo entries say SOLO ENTRY (never the competitor's own handle posing as a team);
  *            - the off-peak note exists only on LIVE contests and only from two real numbers;
  *            - teammates and the team roster are ordered and carry the tier and the "has a card" mark;
@@ -25,10 +26,12 @@
 import { TIER_LADDER } from './kit';
 import { num, type VM, type CareerRowVM, type MedalsVM } from './model';
 
-export interface StandingRow { title: string; sub: string | null; note: string | null; rank: string | null; peak: string | null; score: string | null; subs: string | null }
-export interface CareerBack {
-  rows: CareerRowVM[]; completed: number; header: string; bestFinish: string | null; medals: MedalsVM | null;
+export interface StandingRow {
+  title: string; sub: string | null; note: string | null; rank: string | null; peak: string | null;
+  score: string | null; subs: string | null; evidence: string | null;
 }
+export type MedalCareerRow = CareerRowVM & { medal: keyof MedalsVM };
+export interface CareerBack { rows: MedalCareerRow[]; medalTotal: number }
 export interface MateGroup { contest: string; team: string; mates: { name: string; tier: string | null }[] }
 export interface RosterRow { name: string; tier: string | null; medals: MedalsVM | null; hasCard: boolean }
 export interface VitalCell { k: string; v: string; grow: number }
@@ -116,20 +119,29 @@ function standingRows(vm: VM): StandingRow[] {
     else if (c.status === 'live' && vm.stamp?.word === 'LIVE' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
       note = rc.rank > rc.peakRank ? `${num(rc.rank - rc.peakRank)} OFF PEAK` : rc.rank === rc.peakRank ? 'AT PEAK' : null;
     }
-    return { title: c.full.replace(/\s+-\s+/, ' · ').toUpperCase(), sub: sub.length ? sub.join(' · ') : null, note, rank: c.rank, peak: c.peak, score: c.score, subs: c.subs };
+    return {
+      title: c.full.replace(/\s+-\s+/, ' · ').toUpperCase(), sub: sub.length ? sub.join(' · ') : null, note,
+      rank: c.rank, peak: c.peak, score: c.score, subs: c.subs, evidence: c.standingLabel,
+    };
   });
 }
 
 // ---------- career ----------
 const MEDAL_ORDER = { gold: 0, silver: 1, bronze: 2 } as const;
+const figure = (text: string) => Number(text.replace(/,/g, ''));
+function fieldShare(row: CareerRowVM): number {
+  const rank = figure(row.place), field = figure(row.of);
+  return rank > 0 && field > 0 ? rank / field : Infinity;
+}
+
 function careerBack(vm: VM): CareerBack | null {
-  const c = vm.career;
-  if (!c || !c.rows.length) return null;
-  // The rows arrive best-first (place, then the bigger field; enrich.ts), the same order that picks BEST FINISH: the table and
-  // its header ("best finishes first") agree. Rows with no place sort last.
-  const placeOf = (r: CareerRowVM) => Number(r.place.replace(/,/g, '')) || Infinity;
-  const rows = [...c.rows].sort((a, b) => placeOf(a) - placeOf(b) || (Number(b.of.replace(/,/g, '')) || 0) - (Number(a.of.replace(/,/g, '')) || 0) || (a.medal ? MEDAL_ORDER[a.medal] : 3) - (b.medal ? MEDAL_ORDER[b.medal] : 3));
-  return { rows, completed: Math.max(c.completed, rows.length), header: `${num(Math.max(c.completed, rows.length))} CONTEST${Math.max(c.completed, rows.length) === 1 ? "" : "S"}`, bestFinish: vm.bestFinishParts?.place ?? null, medals: vm.medals };
+  const rows = (vm.career?.rows ?? []).flatMap((row): MedalCareerRow[] =>
+    row.medal ? [{ ...row, medal: row.medal }] : []);
+  // Use the unrounded rank/field fraction: two finishes printed at 0.1% can still have a clear order.
+  rows.sort((a, b) => MEDAL_ORDER[a.medal] - MEDAL_ORDER[b.medal]
+    || fieldShare(a) - fieldShare(b) || a.name.localeCompare(b.name));
+  const profileTotal = vm.medals ? vm.medals.gold + vm.medals.silver + vm.medals.bronze : 0;
+  return rows.length || profileTotal ? { rows, medalTotal: Math.max(rows.length, profileTotal) } : null;
 }
 
 // ---------- teammates and rosters ----------

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high; Claude Opus 5.5
- * Date: 16-November-2026
+ * Date: 25-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): date the profile statistics used on the medal-first card reverse.
  * 16-Nov-2026 (GPT-6 / Codex): omit empty profile fallback faces from catalog results and counts.
  * 14-Nov-2026 (Claude Opus 5.5, integration): the page's og:image uses the collection-aware share version, as the server meta does.
  * 14-Nov-2026 (Claude Opus 5.5): card page data laid out in balanced columns with every table in a scroll wrapper, the
@@ -359,6 +360,7 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
             {career.tier && <div><dt>Competitions tier</dt><dd>{career.tier}</dd></div>}
             {medals && <div><dt>Medals</dt><dd><span className="cb-medals"><b className="g">{medals.gold} gold</b><b className="s">{medals.silver} silver</b><b className="b">{medals.bronze} bronze</b></span></dd></div>}
             {career.rank?.current && <div><dt>Overall rank</dt><dd className="cb-num">#{career.rank.current.toLocaleString('en-US')}{career.rank.outOf ? ` of ${career.rank.outOf.toLocaleString('en-US')}` : ''}</dd></div>}
+            {(medals || career.rank?.current) && <div><dt>Profile date</dt><dd>{newsDate(career.checkedAt)}</dd></div>}
             {career.rank?.best && <div><dt>Best rank</dt><dd className="cb-num">#{career.rank.best.toLocaleString('en-US')}</dd></div>}
             {career.joinedYear && <div><dt>On Kaggle since</dt><dd>{career.joinedYear}</dd></div>}
             {career.organisation && <div><dt>Organisation</dt><dd>{career.organisation}</dd></div>}

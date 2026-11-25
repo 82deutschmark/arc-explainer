@@ -18,7 +18,7 @@ Retired numbers stay unassigned; never renumber the rest of the set. Words to us
 - **Front:** our own ARC Hall of Fame cyberpunk rendering of the real person, a tier border and medallion in Kaggle's
   own ladder (Novice, Contributor, Expert, Master, Grandmaster; each tier looks richer than the last), the ARC Prize mark,
   card number, a LIVE or FINAL stamp with one as-of date, and the standing (rank, peak, score, submissions).
-- **Back:** career table (finishes, field size, medals), season standings, teammates, a "did you know" strip.
+- **Competitor back:** name, tier, dated Kaggle medal tally and overall rank. A smaller strip carries the dated contest rank. Gold, silver and bronze finishes follow in that order, with top percentage ordering each colour. The profile links to the complete record. Team backs carry standings and rosters.
 - Everything printed is drawn from sourced data. Standings are the saved board at the stamped date, not live.
 
 ## Before you write: look everyone up

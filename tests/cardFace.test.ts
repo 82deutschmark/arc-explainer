@@ -1,6 +1,7 @@
 /**
- * Author: Claude Sonnet 5.5 Low; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Low; Claude Opus 5.5
+ * Date: 25-Nov-2026
+ * 25-Nov-2026 (GPT-6 / Codex): regression coverage for the medal-first and rank-only competitor reverse.
  * 14-Nov-2026 (Claude Opus 5.5): cards with a public (not final) standing, before and after the close, print clean wording
  *          (CLOSED stamp, "Snapshot" label); the image version follows teammates' careers and the close; tier counts are per
  *          set and per person; a long set name fits the pennant and long figures fit their columns.
@@ -177,6 +178,30 @@ describe('public standings and the close', () => {
     expect(after.stamp?.word).toBe('CLOSED');
     expect(backModel(before).standings.some(row => /OFF PEAK/.test(row.note ?? ''))).toBe(true);
     expect(backModel(after).standings.some(row => /OFF PEAK|AT PEAK/.test(row.note ?? ''))).toBe(false);
+  });
+
+  it('leads the competitor reverse with the dated medal tally and sorts only medal finishes', async () => {
+    const { model } = cardFaceModel(withPublicStanding(person), collection);
+    const careerRows = [
+      { competition: 'Class midterm', rank: 1, fieldSize: 50, medal: null },
+      { competition: 'Bronze finish', rank: 2, fieldSize: 300, medal: 'bronze' },
+      { competition: 'Silver small field', rank: 2, fieldSize: 100, medal: 'silver' },
+      { competition: 'Silver large field', rank: 16, fieldSize: 12000, medal: 'silver' },
+      { competition: 'Gold finish', rank: 20, fieldSize: 1000, medal: 'gold' },
+    ];
+    const sample = {
+      ...model, medals: { gold: 1, silver: 2, bronze: 1 },
+      rank: { current: 499, outOf: 225021 },
+      career: { ...model.career, asOf: '2026-11-03T10:00:00Z', rows: careerRows },
+    };
+    const words = textOf(await backNode(sample));
+    expect(words).toContain('Kaggle profile · NOV 3 2026');
+    expect(words).toContain('#499');
+    expect(words.slice(words.indexOf('CAREER MEDALS')).filter(word => careerRows.some(row => row.competition === word)))
+      .toEqual(['Gold finish', 'Silver large field', 'Silver small field', 'Bronze finish']);
+    expect(words).toContain('#12');
+    expect(words).not.toContain('0.4166');
+    expect(words).not.toContain('FROM THE FILE');
   });
 
   it('gives a card a new image version when it closes', () => {

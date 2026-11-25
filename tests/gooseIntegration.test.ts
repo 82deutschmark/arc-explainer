@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
- * Date: 13-November-2026
+ * Date: 25-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): admit dated Kaggle profile totals while contest boards stay external.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
  * premiere gate and brand-aware share-card versions against production boundaries.
@@ -30,10 +31,12 @@ it('accepts a directory competition outside the legacy ARC desks', () => {
     headline: 'Fixture only', sections: [{ text: 'Fixture.', sourceIds: ['source'] }],
     sources: [{ id: 'source', title: 'Fixture', url: KAGGLE_COMPETITIONS[competition].path, accessedAt: '2026-11-02T12:00:00Z' }] }).success).toBe(true);
 });
-it('exports source-linked identities and no wiki standings or global rank copy', () => {
+it('exports dated career evidence and keeps contest standings outside the wiki', () => {
   const wiki = loadWikiInputs('content/news')!;
   expect(wiki.registry.snapshots).toEqual([]);
-  expect(Object.values(wiki.careers).every(career => career.rank == null && career.medals == null)).toBe(true);
+  const datedProfiles = Object.values(wiki.careers).filter(career => career.rank || career.medals);
+  expect(datedProfiles.length).toBeGreaterThan(0);
+  expect(datedProfiles.every(career => career.profileUrl && Number.isFinite(Date.parse(career.checkedAt)))).toBe(true);
   expect(wiki.registry.cards.length).toBeGreaterThan(80);
 });
 it('uses a corrected wiki briefing on the rendered card model', () => {

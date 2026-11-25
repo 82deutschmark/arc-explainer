@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
  * 16-Nov-2026 (GPT-6 / Codex): omit bare fallback faces from the server-rendered catalog.
- * Date: 16-November-2026
+ * Date: 25-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): date the profile rank and totals on server-readable card pages.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): story "In this story" asides, person pages and the sitemap use
  *          tryNewsCollection, so a Card Cabinet that cannot be built falls back to portraits and plain links instead of
  *          a 500; the aside no longer builds the Cabinet when a story names nobody; a card page reuses its collection.
@@ -254,6 +255,7 @@ function collectionCardHtml(card: CollectionCard, standalone = false): string {
   const profile = career && (career.tier || medals || career.rank?.current || career.joinedYear || career.organisation)
     ? `<section><h3>Kaggle profile</h3><ul>${[career.tier ? `Competitions tier: ${career.tier}` : '', medals ? `Medals: ${medals.gold} gold, ${medals.silver} silver, ${medals.bronze} bronze` : '',
       career.rank?.current ? `Overall rank: ${career.rank.current}${career.rank.outOf ? ` of ${career.rank.outOf}` : ''}${career.rank.best ? `, best ${career.rank.best}` : ''}` : '',
+      medals || career.rank?.current ? `Profile date: ${newsDate(career.checkedAt)}` : '',
       career.joinedYear ? `On Kaggle since ${career.joinedYear}` : '', career.organisation ? `Organisation: ${career.organisation}` : ''].filter(Boolean).map(line => `<li>${esc(line)}</li>`).join('')}${career.profileUrl ? `<li><a href="${esc(career.profileUrl)}">Kaggle profile</a></li>` : ''}</ul></section>` : '';
   const past = card.pastCards.length ? `<section><h3>Earlier cards</h3><ul>${card.pastCards.map(item => `<li><a href="${esc(item.hallOfFameUrl)}">${esc(item.season ?? 'Earlier')} · ${esc(item.label)}</a>${item.imageSrc ? ` <img src="${esc(encodeURI(item.imageSrc))}" alt="${esc(item.imageAlt)}" loading="lazy"/>` : ''}</li>`).join('')}</ul></section>` : '';
   const history = card.teamHistory.length ? `<section><h3>Teams</h3><ul>${card.teamHistory.map(team => `<li><a href="${esc(team.cardUrl ?? team.profileUrl)}">${esc(team.teamName)}</a> · ${esc(competitionName(team.competition))} ${esc(team.season)}${team.status === 'previous' ? ' · earlier team' : ''}</li>`).join('')}</ul></section>` : '';
