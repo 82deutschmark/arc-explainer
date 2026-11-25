@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
 # Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026
+# 25-Nov-2026 (GPT-6 / Codex): validate selected story card faces at the host gate.
 # 14-Nov-2026 (Claude Opus 5.5): dispatch and wire citations point at their permanent pages, not index anchors.
 # 09-Nov-2026: Tufa cast and card correction by GPT-6.1 Sol / Codex (effort inherited).
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
@@ -604,7 +605,7 @@ def publish(draft, brief, root=ROOT):
 
 def validate_dispatch(draft):
     required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
-    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote', 'dek', 'personIds', 'revisedAt'}:
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote', 'dek', 'personIds', 'revisedAt', 'cardFaces'}:
         raise ValueError('invalid dispatch fields')
     if 'personIds' in draft:
         cast = draft['personIds']
@@ -612,6 +613,16 @@ def validate_dispatch(draft):
                 or any(not isinstance(person, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', person) for person in cast)
                 or len(set(cast)) != len(cast)):
             raise ValueError('dispatch cast needs unique person IDs')
+    if 'cardFaces' in draft:
+        faces = draft['cardFaces']
+        if (not isinstance(faces, list) or not 1 <= len(faces) <= 8
+                or any(not isinstance(face, dict) or set(face) != {'cardId', 'side', 'label'}
+                       or not isinstance(face['cardId'], str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', face['cardId'])
+                       or face['side'] not in ('front', 'back')
+                       or not isinstance(face['label'], str) or not 1 <= len(face['label'].strip()) <= 60
+                       for face in faces)
+                or len({(face['cardId'], face['side']) for face in faces}) != len(faces)):
+            raise ValueError('invalid story card faces')
     if 'generatedBy' in draft and draft['generatedBy'] not in WRITERS:
         raise ValueError('invalid dispatch writer')
     if 'commissionedBy' in draft and draft['commissionedBy'] != 'mark-barney':

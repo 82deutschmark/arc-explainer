@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 25-Nov-2026 (GPT-6 / Codex): validate an optional list of selected story card faces.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): loadNewsArchive is memoised per directory on the modified time and
  *          size of every file it reads, for at most ARCHIVE_TTL_MS so the one-week and future-date windows still move;
  *          goose-wiki.json problems are reported with describeIssues and the row's id, and a conflicting person is
@@ -54,6 +55,8 @@ const dispatchImage = z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, revisedAt: stamp.optional(), headline: text.max(240), dek: text.max(700).optional(),
   personIds: castIds.optional(),
+  cardFaces: z.array(z.object({ cardId: safeId, side: z.enum(['front', 'back']), label: text.max(60) }).strict())
+    .min(1).max(8).refine(items => new Set(items.map(item => `${item.cardId}:${item.side}`)).size === items.length, 'Duplicate card face').optional(),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1), image: dispatchImage.optional() })).min(1).max(5),

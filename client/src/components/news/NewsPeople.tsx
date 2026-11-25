@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
  * Date: 02-November-2026; 02-Nov-2026 (Claude Opus 5.5 High: compact, small-label story cards); 14-Nov-2026
+ * 25-Nov-2026 (GPT-6 / Codex): render the exact front and back faces selected for a dispatch.
  * 14-Nov-2026 (Claude Opus 5.5): story strips and team rosters read the shared useNewsCollection() query and show each
  *          person's card for that contest (their ARC-3 set card on ARC-3 pages) through cardForPerson().
  * 14-Nov-2026 (Claude Opus 5.5, front): "In this story" holds each card's place while the card list loads,
@@ -15,9 +16,9 @@
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { cardForPerson, collectionRoleLabel, collectionShareVersion } from '@shared/newsCollection';
+import { cardForPerson, collectionRoleLabel, collectionShareVersion, selectedStoryCards } from '@shared/newsCollection';
 import { useNewsCollection } from '@/hooks/useNewsCollection';
-import { displayPortrait, personPath, peopleForTeam, newsDate, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
+import { displayPortrait, personPath, peopleForTeam, newsDate, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson, type StoryCardFace } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
 
@@ -40,13 +41,22 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
  * binder page, each linking to its card page. A person with no card yet falls back to the compact portrait
  * tile. Selection is shared with the initial HTML, not inferred from team rosters.
  */
-export function StoryPeopleCards({ people, competition }: { people: NewsPerson[]; competition: NewsCompetition }) {
+export function StoryPeopleCards({ people, competition, cardFaces }: { people: NewsPerson[]; competition: NewsCompetition; cardFaces?: StoryCardFace[] }) {
   const cabinet = useNewsCollection();
   if (!people.length) return null;
   // While the card list loads, hold each card's place so the strip does not jump from tiles to cards.
+  const loadingLabels = cardFaces?.map(face => ({ id: `${face.cardId}:${face.side}`, name: face.label })) ?? people;
   if (cabinet.isLoading) return <section className="news-story-people" aria-label="In this story" aria-busy="true">
     <h2 className="news-story-people-label">In this story</h2>
-    <div className="news-story-cards">{people.map(person => <span key={person.id} className="news-story-card" aria-hidden="true"><span className="news-story-card-skeleton" /><span className="news-story-card-name">{person.name}</span></span>)}</div>
+    <div className="news-story-cards">{loadingLabels.map(person => <span key={person.id} className="news-story-card" aria-hidden="true"><span className="news-story-card-skeleton" /><span className="news-story-card-name">{person.name}</span></span>)}</div>
+  </section>;
+  const selected = cabinet.data && cardFaces ? selectedStoryCards(cabinet.data, people, cardFaces) : [];
+  if (selected.length) return <section className="news-story-people" aria-label="In this story">
+    <h2 className="news-story-people-label">In this story</h2>
+    <div className="news-story-cards">{selected.map(card => <a key={card.key} href={card.href} className="news-story-card">
+      <img src={card.src} width={300} height={420} loading="lazy" alt={card.alt} />
+      <span className="news-story-card-name">{card.label}</span>
+    </a>)}</div>
   </section>;
   const cardOf = (person: NewsPerson) => cabinet.data && cardForPerson(cabinet.data.cards, person.id, competition, cabinet.data.sets);
   const carded = people.map(person => ({ person, card: cardOf(person) }));

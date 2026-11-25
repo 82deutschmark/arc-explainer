@@ -49,6 +49,8 @@ is built from the text, so you control it:
    and social drafts wherever you mention the person, so readers can open and collect it.
 6. **Cards never override evidence.** A card is a lookup, not permission to invent motives, quotes, plans or a rivalry.
 
+A commissioned dispatch may select a short ordered list of existing card faces for its verified cast using `cardFaces`. The browser and server resolve the same list.
+
 ## Pictures
 
 - To show a card in a post or story art, use the card image endpoints (below), never a screenshot or a crop.

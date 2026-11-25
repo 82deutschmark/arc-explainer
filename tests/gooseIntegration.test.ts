@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
  * Date: 25-November-2026
- * 25-Nov-2026 (GPT-6 / Codex): admit dated Kaggle profile totals while contest boards stay external.
+ * 25-Nov-2026 (GPT-6 / Codex): verify dated Kaggle profile totals and selected card faces in the story.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
  * premiere gate and brand-aware share-card versions against production boundaries.
@@ -23,6 +23,7 @@ import { cardFaceModel } from '../server/services/news/cardFace';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { resolveNewsMeta } from '../server/services/news/newsPresentation';
 import { getNewsIndex } from '../server/services/news/newsStore';
+import { selectedStoryCards } from '../shared/newsCollection';
 import { publishedCompetitionOrder, competitionStories } from '../shared/news';
 
 it('accepts a directory competition outside the legacy ARC desks', () => {
@@ -39,6 +40,19 @@ it('exports dated career evidence and keeps contest standings outside the wiki',
   expect(datedProfiles.every(career => career.profileUrl && Number.isFinite(Date.parse(career.checkedAt)))).toBe(true);
   expect(wiki.registry.cards.length).toBeGreaterThan(80);
 });
+it('shows Keith’s requested current and earlier competition card faces on the story', () => {
+  const story = getNewsIndex().dispatches?.find(item => item.id === 'keith-tyser-arcade');
+  expect(story?.cardFaces).toHaveLength(2);
+  const cabinet = getNewsCollection();
+  const tiles = selectedStoryCards(cabinet, [{ id: 'keith-tyser' }], story!.cardFaces!);
+  expect(tiles.map(tile => tile.label)).toEqual(['Generalist Gaming', 'ARC-AGI-3']);
+  expect(selectedStoryCards(cabinet, [{ id: 'son-pham' }], story!.cardFaces!)).toEqual([]);
+  const body = resolveNewsMeta('/news/keith-tyser-arcade')!.tags.bodyHtml!;
+  const locations = tiles.map(tile => body.indexOf(tile.src.replaceAll('&', '&amp;')));
+  expect(locations[0]).toBeGreaterThan(-1);
+  expect(locations[1]).toBeGreaterThan(locations[0]);
+});
+
 it('uses a corrected wiki briefing on the rendered card model', () => {
   const collection = getNewsCollection(), card = collection.cards[0];
   const corrected = { ...card, biography: 'A durable corrected biography.' };

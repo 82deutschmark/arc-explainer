@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 25-Nov-2026 (GPT-6 / Codex): allow a dispatch to select specific faces of its verified subjects’ cards.
  * 14-Nov-2026 (Claude Opus 5.5): wire stories get their own permalink (wirePath, wireTitle,
  *          wireDescription, wireDeskPausedSince, NewsIndex.wireLatest); dispatches get dispatchTitle,
  *          dispatchDescription and dispatchLabel; snippet() is the one 160-character trim; editionLabel
@@ -138,12 +139,14 @@ export const joinNames = (names: string[]) => NAME_LIST.format(names);
  * describes nothing. Real alt text is words: it has a space.
  */
 export const isFilenameAlt = (alt: string) => !/\s/.test(alt.trim()) && /[-_.]/.test(alt);
+export interface StoryCardFace { cardId: string; side: 'front' | 'back'; label: string }
 export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
   dek?: string;
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
   /** Ordered, verified story cast. An empty list deliberately shows no cards. */
   personIds?: string[];
+  cardFaces?: StoryCardFace[];
   /** Historical dispatches lack a writer ID; new features record their actual writer. */
   generatedBy?: typeof NEWS_EDITION_WRITERS[number];
   commissionedBy?: 'mark-barney';

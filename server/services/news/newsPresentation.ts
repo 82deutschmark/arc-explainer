@@ -2,6 +2,7 @@
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
  * 16-Nov-2026 (GPT-6 / Codex): omit bare fallback faces from the server-rendered catalog.
  * Date: 25-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): mirror selected front and back card faces in the initial HTML.
  * 25-Nov-2026 (GPT-6 / Codex): date the profile rank and totals on server-readable card pages.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): story "In this story" asides, person pages and the sitemap use
  *          tryNewsCollection, so a Card Cabinet that cannot be built falls back to portraits and plain links instead of
@@ -57,7 +58,7 @@ import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
 import { catalogCardVisible, catalogSetLabel } from '../../../shared/cardCatalog';
-import { cardForPerson, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
+import { cardForPerson, selectedStoryCards, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry, type NewsCollection } from '../../../shared/newsCollection';
 import { getNewsCollection, tryNewsCollection } from './newsCollection';
 import { getNewsIndex, loadNewsArchive, loadWireStory } from './newsStore';
@@ -94,7 +95,7 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
 /** The full dispatch, including its own art and sources, stays identical across server views. Its own page prints the headline as the <h1>; elsewhere it links there. */
 function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = [], permalink = false): string {
   const headline = permalink ? `<h1>${esc(dispatch.headline)}</h1>` : `<h2><a href="${esc(newsArticlePath(dispatch.id))}">${esc(dispatch.headline)}</a></h2>`;
-  return `<article id="${esc(dispatch.id)}">${headline}${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition) : ''}${sectionExtrasHtml(section)}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
+  return `<article id="${esc(dispatch.id)}">${headline}${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition, dispatch.cardFaces) : ''}${sectionExtrasHtml(section)}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
 }
 
 /** `competitors` decides which box-score teams link to a profile: only those with a record, never a 404. */
@@ -121,10 +122,14 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
 }
 const personLink = (person: NewsPerson) => `<a href="${personPath(person.id)}">${esc(person.name)}</a>`;
 /** The crawler gets the same subjects and disclosed portrait choices as the browser sidebar. */
-function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition']): string {
+function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition'], cardFaces?: NewsDispatch['cardFaces']): string {
   if (!people.length) return '';
   // Without a Cabinet (it failed to build), each person falls back to their portrait and profile link.
   const cabinet = tryNewsCollection();
+  const selected = cabinet && cardFaces ? selectedStoryCards(cabinet, people, cardFaces) : [];
+  if (selected.length) return `<aside aria-label="In this story"><h2>In this story</h2>${selected.map(card =>
+    `<article><a href="${esc(card.href)}"><img src="${esc(card.src)}" alt="${esc(card.alt)}" width="300" height="420"/></a><p>${esc(card.label)}</p></article>`
+  ).join('')}</aside>`;
   return `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
     const portrait = displayPortrait(person);
     const team = [...person.memberships].reverse().find(member => member.competition === competition);

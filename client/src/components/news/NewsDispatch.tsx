@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6.1 Terra / Codex (reasoning effort not exposed); Claude Opus 5.5
  * Date: 14-Nov-2026 (Claude Opus 5.5); 13-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): use the dispatch’s selected faces in the existing card strip.
  * 14-Nov-2026 (Claude Opus 5.5): the headline is an in-app Link to the dispatch's page, which passes
  *          `permalink` to print it as the page's <h1>; the kicker reads the shared dispatchLabel.
  * PURPOSE: Render complete sourced dispatches and their reviewed illustrations for both
@@ -32,7 +33,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [], showPeopl
     {dispatch.sections.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
       <p className="news-dispatch-text"><SportsText text={section.text} stats={stats} /></p>
-      {index === 0 && showPeople && <StoryPeopleCards people={subjects ?? reportedPeople([dispatch], people)} competition={dispatch.competition} />}
+      {index === 0 && showPeople && <StoryPeopleCards people={subjects ?? reportedPeople([dispatch], people)} competition={dispatch.competition} cardFaces={dispatch.cardFaces} />}
       <NewsArticleSectionExtras section={section} />
       <div className="news-section-sources">{section.sourceIds.map(id => {
         const source = dispatch.sources.find(item => item.id === id);

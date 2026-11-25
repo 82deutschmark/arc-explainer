@@ -1,3 +1,7 @@
+### Version 9.164.50 · November 25, 2026
+
+- A story can now show selected faces of its verified competitors’ existing cards. Keith Tyser’s story shows his Generalist Gaming and ARC-AGI-3 cards in the existing row. Author: GPT-6 / Codex.
+
 ### Version 9.164.49 · November 25, 2026
 
 - Competitor card backs lead with the dated Kaggle medal tally, tier and rank. The contest strip shows rank, and the career table orders verified medal finishes by medal colour and field share. Plain paper and fixed medal slots give long contest names room to wrap. Author: GPT-6 / Codex.

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
  * Date: 25-November-2026
+ * 25-Nov-2026 (GPT-6 / Codex): resolve the same selected story card faces for the client and initial HTML.
  * 16-Nov-2026 (GPT-6 / Codex): expose whether a bare profile has a real portrait for the catalog.
  * 14-Nov-2026 (Claude Opus 5.5, card faces): RENDER_VERSION 12; collectionShareVersion also covers what a card prints about
  *          other cards (teammates' tiers and medals, shared-art names, its set's tier count) when given the collection, and
@@ -22,7 +23,7 @@
  */
 import { z } from 'zod';
 import { KAGGLE_COMPETITIONS, competitionRegistered } from './kaggleCompetitions';
-import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition } from './news';
+import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition, type StoryCardFace } from './news';
 import { cardFrameRepair } from './cardFrameRepair';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
@@ -258,6 +259,22 @@ export function cardForPerson(cards: CollectionCard[], personId: string, competi
   const scope = (card: CollectionCard) => card.setId ? sets.find(set => set.id === card.setId)?.competitionIds : [];
   const slug = competition ? KAGGLE_COMPETITIONS[competition]?.slug : undefined;
   return (slug ? own.find(card => scope(card)?.includes(slug)) : undefined) ?? own.find(card => scope(card)?.length === 0) ?? own[0];
+}
+/** Resolve only the article's selected faces that belong to its verified cast. */
+export function selectedStoryCards(collection: NewsCollection, people: readonly { id: string }[], faces: readonly StoryCardFace[]) {
+  const subjects = new Set(people.map(person => person.id));
+  return faces.flatMap(({ cardId, side, label }) => {
+    const card = collection.cards.find(item => item.id === cardId && item.personId && subjects.has(item.personId));
+    if (!card) return [];
+    const imagePath = `/api/news/cards/${encodeURIComponent(card.id)}`;
+    return [{
+      key: `${card.id}:${side}`,
+      label,
+      alt: `${card.name} · ${label}`,
+      href: side === 'front' ? card.cardUrl : `${imagePath}/image.png?side=back`,
+      src: `${imagePath}/thumb.webp?side=${side}&w=300&v=${collectionShareVersion(card, collection)}`,
+    }];
+  });
 }
 export const collectionTeamCompetition = (card: CollectionCard) =>
   card.kind === 'team' && card.entries.length === 1 ? competitionName(card.entries[0].competition) : null;
