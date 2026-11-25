@@ -1,0 +1,67 @@
+{
+  "competition": "generalist-gaming-agent",
+  "dek": "The Goose regular who published his own bot mishaps just put his name at the top of the Generalist Gaming public board.",
+  "editorNote": "Mark Barney, publisher of The Loose Goose, and Son Pham competed alongside Keith Tyser in ARC-AGI-3 and co-wrote the Team Turducken write-up cited here.",
+  "generatedBy": "gpt-6-codex",
+  "headline": "Keith Tyser grabs the arcade lead",
+  "id": "keith-tyser-arcade",
+  "image": {
+    "alt": "Keith Tyser’s yellow fish character sends a tiny wheeled arcade cabinet across the workshop floor.",
+    "caption": "Keith Tyser sends his pint-size cabinet out for a test run.",
+    "src": "/news-images/goose-a050500d406e6c9c41e3.webp"
+  },
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-11-25T22:18:34+00:00",
+  "sections": [
+    {
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Keith Tyser barged into the arcade and took the high score. The leaderboard from Tuesday evening didn’t have his name on it. By Wednesday afternoon the Goose regular was in first place on the public board at 0.408, and Kaggle listed him alone on the team."
+    },
+    {
+      "heading": "The mistakes he kept",
+      "sourceIds": [
+        "training",
+        "turducken"
+      ],
+      "text": "Tyser helped with reinforcement learning on Team Turducken in ARC-AGI-3, where the team wrote that its training runs fell short of its base model on Kaggle. He also spent months at a very different sort of workbench, building agents to steer fleets, play Pokémon cards and run farms. He wrote up what broke. His Orbit Wars simulator ran fast enough to rack up more than a billion simulated transitions, but the bot he built by hand still beat the strongest model he trained. He sent the hand-built bot and took bronze. In Pokémon, a bug made his early submissions pick the first available option until he caught it. He took silver there.\n\nPlenty of people will show you their medal case. Tyser will show you the busted parts on the bench."
+    },
+    {
+      "heading": "The next cabinet",
+      "sourceIds": [
+        "organizer",
+        "board"
+      ],
+      "text": "Generalist Gaming sends the same agent from one game to the next with its memory intact. Change the game and a move that worked a minute ago can be the wrong thing to try. The private leaderboard decides the finish.\n\nTyser has spent months finding out what his bots do when a game stops behaving the way he expects. Who can catch him on the public board?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-25T20:18:16Z",
+      "id": "board",
+      "title": "Kaggle public leaderboard and linked team roster",
+      "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard?teamId=17431467"
+    },
+    {
+      "accessedAt": "2026-11-25T20:48:32+00:00",
+      "id": "training",
+      "title": "Keith Tyser’s account of his three simulation contests",
+      "url": "https://keithtyser.com/blog/three-simulation-competitions-three-ppo-mistakes.html"
+    },
+    {
+      "accessedAt": "2026-11-25T20:48:32+00:00",
+      "id": "turducken",
+      "title": "Team Turducken’s ARC-AGI-3 write-up",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken"
+    },
+    {
+      "accessedAt": "2026-11-25T20:48:32+00:00",
+      "id": "organizer",
+      "title": "Generalist Gaming benchmark and competition",
+      "url": "https://generalistgaming.org/"
+    }
+  ]
+}
