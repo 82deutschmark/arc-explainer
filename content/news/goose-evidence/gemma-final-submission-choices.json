@@ -1,13 +1,13 @@
 {
   "package": {
     "artworkRecords": [
-      "artwork/asset-6aebef31f0f2992fc59d"
+      "artwork/asset-b1998982c42d0c9ddcc5"
     ],
     "assets": [
       {
-        "sha256": "6aebef31f0f2992fc59dee0585d4cb47f071650a07a0f80aff5e38f2bd305254",
-        "source": "client/public/news-images/gemma-final-submission-choices.webp",
-        "target": "client/public/news-images/goose-6aebef31f0f2992fc59d.webp"
+        "sha256": "b1998982c42d0c9ddcc54f0b12c0ae07915df210f1aba24feac418854ed7e59b",
+        "source": "client/public/news-images/gemma-final-submission-choices-geese.webp",
+        "target": "client/public/news-images/goose-b1998982c42d0c9ddcc5.webp"
       }
     ],
     "canonicalUrl": "https://arc.markbarney.net/news/gemma-final-submission-choices",
@@ -20,9 +20,9 @@
       "headline": "Gemma teams pick what flies",
       "id": "gemma-final-submission-choices",
       "image": {
-        "alt": "A gloved hand fits a second data cartridge into a courier case in a desert launch shed. A rocket waits outside.",
-        "caption": "The Loose Goose imagines the final picks as two cartridges headed for launch.",
-        "src": "/news-images/goose-6aebef31f0f2992fc59d.webp"
+        "alt": "Two geese based on the default Kaggle avatar load data cartridges into a flight case. A rocket waits outside the desert launch shed.",
+        "caption": "The Loose Goose imagines two Kaggle geese packing the final picks for launch.",
+        "src": "/news-images/goose-b1998982c42d0c9ddcc5.webp"
       },
       "personIds": [],
       "publishedAt": "2026-11-26T23:00:00+00:00",
@@ -60,15 +60,15 @@
       ]
     },
     "storyId": "gemma-final-submission-choices",
-    "storySha256": "2dc18ddcf1df69e36a0c76eb553177959882d2ebf4cd3f78101730d6236096f3",
+    "storySha256": "66dc8a13fbed042a2f45812140954739707e8b0d0bcd2b64874f84d578228c0f",
     "version": 1
   },
   "review": {
     "assets": [
       {
-        "sha256": "6aebef31f0f2992fc59dee0585d4cb47f071650a07a0f80aff5e38f2bd305254",
-        "source": "client/public/news-images/gemma-final-submission-choices.webp",
-        "target": "client/public/news-images/goose-6aebef31f0f2992fc59d.webp"
+        "sha256": "b1998982c42d0c9ddcc54f0b12c0ae07915df210f1aba24feac418854ed7e59b",
+        "source": "client/public/news-images/gemma-final-submission-choices-geese.webp",
+        "target": "client/public/news-images/goose-b1998982c42d0c9ddcc5.webp"
       }
     ],
     "checks": [
@@ -78,9 +78,9 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "Verified the official Kaggle timeline, limits, defaults, scoring and private-board language. Independent Claude reviews led to a clearer deadline, automatic selection without an assumed count, the patched-repository denominator, the potential-winner wording and an explicitly hypothetical closing question. The final reviewer recommended publication and asked for an illustration label. The caption identifies the scene as imagined by The Loose Goose. Earlier flags about proof metadata referred to the review wrapper. The filed dispatch contains no competitor, rank or cast row. The fresh built-in ImageGen scene uses the David Sarrat Gemma portrait only for set style. Visual inspection at full size and 390 pixels confirmed both case slots, the anonymous glove and rocket. The decorations carry no numbers or text. No regalia or nameplate appears. This review binds the exact caption, dispatch and WebP.",
-    "reviewedAt": "2026-11-26T18:07:30+00:00",
-    "reviewedBy": "GPT-6 / Codex with separate read-only Claude CLI reviews",
-    "storySha256": "2dc18ddcf1df69e36a0c76eb553177959882d2ebf4cd3f78101730d6236096f3"
+    "notes": "The story text and cited sources retain the original independent Claude copy review. Rechecked Kaggle’s timeline and submission rules on 26 November. The owner approved this exact built-in ImageGen replacement after seeing the full-size illustration. Compared both geese with the exact default Kaggle avatar and the setting with the David Sarrat Gemma portrait. The face profiles, bill, stippling, both cartridges and rocket are legible at 390 pixels. The geese are anonymous and the cast remains empty. The revised caption marks the scene as imagined. No lettering, regalia or nameplate appears.",
+    "reviewedAt": "2026-11-27T03:25:12+00:00",
+    "reviewedBy": "GPT-6 / Codex, with the owner’s approval of the exact replacement illustration",
+    "storySha256": "66dc8a13fbed042a2f45812140954739707e8b0d0bcd2b64874f84d578228c0f"
   }
 }
