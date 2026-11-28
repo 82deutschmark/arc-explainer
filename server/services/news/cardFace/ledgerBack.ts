@@ -9,7 +9,8 @@
  *          contest still running leads, every tile names its team (a solo team too), and an open contest with no reading yet
  *          says ENTERED instead of vanishing. Medal rows are one compact line each (name, then place and top share at the
  *          right). The picture shows in the window left between the standings and the medal sheet, so it is smaller and the
- *          numbers get the room. Secondary text is no smaller than 19 px so it reads at the card page's 420 px width.
+ *          numbers get the room. Secondary text is no smaller than 19 px so it reads at the card page's 420 px width. A
+ *          long team name in a narrow tile (a Japanese name) gets two fitted lines and, if needed, a smaller rank beside it.
  * 27-Nov-2026 (GPT-6.2 Sol / Codex): place the dated team strip next to the medal ledger below action art.
  * PURPOSE: Competitor card reverse. A solid paper header leads with the verified medal tally, tier and overall
  *          competitions rank; dated standings follow as rank-only tiles; a medal ledger sits at the foot. Between them the
@@ -141,18 +142,39 @@ async function contestName(row: StandingRow, inner: number, max: number): Promis
   return { name: row.short, size: await fitOneLine(row.short, FONT.bebas, 400, inner, max, 19, max * 0.05) };
 }
 
+/**
+ * A team name in at most two lines of `width`: one line from 22 px down to 19, else two lines split at a space or dot, else
+ * (an unbroken Japanese or Chinese name, which Satori would wrap to three lines) two halves split between characters.
+ */
+async function teamLines(team: string, width: number): Promise<{ size: number; lines: string[] }> {
+  const fit = await fitNameLines(team, FONT.cond, 700, width, 50, { max: 22, min: 19, twoLineMax: 22, twoLineMin: 16 }, 1.08);
+  if (fit.lines.length === 2 || fit.size >= 16) return fit;
+  const chars = Array.from(team), half = Math.ceil(chars.length / 2);
+  const lines = [chars.slice(0, half).join(''), chars.slice(half).join('')];
+  const size = await fitOneLine(lines[0], FONT.cond, 700, width, 22, 14);
+  return { size, lines };
+}
+
 /** One tile of several: contest on top, then the rank beside the team name, then (only when dates differ) the date. */
 async function standingTile(row: StandingRow, width: number, ink: string, dated: boolean, last: boolean): Promise<Node> {
   const inner = width - 28;
   const { name, size } = await contestName(row, inner, 27);
-  const rank = await rankSlot(row, ink, row.rank && row.rank.length > 5 ? 38 : 50);
-  const teamW = Math.max(60, inner - rank.width - 12);
+  // A long team name (a Japanese name runs wide) gets room from a smaller rank before its own letters drop below 18 px.
+  let rank = await rankSlot(row, ink, row.rank && row.rank.length > 5 ? 38 : 50);
+  let teamW = Math.max(60, inner - rank.width - 12);
+  let team = row.team ? await teamLines(row.team, teamW) : null;
+  if (team && team.size < 18 && row.rank && row.rank.length <= 5) {
+    rank = await rankSlot(row, ink, 38);
+    teamW = Math.max(60, inner - rank.width - 12);
+    team = await teamLines(row.team!, teamW);
+  }
   return box({ width, height: '100%', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', padding: '0 14px',
     background: PAPER, ...(last ? {} : { borderRight: `2px solid ${RULE}` }) },
     bebas(name, size, INK, clip(inner)),
     box({ marginTop: 8, alignItems: 'center', gap: 12 },
       rank.node,
-      row.team ? cond(row.team, 22, INK, 700, { width: teamW, lineClamp: 2, lineHeight: 1.08 }) : null),
+      team ? box({ width: teamW, flexDirection: 'column' }, ...team.lines.map(line =>
+        cond(line, team.size, INK, 700, { lineHeight: 1.08, whiteSpace: 'nowrap', overflow: 'hidden' }))) : null),
     dated && row.rank && row.evidence ? cond(row.evidence, 19, MUTED, 600, { marginTop: 6, ...clip(inner) }) : null);
 }
 
