@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
  * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): "In this story" cards come from the shared storyCast() rule; a feature passes its edition.
  * 14-Nov-2026 (Claude Opus 5.5): a dispatch page prints its headline as the <h1> and takes its title and
  *          description from dispatchTitle/dispatchDescription, like the server-rendered head.
  * 14-Nov-2026 (Claude Opus 5.5, profiles-articles): the Sources rail lists only cited, de-duplicated links;
@@ -62,7 +63,7 @@ export default function NewsArticle() {
         <p className="news-byline">{NEWS_NAME} sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
         {!!article.revisions?.length && <div className="news-revisions" role="note" aria-label="Revisions">{article.revisions.map((revision, index) => <p key={`${revision.at}-${index}`} className="news-muted">Updated <time dateTime={revision.at}>{newsDate(revision.at)}</time>{revision.reason ? `: ${revision.reason}` : ''}</p>)}</div>}
       </header>
-      {feature && <DispatchPreview dispatch={feature} stats={article.stats} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
+      {feature && <DispatchPreview dispatch={feature} edition={article} stats={article.stats} lead people={query.data?.people} subjects={reportedPeople([feature, article], query.data?.people ?? [])} />}
       {feature?.image?.src !== article.image?.src && <EditionArtwork article={article} lead={!feature} />}
       <div className="news-article-grid">
         <div>
@@ -70,7 +71,7 @@ export default function NewsArticle() {
             {section.heading && <h2>{section.heading}</h2>}
             <p><SportsText text={section.text} stats={figureStats} teamNames={article.verifiedTeamNames} /></p>
             <NewsArticleSectionExtras section={section} />
-            {index === 0 && !feature && <StoryPeopleCards people={reportedPeople([article], query.data?.people ?? [])} competition={article.competition} />}
+            {index === 0 && !feature && <StoryPeopleCards stories={[article]} people={reportedPeople([article], query.data?.people ?? [])} />}
             {!!section.sourceIds.length && <div className="news-section-sources">{section.sourceIds.map(id => {
               const source = article.sources.find(item => item.id === id);
               return source ? <a key={id} href={source.url}>{source.title} ↗</a> : null;

@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
  * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): "In this story" cards come from the shared storyCast() rule; a feature passes its edition.
  * 14-Nov-2026 (Claude Opus 5.5): the masthead prints the edition label it is given (editionTitle) instead of
  *          rebuilding it from morning/evening; a story preview shows its own art, else same-day companion art,
  *          never a picture already printed by its feature; the archive labels each issue with editionLabel.
@@ -189,11 +190,11 @@ export function StoryPreview({ article, feature, lead = false, people = [], sect
     <h2><Link href={newsArticlePath(article.id)}><SportsText text={article.headline} stats={figureStats} teamNames={article.verifiedTeamNames} /></Link></h2>
     <p className="news-dek"><SportsText text={article.dek} stats={figureStats} teamNames={article.verifiedTeamNames} /></p>
     <div className="news-byline">By {publication.name} sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
-    {feature && <DispatchPreview dispatch={feature} stats={figureStats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
+    {feature && <DispatchPreview dispatch={feature} edition={article} stats={figureStats} lead={lead} people={people} subjects={reportedPeople([feature, article], people)} />}
     {/* The edition's own picture unless its feature already printed it; else the same-day companion art. */}
     {article.image ? article.image.src !== feature?.image?.src && <EditionArtwork article={article} lead={lead} /> : art}
     {!!shown.length && <div className="news-story-body"><StoryBodySection section={shown[0]} stats={figureStats} teamNames={article.verifiedTeamNames} /></div>}
-    {!feature && <StoryPeopleCards people={reportedPeople([article], people)} competition={article.competition} />}
+    {!feature && <StoryPeopleCards stories={[article]} people={reportedPeople([article], people)} />}
     {shown.length > 1 && <div className="news-story-body">{shown.slice(1).map((section, index) => <StoryBodySection key={index} section={section} stats={figureStats} teamNames={article.verifiedTeamNames} />)}</div>}
     <Link href={newsArticlePath(article.id)} className="news-read">{more ? 'Continue reading, with sources and the box score →' : 'Sources and the box score →'}</Link>
   </article>;

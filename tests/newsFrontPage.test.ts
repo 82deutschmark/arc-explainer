@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
  * Date: 14-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card rule): the cast-row checks follow the approved "In this story" rule
+ *          (shared/storyCast.ts): each listed person links to the card the rule picks (a Kaggleverse career card before a
+ *          contest card), and the Tufa row leads with its six authors but may add others the story names, as designed.
  * 14-Nov-2026 (Claude Opus 5.5, front): wire links open each story's own page (/news/wire/<id>), which also
  *          renders a not-found state; a paused desk shows its latest filings; the early-evening special reads its
  *          recorded editionDisplay; older dispatches are no longer copied in full onto the front page.
@@ -42,7 +45,16 @@ import { escapeHtml } from '../shared/seo';
 import fs from 'node:fs';
 import path from 'node:path';
 import { getNewsCollection } from '../server/services/news/newsCollection';
-import { cardForPerson } from '../shared/newsCollection';
+import { storyCast, type StoryCastSource } from '../shared/storyCast';
+import type { NewsCollection } from '../shared/newsCollection';
+/** The link storyCast() gives each listed person: their first card tile, else their name past the card budget. */
+const castLinks = (collection: NewsCollection, stories: StoryCastSource[]) => {
+  const { tiles, more } = storyCast(collection, stories);
+  const links = new Map<string, string>();
+  for (const tile of tiles) if (tile.personId && !links.has(tile.personId)) links.set(tile.personId, tile.href);
+  for (const item of more) if (item.key.startsWith('person:') && !links.has(item.key.slice(7))) links.set(item.key.slice(7), item.href);
+  return links;
+};
 import { getNewsIndex, loadNewsArchive } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
@@ -320,16 +332,13 @@ test('the morning cast row links xz and Chen to their wiki-backed cards after th
   expect(subjects.map(person => person.id)).toEqual(expect.arrayContaining(['xz', 'yi-chia-chen']));
   const html = render(NewsArticle, `/news/${article.id}`, index);
   const sidebar = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
-  const collection = getNewsCollection();
-  for (const subject of subjects) {
-    // An ARC-3 story shows the person's ARC-3 set card where they have one.
-    const card = cardForPerson(collection.cards, subject.id, article.competition, collection.sets);
-    expect(sidebar).toContain(card?.cardUrl ?? `/news/people/${subject.id}`);
-  }
+  // Every listed person links to the card the shared rule picks for them (a card tile, or their name past the budget).
+  const links = castLinks(getNewsCollection(), [article]);
+  for (const subject of subjects) expect(sidebar).toContain(links.get(subject.id) ?? `/news/people/${subject.id}`);
   expect(html.indexOf('class="news-story-people"')).toBeGreaterThan(html.indexOf(article.sections[0].text.slice(0, 40)));
   expect(sidebar).not.toContain('/news/people/dries-smit');
   const initialHtml = newsArticleMeta(article, [], index.people).bodyHtml!;
-  for (const subject of subjects) expect(initialHtml).toContain(`/news/people/${subject.id}`);
+  for (const subject of subjects) expect(initialHtml).toContain(links.get(subject.id) ?? `/news/people/${subject.id}`);
   const chen = subjects.find(subject => subject.id === 'yi-chia-chen')!;
   expect(newsPersonSchema.safeParse(chen).success).toBe(true);
   expect(newsPersonSchema.safeParse({ ...chen, editorialPortrait: { ...chen.editorialPortrait!, sourceUrl: 'https://www.kaggle.com/xiaoz259' } }).success).toBe(false);
@@ -358,11 +367,8 @@ test('all reported subjects survive deduplication across a feature and recap, wi
   expect(reportedPeople([{ ...unverified, personIds: [] }], index.people!)).toEqual([]);
   const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article], dispatches: [feature] });
   const cast = html.match(/<section class="news-story-people"[\s\S]*?<\/section>/)![0];
-  const collection = getNewsCollection();
-  for (const person of people) {
-    const card = cardForPerson(collection.cards, person.id, article.competition, collection.sets);
-    expect(cast).toContain(card?.cardUrl ?? `/news/people/${person.id}`);
-  }
+  const links = castLinks(getNewsCollection(), [feature, article]);
+  for (const person of people) expect(cast).toContain(links.get(person.id) ?? `/news/people/${person.id}`);
 });
 
 // GPT-6 / Codex, 2026-11-01: previously shared special-report URLs must render directly.
@@ -408,22 +414,25 @@ test('includes the sourced cast of the lead team, scoped to its competition', ()
   expect(ids[0]).toBe('dries-smit');
 });
 
-test('the Tufa report shows only its six credited authors in both article renders', () => {
+test('the Tufa report leads with its six credited authors, in the same order in both article renders', () => {
   vi.stubGlobal('React', React);
   const path = '/news/tufa-general-approaches';
   const people = ['dries-smit', 'jeroen-cottaar', 'isaiahp', 'stefano-viel', 'dlorah', 'infinitecreativity'];
-  const cards = getNewsCollection().cards;
-  const expected = people.map(id => cards.find(card => card.personId === id)!.cardUrl);
+  // Each author's best card for this ARC story: Dries (the subject) leads with all his cards, then one card each.
+  const collection = getNewsCollection(), links = castLinks(collection, [getNewsIndex().dispatches!.find(item => item.id === 'tufa-general-approaches')!]);
+  const expected = people.map(id => links.get(id)!);
   const clientHtml = render(NewsArticle, path, getNewsIndex());
   const serverHtml = resolveNewsMeta(path)?.tags.bodyHtml;
   const rows = [
     clientHtml.match(/<section class="news-story-people"[\s\S]*?<\/section>/)?.[0],
     serverHtml?.match(/<aside aria-label="In this story"[\s\S]*?<\/aside>/)?.[0],
   ];
-  for (const row of rows) {
-    expect(row).toBeDefined();
-    expect([...row!.matchAll(/href="(\/news\/cards\/[^"]+)"/g)].map(match => match[1])).toEqual(expected);
+  const found = rows.map(row => [...new Set([...row!.matchAll(/href="(\/news\/cards\/[^"]+)"/g)].map(match => match[1]))]);
+  for (const hrefs of found) {
+    expect(hrefs.filter(href => expected.includes(href))).toEqual(expected);
+    expect(hrefs.indexOf(expected[0])).toBe(0);
   }
+  expect(found[0]).toEqual(found[1]);
 });
 
 test('archive cast corrections drop incidental aliases and keep people with real roster evidence', () => {
