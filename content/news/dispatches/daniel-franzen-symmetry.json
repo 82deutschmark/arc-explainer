@@ -1,0 +1,161 @@
+{
+  "cardFaces": [
+    {
+      "cardId": "person-daniel-franzen-kaggleverse-2026",
+      "label": "Daniel Franzen’s career card",
+      "side": "front"
+    }
+  ],
+  "commissionedBy": "mark-barney",
+  "competition": "generalist-gaming-agent",
+  "dek": "Two Kaggle golds came from solving grids with the ARChitects. Then Daniel Franzen built a game-playing agent that Pathbreaker adapted for the ARC-AGI-3 final.",
+  "editorNote": "Written by GPT-6.2 Sol / Codex.",
+  "generatedBy": "gpt-6-codex",
+  "headline": "Franzen makes the field play his game",
+  "id": "daniel-franzen-symmetry",
+  "image": {
+    "alt": "Daniel Franzen wears two overlapping gold medals, a cyan grid eyepiece and a three-fan graphics card while working on a wheeled robot that operates an arcade joystick.",
+    "caption": "Daniel Franzen’s two Kaggle golds came from a win and a runner-up finish with the ARChitects.",
+    "src": "/news-images/goose-2dc5733aea23ef7e90b2.webp"
+  },
+  "personIds": [
+    "daniel-franzen"
+  ],
+  "publishedAt": "2026-11-28T02:40:12+00:00",
+  "sections": [
+    {
+      "sourceIds": [
+        "agent",
+        "record",
+        "arcade"
+      ],
+      "text": "Daniel Franzen gave his ARC-AGI-3 agent an undo button. He let it see what moved between frames and which squares changed after a move. When the rules are hidden, a wrong move can still teach you something. Now his name is on the Generalist Gaming board, and anyone scouting him has a notebook to read."
+    },
+    {
+      "heading": "Turn the board around",
+      "sourceIds": [
+        "neurips",
+        "franzen",
+        "kaggle",
+        "arc24",
+        "icml",
+        "arc25",
+        "team-method",
+        "record"
+      ],
+      "text": "Franzen studied symmetry with Michael Wand at Johannes Gutenberg University Mainz. Turn an image and a network ought to keep track of how its answer should turn with it. They took that problem to NeurIPS. Away from the lab, Franzen grows Riesling in the Moselle valley.\n\nThe ARChitects made different views of the same grid work for them. Their solver generated possible answers, then judged each one across transformed views. They won the ARC Prize 2024 high-score contest. Franzen, Jan Disselhoff and David Hartmann published the method at ICML and returned to the podium the following year with a solver that could revise its grid guesses. The runner-up finish earned Franzen another Kaggle gold."
+    },
+    {
+      "heading": "The notebook crossed the aisle",
+      "sourceIds": [
+        "agent",
+        "milestone",
+        "franzen",
+        "pathbreaker",
+        "turducken"
+      ],
+      "text": "Franzen started with the Duck harness from Jeroen Cottaar and Tufa Labs, the software that lets an agent inspect a game and make moves. He added a way to spend more time on games where the agent was making headway. He released his notebook and won the open-source prize for ARC-AGI-3’s second milestone. Pathbreaker adapted his agent for a selected final submission. Team Turducken credits the notebook as its starting point too. Mark Barney, editor of The Loose Goose, is a member of Team Turducken."
+    },
+    {
+      "heading": "Where the ARChitects landed",
+      "sourceIds": [
+        "closing-board",
+        "schedule",
+        "arcade"
+      ],
+      "text": "The ARChitects’ ARC-AGI-3 lineup was Franzen, Disselhoff, Hartmann and Sebastian Brodehl. The team stood #14 at 47.19 on Kaggle’s closed public board. ARC Prize is scheduled to announce the private results on December 4.\n\nGeneralist Gaming is the next test. Can Franzen turn the same knack for reading unfamiliar rules into another run at the top?"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "agent",
+      "title": "Daniel Franzen’s ARC-AGI-3 milestone write-up",
+      "url": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "arcade",
+      "title": "Franzen’s arrival in Generalist Gaming",
+      "url": "https://arc.markbarney.net/news/daniel-franzen-arcade-entrance"
+    },
+    {
+      "accessedAt": "2026-11-28T01:17:25Z",
+      "id": "neurips",
+      "title": "Daniel Franzen and Michael Wand’s NeurIPS paper",
+      "url": "https://proceedings.neurips.cc/paper/2021/file/4bfbd52f4e8466dc12aaf30b7e057b66-Paper.pdf"
+    },
+    {
+      "accessedAt": "2026-11-28T01:24:39Z",
+      "id": "kaggle",
+      "title": "Daniel Franzen’s Kaggle profile and competition medals",
+      "url": "https://www.kaggle.com/dfranzen"
+    },
+    {
+      "accessedAt": "2026-11-28T01:24:39Z",
+      "id": "record",
+      "title": "Daniel Franzen’s completed competitions on Kaggle",
+      "url": "https://www.kaggle.com/dfranzen/competitions"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "arc24",
+      "title": "ARC Prize 2024 high-score results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "icml",
+      "title": "The ARChitects’ ICML paper on puzzle views",
+      "url": "https://proceedings.mlr.press/v267/franzen25a.html"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "arc25",
+      "title": "ARC Prize 2025 high-score results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "team-method",
+      "title": "The ARChitects’ 2025 solution report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-13T03:14:07Z",
+      "id": "milestone",
+      "title": "ARC Prize announces its second ARC-AGI-3 milestone winners",
+      "url": "https://x.com/arcprize/status/2105737436450201734"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "pathbreaker",
+      "title": "Pathbreaker’s selected final submissions",
+      "url": "https://github.com/gzatravkin/pathbreaker-arc-agi-3"
+    },
+    {
+      "accessedAt": "2026-11-28T01:24:39Z",
+      "id": "closing-board",
+      "title": "Kaggle ARC-AGI-3 public leaderboard and ARChitects roster",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard?teamId=16032816"
+    },
+    {
+      "accessedAt": "2026-11-28T02:36:29+00:00",
+      "id": "schedule",
+      "title": "ARC Prize 2026 results schedule",
+      "url": "https://arcprize.org/competitions/2026"
+    },
+    {
+      "accessedAt": "2026-11-28T02:40:12+00:00",
+      "id": "franzen",
+      "title": "Daniel Franzen’s research and competition record",
+      "url": "https://da-fr.github.io/"
+    },
+    {
+      "accessedAt": "2026-11-28T02:40:12+00:00",
+      "id": "turducken",
+      "title": "Team Turducken credits Franzen’s notebook",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken"
+    }
+  ]
+}
