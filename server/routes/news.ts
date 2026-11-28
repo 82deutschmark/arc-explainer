@@ -1,5 +1,6 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): a story's response carries storyWire, its page's left column from the whole archive.
  * Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026 (GPT-6 / Codex: publication and loading states; earlier GPT-6.1 Sol lookup)
  * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
  *          public archive and immutable reporting evidence for ARC Daily.
@@ -25,6 +26,7 @@
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
 import { mountNewsHost } from '../services/news/newsHost';
+import { storyWire } from '../../shared/storyPage';
 import { mountNewsFonts } from '../services/news/newsFonts';
 import type { Express, Response } from 'express';
 import fs from 'node:fs';
@@ -120,6 +122,8 @@ export function mountNews(app: Express) {
         dispatches: (index.dispatches ?? []).filter(item => item.id === dispatch?.id || item.id === article?.frontPageFeatureId),
         competitors: index.competitors.filter(item => article?.competition === item.competition && article.teamIds.includes(item.teamId)),
         people: index.people ?? [],
+        // The page's left column reads the whole archive; the browser and the server HTML print the same list.
+        storyWire: storyWire((article ?? dispatch)!, index.articles, index.dispatches ?? []),
       });
     } catch (error) { next(error); }
   });

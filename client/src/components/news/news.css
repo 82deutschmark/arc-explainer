@@ -1,5 +1,10 @@
 /* Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 14-Nov-2026 (Claude Opus 5.5); 13-November-2026
+ * Date: 14-Nov-2026 (Claude Opus 5.5); 13-November-2026; 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, story layout): the three-column story page (.news-storypage: contest wire, story
+ * in two newspaper columns with a drop cap, run-in heads, insets and numbered notes, board and cards column), the
+ * half-height story masthead with the section links and the ad on one row, and the editor's box.
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): "In this story" is a grid with the lead card two columns wide, name and set
+ * lines under every card, a line of linked names past the card budget; on phones one swipeable row.
  * 14-Nov-2026 (Claude Opus 5.5): merged the late override blocks into the rules they overrode (one focus ring,
  * one place/score face, the single-column story body, one story-card row with a 76px phone size), removed
  * dead selectors and the old two-column story rules, and stopped the score-difference colour from turning
@@ -172,14 +177,25 @@
 .news-story-people .news-subject-card { flex: 0 0 220px; }
 /* Optional and secondary to the reporting: a small label and thumbnail-sized cards. */
 .news-story-people-label, .news-story .news-story-people-label { margin: 0 0 8px; padding-top: 4px; border-top: 1px solid var(--ink); color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
-.news-story-cards { display: flex; flex-wrap: nowrap; gap: 10px; overflow-x: auto; margin-bottom: 8px; padding: 2px 2px 10px; scroll-snap-type: x proximity; }
-.news-story-card { flex: 0 0 96px; scroll-snap-align: start; }
-.arc-daily .news-story-card { display: block; line-height: 0; }
-.news-story-card img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; border-radius: 6px; box-shadow: 1px 2px 0 var(--ink); transition: transform .12s; }
-.news-story-card-name { display: block; padding-top: 4px; font: 600 11px/1.3 var(--sans); color: var(--ink); overflow-wrap: break-word; }
-/* Holds each card's place while the card list loads, so the strip does not jump from tiles to cards. */
+/* The cards storyCast() picks: the lead card two columns wide and two rows tall, the rest packed around and under it,
+   so the block fills its column at any width (a story's text column today, the right column later). */
+/* --cast-columns (set by the component) caps the width so the cards after the lead sit in two rows beside it. */
+.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(max(84px, calc((100% - (var(--cast-columns, 8) - 1) * 10px) / var(--cast-columns, 8))), 1fr)); grid-auto-flow: row dense; align-items: start; gap: 12px 10px; max-width: calc(var(--cast-columns, 8) * 128px); margin-bottom: 8px; padding: 2px 2px 4px; }
+.news-story-card { min-width: 0; }
+.news-story-card-lead { grid-column: span 2; grid-row: span 2; }
+.arc-daily .news-story-card { display: block; color: var(--ink); text-decoration: none; }
+.news-story-card img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: cover; border-radius: 6px; box-shadow: 1px 2px 0 var(--ink); transition: transform .12s; }
+.news-story-card-name { display: block; padding-top: 5px; font: 700 11px/1.2 var(--sans); color: var(--ink); overflow-wrap: break-word; }
+.news-story-card-set { display: block; padding-top: 1px; font: 500 10px/1.2 var(--sans); color: var(--muted); overflow-wrap: break-word; }
+.news-story-card-lead .news-story-card-name { font: 700 15px/1.15 var(--serif); }
+.news-story-card-lead .news-story-card-set { font-size: 11px; }
+/* Holds each card's place while the card list loads, so the block does not jump from nothing to cards. */
 .news-story-card-skeleton { display: block; width: 100%; aspect-ratio: 5 / 7; border: 1px solid var(--hair); border-radius: 6px; background: var(--paper-edge); }
 .arc-daily .news-story-card:hover img { transform: translateY(-3px) rotate(-.6deg); }
+/* Past the card budget: the rest of the cast as one line of linked names. */
+.news-story-more { margin: 2px 0 8px; font: 12px/1.45 var(--sans); color: var(--ink); }
+.news-story-more > span:first-child { margin-right: 4px; color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.arc-daily .news-story-more a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 .news-story-people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 8px; }
 .arc-daily .news-subject-card { display: flex; align-items: center; gap: 11px; padding: 7px; border: 1px solid var(--ink); border-left: 3px solid var(--accent); background: var(--paper); color: var(--ink); }
 .arc-daily .news-subject-card:hover { color: var(--accent); text-decoration: none; background: var(--tint); }
@@ -417,12 +433,16 @@
 .news-staff-writer dt { font: 700 21px/1.25 var(--serif); }
 .news-staff-writer dt span { display: block; margin-top: 4px; font: 700 11px/1.5 var(--sans); color: var(--muted); }
 .news-staff-writer dd { margin: 8px 0 0; }
-.news-editor-credit { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; clear: both; margin: 18px 0; padding-top: 12px; border-top: 1px solid var(--hair); }
-.news-editor-credit img { display: block; width: 112px; height: auto; border: 1px solid var(--ink); }
-.news-editor-credit strong, .news-editor-credit span, .news-editor-credit small { display: block; }
-.news-editor-credit strong { font: 700 14px/1.4 var(--serif); }
-.news-editor-credit span, .news-editor-credit small { margin-top: 4px; font: 11px/1.5 var(--sans); color: var(--muted); }
-.news-editor-credit p { margin: 7px 0; font: 12px/1.5 var(--serif); }
+/* The editor's box (27-Nov-2026): portrait, name, both titles, one line, the story's note, About the Paper. */
+.news-editor-credit { clear: both; margin: 14px 0; padding: 7px 10px 9px; border: 1px solid var(--ink); background: var(--tint); }
+.news-editor-label { margin: 0 0 7px; padding-bottom: 3px; border-bottom: 1px solid var(--ink); font: 800 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.news-editor-body { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; align-items: start; }
+.news-editor-body img { display: block; width: 72px; height: 72px; object-fit: cover; object-position: center 20%; border: 1px solid var(--ink); }
+.news-editor-body strong { display: block; font: 700 17px/1.15 var(--serif); }
+.news-editor-titles { display: block; margin-top: 3px; color: var(--accent); font: 700 9.5px/1.35 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.news-editor-line { margin: 5px 0 0; color: var(--ink-2); font: italic 12.5px/1.4 var(--serif); }
+.news-editor-note { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid var(--hair); font: 12.5px/1.45 var(--serif); }
+.news-editor-credit .news-read { margin-top: 6px; }
 @media (max-width: 640px) { .news-staff-human { grid-template-columns: 1fr; } .news-staff-human figure { max-width: 320px; } }
 
 /* Directory entries are ruled columns, not cards. */
@@ -517,8 +537,10 @@
   .news-ad-body { display: block; padding: 12px; }
   .news-ad-thumb { margin-bottom: 10px; }
   .news-ad-actions { margin-top: 10px; }
-  /* Phones: one swipeable row of smaller cards. */
-  .news-story-card { flex-basis: 76px; }
+  /* Phones: one swipeable row, the lead card larger. */
+  .news-story-cards { display: flex; max-width: none; overflow-x: auto; align-items: flex-start; gap: 10px; padding-bottom: 8px; scroll-snap-type: x proximity; }
+  .news-story-card { flex: 0 0 88px; scroll-snap-align: start; }
+  .news-story-card-lead { flex-basis: 148px; }
   .news-ad-actions a { flex: 1 1 140px; }
   .news-person-header { flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 8px; }
   .news-portrait-hero { width: 132px; height: 132px; }
@@ -583,3 +605,121 @@
 
 .news-tips { max-width: 760px; margin: 28px auto 45px; font: 18px/1.6 var(--serif); }
 .news-tip-action { display: inline-block; padding: 10px 16px; border: 2px solid var(--ink); font: 700 14px/1.4 var(--sans); }
+
+/* ── The story page (27-Nov-2026, Claude Opus 5.5 Medium) ─────────────────────────────────────────────────────────
+   The front page's three ruled columns: the contest wire (left), the story (middle), its board, cards and editor (right).
+   DOM order is story, right column, notes, wire: the phone's reading order. The notes sit under the story in the middle
+   column; the 1fr second row takes any extra height when the side columns run longer, so the notes never float down. */
+.news-masthead.is-story .news-goose-banner.has-world { height: clamp(76px, 7.6vw, 100px); margin: 6px 0; }
+.news-masthead.is-story .news-brand-overline { margin-bottom: 3px; font-size: 9px; }
+.is-goose .news-masthead.is-story .news-name { font-size: clamp(26px, 3vw, 40px); }
+.news-masthead.is-story .news-brand-dateline { margin-top: 3px; font-size: 10px; }
+.news-masthead.is-story .news-topline .news-tip-link { letter-spacing: .02em; text-transform: none; }
+.news-nav-row { border-top: 3px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 18px; border-bottom: 1px solid var(--ink); }
+.news-nav-row .news-nav { flex: 1 1 520px; border-bottom: 0; }
+.news-nav-row .news-sponsor-rail { flex: 0 1 440px; min-width: 0; }
+.news-nav-row .news-sponsor-rail .news-masthead-ad { border-bottom: 0; }
+
+.news-storypage { display: grid; grid-template-columns: minmax(200px, 2.5fr) minmax(0, 6.6fr) minmax(290px, 3.3fr); grid-template-rows: auto 1fr; grid-template-areas: "wire story rail" "wire notes rail"; margin-top: 12px; }
+.news-storypage-wire { grid-area: wire; min-width: 0; padding-right: 16px; }
+.news-storypage-story { grid-area: story; min-width: 0; padding: 0 20px; border-left: 1px solid var(--hair); }
+.news-storypage-notes { grid-area: notes; min-width: 0; padding: 6px 20px 0; border-left: 1px solid var(--hair); }
+.news-storypage-rail { grid-area: rail; min-width: 0; padding-left: 16px; border-left: 1px solid var(--hair); }
+
+/* The story: headline block, cover at the column's width, text in two newspaper columns. */
+.news-storypage .news-article-title { margin: 4px 0 5px; font-size: clamp(30px, 2.7vw, 39px); line-height: 1.06; }
+.news-storypage-header .news-dek { margin-bottom: 4px; font-size: 18px; line-height: 1.38; }
+.news-storypage-meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 14px; }
+.news-storypage-meta .news-byline { margin: 0; padding: 0; border: 0; color: var(--ink-2); }
+.news-storypage-header { margin-bottom: 8px; }
+.news-storypage-header .news-dek { margin-bottom: 0; }
+.news-storypage-header .news-revisions p { margin: 0 0 6px; font: 11px/1.4 var(--sans); }
+.news-storypage-cover { margin: 0 0 12px; }
+.news-storypage-cover img { display: block; width: 100%; height: auto; max-height: 370px; object-fit: cover; object-position: center 70%; border: 1px solid var(--ink); }
+.news-storypage-cover figcaption { margin-top: 4px; color: var(--muted); font: italic 11.5px/1.4 var(--serif); }
+.news-storypage-feature { margin: 4px 0 8px; padding-top: 6px; border-top: 1px solid var(--ink); font: 700 22px/1.2 var(--serif); }
+.news-columns { column-count: 2; column-gap: 24px; column-rule: 1px solid var(--hair); margin-bottom: 6px; }
+.news-story-section { margin: 0; }
+.news-columns .news-dispatch-text { margin: 0 0 8px; font: 16px/1.46 var(--serif); white-space: pre-line; overflow-wrap: break-word; hyphens: auto; }
+/* A large opening letter on the story's first paragraph. */
+.news-columns > .news-story-section:first-of-type > p:first-of-type::first-letter { float: left; margin: 5px 7px 0 0; color: var(--accent); font: 700 3.6em/.78 var(--serif); }
+/* Run-in section heads: bold small capitals that start the section's first paragraph. */
+.news-runin { color: var(--ink); font: 800 12px/1 var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+.news-opening-head { display: block; margin: 0 0 6px; line-height: 1.3; }
+.news-inset { break-inside: avoid; margin: 3px 0 10px; }
+.news-inset img { display: block; width: 100%; height: auto; border: 1px solid var(--ink); }
+.news-inset figcaption { margin-top: 3px; color: var(--muted); font: italic 11px/1.35 var(--serif); }
+.news-noterefs { margin-left: 2px; color: var(--muted); font: 700 10px/0 var(--sans); }
+.arc-daily .news-noterefs a { color: var(--accent); text-decoration: none; }
+.news-columns .news-dispatch-take { break-inside: avoid; margin: 4px 0 9px; font-size: 14.5px; }
+/* The notes close the story: small, numbered, three columns. */
+.news-notes-label { margin: 0 0 5px; padding-top: 4px; border-top: 1px solid var(--ink); color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+.news-notes { columns: 3; column-gap: 18px; margin: 0 0 10px; padding: 0; list-style: none; color: var(--ink-2); font: 10.5px/1.35 var(--sans); }
+.news-notes li { break-inside: avoid; margin: 0 0 3px; padding-left: 16px; text-indent: -16px; overflow-wrap: anywhere; }
+.news-note-number { display: inline-block; width: 16px; text-indent: 0; color: var(--accent); }
+.arc-daily .news-notes a { color: var(--ink-2); }
+
+/* The right column: the dated board as a table, the subject's row marked. */
+.news-storypage-boards { margin-bottom: 12px; }
+.news-storyboard + .news-storyboard { margin-top: 12px; }
+.news-storyboard-caption { margin: 0 0 4px; color: var(--ink-2); font: 11px/1.35 var(--sans); }
+.news-storyboard-wrap { overflow-x: auto; }
+.arc-daily .news-storyboard-table { min-width: 0; font-size: 11.5px; }
+.news-storyboard-table th, .news-storyboard-table td { padding: 3px 3px; }
+.news-storyboard-table th:first-child, .news-storyboard-table td:first-child { padding-left: 0; }
+.news-storyboard-table td:nth-child(2) { width: 99%; font: 11.5px/1.25 var(--sans) !important; white-space: normal !important; overflow-wrap: anywhere; }
+.news-storyboard-table td:nth-child(n+3), .news-storyboard-table th:nth-child(n+3) { text-align: right; }
+.news-storyboard-table th { white-space: nowrap; }
+.news-storyboard-table td:nth-child(n+4) { font-size: 10.5px !important; }
+.arc-daily .news-storyboard-table td a.news-team-name { font-weight: 700; text-decoration: none; }
+.arc-daily .news-storyboard-table td a.news-team-name:hover { text-decoration: underline; }
+.news-storyboard-table tr.is-subject td { background: #efdc9c; }
+.news-storyboard-key { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 5px 0 0; color: var(--muted); font: 10.5px/1.4 var(--sans); }
+.news-storyboard-key .news-read { margin: 0 0 0 auto; }
+.news-storypage-checked { margin: 0 0 12px; padding: 6px 0 0; border-top: 1px solid var(--hair); color: var(--ink-2); font: 11px/1.45 var(--sans); }
+.news-storypage-checked p { margin: 0 0 3px; }
+.news-storypage-checked strong { color: var(--ink); }
+.news-storypage-rail .news-story-people { margin: 0 0 4px; }
+
+/* The left column: the contest's other stories, then elsewhere, then the archive. */
+.news-storypage-wire .news-brief:first-of-type { padding-top: 0; }
+.news-wire-art { display: block; margin: 0 0 5px; }
+.news-wire-art img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--ink); }
+.news-wire-dek { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.news-storypage-wire .news-brief h3 { font-size: 15px; }
+.news-wire-elsewhere { margin-top: 16px; }
+.news-storypage-wire .news-latest-list { margin-top: 0; border-top: 0; }
+.news-storypage-wire .news-latest-list a { font-size: 14px; }
+.news-wire-archive { margin-top: 10px; }
+
+/* Laptop: the right column's cards: the lead at the column's width, the rest three to a row. */
+@media (min-width: 761px) {
+  .news-storypage-rail .news-story-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: row; max-width: none; gap: 10px 8px; }
+  .news-storypage-rail .news-story-card-lead { grid-column: 1 / -1; grid-row: auto; }
+  /* A big cast (eight cards or more): four to a row with the lead two wide and two tall, the rest packed beside it. */
+  .news-storypage-rail .news-story-cards:has(> :nth-child(8)) { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 8px 6px; }
+  .news-storypage-rail .news-story-cards:has(> :nth-child(8)) .news-story-card-lead { grid-column: span 2; grid-row: span 2; }
+  .news-storypage-rail .news-story-cards:has(> :nth-child(8)) .news-story-card-name { font-size: 10px; }
+  .news-storypage-rail .news-story-cards:has(> :nth-child(8)) .news-story-card-set { font-size: 9px; }
+}
+/* Tablet: the story and its right column side by side; the wire after the story. */
+@media (max-width: 1100px) {
+  .news-storypage { grid-template-columns: minmax(0, 1.9fr) minmax(260px, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "story rail" "notes rail" "wire rail"; }
+  .news-storypage-story, .news-storypage-notes { padding-left: 0; border-left: 0; }
+  .news-storypage-wire { padding: 14px 20px 0 0; }
+}
+/* Phone: one column in reading order: headline, cover, text, board, cards, notes, wire. */
+@media (max-width: 760px) {
+  .news-storypage { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "story" "rail" "notes" "wire"; margin-top: 8px; }
+  .news-storypage-story, .news-storypage-notes { padding: 0; border: 0; }
+  .news-storypage-rail { margin-top: 14px; padding-left: 0; border-left: 0; }
+  .news-storypage-notes { margin-top: 6px; }
+  .news-storypage-wire { padding: 14px 0 0; }
+  .news-columns { column-count: 1; }
+    .news-notes { columns: 1; }
+  .news-inset { max-width: 360px; }
+  .news-nav-row .news-nav, .news-nav-row .news-sponsor-rail { flex-basis: 100%; }
+  /* The nameplate needs the phone's usual banner height to stay readable. */
+  .news-masthead.is-story .news-goose-banner.has-world { height: 112px; }
+  .news-wire-art { float: right; width: 96px; margin: 2px 0 4px 10px; }
+}

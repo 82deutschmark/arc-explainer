@@ -1,6 +1,9 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5 Medium
  * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card rule): the Keith card-face check now tests the shared storyCast() rule (the
+ *          approved design replaced hand-picked faces, so his career card leads and the labels are name and set); new
+ *          checks run the rule over every published story, the Franzen board and the opening board.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the music feature check follows the 13 Nov removal of its production gallery.
  * 25-Nov-2026 (GPT-6 / Codex): verify dated Kaggle profile totals and selected card faces in the story.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -24,8 +27,9 @@ import { cardFaceModel } from '../server/services/news/cardFace';
 import { getNewsCollection } from '../server/services/news/newsCollection';
 import { resolveNewsMeta } from '../server/services/news/newsPresentation';
 import { getNewsIndex } from '../server/services/news/newsStore';
-import { selectedStoryCards } from '../shared/newsCollection';
-import { publishedCompetitionOrder, competitionStories } from '../shared/news';
+import { storyCast, STORY_CAST_TILE_LIMIT, type StoryCastSource } from '../shared/storyCast';
+import { catalogCardVisible, catalogSet } from '../shared/cardCatalog';
+import { publishedCompetitionOrder, competitionStories, editionFeature } from '../shared/news';
 
 it('accepts a directory competition outside the legacy ARC desks', () => {
   const competition = Object.keys(KAGGLE_COMPETITIONS).find(key => !key.startsWith('arc-'))!;
@@ -41,17 +45,79 @@ it('exports dated career evidence and keeps contest standings outside the wiki',
   expect(datedProfiles.every(career => career.profileUrl && Number.isFinite(Date.parse(career.checkedAt)))).toBe(true);
   expect(wiki.registry.cards.length).toBeGreaterThan(80);
 });
-it('shows Keith’s requested current and earlier competition card faces on the story', () => {
-  const story = getNewsIndex().dispatches?.find(item => item.id === 'keith-tyser-arcade');
-  expect(story?.cardFaces).toHaveLength(2);
-  const cabinet = getNewsCollection();
-  const tiles = selectedStoryCards(cabinet, [{ id: 'keith-tyser' }], story!.cardFaces!);
-  expect(tiles.map(tile => tile.label)).toEqual(['Generalist Gaming', 'ARC-AGI-3']);
-  expect(selectedStoryCards(cabinet, [{ id: 'son-pham' }], story!.cardFaces!)).toEqual([]);
-  const body = resolveNewsMeta('/news/keith-tyser-arcade')!.tags.bodyHtml!;
-  const locations = tiles.map(tile => body.indexOf(tile.src.replaceAll('&', '&amp;')));
-  expect(locations[0]).toBeGreaterThan(-1);
-  expect(locations[1]).toBeGreaterThan(locations[0]);
+describe('In this story: one card rule for every story', () => {
+  const index = getNewsIndex(), cabinet = getNewsCollection();
+  const sets = cabinet.sets ?? [];
+  const visible = cabinet.cards.filter(card => catalogCardVisible(card));
+  // Each published story read the way its page reads it: a front-page feature together with its edition.
+  const stories = [
+    ...(index.dispatches ?? []).map(dispatch => ({ id: dispatch.id, sources: [dispatch] as StoryCastSource[] })),
+    ...index.articles.map(article => { const feature = editionFeature(article, index.dispatches); return { id: article.id, sources: (feature ? [feature, article] : [article]) as StoryCastSource[] }; }),
+  ];
+  const slugsOf = (sources: StoryCastSource[]) => new Set(sources.flatMap(story => [story.competition, ...(story.competitions ?? [])]).map(key => KAGGLE_COMPETITIONS[key]?.slug));
+  const issued = (id: string) => Date.parse(visible.find(card => card.id === id)?.issuedAt ?? '') || 0;
+
+  it('shows every card the subject holds and puts each person’s newest card before their older ones', () => {
+    expect(stories.length).toBeGreaterThan(100);
+    for (const { id, sources } of stories) {
+      const { tiles } = storyCast(cabinet, sources);
+      const subject = sources.flatMap(story => story.personIds ?? []).find(person => visible.some(card => card.personId === person));
+      if (subject) {
+        const shown = new Set(tiles.map(tile => tile.cardId));
+        const missing = visible.filter(card => card.personId === subject && !shown.has(card.id)).map(card => card.id);
+        expect(missing, `${id}: subject ${subject}`).toEqual([]);
+        expect(tiles[0].personId, `${id}: the subject leads`).toBe(subject);
+      }
+      expect(tiles.filter(tile => tile.lead).length, `${id}: one lead`).toBe(tiles.length ? 1 : 0);
+      const slugs = slugsOf(sources);
+      for (const person of new Set(tiles.map(tile => tile.personId).filter(Boolean))) {
+        const fronts = tiles.filter(tile => tile.personId === person && tile.kind === 'card' && tile.side === 'front').map(tile => tile.cardId!);
+        const lead = visible.find(card => card.id === fronts[0])!;
+        const newest = Math.max(...visible.filter(card => card.personId === person).map(card => issued(card.id)));
+        // The lead is their newest card, unless it is the newest special edition or a card for this story's own contest.
+        const leadScope = catalogSet(lead, sets)?.competitionIds ?? [];
+        expect(issued(lead.id) === newest || (!!lead.setId && leadScope.length === 0) || leadScope.some(slug => slugs.has(slug)), `${id}: ${person} lead ${lead.id}`).toBe(true);
+        const rest = fronts.slice(1).map(issued);
+        expect(rest, `${id}: ${person} older cards newest first`).toEqual([...rest].sort((a, b) => b - a));
+        // Hall of Fame cards come after the person's own cards.
+        const kinds = tiles.filter(tile => tile.personId === person).map(tile => tile.kind);
+        expect(kinds.indexOf('hall-of-fame') === -1 || kinds.lastIndexOf('card') < kinds.indexOf('hall-of-fame'), `${id}: ${person} Hall of Fame last`).toBe(true);
+      }
+    }
+  });
+  it('shows Franzen’s career card first, then his older cards and the other carded people on his board', () => {
+    const story = index.dispatches!.find(item => item.id === 'daniel-franzen-arcade-entrance')!;
+    // The hand-typed list names only the old card; it may reorder or add a back face, never limit the row.
+    expect(story.cardFaces?.map(face => face.cardId)).toEqual(['person-daniel-franzen-2026']);
+    const { tiles } = storyCast(cabinet, [story]);
+    expect(tiles.slice(0, 3).map(tile => tile.cardId ?? tile.kind)).toEqual(['person-daniel-franzen-kaggleverse-2026', 'person-daniel-franzen-2026', 'hall-of-fame']);
+    expect(tiles[0].lead).toBe(true);
+    // Board order after the subject: Keith Tyser, Dries @ Tufa Labs, then Jack Cole (Mevlana Yalçın and Pay-to-Compute hold no card).
+    expect([...new Set(tiles.slice(3).map(tile => tile.personId))]).toEqual(['keith-tyser', 'dries-smit', 'jack-cole']);
+    expect(tiles.map(tile => tile.set)).toContain('Kaggleverse 2026');
+  });
+  it('shows Keith’s career card, then his Generalist Gaming, ARC-AGI-3 and ARC Prize cards, in the browser rule and the server HTML', () => {
+    const story = index.dispatches!.find(item => item.id === 'keith-tyser-arcade')!;
+    const { tiles } = storyCast(cabinet, [story]);
+    expect(tiles.map(tile => tile.cardId)).toEqual(['person-keith-tyser-kaggleverse-2026', 'person-keith-tyser-generalist-gaming-agent-2026', 'person-keith-tyser-arc-3-2026', 'person-keith-tyser-2026']);
+    const body = resolveNewsMeta('/news/keith-tyser-arcade')!.tags.bodyHtml!;
+    const locations = tiles.map(tile => body.indexOf(tile.src.replaceAll('&', '&amp;')));
+    expect(locations.every(at => at > -1)).toBe(true);
+    expect([...locations].sort((a, b) => a - b)).toEqual(locations);
+    expect(body).toContain('data-lead="true"');
+  });
+  it('fills a story with no listed cast from its board, and lists the rest by name past the card budget', () => {
+    const story = index.dispatches!.find(item => item.id === 'generalist-gaming-opening-board')!;
+    expect(story.personIds).toEqual([]);
+    const { tiles, more } = storyCast(cabinet, [story]);
+    // The newer of its two printed reads leads: Wednesday's #1, Keith Tyser, then the opening-day leader.
+    expect(tiles[0].cardId).toBe('person-keith-tyser-kaggleverse-2026');
+    expect([...tiles.map(tile => tile.name), ...more.map(item => item.name)]).toContain('Tong Hui Kang');
+    expect(tiles.length).toBeLessThanOrEqual(STORY_CAST_TILE_LIMIT);
+    expect(more.length).toBeGreaterThan(0);
+    // A bare first name in the text ("Jack builds from scratch") is not evidence for a card called "Jack".
+    expect(tiles.filter(tile => tile.cardId === 'person-jackvd-generalist-gaming-agent-2026').length + more.filter(item => item.name === 'Jack').length).toBeLessThanOrEqual(1);
+  });
 });
 
 it('uses a corrected wiki briefing on the rendered card model', () => {

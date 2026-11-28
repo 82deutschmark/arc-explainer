@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
  * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): each card carries its registry issuedAt, so a story can show the newest first.
  * 27-Nov-2026 (GPT-6.2 Sol / Codex): keep newer verified Kaggle profile readings across wiki exports.
  * 16-Nov-2026 (GPT-6 / Codex): classify bare catalog faces using the same card model and art dimensions as the renderer.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): getNewsCollection checks its memo (watched files, board generation,
@@ -287,7 +288,7 @@ export function buildNewsCollection(source: CardRegistry, index: NewsIndex, resu
     // that only repeats a completed-competition row (same contest, same "of N" field) is already in the career table.
     const restatesCareerRow = (text: string) => !!career?.rows.some(row => text.includes(row.competition) && text.includes(`of ${row.fieldSize.toLocaleString('en-US')}`));
     const highlights = facts.filter(fact => !restatesCareerRow(fact.text));
-    return { id: definition.id, kind: definition.kind, setId: definition.setId, ...(definition.previousTeamCardId ? { previousTeamCardId: definition.previousTeamCardId } : {}), role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
+    return { id: definition.id, kind: definition.kind, setId: definition.setId, issuedAt: definition.issuedAt, ...(definition.previousTeamCardId ? { previousTeamCardId: definition.previousTeamCardId } : {}), role: person ? person.role ?? 'competitor' as const : 'team' as const, name: person?.name ?? definition.name,
       season: definition.season, cardUrl: collectionCardPath(definition.id), ...(person ? { personId: person.id } : {}), art, backArt: definition.backArt,
       description: definition.description ?? person?.briefing ?? facts[0]?.text ?? (person ? 'A Kaggle competitor. Follow the linked sources for current standings.' : 'A commissioned Kaggle team card. Follow the linked source for current standings.'),
       biography: definition.biography,

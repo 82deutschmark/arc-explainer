@@ -3,6 +3,7 @@
  * Date: 27-November-2026
  * 27-Nov-2026 (Claude Opus 5.5 Medium, card back): tierTitle() is the one tier wording for cards and card pages (Expert, Master,
  *          Grandmaster; Competitor below Expert; never "Kaggle" in front); collectionRoleLabel uses it. RENDER_VERSION 16.
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card rule): cards carry issuedAt; selectedStoryCards gave way to shared/storyCast.ts.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): RENDER_VERSION 15 for the redrawn top band (pennant cut to its words, stamp label).
  * 25-Nov-2026 (GPT-6 / Codex): resolve the same selected story card faces for the client and initial HTML.
  * 16-Nov-2026 (GPT-6 / Codex): expose whether a bare profile has a real portrait for the catalog.
@@ -26,7 +27,7 @@
  */
 import { z } from 'zod';
 import { KAGGLE_COMPETITIONS, competitionRegistered } from './kaggleCompetitions';
-import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition, type StoryCardFace } from './news';
+import { competitionName, NEWS_NAME, type CompetitorFact, type NewsCompetition } from './news';
 import { cardFrameRepair } from './cardFrameRepair';
 
 const id = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
@@ -162,6 +163,8 @@ export interface CollectionStory {
 export interface CollectionCard {
   id: string; kind: 'person' | 'team'; name: string; season: string; profileUrl: string; cardUrl: string;
   setId?: string;
+  /** When the card was issued, from the registry; stories show a person's newest card first. */
+  issuedAt?: string;
   /** The former shared URL when a team now has separate contest cards. */
   previousTeamCardId?: string;
   /** Authored wiki card copy, separate from the newsroom briefing. */
@@ -273,22 +276,6 @@ export function cardForPerson(cards: CollectionCard[], personId: string, competi
   const scope = (card: CollectionCard) => card.setId ? sets.find(set => set.id === card.setId)?.competitionIds : [];
   const slug = competition ? KAGGLE_COMPETITIONS[competition]?.slug : undefined;
   return (slug ? own.find(card => scope(card)?.includes(slug)) : undefined) ?? own.find(card => scope(card)?.length === 0) ?? own[0];
-}
-/** Resolve only the article's selected faces that belong to its verified cast. */
-export function selectedStoryCards(collection: NewsCollection, people: readonly { id: string }[], faces: readonly StoryCardFace[]) {
-  const subjects = new Set(people.map(person => person.id));
-  return faces.flatMap(({ cardId, side, label }) => {
-    const card = collection.cards.find(item => item.id === cardId && item.personId && subjects.has(item.personId));
-    if (!card) return [];
-    const imagePath = `/api/news/cards/${encodeURIComponent(card.id)}`;
-    return [{
-      key: `${card.id}:${side}`,
-      label,
-      alt: `${card.name} · ${label}`,
-      href: side === 'front' ? card.cardUrl : `${imagePath}/image.png?side=back`,
-      src: `${imagePath}/thumb.webp?side=${side}&w=300&v=${collectionShareVersion(card, collection)}`,
-    }];
-  });
 }
 export const collectionTeamCompetition = (card: CollectionCard) =>
   card.kind === 'team' && card.entries.length === 1 ? competitionName(card.entries[0].competition) : null;
