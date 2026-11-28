@@ -5,7 +5,7 @@ Run by leaderboard_publish.sh straight after leaderboard_snapshot.py. Reads the 
 script keeps in $LEADERBOARD_DATA_DIR (default ~/.cache/arc3-leaderboard-data) (latest, history, events, backfill) and POSTs
 them to arc-explainer's /api/kaggle/board, which serves the public page at
 https://arc.markbarney.net/kaggle-leaderboard (added 05-Oct-2026).
-LEADERBOARD_COMPETITION selects ARC-3 (default) or ARC-2; ARC-2 reads the arc-2/
+LEADERBOARD_COMPETITION selects ARC-3 (default), ARC-2 or Generalist Gaming; each other contest reads its own
 child directory and sends its own competition key to the same API.
 
 NON-FATAL. If the site is mid-deploy or unreachable, this prints one line and exits 0;

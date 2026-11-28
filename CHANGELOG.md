@@ -1,3 +1,7 @@
+### Version 9.164.57 · November 28, 2026
+
+- The half-hourly board job now saves the Generalist Gaming leaderboard as well as the two ARC boards, so the newspaper's front-page board, ticker and cards have a live Generalist Gaming feed. One contest failing no longer stops the others. The first Generalist Gaming board was sent by hand on 28 November. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.56 · November 28, 2026
 
 - A corrected story shows readers only "Updated" and the date under the byline. The newsroom's reasons for the change (what was cut, re-sourced or disclosed) had been printing right under the headline; they stay in the correction records and never print. Both the browser page and the server page. Author: Claude Opus 5.5 Medium.
