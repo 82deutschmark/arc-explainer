@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
  * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card back work): the sub strip names an Expert-and-above competitor by the tier word
+ *          alone ("EXPERT", no "COMPETITOR ·" before it); below Expert it says COMPETITOR.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the top band redone after the Boss marked it as looking bad. The pennant is now cut
  *          to its words and drawn like the name ribbon (same tier gradient, outline and keyline), pinned under the season
  *          coin, with the set name large (one line from 38 px, two lines at 24 px or less) and no unreadable publisher line
@@ -310,8 +312,8 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
   const dot = () => label('·', 22, T.main, { margin: '0 9px' });
   kids.push(at(subLeft, SUB.y, 724 - subLeft - 14, SUB.h - 3, { alignItems: 'center', justifyContent: 'space-between' },
     box({ alignItems: 'center' },
-      label(vm.typeLabel, 19, WHITE, { letterSpacing: 2 }),
-      vm.tierWord ? dot() : null,
+      // A competitor of Expert and above is named by the tier alone ("EXPERT"); below Expert, plain COMPETITOR (Boss, 27-Nov-2026).
+      vm.family === 'competitor' && vm.tierWord ? null : label(vm.typeLabel, 19, WHITE, { letterSpacing: 2 }),
       vm.tierWord ? label(vm.tierWord, 31, tierColour, { letterSpacing: 2.2, textShadow: '2px 2px 0 #000' }) : null,
       vm.family === 'team' && vm.sizeLabel ? dot() : null,
       vm.family === 'team' && vm.sizeLabel ? label(vm.sizeLabel, 19, T.light, { letterSpacing: 2 }) : null,

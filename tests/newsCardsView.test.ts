@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild)
- * Date: 03-November-2026; 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Sonnet 5.5 (30-Oct-2026 rewrite for the binder and card-page rebuild); Claude Opus 5.5 Medium
+ * Date: 27-November-2026; 03-November-2026; 02-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): tier wording changed by design (Boss, 27-Nov-2026): cards and card pages say "Grandmaster",
+ *          "Expert", "Competitor" with no "Kaggle" in front, so the expected strings drop it.
  * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: Render the real Card Cabinet pages and protect what the Boss asked for: every card we already hold for a
  *          person is shown and linked, tiers and sponsor roles are named in Kaggle's words, nobody is a "player",
@@ -79,7 +81,8 @@ it('Puget\'s page shows and links every card we already hold for him, plus his t
   for (const team of card.teamHistory.filter(row => row.cardUrl)) expect(html).toContain(`href="${team.cardUrl}"`);
   expect(card.stories.length).toBeGreaterThan(0);
   for (const story of card.stories) expect(html).toContain(`href="${story.url}"`);
-  expect(html).toContain('Kaggle Grandmaster');
+  expect(html).toContain('<span class="cb-badge tone-grandmaster">Grandmaster</span>');
+  expect(html).not.toContain('Kaggle Grandmaster');
   expect(html).toContain('Completed Kaggle competitions');
   expect(html).toContain('Earned this card: ARC Prize 2025 champion');
 });

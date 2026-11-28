@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5; Claude Opus 5.5 Medium
  * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card back): tierTitle() is the one tier wording for cards and card pages (Expert, Master,
+ *          Grandmaster; Competitor below Expert; never "Kaggle" in front); collectionRoleLabel uses it. RENDER_VERSION 16.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): RENDER_VERSION 15 for the redrawn top band (pennant cut to its words, stamp label).
  * 25-Nov-2026 (GPT-6 / Codex): resolve the same selected story card faces for the client and initial HTML.
  * 16-Nov-2026 (GPT-6 / Codex): expose whether a bare profile has a real portrait for the catalog.
@@ -213,12 +215,23 @@ export const COLLECTION_SHARE_HEIGHT = 630;
  * collectionShareVersion, so every image address changes with it and browsers and link-preview crawlers refetch.
  * Original art paths are immutable. 2 = the Topps-style 2026 set (30-Oct-2026).
  */
-export const RENDER_VERSION = 15;  // Redrawn top band: pennant cut to its words, readable stamp label.
-/** Who a card is, in Kaggle's own words: "Kaggle Grandmaster", "Competition sponsor", "Team". Never "player". */
+export const RENDER_VERSION = 16;  // Denser competitor reverse; tier words without "Kaggle".
+/** The lowest Competitions tier a card names: below it a person is simply a competitor. */
+const TITLED_FROM = KAGGLE_TIERS.indexOf('Expert');
+/**
+ * How a card or card page names a person's tier (Boss, 27-Nov-2026): "Expert", "Master", "Grandmaster", never with "Kaggle"
+ * in front; Novice, Contributor or no tier is plain "Competitor". The saved career holds the Competitions tier only, so the
+ * Double / Triple / Quadruple Grandmaster titles (Grandmaster in several categories) need per-category tiers on file first.
+ */
+export function tierTitle(tier: string | null | undefined): string {
+  const index = KAGGLE_TIERS.findIndex(name => name.toLowerCase() === (tier ?? '').toLowerCase());
+  return index >= TITLED_FROM ? KAGGLE_TIERS[index] : 'Competitor';
+}
+/** Who a card is: "Grandmaster", "Expert", "Competitor", "Competition sponsor", "Team". Never "player". */
 export function collectionRoleLabel(card: Pick<CollectionCard, 'role' | 'career'>): string {
   if (card.role === 'team') return 'Team';
   if (card.role === 'sponsor') return 'Competition sponsor';
-  return card.career?.tier ? `Kaggle ${card.career.tier}` : 'Kaggle competitor';
+  return tierTitle(card.career?.tier);
 }
 /** The entry to lead with: an official final result, else the best public rank. */
 export function collectionLeadEntry(card: Pick<CollectionCard, 'entries'>): CollectionEntry | undefined {

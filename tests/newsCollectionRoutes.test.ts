@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): tier wording changed by design (Boss, 27-Nov-2026): cards and card pages say "Grandmaster",
+ *          "Expert", "Competitor" with no "Kaggle" in front, so the expected strings drop it.
  * 14-Nov-2026 (Claude Opus 5.5): pages are served from the source shell, so the suite runs without a production build.
  *          Share addresses are computed with the collection, as the routes compute them (team cards print their teammates).
  * 09-Nov-2026 (GPT-6 / Codex): verify distinct contest card routes.
@@ -114,7 +116,7 @@ it('competitor links use that competitor’s portrait preview and sourced career
   const response = await fetch(`${origin}${card.cardUrl}`);
   const html = await response.text();
   expect(response.status).toBe(200);
-  expect(html).toContain('Son Pham — Kaggle Expert card');
+  expect(html).toContain('Son Pham — Expert card');
   expect(html).toContain(`property="og:image" content="${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}"`);
   expect(html).toContain(`name="twitter:image" content="${SITE_ORIGIN}${collectionSharePath(card, getNewsCollection())}"`);
   expect(html).toContain(collectionShareAlt(card).replaceAll('&', '&amp;').replaceAll('"', '&quot;'));
@@ -127,7 +129,7 @@ it('shares competitor history and links current and earlier teams to their cards
   const response = await fetch(`${origin}/news/cards/${id}`);
   expect(response.status).toBe(200);
   const html = await response.text();
-  expect(html).toContain('Kaggle competitor card');
+  expect(html).toContain('Mark Barney — Competitor card');
   expect(html).toContain('<h3>Teams</h3>');
   expect(html).toContain('Completed Kaggle competitions');
   expect(html).toContain('href="/news/cards/team-turducken-2026"');

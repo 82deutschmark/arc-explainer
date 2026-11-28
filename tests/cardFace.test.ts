@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6 / Codex; Claude Sonnet 5.5 Low; Claude Opus 5.5; pennant width by Claude Opus 5.5 Medium
  * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, card back): the open contest leads the reverse's standings (ENTERED until it has a
+ *          reading), a solo entry still names its team, and tiers print without "Kaggle" (Competitor below Expert).
  * 25-Nov-2026 (GPT-6 / Codex): regression coverage for the medal-first and rank-only competitor reverse.
  * 14-Nov-2026 (Claude Opus 5.5): cards with a public (not final) standing, before and after the close, print clean wording
  *          (CLOSED stamp, "Snapshot" label); the image version follows teammates' careers and the close; tier counts are per
@@ -28,7 +30,7 @@ import { setById, setForSeason } from '../server/services/news/cardFace/sets';
 import { tierByName } from '../server/services/news/cardFace/tiers';
 import { BORDER } from '../server/services/news/cardFace/zones';
 import { buildCollectionShareImage, buildCollectionShareNode } from '../server/services/news/newsCollectionShareImage';
-import { collectionShareVersion, type CollectionCard } from '../shared/newsCollection';
+import { collectionShareVersion, tierTitle, type CollectionCard } from '../shared/newsCollection';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 
 const collection = getNewsCollection();
@@ -203,6 +205,32 @@ describe('public standings and the close', () => {
     expect(words).toContain('#12');
     expect(words).not.toContain('0.4166');
     expect(words).not.toContain('FROM THE FILE');
+  });
+
+  it('leads the reverse with the open contest, names every team and prints the tier without "Kaggle"', { timeout: 30_000 }, async () => {
+    const keith = cardById('person-keith-tyser-kaggleverse-2026');
+    // ARC readings as the board store gives them; the open Generalist Gaming entry has no reading yet.
+    const card = { ...structuredClone(keith), entries: keith.entries.map((entry, index) => entry.competition === 'generalist-gaming-agent'
+      ? structuredClone(entry) : { ...structuredClone(entry), status: 'public' as const, observedAt: '2026-11-28T02:00:00Z', rank: 30 + index, score: 1, submissions: 5 }) };
+    const { model, names } = cardFaceModel(card, collection);
+    const now = Date.parse('2026-11-28T03:00:00Z');
+    const rows = backModel(viewModel(model, { now })).standings;
+    expect(rows[0]).toMatchObject({ short: 'GENERALIST GAMING AGENT', open: true, rank: null, team: 'Keith Tyser' });
+    expect(rows.slice(1).every(row => !row.open && row.rank && row.team)).toBe(true);
+    // The reverse reads the clock for "still open": pin it to the reading's night so the check does not expire in March.
+    vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(now);
+    const words = await backNode(model, { namesById: names }).then(textOf).finally(() => vi.useRealTimers());
+    expect(words.indexOf('ENTERED')).toBeGreaterThan(words.indexOf('STANDINGS'));
+    expect(words.indexOf('ENTERED')).toBeLessThan(words.indexOf('#30'));
+    expect(words).toContain('MASTER');
+    expect(words).toContain('COMPETITIONS RANK · BEST #291');
+    expect(words.join(' ')).not.toMatch(/KAGGLE (EXPERT|MASTER|GRANDMASTER)/);
+    // a solo entry keeps its team name (Franzen's ARC-AGI-2 team is called "Daniel Franzen")
+    const franzen = cardById('person-daniel-franzen-kaggleverse-2026');
+    const solo = { ...structuredClone(franzen), entries: franzen.entries.map(entry => ({ ...structuredClone(entry), status: 'public' as const, observedAt: '2026-11-28T02:00:00Z', rank: 19, score: 1, submissions: 5 })) };
+    expect(backModel(viewModel(cardFaceModel(solo, collection).model, { now })).standings.every(row => row.team)).toBe(true);
+    expect([null, 'Novice', 'Contributor', 'Expert', 'Master', 'Grandmaster'].map(tierTitle))
+      .toEqual(['Competitor', 'Competitor', 'Competitor', 'Expert', 'Master', 'Grandmaster']);
   });
 
   it('gives a card a new image version when it closes', () => {

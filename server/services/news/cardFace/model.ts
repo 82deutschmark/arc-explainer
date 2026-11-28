@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): tier words come from the shared tierTitle() ("EXPERT", "GRANDMASTER", never "KAGGLE
+ *          EXPERT"; Novice and Contributor print no tier word, so the front says COMPETITOR); each contest also carries the
+ *          entry's team name even for a solo entry (the reverse prints a team on every standings row) and its close time.
  * 14-Nov-2026 (Claude Opus 5.5): the after-close stamp says CLOSED (the lint bans the old word); stampWord() is the one
  *          stamp rule, shared with the render memo keys; seriesLabel prints the set name with its season only once.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -34,10 +37,15 @@
  *          the @handle instead of empty boxes.
  */
 import { TIERS, tierByName, type TierStyle } from './tiers';
+import { tierTitle } from '../../../../shared/newsCollection';
 
 export type Family = 'competitor' | 'sponsor' | 'team';
 export interface ContestVM {
-  short: string; full: string; team: string | null; size: number | null; rank: string | null; peak: string | null; score: string | null; subs: string | null; status: string;
+  short: string; full: string; team: string | null; size: number | null;
+  /** the entry's team name as Kaggle lists it, kept for a solo entry too (where `team` is null) */
+  teamName: string | null;
+  /** when the contest stops taking entries (ISO), null when unknown */
+  closesAt: string | null; rank: string | null; peak: string | null; score: string | null; subs: string | null; status: string;
   /** the contest as printed on a tag: its full name from data with " - " drawn as " · " ("ARC PRIZE 2026 · ARC-AGI-3"); falls back to the short name */
   tag: string;
   /** a solo entry: no team, flagged solo, a team of one, or a team named after the competitor */
@@ -52,7 +60,7 @@ export interface VM {
   card: any; family: Family; T: TierStyle; tierName: string | null; hasBadge: boolean;
   name: string; handle: string | null; handlePlatform: string | null;
   typeLabel: string; tierLine: string | null;
-  /** the tier as a full word for printing ("GRANDMASTER"), null when the card has no tier */
+  /** the tier as a full word for printing ("GRANDMASTER"), null when the card has no tier or one below Expert */
   tierWord: string | null;
   /** "@sorokin on Kaggle": handle and platform with a clear gap, null when there is no handle */
   handleLine: string | null;
@@ -132,7 +140,7 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     const solo = family === 'competitor' && c.solo === true;
     const full: string = c.name ?? c.shortName ?? '';
     return {
-    short: c.shortName ?? c.name, full, team: teamName, size,
+    short: c.shortName ?? c.name, full, team: teamName, size, teamName: teamName ?? c.teamName ?? null, closesAt: c.closesAt ?? null,
     tag: String(full || c.shortName || '').replace(/\s+[-\u2013\u2014]\s+/g, ' \u00b7 '), solo,
     entryLine: family === 'team' ? (c.standingLabel ?? null) : c.status === 'observed' ? 'TEAM · SEE KAGGLE' : solo ? 'SOLO ENTRY' : teamName,
     standingLabel: c.standingLabel ?? null,
@@ -170,7 +178,10 @@ export function viewModel(card: any, opts: { tierOverride?: string | null; names
     card, family, T, tierName, hasBadge: false,   // 05-Nov-2026 (Boss): no tier medallion (the "M" / team-size disc) on any card face; tier shows in the border colour and the tier word
     name: printableName(card.name, card.handle?.name), handle: card.handle?.name ? `@${card.handle.name}` : null, handlePlatform: card.handle?.platform ?? null,
     typeLabel: family === 'competitor' ? (bare ? 'PROFILE' : 'COMPETITOR') : family === 'sponsor' ? 'COMPETITION SPONSOR' : 'TEAM',
-    tierLine: tierName ? `KAGGLE ${tierName.toUpperCase()}` : null, tierWord: tierStyle ? tierStyle.label.toUpperCase() : null,
+    // One tier wording everywhere (shared tierTitle): "EXPERT", never "KAGGLE EXPERT"; below Expert the line says COMPETITOR and
+    // there is no separate tier word, so the front's sub strip prints COMPETITOR alone.
+    tierLine: tierName ? tierTitle(tierName).toUpperCase() : null,
+    tierWord: tierName && tierTitle(tierName) !== 'Competitor' ? tierTitle(tierName).toUpperCase() : null,
     handleLine: handleName ? `@${handleName}${platformLabel(card.handle?.platform) ? ` on ${platformLabel(card.handle?.platform)}` : ''}` : null,
     showPeak: status === 'LIVE',
     sizeLabel: family === 'team' && teamSize ? `${teamSize} ${teamSize === 1 ? 'ACCOUNT' : 'ACCOUNTS'}${contests.length > 1 ? ' ACROSS CONTESTS' : ''}` : null, teamSize: family === 'team' ? teamSize : null, bare,

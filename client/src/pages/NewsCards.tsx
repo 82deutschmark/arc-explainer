@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high; Claude Opus 5.5
- * Date: 25-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5 (30-Oct-2026 rebuild); GPT-6 Astra Extra high; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the tier badge and the card page header pill print the shared tier title ("Expert",
+ *          "Grandmaster", "Competitor" below Expert), never "Kaggle Expert".
  * 25-Nov-2026 (GPT-6 / Codex): date the profile statistics used on the medal-first card reverse.
  * 16-Nov-2026 (GPT-6 / Codex): omit empty profile fallback faces from catalog results and counts.
  * 14-Nov-2026 (Claude Opus 5.5, integration): the page's og:image uses the collection-aware share version, as the server meta does.
@@ -71,9 +73,9 @@ const faceSrc = cardFaceThumb;
 /** A binder tile is about half the phone width, a quarter of a tablet, and at most ~260px on a desktop grid. */
 const TILE_SIZES = '(max-width: 560px) 46vw, (max-width: 900px) 24vw, 260px';
 
-/** Tier or role badge. The Boss's rule: every tier gets its due, in Kaggle's own words. */
-function TierBadge({ card, full = false }: { card: CollectionCard; full?: boolean }) {
-  return <span className={`cb-badge tone-${toneOf(card)}`}>{full ? collectionRoleLabel(card) : collectionRoleLabel(card).replace(/^Kaggle /, '')}</span>;
+/** Tier or role badge: "Grandmaster", "Expert", "Competitor", "Team" (the shared tier title, no "Kaggle" in front). */
+function TierBadge({ card }: { card: CollectionCard }) {
+  return <span className={`cb-badge tone-${toneOf(card)}`}>{collectionRoleLabel(card)}</span>;
 }
 
 /** The real card, front and back, with a flip. The back image loads only when it is asked for. */
@@ -345,7 +347,7 @@ export function Detail({ card, all, sets = [] }: { card: CollectionCard; all: Co
   const staged = card.pastCards.filter(past => past.imageSrc)[Number(stage.replace('past-', ''))];
   return <main className="cb cb-detail">
     <nav className="cb-crumb" aria-label="Breadcrumb"><Link href="/news/cards">← All cards</Link></nav>
-    <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} full /><span className="cb-sub">{competition ?? card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
+    <header className={`cb-dhead tone-${toneOf(card)}`}><h1>{card.name}</h1><TierBadge card={card} /><span className="cb-sub">{competition ?? card.season}{career?.organisation ? ` · ${career.organisation}` : ''}{earned ? ` · Earned this card: ${earned}` : ''}</span></header>
     {otherContestCards.length > 0 && <p className="cb-note">Other contest cards {otherContestCards.map(other => <Link key={other.id} href={other.cardUrl}>{collectionTeamCompetition(other)} → </Link>)}</p>}
     {editions.some(sameArt) && <p className="cb-note">Also issued in {editions.filter(sameArt).map(other => <Link key={other.id} href={other.cardUrl}>{catalogSetLabel(other, sets)} → </Link>)}</p>}
     <div className="cb-dgrid is-paired">
