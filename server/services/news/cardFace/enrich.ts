@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): each contest also carries teamName, kept for a solo entry, for the reverse's standings.
  * 14-Nov-2026 (Claude Opus 5.5, card faces): the publisher printed on every card is the paper's current name (NEWS_BRAND);
  *          "One of N <tier>s" counts distinct people within the card's own set, and the line names that set.
  * 14-Nov-2026 (Claude Opus 5.5): passes the card art's optional focusX through to the full-bleed crop in art.ts.
@@ -18,7 +19,7 @@
  *            series{name,publisher,set,season}, status live|final|null, asOfDate YYYY-MM-DD, urlAbsolute, bio, facts[{text}],
  *            honors[{label}], pastTeams[{team}], roster[{handle,name,tier,medals,cardUrl}], art{file,kind,bakedText,
  *            sharedWith}, career{rows[{competition,rank,fieldSize,medal,team,year}],bestFinish,completedListed,complete},
- *            contests[{name,shortName,team{id,name,size}|null,solo,rank,peakRank,fieldSize,fieldSizeHint,score,
+ *            contests[{name,shortName,team{id,name,size}|null,teamName,solo,rank,peakRank,fieldSize,fieldSizeHint,score,
  *            submissions,status,asOfDate,roster[{handle,name,tier,medals,cardUrl,self}]}].
  *          Rules kept here: null is unknown and never filled with a default; a missing field is simply absent; one
  *          as-of day per card; people are competitors, the two co-founders competition sponsors, groups teams; a
@@ -291,7 +292,8 @@ function contestFor(ctx: Context, card: CollectionCard, entry: CollectionEntry, 
   const solo = teamSize === 1 && roster.some(member => member.self);
   return {
     competition: slug, name, shortName: label, season: yearIn(name) ?? yearIn(slug),
-    team: solo ? null : { id: entry.teamId, name: entry.teamName, size: teamSize }, solo, teamSize,
+    // teamName survives a solo entry (team is null then): the reverse names the team on every standings row.
+    team: solo ? null : { id: entry.teamId, name: entry.teamName, size: teamSize }, teamName: entry.teamName, solo, teamSize,
     rank: entry.rank, peakRank: peak?.rank ?? null, peakRankAt: peak?.at ?? null,
     // The saved board count is near the standing in time, not the same instant, so it is only ever a hint.
     fieldSize: null as number | null, fieldSizeHint: entry.fieldSize != null ? { teams: entry.fieldSize, at: null, gapMinutes: null } : null,

@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026)
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026); Claude Opus 5.5 Medium
+ * Date: 27-November-2026; 02-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): tier wording changed by design (Boss, 27-Nov-2026): cards and card pages say "Grandmaster",
+ *          "Expert", "Competitor" with no "Kaggle" in front, so the expected strings drop it.
  * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: The 1200 x 630 link preview in the Topps look: exact size, the real front render at the left (not a re-draw),
  *          the name, tier line, lead contest rank and score and the single AS OF date at the right, Japanese names, a card
@@ -38,7 +40,8 @@ it('competitor previews retain the identity and omit unavailable standings', asy
   const card = byId('person-ivan-sorokin-2026');
   const text = textOf(await buildCollectionShareNode(card, collection, null)).join('\n');
   expect(text).toContain('Ivan Sorokin');
-  expect(text).toContain('KAGGLE GRANDMASTER');
+  expect(text).toContain('GRANDMASTER');
+  expect(text).not.toContain('KAGGLE GRANDMASTER');
   expect(card.entries.length).toBeGreaterThan(0);
   expect(card.entries.every(entry => entry.status === 'unavailable' && entry.rank === null && entry.score === null)).toBe(true);
   expect(text).not.toContain('RANK');

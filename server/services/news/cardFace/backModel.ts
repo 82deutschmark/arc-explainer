@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5
- * Date: 25-Nov-2026
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): standings rows carry the contest's short name, the entry's team name (also for a solo
+ *          entry) and whether the contest is still open; open contests lead, so the contest the paper follows comes first.
  * 25-Nov-2026 (GPT-6 / Codex): the competitor reverse uses medal-only career rows and a dated rank strip.
  * 14-Nov-2026 (Claude Opus 5.5): the off-peak note follows the printed stamp (LIVE only), so it never sits under CLOSED or FINAL.
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
@@ -29,6 +31,12 @@ import { num, type VM, type CareerRowVM, type MedalsVM } from './model';
 export interface StandingRow {
   title: string; sub: string | null; note: string | null; rank: string | null; peak: string | null;
   score: string | null; subs: string | null; evidence: string | null;
+  /** the contest's short name ("ARC-AGI-3", "Generalist Gaming Agent"), for a narrow tile */
+  short: string;
+  /** the entry's team as Kaggle names it, also for a solo entry; null only when the card has no team name */
+  team: string | null;
+  /** the contest still takes entries: it leads the standings */
+  open: boolean;
 }
 export type MedalCareerRow = CareerRowVM & { medal: keyof MedalsVM };
 export interface CareerBack { rows: MedalCareerRow[]; medalTotal: number }
@@ -100,7 +108,7 @@ function dedupeText(vm: VM): { facts: string[]; bio: string | null } {
 }
 
 // ---------- standings ----------
-function standingRows(vm: VM): StandingRow[] {
+function standingRows(vm: VM, now = Date.now()): StandingRow[] {
   const raw: any[] = vm.card.contests ?? [];
   const me = new Set([norm(vm.name), norm(vm.handle), norm(vm.kaggleName)].filter(Boolean));
   return vm.contests.map((c, i): StandingRow => {
@@ -119,11 +127,15 @@ function standingRows(vm: VM): StandingRow[] {
     else if (c.status === 'live' && vm.stamp?.word === 'LIVE' && typeof rc.rank === 'number' && typeof rc.peakRank === 'number') {
       note = rc.rank > rc.peakRank ? `${num(rc.rank - rc.peakRank)} OFF PEAK` : rc.rank === rc.peakRank ? 'AT PEAK' : null;
     }
+    const closes = Date.parse(c.closesAt ?? '');
     return {
       title: c.full.replace(/\s+-\s+/, ' · ').toUpperCase(), sub: sub.length ? sub.join(' · ') : null, note,
       rank: c.rank, peak: c.peak, score: c.score, subs: c.subs, evidence: c.standingLabel,
+      short: c.short.toUpperCase(), team: c.teamName, open: c.status !== 'final' && Number.isFinite(closes) && closes > now,
     };
-  });
+  })
+    // The contest still running leads (it is the one the paper follows); the rest keep the card's own order. sort() is stable.
+    .sort((a, b) => Number(b.open) - Number(a.open));
 }
 
 // ---------- career ----------
