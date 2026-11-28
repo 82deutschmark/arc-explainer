@@ -31,6 +31,7 @@ import { WhatsNews } from './NewsWire';
 import { DispatchArt, DispatchPreview } from './NewsDispatch';
 import { FromKaggleBoards } from './NewsSources';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { useNewsCollection } from '@/hooks/useNewsCollection';
 
 /** The newest story for one contest (edition or dispatch), then its earlier headlines. */
 function CompetitionDesk({ articles, dispatches, competition, lead = false, people }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean; people: NewsPerson[] }) {
@@ -62,6 +63,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
   // A current contest whose board was never saved here still gets its column, with an honest box instead of figures.
   const pending = NEWS_CURRENT_COMPETITIONS.filter(key => KAGGLE_COMPETITIONS[key] && !boards.some(board => board.competition === key));
   const column = boards.length + pending.length > 0;
+  const collection = useNewsCollection();
   const links = { competitors: index.competitors, people };
   return <>
     <MarketTicker markets={markets} />
@@ -74,7 +76,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
       {column && <aside className="news-col-board" aria-label="The board">
         <h2 className="news-flag"><span>The board</span>{!!boards.length && <em>Δ = change since a day earlier</em>}</h2>
         {boards.map(board => <BoardTable key={board.competition} board={board} links={links} limit={25} />)}
-        {pending.map(key => <BoardPending key={key} competition={key} articles={articles} dispatches={dispatches} />)}
+        {pending.map(key => <BoardPending key={key} competition={key} articles={articles} dispatches={dispatches} collection={collection.data} />)}
       </aside>}
     </div>
   </>;

@@ -6,7 +6,8 @@
  *          a current contest with no saved board still gets its ticker line (board link and countdown) and an honest
  *          empty board box instead of numbers. Movers boxes with nothing in them are left out, and a board whose
  *          boxes are all empty is left out with them. The Inside box leads with Generalist Gaming and moves the ARC
- *          links behind one "ARC Prize 2026 archive" entry (insideLinks, shared with the server HTML).
+ *          links behind one "ARC Prize 2026 archive" entry (insideLinks, shared with the server HTML). The empty
+ *          board box also lists the contest's carded competitors ("The field"), highest tier first.
  * 14-Nov-2026 (Claude Opus 5.5): the ticker and movers print each board's save with its full date; a board
  *          that stopped updating (boardFreshAt) says "not updated since" and its movers cover the day before that
  *          save, so a frozen board can no longer pass for today's.
@@ -28,6 +29,8 @@ import { competitorPath, newsArticlePath, type NewsArticle, type NewsDispatch, n
 import { boardFreshAt, daysToClose, marketClimb, marketGain, type MarketBoard, type MarketRow, type MarketsPayload } from '@shared/newsMarkets';
 import { KAGGLE_COMPETITIONS, daysToClose as daysToCloseNow, kaggleLeaderboardUrl } from '@shared/kaggleCompetitions';
 import { NEWS_CURRENT_COMPETITIONS, contestStories, insideLinks } from '@shared/newsSeasons';
+import { contestField, fieldTier } from '@shared/cardCatalog';
+import type { NewsCollection } from '@shared/newsCollection';
 import { formatOptionalNumber } from '@shared/utils/formatters';
 import { PersonPortrait } from './NewsPeople';
 
@@ -126,9 +129,8 @@ export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
       return <dl key={key}>
         <div className="news-ticker-board"><dt className="sr-only">Board</dt><dd><a href={kaggleLeaderboardUrl(competition)}>{competition.label}</a></dd></div>
         <div><dt>Standings</dt><dd><a href={kaggleLeaderboardUrl(competition)}>public board on Kaggle ↗</a></dd></div>
-        {competition.closeAt && <div><dt>Closes</dt><dd>{closeLine(competition.closeAt)}</dd></div>}
         {days === 0 ? <div><dt>Submissions</dt><dd><b>closed</b></dd></div>
-          : days != null ? <div><dt>Close</dt><dd><b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div> : null}
+          : days != null && competition.closeAt ? <div><dt>Closes</dt><dd>{closeLine(competition.closeAt)} · <b>{days}</b> {days === 1 ? 'day' : 'days'}</dd></div> : null}
       </dl>;
     })}
     <p className="news-ticker-note">{[...boards.map(board => boardSaved(board)), ...unsaved.map(key => `No ${KAGGLE_COMPETITIONS[key].label} board saved on this site yet, so no figures print here`)].join(' · ')}{boards.length ? ' · change over the day before each save · medals settle on the private board' : ' · public standings are provisional'}</p>
@@ -137,18 +139,22 @@ export function MarketTicker({ markets }: { markets?: MarketsPayload }) {
 
 /** The board column before any reading of a current contest has been saved here: where the standings are, when the
  *  contest closes and the paper's latest dated board, never invented figures. */
-export function BoardPending({ competition, articles, dispatches }: { competition: NewsCompetition; articles: NewsArticle[]; dispatches: NewsDispatch[] }) {
+export function BoardPending({ competition, articles, dispatches, collection }: { competition: NewsCompetition; articles: NewsArticle[]; dispatches: NewsDispatch[]; collection?: Pick<NewsCollection, 'cards' | 'sets'> }) {
   const info = KAGGLE_COMPETITIONS[competition];
   if (!info) return null;
   const stories = contestStories(articles, dispatches, competition).slice(0, 4);
+  const field = collection ? contestField(collection, competition) : [];
   return <div className="news-board-pending">
     <h3><a href={kaggleLeaderboardUrl(info)}>{info.label}</a> <span>public board</span></h3>
     <p>No reading of this board has been saved on this site yet, so the Goose prints no standings here. The current public standings are on Kaggle.</p>
     <a className="news-read" href={kaggleLeaderboardUrl(info)}>The public leaderboard on Kaggle ↗</a>
     {info.closeAt && <p className="news-board-pending-close"><strong>Closes</strong> {closeLine(info.closeAt)}</p>}
     {!!stories.length && <><h4>Dated boards in the paper</h4>
-      <ul>{stories.map(story => <li key={story.id}><Link href={newsArticlePath(story.id)}>{story.headline}</Link> <small>{newsDate(story.publishedAt)}</small></li>)}</ul></>}
-    <p className="news-muted">Every story prints the board as it stood when it was written, with its date.</p>
+      <ul>{stories.map(story => <li key={story.id}><Link href={newsArticlePath(story.id)}>{story.headline}</Link> <small>{newsDate(story.publishedAt)}</small></li>)}</ul>
+      <p className="news-muted">Every story prints the board as it stood when it was written, with its date.</p></>}
+    {!!field.length && <><h4>The field · {field.length} with cards</h4>
+      <ul className="news-board-field">{field.map(card => <li key={card.id}><Link href={card.cardUrl}>{card.name}</Link>{fieldTier(card) && <small className={`tier-${fieldTier(card)!.toLowerCase()}`}>{fieldTier(card)}</small>}</li>)}</ul>
+      <Link className="news-read" href="/news/cards">The {info.label} set →</Link></>}
   </div>;
 }
 

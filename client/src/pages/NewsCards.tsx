@@ -46,7 +46,9 @@ import { NewsStatus, newsDate, useNews, useNewsCardImage } from '@/components/ne
 import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair, cardFaceSrcSet, cardFaceThumb } from '@/components/news/CardPair';
 import { useNewsCollection } from '@/hooks/useNewsCollection';
-import { ARC_2026_ARCHIVE } from '@shared/newsSeasons';
+import { ARC_2026_ARCHIVE, NEWS_CURRENT_COMPETITIONS } from '@shared/newsSeasons';
+
+const contestRank = (key: string) => NEWS_CURRENT_COMPETITIONS.includes(key) ? 0 : ARC_2026_ARCHIVE.competitions.includes(key) ? 2 : 1;
 import { CATALOG_PAGE_SIZE, catalogGroup, type CatalogGroup, catalogCardVisible, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
 import '@/components/news/cardRelationships.css';
@@ -217,7 +219,9 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
   const cards = useMemo(() => collection.cards.filter(catalogCardVisible), [collection.cards]);
   const seasons = [...new Set(cards.map(card => card.season))].sort().reverse();
   const contests = useMemo(() => [...new Map(cards.flatMap(card => catalogCompetitions(card, collection.sets)).map(entry => [entry.id, entry.key] as const)).entries()]
-    .map(([id, key]) => ({ id, label: competitionName(key) })), [cards, collection.sets]);
+    .map(([id, key]) => ({ id, key, label: competitionName(key) }))
+    // The current contest's chip first and the stored ARC Prize 2026 contests last, as the binder orders the cards.
+    .sort((a, b) => contestRank(a.key) - contestRank(b.key)), [cards, collection.sets]);
   const counts = useMemo(() => ({
     competitors: cards.filter(card => card.role === 'competitor').length, sponsors: cards.filter(card => card.role === 'sponsor').length, teams: cards.filter(card => card.role === 'team').length,
     tiers: [...KAGGLE_TIERS].reverse().map(name => ({ name, count: cards.filter(card => card.career?.tier === name).length })).filter(row => row.count),
