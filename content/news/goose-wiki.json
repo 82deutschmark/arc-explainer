@@ -40,7 +40,9 @@
     "/news-images/cards/2026/cookize-song-comic-v1.webp": "b6564e738d42d5d928b631881af354bd6ae65aa9b0adb2bfca710d77f28877dd",
     "/news-images/cards/2026/cranberry128-comic-v1.webp": "23e274cef81e7d9dafe1e6b0138824b44b067347a48598288ed78110bf2d1fe2",
     "/news-images/cards/2026/daniel-franzen-career-portrait.webp": "2848e516f9b30f34b32955a492a9ddf46ffbcda445973262e26ee1583499fe15",
+    "/news-images/cards/2026/daniel-franzen-career-robot-gear.webp": "4b9e5cea9e52a395f76c03602aae720d932eea1decea88a3842d442b5277d57c",
     "/news-images/cards/2026/daniel-franzen-career-scene.webp": "9c58b9dcfcb4d13c336b7d8605e20d90e820b8f0580271d2aff30a173dce033b",
+    "/news-images/cards/2026/daniel-franzen-career-visor.webp": "19f66beea25be7222e008c546ceb9b754da71e082b3dee5f93f218a0e41256ea",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
     "/news-images/cards/2026/dawid-kopiczko-goose-v1.webp": "5c622a8cca8abad605615afdb0e40088a7e1f33a4797507efad15ac1dbdd946a",
@@ -12544,7 +12546,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "18bbe31e854c185c815f9c3b962ed528322768f7c616cccad63697e04a9d020d",
+  "fingerprint": "71724875c8b4c374efcbd4b6a392337cd5f18d3318e823e3d5eec1a08ba19047",
   "people": [
     {
       "accounts": [
@@ -26386,22 +26388,22 @@
       },
       {
         "art": {
-          "alt": "Comic portrait of Daniel Franzen in ARC-grid armour at the arcade",
-          "artworkId": "asset-2848e516f9b30f34b329",
-          "commissionedAt": "2026-11-28T01:22:09+00:00",
+          "alt": "Daniel Franzen with two Kaggle gold medals, a grid eyepiece and a harness-mounted graphics card",
+          "artworkId": "asset-19f66beea25be7222e00",
+          "commissionedAt": "2026-11-28T01:50:24+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
-          "src": "/news-images/cards/2026/daniel-franzen-career-portrait.webp"
+          "src": "/news-images/cards/2026/daniel-franzen-career-visor.webp"
         },
         "artFallback": "none",
         "artNotes": [
-          "Approval and scene conditions: wiki/artwork/asset-2848e516f9b30f34b329.md"
+          "Approval and scene conditions: wiki/artwork/asset-19f66beea25be7222e00.md"
         ],
         "backArt": {
-          "alt": "Daniel Franzen and his game-playing robot in the ARC arcade",
-          "artworkId": "asset-9c58b9dcfcb4d13c336b",
-          "commissionedAt": "2026-11-28T01:21:34+00:00",
+          "alt": "Daniel Franzen with two Kaggle golds and GPU gear, working on his arcade robot",
+          "artworkId": "asset-4b9e5cea9e52a395f76c",
+          "commissionedAt": "2026-11-28T01:50:24+00:00",
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
-          "src": "/news-images/cards/2026/daniel-franzen-career-scene.webp"
+          "src": "/news-images/cards/2026/daniel-franzen-career-robot-gear.webp"
         },
         "biography": "Mainz symmetry researcher and two-time Kaggle gold medalist. With the ARChitects he took the ARC Prize 2024 high-score title and finished second in 2025. His agent built on Tufa Labs’ Duck harness won the ARC-AGI-3 Milestone 2 prize.",
         "description": "Two Kaggle competition golds with the ARChitects. Franzen topped the ARC Prize 2024 high-score competition, returned as runner-up in 2025 and took the ARC-AGI-3 Milestone 2 open-source prize in 2026.",
@@ -26429,7 +26431,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-28T01:24:39Z",
+    "updatedAt": "2026-11-28T01:50:24+00:00",
     "version": 1
   },
   "results": [],
