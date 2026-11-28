@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026); Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Low (rewrites GPT-6 / Codex's tests of 29-Oct-2026); Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the ledger test follows the medal-first reverse of 25 Nov 2026: a team is
+ *          printed on its contest's dated standings strip and the old KAGGLE COMPETITIONS table is gone.
  * 14-Nov-2026 (Claude Opus 5.5): a dated public reading is labelled "Snapshot", the card lint's wording (W24).
  * 09-Nov-2026 (GPT-6 / Codex): verified story casts and per-contest team card evidence.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
@@ -59,10 +61,13 @@ describe('Card Cabinet PNG export', () => {
 
   it('draws the competitor ledger with career and teammates while retaining its share address', { timeout: 30_000 }, async () => {
     const person = collection.cards.find(item => item.personId === 'mark-barney')!;
-    const { model, names } = cardFaceModel(person, collection);
+    // a dated public reading for each contest, so the reverse has standings to print (his real ones are unavailable)
+    const reading = { ...person, entries: person.entries.map((entry, i) => ({ ...entry, rank: i + 1, score: 1 + i, submissions: 3, status: 'public' as const })) };
+    const adjusted = { ...collection, cards: collection.cards.map(item => item.id === person.id ? reading : item) };
+    const { model, names } = cardFaceModel(reading, adjusted);
     const text = drawn(await backNode(model, { namesById: names }));
     expect(model.urlAbsolute).toBe(`https://arc.markbarney.net${person.cardUrl}`);
-    expect(text).toContain('KAGGLE COMPETITIONS');
+    expect(text).toContain('CAREER MEDALS');
     expect(text).toContain('Team Turducken');
     expect(text).not.toContain('arc.markbarney.net');
     expect(model.pastTeams.some((team: any) => team.team === 'Team Turducken')).toBe(true);

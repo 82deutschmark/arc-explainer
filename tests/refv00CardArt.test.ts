@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 Medium
+ * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): checks follow the Boss's medal-first reverse of 25 Nov 2026
+ *          (docs/plans/2026-11-25-medal-first-card-backs-plan.md): standings are a dated rank-only strip per contest,
+ *          and the old contest-count summary and score column are gone, so the test no longer asks for them.
  * 09-Nov-2026 (GPT-6.1 Terra / Codex): align checks with current sourced cards.
  * PURPOSE: Check that the approved re card uses separate front and back pictures and
  * retains the complete dated career table over an uncropped picture on its reverse.
@@ -39,11 +42,11 @@ it('keeps both selected pictures and the complete career on re’s art-led card'
   const words = textOf(node).join(' ');
   expect(words).toContain('NeuroGolf');
   expect(words).toContain('Nemotron');
-  expect(words).toContain('8 CONTESTS');
+  expect(words).toContain('CAREER MEDALS'); // the verified medal finishes lead the ledger
   expect(await sharp(await renderCardFace(card, collection, 'back')).metadata()).toMatchObject({ width: 750, height: 1050 });
 }, 30_000);
 
-it('keeps live standings and the career table over the complete reverse illustration', async () => {
+it('keeps dated rank-only standings and the medal ledger over the complete reverse illustration', async () => {
   const collection = getNewsCollection();
   const original = collection.cards.find(item => item.id === 'person-refv00-2026')!;
   const card = { ...original, entries: original.entries.map((entry, i) => ({ ...entry,
@@ -53,11 +56,13 @@ it('keeps live standings and the career table over the complete reverse illustra
   const { model, names } = cardFaceModel(card, adjusted);
   const node: any = await backNode(model, { namesById: names, backPicture: card.backArt!.src });
   const words = textOf(node).join(' ');
-  expect(words).toContain('STANDINGS');
-  expect(words).toContain('45.67');
+  // each live contest gets its own dated strip: contest, team, the reading's date and the rank, never a score
+  expect(words).toContain('ARC PRIZE 2026 · ARC-AGI-2');
+  expect(words).toContain('Snapshot');
+  expect(words).toContain('#1');
+  expect(words).not.toContain('45.67');
   expect(words).toContain('NVIDIA Nemotron');
-  expect(words).toContain('7 MORE CONTESTS ON THE KAGGLE PROFILE');
-  expect(words).toContain('8 CONTESTS');
+  expect(words).toContain('CAREER MEDALS');
   const image = Buffer.from(node.props.children[0].props.src.split(',')[1], 'base64');
   // 05-Nov-2026 (ledger reverse): the whole second picture is kept, never cropped; a picture that is not 5:7 sits on a blurred copy of itself.
   // Its middle band must still match the uncropped picture, so the subject is intact.

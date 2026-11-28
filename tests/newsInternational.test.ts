@@ -1,11 +1,13 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 Medium
+ * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): citations are the cited sources in first-citation order (citedSources,
+ *          14 Nov 2026), not the brief's source list order; the newest story's two orders differ.
  * PURPOSE: Verify UTC day boundaries and equal story metadata for wiki dispatches.
  * SRP/DRY check: Pass — exercise shared metadata and the actual published store.
  */
 import { expect, it } from 'vitest';
-import { newsDate, easternDay, dispatchStructuredData, NEWS_NAME } from '../shared/news';
+import { newsDate, easternDay, dispatchStructuredData, citedSources, NEWS_NAME } from '../shared/news';
 import { socialMetaEntries, SITE_ORIGIN } from '../shared/seo';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { resolveNewsMeta, newsSitemapUrls } from '../server/services/news/newsPresentation';
@@ -21,7 +23,7 @@ it('gives wiki stories the same canonical dated schema in initial HTML and SPA m
   expect(resolveNewsMeta('/news/' + story.id)!.tags.jsonLd).toEqual(schema);
   expect(node.datePublished).toBe(story.publishedAt);
   expect(node.dateModified).toBe(story.publishedAt);
-  expect(node.citation).toEqual([...new Set(story.sources.map(source => source.url))]);
+  expect(node.citation).toEqual(citedSources(story).map(source => source.url));
   expect(node.publisher['@type']).toBe('NewsMediaOrganization');
   expect(node.publisher.masthead).toBe(SITE_ORIGIN + '/news/staff');
   expect(socialMetaEntries(resolveNewsMeta('/news/' + story.id)!.tags)).toContainEqual(['property', 'og:site_name', NEWS_NAME]);

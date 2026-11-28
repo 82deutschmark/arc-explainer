@@ -1,6 +1,7 @@
 /**
- * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex
- * Date: 25-November-2026
+ * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5 Medium
+ * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the music feature check follows the 13 Nov removal of its production gallery.
  * 25-Nov-2026 (GPT-6 / Codex): verify dated Kaggle profile totals and selected card faces in the story.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
@@ -148,12 +149,14 @@ it('gives the rebrand new article and front-page image URLs without changing the
 });
 
 
-it('keeps the music feature, credits and complete scene book together', () => {
+it('keeps the music feature, credits and a link to the complete scene book', () => {
   const html = resolveNewsMeta('/news/on-the-private')!.tags.bodyHtml!;
   expect(html).toContain('GPT-6.1 Terra / Codex');
   expect(html).toContain('Lyria 3 Pro');
-  expect(html).toContain('Inside the nightclub');
-  expect(html).toContain('ensemble-formation.jpg');
+  // 13-Nov-2026: the Boss had the production stills and the expanding iframe taken off the page (Son reported them
+  // flooding it); the stills stay on file and in the standalone scene book behind one link.
+  expect(html).not.toContain('Inside the nightclub');
+  expect(html).not.toContain('<iframe');
   expect(ON_THE_PRIVATE_ART).toHaveLength(10);
   expect(ON_THE_PRIVATE_ART.every(item => existsSync(join(process.cwd(), 'client/public', item.src)))).toBe(true);
   expect(html).toContain('goose-2042ae585076eddc486d.jpg');

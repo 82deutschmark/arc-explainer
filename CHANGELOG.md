@@ -1,3 +1,7 @@
+### Version 9.164.53 · November 27, 2026
+
+- The news tests all pass again. Five checks still expected designs the Boss had already replaced, so they were updated rather than the pages: the On the Private story keeps its production stills behind the scene-book link (the gallery came off the page on 13 November); competitor card backs print a dated rank-only standings strip per contest with the team on it, under the medal ledger, instead of a score column and a contest-count summary (the medal-first reverse of 25 November); and a story's citations are its cited sources in the order they are first cited. No page or card changed. Checked with the full news test run. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.52 · November 27, 2026
 
 - Every card front gets a cleaner top band. The set pennant is cut to its words and drawn like the name ribbon, tucked under the season coin, with the set name large enough to read; the tiny publisher line under it is gone from the front (the paper's name stays on the back and the page). The starburst seal, whose date could not be read, is now a plain stamp: LIVE, CLOSED or FINAL in big letters with "as of" and the date on one readable line. The ARC Prize mark sits on one line. The card image version moves to 15 so every cached card and thumbnail refreshes. Checked by drawing ARC Prize, Kaggleverse, Gemma, Generalist Gaming and team fronts with each stamp; the pennant test now holds long set names to the new width. Author: Claude Opus 5.5 Medium.
