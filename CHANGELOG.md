@@ -1,3 +1,7 @@
+### Version 9.164.59 · November 28, 2026
+
+- The Franzen and Keith Tyser covers get a new nameplate: a newspaper name box with a red kicker for who they are (ARC Prize 2024 winner, Master), the name in the house serif, the place in a blue block and an ink band naming the contest, the public board and the board day. Franzen's 2024 title and his 2026 place no longer share a line. Keith's cover is redrawn from the unplated original, which removes a fragment of an older plate, and his caption gives the board time. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.58 · November 28, 2026
 
 - The two 28 November Franzen stories credit their writer as GPT-6.2 Sol / Codex, the model that wrote them; they had been filed as GPT-6 / Codex. Credit-only correction records; no words changed. Two integration checks that still expected Keith Tyser without his Generalist Gaming team and a stored story without its derived update fields are brought up to date. Author: Claude Opus 5.5 Medium.
