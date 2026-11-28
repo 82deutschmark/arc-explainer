@@ -39,9 +39,7 @@
     "/news-images/cards/2026/common-people-library-v1.webp": "ba8d86af5184c79befa7d7022d44a0b73c6bb5378f0d0db5b10be32c800870bb",
     "/news-images/cards/2026/cookize-song-comic-v1.webp": "b6564e738d42d5d928b631881af354bd6ae65aa9b0adb2bfca710d77f28877dd",
     "/news-images/cards/2026/cranberry128-comic-v1.webp": "23e274cef81e7d9dafe1e6b0138824b44b067347a48598288ed78110bf2d1fe2",
-    "/news-images/cards/2026/daniel-franzen-career-portrait.webp": "2848e516f9b30f34b32955a492a9ddf46ffbcda445973262e26ee1583499fe15",
     "/news-images/cards/2026/daniel-franzen-career-robot-gear.webp": "4b9e5cea9e52a395f76c03602aae720d932eea1decea88a3842d442b5277d57c",
-    "/news-images/cards/2026/daniel-franzen-career-scene.webp": "9c58b9dcfcb4d13c336b7d8605e20d90e820b8f0580271d2aff30a173dce033b",
     "/news-images/cards/2026/daniel-franzen-career-visor.webp": "19f66beea25be7222e008c546ceb9b754da71e082b3dee5f93f218a0e41256ea",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
@@ -12546,7 +12544,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "71724875c8b4c374efcbd4b6a392337cd5f18d3318e823e3d5eec1a08ba19047",
+  "fingerprint": "a3e7394b8be7f52666e70e846d252d3fa4cb364420fb56da7feb30e687fa834e",
   "people": [
     {
       "accounts": [
@@ -13568,18 +13566,6 @@
           "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
         },
         {
-          "checkedAt": "2026-11-02T02:58:41.165021+00:00",
-          "sourceTitle": "ARChitects (Franzen, Disselhoff, Hartmann) — archived Hall of Fame card",
-          "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-5",
-          "text": "ARC-Explainer’s Hall of Fame records: 2nd Place ARC Prize 2025 (16.53%)"
-        },
-        {
-          "checkedAt": "2026-11-02T02:58:41.165021+00:00",
-          "sourceTitle": "ARChitects 2024 (Franzen, Disselhoff, Hartmann) — archived Hall of Fame card",
-          "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-6",
-          "text": "ARC-Explainer’s Hall of Fame records: 1st Place ARC Prize 2024 (53.5%)"
-        },
-        {
           "checkedAt": "2026-11-28T01:17:25+00:00",
           "sourceTitle": "Franzen — ARC-AGI-3 source and write-up",
           "sourceUrl": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md",
@@ -13620,6 +13606,18 @@
           "sourceTitle": "Team Turducken — ARC-AGI-3 write-up",
           "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken",
           "text": "Team Turducken credits Franzen’s released Milestone 2 notebook as the starting point for its ARC-AGI-3 entry."
+        },
+        {
+          "checkedAt": "2026-11-02T02:58:41.165021+00:00",
+          "sourceTitle": "ARChitects (Franzen, Disselhoff, Hartmann) — archived Hall of Fame card",
+          "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-5",
+          "text": "ARC-Explainer’s Hall of Fame records: 2nd Place ARC Prize 2025 (16.53%)"
+        },
+        {
+          "checkedAt": "2026-11-02T02:58:41.165021+00:00",
+          "sourceTitle": "ARChitects 2024 (Franzen, Disselhoff, Hartmann) — archived Hall of Fame card",
+          "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-6",
+          "text": "ARC-Explainer’s Hall of Fame records: 1st Place ARC Prize 2024 (53.5%)"
         }
       ],
       "hallOfFame": [
@@ -21636,7 +21634,8 @@
           "Editor-approved solo adaptation of the established duck avatar from the 2026 ARChitects scene; not a human likeness.",
           "Keep the historical team card separate. Rejected generated human portraits must not be used as this person’s character reference."
         ],
-        "description": "ARC Prize’s 2024 results list “The LLM ARChitect: Solving ARC-AGI Is a Matter of Perspective” by Franzen et al. among the paper award runners-up.",
+        "biography": "Mainz symmetry researcher and two-time Kaggle gold medalist. With the ARChitects he took the ARC Prize 2024 high-score title and finished second in 2025. His agent built on Tufa Labs’ Duck harness won the ARC-AGI-3 Milestone 2 prize.",
+        "description": "Two Kaggle competition golds with the ARChitects. Franzen topped the ARC Prize 2024 high-score competition, returned as runner-up in 2025 and took the ARC-AGI-3 Milestone 2 open-source prize in 2026.",
         "entries": [],
         "id": "person-daniel-franzen-2026",
         "issuedAt": "2026-10-30T00:23:50.049Z",
@@ -26510,6 +26509,18 @@
         "publisher": "The Loose Goose",
         "season": "2026",
         "setName": "Generalist Gaming Agent 2026",
+        "timeZone": "UTC"
+      },
+      {
+        "competitionIds": [
+          "name-that-llm"
+        ],
+        "id": "name-that-llm-2026",
+        "look": "topps86",
+        "name": "Name That LLM",
+        "publisher": "The Loose Goose",
+        "season": "2026",
+        "setName": "Name That LLM 2026",
         "timeZone": "UTC"
       }
     ],

@@ -1,0 +1,222 @@
+{
+  "package": {
+    "artworkRecords": [
+      "artwork/2026-10-26-architects-dream-team-base",
+      "artwork/2026-11-01-daniel-franzen-hero-v1",
+      "artwork/2026-11-01-jan-disselhoff-hero-v1",
+      "artwork/asset-9a745cb52eca40d9b3cc",
+      "artwork/asset-f35b1b7935b73db2f2b3"
+    ],
+    "assets": [
+      {
+        "sha256": "9a745cb52eca40d9b3cc1e50ac63ef093aaab4b1171108e7b815914617dd7261",
+        "source": "client/public/news-images/daniel-franzen-arcade-entrance-cover-v2.webp",
+        "target": "client/public/news-images/goose-9a745cb52eca40d9b3cc.webp"
+      },
+      {
+        "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe",
+        "source": "client/public/news-images/hall-of-fame/architechts.png",
+        "target": "client/public/news-images/goose-f35b1b7935b73db2f2b3.png"
+      }
+    ],
+    "canonicalUrl": "https://arc.markbarney.net/news/daniel-franzen-arcade-entrance",
+    "dispatch": {
+      "cardFaces": [
+        {
+          "cardId": "person-daniel-franzen-2026",
+          "label": "Daniel Franzen",
+          "side": "front"
+        }
+      ],
+      "commissionedBy": "mark-barney",
+      "competition": "generalist-gaming-agent",
+      "dek": "Six entries on the board and the ARChitects star already has the high score. Keith Tyser beat his own Wednesday mark and slipped to second.",
+      "generatedBy": "gpt-6-codex",
+      "headline": "Franzen swipes the arcade lead",
+      "id": "daniel-franzen-arcade-entrance",
+      "image": {
+        "alt": "In a comic illustration, Daniel Franzen kneels in multicoloured ARC-grid armour to tune a wheeled robot at an arcade cabinet. His nameplate shows first place on the public board.",
+        "caption": "Franzen tunes his arcade robot in his ARChitects colours. The medals recall the team’s first- and second-place ARC Prize finishes.",
+        "src": "/news-images/goose-9a745cb52eca40d9b3cc.webp"
+      },
+      "personIds": [
+        "daniel-franzen"
+      ],
+      "publishedAt": "2026-11-28T01:14:03+00:00",
+      "sections": [
+        {
+          "sourceIds": [
+            "board",
+            "prior"
+          ],
+          "text": "Daniel Franzen barged into Generalist Gaming and grabbed the high score. Kaggle had just six entries next to his name when he was #1 on the public board with 0.554. Keith Tyser, who led on Wednesday, had thirteen entries and had already beaten his own Wednesday score of 0.408. On the next board check he was looking up at Franzen."
+        },
+        {
+          "heading": "The chase picks up",
+          "sourceIds": [
+            "board",
+            "opening"
+          ],
+          "text": "Tyser’s last submission on the board went in at 11:10 UTC. Franzen’s came six hours later. Dries @ Tufa Labs had put in a fifteenth entry by 18:57 UTC and sat third. The team had been thirty-ninth on Wednesday. Just a thousandth behind Dries, Mevlana Yalçın was fourth with seven entries. Pay-to-Compute had seventeen and sat fifth.\n\nJack Cole told The Loose Goose he’s using Gemma 31B in Generalist Gaming."
+        },
+        {
+          "heading": "The ARChitects pedigree",
+          "image": {
+            "alt": "The historical ARChitects card shows Daniel Franzen on the left, Jan Disselhoff in the middle and David Hartmann on the right.",
+            "caption": "The Hall of Fame card for the ARChitects’ 2025 ARC-AGI-2 run. Franzen is on the left.",
+            "src": "/news-images/goose-f35b1b7935b73db2f2b3.png"
+          },
+          "sourceIds": [
+            "arc24",
+            "arc25",
+            "team",
+            "bio",
+            "release",
+            "milestone",
+            "hall"
+          ],
+          "text": "The man on the left of the old ARChitects card is the man on top of the arcade board. The ARChitects took the top score at ARC Prize in 2024 and finished second in the following year’s ARC-AGI-2 high-score standings. Franzen, Jan Disselhoff and David Hartmann wrote up that run together. Then Franzen took the second ARC-AGI-3 milestone prize on his own, opening up the agent he’d built on Tufa Labs’ Duck harness. Among his changes was a way to give promising games more time and shift attention to finishing levels as the clock ran down."
+        },
+        {
+          "heading": "Rivals kept his name in the notebook",
+          "sourceIds": [
+            "pathbreaker",
+            "sophie",
+            "keeper",
+            "release"
+          ],
+          "text": "Pathbreaker put Franzen’s name right in both of its selected notebook titles and reported sixth place on the closing ARC-AGI-3 public board. The Sophie778 release credits a port of his agent and adds a way to see where its code was stuck as it approached a timeout. The Keeper authors built their own checks on top of his work, testing an agent’s hunches against the moves it actually made. At the arcade, Franzen’s name is back where everyone can see it."
+        },
+        {
+          "heading": "The public board",
+          "sourceIds": [
+            "board",
+            "evaluation"
+          ],
+          "text": "Generalist Gaming public board · 28 November 2026, 01:13 UTC. Top five and Jack Cole. All submission times are UTC on 27 November.\n\nPlace · Team · Best public score · Entries · Last submission\n#1  Daniel Franzen  ·  0.554  ·  6  ·  17:11\n#2  Keith Tyser  ·  0.477  ·  13  ·  11:10\n#3  Dries @ Tufa Labs  ·  0.401  ·  15  ·  18:57\n#4  Mevlana Yalçın  ·  0.400  ·  7  ·  18:37\n#5  Pay-to-Compute  ·  0.365  ·  17  ·  17:25\n#33  Jack Cole  ·  0.338  ·  20  ·  13:31\n\nThe private board sets the final ranking. When Tyser gets another run on the board, how much of Franzen’s lead can he take back?"
+        }
+      ],
+      "sources": [
+        {
+          "accessedAt": "2026-11-28T01:13:34+00:00",
+          "id": "board",
+          "title": "Kaggle public leaderboard, Entries column and Last Submission tooltips",
+          "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "bio",
+          "title": "Daniel Franzen’s research and career account",
+          "url": "https://da-fr.github.io/"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "arc24",
+          "title": "ARC Prize official 2024 results",
+          "url": "https://arcprize.org/competitions/2024"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "arc25",
+          "title": "ARC Prize official 2025 results",
+          "url": "https://arcprize.org/blog/arc-prize-2025-results-analysis"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "team",
+          "title": "The ARChitects’ 2025 technical report",
+          "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "release",
+          "title": "Franzen’s ARC-AGI-3 Milestone 2 code and credits",
+          "url": "https://github.com/da-fr/arc-agi-3-solution"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "pathbreaker",
+          "title": "Pathbreaker’s selected ARC-AGI-3 submissions",
+          "url": "https://github.com/gzatravkin/pathbreaker-arc-agi-3"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "sophie",
+          "title": "Sophie778’s published ARC-AGI-3 code bundle",
+          "url": "https://github.com/Sophie778/arc-prize-2026-arc-agi-3-solution"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "keeper",
+          "title": "The Keeper harness and credits",
+          "url": "https://github.com/AnasGharaibah/The_keeper_harness"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "prior",
+          "title": "The Loose Goose’s November 25 Keith Tyser report",
+          "url": "https://arc.markbarney.net/news/keith-tyser-arcade"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "hall",
+          "title": "The Loose Goose Hall of Fame, ARChitects",
+          "url": "https://arc.markbarney.net/hall-of-fame#contributor-5"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "milestone",
+          "title": "ARC Prize 2026 ARC-AGI-3 milestone prize rules",
+          "url": "https://arcprize.org/competitions/2026/arc-agi-3"
+        },
+        {
+          "accessedAt": "2026-11-27T23:46:43+00:00",
+          "id": "evaluation",
+          "title": "Kaggle Generalist Gaming Agent evaluation and rules",
+          "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/overview/evaluation"
+        },
+        {
+          "accessedAt": "2026-11-27T23:59:02Z",
+          "id": "opening",
+          "title": "The Loose Goose’s November 25 Generalist Gaming opening board",
+          "url": "https://arc.markbarney.net/news/generalist-gaming-opening-board"
+        }
+      ]
+    },
+    "storyId": "daniel-franzen-arcade-entrance",
+    "storySha256": "d17eaa0d78a1557d61febe0c68f51ff8005c005720c6432e80265ce0ce7c5f57",
+    "version": 1
+  },
+  "review": {
+    "assets": [
+      {
+        "sha256": "9a745cb52eca40d9b3cc1e50ac63ef093aaab4b1171108e7b815914617dd7261",
+        "source": "client/public/news-images/daniel-franzen-arcade-entrance-cover-v2.webp",
+        "target": "client/public/news-images/goose-9a745cb52eca40d9b3cc.webp"
+      },
+      {
+        "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe",
+        "source": "client/public/news-images/hall-of-fame/architechts.png",
+        "target": "client/public/news-images/goose-f35b1b7935b73db2f2b3.png"
+      }
+    ],
+    "checks": [
+      "art-continuity",
+      "art-reuse",
+      "copy",
+      "facts",
+      "identity-and-roster"
+    ],
+    "notes": "Independent Claude reviewed the release manuscript and matched all leaderboard figures against the exact 28 November 01:13 UTC Kaggle public board rows and Last Submission tooltips. Sources for the 25 November comparisons are the confirmed board and prior stories. Removed the relative Friday timing, separated the attributed Cole disclosure from his board line, and attributed Pathbreaker’s closing public rank to its own README, which explicitly reports sixth at the close and names both selected notebooks. Franzen’s README names the Duck harness and documents progress-based priorities and the late push for completed levels; Sophie’s release calls its entry a port, and Keeper explicitly credits Franzen and documents its own checks. Historical podium placings match ARC Prize; the site and release identify the milestone. The owner approved the clean illustrated cover and directed the release. Matched the exact approved master to the owner’s art record and verified likeness, medal symbolism, regalia and the programmatic name and place at 343 pixels. The only named cover contestant is Daniel Franzen. Verified his identity against Kaggle’s roster, his individual card, and the historical Hall of Fame card in the body.",
+    "rechecks": [
+      {
+        "at": "2026-11-28T01:28:08+00:00",
+        "by": "Claude Opus 5.5 Medium",
+        "what": "Cover replaced on 28 November: the same approved master with a new nameplate. Its small line now reads “ARC Prize 2024 winner · Public leaderboard” instead of “Kaggle user”, taken by the overlay script from Franzen’s verified Kaggle record (first of 1,427 with a gold medal) and matching the story’s ARC Prize 2024 source. The plate was enlarged so that line reads at 343 pixels and moved so it clears the robot; the story text is unchanged. The original reviewer has not seen the new cover; this re-check is by the assistant that rendered it."
+      }
+    ],
+    "reviewedAt": "2026-11-28T01:15:18+00:00",
+    "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
+    "storySha256": "d17eaa0d78a1557d61febe0c68f51ff8005c005720c6432e80265ce0ce7c5f57"
+  }
+}
