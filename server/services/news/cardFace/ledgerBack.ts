@@ -148,7 +148,9 @@ async function contestName(row: StandingRow, inner: number, max: number): Promis
  */
 async function teamLines(team: string, width: number): Promise<{ size: number; lines: string[] }> {
   const fit = await fitNameLines(team, FONT.cond, 700, width, 50, { max: 22, min: 19, twoLineMax: 22, twoLineMin: 16 }, 1.08);
-  if (fit.lines.length === 2 || fit.size >= 16) return fit;
+  // A name with spaces stays one string (it wraps at its spaces, and the name is still searchable as written).
+  if (fit.lines.length === 2) return { size: fit.size, lines: [team] };
+  if (fit.size >= 16) return fit;
   const chars = Array.from(team), half = Math.ceil(chars.length / 2);
   const lines = [chars.slice(0, half).join(''), chars.slice(half).join('')];
   const size = await fitOneLine(lines[0], FONT.cond, 700, width, 22, 14);
@@ -174,7 +176,7 @@ async function standingTile(row: StandingRow, width: number, ink: string, dated:
     box({ marginTop: 8, alignItems: 'center', gap: 12 },
       rank.node,
       team ? box({ width: teamW, flexDirection: 'column' }, ...team.lines.map(line =>
-        cond(line, team.size, INK, 700, { lineHeight: 1.08, whiteSpace: 'nowrap', overflow: 'hidden' }))) : null),
+        cond(line, team.size, INK, 700, { width: teamW, lineHeight: 1.08, overflow: 'hidden', ...(team.lines.length > 1 ? { whiteSpace: 'nowrap' } : {}) }))) : null),
     dated && row.rank && row.evidence ? cond(row.evidence, 19, MUTED, 600, { marginTop: 6, ...clip(inner) }) : null);
 }
 
