@@ -8,10 +8,10 @@
   ],
   "commissionedBy": "mark-barney",
   "competition": "generalist-gaming-agent",
-  "dek": "Two Kaggle golds came from solving grids with the ARChitects. Then Daniel Franzen built a game-playing agent that Pathbreaker adapted for the ARC-AGI-3 final.",
+  "dek": "The ARChitects’ grid solver earned Franzen two Kaggle golds. His prize-winning version of Duck gave rival teams a way into ARC-AGI-3.",
   "editorNote": "Written by GPT-6.2 Sol / Codex.",
   "generatedBy": "gpt-6-codex",
-  "headline": "Franzen makes the field play his game",
+  "headline": "Daniel “the Duck” Franzen makes the field play his game",
   "id": "daniel-franzen-symmetry",
   "image": {
     "alt": "Daniel Franzen wears two overlapping gold medals, a cyan grid eyepiece and a three-fan graphics card while working on a wheeled robot that operates an arcade joystick.",
@@ -22,14 +22,17 @@
     "daniel-franzen"
   ],
   "publishedAt": "2026-11-28T02:40:12+00:00",
+  "revisedAt": "2026-11-28T02:44:52+00:00",
   "sections": [
     {
       "sourceIds": [
         "agent",
+        "pathbreaker",
+        "turducken",
         "record",
         "arcade"
       ],
-      "text": "Daniel Franzen gave his ARC-AGI-3 agent an undo button. He let it see what moved between frames and which squares changed after a move. When the rules are hidden, a wrong move can still teach you something. Now his name is on the Generalist Gaming board, and anyone scouting him has a notebook to read."
+      "text": "Daniel Franzen gave his version of the Duck agent an undo button. He let it see what moved between frames and which squares changed after a move. When the rules are hidden, a wrong move can still teach you something. Other ARC-AGI-3 entrants took that notebook into the contest. Now his name is on the Generalist Gaming board, and anyone scouting him has a notebook to read."
     },
     {
       "heading": "Turn the board around",
@@ -43,18 +46,20 @@
         "team-method",
         "record"
       ],
-      "text": "Franzen studied symmetry with Michael Wand at Johannes Gutenberg University Mainz. Turn an image and a network ought to keep track of how its answer should turn with it. They took that problem to NeurIPS. Away from the lab, Franzen grows Riesling in the Moselle valley.\n\nThe ARChitects made different views of the same grid work for them. Their solver generated possible answers, then judged each one across transformed views. They won the ARC Prize 2024 high-score contest. Franzen, Jan Disselhoff and David Hartmann published the method at ICML and returned to the podium the following year with a solver that could revise its grid guesses. The runner-up finish earned Franzen another Kaggle gold."
+      "text": "At Johannes Gutenberg University Mainz, Franzen and Michael Wand wrote a NeurIPS paper on networks that keep track of what happens when an image turns. Away from the lab, Franzen grows Riesling in the Moselle valley.\n\nThe ARChitects made different views of the same grid work for them. Their solver generated possible answers and used the same model to score them. They won the ARC Prize 2024 high-score contest. Franzen, Jan Disselhoff and David Hartmann published the method at ICML and returned to the podium the following year with a solver that could revise its grid guesses. The runner-up finish earned Franzen another Kaggle gold."
     },
     {
-      "heading": "The notebook crossed the aisle",
+      "heading": "How the Duck got around",
       "sourceIds": [
+        "tufa",
         "agent",
         "milestone",
         "franzen",
         "pathbreaker",
+        "keeper",
         "turducken"
       ],
-      "text": "Franzen started with the Duck harness from Jeroen Cottaar and Tufa Labs, the software that lets an agent inspect a game and make moves. He added a way to spend more time on games where the agent was making headway. He released his notebook and won the open-source prize for ARC-AGI-3’s second milestone. Pathbreaker adapted his agent for a selected final submission. Team Turducken credits the notebook as its starting point too. Mark Barney, editor of The Loose Goose, is a member of Team Turducken."
+      "text": "Jeroen Cottaar and Tufa Labs built the original Duck harness, which lets an agent inspect a game and make moves. Franzen adapted it to give promising games more time and to show the agent more of what happened after a move. He released the notebook and won the open-source prize for ARC-AGI-3’s second milestone.\n\nThen came the forks. Pathbreaker adapted Franzen’s agent for a selected final submission. Keeper built on his release and tested the agent’s guesses about the rules against the moves it had played. Team Turducken credits the same notebook as its starting point. Mark Barney, editor of The Loose Goose, is a member of Team Turducken."
     },
     {
       "heading": "Where the ARChitects landed",
@@ -63,7 +68,7 @@
         "schedule",
         "arcade"
       ],
-      "text": "The ARChitects’ ARC-AGI-3 lineup was Franzen, Disselhoff, Hartmann and Sebastian Brodehl. The team stood #14 at 47.19 on Kaggle’s closed public board. ARC Prize is scheduled to announce the private results on December 4.\n\nGeneralist Gaming is the next test. Can Franzen turn the same knack for reading unfamiliar rules into another run at the top?"
+      "text": "The ARChitects’ ARC-AGI-3 lineup was Franzen, Disselhoff, Hartmann and Sebastian Brodehl. The team stood #14 at 47.19 on Kaggle’s closed public board. ARC Prize is scheduled to announce the competition results on December 4.\n\nGeneralist Gaming is the next test. Can Franzen turn the same knack for reading unfamiliar rules into another run at the top?"
     }
   ],
   "sources": [
@@ -156,6 +161,18 @@
       "id": "turducken",
       "title": "Team Turducken credits Franzen’s notebook",
       "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken"
+    },
+    {
+      "accessedAt": "2026-11-28T02:44:52+00:00",
+      "id": "tufa",
+      "title": "Tufa Labs’ original Duck harness",
+      "url": "https://github.com/Tufalabs/duck-harness"
+    },
+    {
+      "accessedAt": "2026-11-28T02:44:52+00:00",
+      "id": "keeper",
+      "title": "Keeper’s authors explain what they added to Franzen’s release",
+      "url": "https://github.com/AnasGharaibah/The_keeper_harness"
     }
   ]
 }
