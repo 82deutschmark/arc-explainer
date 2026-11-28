@@ -176,7 +176,8 @@
 .news-story-people-label, .news-story .news-story-people-label { margin: 0 0 8px; padding-top: 4px; border-top: 1px solid var(--ink); color: var(--muted); font: 700 10px/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
 /* The cards storyCast() picks: the lead card two columns wide and two rows tall, the rest packed around and under it,
    so the block fills its column at any width (a story's text column today, the right column later). */
-.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); grid-auto-flow: row dense; align-items: start; gap: 12px 10px; margin-bottom: 8px; padding: 2px 2px 4px; }
+/* --cast-columns (set by the component) caps the width so the cards after the lead sit in two rows beside it. */
+.news-story-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(max(84px, calc((100% - (var(--cast-columns, 8) - 1) * 10px) / var(--cast-columns, 8))), 1fr)); grid-auto-flow: row dense; align-items: start; gap: 12px 10px; max-width: calc(var(--cast-columns, 8) * 128px); margin-bottom: 8px; padding: 2px 2px 4px; }
 .news-story-card { min-width: 0; }
 .news-story-card-lead { grid-column: span 2; grid-row: span 2; }
 .arc-daily .news-story-card { display: block; color: var(--ink); text-decoration: none; }
@@ -530,7 +531,7 @@
   .news-ad-thumb { margin-bottom: 10px; }
   .news-ad-actions { margin-top: 10px; }
   /* Phones: one swipeable row, the lead card larger. */
-  .news-story-cards { display: flex; overflow-x: auto; align-items: flex-start; gap: 10px; padding-bottom: 8px; scroll-snap-type: x proximity; }
+  .news-story-cards { display: flex; max-width: none; overflow-x: auto; align-items: flex-start; gap: 10px; padding-bottom: 8px; scroll-snap-type: x proximity; }
   .news-story-card { flex: 0 0 88px; scroll-snap-align: start; }
   .news-story-card-lead { flex-basis: 148px; }
   .news-ad-actions a { flex: 1 1 140px; }

@@ -110,9 +110,11 @@ describe('In this story: one card rule for every story', () => {
     const story = index.dispatches!.find(item => item.id === 'generalist-gaming-opening-board')!;
     expect(story.personIds).toEqual([]);
     const { tiles, more } = storyCast(cabinet, [story]);
-    expect(tiles[0].cardId).toBe('person-tong-hui-kang-generalist-gaming-agent-2026');
+    // The newer of its two printed reads leads: Wednesday's #1, Keith Tyser, then the opening-day leader.
+    expect(tiles[0].cardId).toBe('person-keith-tyser-kaggleverse-2026');
+    expect([...tiles.map(tile => tile.name), ...more.map(item => item.name)]).toContain('Tong Hui Kang');
     expect(tiles.length).toBeLessThanOrEqual(STORY_CAST_TILE_LIMIT);
-    expect(more.map(item => item.name)).toContain('Keith Tyser');
+    expect(more.length).toBeGreaterThan(0);
     // A bare first name in the text ("Jack builds from scratch") is not evidence for a card called "Jack".
     expect(tiles.filter(tile => tile.cardId === 'person-jackvd-generalist-gaming-agent-2026').length + more.filter(item => item.name === 'Jack').length).toBeLessThanOrEqual(1);
   });

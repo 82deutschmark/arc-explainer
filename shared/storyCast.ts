@@ -9,7 +9,8 @@
  *          2. for the subject every card they hold, best first (the newest special edition such as the Kaggleverse career
  *             card, else the newest card for the story's contest), the rest newest issued first, then their Hall of Fame
  *             cards (Franzen: Kaggleverse, then his ARC Prize card, then the ARChitects card); for everyone else their best card;
- *          3. the story's subject first, then the others in board order, then the rest in the order the text names them;
+ *          3. the story's subject first, then the others in board order (the newest table first when a story prints two
+ *             reads), then the rest in the order the text names them;
  *          4. hand-typed card faces only move a person forward or add a back face; they never limit the list;
  *          5. the first card is marked as the lead so the layout can show it large; past a dozen cards the rest of the
  *             cast is listed by name, each linking to their card, so a thirty-team edition is not a wall of cards.
@@ -60,14 +61,24 @@ const slugFor = (competition: string) => KAGGLE_COMPETITIONS[competition]?.slug 
 const keyForSlug = (slug: string) => Object.keys(KAGGLE_COMPETITIONS).find(key => KAGGLE_COMPETITIONS[key].slug === slug);
 
 /** Board lines the desks type into a section: "#1  Daniel Franzen  ·  0.554  ·  6  ·  17:11". The team is the first field. */
-const BOARD_LINE = /^\s*#\d[\d,]*\s+(.+?)\s+·/gmu;
+const BOARD_LINE = /^\s*#\d[\d,]*\s+(.+?)\s+·/u;
+/**
+ * The story's board rows in board order. The box score comes first; typed tables follow, newest first: a desk that
+ * prints two reads ("then and now") prints the older one first, and the current board should lead the cast.
+ */
 function boardNames(story: StoryCastSource): { teamId: string | null; name: string }[] {
-  const rows: { teamId: string | null; name: string }[] = [...(story.stats ?? [])];
+  const tables: { teamId: string | null; name: string }[][] = [];
   for (const section of story.sections) {
-    rows.push(...(section.standings?.rows ?? []));
-    for (const match of section.text.matchAll(BOARD_LINE)) rows.push({ teamId: null, name: match[1] });
+    if (section.standings?.rows.length) tables.push([...section.standings.rows]);
+    let table: { teamId: null; name: string }[] = [];
+    for (const line of section.text.split('\n')) {
+      const match = BOARD_LINE.exec(line);
+      if (match) table.push({ teamId: null, name: match[1] });
+      else if (table.length && line.trim()) { tables.push(table); table = []; }
+    }
+    if (table.length) tables.push(table);
   }
-  return rows;
+  return [...(story.stats ?? []), ...tables.reverse().flat()];
 }
 
 /**

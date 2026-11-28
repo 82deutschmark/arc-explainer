@@ -17,7 +17,7 @@
  * SRP/DRY check: Pass — exact verified account matches reuse the shared identity ledger; every
  *          view draws a person through PersonPortrait so a face looks the same everywhere.
  */
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { cardForPerson, collectionRoleLabel, collectionShareVersion } from '@shared/newsCollection';
 import { storyCast, type StoryCastSource } from '@shared/storyCast';
@@ -39,6 +39,9 @@ export function PersonPortrait({ person, size, decorative = false }: { person: N
 export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors?: number }) {
   return <span className="news-person-chip"><PersonPortrait person={person} size="chip" decorative /><span><Link href={personPath(person.id)}>{person.name} →</Link>{person.hallOfFame.slice(0, honors).map(card => <span key={card.path} className="news-person-history"> · <Link href={card.path}>{card.label} ↗</Link></span>)}</span></span>;
 }
+
+/** Columns that put the cards after the lead in two rows beside it, so a short cast is one compact block. */
+export const castColumns = (tiles: number) => 2 + Math.max(1, Math.ceil((tiles - 1) / 2));
 
 /**
  * "In this story": the cards storyCast() chooses for the story (shared with the server HTML, so both show the same
@@ -62,7 +65,7 @@ export function StoryPeopleCards({ stories, people }: { stories: StoryCastSource
   if (!tiles.length && !more.length && !without.length) return null;
   return <section className="news-story-people" aria-label="In this story">
     <h2 className="news-story-people-label">In this story</h2>
-    {!!tiles.length && <div className="news-story-cards">{tiles.map(tile => {
+    {!!tiles.length && <div className="news-story-cards" style={{ '--cast-columns': castColumns(tiles.length) } as React.CSSProperties}>{tiles.map(tile => {
       const face = <><img src={tile.src} width={tile.width} height={tile.height} loading={tile.lead ? 'eager' : 'lazy'} decoding="async" alt={tile.alt} />
         <span className="news-story-card-name">{tile.name}</span><span className="news-story-card-set">{tile.set}</span></>;
       const className = `news-story-card${tile.lead ? ' news-story-card-lead' : ''}`;
