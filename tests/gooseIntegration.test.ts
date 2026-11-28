@@ -3,7 +3,8 @@
  * Date: 27-November-2026
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the music feature check follows the 13 Nov removal of its production gallery.
  * 27-Nov-2026 (Claude Opus 5.5 Medium, ARC archive): the server front-page order check uses frontPageCompetitions, since
- *          ARC Prize 2026 is in storage and its desks no longer lead while current coverage exists.
+ *          ARC Prize 2026 is in storage and its desks no longer lead while current coverage exists; a new check covers the
+ *          archive page's server HTML.
  * 25-Nov-2026 (GPT-6 / Codex): verify dated Kaggle profile totals and selected card faces in the story.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
@@ -28,7 +29,7 @@ import { resolveNewsMeta } from '../server/services/news/newsPresentation';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { selectedStoryCards } from '../shared/newsCollection';
 import { competitionStories } from '../shared/news';
-import { frontPageCompetitions } from '../shared/newsSeasons';
+import { ARC_2026_ARCHIVE, arc2026Stories, frontPageCompetitions } from '../shared/newsSeasons';
 
 it('accepts a directory competition outside the legacy ARC desks', () => {
   const competition = Object.keys(KAGGLE_COMPETITIONS).find(key => !key.startsWith('arc-'))!;
@@ -74,6 +75,19 @@ it('orders the server front page by the same published competition leads', () =>
   const positions = frontPageCompetitions(articles, dispatches).map(key => html.indexOf(`data-news-lead="${competitionStories(articles, dispatches, key)[0].id}"`));
   expect(heads.length).toBeGreaterThan(0); expect(positions.every(p => p >= 0)).toBe(true);
   expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+});
+it('serves the ARC Prize 2026 archive page with its boards and every ARC story in the server HTML', () => {
+  const { articles, dispatches = [] } = getNewsIndex();
+  const page = resolveNewsMeta(ARC_2026_ARCHIVE.path)!;
+  const html = page.tags.bodyHtml!;
+  expect(page.status).toBe(200);
+  expect(html).toContain(`<h1>${ARC_2026_ARCHIVE.heading}</h1>`);
+  expect(html).toContain('href="/kaggle-leaderboard#medal-race"');
+  const stories = arc2026Stories(articles, dispatches);
+  expect(stories.length).toBeGreaterThan(0);
+  for (const story of stories) expect(html).toContain(`href="/news/${story.id}"`);
+  // Nothing from the current contest is filed in the archive.
+  expect(stories.every(story => story.competition !== 'generalist-gaming-agent')).toBe(true);
 });
 describe('fresh source boundary', () => {
   const now = Date.parse('2026-11-02T20:00:00Z'), close = '2026-11-02T23:59:00Z';

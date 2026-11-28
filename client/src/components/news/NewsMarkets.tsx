@@ -7,7 +7,8 @@
  *          empty board box instead of numbers. Movers boxes with nothing in them are left out, and a board whose
  *          boxes are all empty is left out with them. The Inside box leads with Generalist Gaming and moves the ARC
  *          links behind one "ARC Prize 2026 archive" entry (insideLinks, shared with the server HTML). The empty
- *          board box also lists the contest's carded competitors ("The field"), highest tier first.
+ *          board box also lists the contest's carded competitors ("The field"), highest tier first. A board whose
+ *          only page is Kaggle's says so in its "all teams" link.
  * 14-Nov-2026 (Claude Opus 5.5): the ticker and movers print each board's save with its full date; a board
  *          that stopped updating (boardFreshAt) says "not updated since" and its movers cover the day before that
  *          save, so a frozen board can no longer pass for today's.
@@ -168,7 +169,8 @@ export function BoardTable({ board, links, limit = 25 }: { board: MarketBoard; l
       <thead><tr><th scope="col" className="num">Place</th><th scope="col"><span className="sr-only">Places moved</span></th><th scope="col">Team</th><th scope="col" className="num">Score</th><th scope="col" className="num">Δ Score</th></tr></thead>
       <tbody>{rows.map(row => <BoardRow key={row.teamId} row={row} board={board} links={links} medal={medal(row.rank)} />)}</tbody>
     </table>
-    <a className="news-read" href={board.boardPath}>All {count(board.teams)} teams, charts and history →</a>
+    {/* A board with no page on this site (Generalist Gaming) links to Kaggle and says so. */}
+    <a className="news-read" href={board.boardPath}>{/^https?:/.test(board.boardPath) ? <>All {count(board.teams)} teams on Kaggle ↗</> : <>All {count(board.teams)} teams, charts and history →</>}</a>
   </div>;
 }
 
