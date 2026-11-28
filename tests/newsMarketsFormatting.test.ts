@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 03-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the front page's ticker and movers show only the contest the paper follows
+ *          (Generalist Gaming; ARC Prize 2026 is in storage), so the synthetic board is filed under that contest.
+ *          The figures and what is checked are unchanged.
  * PURPOSE: Render the news ticker, standings and movers against decimal score differences,
  *          catching visible floating-point tails while retaining score/difference semantics,
  *          integer team counts and unknown comparisons.
@@ -12,6 +15,7 @@ import { Router } from 'wouter';
 import { afterEach, expect, test, vi } from 'vitest';
 import { BoardTable, Change, MarketTicker, MoversBand } from '../client/src/components/news/NewsMarkets';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
+import { NEWS_LEAD_COMPETITION as KEY } from '../shared/newsSeasons';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -20,7 +24,7 @@ const NOW = '2026-11-03T00:16:35Z';
 const THEN = '2026-11-02T00:16:35Z';
 
 function digest(): MarketsPayload {
-  const board = buildMarketBoard('arc-2', {
+  const board = buildMarketBoard(KEY, {
     fetched: NOW, teams: 1234, ourTeamId: 'none', medalRanks: { gold: 1, silver: 2, bronze: 3 },
     rows: [
       [1, '16756524', 'Tufa Labs', NOW, 88.06, 9, 'driessmit1', null, null],
@@ -36,7 +40,7 @@ function digest(): MarketsPayload {
       '4': { name: 'Precision entry', pts: [[THEN, 0.1, 4]] },
     },
   }, [])!;
-  return { generatedAt: NOW, boards: { 'arc-2': board } };
+  return { generatedAt: NOW, boards: { [KEY]: board } };
 }
 
 function render(child: React.ReactElement) {
@@ -62,7 +66,7 @@ test('integer counts, unchanged changes and missing comparisons keep their disti
 
 test('ticker and standings preserve source score precision and clean derived changes', () => {
   const markets = digest();
-  const board = markets.boards['arc-2']!;
+  const board = markets.boards[KEY]!;
   const ticker = render(createElement(MarketTicker, { markets }));
   const table = render(createElement(BoardTable, { board, links }));
   expect(ticker).toContain('<b class="sc">88.06</b>');

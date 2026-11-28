@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026; 02-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026 (Claude Opus 5.5); 03-November-2026; 02-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): ARC Prize 2026 into storage. The "Every edition" list (all ARC editions)
+ *          leaves the front page; those editions are on the ARC Prize 2026 archive page and in the story archive.
+ *          The Inside box takes the stories it summarises; the lower band closes up when it has only one part.
  * 14-Nov-2026 (Claude Opus 5.5): the masthead dates the paper by its newest published story (edition or
  *          dispatch), prints an edition label only when that story is an edition, and counts dispatches in
  *          the issue number. An old /news#<id> link scrolls to the story when it is on the page, else opens
@@ -21,7 +24,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { NEWS_NAME, NEWS_BRAND, editionLabel, newsArticlePath, publishedStories } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { AboutThisPaper, ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
+import { AboutThisPaper, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { NewsFrontPage } from '@/components/news/NewsFrontPage';
 import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
@@ -60,11 +63,10 @@ export default function News() {
       <MoversBand markets={markets.data} links={links} />
       <div className="news-lower">
         <PastWinners markets={markets.data} people={people} links={links} />
-        <InsideIndex />
+        <InsideIndex articles={articles} dispatches={dispatches} />
       </div>
       <SponsorPlacement format="banner" />
       <AboutThisPaper />
-      <ArticleArchive articles={articles} heading="Every edition" />
     </>}
   </NewsPaper>;
 }

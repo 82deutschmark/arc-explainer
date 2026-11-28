@@ -1,6 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed)
- * Date: 14-Nov-2026 (Claude Opus 5.5); 03-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026 (Claude Opus 5.5); 03-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the front page's ticker now shows only the contest the paper follows
+ *          (shared/newsSeasons.ts NEWS_LEAD_COMPETITION, Generalist Gaming) and ARC Prize 2026 is in storage, so the
+ *          synthetic board is filed under that contest and the deadline is its registered close. The checks
+ *          themselves (countdown, closed at the cutoff, stale save) are unchanged.
  * 14-Nov-2026 (Claude Opus 5.5): the note prints each board's full save date, and a board past the
  *          freshness window says "not updated since" (W4).
  * PURPOSE: Check that the newspaper's board ticker distinguishes an upcoming
@@ -17,12 +21,16 @@ import { MarketTicker } from '../client/src/components/news/NewsMarkets';
 import { KAGGLE_COMPETITIONS } from '../shared/kaggleCompetitions';
 import { buildMarketBoard, type MarketBoard } from '../shared/newsMarkets';
 import { newsDate } from '../shared/news';
+import { NEWS_LEAD_COMPETITION } from '../shared/newsSeasons';
 
-const cutoff = KAGGLE_COMPETITIONS['arc-3'].closeAt!;
+const KEY = NEWS_LEAD_COMPETITION;
+const LABEL = KAGGLE_COMPETITIONS[KEY].label;
+
+const cutoff = KAGGLE_COMPETITIONS[KEY].closeAt!;
 const cutoffMs = Date.parse(cutoff);
 
 function boardAt(fetched: string): MarketBoard {
-  return buildMarketBoard('arc-3', {
+  return buildMarketBoard(KEY, {
     fetched, teams: 1, ourTeamId: 'none', medalRanks: { gold: 1, silver: 1, bronze: 1 },
     rows: [[1, 'test-team', 'Ticker test team', '2026-11-01 12:00:00', 1, 1, 'testmember', null, null]],
   }, { snaps: [], trails: {} }, [], [])!;
@@ -33,7 +41,7 @@ function tickerText(board: MarketBoard, currentTime: string): string {
   vi.setSystemTime(new Date(currentTime));
   vi.stubGlobal('React', React);
   const html = renderToStaticMarkup(createElement(MarketTicker, {
-    markets: { generatedAt: board.fetched, boards: { 'arc-3': board } },
+    markets: { generatedAt: board.fetched, boards: { [KEY]: board } },
   }));
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -76,7 +84,7 @@ it('closes stale pre-deadline standings using the current clock while preserving
   const text = tickerText(board, new Date(cutoffMs + 60_000).toISOString());
   expect(text).toContain('Submissions closed');
   expect(text).not.toContain('Close 1 day');
-  expect(text).toContain(`ARC-AGI-3 saved ${newsDate(savedAt, true)}`);
+  expect(text).toContain(`${LABEL} saved ${newsDate(savedAt, true)}`);
   expect(text).toContain('22:59 UTC');
   expect(board.fetched).toBe(savedAt);
 });
@@ -84,6 +92,6 @@ it('closes stale pre-deadline standings using the current clock while preserving
 it('dates a board that stopped updating instead of passing it off as current', () => {
   const savedAt = new Date(cutoffMs - 3 * 24 * 3_600_000).toISOString();
   const text = tickerText(boardAt(savedAt), new Date(cutoffMs - 2 * 24 * 3_600_000).toISOString());
-  expect(text).toContain(`ARC-AGI-3 not updated since ${newsDate(savedAt, true)}`);
-  expect(text).not.toContain('ARC-AGI-3 saved');
+  expect(text).toContain(`${LABEL} not updated since ${newsDate(savedAt, true)}`);
+  expect(text).not.toContain(`${LABEL} saved`);
 });

@@ -1,6 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the digest also builds the Generalist Gaming board (shared/newsSeasons.ts
+ *          NEWS_MARKET_COMPETITIONS), from the same board store the cards read. The stored ARC boards stay in the
+ *          feed for the wire desk and the leaderboard pages; the front page shows only the current contest. A board
+ *          the snapshot job has never pushed is simply absent, and the front page prints an honest empty state.
  * 14-Nov-2026 (Claude Opus 5.5): each board is built in its own try/catch (a failed query or a corrupt
  *          saved body leaves only that board out), a failed rebuild serves the last good digest, and
  *          concurrent readers after expiry share one in-flight rebuild.
@@ -22,6 +26,7 @@ import type { KaggleBoardEvent, KaggleBoardHistory, KaggleBoardLatest } from '..
 import { kaggleBoardRepository } from '../../repositories/KaggleBoardRepository.js';
 import { logger } from '../../utils/logger';
 import { getNewsIndex } from './newsStore';
+import { NEWS_MARKET_COMPETITIONS } from '../../../shared/newsSeasons';
 
 const TTL_MS = 60_000;
 type MarketsEntry = { at: number; payload: MarketsPayload; raw: Buffer; gzip: Buffer };
@@ -55,8 +60,8 @@ async function marketBoard(index: NewsIndex, competition: NewsCompetition): Prom
 export async function buildMarkets(now = new Date()): Promise<MarketsPayload> {
   const index = getNewsIndex();
   const boards: MarketsPayload['boards'] = {};
-  for (const competition of ['arc-3', 'arc-2'] as const) {
-    // One bad board (query error, corrupt saved JSON) must not take the other one down with it.
+  for (const competition of NEWS_MARKET_COMPETITIONS) {
+    // One bad board (query error, corrupt saved JSON) must not take the others down with it.
     try {
       const board = await marketBoard(index, competition);
       if (board) boards[competition] = board;

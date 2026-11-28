@@ -1,6 +1,9 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Author: Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the digest now builds the Generalist Gaming board as well as the two
+ *          stored ARC boards (the approved "ARC Prize 2026 into storage" plan), so the expected board lists and
+ *          the one-query-per-board count include it. What the tests check is unchanged.
  * PURPOSE: Failure handling of the market digest (server/services/news/newsMarkets.ts, GET /api/news/markets):
  *          one board's failed query or corrupt saved document leaves only that board out, a failed rebuild
  *          serves the last good digest, and readers arriving together after expiry share one rebuild.
@@ -44,9 +47,9 @@ afterEach(() => { vi.useRealTimers(); });
 it('leaves out only the board whose query fails or whose saved document is corrupt', async () => {
   const { buildMarkets } = await freshService();
   control.documents = board => board === slug('arc-3') ? Promise.reject(new Error('relation does not exist')) : Promise.resolve(docs('two'));
-  expect(Object.keys((await buildMarkets()).boards)).toEqual(['arc-2']);
+  expect(Object.keys((await buildMarkets()).boards)).toEqual(['generalist-gaming-agent', 'arc-2']);
   control.documents = board => Promise.resolve(board === slug('arc-2') ? [{ name: 'latest', capturedAt: fetched, body: '{not json' }] : docs('three'));
-  expect(Object.keys((await buildMarkets()).boards)).toEqual(['arc-3']);
+  expect(Object.keys((await buildMarkets()).boards)).toEqual(['generalist-gaming-agent', 'arc-3']);
 });
 
 it('serves the last good digest when a rebuild fails after the cache expires', async () => {
@@ -65,7 +68,7 @@ it('serves the last good digest when a rebuild fails after the cache expires', a
 it('shares one in-flight rebuild between readers that arrive together', async () => {
   const { marketsResponse } = await freshService();
   const [first, second, third] = await Promise.all([marketsResponse(), marketsResponse(), marketsResponse()]);
-  expect(control.calls).toBe(2); // one query per board, once
+  expect(control.calls).toBe(3); // one query per board, once
   expect(second).toBe(first);
   expect(third).toBe(first);
 });

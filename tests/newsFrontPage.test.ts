@@ -1,6 +1,14 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 14-Nov-2026
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): ARC Prize 2026 is in storage (the approved plan), so the front page's live
+ *          board, ticker, movers and past winners follow Generalist Gaming. The synthetic digest is now a Generalist
+ *          Gaming board built on the real Generalist Gaming team IDs (so the notebook and the people ledger still
+ *          connect to it), the populated-digest check expects its leader and Jack Cole's honour instead of the ARC
+ *          ones, and no longer expects the "Every edition" list, which moved to the ARC archive page. Without a
+ *          digest the ticker and board column now print the honest "no board saved" state instead of vanishing,
+ *          and an edition fixture that must lead is filed under the lead contest. The ARC-only fixtures still lead
+ *          because a paper with only stored coverage falls back to it.
  * 14-Nov-2026 (Claude Opus 5.5, front): wire links open each story's own page (/news/wire/<id>), which also
  *          renders a not-found state; a paused desk shows its latest filings; the early-evening special reads its
  *          recorded editionDisplay; older dispatches are no longer copied in full onto the front page.
@@ -49,6 +57,7 @@ import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared
 import { reportedPeople, displayPortrait } from '../shared/news';
 import { newsDiscussionSchema, newsPersonSchema } from '../server/services/news/newsStore';
 import type { KaggleBoardRow } from '../shared/types';
+import { NEWS_LEAD_COMPETITION, frontPageCompetitions } from '../shared/newsSeasons';
 
 // Inline sporting spans preserve readable source values and words.
 const readable = (html: string) => html.replace(/<[^>]*>/g, '').replaceAll('&amp;', '&').replace(/(\d)(?:st|nd|rd|th)\b/g, '$1').replaceAll('#', '');
@@ -56,20 +65,20 @@ const NOW = '2026-10-09T23:54:00Z';
 const DAY_AGO = '2026-10-08T23:51:00Z';
 const row = (rank: number, id: string, name: string, score: number, members: string): KaggleBoardRow => [rank, id, name, '2026-10-09 12:00:00', score, 9, members, null, null];
 
-/** A small ARC-3 board using real team IDs, so the notebook and the people ledger connect to it. */
+/** A small Generalist Gaming board using real team IDs, so the notebook and the people ledger connect to it. The scores are synthetic. */
 function markets(index: NewsIndex): MarketsPayload {
-  const rows = [row(1, '15499660', 'Yi-Chia Chen', 59.17, 'threerabbits'), row(2, '15486995', 'Tufa Labs', 56.52, 'driessmit1,jeroencottaar,pressman1'),
-    row(3, '16153655', 'mtg', 44.32, 'michaeltgao'), row(4, '15770880', 'NVARC3', 40.97, 'cpmpml,sorokin'), row(5, '16958599', 'Majkel1337', 40.5, 'majkel1337'),
-    row(6, '15605182', 'Son & Mark & Ronen', 35.45, 'markbarney')];
+  const rows = [row(1, '17431467', 'Keith Tyser', 0.412, 'keithtyser'), row(2, '17430290', 'Tong Hui Kang', 0.398, 'huikang'),
+    row(3, '17430967', 'Dries @ Tufa Labs', 0.351, 'driessmit1'), row(4, '17431668', 'Jack Cole', 0.333, 'jcole75'), row(5, '17431327', 'Vladislav Lavrentev', 0.33, 'vlavrentev'),
+    row(6, '17431944', 'Logical Arbitrage', 0.301, 'markbarney')];
   const watch = (index.people ?? []).flatMap(person => person.memberships.map(member => member.teamId)).concat(index.competitors.map(record => record.teamId));
-  const board = buildMarketBoard('arc-3', { fetched: NOW, teams: 4067, ourTeamId: 'none', medalRanks: { gold: 5, silver: 50, bronze: 100 }, rows },
-    { snaps: [{ t: DAY_AGO, teams: 4005, top: 55.89, gold: 39.9, silver: 30, bronze: 29 }, { t: NOW, teams: 4067, top: 59.17, gold: 40.5, silver: 30.9, bronze: 29.5 }],
-      trails: { '15486995': { name: 'Tufa Labs', pts: [['2026-10-08T10:00:00Z', 55.89, 1], ['2026-10-09T10:00:00Z', 56.52, 2]] } } },
-    [{ t: '2026-10-09T03:51:00Z', id: '15499660', name: 'Yi-Chia Chen', from: 55.77, to: 59.17, rankFrom: 2, rankTo: 1 },
-      { t: '2026-10-09T08:00:00Z', id: '16153655', name: 'mtg', from: 38.33, to: 44.32, rankFrom: 7, rankTo: 3 },
-      { t: '2026-10-09T09:00:00Z', id: '15770880', name: 'NVARC3', from: 37.51, to: 40.97, rankFrom: 9, rankTo: 4 },
-      { t: '2026-10-09T09:30:00Z', id: '16958599', name: 'Majkel1337', from: null, to: 40.5, rankFrom: null, rankTo: 5 }], watch)!;
-  return { generatedAt: NOW, boards: { 'arc-3': board } };
+  const board = buildMarketBoard(NEWS_LEAD_COMPETITION, { fetched: NOW, teams: 4067, ourTeamId: 'none', medalRanks: { gold: 5, silver: 50, bronze: 100 }, rows },
+    { snaps: [{ t: DAY_AGO, teams: 4005, top: 0.398, gold: 0.29, silver: 0.2, bronze: 0.1 }, { t: NOW, teams: 4067, top: 0.412, gold: 0.33, silver: 0.21, bronze: 0.11 }],
+      trails: { '17430290': { name: 'Tong Hui Kang', pts: [['2026-10-08T10:00:00Z', 0.398, 1], ['2026-10-09T10:00:00Z', 0.398, 2]] } } },
+    [{ t: '2026-10-09T03:51:00Z', id: '17431467', name: 'Keith Tyser', from: 0.37, to: 0.412, rankFrom: 2, rankTo: 1 },
+      { t: '2026-10-09T08:00:00Z', id: '17430967', name: 'Dries @ Tufa Labs', from: 0.3, to: 0.351, rankFrom: 7, rankTo: 3 },
+      { t: '2026-10-09T09:00:00Z', id: '17431668', name: 'Jack Cole', from: 0.31, to: 0.333, rankFrom: 9, rankTo: 4 },
+      { t: '2026-10-09T09:30:00Z', id: '17431327', name: 'Vladislav Lavrentev', from: null, to: 0.33, rankFrom: null, rankTo: 5 }], watch)!;
+  return { generatedAt: NOW, boards: { [NEWS_LEAD_COMPETITION]: board } };
 }
 
 function render(page: React.ComponentType, path: string, index: NewsIndex, payload?: MarketsPayload) {
@@ -173,16 +182,18 @@ test('the front page runs every live section against a populated digest', () => 
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const html = render(News, '/news', index, markets(index));
-  for (const text of ['What’s news', 'The board', 'Market movers', 'Where the past winners stand', 'Inside', 'Cards', 'Every edition',
-    'Gold line · 5 places', 'Into gold:', 'Leader · <span class="news-ticker-name">Yi-Chia Chen</span>', 'NEW', 'ARC Prize 2025 champion · NVARC'])
+  for (const text of ['What’s news', 'The board', 'Market movers', 'Where the past winners stand', 'Inside', 'Cards', 'ARC Prize 2026 archive',
+    'Gold line · 5 places', 'Into gold:', 'Leader · <span class="news-ticker-name">Keith Tyser</span>', 'NEW', 'ARC Prize 2025 third place · MindsAI &amp; Tufa Labs'])
     expect(html).toContain(text);
+  // The stored ARC season keeps one archive entry; its boards and edition list stay off the front page.
+  for (const text of ['Every edition', 'ARC-AGI-3 board', 'Medal race']) expect(html).not.toContain(text);
   // A newer afternoon dispatch can lead; a reserved feature gets the full treatment for its edition.
-  const newest = [...index.articles, ...(index.dispatches ?? [])]
+  const leadKey = frontPageCompetitions(index.articles, index.dispatches)[0];
+  const newest = [...index.articles, ...(index.dispatches ?? [])].filter(story => story.competition === leadKey)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))[0];
   const feature = 'frontPageFeatureId' in newest ? index.dispatches?.find(story => story.id === newest.frontPageFeatureId) : undefined;
   const lead = feature ?? newest;
   expect(html).toContain(lead.sections.at(-1)!.text.slice(0, 40).replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
-  expect(html).toMatch(/(Early|Late) edition/);
   expect(html).not.toContain('The people behind the puzzles');
   expect(html).not.toContain('Explore the contests');
 });
@@ -192,8 +203,14 @@ test('without the digest the reporting still leads and the market sections stay 
   const index = getNewsIndex();
   const html = render(News, '/news', index);
   expect(html).toContain('What’s news');
-  expect(readable(html)).toContain(readable(index.articles[0].headline.slice(0, 30)));
-  for (const text of ['news-ticker', 'Market movers', 'Where the past winners stand', 'The board<']) expect(html).not.toContain(text);
+  const leadKey = frontPageCompetitions(index.articles, index.dispatches)[0];
+  const newest = [...index.articles, ...(index.dispatches ?? [])].filter(story => story.competition === leadKey)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))[0];
+  expect(readable(html)).toContain(readable(newest.headline.slice(0, 30)));
+  for (const text of ['Market movers', 'Where the past winners stand', 'Leader ·', 'Gold line']) expect(html).not.toContain(text);
+  // The lead contest keeps its ticker line and board column, saying plainly that no board is saved here yet.
+  expect(html).toContain('board saved on this site yet');
+  expect(html).toContain('No reading of this board has been saved on this site yet');
 });
 
 test('Kaggle threads follow the prominent X strip and the wire, with original links', () => {
@@ -268,7 +285,8 @@ test('an edition-bound illustration runs with its headline and dated caption', (
   const index = getNewsIndex();
   const art = JSON.parse(fs.readFileSync('content/news/artwork/2026-10-12-evening-arc-3-preview-dc154a9777.json', 'utf8'));
   // Published "now" so it leads the ARC-3 desk however many editions have run since this artwork.
-  const article = { ...index.articles.find(story => story.competition === 'arc-3')!, id: art.articleId,
+  // Filed under the lead contest: ARC Prize 2026 desks are in storage while the paper covers anything else.
+  const article = { ...index.articles.find(story => story.competition === 'arc-3')!, competition: NEWS_LEAD_COMPETITION, id: art.articleId,
     headline: art.headline, publishedAt: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), dataAsOf: art.dataAsOf, frontPageFeatureId: undefined, image: art.image };
   index.articles = [article, ...index.articles];
   const front = render(News, '/news', index, markets(index));

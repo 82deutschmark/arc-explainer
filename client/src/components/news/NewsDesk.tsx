@@ -1,6 +1,9 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
- * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the countdown (theClose) points at the contest the paper follows now
+ *          (shared/newsSeasons.ts, Generalist Gaming) instead of the closed ARC boards, names that contest, and the
+ *          Goose masthead's dateline prints it; the Card Cabinet bar reads the same helper.
  * 14-Nov-2026 (Claude Opus 5.5): the masthead prints the edition label it is given (editionTitle) instead of
  *          rebuilding it from morning/evening; a story preview shows its own art, else same-day companion art,
  *          never a picture already printed by its feature; the archive labels each issue with editionLabel.
@@ -34,6 +37,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_ARCHIVE, articleCompetitionLabel, articleFigureStats, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, reportedPeople, wirePath, writerCredit, type NewsArticle, type NewsDispatch, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
+import { NEWS_LEAD_COMPETITION } from '@shared/newsSeasons';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
 import { MastheadAd } from './SponsorPlacement';
@@ -75,12 +79,18 @@ export function datelineDate(value: string): string {
     : 'Date unavailable';
 }
 
-/** Days until both boards close (they share a deadline) and the close date in UTC; null once past or unknown. */
-export function theClose(now = Date.now()): { days: number; date: string } | null {
-  const close = closeMs(KAGGLE_COMPETITIONS['arc-3']);
-  const days = daysToClose(KAGGLE_COMPETITIONS['arc-3'], now);
-  return close != null && days ? { days, date: new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
+/** Days until the lead contest closes, its name and the close date in UTC; null once past or while no close is published. */
+export function theClose(now = Date.now()): { days: number; date: string; label: string } | null {
+  const competition = KAGGLE_COMPETITIONS[NEWS_LEAD_COMPETITION];
+  if (!competition) return null;
+  const close = closeMs(competition);
+  const days = daysToClose(competition, now);
+  return close != null && days ? { days, label: competition.label, date: new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(close)) } : null;
 }
+
+/** "Generalist Gaming Agent closes 1 March 2027 · 94 days", as the masthead and the Cabinet bar print it. */
+export const closeCountdown = (close: NonNullable<ReturnType<typeof theClose>>) =>
+  `${close.label} closes ${close.date} · ${close.days} ${close.days === 1 ? 'day' : 'days'}`;
 
 /** The paper's section links; the slim Cabinet bar and the broadsheet masthead print the same list. */
 export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { className?: string; brand?: typeof NEWS_BRAND }) {
@@ -117,8 +127,9 @@ export function NewsPaper({ children, frontPage = false, date, editionTitle, iss
           <div className="news-brand-type"><p className="news-brand-overline">The sports tabloid of the Kaggleverse</p>
             {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}
             <div className="news-brand-dateline">{editionTitle && <strong>{editionTitle} · </strong>}{date && datelineDate(date)}</div>
+            {close && <div className="news-brand-dateline news-brand-close">{closeCountdown(close)}</div>}
           </div></div>
-        </div> : <div className="news-brand-row"><div className="news-ear"><strong>{editionTitle ?? 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
+        </div> : <div className="news-brand-row"><div className="news-ear"><strong>{editionTitle ?? 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{closeCountdown(close)}</span>}</div>
           {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}<MastheadAd /></div>}
         <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Competition news · All times UTC</span>}</div>
         <NewsNav brand={brand} />

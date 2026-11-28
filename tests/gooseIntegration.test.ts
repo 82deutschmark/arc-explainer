@@ -2,6 +2,8 @@
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; Claude Opus 5.5 Medium
  * Date: 27-November-2026
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the music feature check follows the 13 Nov removal of its production gallery.
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, ARC archive): the server front-page order check uses frontPageCompetitions, since
+ *          ARC Prize 2026 is in storage and its desks no longer lead while current coverage exists.
  * 25-Nov-2026 (GPT-6 / Codex): verify dated Kaggle profile totals and selected card faces in the story.
  * 09-Nov-2026 (GPT-6 / Codex): contest card evidence and regression checks.
  * PURPOSE: Verify directory-based publishing, source freshness and the staged
@@ -25,7 +27,8 @@ import { getNewsCollection } from '../server/services/news/newsCollection';
 import { resolveNewsMeta } from '../server/services/news/newsPresentation';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { selectedStoryCards } from '../shared/newsCollection';
-import { publishedCompetitionOrder, competitionStories } from '../shared/news';
+import { competitionStories } from '../shared/news';
+import { frontPageCompetitions } from '../shared/newsSeasons';
 
 it('accepts a directory competition outside the legacy ARC desks', () => {
   const competition = Object.keys(KAGGLE_COMPETITIONS).find(key => !key.startsWith('arc-'))!;
@@ -62,12 +65,13 @@ it('uses a corrected wiki briefing on the rendered card model', () => {
 it('orders the server front page by the same published competition leads', () => {
   const { articles, dispatches = [] } = getNewsIndex();
   const html = resolveNewsMeta('/news')!.tags.bodyHtml!;
-  const heads = publishedCompetitionOrder(articles, dispatches).map(key => {
+  // 27-Nov-2026: the front page runs the current contest first and keeps stored ARC Prize 2026 desks off it.
+  const heads = frontPageCompetitions(articles, dispatches).map(key => {
     const first = competitionStories(articles, dispatches, key)[0];
     return 'article' in first ? first.article.headline : first.dispatch.headline;
   });
   // Source links inside one lead can mention another story before its own lead.
-  const positions = publishedCompetitionOrder(articles, dispatches).map(key => html.indexOf(`data-news-lead="${competitionStories(articles, dispatches, key)[0].id}"`));
+  const positions = frontPageCompetitions(articles, dispatches).map(key => html.indexOf(`data-news-lead="${competitionStories(articles, dispatches, key)[0].id}"`));
   expect(heads.length).toBeGreaterThan(0); expect(positions.every(p => p >= 0)).toBe(true);
   expect([...positions].sort((a, b) => a - b)).toEqual(positions);
 });
