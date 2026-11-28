@@ -138,7 +138,8 @@ export function NewsStoryPage({ story, feature, index, competitors = [] }: { sto
         </div>
         <h1 className="news-article-title"><SportsText text={story.headline} stats={stats} teamNames={edition?.verifiedTeamNames} /></h1>
         {story.dek && <p className="news-dek"><SportsText text={story.dek} stats={stats} teamNames={edition?.verifiedTeamNames} /></p>}
-        {!!story.revisions?.length && <div className="news-revisions" role="note" aria-label="Revisions">{story.revisions.map((revision, position) => <p key={`${revision.at}-${position}`} className="news-muted">Updated <time dateTime={revision.at}>{newsDate(revision.at)}</time>{revision.reason ? `: ${revision.reason}` : ''}</p>)}</div>}
+        {/* Readers get the date of the latest update only; the reason is the newsroom's correction record and never prints. */}
+        {!!story.revisions?.length && <div className="news-revisions"><p className="news-muted">Updated <time dateTime={story.revisions[story.revisions.length - 1].at}>{newsDate(story.revisions[story.revisions.length - 1].at)}</time></p></div>}
       </header>
       {cover && <figure className="news-storypage-cover"><a href={cover.src} aria-label="Open the full editorial illustration"><img src={cover.src} alt={cover.alt} loading="eager" /></a>
         <figcaption><SportsText text={cover.caption} stats={stats} /></figcaption></figure>}

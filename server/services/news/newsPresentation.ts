@@ -94,9 +94,10 @@ function sectionExtrasHtml(section: NewsSection): string {
 const newlineText = (text: string) => text.split(/\n\n+/).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
 const timeTag = (value: string, withTime = true) => `<time datetime="${esc(value)}">${esc(newsDate(value, withTime))}</time>`;
 const kicker = (article: NewsArticle) => `${esc(articleCompetitionLabel(article))} · ${esc(editionLabel(article))} · ${timeTag(article.date, false)}`;
-/** "Updated <date>: <reason>" for each recorded revision, printed under the byline. */
+/** "Updated <date>" for the latest revision only, under the byline. The reason is the newsroom's correction record
+ *  and never prints: readers saw private editing notes there on 28 November 2026. */
 const revisionsHtml = (story: Pick<NewsArticle, 'revisions'>) => story.revisions?.length
-  ? `<ul class="news-revisions">${story.revisions.map(revision => `<li>Updated ${timeTag(revision.at, false)}${revision.reason ? `: ${esc(revision.reason)}` : ''}</li>`).join('')}</ul>` : '';
+  ? `<p class="news-revisions">Updated ${timeTag(story.revisions[story.revisions.length - 1].at, false)}</p>` : '';
 /** A CollectionPage whose ItemList names each linked entry, for the two index pages. */
 function collection(tags: RouteMetaTags, items: { name: string; path: string }[]): Record<string, unknown> {
   return { '@context': 'https://schema.org', '@graph': [{

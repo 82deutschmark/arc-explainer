@@ -1,3 +1,7 @@
+### Version 9.164.56 · November 28, 2026
+
+- A corrected story shows readers only "Updated" and the date under the byline. The newsroom's reasons for the change (what was cut, re-sourced or disclosed) had been printing right under the headline; they stay in the correction records and never print. Both the browser page and the server page. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.55 · November 28, 2026
 
 - The small pictures at the top of a story page's left column load with the page instead of waiting until they scroll into view, so they never show as empty boxes. Author: Claude Opus 5.5 Medium.
