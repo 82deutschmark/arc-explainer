@@ -1,3 +1,7 @@
+### Version 9.164.55 · November 28, 2026
+
+- The small pictures at the top of a story page's left column load with the page instead of waiting until they scroll into view, so they never show as empty boxes. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.54 · November 27, 2026
 
 - Story pages are newspaper pages: three ruled columns like the front page. The left column carries the contest's other stories, the middle the story in two columns with a large opening letter, numbered source notes and pictures as one-column insets, and the right the story's own dated board as a real table, the "In this story" cards and the editor's box ("Editor-in-Chief · Head Meat Proxy"). The masthead runs at half height on story pages.

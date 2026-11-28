@@ -103,7 +103,7 @@ export function StoryWireColumn({ wire }: { wire: StoryWire }) {
   return <nav className="news-storypage-wire" aria-label={`More from ${brand.name}`}>
     <h2 className="news-flag"><span>{wire.contestName}</span><em>More from this contest</em></h2>
     {wire.contest.map(item => <article key={item.id} className={`news-brief${item.image ? ' has-art' : ''}`}>
-      {item.image && <Link href={item.href} className="news-wire-art" tabIndex={-1} aria-hidden="true"><img src={item.image.src} alt="" loading="lazy" decoding="async" /></Link>}
+      {item.image && <Link href={item.href} className="news-wire-art" tabIndex={-1} aria-hidden="true"><img src={item.image.src} alt="" decoding="async" /></Link>}
       <div className="news-brief-meta"><b>{item.label}</b> · {newsDate(item.publishedAt, true)}</div>
       <h3><Link href={item.href}>{item.headline}</Link></h3>
       {item.dek && <p className="news-wire-dek">{item.dek}</p>}
