@@ -2,7 +2,8 @@
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
  * Date: 27-Nov-2026
  * 27-Nov-2026 (Claude Opus 5.5 Medium, card back work): the sub strip names an Expert-and-above competitor by the tier word
- *          alone ("EXPERT", no "COMPETITOR ·" before it); below Expert it says COMPETITOR.
+ *          alone ("EXPERT", no "COMPETITOR ·" before it); below Expert it says COMPETITOR. The strip starts clear of the
+ *          Grandmaster starburst corner, which covered the first letter.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the top band redone after the Boss marked it as looking bad. The pennant is now cut
  *          to its words and drawn like the name ribbon (same tier gradient, outline and keyline), pinned under the season
  *          coin, with the set name large (one line from 38 px, two lines at 24 px or less) and no unreadable publisher line
@@ -306,7 +307,8 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
       ...fit.lines.map(l => nowrap({}, l)))));
 
   // ---- sub strip: what this is, the full tier word big enough for a thumbnail, and the overall rank ----
-  const subLeft = vm.hasBadge ? nameX - 6 : 40;
+  // The Grandmaster starburst corner reaches up into this strip: start the words clear of it (it hid the tier word's first letter).
+  const subLeft = vm.hasBadge ? nameX - 6 : T.border.corner === 'burst' ? Math.max(40, T.border.cornerSize + 34) : 40;
   const tierColour = mix(T.main, T.light, 0.35);
   const bestTier = vm.family === 'team' ? vm.roster.map(r => r.tier).filter(Boolean).sort((a, b) => TIER_LADDER.indexOf(b!) - TIER_LADDER.indexOf(a!))[0] : null;
   const dot = () => label('·', 22, T.main, { margin: '0 9px' });
