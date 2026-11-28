@@ -207,7 +207,7 @@ export interface StoryWireItem {
 export interface StoryWire { contest: StoryWireItem[]; contestName: string; elsewhere: StoryWireItem[]; archive: { href: string; text: string } }
 
 /** How many of the contest's other stories, and how many from elsewhere, the left column lists. */
-export const STORY_WIRE_LIMITS = { contest: 6, pictures: 2, elsewhere: 10 } as const;
+export const STORY_WIRE_LIMITS = { contest: 5, pictures: 2, elsewhere: 6 } as const;
 
 const wireItem = (story: NewsArticle | NewsDispatch): StoryWireItem => 'edition' in story
   ? { id: story.id, href: newsArticlePath(story.id), competition: competitionName(story.competition), label: editionLabel(story), publishedAt: story.publishedAt, headline: story.headline, dek: story.dek, image: story.image ? { src: story.image.src, alt: story.image.alt } : undefined }
