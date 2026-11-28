@@ -47,7 +47,7 @@
       "competition": "generalist-gaming-agent",
       "dek": "The ARChitects star who took first at ARC-AGI-3’s second milestone now holds the arcade’s high score, and Tufa Labs’ entry has climbed from thirty-ninth to third behind him.",
       "editorNote": "Disclosure: Keith Tyser, named in this story, was a Team Turducken teammate of Loose Goose editor Mark Barney in ARC-AGI-3.",
-      "generatedBy": "gpt-6-codex",
+      "generatedBy": "gpt-6.2-sol",
       "headline": "Franzen swipes the arcade lead",
       "id": "daniel-franzen-arcade-entrance",
       "image": {
@@ -59,7 +59,7 @@
         "daniel-franzen"
       ],
       "publishedAt": "2026-11-28T01:14:03+00:00",
-      "revisedAt": "2026-11-28T03:31:42+00:00",
+      "revisedAt": "2026-11-28T05:35:00+00:00",
       "sections": [
         {
           "sourceIds": [
@@ -217,7 +217,7 @@
       ]
     },
     "storyId": "daniel-franzen-arcade-entrance",
-    "storySha256": "bc315f3c0c4648228678f67691117ab840e18c599295a9ad059a2ab63409a0ab",
+    "storySha256": "decdd3acbd43cb72bb8076b31afab824cd2ade4843c21a4671027b5f0240f724",
     "version": 1
   },
   "review": {
@@ -240,7 +240,7 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "Independent review of the 27-28 November corrections made by a separate Claude Opus 5.5 Medium corrections session (branch claude/goose-story-corrections); this reviewer did not write the story or the corrections. Cards: the registry holds two person cards for Daniel Franzen, the career card (front and back art registered in the artwork catalog in the 27 November commit showing his two golds, graphics card and eyepiece, filed under the editor's Git name with GPT-6.2 Sol / Codex credited for the work; the art index confirms Franzen as the person pictured, while the asset records themselves carry no separate approval note) and the ARChitects duck card. The corrections showed the career front, career back and duck front but left out the duck card's back, which carries the close-up duck picture the editor chose for that back on 2 November (wiki/artwork/daniel-franzen-card-proof-v2.md; the host's card renderer supplies it). I added the duck back, so the story now shows all four faces of both cards. Facts: the 28 Nov 01:13 UTC table matches the saved record row for row, and that record's fingerprint matches the stored Kaggle read on the Team 4TB drive; the stored board export confirms the submission dates are 27 November. Tyser's Wednesday 0.408 and Dries @ Tufa Labs at thirty-ninth match the saved 25 Nov 20:18 UTC board, which the story did not cite; I added it to the first two sections. The milestone: x.com refused the ARC Prize winners post (payment wall), so I read it through a public mirror, which lists Franzen first with 27.9 percent and 25,000 dollars, ahead of Lord Han Solo and Lohit Siriki, dated 1 October; the wiki's archived summary of the post agrees. His homepage calls him the solo winner of Milestone Prize 2 and says he built on Tufa Labs' Duck harness. His release README carries the full-credit line to Jeroen Cottaar and Tufa Labs as quoted, and documents the progress-based compute priority and the late shift to finishing levels. The Jack Cole Gemma line and his table row are gone; I found no record of when or how he said it, so the cut is right. Copy: no banned words, no Eastern or AM/PM times, says used twice, ends on a statement, deck adds the milestone and the Tufa climb rather than repeating the lead, source titles plain and each listed once. Disclosure names Tyser as the editor's Team Turducken teammate, confirmed by the team roster record. Per the plan's decision that the board time travels with a place drawn into art, I added the 01:13 UTC 28 November board time to the cover caption. I checked the cover: its nameplate reads Daniel Franzen, ARC Prize 2024 winner · Public leaderboard, #1, with no time, so the alt text still describes only what is drawn. The plate's mix of a 2024 team title and a 2026 public place is the teardown's complaint about this cover and is an art change outside this review. Art: the cover and Hall of Fame images are unchanged and match the catalog. Continuity is not clean by the teardown's standard: the reader now sees a human cover, a human career card and a duck card. Both looks are editor-approved and showing every card is what the editor asked for, so it passes as stated. The unchanged section on Pathbreaker, Sophie778 and Keeper rests on the prior review. The saved-board links point to the planned /news/boards pages, which do not exist on the site yet; stage only after that page ships.",
+    "notes": "Credit-only change: the writer credit now names GPT-6.2 Sol / Codex, the model that wrote the story. No words, sources or art changed; the earlier review stands for everything else.",
     "previousReview": {
       "assets": [
         {
@@ -261,21 +261,47 @@
         "facts",
         "identity-and-roster"
       ],
-      "notes": "Independent Claude reviewed the release manuscript and matched all leaderboard figures against the exact 28 November 01:13 UTC Kaggle public board rows and Last Submission tooltips. Sources for the 25 November comparisons are the confirmed board and prior stories. Removed the relative Friday timing, separated the attributed Cole disclosure from his board line, and attributed Pathbreaker’s closing public rank to its own README, which explicitly reports sixth at the close and names both selected notebooks. Franzen’s README names the Duck harness and documents progress-based priorities and the late push for completed levels; Sophie’s release calls its entry a port, and Keeper explicitly credits Franzen and documents its own checks. Historical podium placings match ARC Prize; the site and release identify the milestone. The owner approved the clean illustrated cover and directed the release. Matched the exact approved master to the owner’s art record and verified likeness, medal symbolism, regalia and the programmatic name and place at 343 pixels. The only named cover contestant is Daniel Franzen. Verified his identity against Kaggle’s roster, his individual card, and the historical Hall of Fame card in the body.",
-      "rechecks": [
-        {
-          "at": "2026-11-28T01:28:08+00:00",
-          "by": "Claude Opus 5.5 Medium",
-          "what": "Cover replaced on 28 November: the same approved master with a new nameplate. Its small line now reads “ARC Prize 2024 winner · Public leaderboard” instead of “Kaggle user”, taken by the overlay script from Franzen’s verified Kaggle record (first of 1,427 with a gold medal) and matching the story’s ARC Prize 2024 source. The plate was enlarged so that line reads at 343 pixels and moved so it clears the robot; the story text is unchanged. The original reviewer has not seen the new cover; this re-check is by the assistant that rendered it."
-        }
-      ],
-      "reviewedAt": "2026-11-28T01:15:18+00:00",
-      "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
-      "storySha256": "d17eaa0d78a1557d61febe0c68f51ff8005c005720c6432e80265ce0ce7c5f57"
+      "notes": "Independent review of the 27-28 November corrections made by a separate Claude Opus 5.5 Medium corrections session (branch claude/goose-story-corrections); this reviewer did not write the story or the corrections. Cards: the registry holds two person cards for Daniel Franzen, the career card (front and back art registered in the artwork catalog in the 27 November commit showing his two golds, graphics card and eyepiece, filed under the editor's Git name with GPT-6.2 Sol / Codex credited for the work; the art index confirms Franzen as the person pictured, while the asset records themselves carry no separate approval note) and the ARChitects duck card. The corrections showed the career front, career back and duck front but left out the duck card's back, which carries the close-up duck picture the editor chose for that back on 2 November (wiki/artwork/daniel-franzen-card-proof-v2.md; the host's card renderer supplies it). I added the duck back, so the story now shows all four faces of both cards. Facts: the 28 Nov 01:13 UTC table matches the saved record row for row, and that record's fingerprint matches the stored Kaggle read on the Team 4TB drive; the stored board export confirms the submission dates are 27 November. Tyser's Wednesday 0.408 and Dries @ Tufa Labs at thirty-ninth match the saved 25 Nov 20:18 UTC board, which the story did not cite; I added it to the first two sections. The milestone: x.com refused the ARC Prize winners post (payment wall), so I read it through a public mirror, which lists Franzen first with 27.9 percent and 25,000 dollars, ahead of Lord Han Solo and Lohit Siriki, dated 1 October; the wiki's archived summary of the post agrees. His homepage calls him the solo winner of Milestone Prize 2 and says he built on Tufa Labs' Duck harness. His release README carries the full-credit line to Jeroen Cottaar and Tufa Labs as quoted, and documents the progress-based compute priority and the late shift to finishing levels. The Jack Cole Gemma line and his table row are gone; I found no record of when or how he said it, so the cut is right. Copy: no banned words, no Eastern or AM/PM times, says used twice, ends on a statement, deck adds the milestone and the Tufa climb rather than repeating the lead, source titles plain and each listed once. Disclosure names Tyser as the editor's Team Turducken teammate, confirmed by the team roster record. Per the plan's decision that the board time travels with a place drawn into art, I added the 01:13 UTC 28 November board time to the cover caption. I checked the cover: its nameplate reads Daniel Franzen, ARC Prize 2024 winner · Public leaderboard, #1, with no time, so the alt text still describes only what is drawn. The plate's mix of a 2024 team title and a 2026 public place is the teardown's complaint about this cover and is an art change outside this review. Art: the cover and Hall of Fame images are unchanged and match the catalog. Continuity is not clean by the teardown's standard: the reader now sees a human cover, a human career card and a duck card. Both looks are editor-approved and showing every card is what the editor asked for, so it passes as stated. The unchanged section on Pathbreaker, Sophie778 and Keeper rests on the prior review. The saved-board links point to the planned /news/boards pages, which do not exist on the site yet; stage only after that page ships.",
+      "previousReview": {
+        "assets": [
+          {
+            "sha256": "9a745cb52eca40d9b3cc1e50ac63ef093aaab4b1171108e7b815914617dd7261",
+            "source": "client/public/news-images/daniel-franzen-arcade-entrance-cover-v2.webp",
+            "target": "client/public/news-images/goose-9a745cb52eca40d9b3cc.webp"
+          },
+          {
+            "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe",
+            "source": "client/public/news-images/hall-of-fame/architechts.png",
+            "target": "client/public/news-images/goose-f35b1b7935b73db2f2b3.png"
+          }
+        ],
+        "checks": [
+          "art-continuity",
+          "art-reuse",
+          "copy",
+          "facts",
+          "identity-and-roster"
+        ],
+        "notes": "Independent Claude reviewed the release manuscript and matched all leaderboard figures against the exact 28 November 01:13 UTC Kaggle public board rows and Last Submission tooltips. Sources for the 25 November comparisons are the confirmed board and prior stories. Removed the relative Friday timing, separated the attributed Cole disclosure from his board line, and attributed Pathbreaker’s closing public rank to its own README, which explicitly reports sixth at the close and names both selected notebooks. Franzen’s README names the Duck harness and documents progress-based priorities and the late push for completed levels; Sophie’s release calls its entry a port, and Keeper explicitly credits Franzen and documents its own checks. Historical podium placings match ARC Prize; the site and release identify the milestone. The owner approved the clean illustrated cover and directed the release. Matched the exact approved master to the owner’s art record and verified likeness, medal symbolism, regalia and the programmatic name and place at 343 pixels. The only named cover contestant is Daniel Franzen. Verified his identity against Kaggle’s roster, his individual card, and the historical Hall of Fame card in the body.",
+        "rechecks": [
+          {
+            "at": "2026-11-28T01:28:08+00:00",
+            "by": "Claude Opus 5.5 Medium",
+            "what": "Cover replaced on 28 November: the same approved master with a new nameplate. Its small line now reads “ARC Prize 2024 winner · Public leaderboard” instead of “Kaggle user”, taken by the overlay script from Franzen’s verified Kaggle record (first of 1,427 with a gold medal) and matching the story’s ARC Prize 2024 source. The plate was enlarged so that line reads at 343 pixels and moved so it clears the robot; the story text is unchanged. The original reviewer has not seen the new cover; this re-check is by the assistant that rendered it."
+          }
+        ],
+        "reviewedAt": "2026-11-28T01:15:18+00:00",
+        "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
+        "storySha256": "d17eaa0d78a1557d61febe0c68f51ff8005c005720c6432e80265ce0ce7c5f57"
+      },
+      "reviewedAt": "2026-11-28T03:31:54+00:00",
+      "reviewedBy": "Claude Opus 5.5 Medium (independent review session)",
+      "storySha256": "bc315f3c0c4648228678f67691117ab840e18c599295a9ad059a2ab63409a0ab",
+      "writer": "gpt-6-codex"
     },
-    "reviewedAt": "2026-11-28T03:31:54+00:00",
-    "reviewedBy": "Claude Opus 5.5 Medium (independent review session)",
-    "storySha256": "bc315f3c0c4648228678f67691117ab840e18c599295a9ad059a2ab63409a0ab",
-    "writer": "gpt-6-codex"
+    "reviewedAt": "2026-11-28T05:33:00+00:00",
+    "reviewedBy": "Claude Opus 5.5 Medium (credit correction)",
+    "storySha256": "decdd3acbd43cb72bb8076b31afab824cd2ade4843c21a4671027b5f0240f724",
+    "writer": "gpt-6.2-sol"
   }
 }

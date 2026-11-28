@@ -4,13 +4,23 @@
       "cardId": "person-daniel-franzen-kaggleverse-2026",
       "label": "Daniel Franzen’s career card",
       "side": "front"
+    },
+    {
+      "cardId": "person-daniel-franzen-kaggleverse-2026",
+      "label": "Career card, back",
+      "side": "back"
+    },
+    {
+      "cardId": "person-daniel-franzen-2026",
+      "label": "ARChitects duck card",
+      "side": "front"
     }
   ],
   "commissionedBy": "mark-barney",
   "competition": "generalist-gaming-agent",
   "dek": "The ARChitects’ grid solver earned Franzen two Kaggle golds. His prize-winning version of Duck gave rival teams a way into ARC-AGI-3.",
   "editorNote": "Written by GPT-6.2 Sol / Codex.",
-  "generatedBy": "gpt-6-codex",
+  "generatedBy": "gpt-6.2-sol",
   "headline": "Daniel “the Duck” Franzen makes the field play his game",
   "id": "daniel-franzen-symmetry",
   "image": {
@@ -22,7 +32,7 @@
     "daniel-franzen"
   ],
   "publishedAt": "2026-11-28T02:40:12+00:00",
-  "revisedAt": "2026-11-28T02:44:52+00:00",
+  "revisedAt": "2026-11-28T05:35:00+00:00",
   "sections": [
     {
       "sourceIds": [

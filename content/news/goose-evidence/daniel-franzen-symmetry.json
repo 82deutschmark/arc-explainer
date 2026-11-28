@@ -17,13 +17,23 @@
           "cardId": "person-daniel-franzen-kaggleverse-2026",
           "label": "Daniel Franzen’s career card",
           "side": "front"
+        },
+        {
+          "cardId": "person-daniel-franzen-kaggleverse-2026",
+          "label": "Career card, back",
+          "side": "back"
+        },
+        {
+          "cardId": "person-daniel-franzen-2026",
+          "label": "ARChitects duck card",
+          "side": "front"
         }
       ],
       "commissionedBy": "mark-barney",
       "competition": "generalist-gaming-agent",
       "dek": "The ARChitects’ grid solver earned Franzen two Kaggle golds. His prize-winning version of Duck gave rival teams a way into ARC-AGI-3.",
       "editorNote": "Written by GPT-6.2 Sol / Codex.",
-      "generatedBy": "gpt-6-codex",
+      "generatedBy": "gpt-6.2-sol",
       "headline": "Daniel “the Duck” Franzen makes the field play his game",
       "id": "daniel-franzen-symmetry",
       "image": {
@@ -35,7 +45,7 @@
         "daniel-franzen"
       ],
       "publishedAt": "2026-11-28T02:40:12+00:00",
-      "revisedAt": "2026-11-28T02:44:52+00:00",
+      "revisedAt": "2026-11-28T05:35:00+00:00",
       "sections": [
         {
           "sourceIds": [
@@ -190,7 +200,7 @@
       ]
     },
     "storyId": "daniel-franzen-symmetry",
-    "storySha256": "0395e3397a2675388a51d548be17fe432298dbfbbb2adb08b79d1057dfacd618",
+    "storySha256": "7cf14f68196b4063720ebc0f72011c17b71bc7e52c01c728204e324d69d242e3",
     "version": 1
   },
   "review": {
@@ -208,9 +218,30 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "The independent Claude pass confirmed the core sourced record and conditioned publication on accurate disclosure, the public-board distinction and source labels. Named Mark Barney as a member of Team Turducken beside the notebook credit, checked against the team’s signed Kaggle write-up. Removed the Generalist Gaming rules description and the speculative opening claim. Franzen’s entry was verified on his Kaggle Competitions tab and the published entry report. Checked PMLR volume 267, which explicitly identifies the 42nd International Conference on Machine Learning, and Franzen’s own site, which gives the Mainz affiliation and solo second milestone prize. Kaggle shows two golds, from first in 2024 and second in 2025. The official four-person public ARC-AGI-3 row showed #14 at 47.19. The host copy of the board dated 28 November 02:27 UTC confirmed the same row. The private announcement is scheduled for December 4. The prose uses only the figures that matter to this feature. Used the exact corrected full arcade scene selected by the owner, without an overlay. Checked two gold medals, the grid eyepiece, the three-fan GPU and the separate robot against the registered character scene at 343 pixels. Franzen is a verified Kaggle Competitions Expert and wears functional gear without Grandmaster regalia. The phone layout showed the art before the opening and one small link to the new career card just after it. Confirmed that the proof headers do not appear in the rendered article. The owner requested the editorial nickname Daniel “the Duck” Franzen and a stronger focus on his Duck release. A separate Claude recheck confirmed the original-vs-fork attribution, the milestone prize, the golds and the disclosure, and asked for changes before publishing. Resolved the recheck by describing the actual NeurIPS coauthorship instead of their working relationship, using the ICML abstract’s explicit candidate-scoring description, stating the organizer’s announced results date, and naming the reuse shown in the cited Pathbreaker, Keeper and Turducken records. The nickname is the editor’s choice and is recorded as an alias. The artwork and card binding are unchanged.",
-    "reviewedAt": "2026-11-28T02:46:05+00:00",
-    "reviewedBy": "GPT-6.2 Sol / Codex with independent read-only Claude review",
-    "storySha256": "0395e3397a2675388a51d548be17fe432298dbfbbb2adb08b79d1057dfacd618"
+    "notes": "Credit-only change: the writer credit now names GPT-6.2 Sol / Codex, the model that wrote the story. No words, sources or art changed; the earlier review stands for everything else.",
+    "previousReview": {
+      "assets": [
+        {
+          "sha256": "2dc5733aea23ef7e90b2f7596ba04f9f061da1826792fe564199a5ee65b3eeae",
+          "source": "client/public/news-images/daniel-franzen-arcade-robot-gear.webp",
+          "target": "client/public/news-images/goose-2dc5733aea23ef7e90b2.webp"
+        }
+      ],
+      "checks": [
+        "art-continuity",
+        "art-reuse",
+        "copy",
+        "facts",
+        "identity-and-roster"
+      ],
+      "notes": "The independent Claude pass confirmed the core sourced record and conditioned publication on accurate disclosure, the public-board distinction and source labels. Named Mark Barney as a member of Team Turducken beside the notebook credit, checked against the team’s signed Kaggle write-up. Removed the Generalist Gaming rules description and the speculative opening claim. Franzen’s entry was verified on his Kaggle Competitions tab and the published entry report. Checked PMLR volume 267, which explicitly identifies the 42nd International Conference on Machine Learning, and Franzen’s own site, which gives the Mainz affiliation and solo second milestone prize. Kaggle shows two golds, from first in 2024 and second in 2025. The official four-person public ARC-AGI-3 row showed #14 at 47.19. The host copy of the board dated 28 November 02:27 UTC confirmed the same row. The private announcement is scheduled for December 4. The prose uses only the figures that matter to this feature. Used the exact corrected full arcade scene selected by the owner, without an overlay. Checked two gold medals, the grid eyepiece, the three-fan GPU and the separate robot against the registered character scene at 343 pixels. Franzen is a verified Kaggle Competitions Expert and wears functional gear without Grandmaster regalia. The phone layout showed the art before the opening and one small link to the new career card just after it. Confirmed that the proof headers do not appear in the rendered article. The owner requested the editorial nickname Daniel “the Duck” Franzen and a stronger focus on his Duck release. A separate Claude recheck confirmed the original-vs-fork attribution, the milestone prize, the golds and the disclosure, and asked for changes before publishing. Resolved the recheck by describing the actual NeurIPS coauthorship instead of their working relationship, using the ICML abstract’s explicit candidate-scoring description, stating the organizer’s announced results date, and naming the reuse shown in the cited Pathbreaker, Keeper and Turducken records. The nickname is the editor’s choice and is recorded as an alias. The artwork and card binding are unchanged.",
+      "reviewedAt": "2026-11-28T02:46:05+00:00",
+      "reviewedBy": "GPT-6.2 Sol / Codex with independent read-only Claude review",
+      "storySha256": "0395e3397a2675388a51d548be17fe432298dbfbbb2adb08b79d1057dfacd618"
+    },
+    "reviewedAt": "2026-11-28T05:33:00+00:00",
+    "reviewedBy": "Claude Opus 5.5 Medium (credit correction)",
+    "storySha256": "7cf14f68196b4063720ebc0f72011c17b71bc7e52c01c728204e324d69d242e3",
+    "writer": "gpt-6.2-sol"
   }
 }

@@ -7,7 +7,8 @@
     "gpt-6.1-terra-extra-high",
     "claude-sonnet-5-5",
     "claude-opus-5-5",
-    "gpt-6-astra-extra-high"
+    "gpt-6-astra-extra-high",
+    "gpt-6.2-sol"
   ],
   "wire": [
     "gpt-6-luna",

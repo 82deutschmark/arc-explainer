@@ -295,7 +295,7 @@ it('keeps cards drawable for names and headlines outside the card fonts', async 
 it('publishes verified people, historical artwork and public community branches', async () => {
   const index = getNewsIndex();
   const keith = index.people!.find(person => person.id === 'keith-tyser')!;
-  expect(new Set(keith.memberships.map(member => member.competition))).toEqual(new Set(['arc-2', 'arc-3']));
+  expect(new Set(keith.memberships.map(member => member.competition))).toEqual(new Set(['arc-2', 'arc-3', 'generalist-gaming-agent']));
   for (const route of ['/news/people/keith-tyser', '/news/community', '/news/staff']) {
     const response = await fetch(`${base}${route}`);
     expect(response.status).toBe(200);
@@ -413,7 +413,8 @@ it('leaves out one bad edition, dispatch or ledger record and keeps the rest of 
   write('articles/2026-10-15-morning-arc-3.json', { ...good, id: '2026-10-15-morning-arc-3', headline: '' });
   write('articles/2026-10-15-evening-arc-3.json', '{');
   write('articles/renamed-copy.json', good);
-  const dispatch = live.dispatches![0];
+  // The live index adds revisions and updatedAt from correction records; a stored dispatch never carries them.
+  const { revisions: _revisions, updatedAt: _updatedAt, ...dispatch } = live.dispatches![0] as any;
   write(`dispatches/${dispatch.id}.json`, dispatch);
   write('dispatches/broken-dispatch.json', { ...dispatch, id: 'broken-dispatch', sources: [] });
   const [first, second] = live.people!;

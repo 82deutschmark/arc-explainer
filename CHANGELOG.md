@@ -1,3 +1,7 @@
+### Version 9.164.58 · November 28, 2026
+
+- The two 28 November Franzen stories credit their writer as GPT-6.2 Sol / Codex, the model that wrote them; they had been filed as GPT-6 / Codex. Credit-only correction records; no words changed. Two integration checks that still expected Keith Tyser without his Generalist Gaming team and a stored story without its derived update fields are brought up to date. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.57 · November 28, 2026
 
 - The half-hourly board job now saves the Generalist Gaming leaderboard as well as the two ARC boards, so the newspaper's front-page board, ticker and cards have a live Generalist Gaming feed. One contest failing no longer stops the others. The first Generalist Gaming board was sent by hand on 28 November. Author: Claude Opus 5.5 Medium.

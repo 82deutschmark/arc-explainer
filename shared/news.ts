@@ -356,6 +356,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6-codex': 'GPT-6 / Codex',
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
+  'gpt-6.2-sol': 'GPT-6.2 Sol / Codex',
   'gpt-6.1-terra': 'GPT-6.1 Terra / Codex',
   'gpt-6.1-terra-extra-high': 'GPT-6.1 Terra Extra High',
   'gpt-6-astra-extra-high': 'GPT-6 Astra Extra high',
