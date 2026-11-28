@@ -1,3 +1,7 @@
+### Version 9.164.51 · November 27, 2026
+
+- Daniel Franzen’s career card uses his latest verified Kaggle profile and leads with the ARChitects’ dated ARC-AGI-3 public standing. The reverse groups standings with the medal ledger below the action art. Author: GPT-6.2 Sol / Codex.
+
 ### Version 9.164.50 · November 25, 2026
 
 - A story can now show selected faces of its verified competitors’ existing cards. Keith Tyser’s story shows his Generalist Gaming and ARC-AGI-3 cards in the existing row. Author: GPT-6 / Codex.

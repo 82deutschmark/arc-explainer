@@ -12544,7 +12544,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "e53f0c31472a9be82d4f9f46d6b64e857d1b7aa9658ba196701f77a16e4c7699",
+  "fingerprint": "18bbe31e854c185c815f9c3b962ed528322768f7c616cccad63697e04a9d020d",
   "people": [
     {
       "accounts": [
@@ -26403,9 +26403,15 @@
           "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
           "src": "/news-images/cards/2026/daniel-franzen-career-scene.webp"
         },
-        "biography": "Mainz symmetry researcher and two-time Kaggle gold medalist. With the ARChitects he took the ARC Prize 2024 high-score title and finished second in 2025. His agent built on Tufa Labs’ Duck harness won the ARC-AGI-3 Milestone 2 open-source prize.",
+        "biography": "Mainz symmetry researcher and two-time Kaggle gold medalist. With the ARChitects he took the ARC Prize 2024 high-score title and finished second in 2025. His agent built on Tufa Labs’ Duck harness won the ARC-AGI-3 Milestone 2 prize.",
         "description": "Two Kaggle competition golds with the ARChitects. Franzen topped the ARC Prize 2024 high-score competition, returned as runner-up in 2025 and took the ARC-AGI-3 Milestone 2 open-source prize in 2026.",
-        "entries": [],
+        "entries": [
+          {
+            "competition": "arc-3",
+            "competitionId": "arc-prize-2026-arc-agi-3",
+            "teamId": "16032816"
+          }
+        ],
         "id": "person-daniel-franzen-kaggleverse-2026",
         "issuedAt": "2026-11-28T01:16:23+00:00",
         "kind": "person",
@@ -26423,7 +26429,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-28T01:22:09+00:00",
+    "updatedAt": "2026-11-28T01:24:39Z",
     "version": 1
   },
   "results": [],

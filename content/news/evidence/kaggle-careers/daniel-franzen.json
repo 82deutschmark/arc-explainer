@@ -2,8 +2,8 @@
   "personId": "daniel-franzen",
   "handle": "dfranzen",
   "name": "Daniel Franzen",
-  "checkedAt": "2026-10-30T11:39:34Z",
-  "method": "Rebuilt from scratch on 2026-10-30 in the app's built-in browser, with the earlier draft treated as unverified. Loaded only the public Kaggle profile page and its Competitions tab, one request each, about five seconds apart, and read page text, the document's own join tooltip and medal labels, and screenshots of the completed-competitions list to confirm the gold icons. The profile picture was read from the profile's avatar element, downloaded with curl, and compared by eye with the saved portrait.",
+  "checkedAt": "2026-11-28T01:24:39Z",
+  "method": "Rebuilt from scratch on 2026-10-30 in the app's built-in browser, with the earlier draft treated as unverified. Loaded only the public Kaggle profile page and its Competitions tab, one request each, about five seconds apart, and read page text, the document's own join tooltip and medal labels, and screenshots of the completed-competitions list to confirm the gold icons. The profile picture was read from the profile's avatar element, downloaded with curl, and compared by eye with the saved portrait. Refreshed the profile and its Competitions tab in the Codex in-app browser on 27 November 2026 Eastern. Kaggle showed Competitions Expert, two golds, rank 247 of 224,220 and best rank 77.",
   "sources": [
     "https://www.kaggle.com/dfranzen",
     "https://www.kaggle.com/dfranzen/competitions"
@@ -14,8 +14,8 @@
     "medals": {
       "gold": 2
     },
-    "competitionRank": 246,
-    "competitionRankOutOf": 225021,
+    "competitionRank": 247,
+    "competitionRankOutOf": 224220,
     "highestCompetitionRank": 77,
     "joinedTooltip": "Tue Mar 20 2018 08:01:20 GMT-0400 (Eastern Daylight Time)",
     "joinedMonth": "2018-03",
@@ -23,14 +23,14 @@
     "location": "Mainz, Rhineland-Palatinate, Germany",
     "bioPresent": true,
     "bioSummary": "PhD work on equivariant neural networks for physics and chemistry at the University of Mainz; grows Riesling wine in the Moselle valley as a side project.",
-    "followers": 86,
-    "activity": "3 competitions solo, 4 in a team, 0 hosted",
-    "competitionsTab": "7 competitions: 2 active, 5 completed"
+    "followers": 91,
+    "competitionsTab": "8 competitions: 3 under Active Competitions, 5 completed"
   },
   "visibleCompetitionList": {
-    "activeCount": 2,
+    "activeCount": 3,
     "completedCount": 5,
     "activeNames": [
+      "Generalist Gaming Agent",
       "ARC Prize 2026 - ARC-AGI-3",
       "ARC Prize 2026 - ARC-AGI-2"
     ],
@@ -41,7 +41,7 @@
       "Jane Street Real-Time Market Data Forecasting",
       "AI Mathematical Olympiad - Progress Prize 3"
     ],
-    "scopeNote": "The page lists five completed competitions and shows no standing for the two active ones. Do not invent further finishes or treat the list as the full participation history."
+    "scopeNote": "The page lists five completed competitions and groups Generalist Gaming with both 2026 ARC events under Active Competitions. The two ARC submission windows have closed and their private results are pending."
   },
   "completedResults": [
     {

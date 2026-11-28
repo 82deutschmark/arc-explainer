@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Sonnet 5.5; Claude Opus 5.5
- * Date: 16-November-2026
+ * Date: 27-November-2026
+ * 27-Nov-2026 (GPT-6.2 Sol / Codex): keep newer verified Kaggle profile readings across wiki exports.
  * 16-Nov-2026 (GPT-6 / Codex): classify bare catalog faces using the same card model and art dimensions as the renderer.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): getNewsCollection checks its memo (watched files, board generation,
  *          TTL) before reading the news index; each artwork is hashed once per path, modified time and size; a person
@@ -428,7 +429,14 @@ function buildCollectionFromFiles(directory: string, wiki: ReturnType<typeof loa
   const resultFile = path.join(directory, 'card-results.json');
   const results = wiki?.results ?? (resultFile && fs.existsSync(resultFile) ? JSON.parse(fs.readFileSync(resultFile, 'utf8')) as FinalCardResult[] : []);
   const careerFile = path.join(directory, 'careers.json');
-  const careers = wiki?.careers ?? (fs.existsSync(careerFile) ? careersFileSchema.parse(JSON.parse(fs.readFileSync(careerFile, 'utf8'))).careers : {});
+  const profileCareers = fs.existsSync(careerFile) ? careersFileSchema.parse(JSON.parse(fs.readFileSync(careerFile, 'utf8'))).careers : {};
+  const careers = wiki ? Object.fromEntries(Object.entries(wiki.careers).map(([id, career]) => {
+    const profile = profileCareers[id];
+    if (!profile || Date.parse(profile.checkedAt) < Date.parse(career.checkedAt)) return [id, career];
+    // The verified profile provides a dated tier, tally and rank. The wiki still owns its sourced ledger and team credits.
+    const { checkedAt, rank, medals, tier } = profile;
+    return [id, { ...career, checkedAt, rank, medals, tier }];
+  })) : profileCareers;
   const boardFile = path.join(directory, 'board-history.json');
   const board = !wiki && fs.existsSync(boardFile) ? boardHistorySchema.parse(JSON.parse(fs.readFileSync(boardFile, 'utf8'))) : null;
   const hofFile = path.join(directory, 'hall-of-fame.json');

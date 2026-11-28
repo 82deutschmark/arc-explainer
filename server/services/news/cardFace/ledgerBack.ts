@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex; Claude Sonnet 5.5 Medium; Claude Opus 5.5
- * Date: 25-Nov-2026
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (GPT-6.2 Sol / Codex): place the dated team strip next to the medal ledger below action art.
  * PURPOSE: Competitor card reverse. A solid paper header leads with the verified medal tally,
  *          tier and Kaggle rank. Dated standings use a rank-only strip. A medal ledger sits
  *          over the selected second picture or a tier-coloured backdrop. The row budget
@@ -97,8 +98,8 @@ export async function ledgerNode({ vm, bm, second, blank }: LedgerInput): Promis
   const standings = bm.standings.filter(row => row.rank).slice(0, 3);
   const STAND_H = 58, TITLE_H = 44, NOTE_H = 48, ROW_MIN = 73, ROW_MAX = 83;
   const standH = standings.length ? standings.length * STAND_H + 6 : 0;
-  const standTop = MARGIN + headH + GAP;
-  const recordTop = standTop + (standH ? standH + GAP : 0);
+  const headerEnd = MARGIN + headH + GAP;
+  const recordTop = headerEnd + (standH ? standH + GAP : 0);
 
   const career = bm.career;
   // Reserve the footer before counting rows if the dated career evidence can't all fit.
@@ -114,13 +115,18 @@ export async function ledgerNode({ vm, bm, second, blank }: LedgerInput): Promis
   const sheetTop = hasArt || !career ? BOTTOM - sheetH : recordTop;
   const lines = await Promise.all(rows.slice(0, visible).map((row, index) => medalRow(row, rowH, index)));
 
+  const standTop = hasArt ? sheetTop - standH - GAP : headerEnd;
   const stand = standH ? at(MARGIN, standTop, COL, standH, panel,
-    ...standings.map(r => box({ height: STAND_H, flexShrink: 0, alignItems: 'center', background: PAPER_ALT,
-      padding: `0 ${INSET}px`, borderBottom: `1px solid ${RULE}`, gap: 12 },
-      box({ flexDirection: 'column', flexGrow: 1, minWidth: 0 },
-        cond(r.title, 24, INK, 700, clip(COL - 175)),
-        r.evidence ? cond(r.evidence, 17, MUTED, 500, { marginTop: 4 }) : null),
-      mono(r.rank!, 27, ink, 700, { marginLeft: 'auto' })))) : null;
+    ...standings.map(row => {
+      const team = row.sub?.split(' · ')[0];
+      const detail = [team, row.evidence].filter(Boolean).join(' · ');
+      return box({ height: STAND_H, flexShrink: 0, alignItems: 'center', background: PAPER_ALT,
+        padding: `0 ${INSET}px`, borderBottom: `1px solid ${RULE}`, gap: 12 },
+        box({ flexDirection: 'column', flexGrow: 1, minWidth: 0 },
+          cond(row.title, 24, INK, 700, clip(COL - 175)),
+          detail ? cond(detail, 17, MUTED, 500, { marginTop: 4, ...clip(COL - 145) }) : null),
+        mono(row.rank!, 27, ink, 700, { marginLeft: 'auto' }));
+    })) : null;
 
   const sheet = career ? at(MARGIN, sheetTop, COL, sheetH, { ...panel, overflow: 'hidden' },
     rows.length ? box({ height: TITLE_H, flexShrink: 0, background: ink, alignItems: 'center',
@@ -145,7 +151,7 @@ export async function ledgerNode({ vm, bm, second, blank }: LedgerInput): Promis
       }
     } else {
       // a wide picture (a scene of the team) fills the space above the sheet edge to edge, cropped toward its subjects, so it is SEEN
-      const windowH = Math.max(200, sheetTop + 24);
+      const windowH = Math.max(200, (standH ? standTop : sheetTop) + 24);
       const fill = await sharp(second).rotate().resize(W, H, { fit: 'cover' }).blur(30).modulate({ brightness: 0.45 }).jpeg({ quality: 80 }).toBuffer();
       const scene = await sharp(second).rotate().resize(W, windowH, { fit: 'cover', position: sharp.strategy.attention }).toBuffer();
       backdrop = await sharp(fill).composite([{ input: scene, left: 0, top: 0 }]).jpeg({ quality: 90 }).toBuffer();
