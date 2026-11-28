@@ -1,5 +1,7 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): GET /news/boards/:id serves a saved, dated leaderboard copy that stories cite
+ *          (content/news/boards/<id>.json, copied from the newsroom's wiki/leaderboards/boards).
  * 27-Nov-2026 (Claude Opus 5.5 Medium): a story's response carries storyWire, its page's left column from the whole archive.
  * Date: 14-Nov-2026 (Claude Opus 5.5); 02-November-2026 (GPT-6 / Codex: publication and loading states; earlier GPT-6.1 Sol lookup)
  * PURPOSE: Read-only Card Cabinet, landscape link previews, downloadable front/back collectibles,
@@ -62,6 +64,13 @@ export function mountNews(app: Express) {
         .set('Cache-Control', req.query.v === version ? 'public, max-age=31536000, immutable' : 'public, max-age=60')
         .send(await buildCollectionShareImage(card, collection));
     } catch (error) { next(error); }
+  });
+  // A saved, dated copy of a leaderboard a story quotes. The id is a plain slug, so it can only name a file in the folder.
+  app.get('/news/boards/:id', (req, res) => {
+    const id = req.params.id;
+    const file = path.join(NEWS_DIRECTORY, 'boards', `${id}.json`);
+    if (!/^[a-z0-9][a-z0-9-]*-\d{4}-\d{2}-\d{2}T\d{4}Z$/.test(id) || !fs.existsSync(file)) return res.status(404).json({ error: 'Saved board not found' });
+    return res.type('application/json').set('Cache-Control', 'public, max-age=31536000, immutable').send(fs.readFileSync(file));
   });
   app.get('/api/news/cards/:id/image.png', async (req, res, next) => {
     try {

@@ -1,3 +1,12 @@
+### Version 9.164.54 · November 27, 2026
+
+- Story pages are newspaper pages: three ruled columns like the front page. The left column carries the contest's other stories, the middle the story in two columns with a large opening letter, numbered source notes and pictures as one-column insets, and the right the story's own dated board as a real table, the "In this story" cards and the editor's box ("Editor-in-Chief · Head Meat Proxy"). The masthead runs at half height on story pages.
+- "In this story" follows one rule on every story: the subject's newest card first (a Kaggleverse career card before an ARC card), then their older cards, then everyone else the story names or lists on its board. A test holds every published story to it.
+- ARC Prize 2026 goes into storage on the newspaper. The front page's ticker, board column and movers follow Generalist Gaming, the Inside box leads with it, and a new page at /news/archive/arc-prize-2026 holds the final boards, guides and every ARC story. The cards page puts Generalist Gaming and the career cards first and the ARC sets under "2026 archive". The countdown points at the Generalist Gaming close. Nothing is deleted. The Generalist Gaming board stays empty until the board job saves it.
+- The competitor card back is denser and evenly spaced, and tiers read Expert, Master or Grandmaster without "Kaggle". Card image version 16.
+- The three Generalist Gaming stories are corrected, with dated correction records: Franzen's milestone win cited to ARC Prize's winners post and credited as his release credits it, unsourced Jack Cole remarks cut, teammate disclosures added, times in UTC, and boards linked to saved copies, now served at /news/boards/<id>.
+Author: Claude Opus 5.5 Medium (with four build sessions and a separate review session).
+
 ### Version 9.164.53 · November 27, 2026
 
 - The news tests all pass again. Five checks still expected designs the Boss had already replaced, so they were updated rather than the pages: the On the Private story keeps its production stills behind the scene-book link (the gallery came off the page on 13 November); competitor card backs print a dated rank-only standings strip per contest with the team on it, under the medal ledger, instead of a score column and a contest-count summary (the medal-first reverse of 25 November); and a story's citations are its cited sources in the order they are first cited. No page or card changed. Checked with the full news test run. Author: Claude Opus 5.5 Medium.

@@ -3,6 +3,12 @@
  * Date: 27-November-2026
  * 27-Nov-2026 (Claude Opus 5.5 Medium): the tier badge and the card page header pill print the shared tier title ("Expert",
  *          "Grandmaster", "Competitor" below Expert), never "Kaggle Expert".
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): ARC Prize 2026 into storage. The catalog is ordered by heading
+ *          (shared/cardCatalog.ts catalogGroup): the Generalist Gaming set first, the Kaggleverse career cards next,
+ *          other contests after, and the ARC Prize 2026 sets last under "2026 archive"; the binder and the checklist
+ *          print each heading where its cards begin, and the Card set menu groups its sets the same way. A role or
+ *          tier with no cards (today: sponsors) is neither counted in the header nor offered as a filter. Tier labels
+ *          drop the word "Kaggle".
  * 25-Nov-2026 (GPT-6 / Codex): date the profile statistics used on the medal-first card reverse.
  * 16-Nov-2026 (GPT-6 / Codex): omit empty profile fallback faces from catalog results and counts.
  * 14-Nov-2026 (Claude Opus 5.5, integration): the page's og:image uses the collection-aware share version, as the server meta does.
@@ -25,7 +31,7 @@
  *          lays out and links. Wording helpers live in shared/newsCollection.ts so the server HTML, the share
  *          images and this page say the same thing.
  */
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { SITE_ORIGIN } from '@shared/seo';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
@@ -42,7 +48,10 @@ import { NewsStatus, newsDate, useNews, useNewsCardImage } from '@/components/ne
 import { CabinetShell } from '@/components/news/CabinetShell';
 import { CardPair, cardFaceSrcSet, cardFaceThumb } from '@/components/news/CardPair';
 import { useNewsCollection } from '@/hooks/useNewsCollection';
-import { CATALOG_PAGE_SIZE, catalogCardVisible, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
+import { ARC_2026_ARCHIVE, NEWS_CURRENT_COMPETITIONS } from '@shared/newsSeasons';
+
+const contestRank = (key: string) => NEWS_CURRENT_COMPETITIONS.includes(key) ? 0 : ARC_2026_ARCHIVE.competitions.includes(key) ? 2 : 1;
+import { CATALOG_PAGE_SIZE, catalogGroup, type CatalogGroup, catalogCardVisible, catalogCompetitions, catalogEntry, catalogFallbackLine, catalogSubjectLabel, catalogSet, catalogSetLabel } from '@shared/cardCatalog';
 import '@/components/news/cardCatalog.css';
 import '@/components/news/cardRelationships.css';
 
@@ -106,6 +115,21 @@ export function Tile({ card, index, contest = 'all' }: { card: CollectionCard; i
   </article>;
 }
 
+/** The binder: one grid per heading on this page, each under its heading (the current set first, the 2026 archive last). */
+function Binder({ cards, contest, groupOf }: { cards: CollectionCard[]; contest: string; groupOf: (card: CollectionCard) => CatalogGroup }) {
+  const runs: { group: CatalogGroup; cards: CollectionCard[] }[] = [];
+  for (const card of cards) {
+    const group = groupOf(card);
+    if (runs.at(-1)?.group.id === group.id) runs.at(-1)!.cards.push(card);
+    else runs.push({ group, cards: [card] });
+  }
+  let index = 0;
+  return <>{runs.map(run => <section key={run.group.id} className="cb-group" id={`set-${run.group.id}`} aria-label={run.group.heading}>
+    <h2 className="cb-group-head">{run.group.heading}{run.group.note && <small>{run.group.note}</small>}</h2>
+    <div className="cb-grid">{run.cards.map(card => <Tile key={card.id} card={card} index={index++} contest={contest} />)}</div>
+  </section>)}</>;
+}
+
 function MedalRow({ card }: { card: CollectionCard }) {
   const m = card.career?.medals;
   if (!m) return <span className="cb-dim">—</span>;
@@ -113,15 +137,17 @@ function MedalRow({ card }: { card: CollectionCard }) {
 }
 
 /** The price-guide view: every card on one dense line, sortable. */
-function Sheet({ cards, sort, setSort, contest }: { cards: CollectionCard[]; sort: SortKey; setSort: (key: SortKey) => void; contest: string }) {
+function Sheet({ cards, sort, setSort, contest, groupOf }: { cards: CollectionCard[]; sort: SortKey; setSort: (key: SortKey) => void; contest: string; groupOf: (card: CollectionCard) => CatalogGroup }) {
   const head = (key: SortKey, label: string) => <th scope="col"><button type="button" onClick={() => setSort(key)} disabled={key === 'rank' && contest === 'all'} aria-pressed={sort === key}>{label}{sort === key ? ' ▾' : ''}</button></th>;
   return <div className="cb-sheet-wrap"><table className="cb-sheet">
     <caption className="sr-only">Every card in the Cabinet, with role, tier, standing and medals</caption>
     <thead><tr><th scope="col">Card</th>{head('tier', 'Tier')}<th scope="col">Contest</th><th scope="col">Team</th>{head('rank', 'Rank')}<th scope="col">Score</th>{head('medals', 'G · S · B')}</tr></thead>
-    <tbody>{cards.map(card => {
+    <tbody>{cards.map((card, index) => {
       const lead = catalogEntry(card, contest);
       const more = card.entries.filter(entry => contest === 'all' && entry !== lead && entry.status !== 'unavailable');
-      return <tr key={card.id} className={`tone-${toneOf(card)}`}>
+      const group = groupOf(card);
+      const heading = index === 0 || groupOf(cards[index - 1]).id !== group.id;
+      return <Fragment key={card.id}>{heading && <tr className="cb-group-row" id={`set-${group.id}`}><th colSpan={7} scope="rowgroup">{group.heading}{group.note && <small>{group.note}</small>}</th></tr>}<tr className={`tone-${toneOf(card)}`}>
         <th scope="row"><Link href={card.cardUrl}>{card.name}</Link></th>
         <td><TierBadge card={card} /></td>
         <td>{lead ? competitionName(lead.competition) : '—'}{more.map(entry => <small key={entry.competitionId}>{competitionName(entry.competition)}</small>)}</td>
@@ -129,7 +155,7 @@ function Sheet({ cards, sort, setSort, contest }: { cards: CollectionCard[]; sor
         <td className="cb-num pl">{rankText(lead)}{more.map(entry => <small key={entry.competitionId}>{rankText(entry)}</small>)}</td>
         <td className="cb-num sc">{scoreText(lead)}{more.map(entry => <small key={entry.competitionId}>{scoreText(entry)}</small>)}</td>
         <td><MedalRow card={card} /></td>
-      </tr>;
+      </tr></Fragment>;
     })}</tbody>
   </table></div>;
 }
@@ -195,12 +221,17 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
   const cards = useMemo(() => collection.cards.filter(catalogCardVisible), [collection.cards]);
   const seasons = [...new Set(cards.map(card => card.season))].sort().reverse();
   const contests = useMemo(() => [...new Map(cards.flatMap(card => catalogCompetitions(card, collection.sets)).map(entry => [entry.id, entry.key] as const)).entries()]
-    .map(([id, key]) => ({ id, label: competitionName(key) })), [cards, collection.sets]);
+    .map(([id, key]) => ({ id, key, label: competitionName(key) }))
+    // The current contest's chip first and the stored ARC Prize 2026 contests last, as the binder orders the cards.
+    .sort((a, b) => contestRank(a.key) - contestRank(b.key)), [cards, collection.sets]);
   const counts = useMemo(() => ({
     competitors: cards.filter(card => card.role === 'competitor').length, sponsors: cards.filter(card => card.role === 'sponsor').length, teams: cards.filter(card => card.role === 'team').length,
     tiers: [...KAGGLE_TIERS].reverse().map(name => ({ name, count: cards.filter(card => card.career?.tier === name).length })).filter(row => row.count),
   }), [cards]);
   const needle = search.trim().toLocaleLowerCase();
+  // Every card's heading, worked out once: the current contest's set, the career cards, other contests, the 2026 archive.
+  const groups = useMemo(() => new Map(cards.map(card => [card.id, catalogGroup(card, collection.sets)])), [cards, collection.sets]);
+  const groupOf = (card: CollectionCard) => groups.get(card.id) ?? catalogGroup(card, collection.sets);
   const shown = useMemo(() => cards.filter(card => {
     if (edition !== 'all' && catalogSet(card, collection.sets)?.id !== edition) return false;
     if (season !== 'all' && card.season !== season) return false;
@@ -212,6 +243,9 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
       ...card.entries.flatMap(entry => [entry.teamName, ...entry.members.flatMap(member => [member.name, member.handle])]), ...card.teamHistory.map(team => team.teamName)];
     return words.join(' ').toLocaleLowerCase().includes(needle);
   }).sort((a, b) => {
+    // Headings first, so the current contest's set leads and the 2026 archive comes last whatever the sort.
+    const byGroup = (groups.get(a.id)?.order ?? 2) - (groups.get(b.id)?.order ?? 2);
+    if (byGroup) return byGroup;
     const byNumber = a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });   // sorted by name: cards carry no invented numbers
     if (sort === 'rank' && contest !== 'all') {
       const rank = (card: CollectionCard) => catalogEntry(card, contest)?.rank ?? Infinity;
@@ -220,7 +254,7 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     if (sort === 'tier') return tierRank(b) - tierRank(a) || medalScore(b) - medalScore(a) || byNumber;
     if (sort === 'medals') return medalScore(b) - medalScore(a) || byNumber;
     return byNumber;
-  }), [cards, role, tier, contest, needle, sort, season, edition, collection.sets]);
+  }), [cards, role, tier, contest, needle, sort, season, edition, collection.sets, groups]);
   // The binder and the checklist show the same cards, so switching view keeps the page; a new filter starts at page 1.
   const filterKey = JSON.stringify([role, tier, contest, needle, sort, season, edition]);
   const pages = Math.max(1, Math.ceil(shown.length / CATALOG_PAGE_SIZE));
@@ -230,6 +264,9 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
   // The lower pager sits below a full page of cards: bring the controls and the new page's first cards back into view.
   const turnTo = (next: number) => { setPageChoice({ key: filterKey, page: next }); controls.current?.scrollIntoView({ block: 'start' }); };
   const pagination = pages > 1 && <nav className="cb-pagination" aria-label="Card pages"><button type="button" disabled={page === 0} onClick={() => turnTo(page - 1)}>← Previous</button><span>Page {page + 1} of {pages}</span><button type="button" disabled={page + 1 === pages} onClick={() => turnTo(page + 1)}>Next →</button></nav>;
+  const storedIds = ARC_2026_ARCHIVE.cardSetIds as readonly string[];
+  const setsNow = (collection.sets ?? []).filter(item => !storedIds.includes(item.id));
+  const setsStored = (collection.sets ?? []).filter(item => storedIds.includes(item.id));
   const chip = <T extends string>(current: T, set: (value: T) => void, value: T, label: string, count?: number) =>
     <button key={value} type="button" aria-pressed={current === value} onClick={() => set(value)}>{label}{count != null ? <i>{count}</i> : null}</button>;
   return <main className="cb">
@@ -237,7 +274,9 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
       <h1>Kaggle card catalog</h1>
       <p className="cb-sub">Individual competitors, teams and sponsors across Kaggle competitions. Each card keeps its own permanent link and season; open it for the full record.</p>
       <ul className="cb-ticker" aria-label="The set">
-        <li><b>{cards.length}</b> cards</li><li><b>{counts.competitors}</b> individual cards</li><li><b>{counts.sponsors}</b> sponsor cards</li><li><b>{counts.teams}</b> team cards</li>
+        <li><b>{cards.length}</b> cards</li>
+        {/* A role with no cards is not a statistic worth printing (no sponsor has a card yet). */}
+        {!!counts.competitors && <li><b>{counts.competitors}</b> individual cards</li>}{!!counts.sponsors && <li><b>{counts.sponsors}</b> sponsor cards</li>}{!!counts.teams && <li><b>{counts.teams}</b> team cards</li>}
         {counts.tiers.map(row => <li key={row.name} className={`tone-${row.name.toLowerCase()}`}><b>{row.count}</b> {row.name}{row.count === 1 ? '' : 's'}</li>)}
       </ul>
       {collection.archive && <div className="cb-chips cb-sets" role="group" aria-label="Set">
@@ -247,17 +286,20 @@ export function Cabinet({ collection }: { collection: NewsCollection }) {
     {set === 'archive' && collection.archive ? <Archive archive={collection.archive} /> : <>
     <form ref={controls} className="cb-controls" onSubmit={event => event.preventDefault()} aria-label="Find cards">
       <label className="cb-search"><span className="sr-only">Find a card</span><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a name, team or Kaggle handle" /></label>
-      <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{chip(role, setRole, 'competitor', 'People', counts.competitors)}{chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
-      <div className="cb-chips" role="group" aria-label="Individual Kaggle tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
+      <div className="cb-chips" role="group" aria-label="Who">{chip(role, setRole, 'all', 'All')}{!!counts.competitors && chip(role, setRole, 'competitor', 'People', counts.competitors)}{!!counts.sponsors && chip(role, setRole, 'sponsor', 'Sponsors', counts.sponsors)}{!!counts.teams && chip(role, setRole, 'team', 'Teams', counts.teams)}</div>
+      <div className="cb-chips" role="group" aria-label="Competitions tier">{chip(tier, setTier, 'all', 'Any tier')}{[...KAGGLE_TIERS].reverse().map(name => counts.tiers.some(row => row.name === name) && chip(tier, setTier, name as TierFilter, name))}</div>
       {contests.length > 1 && <div className="cb-chips" role="group" aria-label="Competition">{chip(contest, (value: string) => { setContest(value); if (sort === 'rank') setSort('name'); }, 'all', 'Any contest')}{contests.map(row => chip(contest, setContest, row.id, row.label))}</div>}
-      <label className="cb-sort"><span>Card set</span><select value={edition} onChange={event => setEdition(event.target.value)}><option value="all">All sets</option>{collection.sets?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+      <label className="cb-sort"><span>Card set</span><select value={edition} onChange={event => setEdition(event.target.value)}><option value="all">All sets</option>
+        {/* The stored ARC Prize 2026 sets are grouped apart, as the binder files them. */}
+        <optgroup label="Now">{setsNow.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>
+        {!!setsStored.length && <optgroup label={ARC_2026_ARCHIVE.cardHeading}>{setsStored.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</optgroup>}</select></label>
       <label className="cb-sort"><span>Season</span><select value={season} onChange={event => setSeason(event.target.value)}><option value="all">All seasons</option>{seasons.map(year => <option key={year} value={year}>{year}</option>)}</select></label>
-      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="name">Name</option><option value="rank" disabled={contest === 'all'}>Place in selected contest</option><option value="tier">Kaggle tier</option><option value="medals">Medals</option></select></label>
+      <label className="cb-sort"><span>Sort</span><select value={sort} onChange={event => setSort(event.target.value as SortKey)}><option value="name">Name</option><option value="rank" disabled={contest === 'all'}>Place in selected contest</option><option value="tier">Tier</option><option value="medals">Medals</option></select></label>
       <div className="cb-chips cb-view" role="group" aria-label="View">{chip(view, setView, 'binder', 'Binder')}{chip(view, setView, 'sheet', 'Checklist')}</div>
       <p className="cb-shown" role="status" aria-live="polite">{shown.length} card matches · {shown.length ? page * CATALOG_PAGE_SIZE + 1 : 0}–{Math.min((page + 1) * CATALOG_PAGE_SIZE, shown.length)} shown</p>
     </form>
     {pagination}
-    {view === 'binder' ? <div className="cb-grid">{visible.map((card, index) => <Tile key={card.id} card={card} index={index} contest={contest} />)}</div> : <Sheet cards={visible} sort={sort} setSort={setSort} contest={contest} />}
+    {view === 'binder' ? <Binder cards={visible} contest={contest} groupOf={groupOf} /> : <Sheet cards={visible} sort={sort} setSort={setSort} contest={contest} groupOf={groupOf} />}
     {pagination}
     {news.data && <UncardedCast index={news.data} cards={collection.cards} needle={needle} role={role} contest={contest} season={season} filtered={tier !== 'all' || edition !== 'all'} />}
     {news.isError && !news.data && <p className="cb-note">People and teams without cards could not be loaded. <button type="button" onClick={() => void news.refetch()}>Try again</button></p>}

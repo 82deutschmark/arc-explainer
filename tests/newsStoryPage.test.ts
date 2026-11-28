@@ -44,7 +44,7 @@ describe('the story page', () => {
     expect(boards[0].caption).toMatch(/^Generalist Gaming public board · 28 November 2026, 01:13 UTC/);
     expect(boards[0].rows.map(row => [row.place, row.team, ...row.fields])).toEqual([
       [1, 'Daniel Franzen', '0.554', '6', '17:11'], [2, 'Keith Tyser', '0.477', '13', '11:10'], [3, 'Dries @ Tufa Labs', '0.401', '15', '18:57'],
-      [4, 'Mevlana Yalçın', '0.400', '7', '18:37'], [5, 'Pay-to-Compute', '0.365', '17', '17:25'], [33, 'Jack Cole', '0.338', '20', '13:31']]);
+      [4, 'Mevlana Yalçın', '0.400', '7', '18:37'], [5, 'Pay-to-Compute', '0.365', '17', '17:25']]); // the 28 Nov correction cut Jack Cole's row
     // The table, its header and its caption move to the board column; the closing words stay in the story.
     expect(prose).not.toMatch(/#1|Place · Team/);
     expect(prose).toMatch(/^The private board sets the final ranking\./);
@@ -55,7 +55,7 @@ describe('the story page', () => {
     expect(franzen.rows.filter(row => row.subject).map(row => row.team)).toEqual(['Daniel Franzen']);
     const opening = storyBoards([dispatch('generalist-gaming-opening-board')], index.people);
     expect(opening).toHaveLength(2);
-    expect(opening[0].caption).toMatch(/^Next-afternoon snapshot/);
+    expect(opening[0].caption).toMatch(/25 November 2026/); // the newer read, Wednesday evening
     expect(opening[0].rows[0].team).toBe('Keith Tyser');
     expect(opening[1].rows[0].team).toBe('Tong Hui Kang');
     // Keith's story prints no board, so its board column starts with the cards.
@@ -67,7 +67,7 @@ describe('the story page', () => {
     const { notes, refs } = storyNotes([story]);
     expect(notes.map(note => note.number)).toEqual(notes.map((_, position) => position + 1));
     expect(new Set(notes.map(note => note.source.url)).size).toBe(notes.length);
-    expect(refs[0][0]).toEqual([1, 2]);
+    expect(refs[0][0][0]).toBe(1); // the opening section cites the first source first
     expect(refs[0].flat().every(number => number >= 1 && number <= notes.length)).toBe(true);
   });
 

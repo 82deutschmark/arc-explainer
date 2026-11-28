@@ -20,8 +20,8 @@
     "dispatch": {
       "commissionedBy": "mark-barney",
       "competition": "generalist-gaming-agent",
-      "dek": "Tong Hui Kang led the opening day. By the next afternoon Keith Tyser had the high score and a new top ten had swept in.",
-      "editorNote": "The Loose Goose sports desk · GPT-6 / Codex.",
+      "dek": "The field nearly doubled in a day, and entrants who kept improving still lost their seats.",
+      "editorNote": "Disclosure: Loose Goose editor Mark Barney and Son Pham enter this arcade together as Logical Arbitrage. Son Pham and Keith Tyser were Barney’s Team Turducken teammates in ARC-AGI-3, and Jack Cole and Pham were his ARC Mutants teammates in ARC-AGI-2.",
       "generatedBy": "gpt-6-codex",
       "headline": "The arcade fills up",
       "id": "generalist-gaming-opening-board",
@@ -32,13 +32,16 @@
       },
       "personIds": [],
       "publishedAt": "2026-11-25T00:35:01+00:00",
-      "revisedAt": "2026-11-25T20:28:55+00:00",
+      "revisedAt": "2026-11-28T03:28:00+00:00",
       "sections": [
         {
           "sourceIds": [
-            "board"
+            "board",
+            "saved-evening",
+            "saved-afternoon",
+            "saved-tuesday"
           ],
-          "text": "Tong Hui Kang had the high score when the arcade opened. Vladislav Lavrentev slipped a thousandth ahead of Dries Smit for second, and the rest of Tuesday’s top ten barely had time to get comfortable. By Wednesday afternoon every one of those names was out of the top ten. Keith Tyser, absent from Tuesday evening’s board, was #1 and the only entrant above 0.400.\n\nSalah Ibrahiemu went from twentieth to second. Lebxgue. came in third on the same displayed score. Akmal Azzam o'g'li and THIRUPATHI KANNAN K both climbed from outside Tuesday evening’s top fifty to round out the top five. The crowd behind them grew too. Kaggle showed 159 scored teams around this time on Tuesday and 304 on Wednesday."
+          "text": "Tong Hui Kang had the high score when the arcade opened. Vladislav Lavrentev slipped a thousandth ahead of Dries Smit for second, and the rest of the opening-night top ten barely had time to get comfortable. By Wednesday evening every one of those names was out of the top ten. Keith Tyser, absent from the opening-night board, was #1 and the only entrant above 0.400.\n\nSalah Ibrahiemu went from twentieth to second. Lebxgue. came in third on the same displayed score. Akmal Azzam o'g'li and THIRUPATHI KANNAN K both climbed from outside the opening-night top fifty to round out the top five. The crowd behind them grew too. Kaggle showed 159 scored teams around this time on Tuesday and 304 on Wednesday."
         },
         {
           "heading": "Better runs, worse seats",
@@ -52,10 +55,10 @@
             "duck",
             "decem-kaggriculture"
           ],
-          "text": "Tong Hui Kang used to give ARC entrants a reason to refresh. When the queue backed up, Kaggle competitor mp sent readers to the tracker Tong built. Now it’s his name people look for. The solo entrant had nine scored submissions by Wednesday and beat his opening-day mark. He was down to twenty-fourth anyway.\n\nDries Smit put Tufa Labs on the board with a single scored entry on opening day. Now Kaggle shows seven scored entries and a higher score, good for thirty-ninth. Dries is still the only account listed under Dries @ Tufa Labs. Will Stefano Viel, Jeroen Cottaar, Isaiah Pressman, Michal Tešnar or Tommy He take a seat of their own?\n\nThe Kaggriculture crowd is moving too. Ahmed Berat Özer’s entry now goes by Pay-to-Compute. It sits eighteenth and lists Özer, Alperen Aydın and ulasdesouza. DECEM also improved and fell to eighty-second."
+          "text": "Tong Hui Kang used to give ARC entrants a reason to refresh. When the queue backed up, Kaggle competitor mp sent readers to the submission board Tong built. Now it’s his name people look for. The solo entrant had nine scored submissions by Wednesday and beat his opening-day mark. He was down to twenty-fourth anyway.\n\nDries Smit put Tufa Labs on the board with a single scored entry on opening day. Now Kaggle shows seven scored entries and a higher score, good for thirty-ninth. Dries is still the only account listed under Dries @ Tufa Labs. Will Stefano Viel, Jeroen Cottaar, Isaiah Pressman, Michal Tešnar or Tommy He take a seat of their own?\n\nThe Kaggriculture crowd is moving too. Ahmed Berat Özer’s entry now goes by Pay-to-Compute. It sits eighteenth and lists Özer, Alperen Aydın and ulasdesouza. DECEM also improved and fell to eighty-second."
         },
         {
-          "heading": "Jack builds from scratch",
+          "heading": "Jack at his own bench",
           "image": {
             "alt": "Jack Cole wears a broad cyan visor while soldering a small copper robot in an arcade service booth.",
             "caption": "Jack Cole at his own bench.",
@@ -64,11 +67,12 @@
           "sourceIds": [
             "mark-morning",
             "board",
+            "saved-afternoon",
             "arc-history",
             "preview",
             "arc-roster"
           ],
-          "text": "Jack Cole went from fourth in Mark Barney’s Tuesday morning post to ninety-third on Wednesday’s board, even as his score edged up. The joint winner of the 2023 ARCathon told the Goose at launch that he was starting from scratch with an idea of his own. He was an adviser on Dries’s StochasticGoose when it won the ARC-AGI-3 Preview. They have separate entries in this arcade.\n\n“I don’t expect this position to last long,” Barney had written when his entry was third. By Wednesday, he and Son Pham had improved their score and slipped to sixty-eighth under Logical Arbitrage. Barney publishes the Goose. Tyser competed alongside Barney and Pham on Team Turducken in ARC-AGI-3. Here Tyser has a separate, one-account entry, all the way at the top."
+          "text": "Jack Cole went from fourth in Mark Barney’s Tuesday post to ninety-third on Wednesday’s board, even as his score edged up. The joint winner of the 2023 ARCathon was an adviser on Dries’s StochasticGoose when it won the ARC-AGI-3 Preview. Here they have separate entries, and Kaggle lists Cole alone on his.\n\n“I don’t expect this position to last long,” Barney had written when his entry was third. By Wednesday, he and Son Pham had improved their score and slipped to sixty-eighth under Logical Arbitrage. Barney publishes the Goose. Tyser competed alongside Barney and Pham on Team Turducken in ARC-AGI-3. Here Tyser has a separate, one-account entry, all the way at the top."
         },
         {
           "heading": "The game never waits",
@@ -81,28 +85,47 @@
         {
           "heading": "The public board, then and now",
           "sourceIds": [
-            "board"
+            "saved-evening",
+            "saved-afternoon"
           ],
-          "text": "Two saved reads of Kaggle’s public leaderboard. Higher scores are better.\n\nOpening-day evening snapshot · 24 November 2026 at 19:34 Eastern (25 November at 00:34 UTC).\n#1  Tong Hui Kang  ·  0.314\n#2  Vladislav Lavrentev  ·  0.294\n#3  Dries @ Tufa Labs  ·  0.293\n#4  matsu997  ·  0.221\n#5  john  ·  0.210\n#6  M.J.  ·  0.208\n#7  Malyshev Danil  ·  0.207\n#8  Logical Arbitrage  ·  0.187\n#9  Ahmed Berat Özer  ·  0.173\n#10  Emre Cirak  ·  0.172\n\nNext-afternoon snapshot · 25 November 2026 at 15:18 Eastern (20:18 UTC).\n#1  Keith Tyser  ·  0.408\n#2  Salah Ibrahiemu  ·  0.339\n#3  Lebxgue.  ·  0.339\n#4  Akmal Azzam o'g'li  ·  0.337\n#5  THIRUPATHI KANNAN K  ·  0.337\n#6  aboii  ·  0.336\n#7  吃白饭的大肥鱼  ·  0.333\n#8  cm391  ·  0.332\n#9  Yuxiao Wang  ·  0.332\n#10  Jules  ·  0.332\n\nTong and Dries kept sending better runs and lost ground in the rush. Who will be in the high-score window the next time the arcade fills up?"
+          "text": "Two saved reads of Kaggle’s public leaderboard. Higher scores are better.\n\nOpening night · 25 November 2026, 00:34 UTC.\n#1  Tong Hui Kang  ·  0.314\n#2  Vladislav Lavrentev  ·  0.294\n#3  Dries @ Tufa Labs  ·  0.293\n#4  matsu997  ·  0.221\n#5  john  ·  0.210\n#6  M.J.  ·  0.208\n#7  Malyshev Danil  ·  0.207\n#8  Logical Arbitrage  ·  0.187\n#9  Ahmed Berat Özer  ·  0.173\n#10  Emre Cirak  ·  0.172\n\nWednesday evening · 25 November 2026, 20:18 UTC.\n#1  Keith Tyser  ·  0.408\n#2  Salah Ibrahiemu  ·  0.339\n#3  Lebxgue.  ·  0.339\n#4  Akmal Azzam o'g'li  ·  0.337\n#5  THIRUPATHI KANNAN K  ·  0.337\n#6  aboii  ·  0.336\n#7  吃白饭的大肥鱼  ·  0.333\n#8  cm391  ·  0.332\n#9  Yuxiao Wang  ·  0.332\n#10  Jules  ·  0.332\n\nTong and Dries kept sending better runs and lost ground in the rush. In this arcade, a better score holds a seat only until the next crowd shows up."
         }
       ],
       "sources": [
         {
           "accessedAt": "2026-11-25T20:18:16+00:00",
           "id": "board",
-          "title": "Kaggle public leaderboard and linked team rosters",
+          "title": "Kaggle Generalist Gaming public leaderboard and team pages",
           "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard"
+        },
+        {
+          "accessedAt": "2026-11-28T03:11:14+00:00",
+          "id": "saved-tuesday",
+          "title": "Saved Kaggle public leaderboard, 24 Nov 2026 21:08 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-24T2108Z"
+        },
+        {
+          "accessedAt": "2026-11-28T03:11:14+00:00",
+          "id": "saved-evening",
+          "title": "Saved Kaggle public leaderboard, 25 Nov 2026 00:34 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T0034Z"
+        },
+        {
+          "accessedAt": "2026-11-28T03:11:14+00:00",
+          "id": "saved-afternoon",
+          "title": "Saved Kaggle public leaderboard, 25 Nov 2026 20:18 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T2018Z"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "tong-tracker",
-          "title": "Tong Hui Kang’s ARC submission tracker source",
+          "title": "Tong Hui Kang’s ARC submission board code on GitHub",
           "url": "https://github.com/tonghuikang/arc3/blob/master/leaderboard/leaderboard.py"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "tong-tracker-use",
-          "title": "Entrants linked the tracker during the ARC submission queue",
+          "title": "Kaggle ARC-AGI-2 forum thread linking Tong’s board",
           "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/747193"
         },
         {
@@ -114,67 +137,67 @@
         {
           "accessedAt": "2026-11-24T21:07:00Z",
           "id": "dries-reply",
-          "title": "Dries Smit’s reply",
+          "title": "Dries Smit’s reply on X",
           "url": "https://x.com/DriesSmit1/status/2125327641842446822"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "tufa-staff",
-          "title": "Tufa Labs staff",
+          "title": "Tufa Labs team page",
           "url": "https://tufalabs.ai/team/"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "duck",
-          "title": "Tufa Labs’ Duck Harness write-up",
+          "title": "Tufa Labs’ Duck harness write-up",
           "url": "https://tufalabs.ai/research/duck-harness/"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "decem-kaggriculture",
-          "title": "DECEM’s Kaggriculture write-up",
+          "title": "DECEM’s Kaggriculture write-up on Kaggle",
           "url": "https://www.kaggle.com/competitions/kaggriculture/discussion/751681"
         },
         {
           "accessedAt": "2026-11-24T21:07:00Z",
           "id": "mark-morning",
-          "title": "Mark Barney’s morning post and screenshot",
+          "title": "Mark Barney’s 24 November post on X",
           "url": "https://x.com/82deutschmark/status/2125251857652027820"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "arc-history",
-          "title": "ARC Prize history and Cole’s joint first",
+          "title": "ARC Prize history",
           "url": "https://arcprize.org/history"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "preview",
-          "title": "ARC Prize Preview results and StochasticGoose credits",
+          "title": "ARC-AGI-3 Preview competition results",
           "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "arc-roster",
-          "title": "Team Turducken’s ARC-AGI-3 roster",
+          "title": "Team Turducken’s ARC-AGI-3 roster on The Loose Goose",
           "url": "https://arc.markbarney.net/news/competitors/arc-3-15605182"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "overview",
-          "title": "Kaggle overview, rules, evaluation and timeline",
+          "title": "Kaggle Generalist Gaming overview, rules and timeline",
           "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/overview"
         },
         {
           "accessedAt": "2026-11-24T21:15:42Z",
           "id": "organizer",
-          "title": "Organizer’s contest and benchmark explanation",
+          "title": "Generalist Gaming organizers’ site",
           "url": "https://generalistgaming.org/"
         }
       ]
     },
     "storyId": "generalist-gaming-opening-board",
-    "storySha256": "da3fbefcdf1a51b7423195261ef78e842ea37d365b2ef1e68156131e7529ef9c",
+    "storySha256": "eea418a554143750704741b0ccafa1ba7fa0c063c776e50c1d0d216355d8584f",
     "version": 1
   },
   "review": {
@@ -197,9 +220,35 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "Owner selected the revised arcade workbench and Jack’s solo booth for this article. Both complete images were compared with the approved character references and viewed at 343px width. Tong, Dries, Mark and Son are on the cover. Only Jack is in the booth. No Grandmaster regalia. Kept the two owner-selected panels clean. Matched the current and previous official boards by team ID and checked the top ten, counts, margins, five named score changes and board timestamps. Verified browser roster links and scored-entry counts. Claude matched the table and questioned the split, associations, quotes and Pay-to-Compute wording. The overview gives sixteen public games including all four practice titles, with a separate sixteen for the final ranking. The original X post contains Barney’s quote and screenshot. The owner supplied Cole’s attributed remark in the commission. Competitor mp’s linked ARC discussion contains Tong’s tracker. Clarified earlier Turducken membership and Tyser’s separate current entry. Reworded the renamed Pay-to-Compute row and cited the public board for its roster. The existing card row remains hidden. Owner requested explicit dated standings. Compared and saved both exact public top tens, at 24 November 19:34 Eastern and 25 November 15:18 Eastern, using the two full Kaggle pulls on T4. Both approved image bindings are unchanged.",
-    "reviewedAt": "2026-11-25T20:28:55+00:00",
-    "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
-    "storySha256": "da3fbefcdf1a51b7423195261ef78e842ea37d365b2ef1e68156131e7529ef9c"
+    "notes": "Independent review of the corrections made by a separate Claude Opus 5.5 Medium corrections session; this reviewer did not write the story or the corrections. Facts: every place and score in the prose and both tables matches the saved 25 Nov 00:34 UTC and 20:18 UTC boards (Tong first then twenty-fourth, Lavrentev second a thousandth ahead of Dries, Salah twentieth to second, Akmal and THIRUPATHI from fifty-eighth and eighty-seventh, Pay-to-Compute eighteenth, Dries thirty-ninth, DECEM eighty-second, Cole ninety-third, Logical Arbitrage sixty-eighth, no opening top-ten name in the later top ten). The 159 and 304 team counts match the 24 Nov 21:08 UTC and 25 Nov 20:18 UTC records, and all record fingerprints match the stored Kaggle reads. The wiki's team record lists only jcole75 on Cole's entry. The \"told the Goose at launch\" line is gone; I found no record of it, so the cut is right. UTC: the corrections fixed the clock times but the prose still called the 25 Nov 00:34 UTC read \"Tuesday\" and the 20:18 UTC read \"afternoon\", both Eastern framings that clash with the dates printed in the table. This was a factual error, not only a label: against the real Tuesday evening board (24 Nov 21:08 UTC) THIRUPATHI KANNAN K sat forty-third, inside the top fifty, so \"outside Tuesday evening's top fifty\" was false; against the 00:34 UTC opening-night read both were outside. I changed the wording to the opening-night board and Wednesday evening, relabelled the second table the same way, and made Barney's 24 Nov post (15:35 UTC, read from the post's id) his Tuesday post rather than his Tuesday morning post. Disclosure: rosters confirm Barney and Pham on Logical Arbitrage, Pham and Tyser on Team Turducken, and Cole and Pham on ARC Mutants; I changed \"are\" to \"were\" for ARC Mutants because ARC-AGI-2 closed on 2 November. Copy: no banned words left (tracker and snapshot gone), no says, the deck adds the field doubling instead of repeating the lead, the ending is a statement, source titles plain and listed once. Art: both images unchanged and match the catalog; the cover still shows the editor and Son Pham at the bench, which the plan keeps with the disclosure as the fix. Unchanged sections rest on the prior review. The saved-board links point to the planned /news/boards pages; stage only after that page ships. Open: the story files no cast although a section portrait shows Jack Cole; unchanged from before and resting on the prior review.",
+    "previousReview": {
+      "assets": [
+        {
+          "sha256": "499df738a09644bb5c19a75b4e2172c55e7c9fe918b363c75bdea868f695a5d0",
+          "source": "client/public/news-images/generalist-gaming-opening-board.webp",
+          "target": "client/public/news-images/goose-499df738a09644bb5c19.webp"
+        },
+        {
+          "sha256": "1651df1d6b4e36564710773eda094065932f69c25bd02821e6cbb1e1e36d8102",
+          "source": "client/public/news-images/generalist-gaming-opening-board-jack.webp",
+          "target": "client/public/news-images/goose-1651df1d6b4e36564710.webp"
+        }
+      ],
+      "checks": [
+        "art-continuity",
+        "art-reuse",
+        "copy",
+        "facts",
+        "identity-and-roster"
+      ],
+      "notes": "Owner selected the revised arcade workbench and Jack’s solo booth for this article. Both complete images were compared with the approved character references and viewed at 343px width. Tong, Dries, Mark and Son are on the cover. Only Jack is in the booth. No Grandmaster regalia. Kept the two owner-selected panels clean. Matched the current and previous official boards by team ID and checked the top ten, counts, margins, five named score changes and board timestamps. Verified browser roster links and scored-entry counts. Claude matched the table and questioned the split, associations, quotes and Pay-to-Compute wording. The overview gives sixteen public games including all four practice titles, with a separate sixteen for the final ranking. The original X post contains Barney’s quote and screenshot. The owner supplied Cole’s attributed remark in the commission. Competitor mp’s linked ARC discussion contains Tong’s tracker. Clarified earlier Turducken membership and Tyser’s separate current entry. Reworded the renamed Pay-to-Compute row and cited the public board for its roster. The existing card row remains hidden. Owner requested explicit dated standings. Compared and saved both exact public top tens, at 24 November 19:34 Eastern and 25 November 15:18 Eastern, using the two full Kaggle pulls on T4. Both approved image bindings are unchanged.",
+      "reviewedAt": "2026-11-25T20:28:55+00:00",
+      "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
+      "storySha256": "da3fbefcdf1a51b7423195261ef78e842ea37d365b2ef1e68156131e7529ef9c"
+    },
+    "reviewedAt": "2026-11-28T03:31:54+00:00",
+    "reviewedBy": "Claude Opus 5.5 Medium (independent review session)",
+    "storySha256": "eea418a554143750704741b0ccafa1ba7fa0c063c776e50c1d0d216355d8584f",
+    "writer": "gpt-6-codex"
   }
 }

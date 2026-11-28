@@ -1,6 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high
- * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; GPT-6 Astra Extra high; Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026 (Claude Opus 5.5 Medium); 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): ARC Prize 2026 into storage. The lead column runs the current contest
+ *          first and no ARC desk (frontPageCompetitions); the board column shows the current contest's board, or,
+ *          until a reading of it is saved here, an honest box with the Kaggle link, the close and the paper's dated
+ *          boards (BoardPending). The stored ARC boards no longer print here.
  * 14-Nov-2026 (Claude Opus 5.5): older dispatches are listed once, as links to their own pages (the collapsed
  *          full-text copies are gone); commissioned pieces are labelled as such; same-day companion art runs
  *          unless it is the edition's own feature.
@@ -17,15 +21,17 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { newsDate, newsArticlePath, editionFeature, editionLabel, dispatchLabel, personForXHandle, personPath, frontPageSocialPosts, publishedCompetitionOrder, competitionStories } from '@shared/news';
+import { newsDate, newsArticlePath, editionFeature, editionLabel, dispatchLabel, personForXHandle, personPath, frontPageSocialPosts, competitionStories } from '@shared/news';
+import { NEWS_CURRENT_COMPETITIONS, frontPageCompetitions } from '@shared/newsSeasons';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
-import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
+import { BoardPending, BoardTable, MarketTicker, currentBoards } from './NewsMarkets';
 import { PersonPortrait } from './NewsPeople';
 import { WhatsNews } from './NewsWire';
 import { DispatchArt, DispatchPreview } from './NewsDispatch';
 import { FromKaggleBoards } from './NewsSources';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { useNewsCollection } from '@/hooks/useNewsCollection';
 
 /** The newest story for one contest (edition or dispatch), then its earlier headlines. */
 function CompetitionDesk({ articles, dispatches, competition, lead = false, people }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean; people: NewsPerson[] }) {
@@ -51,21 +57,26 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
 export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: MarketsPayload }) {
   const articles = sortedArticles(index.articles);
   const dispatches = index.dispatches ?? [];
-  const competitions = publishedCompetitionOrder(articles, dispatches);
+  const competitions = frontPageCompetitions(articles, dispatches);
   const people = index.people ?? [];
-  const boards = marketBoards(markets);
+  const boards = currentBoards(markets);
+  // A current contest whose board was never saved here still gets its column, with an honest box instead of figures.
+  const pending = NEWS_CURRENT_COMPETITIONS.filter(key => KAGGLE_COMPETITIONS[key] && !boards.some(board => board.competition === key));
+  const column = boards.length + pending.length > 0;
+  const collection = useNewsCollection();
   const links = { competitors: index.competitors, people };
   return <>
     <MarketTicker markets={markets} />
-    <div className={`news-front${boards.length ? '' : ' no-board'}`}>
+    <div className={`news-front${column ? '' : ' no-board'}`}>
       <section className="news-col-lead" aria-label="Lead stories">
         {competitions.map((competition, position) => <CompetitionDesk key={competition} articles={articles} dispatches={dispatches} competition={competition} lead={position === 0} people={people} />)}
       </section>
       <AroundTheContests index={index} />
       <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} /></section>
-      {!!boards.length && <aside className="news-col-board" aria-label="The board">
-        <h2 className="news-flag"><span>The board</span><em>Day = change since a day earlier</em></h2>
-        {boards.map(board => <BoardTable key={board.competition} board={board} links={links} limit={board.competition === 'arc-3' ? 25 : 20} />)}
+      {column && <aside className="news-col-board" aria-label="The board">
+        <h2 className="news-flag"><span>The board</span>{!!boards.length && <em>Δ = change since a day earlier</em>}</h2>
+        {boards.map(board => <BoardTable key={board.competition} board={board} links={links} limit={25} />)}
+        {pending.map(key => <BoardPending key={key} competition={key} articles={articles} dispatches={dispatches} collection={collection.data} />)}
       </aside>}
     </div>
   </>;

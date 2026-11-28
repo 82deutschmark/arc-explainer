@@ -1,6 +1,10 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5
- * Date: 16-November-2026
+ * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Opus 5.5; Claude Opus 5.5 Medium
+ * Date: 27-November-2026 (Claude Opus 5.5 Medium); 16-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): catalogGroup files every card under one heading in a fixed order: the
+ *          current contest's set (Generalist Gaming) first, the Kaggleverse career cards next, other contests' sets
+ *          after, and the ARC Prize 2026 sets last under "2026 archive". The cards page and its server HTML share it.
+ *          contestField lists a contest's carded competitors, highest tier first, for the front page's board column.
  * 16-Nov-2026 (GPT-6 / Codex): keep empty profile fallback faces out of the catalog.
  * 14-Nov-2026 (Claude Opus 5.5): catalogSetLabel names a card by its set without a repeated season; catalogFallbackLine keeps a
  *          contest-filtered tile caption to that contest instead of a standing from another one.
@@ -8,10 +12,11 @@
  * on a fresh leaderboard or comparing ranks from different contests. Preserve subject identities.
  * SRP/DRY check: Pass — reuse canonical card entries and dated team history, never another standings store.
  */
-import type { CollectionCard, NewsCollection } from './newsCollection';
+import { KAGGLE_TIERS, type CollectionCard, type NewsCollection } from './newsCollection';
 import { collectionEarnedLine, collectionLeadEntry, collectionTeamCompetition } from './newsCollection';
 import { competitionName } from './news';
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
+import { ARC_2026_ARCHIVE, NEWS_CURRENT_COMPETITIONS } from './newsSeasons';
 
 /** A bare profile has no sporting record to make a card; keep its permanent page, but omit its placeholder face from the catalog. */
 export function catalogCardVisible(card: CollectionCard): boolean {
@@ -64,4 +69,39 @@ export function catalogFallbackLine(card: CollectionCard, competitionId = 'all')
   if (card.kind === 'team' && card.entries.length === 1 && card.entries[0].competitionId === competitionId) return collectionTeamCompetition(card) ?? '';
   const honor = card.honors.find(item => item.competition === key);
   return honor ? `${honor.season} ${honor.label}` : `No standing in ${key ? competitionName(key) : competitionId}`;
+}
+
+/** A heading on the cards page: its anchor, its title and its place in the page order. */
+export interface CatalogGroup { id: string; order: number; heading: string; note?: string }
+const KAGGLEVERSE_SET = 'kaggleverse-2026';
+const currentSlugs = () => NEWS_CURRENT_COMPETITIONS.map(key => KAGGLE_COMPETITIONS[key]?.slug).filter(Boolean);
+
+/**
+ * Which heading a card sits under. The current contest's set leads, then the Kaggleverse career cards, then other
+ * contests' sets, and the ARC Prize 2026 sets (the original combined set and both board sets) go last, under
+ * "2026 archive". A card with no set of its own and no inferable set stays with the other contests.
+ */
+export function catalogGroup(card: CollectionCard, sets: NewsCollection['sets'] = []): CatalogGroup {
+  const set = catalogSet(card, sets);
+  if (set && (ARC_2026_ARCHIVE.cardSetIds as readonly string[]).includes(set.id))
+    return { id: 'archive', order: 3, heading: ARC_2026_ARCHIVE.cardHeading, note: 'ARC Prize 2026, closed 2 November 2026' };
+  if (set && set.competitionIds.some(slug => currentSlugs().includes(slug)))
+    return { id: set.id, order: 0, heading: catalogSetLabel(card, sets).replace(/\s+\d{4}$/, ''), note: 'the contest the paper follows now' };
+  if (set?.id === KAGGLEVERSE_SET) return { id: set.id, order: 1, heading: 'Kaggleverse career cards', note: 'careers across Kaggle' };
+  return { id: 'other', order: 2, heading: 'Other contests' };
+}
+
+/** Tier as a reader sees it: Expert, Master, Grandmaster; below Expert a person is just a competitor (null). */
+export const fieldTier = (card: CollectionCard): string | null =>
+  card.career?.tier && KAGGLE_TIERS.indexOf(card.career.tier) >= KAGGLE_TIERS.indexOf('Expert') ? card.career.tier : null;
+
+/** The people with a card in a contest's own set, highest tier first, then by name: the front page's "The field". */
+export function contestField(collection: Pick<NewsCollection, 'cards' | 'sets'>, competition: string): CollectionCard[] {
+  const slug = KAGGLE_COMPETITIONS[competition]?.slug;
+  if (!slug) return [];
+  const tier = (card: CollectionCard) => card.career?.tier ? KAGGLE_TIERS.indexOf(card.career.tier) : -1;
+  return collection.cards.filter(card => card.kind === 'person' && card.role === 'competitor' && catalogCardVisible(card)
+    // Only cards issued in the contest's own set (a legacy combined set is no evidence of entry).
+    && !!card.setId && !!catalogSet(card, collection.sets)?.competitionIds.includes(slug))
+    .sort((a, b) => tier(b) - tier(a) || a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
 }

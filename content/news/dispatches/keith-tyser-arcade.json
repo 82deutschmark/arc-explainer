@@ -14,7 +14,7 @@
   "commissionedBy": "mark-barney",
   "competition": "generalist-gaming-agent",
   "dek": "The Goose regular who published his own bot mishaps just put his name at the top of the Generalist Gaming public board.",
-  "editorNote": "Mark Barney, publisher of The Loose Goose, and Son Pham competed alongside Keith Tyser in ARC-AGI-3 and co-wrote the Team Turducken write-up cited here.",
+  "editorNote": "Disclosure: Keith Tyser was a Team Turducken teammate of Loose Goose editor Mark Barney and of Son Pham in ARC-AGI-3. Barney and Pham co-wrote the team write-up cited here.",
   "generatedBy": "gpt-6-codex",
   "headline": "Keith Tyser grabs the arcade lead",
   "id": "keith-tyser-arcade",
@@ -27,14 +27,17 @@
     "keith-tyser"
   ],
   "publishedAt": "2026-11-25T22:18:34+00:00",
-  "revisedAt": "2026-11-25T23:06:02+00:00",
+  "revisedAt": "2026-11-28T03:28:00+00:00",
   "sections": [
     {
       "sourceIds": [
         "board",
+        "saved-tuesday",
+        "saved-overnight",
+        "saved-board",
         "tier"
       ],
-      "text": "Keith Tyser barged into the arcade and took the high score. The leaderboard from Tuesday evening didn’t have his name on it. By Wednesday afternoon the Goose regular was in first place on the public board at 0.408, and Kaggle listed him alone on the team."
+      "text": "Keith Tyser barged into the arcade and took the high score. The leaderboard from Tuesday evening didn’t have his name on it. By Wednesday evening the Goose regular was in first place on the public board at 0.408, and Kaggle listed him alone on the team."
     },
     {
       "heading": "The mistakes he kept",
@@ -76,43 +79,61 @@
     {
       "accessedAt": "2026-11-25T20:18:16Z",
       "id": "board",
-      "title": "Kaggle public leaderboard and linked team roster",
+      "title": "Kaggle Generalist Gaming public leaderboard and Tyser’s team page",
       "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard?teamId=17431467"
+    },
+    {
+      "accessedAt": "2026-11-28T03:11:14+00:00",
+      "id": "saved-board",
+      "title": "Saved Kaggle public leaderboard, 25 Nov 2026 20:18 UTC",
+      "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T2018Z"
+    },
+    {
+      "accessedAt": "2026-11-28T03:28:00+00:00",
+      "id": "saved-tuesday",
+      "title": "Saved Kaggle public leaderboard, 24 Nov 2026 21:08 UTC",
+      "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-24T2108Z"
+    },
+    {
+      "accessedAt": "2026-11-28T03:12:47+00:00",
+      "id": "saved-overnight",
+      "title": "Saved Kaggle public leaderboard, 25 Nov 2026 00:34 UTC",
+      "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T0034Z"
     },
     {
       "accessedAt": "2026-11-25T20:48:32+00:00",
       "id": "training",
-      "title": "Keith Tyser’s account of his three simulation contests",
+      "title": "Keith Tyser’s blog post on his three simulation contests",
       "url": "https://keithtyser.com/blog/three-simulation-competitions-three-ppo-mistakes.html"
     },
     {
       "accessedAt": "2026-11-25T20:48:32+00:00",
       "id": "turducken",
-      "title": "Team Turducken’s ARC-AGI-3 write-up",
+      "title": "Team Turducken’s ARC-AGI-3 write-up on Kaggle",
       "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken"
     },
     {
       "accessedAt": "2026-11-25T20:48:32+00:00",
       "id": "organizer",
-      "title": "Generalist Gaming benchmark and competition",
+      "title": "Generalist Gaming organizers’ site",
       "url": "https://generalistgaming.org/"
     },
     {
       "accessedAt": "2026-10-30T11:23:25Z",
       "id": "career",
-      "title": "Keith Tyser’s Kaggle profile and competition record",
+      "title": "Keith Tyser’s Kaggle profile",
       "url": "https://www.kaggle.com/keithtyser"
     },
     {
       "accessedAt": "2026-11-25T22:37:09+00:00",
       "id": "portrait",
-      "title": "Keith Tyser’s GitHub portrait reference",
+      "title": "Keith Tyser’s GitHub profile",
       "url": "https://github.com/keithtyser"
     },
     {
       "accessedAt": "2026-11-25T23:04:50+00:00",
       "id": "tier",
-      "title": "Keith Tyser’s Kaggle Competitions tier",
+      "title": "Keith Tyser’s Kaggle competitions page",
       "url": "https://www.kaggle.com/keithtyser/competitions"
     }
   ]

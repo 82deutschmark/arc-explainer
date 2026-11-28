@@ -1,0 +1,2156 @@
+{
+  "id": "generalist-gaming-agent-2026-11-25T2018Z",
+  "competition": "generalist-gaming-agent",
+  "board": "public",
+  "observedAt": "2026-11-25T20:18:16+00:00",
+  "savedAt": "2026-11-28T03:10:22+00:00",
+  "source": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+  "savedFrom": {
+    "path": "/Volumes/Team 4TB/loose-goose/research/generalist-gaming-agent/public-board-2026-11-25T201816Z.json",
+    "sha256": "09403d67876ec312f65743b0006ea3edec31ccf9ec06b40836466a4ac0c9ed67"
+  },
+  "covers": "Every scored team Kaggle returned in this read, in Kaggle’s order, with best public score and last submission time (UTC).",
+  "doesNotCover": "The private leaderboard, which sets the final ranking, and any change on Kaggle after the observed time.",
+  "columns": [
+    "place",
+    "teamId",
+    "team",
+    "score",
+    "lastSubmission"
+  ],
+  "rows": [
+    {
+      "place": 1,
+      "teamId": 17431467,
+      "team": "Keith Tyser",
+      "score": "0.408",
+      "lastSubmission": "2026-11-25T11:02:59.260Z"
+    },
+    {
+      "place": 2,
+      "teamId": 17430811,
+      "team": "Salah Ibrahiemu",
+      "score": "0.339",
+      "lastSubmission": "2026-11-25T10:27:31.153Z"
+    },
+    {
+      "place": 3,
+      "teamId": 17443123,
+      "team": "Lebxgue.",
+      "score": "0.339",
+      "lastSubmission": "2026-11-25T10:55:14.853Z"
+    },
+    {
+      "place": 4,
+      "teamId": 17436506,
+      "team": "Akmal Azzam o'g'li",
+      "score": "0.337",
+      "lastSubmission": "2026-11-25T11:47:53.926Z"
+    },
+    {
+      "place": 5,
+      "teamId": 17434623,
+      "team": "THIRUPATHI KANNAN K",
+      "score": "0.337",
+      "lastSubmission": "2026-11-25T10:55:48.423Z"
+    },
+    {
+      "place": 6,
+      "teamId": 17446310,
+      "team": "aboii",
+      "score": "0.336",
+      "lastSubmission": "2026-11-25T11:03:12.420Z"
+    },
+    {
+      "place": 7,
+      "teamId": 17443121,
+      "team": "吃白饭的大肥鱼",
+      "score": "0.333",
+      "lastSubmission": "2026-11-25T11:19:50.620Z"
+    },
+    {
+      "place": 8,
+      "teamId": 17438629,
+      "team": "cm391",
+      "score": "0.332",
+      "lastSubmission": "2026-11-25T12:38:25.006Z"
+    },
+    {
+      "place": 9,
+      "teamId": 17433390,
+      "team": "Yuxiao Wang",
+      "score": "0.332",
+      "lastSubmission": "2026-11-25T11:19:53.470Z"
+    },
+    {
+      "place": 10,
+      "teamId": 17446624,
+      "team": "Jules",
+      "score": "0.332",
+      "lastSubmission": "2026-11-25T11:04:15.373Z"
+    },
+    {
+      "place": 11,
+      "teamId": 17447728,
+      "team": "xiao-xiao",
+      "score": "0.332",
+      "lastSubmission": "2026-11-25T12:42:20.416Z"
+    },
+    {
+      "place": 12,
+      "teamId": 17440352,
+      "team": "Bohdan Somriakov",
+      "score": "0.331",
+      "lastSubmission": "2026-11-25T08:02:33.726Z"
+    },
+    {
+      "place": 13,
+      "teamId": 17433707,
+      "team": "Quan Vu",
+      "score": "0.331",
+      "lastSubmission": "2026-11-25T12:14:14.026Z"
+    },
+    {
+      "place": 14,
+      "teamId": 17447967,
+      "team": "三天",
+      "score": "0.330",
+      "lastSubmission": "2026-11-25T13:14:11.500Z"
+    },
+    {
+      "place": 15,
+      "teamId": 17433207,
+      "team": "Galaxy A55",
+      "score": "0.329",
+      "lastSubmission": "2026-11-25T14:18:58.010Z"
+    },
+    {
+      "place": 16,
+      "teamId": 17448222,
+      "team": "Nguyễn Trần Thanh Bình",
+      "score": "0.329",
+      "lastSubmission": "2026-11-25T13:34:17.136Z"
+    },
+    {
+      "place": 17,
+      "teamId": 17447578,
+      "team": "add_oils",
+      "score": "0.329",
+      "lastSubmission": "2026-11-25T12:25:04.893Z"
+    },
+    {
+      "place": 18,
+      "teamId": 17434745,
+      "team": "Pay-to-Compute",
+      "score": "0.329",
+      "lastSubmission": "2026-11-25T11:42:31.376Z"
+    },
+    {
+      "place": 19,
+      "teamId": 17431730,
+      "team": "Malyshev Danil",
+      "score": "0.328",
+      "lastSubmission": "2026-11-25T12:12:47.180Z"
+    },
+    {
+      "place": 20,
+      "teamId": 17446003,
+      "team": "Nisar Khan",
+      "score": "0.328",
+      "lastSubmission": "2026-11-25T09:45:14.330Z"
+    },
+    {
+      "place": 21,
+      "teamId": 17438520,
+      "team": "邓紫棋牛逼",
+      "score": "0.327",
+      "lastSubmission": "2026-11-25T13:38:21.203Z"
+    },
+    {
+      "place": 22,
+      "teamId": 17445249,
+      "team": "feng chen202",
+      "score": "0.327",
+      "lastSubmission": "2026-11-25T08:47:59.986Z"
+    },
+    {
+      "place": 23,
+      "teamId": 17430323,
+      "team": "alex chilton",
+      "score": "0.326",
+      "lastSubmission": "2026-11-25T11:59:50.826Z"
+    },
+    {
+      "place": 24,
+      "teamId": 17430290,
+      "team": "Tong Hui Kang",
+      "score": "0.325",
+      "lastSubmission": "2026-11-25T11:35:29.540Z"
+    },
+    {
+      "place": 25,
+      "teamId": 17431424,
+      "team": "Kunal Aarse",
+      "score": "0.325",
+      "lastSubmission": "2026-11-25T08:53:53.643Z"
+    },
+    {
+      "place": 26,
+      "teamId": 17446522,
+      "team": "Bupz Nguyen",
+      "score": "0.324",
+      "lastSubmission": "2026-11-25T11:09:44.676Z"
+    },
+    {
+      "place": 27,
+      "teamId": 17433807,
+      "team": "Top 1 hack wall aimbot",
+      "score": "0.322",
+      "lastSubmission": "2026-11-25T08:06:42.840Z"
+    },
+    {
+      "place": 28,
+      "teamId": 17433636,
+      "team": "Saiprakash Nayak",
+      "score": "0.321",
+      "lastSubmission": "2026-11-25T09:10:32.393Z"
+    },
+    {
+      "place": 29,
+      "teamId": 17445925,
+      "team": "Van-Phuc Huynh",
+      "score": "0.321",
+      "lastSubmission": "2026-11-25T09:13:18.743Z"
+    },
+    {
+      "place": 30,
+      "teamId": 17431128,
+      "team": "Andreas Bisiadis",
+      "score": "0.321",
+      "lastSubmission": "2026-11-25T11:37:40.656Z"
+    },
+    {
+      "place": 31,
+      "teamId": 17439158,
+      "team": "Eric",
+      "score": "0.321",
+      "lastSubmission": "2026-11-25T09:51:42.466Z"
+    },
+    {
+      "place": 32,
+      "teamId": 17447951,
+      "team": "Vibhanshu Singh",
+      "score": "0.320",
+      "lastSubmission": "2026-11-25T13:15:02.603Z"
+    },
+    {
+      "place": 33,
+      "teamId": 17442587,
+      "team": "Sou1Maker",
+      "score": "0.319",
+      "lastSubmission": "2026-11-25T11:03:31.063Z"
+    },
+    {
+      "place": 34,
+      "teamId": 17431308,
+      "team": "Sargis Khachatryan",
+      "score": "0.319",
+      "lastSubmission": "2026-11-25T12:14:50.493Z"
+    },
+    {
+      "place": 35,
+      "teamId": 17431471,
+      "team": "Tony Li",
+      "score": "0.318",
+      "lastSubmission": "2026-11-25T12:32:25.710Z"
+    },
+    {
+      "place": 36,
+      "teamId": 17432400,
+      "team": "OsakanaTeishoku",
+      "score": "0.318",
+      "lastSubmission": "2026-11-25T10:57:38.983Z"
+    },
+    {
+      "place": 37,
+      "teamId": 17433008,
+      "team": "tanadai",
+      "score": "0.317",
+      "lastSubmission": "2026-11-25T14:05:29.890Z"
+    },
+    {
+      "place": 38,
+      "teamId": 17430291,
+      "team": "Kozykorpesh",
+      "score": "0.315",
+      "lastSubmission": "2026-11-25T09:49:36.823Z"
+    },
+    {
+      "place": 39,
+      "teamId": 17430967,
+      "team": "Dries @ Tufa Labs",
+      "score": "0.315",
+      "lastSubmission": "2026-11-25T13:56:10.366Z"
+    },
+    {
+      "place": 40,
+      "teamId": 17433675,
+      "team": "Aditya Goyal",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T02:17:53.306Z"
+    },
+    {
+      "place": 41,
+      "teamId": 17430292,
+      "team": "xz",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T03:54:21.886Z"
+    },
+    {
+      "place": 42,
+      "teamId": 17430718,
+      "team": "Ali",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T12:38:36.776Z"
+    },
+    {
+      "place": 43,
+      "teamId": 17443886,
+      "team": "Shubhi Dixit",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T05:30:35.843Z"
+    },
+    {
+      "place": 44,
+      "teamId": 17433875,
+      "team": "Vyom J",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T07:03:40.503Z"
+    },
+    {
+      "place": 45,
+      "teamId": 17431121,
+      "team": "tammamalasha",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T07:46:16.076Z"
+    },
+    {
+      "place": 46,
+      "teamId": 17437897,
+      "team": "saadhana",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T09:55:04.156Z"
+    },
+    {
+      "place": 47,
+      "teamId": 17434244,
+      "team": "William",
+      "score": "0.314",
+      "lastSubmission": "2026-11-25T12:17:44.050Z"
+    },
+    {
+      "place": 48,
+      "teamId": 17442884,
+      "team": "huangbin",
+      "score": "0.313",
+      "lastSubmission": "2026-11-25T13:28:35.466Z"
+    },
+    {
+      "place": 49,
+      "teamId": 17431361,
+      "team": "occhan",
+      "score": "0.313",
+      "lastSubmission": "2026-11-25T12:25:16.820Z"
+    },
+    {
+      "place": 50,
+      "teamId": 17439466,
+      "team": "Jordi Corbilla",
+      "score": "0.313",
+      "lastSubmission": "2026-11-25T09:35:07.196Z"
+    },
+    {
+      "place": 51,
+      "teamId": 17439665,
+      "team": "TheBlackCat",
+      "score": "0.312",
+      "lastSubmission": "2026-11-25T13:37:10.123Z"
+    },
+    {
+      "place": 52,
+      "teamId": 17446235,
+      "team": "haodou092",
+      "score": "0.312",
+      "lastSubmission": "2026-11-25T12:45:31.620Z"
+    },
+    {
+      "place": 53,
+      "teamId": 17443902,
+      "team": "Ankiy",
+      "score": "0.312",
+      "lastSubmission": "2026-11-25T10:08:14.583Z"
+    },
+    {
+      "place": 54,
+      "teamId": 17430273,
+      "team": "parthenos",
+      "score": "0.311",
+      "lastSubmission": "2026-11-25T10:30:07.636Z"
+    },
+    {
+      "place": 55,
+      "teamId": 17440877,
+      "team": "Elie",
+      "score": "0.310",
+      "lastSubmission": "2026-11-25T10:54:28.950Z"
+    },
+    {
+      "place": 56,
+      "teamId": 17446247,
+      "team": "APS Team",
+      "score": "0.308",
+      "lastSubmission": "2026-11-25T12:59:56.050Z"
+    },
+    {
+      "place": 57,
+      "teamId": 17430219,
+      "team": "Emre Cirak",
+      "score": "0.306",
+      "lastSubmission": "2026-11-25T07:55:04.116Z"
+    },
+    {
+      "place": 58,
+      "teamId": 17444068,
+      "team": "Oleg Sher",
+      "score": "0.304",
+      "lastSubmission": "2026-11-25T07:07:21.873Z"
+    },
+    {
+      "place": 59,
+      "teamId": 17431663,
+      "team": "Anyanwu Promise",
+      "score": "0.303",
+      "lastSubmission": "2026-11-25T12:39:00.266Z"
+    },
+    {
+      "place": 60,
+      "teamId": 17431214,
+      "team": "Arsen Zakaryan",
+      "score": "0.296",
+      "lastSubmission": "2026-11-25T09:24:37.183Z"
+    },
+    {
+      "place": 61,
+      "teamId": 17431327,
+      "team": "Vladislav Lavrentev",
+      "score": "0.294",
+      "lastSubmission": "2026-11-25T02:28:42.516Z"
+    },
+    {
+      "place": 62,
+      "teamId": 17439906,
+      "team": "James Y",
+      "score": "0.294",
+      "lastSubmission": "2026-11-25T04:21:10.990Z"
+    },
+    {
+      "place": 63,
+      "teamId": 17444097,
+      "team": "Marlubie",
+      "score": "0.293",
+      "lastSubmission": "2026-11-25T07:33:35.046Z"
+    },
+    {
+      "place": 64,
+      "teamId": 17432653,
+      "team": "Abdul Wahab Khan",
+      "score": "0.292",
+      "lastSubmission": "2026-11-25T06:49:52.330Z"
+    },
+    {
+      "place": 65,
+      "teamId": 17431025,
+      "team": "Asterios Panoras",
+      "score": "0.289",
+      "lastSubmission": "2026-11-24T23:46:52.213Z"
+    },
+    {
+      "place": 66,
+      "teamId": 17431190,
+      "team": "Rishad S",
+      "score": "0.286",
+      "lastSubmission": "2026-11-25T01:53:55.076Z"
+    },
+    {
+      "place": 67,
+      "teamId": 17437862,
+      "team": "baolong lin1",
+      "score": "0.285",
+      "lastSubmission": "2026-11-25T12:24:05.050Z"
+    },
+    {
+      "place": 68,
+      "teamId": 17431944,
+      "team": "Logical Arbitrage",
+      "score": "0.278",
+      "lastSubmission": "2026-11-24T23:58:01.896Z"
+    },
+    {
+      "place": 69,
+      "teamId": 17434233,
+      "team": "Meet Mendapara",
+      "score": "0.276",
+      "lastSubmission": "2026-11-25T08:35:40.043Z"
+    },
+    {
+      "place": 70,
+      "teamId": 17438829,
+      "team": "Anuj Saini",
+      "score": "0.274",
+      "lastSubmission": "2026-11-25T10:45:52.660Z"
+    },
+    {
+      "place": 71,
+      "teamId": 17432748,
+      "team": "SIDHAARTH SHREE",
+      "score": "0.272",
+      "lastSubmission": "2026-11-25T05:37:58.610Z"
+    },
+    {
+      "place": 72,
+      "teamId": 17437913,
+      "team": "Cổ Nguyệt Phương Nguyên",
+      "score": "0.258",
+      "lastSubmission": "2026-11-25T07:19:54.970Z"
+    },
+    {
+      "place": 73,
+      "teamId": 17432126,
+      "team": "matsu997",
+      "score": "0.258",
+      "lastSubmission": "2026-11-25T03:18:09.753Z"
+    },
+    {
+      "place": 74,
+      "teamId": 17430354,
+      "team": "john",
+      "score": "0.252",
+      "lastSubmission": "2026-11-25T02:57:30.256Z"
+    },
+    {
+      "place": 75,
+      "teamId": 17431754,
+      "team": "PARK HYUNSIK",
+      "score": "0.246",
+      "lastSubmission": "2026-11-25T13:51:46.536Z"
+    },
+    {
+      "place": 76,
+      "teamId": 17431393,
+      "team": "hwe owe",
+      "score": "0.238",
+      "lastSubmission": "2026-11-25T08:04:07.176Z"
+    },
+    {
+      "place": 77,
+      "teamId": 17431897,
+      "team": "Clark Kitchen",
+      "score": "0.236",
+      "lastSubmission": "2026-11-25T12:09:02.253Z"
+    },
+    {
+      "place": 78,
+      "teamId": 17432755,
+      "team": "M.J.",
+      "score": "0.208",
+      "lastSubmission": "2026-11-24T23:28:06.830Z"
+    },
+    {
+      "place": 79,
+      "teamId": 17446581,
+      "team": "mohamed saafan",
+      "score": "0.201",
+      "lastSubmission": "2026-11-25T13:05:28.880Z"
+    },
+    {
+      "place": 80,
+      "teamId": 17432807,
+      "team": "Tanaka Ai24",
+      "score": "0.170",
+      "lastSubmission": "2026-11-25T13:25:42.140Z"
+    },
+    {
+      "place": 81,
+      "teamId": 17430600,
+      "team": "Giba",
+      "score": "0.167",
+      "lastSubmission": "2026-11-24T20:13:06.313Z"
+    },
+    {
+      "place": 82,
+      "teamId": 17432339,
+      "team": "DECEM",
+      "score": "0.164",
+      "lastSubmission": "2026-11-25T12:45:11.620Z"
+    },
+    {
+      "place": 83,
+      "teamId": 17434389,
+      "team": "Marco Lodi",
+      "score": "0.157",
+      "lastSubmission": "2026-11-24T16:30:15.846Z"
+    },
+    {
+      "place": 84,
+      "teamId": 17438183,
+      "team": "ProKope",
+      "score": "0.157",
+      "lastSubmission": "2026-11-25T09:12:43.046Z"
+    },
+    {
+      "place": 85,
+      "teamId": 17431279,
+      "team": "Ray777",
+      "score": "0.153",
+      "lastSubmission": "2026-11-25T12:00:46.953Z"
+    },
+    {
+      "place": 86,
+      "teamId": 17434064,
+      "team": "theredbluepill",
+      "score": "0.153",
+      "lastSubmission": "2026-11-25T11:53:55.003Z"
+    },
+    {
+      "place": 87,
+      "teamId": 17431711,
+      "team": "Hengrui Guo",
+      "score": "0.151",
+      "lastSubmission": "2026-11-25T13:24:40.190Z"
+    },
+    {
+      "place": 88,
+      "teamId": 17441589,
+      "team": "kerai",
+      "score": "0.147",
+      "lastSubmission": "2026-11-25T01:25:23.943Z"
+    },
+    {
+      "place": 89,
+      "teamId": 17442766,
+      "team": "Ronit Agarwal",
+      "score": "0.146",
+      "lastSubmission": "2026-11-25T02:21:15.746Z"
+    },
+    {
+      "place": 90,
+      "teamId": 17434146,
+      "team": "Youssef Nader",
+      "score": "0.146",
+      "lastSubmission": "2026-11-25T13:49:29.310Z"
+    },
+    {
+      "place": 91,
+      "teamId": 17436427,
+      "team": "Maniceet Sahay",
+      "score": "0.144",
+      "lastSubmission": "2026-11-25T09:37:45.023Z"
+    },
+    {
+      "place": 92,
+      "teamId": 17432333,
+      "team": "Yuki_Kaneko",
+      "score": "0.144",
+      "lastSubmission": "2026-11-24T14:11:43.710Z"
+    },
+    {
+      "place": 93,
+      "teamId": 17431668,
+      "team": "Jack Cole",
+      "score": "0.142",
+      "lastSubmission": "2026-11-25T09:36:25.640Z"
+    },
+    {
+      "place": 94,
+      "teamId": 17438785,
+      "team": "Prathamesh Chavan",
+      "score": "0.142",
+      "lastSubmission": "2026-11-25T11:44:43.793Z"
+    },
+    {
+      "place": 95,
+      "teamId": 17434377,
+      "team": "LAHOUCINE BOUSMENE",
+      "score": "0.142",
+      "lastSubmission": "2026-11-25T08:46:44.973Z"
+    },
+    {
+      "place": 96,
+      "teamId": 17430224,
+      "team": "Josh Pirvu",
+      "score": "0.141",
+      "lastSubmission": "2026-11-24T18:56:13.563Z"
+    },
+    {
+      "place": 97,
+      "teamId": 17438825,
+      "team": "SUJAL DWIVEDI",
+      "score": "0.141",
+      "lastSubmission": "2026-11-25T02:34:03.156Z"
+    },
+    {
+      "place": 98,
+      "teamId": 17431582,
+      "team": "BobtheBot369",
+      "score": "0.141",
+      "lastSubmission": "2026-11-25T00:36:41.783Z"
+    },
+    {
+      "place": 99,
+      "teamId": 17432387,
+      "team": "mp",
+      "score": "0.141",
+      "lastSubmission": "2026-11-25T10:35:15.670Z"
+    },
+    {
+      "place": 100,
+      "teamId": 17431873,
+      "team": "Lonnie",
+      "score": "0.137",
+      "lastSubmission": "2026-11-25T12:29:53.990Z"
+    },
+    {
+      "place": 101,
+      "teamId": 17437708,
+      "team": "Junior_ak",
+      "score": "0.137",
+      "lastSubmission": "2026-11-25T13:58:40.740Z"
+    },
+    {
+      "place": 102,
+      "teamId": 17430441,
+      "team": "Doraking",
+      "score": "0.137",
+      "lastSubmission": "2026-11-25T12:29:45.856Z"
+    },
+    {
+      "place": 103,
+      "teamId": 17431039,
+      "team": "Pai",
+      "score": "0.136",
+      "lastSubmission": "2026-11-24T20:54:32.840Z"
+    },
+    {
+      "place": 104,
+      "teamId": 17430258,
+      "team": "GARC_Expert",
+      "score": "0.136",
+      "lastSubmission": "2026-11-25T14:02:10.533Z"
+    },
+    {
+      "place": 105,
+      "teamId": 17434721,
+      "team": "dustin liang",
+      "score": "0.136",
+      "lastSubmission": "2026-11-25T02:58:20.890Z"
+    },
+    {
+      "place": 106,
+      "teamId": 17437665,
+      "team": "Manuel Muñoz Plá",
+      "score": "0.133",
+      "lastSubmission": "2026-11-25T09:01:43.406Z"
+    },
+    {
+      "place": 107,
+      "teamId": 17439606,
+      "team": "thang",
+      "score": "0.130",
+      "lastSubmission": "2026-11-25T07:31:25.536Z"
+    },
+    {
+      "place": 108,
+      "teamId": 17441707,
+      "team": "kay.liechtenstein",
+      "score": "0.130",
+      "lastSubmission": "2026-11-25T11:59:40.106Z"
+    },
+    {
+      "place": 109,
+      "teamId": 17442072,
+      "team": "My Agent é bom",
+      "score": "0.129",
+      "lastSubmission": "2026-11-25T07:28:22.636Z"
+    },
+    {
+      "place": 110,
+      "teamId": 17441731,
+      "team": "Sofrony",
+      "score": "0.127",
+      "lastSubmission": "2026-11-25T08:50:05.983Z"
+    },
+    {
+      "place": 111,
+      "teamId": 17439892,
+      "team": "Alen Sheriyazdanov",
+      "score": "0.123",
+      "lastSubmission": "2026-11-24T16:37:22.330Z"
+    },
+    {
+      "place": 112,
+      "teamId": 17432521,
+      "team": "OBSTACLE DEVELOPER",
+      "score": "0.123",
+      "lastSubmission": "2026-11-25T12:53:12.196Z"
+    },
+    {
+      "place": 113,
+      "teamId": 17439214,
+      "team": "Aman Khanna",
+      "score": "0.123",
+      "lastSubmission": "2026-11-24T20:24:10.523Z"
+    },
+    {
+      "place": 114,
+      "teamId": 17443057,
+      "team": "Ni123456&",
+      "score": "0.122",
+      "lastSubmission": "2026-11-25T10:12:40.236Z"
+    },
+    {
+      "place": 115,
+      "teamId": 17430387,
+      "team": "Kudo",
+      "score": "0.122",
+      "lastSubmission": "2026-11-25T12:21:57.023Z"
+    },
+    {
+      "place": 116,
+      "teamId": 17433193,
+      "team": "R Arjun Thilak",
+      "score": "0.122",
+      "lastSubmission": "2026-11-25T12:45:38.653Z"
+    },
+    {
+      "place": 117,
+      "teamId": 17430738,
+      "team": "OrDant",
+      "score": "0.121",
+      "lastSubmission": "2026-11-24T20:33:33.313Z"
+    },
+    {
+      "place": 118,
+      "teamId": 17434298,
+      "team": "sanyul",
+      "score": "0.120",
+      "lastSubmission": "2026-11-25T14:02:10.823Z"
+    },
+    {
+      "place": 119,
+      "teamId": 17439842,
+      "team": "hotaq",
+      "score": "0.119",
+      "lastSubmission": "2026-11-25T13:19:13.853Z"
+    },
+    {
+      "place": 120,
+      "teamId": 17431845,
+      "team": "Howon Kang",
+      "score": "0.118",
+      "lastSubmission": "2026-11-25T13:32:21.616Z"
+    },
+    {
+      "place": 121,
+      "teamId": 17430957,
+      "team": "Siddhesh Sathe",
+      "score": "0.118",
+      "lastSubmission": "2026-11-24T18:30:58.983Z"
+    },
+    {
+      "place": 122,
+      "teamId": 17446701,
+      "team": "Yanxi Teng",
+      "score": "0.117",
+      "lastSubmission": "2026-11-25T11:36:57.123Z"
+    },
+    {
+      "place": 123,
+      "teamId": 17438934,
+      "team": "aruuu",
+      "score": "0.117",
+      "lastSubmission": "2026-11-25T13:58:24.613Z"
+    },
+    {
+      "place": 124,
+      "teamId": 17431086,
+      "team": "Fidel Escalona",
+      "score": "0.117",
+      "lastSubmission": "2026-11-25T11:08:19.833Z"
+    },
+    {
+      "place": 125,
+      "teamId": 17441080,
+      "team": "Chew Kok Wah",
+      "score": "0.117",
+      "lastSubmission": "2026-11-24T18:53:48.943Z"
+    },
+    {
+      "place": 126,
+      "teamId": 17440188,
+      "team": "tukikmuse",
+      "score": "0.116",
+      "lastSubmission": "2026-11-24T17:16:41.306Z"
+    },
+    {
+      "place": 127,
+      "teamId": 17440999,
+      "team": "Ishan Karnick",
+      "score": "0.115",
+      "lastSubmission": "2026-11-24T19:59:16.823Z"
+    },
+    {
+      "place": 128,
+      "teamId": 17433681,
+      "team": "Mizero Lucky Gall",
+      "score": "0.114",
+      "lastSubmission": "2026-11-24T14:24:04.986Z"
+    },
+    {
+      "place": 129,
+      "teamId": 17430378,
+      "team": "Cakpo Vital",
+      "score": "0.114",
+      "lastSubmission": "2026-11-25T11:00:00.880Z"
+    },
+    {
+      "place": 130,
+      "teamId": 17432149,
+      "team": "ryos",
+      "score": "0.114",
+      "lastSubmission": "2026-11-25T14:00:22.390Z"
+    },
+    {
+      "place": 131,
+      "teamId": 17441234,
+      "team": "sunny17347",
+      "score": "0.114",
+      "lastSubmission": "2026-11-25T06:00:09.256Z"
+    },
+    {
+      "place": 132,
+      "teamId": 17431788,
+      "team": "Christian Kent Bayani",
+      "score": "0.113",
+      "lastSubmission": "2026-11-25T12:52:00.076Z"
+    },
+    {
+      "place": 133,
+      "teamId": 17433474,
+      "team": "Saheb",
+      "score": "0.113",
+      "lastSubmission": "2026-11-25T08:02:57.340Z"
+    },
+    {
+      "place": 134,
+      "teamId": 17433689,
+      "team": "muyouqian4",
+      "score": "0.113",
+      "lastSubmission": "2026-11-24T21:46:31.483Z"
+    },
+    {
+      "place": 135,
+      "teamId": 17431085,
+      "team": "rishavsaigal",
+      "score": "0.113",
+      "lastSubmission": "2026-11-24T00:02:14.626Z"
+    },
+    {
+      "place": 136,
+      "teamId": 17439569,
+      "team": "rodolfo fonseca acuña",
+      "score": "0.113",
+      "lastSubmission": "2026-11-25T11:50:50.450Z"
+    },
+    {
+      "place": 137,
+      "teamId": 17438409,
+      "team": "Albheryani Agus Katik",
+      "score": "0.112",
+      "lastSubmission": "2026-11-24T13:57:59.750Z"
+    },
+    {
+      "place": 138,
+      "teamId": 17431794,
+      "team": "Ushimaru",
+      "score": "0.109",
+      "lastSubmission": "2026-11-24T15:19:51.836Z"
+    },
+    {
+      "place": 139,
+      "teamId": 17430262,
+      "team": "Jame Time",
+      "score": "0.109",
+      "lastSubmission": "2026-11-24T05:58:00.463Z"
+    },
+    {
+      "place": 140,
+      "teamId": 17432000,
+      "team": "Md. Hamid Hosen",
+      "score": "0.108",
+      "lastSubmission": "2026-11-24T16:40:55.116Z"
+    },
+    {
+      "place": 141,
+      "teamId": 17434967,
+      "team": "Loumi TRÉMAS",
+      "score": "0.108",
+      "lastSubmission": "2026-11-24T23:16:18.086Z"
+    },
+    {
+      "place": 142,
+      "teamId": 17430910,
+      "team": "Menachem Kornreich",
+      "score": "0.107",
+      "lastSubmission": "2026-11-25T06:43:08.890Z"
+    },
+    {
+      "place": 143,
+      "teamId": 17437614,
+      "team": "Etxfdc",
+      "score": "0.107",
+      "lastSubmission": "2026-11-24T12:31:24.400Z"
+    },
+    {
+      "place": 144,
+      "teamId": 17444786,
+      "team": "Ruijie Zhao666",
+      "score": "0.106",
+      "lastSubmission": "2026-11-25T08:54:58.746Z"
+    },
+    {
+      "place": 145,
+      "teamId": 17439455,
+      "team": "Pravin Takpire",
+      "score": "0.106",
+      "lastSubmission": "2026-11-25T06:51:46.673Z"
+    },
+    {
+      "place": 146,
+      "teamId": 17430367,
+      "team": "justsamyyyy",
+      "score": "0.105",
+      "lastSubmission": "2026-11-25T00:27:42.820Z"
+    },
+    {
+      "place": 147,
+      "teamId": 17430259,
+      "team": "Ravi Ramakrishnan",
+      "score": "0.105",
+      "lastSubmission": "2026-11-24T14:12:36.500Z"
+    },
+    {
+      "place": 148,
+      "teamId": 17441415,
+      "team": "Kulraj Sabharwal",
+      "score": "0.104",
+      "lastSubmission": "2026-11-25T01:15:20.850Z"
+    },
+    {
+      "place": 149,
+      "teamId": 17431696,
+      "team": "Priyanshu Kumar",
+      "score": "0.104",
+      "lastSubmission": "2026-11-25T03:17:42.470Z"
+    },
+    {
+      "place": 150,
+      "teamId": 17433712,
+      "team": "Octavi Grau",
+      "score": "0.104",
+      "lastSubmission": "2026-11-24T19:09:06.870Z"
+    },
+    {
+      "place": 151,
+      "teamId": 17435059,
+      "team": "Hiroyasu Okuno",
+      "score": "0.103",
+      "lastSubmission": "2026-11-24T11:34:03.563Z"
+    },
+    {
+      "place": 152,
+      "teamId": 17441167,
+      "team": "Guru Prasaath S",
+      "score": "0.103",
+      "lastSubmission": "2026-11-24T19:06:08.160Z"
+    },
+    {
+      "place": 153,
+      "teamId": 17434534,
+      "team": "Nikhil",
+      "score": "0.102",
+      "lastSubmission": "2026-11-24T09:42:33.816Z"
+    },
+    {
+      "place": 154,
+      "teamId": 17442903,
+      "team": "ZIRENLI-001",
+      "score": "0.102",
+      "lastSubmission": "2026-11-25T02:03:37.100Z"
+    },
+    {
+      "place": 155,
+      "teamId": 17431774,
+      "team": "Parabellum",
+      "score": "0.102",
+      "lastSubmission": "2026-11-25T02:08:16.276Z"
+    },
+    {
+      "place": 156,
+      "teamId": 17441297,
+      "team": "Pablo Diego Pereira",
+      "score": "0.101",
+      "lastSubmission": "2026-11-25T07:53:07.023Z"
+    },
+    {
+      "place": 157,
+      "teamId": 17439332,
+      "team": "babybuffalo",
+      "score": "0.100",
+      "lastSubmission": "2026-11-24T15:36:32.016Z"
+    },
+    {
+      "place": 158,
+      "teamId": 17439768,
+      "team": "Staratnyte",
+      "score": "0.100",
+      "lastSubmission": "2026-11-24T16:39:51.000Z"
+    },
+    {
+      "place": 159,
+      "teamId": 17433068,
+      "team": "huifaliu",
+      "score": "0.099",
+      "lastSubmission": "2026-11-25T13:02:16.943Z"
+    },
+    {
+      "place": 160,
+      "teamId": 17432943,
+      "team": "nasubiman",
+      "score": "0.099",
+      "lastSubmission": "2026-11-24T07:00:58.663Z"
+    },
+    {
+      "place": 161,
+      "teamId": 17433538,
+      "team": "Giridharan R",
+      "score": "0.098",
+      "lastSubmission": "2026-11-25T08:21:27.323Z"
+    },
+    {
+      "place": 162,
+      "teamId": 17436048,
+      "team": "simmons1025",
+      "score": "0.098",
+      "lastSubmission": "2026-11-25T13:43:42.546Z"
+    },
+    {
+      "place": 163,
+      "teamId": 17432835,
+      "team": "Udit Jain",
+      "score": "0.098",
+      "lastSubmission": "2026-11-25T10:49:13.523Z"
+    },
+    {
+      "place": 164,
+      "teamId": 17434598,
+      "team": "Nick Styles",
+      "score": "0.098",
+      "lastSubmission": "2026-11-24T09:32:44.786Z"
+    },
+    {
+      "place": 165,
+      "teamId": 17440260,
+      "team": "secury",
+      "score": "0.097",
+      "lastSubmission": "2026-11-25T09:47:32.330Z"
+    },
+    {
+      "place": 166,
+      "teamId": 17439259,
+      "team": "Aditya Murugesh",
+      "score": "0.095",
+      "lastSubmission": "2026-11-25T00:57:49.513Z"
+    },
+    {
+      "place": 167,
+      "teamId": 17431129,
+      "team": "xiruij",
+      "score": "0.094",
+      "lastSubmission": "2026-11-25T14:02:20.863Z"
+    },
+    {
+      "place": 168,
+      "teamId": 17438099,
+      "team": "handsomeyangz",
+      "score": "0.094",
+      "lastSubmission": "2026-11-25T12:13:50.416Z"
+    },
+    {
+      "place": 169,
+      "teamId": 17435776,
+      "team": "Lennart Haupts",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T09:06:01.553Z"
+    },
+    {
+      "place": 170,
+      "teamId": 17430299,
+      "team": "Kohei",
+      "score": "0.093",
+      "lastSubmission": "2026-11-23T19:06:29.486Z"
+    },
+    {
+      "place": 171,
+      "teamId": 17430496,
+      "team": "Sukhendu Sain",
+      "score": "0.093",
+      "lastSubmission": "2026-11-23T20:04:04.766Z"
+    },
+    {
+      "place": 172,
+      "teamId": 17431007,
+      "team": "Shoko",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T04:09:15.606Z"
+    },
+    {
+      "place": 173,
+      "teamId": 17431951,
+      "team": "smbu-zengyu",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T02:13:44.276Z"
+    },
+    {
+      "place": 174,
+      "teamId": 17430816,
+      "team": "ISAKA Tsuyoshi",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T14:31:27.880Z"
+    },
+    {
+      "place": 175,
+      "teamId": 17431416,
+      "team": "ONODERA",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T09:56:24.236Z"
+    },
+    {
+      "place": 176,
+      "teamId": 17437431,
+      "team": "ra1nac1d",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T11:33:21.486Z"
+    },
+    {
+      "place": 177,
+      "teamId": 17438084,
+      "team": "Mindaugas Jankauskas",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T10:53:33.880Z"
+    },
+    {
+      "place": 178,
+      "teamId": 17434332,
+      "team": "sunny114514",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T21:26:28.933Z"
+    },
+    {
+      "place": 179,
+      "teamId": 17442051,
+      "team": "Khushal Gaur",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T22:31:29.810Z"
+    },
+    {
+      "place": 180,
+      "teamId": 17438612,
+      "team": "Chonghao Peng",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T08:41:23.573Z"
+    },
+    {
+      "place": 181,
+      "teamId": 17442822,
+      "team": "tom sbados",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T01:41:31.676Z"
+    },
+    {
+      "place": 182,
+      "teamId": 17442438,
+      "team": "HIDEYO CHIBA",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T05:56:30.763Z"
+    },
+    {
+      "place": 183,
+      "teamId": 17446721,
+      "team": "Prince AJ CUYOS",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T10:47:53.403Z"
+    },
+    {
+      "place": 184,
+      "teamId": 17447554,
+      "team": "Den Pugovkin",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T13:08:02.510Z"
+    },
+    {
+      "place": 185,
+      "teamId": 17447533,
+      "team": "BoomHSB",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T12:37:58.260Z"
+    },
+    {
+      "place": 186,
+      "teamId": 17440247,
+      "team": "ML_Orlov_Dmitry",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T17:34:28.180Z"
+    },
+    {
+      "place": 187,
+      "teamId": 17433109,
+      "team": "waterrbq",
+      "score": "0.093",
+      "lastSubmission": "2026-11-24T06:12:51.813Z"
+    },
+    {
+      "place": 188,
+      "teamId": 17439051,
+      "team": "tomo2677",
+      "score": "0.093",
+      "lastSubmission": "2026-11-25T14:07:48.633Z"
+    },
+    {
+      "place": 189,
+      "teamId": 17430337,
+      "team": "Faycal Zouine",
+      "score": "0.092",
+      "lastSubmission": "2026-11-23T20:27:32.370Z"
+    },
+    {
+      "place": 190,
+      "teamId": 17430953,
+      "team": "Cindyl789",
+      "score": "0.092",
+      "lastSubmission": "2026-11-23T21:38:34.243Z"
+    },
+    {
+      "place": 191,
+      "teamId": 17431480,
+      "team": "johnny",
+      "score": "0.092",
+      "lastSubmission": "2026-11-24T00:30:51.536Z"
+    },
+    {
+      "place": 192,
+      "teamId": 17439065,
+      "team": "sdfaf jkjm",
+      "score": "0.092",
+      "lastSubmission": "2026-11-25T08:36:06.510Z"
+    },
+    {
+      "place": 193,
+      "teamId": 17432700,
+      "team": "Twil3akine",
+      "score": "0.092",
+      "lastSubmission": "2026-11-24T06:49:28.820Z"
+    },
+    {
+      "place": 194,
+      "teamId": 17430594,
+      "team": "SWARNA SEKHAR DHAR",
+      "score": "0.092",
+      "lastSubmission": "2026-11-25T13:29:03.656Z"
+    },
+    {
+      "place": 195,
+      "teamId": 17447848,
+      "team": "hyunjunbae",
+      "score": "0.092",
+      "lastSubmission": "2026-11-25T13:26:16.923Z"
+    },
+    {
+      "place": 196,
+      "teamId": 17431570,
+      "team": "gurume",
+      "score": "0.092",
+      "lastSubmission": "2026-11-24T22:05:42.563Z"
+    },
+    {
+      "place": 197,
+      "teamId": 17434278,
+      "team": "Ready Player Zero",
+      "score": "0.091",
+      "lastSubmission": "2026-11-24T10:39:35.233Z"
+    },
+    {
+      "place": 198,
+      "teamId": 17430384,
+      "team": "Yaromir_Ko",
+      "score": "0.090",
+      "lastSubmission": "2026-11-25T04:45:43.786Z"
+    },
+    {
+      "place": 199,
+      "teamId": 17431072,
+      "team": "StanleyJacob",
+      "score": "0.089",
+      "lastSubmission": "2026-11-24T06:32:55.180Z"
+    },
+    {
+      "place": 200,
+      "teamId": 17432320,
+      "team": "Team Zemo",
+      "score": "0.089",
+      "lastSubmission": "2026-11-25T13:29:32.843Z"
+    },
+    {
+      "place": 201,
+      "teamId": 17432357,
+      "team": "AbhilashVJ",
+      "score": "0.087",
+      "lastSubmission": "2026-11-24T03:48:31.970Z"
+    },
+    {
+      "place": 202,
+      "teamId": 17433654,
+      "team": "gga(gag)agg",
+      "score": "0.087",
+      "lastSubmission": "2026-11-25T11:30:49.746Z"
+    },
+    {
+      "place": 203,
+      "teamId": 17446207,
+      "team": "Mohammad Albaddawi",
+      "score": "0.087",
+      "lastSubmission": "2026-11-25T14:15:42.550Z"
+    },
+    {
+      "place": 204,
+      "teamId": 17433379,
+      "team": "minhduynguyen1505",
+      "score": "0.084",
+      "lastSubmission": "2026-11-25T18:39:39.663Z"
+    },
+    {
+      "place": 205,
+      "teamId": 17442450,
+      "team": "Jobless Students",
+      "score": "0.082",
+      "lastSubmission": "2026-11-25T08:13:38.250Z"
+    },
+    {
+      "place": 206,
+      "teamId": 17441593,
+      "team": "Aiden Wang",
+      "score": "0.082",
+      "lastSubmission": "2026-11-25T12:01:02.980Z"
+    },
+    {
+      "place": 207,
+      "teamId": 17430346,
+      "team": "alekh",
+      "score": "0.081",
+      "lastSubmission": "2026-11-25T00:01:26.660Z"
+    },
+    {
+      "place": 208,
+      "teamId": 17440012,
+      "team": "Ismail Sab Ajnalkar",
+      "score": "0.080",
+      "lastSubmission": "2026-11-25T02:27:25.946Z"
+    },
+    {
+      "place": 209,
+      "teamId": 17431548,
+      "team": "Riku Okawa",
+      "score": "0.078",
+      "lastSubmission": "2026-11-25T07:53:39.833Z"
+    },
+    {
+      "place": 210,
+      "teamId": 17431285,
+      "team": "Seong-Min Park",
+      "score": "0.077",
+      "lastSubmission": "2026-11-24T21:19:42.150Z"
+    },
+    {
+      "place": 211,
+      "teamId": 17431212,
+      "team": "Tom.",
+      "score": "0.076",
+      "lastSubmission": "2026-11-25T09:08:13.373Z"
+    },
+    {
+      "place": 212,
+      "teamId": 17438894,
+      "team": "Gaurav Vyas",
+      "score": "0.075",
+      "lastSubmission": "2026-11-24T20:25:02.286Z"
+    },
+    {
+      "place": 213,
+      "teamId": 17447331,
+      "team": "Lovlace、",
+      "score": "0.075",
+      "lastSubmission": "2026-11-25T13:54:25.336Z"
+    },
+    {
+      "place": 214,
+      "teamId": 17440115,
+      "team": "Zefirrr",
+      "score": "0.075",
+      "lastSubmission": "2026-11-25T03:03:30.860Z"
+    },
+    {
+      "place": 215,
+      "teamId": 17442026,
+      "team": "keeaitec",
+      "score": "0.074",
+      "lastSubmission": "2026-11-25T09:04:28.596Z"
+    },
+    {
+      "place": 216,
+      "teamId": 17434914,
+      "team": "windrise",
+      "score": "0.074",
+      "lastSubmission": "2026-11-25T10:09:56.076Z"
+    },
+    {
+      "place": 217,
+      "teamId": 17431655,
+      "team": "Zero",
+      "score": "0.072",
+      "lastSubmission": "2026-11-24T05:34:38.966Z"
+    },
+    {
+      "place": 218,
+      "teamId": 17443883,
+      "team": "pandacat-ai",
+      "score": "0.070",
+      "lastSubmission": "2026-11-25T06:21:14.303Z"
+    },
+    {
+      "place": 219,
+      "teamId": 17446635,
+      "team": "sylow",
+      "score": "0.067",
+      "lastSubmission": "2026-11-25T12:32:06.963Z"
+    },
+    {
+      "place": 220,
+      "teamId": 17430927,
+      "team": "Khalid LEMOUDEN",
+      "score": "0.067",
+      "lastSubmission": "2026-11-25T10:30:14.480Z"
+    },
+    {
+      "place": 221,
+      "teamId": 17440806,
+      "team": "Dao Huu Trong",
+      "score": "0.067",
+      "lastSubmission": "2026-11-25T06:43:05.796Z"
+    },
+    {
+      "place": 222,
+      "teamId": 17431322,
+      "team": "honjousetuna",
+      "score": "0.066",
+      "lastSubmission": "2026-11-24T18:40:15.380Z"
+    },
+    {
+      "place": 223,
+      "teamId": 17439977,
+      "team": "Jefri Maulana",
+      "score": "0.065",
+      "lastSubmission": "2026-11-24T16:40:49.813Z"
+    },
+    {
+      "place": 224,
+      "teamId": 17441210,
+      "team": "Yash Verdhan",
+      "score": "0.064",
+      "lastSubmission": "2026-11-25T11:05:26.196Z"
+    },
+    {
+      "place": 225,
+      "teamId": 17433303,
+      "team": "Deepak Thanam",
+      "score": "0.063",
+      "lastSubmission": "2026-11-24T11:06:32.646Z"
+    },
+    {
+      "place": 226,
+      "teamId": 17431391,
+      "team": "3as6Bl",
+      "score": "0.062",
+      "lastSubmission": "2026-11-24T04:48:56.370Z"
+    },
+    {
+      "place": 227,
+      "teamId": 17430185,
+      "team": "lmnhgF",
+      "score": "0.062",
+      "lastSubmission": "2026-11-24T05:32:18.093Z"
+    },
+    {
+      "place": 228,
+      "teamId": 17440534,
+      "team": "mraz1006",
+      "score": "0.061",
+      "lastSubmission": "2026-11-25T05:39:49.850Z"
+    },
+    {
+      "place": 229,
+      "teamId": 17437624,
+      "team": "Rainbow Pig",
+      "score": "0.060",
+      "lastSubmission": "2026-11-25T10:37:21.873Z"
+    },
+    {
+      "place": 230,
+      "teamId": 17440200,
+      "team": "Ranjeet Kumar",
+      "score": "0.058",
+      "lastSubmission": "2026-11-25T13:01:28.680Z"
+    },
+    {
+      "place": 231,
+      "teamId": 17431292,
+      "team": "jorge fabian avila",
+      "score": "0.058",
+      "lastSubmission": "2026-11-23T23:16:29.896Z"
+    },
+    {
+      "place": 232,
+      "teamId": 17430934,
+      "team": "Francisco MEP",
+      "score": "0.058",
+      "lastSubmission": "2026-11-24T16:57:17.070Z"
+    },
+    {
+      "place": 233,
+      "teamId": 17432583,
+      "team": "Orest Stadnik",
+      "score": "0.058",
+      "lastSubmission": "2026-11-24T13:04:59.010Z"
+    },
+    {
+      "place": 234,
+      "teamId": 17431024,
+      "team": "imad hamz",
+      "score": "0.058",
+      "lastSubmission": "2026-11-24T20:25:43.403Z"
+    },
+    {
+      "place": 235,
+      "teamId": 17442041,
+      "team": "ye jialin",
+      "score": "0.058",
+      "lastSubmission": "2026-11-24T22:27:02.230Z"
+    },
+    {
+      "place": 236,
+      "teamId": 17447040,
+      "team": "Winry",
+      "score": "0.058",
+      "lastSubmission": "2026-11-25T12:39:50.140Z"
+    },
+    {
+      "place": 237,
+      "teamId": 17430355,
+      "team": "mentria.ai",
+      "score": "0.056",
+      "lastSubmission": "2026-11-23T19:28:13.380Z"
+    },
+    {
+      "place": 238,
+      "teamId": 17431973,
+      "team": "yuki16",
+      "score": "0.056",
+      "lastSubmission": "2026-11-24T02:13:09.766Z"
+    },
+    {
+      "place": 239,
+      "teamId": 17431390,
+      "team": "Taro_pan",
+      "score": "0.056",
+      "lastSubmission": "2026-11-24T04:52:30.860Z"
+    },
+    {
+      "place": 240,
+      "teamId": 17434925,
+      "team": "ooi jed",
+      "score": "0.056",
+      "lastSubmission": "2026-11-25T10:21:01.206Z"
+    },
+    {
+      "place": 241,
+      "teamId": 17432689,
+      "team": "Tristan Pham",
+      "score": "0.055",
+      "lastSubmission": "2026-11-24T16:14:15.236Z"
+    },
+    {
+      "place": 242,
+      "teamId": 17432193,
+      "team": "seven",
+      "score": "0.055",
+      "lastSubmission": "2026-11-25T10:09:45.066Z"
+    },
+    {
+      "place": 243,
+      "teamId": 17431237,
+      "team": "Ancha pramudia Saja",
+      "score": "0.054",
+      "lastSubmission": "2026-11-24T01:37:33.880Z"
+    },
+    {
+      "place": 244,
+      "teamId": 17438853,
+      "team": "Shah Atharva Suryakant",
+      "score": "0.053",
+      "lastSubmission": "2026-11-24T15:43:11.823Z"
+    },
+    {
+      "place": 245,
+      "teamId": 17434117,
+      "team": "hemchand jajoria",
+      "score": "0.052",
+      "lastSubmission": "2026-11-25T02:40:56.413Z"
+    },
+    {
+      "place": 246,
+      "teamId": 17433401,
+      "team": "Prashant Rawat",
+      "score": "0.051",
+      "lastSubmission": "2026-11-24T06:42:16.480Z"
+    },
+    {
+      "place": 247,
+      "teamId": 17434350,
+      "team": "Duong Y Nhi",
+      "score": "0.051",
+      "lastSubmission": "2026-11-25T06:20:40.253Z"
+    },
+    {
+      "place": 248,
+      "teamId": 17431031,
+      "team": "hengck23",
+      "score": "0.051",
+      "lastSubmission": "2026-11-24T09:39:42.583Z"
+    },
+    {
+      "place": 249,
+      "teamId": 17433680,
+      "team": "Aqil Contractor",
+      "score": "0.050",
+      "lastSubmission": "2026-11-24T18:02:15.976Z"
+    },
+    {
+      "place": 250,
+      "teamId": 17431000,
+      "team": "Taylor S. Amarel",
+      "score": "0.047",
+      "lastSubmission": "2026-11-24T23:26:10.760Z"
+    },
+    {
+      "place": 251,
+      "teamId": 17433404,
+      "team": "Jacie Crown_1",
+      "score": "0.047",
+      "lastSubmission": "2026-11-24T18:08:20.030Z"
+    },
+    {
+      "place": 252,
+      "teamId": 17431179,
+      "team": "Ymori（盛島康徳）",
+      "score": "0.046",
+      "lastSubmission": "2026-11-24T20:26:44.180Z"
+    },
+    {
+      "place": 253,
+      "teamId": 17434667,
+      "team": "Norwin Yu",
+      "score": "0.046",
+      "lastSubmission": "2026-11-25T12:49:55.646Z"
+    },
+    {
+      "place": 254,
+      "teamId": 17444515,
+      "team": "Vaibhav Mahore",
+      "score": "0.044",
+      "lastSubmission": "2026-11-25T08:17:03.390Z"
+    },
+    {
+      "place": 255,
+      "teamId": 17431406,
+      "team": "kakuteki",
+      "score": "0.044",
+      "lastSubmission": "2026-11-24T00:07:37.760Z"
+    },
+    {
+      "place": 256,
+      "teamId": 17440600,
+      "team": "Addison Howard",
+      "score": "0.042",
+      "lastSubmission": "2026-11-25T01:38:37.166Z"
+    },
+    {
+      "place": 257,
+      "teamId": 17437817,
+      "team": "TanTai31124",
+      "score": "0.042",
+      "lastSubmission": "2026-11-24T11:47:19.440Z"
+    },
+    {
+      "place": 258,
+      "teamId": 17431717,
+      "team": "e-toppo",
+      "score": "0.042",
+      "lastSubmission": "2026-11-24T08:23:35.923Z"
+    },
+    {
+      "place": 259,
+      "teamId": 17433995,
+      "team": "Canon",
+      "score": "0.041",
+      "lastSubmission": "2026-11-25T06:15:00.073Z"
+    },
+    {
+      "place": 260,
+      "teamId": 17444924,
+      "team": "Yin Ma",
+      "score": "0.041",
+      "lastSubmission": "2026-11-25T08:37:59.463Z"
+    },
+    {
+      "place": 261,
+      "teamId": 17433441,
+      "team": "Samer Tallauze",
+      "score": "0.040",
+      "lastSubmission": "2026-11-24T08:10:35.413Z"
+    },
+    {
+      "place": 262,
+      "teamId": 17430596,
+      "team": "Adaptive Agent Systems",
+      "score": "0.040",
+      "lastSubmission": "2026-11-24T17:46:59.876Z"
+    },
+    {
+      "place": 263,
+      "teamId": 17444267,
+      "team": "Jeroen Cottaar",
+      "score": "0.040",
+      "lastSubmission": "2026-11-25T08:19:39.840Z"
+    },
+    {
+      "place": 264,
+      "teamId": 17445605,
+      "team": "nguyenbaotri-VIETNAM",
+      "score": "0.037",
+      "lastSubmission": "2026-11-25T10:12:39.323Z"
+    },
+    {
+      "place": 265,
+      "teamId": 17432064,
+      "team": "Takayuki Michishita",
+      "score": "0.034",
+      "lastSubmission": "2026-11-24T23:34:13.923Z"
+    },
+    {
+      "place": 266,
+      "teamId": 17439951,
+      "team": "Ricardo Lu",
+      "score": "0.033",
+      "lastSubmission": "2026-11-25T03:46:11.320Z"
+    },
+    {
+      "place": 267,
+      "teamId": 17434181,
+      "team": "Bao Tran",
+      "score": "0.031",
+      "lastSubmission": "2026-11-25T02:56:43.966Z"
+    },
+    {
+      "place": 268,
+      "teamId": 17447147,
+      "team": "kiyotomokuroda",
+      "score": "0.031",
+      "lastSubmission": "2026-11-25T13:06:42.030Z"
+    },
+    {
+      "place": 269,
+      "teamId": 17430477,
+      "team": "Rainyy",
+      "score": "0.031",
+      "lastSubmission": "2026-11-23T23:17:43.770Z"
+    },
+    {
+      "place": 270,
+      "teamId": 17442977,
+      "team": "Vikram Tiwari",
+      "score": "0.030",
+      "lastSubmission": "2026-11-25T05:46:58.740Z"
+    },
+    {
+      "place": 271,
+      "teamId": 17440189,
+      "team": "MrEvidentYew",
+      "score": "0.030",
+      "lastSubmission": "2026-11-24T17:41:35.570Z"
+    },
+    {
+      "place": 272,
+      "teamId": 17439601,
+      "team": "Shinwonryuuuu",
+      "score": "0.029",
+      "lastSubmission": "2026-11-25T03:48:12.790Z"
+    },
+    {
+      "place": 273,
+      "teamId": 17437649,
+      "team": "chxx1234",
+      "score": "0.029",
+      "lastSubmission": "2026-11-24T16:49:25.580Z"
+    },
+    {
+      "place": 274,
+      "teamId": 17431341,
+      "team": "hmmmreally",
+      "score": "0.028",
+      "lastSubmission": "2026-11-24T16:51:17.346Z"
+    },
+    {
+      "place": 275,
+      "teamId": 17430216,
+      "team": "James Mills",
+      "score": "0.026",
+      "lastSubmission": "2026-11-24T07:13:10.346Z"
+    },
+    {
+      "place": 276,
+      "teamId": 17430236,
+      "team": "Will",
+      "score": "0.024",
+      "lastSubmission": "2026-11-23T19:23:30.593Z"
+    },
+    {
+      "place": 277,
+      "teamId": 17434104,
+      "team": "LUV BILONIYA",
+      "score": "0.024",
+      "lastSubmission": "2026-11-25T07:54:52.066Z"
+    },
+    {
+      "place": 278,
+      "teamId": 17446208,
+      "team": "Deepak Saldanha",
+      "score": "0.023",
+      "lastSubmission": "2026-11-25T11:07:19.066Z"
+    },
+    {
+      "place": 279,
+      "teamId": 17439523,
+      "team": "Priyanshu RAJ",
+      "score": "0.022",
+      "lastSubmission": "2026-11-24T15:49:19.333Z"
+    },
+    {
+      "place": 280,
+      "teamId": 17443365,
+      "team": "Cheng Li",
+      "score": "0.022",
+      "lastSubmission": "2026-11-25T07:59:55.016Z"
+    },
+    {
+      "place": 281,
+      "teamId": 17440301,
+      "team": "Kellas0102",
+      "score": "0.022",
+      "lastSubmission": "2026-11-25T09:14:17.510Z"
+    },
+    {
+      "place": 282,
+      "teamId": 17432607,
+      "team": "sedhupathi vishnu",
+      "score": "0.021",
+      "lastSubmission": "2026-11-24T04:33:14.113Z"
+    },
+    {
+      "place": 283,
+      "teamId": 17430217,
+      "team": "SeshuRaju 🧘‍♂️",
+      "score": "0.019",
+      "lastSubmission": "2026-11-25T08:48:22.230Z"
+    },
+    {
+      "place": 284,
+      "teamId": 17441448,
+      "team": "Ralf",
+      "score": "0.019",
+      "lastSubmission": "2026-11-24T21:54:25.600Z"
+    },
+    {
+      "place": 285,
+      "teamId": 17431685,
+      "team": "gezi",
+      "score": "0.019",
+      "lastSubmission": "2026-11-24T01:12:27.230Z"
+    },
+    {
+      "place": 286,
+      "teamId": 17433609,
+      "team": "Minghao Xia",
+      "score": "0.012",
+      "lastSubmission": "2026-11-25T07:07:05.220Z"
+    },
+    {
+      "place": 287,
+      "teamId": 17430193,
+      "team": "Md. Ismiel Hossen Abir",
+      "score": "0.012",
+      "lastSubmission": "2026-11-25T07:11:26.790Z"
+    },
+    {
+      "place": 288,
+      "teamId": 17444157,
+      "team": "magicalcats",
+      "score": "0.010",
+      "lastSubmission": "2026-11-25T06:11:44.970Z"
+    },
+    {
+      "place": 289,
+      "teamId": 17437241,
+      "team": "Nguyễn Đăng Khoa",
+      "score": "0.010",
+      "lastSubmission": "2026-11-25T04:00:27.393Z"
+    },
+    {
+      "place": 290,
+      "teamId": 17433283,
+      "team": "JIAWEILI0001",
+      "score": "0.010",
+      "lastSubmission": "2026-11-25T13:19:55.003Z"
+    },
+    {
+      "place": 291,
+      "teamId": 17433927,
+      "team": "koheip",
+      "score": "0.009",
+      "lastSubmission": "2026-11-24T08:59:10.810Z"
+    },
+    {
+      "place": 292,
+      "teamId": 17433924,
+      "team": "Chovy",
+      "score": "0.009",
+      "lastSubmission": "2026-11-24T08:08:02.843Z"
+    },
+    {
+      "place": 293,
+      "teamId": 17437555,
+      "team": "SoulofCinder_4396",
+      "score": "0.007",
+      "lastSubmission": "2026-11-24T11:47:04.976Z"
+    },
+    {
+      "place": 294,
+      "teamId": 17431757,
+      "team": "Avik Das",
+      "score": "0.006",
+      "lastSubmission": "2026-11-24T06:44:30.936Z"
+    },
+    {
+      "place": 295,
+      "teamId": 17443954,
+      "team": "bill123987",
+      "score": "0.006",
+      "lastSubmission": "2026-11-25T12:51:39.956Z"
+    },
+    {
+      "place": 296,
+      "teamId": 17438605,
+      "team": "Cheung Yee Yan",
+      "score": "0.004",
+      "lastSubmission": "2026-11-24T13:40:11.896Z"
+    },
+    {
+      "place": 297,
+      "teamId": 17431517,
+      "team": "優斗",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T00:17:56.973Z"
+    },
+    {
+      "place": 298,
+      "teamId": 17433650,
+      "team": "Kazuki Igeta",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T07:57:24.736Z"
+    },
+    {
+      "place": 299,
+      "teamId": 17430122,
+      "team": "Sameh Ben Houria",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T11:44:12.870Z"
+    },
+    {
+      "place": 300,
+      "teamId": 17438726,
+      "team": "okkoj bjj",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T15:15:28.610Z"
+    },
+    {
+      "place": 301,
+      "teamId": 17440209,
+      "team": "Spynel KOUTON",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T17:23:27.563Z"
+    },
+    {
+      "place": 302,
+      "teamId": 17435016,
+      "team": "prvsiyan",
+      "score": "0.001",
+      "lastSubmission": "2026-11-24T19:50:09.440Z"
+    },
+    {
+      "place": 303,
+      "teamId": 17431689,
+      "team": "Daniel Wu",
+      "score": "0.001",
+      "lastSubmission": "2026-11-25T07:27:44.583Z"
+    },
+    {
+      "place": 304,
+      "teamId": 17430666,
+      "team": "Oleg Zholobov",
+      "score": "0.000",
+      "lastSubmission": "2026-11-24T13:22:09.003Z"
+    }
+  ],
+  "citedBy": [
+    "daniel-franzen-arcade-entrance",
+    "generalist-gaming-opening-board",
+    "keith-tyser-arcade"
+  ]
+}

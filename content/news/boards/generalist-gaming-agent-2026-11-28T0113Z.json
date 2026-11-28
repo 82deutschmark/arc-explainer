@@ -1,0 +1,68 @@
+{
+  "id": "generalist-gaming-agent-2026-11-28T0113Z",
+  "competition": "generalist-gaming-agent",
+  "board": "public",
+  "observedAt": "2026-11-28T01:13:34+00:00",
+  "savedAt": "2026-11-28T03:10:22+00:00",
+  "source": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard",
+  "savedFrom": {
+    "path": "/Volumes/Team 4TB/loose-goose/artwork/daniel-franzen-arcade-entrance/public-entries-release.json",
+    "sha256": "e8bf11554c937fdcacf61bf990c3cf63fa16ac432cafce5657e6d0d6ddcabff7"
+  },
+  "covers": "The rows the newsroom read with entry counts: places one to five and Jack Cole at thirty-third, with best public score, Kaggle’s Entries count and last submission time (UTC).",
+  "doesNotCover": "The private leaderboard, which sets the final ranking, and any change on Kaggle after the observed time.",
+  "columns": [
+    "place",
+    "team",
+    "score",
+    "entries",
+    "lastSubmission"
+  ],
+  "rows": [
+    {
+      "place": 1,
+      "team": "Daniel Franzen",
+      "score": "0.554",
+      "entries": 6,
+      "lastSubmission": "2026-11-27T17:11:54Z"
+    },
+    {
+      "place": 2,
+      "team": "Keith Tyser",
+      "score": "0.477",
+      "entries": 13,
+      "lastSubmission": "2026-11-27T11:10:08Z"
+    },
+    {
+      "place": 3,
+      "team": "Dries @ Tufa Labs",
+      "score": "0.401",
+      "entries": 15,
+      "lastSubmission": "2026-11-27T18:57:48Z"
+    },
+    {
+      "place": 4,
+      "team": "Mevlana Yalçın",
+      "score": "0.400",
+      "entries": 7,
+      "lastSubmission": "2026-11-27T18:37:43Z"
+    },
+    {
+      "place": 5,
+      "team": "Pay-to-Compute",
+      "score": "0.365",
+      "entries": 17,
+      "lastSubmission": "2026-11-27T17:25:00Z"
+    },
+    {
+      "place": 33,
+      "team": "Jack Cole",
+      "score": "0.338",
+      "entries": 20,
+      "lastSubmission": "2026-11-27T13:31:50Z"
+    }
+  ],
+  "citedBy": [
+    "daniel-franzen-arcade-entrance"
+  ]
+}

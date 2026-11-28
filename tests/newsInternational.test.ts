@@ -22,7 +22,7 @@ it('gives wiki stories the same canonical dated schema in initial HTML and SPA m
   const node = (schema['@graph'] as Record<string, any>[])[0];
   expect(resolveNewsMeta('/news/' + story.id)!.tags.jsonLd).toEqual(schema);
   expect(node.datePublished).toBe(story.publishedAt);
-  expect(node.dateModified).toBe(story.publishedAt);
+  expect(node.dateModified).toBe(story.updatedAt ?? story.publishedAt); // a revised story carries its revision time
   expect(node.citation).toEqual(citedSources(story).map(source => source.url));
   expect(node.publisher['@type']).toBe('NewsMediaOrganization');
   expect(node.publisher.masthead).toBe(SITE_ORIGIN + '/news/staff');

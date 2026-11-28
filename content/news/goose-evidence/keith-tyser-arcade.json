@@ -39,7 +39,7 @@
       "commissionedBy": "mark-barney",
       "competition": "generalist-gaming-agent",
       "dek": "The Goose regular who published his own bot mishaps just put his name at the top of the Generalist Gaming public board.",
-      "editorNote": "Mark Barney, publisher of The Loose Goose, and Son Pham competed alongside Keith Tyser in ARC-AGI-3 and co-wrote the Team Turducken write-up cited here.",
+      "editorNote": "Disclosure: Keith Tyser was a Team Turducken teammate of Loose Goose editor Mark Barney and of Son Pham in ARC-AGI-3. Barney and Pham co-wrote the team write-up cited here.",
       "generatedBy": "gpt-6-codex",
       "headline": "Keith Tyser grabs the arcade lead",
       "id": "keith-tyser-arcade",
@@ -52,14 +52,17 @@
         "keith-tyser"
       ],
       "publishedAt": "2026-11-25T22:18:34+00:00",
-      "revisedAt": "2026-11-25T23:06:02+00:00",
+      "revisedAt": "2026-11-28T03:28:00+00:00",
       "sections": [
         {
           "sourceIds": [
             "board",
+            "saved-tuesday",
+            "saved-overnight",
+            "saved-board",
             "tier"
           ],
-          "text": "Keith Tyser barged into the arcade and took the high score. The leaderboard from Tuesday evening didn’t have his name on it. By Wednesday afternoon the Goose regular was in first place on the public board at 0.408, and Kaggle listed him alone on the team."
+          "text": "Keith Tyser barged into the arcade and took the high score. The leaderboard from Tuesday evening didn’t have his name on it. By Wednesday evening the Goose regular was in first place on the public board at 0.408, and Kaggle listed him alone on the team."
         },
         {
           "heading": "The mistakes he kept",
@@ -101,49 +104,67 @@
         {
           "accessedAt": "2026-11-25T20:18:16Z",
           "id": "board",
-          "title": "Kaggle public leaderboard and linked team roster",
+          "title": "Kaggle Generalist Gaming public leaderboard and Tyser’s team page",
           "url": "https://www.kaggle.com/competitions/generalist-gaming-agent/leaderboard?teamId=17431467"
+        },
+        {
+          "accessedAt": "2026-11-28T03:11:14+00:00",
+          "id": "saved-board",
+          "title": "Saved Kaggle public leaderboard, 25 Nov 2026 20:18 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T2018Z"
+        },
+        {
+          "accessedAt": "2026-11-28T03:28:00+00:00",
+          "id": "saved-tuesday",
+          "title": "Saved Kaggle public leaderboard, 24 Nov 2026 21:08 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-24T2108Z"
+        },
+        {
+          "accessedAt": "2026-11-28T03:12:47+00:00",
+          "id": "saved-overnight",
+          "title": "Saved Kaggle public leaderboard, 25 Nov 2026 00:34 UTC",
+          "url": "https://arc.markbarney.net/news/boards/generalist-gaming-agent-2026-11-25T0034Z"
         },
         {
           "accessedAt": "2026-11-25T20:48:32+00:00",
           "id": "training",
-          "title": "Keith Tyser’s account of his three simulation contests",
+          "title": "Keith Tyser’s blog post on his three simulation contests",
           "url": "https://keithtyser.com/blog/three-simulation-competitions-three-ppo-mistakes.html"
         },
         {
           "accessedAt": "2026-11-25T20:48:32+00:00",
           "id": "turducken",
-          "title": "Team Turducken’s ARC-AGI-3 write-up",
+          "title": "Team Turducken’s ARC-AGI-3 write-up on Kaggle",
           "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken"
         },
         {
           "accessedAt": "2026-11-25T20:48:32+00:00",
           "id": "organizer",
-          "title": "Generalist Gaming benchmark and competition",
+          "title": "Generalist Gaming organizers’ site",
           "url": "https://generalistgaming.org/"
         },
         {
           "accessedAt": "2026-10-30T11:23:25Z",
           "id": "career",
-          "title": "Keith Tyser’s Kaggle profile and competition record",
+          "title": "Keith Tyser’s Kaggle profile",
           "url": "https://www.kaggle.com/keithtyser"
         },
         {
           "accessedAt": "2026-11-25T22:37:09+00:00",
           "id": "portrait",
-          "title": "Keith Tyser’s GitHub portrait reference",
+          "title": "Keith Tyser’s GitHub profile",
           "url": "https://github.com/keithtyser"
         },
         {
           "accessedAt": "2026-11-25T23:04:50+00:00",
           "id": "tier",
-          "title": "Keith Tyser’s Kaggle Competitions tier",
+          "title": "Keith Tyser’s Kaggle competitions page",
           "url": "https://www.kaggle.com/keithtyser/competitions"
         }
       ]
     },
     "storyId": "keith-tyser-arcade",
-    "storySha256": "baa02c2f11abf6f98e1a4973bc949279192256464dc421b3995cb122d29f73fb",
+    "storySha256": "a71ac49422bca64fda7194b673f7299958f9eaed7837ee210d52623c3bf9304c",
     "version": 1
   },
   "review": {
@@ -171,9 +192,40 @@
       "facts",
       "identity-and-roster"
     ],
-    "notes": "Read-only Claude identified five issues. Narrowed the headline, standfirst and closing to the public-board lead. Used the private-board caveat without a claim about overlap. Matched team 17431467 to the 25 November 20:18 UTC full official board and the public roster links, which listed Keith’s handle only and six scored entries. A second official leaderboard pull still showed him first at 0.408. Limited the Pokémon fallback to early submissions and replaced unsupported characterizations with his documented results. Disclosed Barney and Pham’s co-authorship of Turducken’s write-up and cited the team’s comparison with its base model. Reviewed the new story cover at 343 pixels and compared it with Keith’s established fish avatar and approved card art. Only Keith appears, with no Grandmaster regalia. Checked the label against the exact public place in the text. The separate human variant uses his public GitHub portrait. Verified the catalog model and rendered both fronts and the official reverse with the sourced #1 and 0.408. The owner advanced the release. Updated only the publication time and confirmed immediately before staging that Kaggle still showed team 17431467 at #1 with 0.408. Switched the writer field to the host’s registered identifier for the same displayed byline. Illustrated revision: retained lead image, original publication time and verified cast. Compared the owner-selected portrait with the approved human reference and checked the career reverse at 343px width against the dated Kaggle career record. Claude requested source substantiation for the existing paragraph, clearer caption and an updated profile label. Rechecked the existing prose against Tyser’s blog and Turducken’s Kaggle write-up. The new caption identifies the career-card character and the article links the public GitHub portrait reference. Preserved the supplied October profile as a dated historical print. The original commissioning disclosure is shown with the commissioning credit. The new medal paragraph matches the Kaggle career record. Owner-directed medal display in the human portrait only. Counted the one gold, three silver and six bronze medals in the image against the dated career record and rendered reverse. Compared the portrait at full and phone scale with the selected bareheaded coat-and-cane artwork. The reporting, disclosures, competition art and career card back match the previous independent review. The owner requested Keith’s verified tier on the cover and one or two prior competition card faces. Kaggle’s public competitions profile identifies Keith as a Competitions Master. Redrew the label from the same clean cover and checked it at 343px. The shelf selects his Generalist Gaming and existing ARC-AGI-3 fronts. The approved portrait with the October medal display and career card reverse remain in the article body.",
-    "reviewedAt": "2026-11-25T23:06:03+00:00",
-    "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
-    "storySha256": "baa02c2f11abf6f98e1a4973bc949279192256464dc421b3995cb122d29f73fb"
+    "notes": "Independent review of the corrections made by a separate Claude Opus 5.5 Medium corrections session; this reviewer did not write the story or the corrections. Facts: Tyser is first at 0.408 on the saved 25 Nov 20:18 UTC board (team 17431467) and absent from both the 24 Nov 21:08 UTC and 25 Nov 00:34 UTC saved boards; all three record fingerprints match the stored Kaggle reads. The corrections cited only the 00:34 UTC board for \"Tuesday evening\", but under the paper's UTC rule that read falls on Wednesday; I made the 24 Nov 21:08 UTC board the Tuesday citation and kept the 00:34 read beside it. I changed \"By Wednesday afternoon\" to \"By Wednesday evening\", since the 20:18 UTC read is evening in UTC (the old word came from Eastern time). Disclosure: the Team Turducken roster record lists Tyser, Mark Barney and Son Pham; the line now reads plainly. Copy: no banned words, no Eastern or AM/PM times, no says, the one closing question among the three stories, source titles plain and listed once. Cards: the Generalist Gaming and ARC-AGI-3 fronts are unchanged. Art and the unchanged sections (blog, Turducken write-up, medal record) rest on the prior review; the medal record and both medal images are dated 30 October and are not refreshed here, which the planned fresh-career rule will flag. The saved-board links point to the planned /news/boards pages; stage only after that page ships.",
+    "previousReview": {
+      "assets": [
+        {
+          "sha256": "6108ba47e4b5a2de0767c3f8ce93b237d90de197d5f343ca71e9764e35dc2545",
+          "source": "client/public/news-images/keith-tyser-arcade-master.webp",
+          "target": "client/public/news-images/goose-6108ba47e4b5a2de0767.webp"
+        },
+        {
+          "sha256": "433d567d3a6c970e1cde424ffb1f677a3151fbae8e6069c19c08c603cce81520",
+          "source": "client/public/news-images/keith-tyser-arcade-medal-portrait.webp",
+          "target": "client/public/news-images/goose-433d567d3a6c970e1cde.webp"
+        },
+        {
+          "sha256": "4f7c9c07c6fee139b8dd5b0e58b27404244f30dec29ce522728d270623f98092",
+          "source": "client/public/news-images/keith-tyser-arcade-career-back.webp",
+          "target": "client/public/news-images/goose-4f7c9c07c6fee139b8dd.webp"
+        }
+      ],
+      "checks": [
+        "art-continuity",
+        "art-reuse",
+        "copy",
+        "facts",
+        "identity-and-roster"
+      ],
+      "notes": "Read-only Claude identified five issues. Narrowed the headline, standfirst and closing to the public-board lead. Used the private-board caveat without a claim about overlap. Matched team 17431467 to the 25 November 20:18 UTC full official board and the public roster links, which listed Keith’s handle only and six scored entries. A second official leaderboard pull still showed him first at 0.408. Limited the Pokémon fallback to early submissions and replaced unsupported characterizations with his documented results. Disclosed Barney and Pham’s co-authorship of Turducken’s write-up and cited the team’s comparison with its base model. Reviewed the new story cover at 343 pixels and compared it with Keith’s established fish avatar and approved card art. Only Keith appears, with no Grandmaster regalia. Checked the label against the exact public place in the text. The separate human variant uses his public GitHub portrait. Verified the catalog model and rendered both fronts and the official reverse with the sourced #1 and 0.408. The owner advanced the release. Updated only the publication time and confirmed immediately before staging that Kaggle still showed team 17431467 at #1 with 0.408. Switched the writer field to the host’s registered identifier for the same displayed byline. Illustrated revision: retained lead image, original publication time and verified cast. Compared the owner-selected portrait with the approved human reference and checked the career reverse at 343px width against the dated Kaggle career record. Claude requested source substantiation for the existing paragraph, clearer caption and an updated profile label. Rechecked the existing prose against Tyser’s blog and Turducken’s Kaggle write-up. The new caption identifies the career-card character and the article links the public GitHub portrait reference. Preserved the supplied October profile as a dated historical print. The original commissioning disclosure is shown with the commissioning credit. The new medal paragraph matches the Kaggle career record. Owner-directed medal display in the human portrait only. Counted the one gold, three silver and six bronze medals in the image against the dated career record and rendered reverse. Compared the portrait at full and phone scale with the selected bareheaded coat-and-cane artwork. The reporting, disclosures, competition art and career card back match the previous independent review. The owner requested Keith’s verified tier on the cover and one or two prior competition card faces. Kaggle’s public competitions profile identifies Keith as a Competitions Master. Redrew the label from the same clean cover and checked it at 343px. The shelf selects his Generalist Gaming and existing ARC-AGI-3 fronts. The approved portrait with the October medal display and career card reverse remain in the article body.",
+      "reviewedAt": "2026-11-25T23:06:03+00:00",
+      "reviewedBy": "GPT-6 / Codex with independent read-only Claude copy review",
+      "storySha256": "baa02c2f11abf6f98e1a4973bc949279192256464dc421b3995cb122d29f73fb"
+    },
+    "reviewedAt": "2026-11-28T03:31:54+00:00",
+    "reviewedBy": "Claude Opus 5.5 Medium (independent review session)",
+    "storySha256": "a71ac49422bca64fda7194b673f7299958f9eaed7837ee210d52623c3bf9304c",
+    "writer": "gpt-6-codex"
   }
 }
