@@ -1,6 +1,11 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); Claude Sonnet 5.5 Medium; Claude Opus 5.5
- * Date: 14-Nov-2026
+ * Date: 27-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the top band redone after the Boss marked it as looking bad. The pennant is now cut
+ *          to its words and drawn like the name ribbon (same tier gradient, outline and keyline), pinned under the season
+ *          coin, with the set name large (one line from 38 px, two lines at 24 px or less) and no unreadable publisher line
+ *          (the paper's name stays on the back and the page). The starburst seal, whose AS OF line was too small to read, is a
+ *          plain rubber-stamp label: the word large, AS OF <date> on one readable line. The ARC Prize mark sits on one line.
  * 14-Nov-2026 (Claude Opus 5.5): the pennant's set name is measured and steps down, wraps to two lines below its smallest
  *          size and is clipped as a backstop; rank, peak, score and submission figures are sized to their columns; the front
  *          memo key carries the stamp word (LIVE / CLOSED / FINAL) and is sized from the set (sizeFrontMemo); the unused
@@ -43,7 +48,7 @@
 import crypto from 'node:crypto';
 import satori from 'satori';
 import sharp from 'sharp';
-import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, fitName, fitNameLines, fitOneLine, textWidth, wrappedHeight, frameSvg, medallionSvg, stampSvg, starburst, halftone, mix, alpha, rr, coinSvg, MEDAL, TIERS, type Node, type Style } from './kit';
+import { FONT, ff, box, at, pic, svgPic, svgDoc, loadFonts, fitName, fitNameLines, fitOneLine, textWidth, wrappedHeight, frameSvg, medallionSvg, starburst, halftone, mix, alpha, rr, coinSvg, MEDAL, TIERS, type Node, type Style } from './kit';
 import { artLayer, artMtime, type ArtResult, type ArtOverride } from './art';
 import { viewModel, stampWord, num, type VM, type ContestVM } from './model';
 import { W, H, BORDER, BAND_BOTTOM } from './zones';
@@ -72,8 +77,9 @@ const WHITE = '#ffffff';
 export const FL = {
   T: BORDER,                                // border thickness
   logo: { cx: 102, cy: 64, r: 33 },         // round set logo, top-left (inside the badge band)
-  pennant: { x: 134, y: 40, w: 330, h: 48 },   // wider since the number box left the band (Boss, 5 Nov 2026)
-  stamp: { x: 616, y: 28, s: 88 },          // LIVE / FINAL burst, in the band beside the number box
+  // The pennant starts under the season coin and is cut to its words; maxW keeps it clear of the stamp (27 Nov 2026).
+  pennant: { x: 112, y: 37, h: 54, maxW: 458 },
+  stamp: { x: 590, y: 34, w: 124, h: 64 },  // LIVE / CLOSED / FINAL rubber-stamp label, top right of the badge band
     ribbon: { y: 726, h: 64, x0: 26, x1: 724 },
   sub: { y: 790, h: 36 },
   panel: { y: 826, b: 1024 },
@@ -88,8 +94,36 @@ export const FL = {
  */
 export const PORTRAIT_LAYOUT = { ribbon: { ...FL.ribbon, y: 912 }, sub: { y: 976, h: 42 }, scrim: 300 };
 
+// The pennant's text box: it starts clear of the season coin and stops short of the swallow-tail notch.
+const PEN_PAD_L = 35, PEN_PAD_R = 32, PEN_SPACING = 1.4;
+/** The widest a set name may be printed on the pennant (tests hold the renderer to it). */
+export const PEN_TEXT_MAX = FL.pennant.maxW - PEN_PAD_L - PEN_PAD_R;
+const ARC_SIZE = 27, ARC_CELLS = 5 + 15 + 3 + 15 + 9; // the ARC Prize mark: two coloured cells and their gaps between the words
+
+interface PennantHead { arcMark: boolean; fit: { size: number; lines: string[] }; spacing: number; textW: number; w: number }
+/**
+ * The set name and the pennant cut to fit it: one big line when the name allows, else two smaller lines broken at spaces.
+ * Measured before anything is drawn, because the pennant shape (furnitureSvg) and its text must agree on the width.
+ */
+async function pennantHead(vm: VM): Promise<PennantHead> {
+  const wm = vm.wordmark.toUpperCase();
+  if (wm === 'ARC PRIZE') {
+    const textW = Math.ceil(await textWidth('ARC', FONT.slab, 400, ARC_SIZE, 2) + ARC_CELLS + await textWidth('PRIZE', FONT.slab, 400, ARC_SIZE, 2));
+    return { arcMark: true, fit: { size: ARC_SIZE, lines: [wm] }, spacing: 2, textW, w: textW + PEN_PAD_L + PEN_PAD_R };
+  }
+  const one = await fitOneLine(wm, FONT.bebas, 400, PEN_TEXT_MAX, 38, 26, PEN_SPACING);
+  const big = (await textWidth(wm, FONT.bebas, 400, one, PEN_SPACING)) <= PEN_TEXT_MAX;
+  // fitNameLines measures without letter spacing, so a smaller fallback is set without it too, or a line would overrun
+  const fit = big ? { size: one, lines: [wm] }
+    : await fitNameLines(wm, FONT.bebas, 400, PEN_TEXT_MAX, FL.pennant.h - 8, { max: 24, min: 24, twoLineMax: 24, twoLineMin: 15 }, 1);
+  const spacing = big ? PEN_SPACING : 0;
+  const widths = await Promise.all(fit.lines.map(line => textWidth(line, FONT.bebas, 400, fit.size, spacing)));
+  const textW = Math.min(PEN_TEXT_MAX, Math.ceil(Math.max(...widths)));
+  return { arcMark: false, fit, spacing, textW, w: Math.max(170, textW + PEN_PAD_L + PEN_PAD_R) };
+}
+
 /** Everything drawn under the text: scrims, badge-band header, top badges, ribbon, sub strip and panel. One transparent SVG. */
-function furnitureSvg(vm: VM, art: ArtResult, portrait = false): string {
+function furnitureSvg(vm: VM, art: ArtResult, portrait = false, penW: number = FL.pennant.maxW): string {
   const T = vm.T, r = portrait ? PORTRAIT_LAYOUT.ribbon : FL.ribbon, p = FL.panel;
   const defs = `${halftone('ht', T.main, 0.16, 7, 1.5)}${halftone('hd', '#000', 0.30, 5, 1.25)}
     <linearGradient id="scrimT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
@@ -111,10 +145,11 @@ function furnitureSvg(vm: VM, art: ArtResult, portrait = false): string {
   }
   const scrimH = portrait ? PORTRAIT_LAYOUT.scrim : 110;
   s += `<rect x="${FL.T}" y="${r.y - scrimH}" width="${inner}" height="${scrimH + (portrait ? FL.T + 4 : 0)}" fill="url(#scrimB)"/>`;
-  // set logo (round) and pennant
+  // set logo (round) and pennant: the pennant is the name ribbon's little sister (same gradient, outline and white keyline),
+  // its left end tucked under the coin so the two read as one badge
   const L = FL.logo, P = FL.pennant;
-  const pen = `M${P.x} ${P.y}H${P.x + P.w}L${P.x + P.w - 20} ${P.y + P.h / 2}L${P.x + P.w} ${P.y + P.h}H${P.x}Z`;
-  s += `<path d="${pen}" transform="translate(4 5)" fill="#000" opacity=".55"/><path d="${pen}" fill="${T.deep}" stroke="#000" stroke-width="3" stroke-linejoin="round"/><path d="${pen}" fill="url(#hd)"/><path d="${rr(P.x + 5, P.y + 5, P.w - 34, P.h - 10, 2)}" fill="none" stroke="${T.main}" stroke-width="1.8"/>`;
+  const pen = `M${P.x} ${P.y}H${P.x + penW}L${P.x + penW - 18} ${P.y + P.h / 2}L${P.x + penW} ${P.y + P.h}H${P.x}Z`;
+  s += `<path d="${pen}" transform="translate(4 5)" fill="#000" opacity=".6"/><path d="${pen}" fill="url(#rib)" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/><path d="${rr(P.x + 5, P.y + 5, penW - 30, P.h - 10, 2)}" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.6"/>`;
   s += `<circle cx="${L.cx + 3}" cy="${L.cy + 4}" r="${L.r}" fill="#000" opacity=".55"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r}" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r - 5}" fill="${T.main}" stroke="#000" stroke-width="2"/><circle cx="${L.cx}" cy="${L.cy}" r="${L.r - 9}" fill="none" stroke="${T.ink}" stroke-opacity=".7" stroke-width="1.5" stroke-dasharray="3 3"/>`;
   // the name ribbon: pennant shape pointing right, hard shadow, outline and inner white keyline
   const rb = `M${r.x0} ${r.y}H${r.x1 - 24}L${r.x1} ${r.y + r.h / 2}L${r.x1 - 24} ${r.y + r.h}H${r.x0}Z`;
@@ -225,42 +260,35 @@ async function buildFront(card: any, opts: RenderOpts): Promise<{ root: Node; ar
 
   const kids: Node[] = [];
   kids.push(pic(`data:${art.mime};base64,${art.png.toString('base64')}`, 0, 0, W, H));
-  kids.push(svgPic(furnitureSvg(vm, art, portrait), 0, 0, W, H));
+  const head = await pennantHead(vm);
+  kids.push(svgPic(furnitureSvg(vm, art, portrait, head.w), 0, 0, W, H));
   kids.push(svgPic(frameSvg(T, W, H, 1), 0, 0, W, H));
 
   // ---- top badges: season logo, series pennant, stamp, number ----
   const season = vm.season;
   if (season) kids.push(at(FL.logo.cx - 30, FL.logo.cy - 30, 60, 60, { alignItems: 'center', justifyContent: 'center' },
     box({ fontFamily: ff(FONT.slab), fontSize: season.length > 4 ? 15 : 20, color: T.ink, lineHeight: 1, textShadow: T.ink === '#ffffff' ? '1.5px 1.5px 0 #000' : 'none' }, season)));
-  const wm = vm.wordmark.toUpperCase();
-  // The ARC Prize mark (white blocky name with a magenta and a yellow cell after the first word) is drawn for the ARC Prize set;
-  // any other series name falls through to the plain Bebas wordmark below.
-  const arcMark = wm === 'ARC PRIZE';
-  // The set name is measured: one line from 28 px down to 18 px; below that it wraps to two lines (breaking at spaces) and
-  // the box clips as the backstop, so a long name (the Gemma set) never runs off the pennant or over the season logo.
-  const WM_W = 285, WM_SPACING = 1.6;
-  const wmOne = await fitOneLine(wm, FONT.bebas, 400, WM_W, 28, 18, WM_SPACING);
-  const wmFits = (await textWidth(wm, FONT.bebas, 400, wmOne, WM_SPACING)) <= WM_W;
-  const wmFit = wmFits ? { size: wmOne, lines: [wm] }
-    : await fitNameLines(wm, FONT.bebas, 400, WM_W - 20, FL.pennant.h - (vm.publisher ? 16 : 6), { max: 17, min: 17, twoLineMax: 17, twoLineMin: 11 }, 1);
-  if (arcMark) kids.push(at(FL.pennant.x + 14, FL.pennant.y, FL.pennant.w - 44, FL.pennant.h, { alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center' },
-    box({ alignItems: 'center' },
-      nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000' }, 'ARC'),
-      box({ width: 15, height: 15, backgroundColor: '#F012BE', marginLeft: 5, border: '1.5px solid #000' }),
-      box({ width: 15, height: 15, backgroundColor: '#FFDC00', marginLeft: 3, border: '1.5px solid #000' })),
-    nowrap({ fontFamily: ff(FONT.slab), fontSize: 21, color: WHITE, letterSpacing: 2, lineHeight: 1, marginTop: 1, textShadow: '1.5px 1.5px 0 #000' }, 'PRIZE')));
-  else kids.push(at(FL.pennant.x + 12, FL.pennant.y, FL.pennant.w - 40, FL.pennant.h, { alignItems: 'center', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' },
-    ...wmFit.lines.map(line => nowrap({ fontFamily: ff(FONT.bebas), fontSize: wmFit.size, color: WHITE, letterSpacing: wmFit.lines.length > 1 ? 0.8 : WM_SPACING, lineHeight: 1, textShadow: '1.5px 1.5px 0 #000', maxWidth: WM_W, overflow: 'hidden' }, line)),
-    vm.publisher ? nowrap({ fontFamily: ff(FONT.cond), fontWeight: 700, fontSize: 10.5, color: T.light, letterSpacing: 0.8, marginTop: 2 }, vm.publisher.toUpperCase()) : null));
+  // the set name on the pennant, in the tier's ink with the name ribbon's shadow so the two read as a pair
+  const inkShadow = T.ink === '#ffffff' ? { textShadow: `2px 2px 0 ${T.deep}` } : { textShadow: `1px 1px 0 ${alpha('#ffffff', 0.35)}` };
+  const P = FL.pennant;
+  if (head.arcMark) kids.push(at(P.x + PEN_PAD_L, P.y, head.textW + 4, P.h, { alignItems: 'center' },
+    nowrap({ fontFamily: ff(FONT.slab), fontSize: ARC_SIZE, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '2px 2px 0 #000' }, 'ARC'),
+    box({ width: 15, height: 15, backgroundColor: '#F012BE', marginLeft: 5, border: '1.5px solid #000' }),
+    box({ width: 15, height: 15, backgroundColor: '#FFDC00', marginLeft: 3, marginRight: 9, border: '1.5px solid #000' }),
+    nowrap({ fontFamily: ff(FONT.slab), fontSize: ARC_SIZE, color: WHITE, letterSpacing: 2, lineHeight: 1, textShadow: '2px 2px 0 #000' }, 'PRIZE')));
+  else kids.push(at(P.x + PEN_PAD_L, P.y + 2, head.textW + 4, P.h - 2, { alignItems: 'flex-start', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' },
+    ...head.fit.lines.map(line => nowrap({ fontFamily: ff(FONT.bebas), fontSize: head.fit.size, color: T.ink, letterSpacing: head.spacing,
+      lineHeight: head.fit.lines.length > 1 ? 0.98 : 1, ...inkShadow, maxWidth: PEN_TEXT_MAX, overflow: 'hidden' }, line))));
   if (vm.stamp) {
-    // the one as-of date on the face: inside the burst, in the badge band, clear of the subject zone
-    const S = FL.stamp, live = vm.stamp.word === 'LIVE';
-    kids.push(box({ position: 'absolute', left: S.x, top: S.y, width: S.s, height: S.s, transform: 'rotate(-9deg)' },
-      svgPic(stampSvg(vm.stamp.word, S.s), 0, 0, S.s, S.s),
-      at(0, 0, S.s, S.s, { alignItems: 'center', justifyContent: 'center', flexDirection: 'column' },
-        box({ fontFamily: ff(FONT.comic), fontSize: live ? 27 : 22, color: live ? WHITE : '#f2c230', lineHeight: 1, letterSpacing: 1, textShadow: '1.5px 1.5px 0 #000' }, vm.stamp.word),
-        box({ fontFamily: ff(FONT.bebas), fontSize: 10, color: WHITE, letterSpacing: 1.2, lineHeight: 1, marginTop: 1 }, 'AS OF'),
-        box({ fontFamily: ff(FONT.bebas), fontSize: 15, color: live ? '#ffe9a8' : WHITE, letterSpacing: 0.8, lineHeight: 1 }, vm.stamp.date))));
+    // the one as-of date on the face, on a rubber-stamp label in the badge band, clear of the subject zone:
+    // the word big enough for a thumbnail, the date on one line under it (27 Nov 2026: the old burst's date could not be read)
+    const S = FL.stamp, word = vm.stamp.word, live = word === 'LIVE';
+    const fill = live ? '#d8232a' : word === 'FINAL' ? '#14161c' : '#14306e', ink = live ? WHITE : '#f2c230';
+    kids.push(box({ position: 'absolute', left: S.x, top: S.y, width: S.w, height: S.h, transform: 'rotate(-6deg)', padding: 3,
+      backgroundColor: fill, border: '3px solid #000', borderRadius: 4, boxShadow: '4px 5px 0 rgba(0,0,0,0.6)' },
+      box({ width: '100%', height: '100%', border: `2px solid ${ink}`, borderRadius: 2, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
+        box({ fontFamily: ff(FONT.comic), fontSize: 31, color: ink, lineHeight: 1, letterSpacing: 1.5, textShadow: '2px 2px 0 #000' }, word),
+        nowrap({ fontFamily: ff(FONT.bebas), fontSize: 16, color: WHITE, letterSpacing: 1, lineHeight: 1, marginTop: 2 }, `AS OF ${vm.stamp.date}`))));
   }
 
   // (no words on a placeholder picture: the silhouette stands alone)

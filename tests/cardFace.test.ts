@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 / Codex; Claude Sonnet 5.5 Low; Claude Opus 5.5
- * Date: 25-Nov-2026
+ * Author: GPT-6 / Codex; Claude Sonnet 5.5 Low; Claude Opus 5.5; pennant width by Claude Opus 5.5 Medium
+ * Date: 27-Nov-2026
  * 25-Nov-2026 (GPT-6 / Codex): regression coverage for the medal-first and rank-only competitor reverse.
  * 14-Nov-2026 (Claude Opus 5.5): cards with a public (not final) standing, before and after the close, print clean wording
  *          (CLOSED stamp, "Snapshot" label); the image version follows teammates' careers and the close; tier counts are per
@@ -22,6 +22,7 @@ import { backNode } from '../server/services/news/cardFace/back';
 import { lintNode, careerNames, textOf } from '../server/services/news/cardFace/lint';
 import { FONT, textWidth, type Node } from '../server/services/news/cardFace/kit';
 import { viewModel } from '../server/services/news/cardFace/model';
+import { PEN_TEXT_MAX } from '../server/services/news/cardFace/render';
 import { backModel } from '../server/services/news/cardFace/backModel';
 import { setById, setForSeason } from '../server/services/news/cardFace/sets';
 import { tierByName } from '../server/services/news/cardFace/tiers';
@@ -261,7 +262,7 @@ describe('measured lettering', () => {
     const lines = runs(tree).filter(run => run.text && name.includes(run.text) && String(run.style.fontFamily ?? '').startsWith(FONT.bebas) && run.text.length > 3);
     expect(lines.length).toBeGreaterThan(0);
     expect(lines.map(run => run.text).join(' ')).toBe(name);
-    for (const run of lines) expect(await textWidth(run.text, FONT.bebas, 400, run.style.fontSize, run.style.letterSpacing ?? 0), run.text).toBeLessThanOrEqual(285);
+    for (const run of lines) expect(await textWidth(run.text, FONT.bebas, 400, run.style.fontSize, run.style.letterSpacing ?? 0), run.text).toBeLessThanOrEqual(PEN_TEXT_MAX);
   });
 
   it('sizes a long rank and score to their columns on the front', { timeout: 30_000 }, async () => {

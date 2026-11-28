@@ -1,3 +1,7 @@
+### Version 9.164.52 · November 27, 2026
+
+- Every card front gets a cleaner top band. The set pennant is cut to its words and drawn like the name ribbon, tucked under the season coin, with the set name large enough to read; the tiny publisher line under it is gone from the front (the paper's name stays on the back and the page). The starburst seal, whose date could not be read, is now a plain stamp: LIVE, CLOSED or FINAL in big letters with "as of" and the date on one readable line. The ARC Prize mark sits on one line. The card image version moves to 15 so every cached card and thumbnail refreshes. Checked by drawing ARC Prize, Kaggleverse, Gemma, Generalist Gaming and team fronts with each stamp; the pennant test now holds long set names to the new width. Author: Claude Opus 5.5 Medium.
+
 ### Version 9.164.51 · November 27, 2026
 
 - Daniel Franzen’s career card uses his latest verified Kaggle profile and leads with the ARChitects’ dated ARC-AGI-3 public standing. The reverse groups standings with the medal ledger below the action art. Author: GPT-6.2 Sol / Codex.
