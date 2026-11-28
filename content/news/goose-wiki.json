@@ -39,6 +39,8 @@
     "/news-images/cards/2026/common-people-library-v1.webp": "ba8d86af5184c79befa7d7022d44a0b73c6bb5378f0d0db5b10be32c800870bb",
     "/news-images/cards/2026/cookize-song-comic-v1.webp": "b6564e738d42d5d928b631881af354bd6ae65aa9b0adb2bfca710d77f28877dd",
     "/news-images/cards/2026/cranberry128-comic-v1.webp": "23e274cef81e7d9dafe1e6b0138824b44b067347a48598288ed78110bf2d1fe2",
+    "/news-images/cards/2026/daniel-franzen-career-portrait.webp": "2848e516f9b30f34b32955a492a9ddf46ffbcda445973262e26ee1583499fe15",
+    "/news-images/cards/2026/daniel-franzen-career-scene.webp": "9c58b9dcfcb4d13c336b7d8605e20d90e820b8f0580271d2aff30a173dce033b",
     "/news-images/cards/2026/daniel-franzen-duck-solo-v1.png": "d357afec2acc70794bf17154be42bbeca9e7b96b09fd740c9d72c9b4436b6b28",
     "/news-images/cards/2026/david-hartmann-fox-solo-v1.png": "57c045852053853b659434f7fcf9623f1d7a3eae88dfbb89bf20362c6f5f290e",
     "/news-images/cards/2026/dawid-kopiczko-goose-v1.webp": "5c622a8cca8abad605615afdb0e40088a7e1f33a4797507efad15ac1dbdd946a",
@@ -812,7 +814,7 @@
           "fieldSize": 1427,
           "medal": "gold",
           "rank": 1,
-          "team": null,
+          "team": "the ARChitects",
           "year": 2024
         },
         {
@@ -821,7 +823,7 @@
           "fieldSize": 1455,
           "medal": "gold",
           "rank": 2,
-          "team": null,
+          "team": "the ARChitects",
           "year": 2025
         },
         {
@@ -12542,7 +12544,7 @@
       "teamId": "17434745"
     }
   ],
-  "fingerprint": "5f1ebd6fceff6423f6cca7df66f5e4db77745a486e634f5975fa639e43172f23",
+  "fingerprint": "e53f0c31472a9be82d4f9f46d6b64e857d1b7aa9658ba196701f77a16e4c7699",
   "people": [
     {
       "accounts": [
@@ -13525,7 +13527,7 @@
           "url": "https://www.kaggle.com/dfranzen"
         }
       ],
-      "briefing": "ARC Prize’s 2024 results list “The LLM ARChitect: Solving ARC-AGI Is a Matter of Perspective” by Franzen et al. among the paper award runners-up.",
+      "briefing": "Two Kaggle competition golds with the ARChitects. Franzen topped the ARC Prize 2024 high-score competition, returned as runner-up in 2025 and took the ARC-AGI-3 Milestone 2 open-source prize in 2026.",
       "facts": [
         {
           "checkedAt": "2026-10-09T21:30:00Z",
@@ -13574,6 +13576,48 @@
           "sourceTitle": "ARChitects 2024 (Franzen, Disselhoff, Hartmann) — archived Hall of Fame card",
           "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-6",
           "text": "ARC-Explainer’s Hall of Fame records: 1st Place ARC Prize 2024 (53.5%)"
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "Franzen — ARC-AGI-3 source and write-up",
+          "sourceUrl": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md",
+          "text": "Franzen credited Jeroen Cottaar and Tufa Labs for the Duck harness and documented his changes to game perception, undo and compute scheduling."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "ICML proceedings — The ARChitects",
+          "sourceUrl": "https://proceedings.mlr.press/v267/franzen25a.html",
+          "text": "Franzen, Jan Disselhoff and David Hartmann published their work on solving ARC puzzles across transformed views at ICML in 2025."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "Daniel Franzen — home page and research",
+          "sourceUrl": "https://da-fr.github.io/",
+          "text": "Franzen studied computer science at Johannes Gutenberg University Mainz and describes his doctoral research there as work on equivariant neural networks."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "ARC Prize — Milestone 2 winners",
+          "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+          "text": "ARC Prize named Franzen first in the 2026 ARC-AGI-3 Milestone 2 open-source prize, with a score of 27.9% and a $25,000 award."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "NeurIPS — Franzen and Wand",
+          "sourceUrl": "https://proceedings.neurips.cc/paper/2021/file/4bfbd52f4e8466dc12aaf30b7e057b66-Paper.pdf",
+          "text": "Franzen and Michael Wand published work on rotation-equivariant neural networks at NeurIPS in 2021."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "Pathbreaker — final ARC-AGI-3 entries",
+          "sourceUrl": "https://github.com/gzatravkin/pathbreaker-arc-agi-3",
+          "text": "Pathbreaker credits Franzen’s milestone agent in its account of its selected final ARC-AGI-3 submissions."
+        },
+        {
+          "checkedAt": "2026-11-28T01:17:25+00:00",
+          "sourceTitle": "Team Turducken — ARC-AGI-3 write-up",
+          "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/writeups/public-lb-5th-stuffing-the-turducken",
+          "text": "Team Turducken credits Franzen’s released Milestone 2 notebook as the starting point for its ARC-AGI-3 entry."
         }
       ],
       "hallOfFame": [
@@ -26339,6 +26383,36 @@
         "personId": "keith-tyser",
         "season": "2026",
         "setId": "kaggleverse-2026"
+      },
+      {
+        "art": {
+          "alt": "Comic portrait of Daniel Franzen in ARC-grid armour at the arcade",
+          "artworkId": "asset-2848e516f9b30f34b329",
+          "commissionedAt": "2026-11-28T01:22:09+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/daniel-franzen-career-portrait.webp"
+        },
+        "artFallback": "none",
+        "artNotes": [
+          "Approval and scene conditions: wiki/artwork/asset-2848e516f9b30f34b329.md"
+        ],
+        "backArt": {
+          "alt": "Daniel Franzen and his game-playing robot in the ARC arcade",
+          "artworkId": "asset-9c58b9dcfcb4d13c336b",
+          "commissionedAt": "2026-11-28T01:21:34+00:00",
+          "credit": "Reviewed illustration; provenance in The Loose Goose wiki",
+          "src": "/news-images/cards/2026/daniel-franzen-career-scene.webp"
+        },
+        "biography": "Mainz symmetry researcher and two-time Kaggle gold medalist. With the ARChitects he took the ARC Prize 2024 high-score title and finished second in 2025. His agent built on Tufa Labs’ Duck harness won the ARC-AGI-3 Milestone 2 open-source prize.",
+        "description": "Two Kaggle competition golds with the ARChitects. Franzen topped the ARC Prize 2024 high-score competition, returned as runner-up in 2025 and took the ARC-AGI-3 Milestone 2 open-source prize in 2026.",
+        "entries": [],
+        "id": "person-daniel-franzen-kaggleverse-2026",
+        "issuedAt": "2026-11-28T01:16:23+00:00",
+        "kind": "person",
+        "name": "Daniel Franzen",
+        "personId": "daniel-franzen",
+        "season": "2026",
+        "setId": "kaggleverse-2026"
       }
     ],
     "commissionedAt": "2026-10-30T00:23:50.049Z",
@@ -26349,7 +26423,7 @@
     ],
     "season": "2026",
     "snapshots": [],
-    "updatedAt": "2026-11-25T21:00:37+00:00",
+    "updatedAt": "2026-11-28T01:22:09+00:00",
     "version": 1
   },
   "results": [],
