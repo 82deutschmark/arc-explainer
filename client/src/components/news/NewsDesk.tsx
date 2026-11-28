@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex (reasoning effort not exposed); GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
  * Date: 14-Nov-2026 (Claude Opus 5.5); 09-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, story layout): NewsPaper's `story` masthead: half-height art, the section links
+ *          and the ad on one row, and the tip line in the top line instead of its own row.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): "In this story" cards come from the shared storyCast() rule; a feature passes its edition.
  * 14-Nov-2026 (Claude Opus 5.5): the masthead prints the edition label it is given (editionTitle) instead of
  *          rebuilding it from morning/evening; a story preview shows its own art, else same-day companion art,
@@ -102,15 +104,16 @@ export function NewsNav({ className = 'news-nav', brand = NEWS_BRAND }: { classN
 
 export const NewsBrandContext = createContext(NEWS_BRAND);
 /** `date` is the dateline (a date or an instant); `editionTitle` is the leading story's edition label, when it is an edition. */
-export function NewsPaper({ children, frontPage = false, date, editionTitle, issue, brand: explicitBrand }: { children: ReactNode; frontPage?: boolean; date?: string; editionTitle?: string; issue?: number; brand?: typeof NEWS_BRAND }) {
+/** `story` marks a story page: the masthead art runs at about half height and the section links share a row with the ad. */
+export function NewsPaper({ children, frontPage = false, story = false, date, editionTitle, issue, brand: explicitBrand }: { children: ReactNode; frontPage?: boolean; story?: boolean; date?: string; editionTitle?: string; issue?: number; brand?: typeof NEWS_BRAND }) {
   const inheritedBrand = useContext(NewsBrandContext);
   const brand = explicitBrand ?? inheritedBrand;
   const close = theClose();
   const name = brand.name;
   return <NewsBrandContext.Provider value={brand}><div className={`arc-daily${brand.goose ? ' is-goose' : ''}`}>
     <div className="news-paper">
-      <header className={`news-masthead${frontPage ? ' is-front' : ''}`}>
-        <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span><span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span></div>
+      <header className={`news-masthead${frontPage ? ' is-front' : ''}${story ? ' is-story' : ''}`}>
+        <div className="news-topline"><span>{brand.goose ? <a href="https://github.com/Autoresearch-Arena">Autoresearch Arena</a> : <Link href="/home">ARC Explainer</Link>} · The competition desk</span>{story && brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>{issue ? `Vol. I · No. ${issue} · ` : ''}Free</span>}</div>
         {brand.goose ? <div className={`news-goose-banner${brand.banner ? " has-world" : ""}`}>
           {brand.banner && <img className="news-banner-world" src={brand.banner} alt="" width={2172} height={724} />}
           <div className="news-brand-lockup">
@@ -121,9 +124,10 @@ export function NewsPaper({ children, frontPage = false, date, editionTitle, iss
           </div></div>
         </div> : <div className="news-brand-row"><div className="news-ear"><strong>{editionTitle ?? 'Competition desk'}</strong>{date && <span>{datelineDate(date)}</span>}{close && <span>{close.days} {close.days === 1 ? 'day' : 'days'} to the {close.date} close</span>}</div>
           {frontPage ? <h1 className="news-name">{name}</h1> : <Link href="/news" className="news-name">{name}</Link>}<MastheadAd /></div>}
-        <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Competition news · All times UTC</span>}</div>
-        <NewsNav brand={brand} />
-        {brand.goose && <div className="news-sponsor-rail"><MastheadAd /></div>}
+        {!(story && brand.goose) && <div className="news-edition-line"><span>{brand.goose ? 'Competition reporting · Contenders, methods & movement' : 'ARC Prize 2026 · ARC-AGI-3 & ARC-AGI-2 on Kaggle'}</span>{brand.goose ? <Link className="news-tip-link" href="/news/tips">Talk to me, Goose. ↗</Link> : <span>Competition news · All times UTC</span>}</div>}
+        {story && brand.goose
+          ? <div className="news-nav-row"><NewsNav brand={brand} /><div className="news-sponsor-rail"><MastheadAd /></div></div>
+          : <><NewsNav brand={brand} />{brand.goose && <div className="news-sponsor-rail"><MastheadAd /></div>}</>}
       </header>
       {children}<NewsWelcome />
       <footer className="news-footer"><strong>{brand.name}</strong><span>Competition reporting · writer credited on each story</span><p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>

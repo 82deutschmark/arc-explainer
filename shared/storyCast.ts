@@ -1,6 +1,8 @@
 /**
  * Author: Claude Opus 5.5 Medium
  * Date: 27-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium, story layout): board rows are read by typedBoards() in shared/storyPage.ts, the
+ *          same reader as the story page's board column, so the cards and the board table never disagree.
  * 27-Nov-2026 (Claude Opus 5.5 Medium): new. One rule for every story's "In this story" cards, replacing the hand-typed
  *          card list (selectedStoryCards) that showed Franzen's old card and nobody else the story named.
  * PURPOSE: Choose, for any published story (dispatch or edition), the ordered cards its "In this story" block shows:
@@ -22,6 +24,7 @@ import { catalogCardVisible, catalogSet, catalogSetLabel } from './cardCatalog';
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
 import { competitionName, type NewsCompetition, type StoryCardFace } from './news';
 import { collectionShareVersion, type CollectionCard, type NewsCollection } from './newsCollection';
+import { typedBoards } from './storyPage';
 
 /** What the rule reads from a story. A NewsArticle and a NewsDispatch both fit. */
 export interface StoryCastSource {
@@ -60,23 +63,16 @@ const memberKey = (card: CollectionCard) => card.personId ? `person:${card.perso
 const slugFor = (competition: string) => KAGGLE_COMPETITIONS[competition]?.slug ?? competition;
 const keyForSlug = (slug: string) => Object.keys(KAGGLE_COMPETITIONS).find(key => KAGGLE_COMPETITIONS[key].slug === slug);
 
-/** Board lines the desks type into a section: "#1  Daniel Franzen  ·  0.554  ·  6  ·  17:11". The team is the first field. */
-const BOARD_LINE = /^\s*#\d[\d,]*\s+(.+?)\s+·/u;
 /**
- * The story's board rows in board order. The box score comes first; typed tables follow, newest first: a desk that
- * prints two reads ("then and now") prints the older one first, and the current board should lead the cast.
+ * The story's board rows in board order. The box score comes first; typed tables (read by typedBoards, the same reader
+ * the story page's board column uses) follow, newest first: a desk that prints two reads ("then and now") prints the
+ * older one first, and the current board should lead the cast.
  */
 function boardNames(story: StoryCastSource): { teamId: string | null; name: string }[] {
   const tables: { teamId: string | null; name: string }[][] = [];
   for (const section of story.sections) {
     if (section.standings?.rows.length) tables.push([...section.standings.rows]);
-    let table: { teamId: null; name: string }[] = [];
-    for (const line of section.text.split('\n')) {
-      const match = BOARD_LINE.exec(line);
-      if (match) table.push({ teamId: null, name: match[1] });
-      else if (table.length && line.trim()) { tables.push(table); table = []; }
-    }
-    if (table.length) tables.push(table);
+    for (const board of typedBoards(section.text).boards) tables.push(board.rows.map(row => ({ teamId: null, name: row.team })));
   }
   return [...(story.stats ?? []), ...tables.reverse().flat()];
 }

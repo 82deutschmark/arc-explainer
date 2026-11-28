@@ -1,6 +1,8 @@
 /**
- * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
+ * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; Claude Opus 5.5 Max; Claude Opus 5.5 Medium
  * Date: 02-November-2026
+ *       27-Nov-2026, Claude Opus 5.5 Medium: the editor's titles are Editor-in-Chief · Head Meat Proxy, and the editor's
+ *       box carries one line on what he does (line), shared by the story pages, the server HTML and About the Paper.
  *       21-October-2026, Claude Opus 5.5 Low (Claude Haiku 5.5 takes the backup wire)
  * PURPOSE: Institutional masthead and editor portrait for the unified About the Paper
  *          page, story credits and crawler HTML. Current desks and archive bylines are distinct;
@@ -16,7 +18,9 @@ export const NEWS_STAFF_DESCRIPTION = `${NEWS_NAME} masthead: Mark Barney, the r
 export const NEWS_STAFF_INTRO = NEWS_BRAND.goose ? 'The Loose Goose follows the people, research and sporting drama across major Kaggle competitions. The human editor sets the direction; reporting starts with original sources and preserves a continuing cast across contests.' : 'The ARC Daily Digest covers the people, results and research around ARC Prize. A human editor sets the direction; AI reporting desks keep the wire moving and bring the day’s news into the morning and evening editions.';
 export const NEWS_EDITOR_CONTACT = { xUrl: 'https://x.com/82deutschmark', discordUrl: 'https://discord.gg/9b77dPAmcA' };
 export const NEWS_HUMAN_EDITOR = {
-  id: 'mark-barney', name: 'Mark Barney', role: 'Head human editor · Human-in-the-loop editor',
+  id: 'mark-barney', name: 'Mark Barney', role: 'Editor-in-Chief · Head Meat Proxy',
+  /** The editor's box's one line on what he does (story pages and the front-page feature). */
+  line: 'The paper’s one human. He points the desks at a story and answers for what they print.',
   description: 'Mark sets the paper’s editorial priorities, commissions coverage, and provides direction and corrections. He is the human point of contact for the newsroom.',
   portrait: {
     src: '/news-images/people/mark-barney-instagram-original.jpg',
