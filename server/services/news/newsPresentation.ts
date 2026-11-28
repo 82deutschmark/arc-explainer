@@ -2,6 +2,8 @@
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6 Astra Extra high; GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Sonnet 5.5; Claude Opus 5.5
  * 16-Nov-2026 (GPT-6 / Codex): omit bare fallback faces from the server-rendered catalog.
  * Date: 25-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): "In this story" prints the shared storyCast() cards (lead marked, name and set
+ *          under each, linked names past the budget), on every story including those with no listed cast.
  * 25-Nov-2026 (GPT-6 / Codex): mirror selected front and back card faces in the initial HTML.
  * 25-Nov-2026 (GPT-6 / Codex): date the profile rank and totals on server-readable card pages.
  * 14-Nov-2026 (Claude Opus 5.5, archive-collection): story "In this story" asides, person pages and the sitemap use
@@ -58,7 +60,8 @@ import { NEWS_PRODUCTION, NEWS_METHOD } from '../../../shared/newsMethod';
 import { NEWS_STAFF_PATH, NEWS_STAFF_HEADING, NEWS_STAFF_INTRO, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_ARCHIVE_WRITERS, NEWS_STAFF_TOOL_CREDIT, NEWS_EDITOR_CONTACT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
 import { catalogCardVisible, catalogSetLabel } from '../../../shared/cardCatalog';
-import { cardForPerson, selectedStoryCards, collectionShareVersion, collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
+import { storyCast, type StoryCastSource } from '../../../shared/storyCast';
+import { collectionCardPath, collectionCardTitle, collectionCardDescription, collectionEarnedLine, collectionStandingLabel, collectionRoleLabel, collectionShareAlt, collectionSharePath, collectionTeamCompetition, splitTeamCards,
   COLLECTION_SHARE_WIDTH, COLLECTION_SHARE_HEIGHT, type CollectionCard, type CollectionEntry, type NewsCollection } from '../../../shared/newsCollection';
 import { getNewsCollection, tryNewsCollection } from './newsCollection';
 import { getNewsIndex, loadNewsArchive, loadWireStory } from './newsStore';
@@ -93,9 +96,9 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
   }] };
 }
 /** The full dispatch, including its own art and sources, stays identical across server views. Its own page prints the headline as the <h1>; elsewhere it links there. */
-function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = [], permalink = false): string {
+function dispatchHtml(dispatch: NewsDispatch, subjects: NewsPerson[] = [], permalink = false, edition?: NewsArticle): string {
   const headline = permalink ? `<h1>${esc(dispatch.headline)}</h1>` : `<h2><a href="${esc(newsArticlePath(dispatch.id))}">${esc(dispatch.headline)}</a></h2>`;
-  return `<article id="${esc(dispatch.id)}">${headline}${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 && subjects.length ? storyPeopleHtml(subjects, dispatch.competition, dispatch.cardFaces) : ''}${sectionExtrasHtml(section)}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
+  return `<article id="${esc(dispatch.id)}">${headline}${dispatch.dek ? `<p>${esc(dispatch.dek)}</p>` : ''}<p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p>${illustrationHtml(dispatch)}${dispatch.sections.map((section, position) => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${figuresHtml(section.text, esc).replace(/\n/g, '<br/>')}${position === 0 ? storyPeopleHtml(edition ? [dispatch, edition] : [dispatch], subjects) : ''}${sectionExtrasHtml(section)}${position === 0 && dispatch.id === 'on-the-private' ? `<p><a href="/news-scene-books/on-the-private/index.html">Explore the scene book and production stills ↗</a></p>` : ''}`).join('')}${dispatch.interpretation ? `<p><strong>${esc(NEWS_NAME)}’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
 }
 
 /** `competitors` decides which box-score teams link to a profile: only those with a record, never a 404. */
@@ -111,8 +114,8 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
     <h1>${figuresHtml(article.headline, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</h1><p>${figuresHtml(article.dek, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])])}</p><p>${esc(NEWS_NAME)} sports desk · ${esc(writerCredit(article.generatedBy))}</p>${revisionsHtml(article)}
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, true)}. Exact source observations remain in the archived reporting data.</p>
-    ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people)) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
-    ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])]).replace(/\n/g, '<br/>')}${sectionExtrasHtml(section)}${!feature && position === 0 ? storyPeopleHtml(reportedPeople([article], people), article.competition) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
+    ${feature ? dispatchHtml(feature, reportedPeople([feature, article], people), false, article) : ''}${feature?.image?.src === article.image?.src ? '' : illustrationHtml(article)}
+    ${article.sections.map((section, position) => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${figuresHtml(section.text, esc, statScores(figures), [], [...statTeamNames(figures), ...(article.verifiedTeamNames ?? [])]).replace(/\n/g, '<br/>')}${sectionExtrasHtml(section)}${!feature && position === 0 ? storyPeopleHtml([article], reportedPeople([article], people)) : ''}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     ${article.stats.length ? `<h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td>${teamCell(stat)}</td><td class="pl">#${stat.rank.toLocaleString('en-US')}</td><td class="sc">${stat.score}</td><td>${rankChangeLabel(stat.rankChange)}</td><td class="sd">${scoreChangeLabel(stat.scoreChange)}</td></tr>`).join('')}</tbody></table>` : ''}
     <p>${esc(article.coverageNote)}</p><p>${articleCompetitions(article).map(competition => `<a href="${boardPath(competition)}">Full live ${esc(competitionName(competition))} box score</a>`).join(' · ')} ·<a href="/news">${esc(NEWS_NAME)} front page</a> · <a href="/news/cards">Cards</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
     <h2>Sources</h2>${sourceList(article)}</article></main>`;
@@ -121,20 +124,23 @@ export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[]
     publishedTime: article.publishedAt, section: articleCompetitionLabel(article) });
 }
 const personLink = (person: NewsPerson) => `<a href="${personPath(person.id)}">${esc(person.name)}</a>`;
-/** The crawler gets the same subjects and disclosed portrait choices as the browser sidebar. */
-function storyPeopleHtml(people: NewsPerson[], competition: NewsArticle['competition'], cardFaces?: NewsDispatch['cardFaces']): string {
-  if (!people.length) return '';
-  // Without a Cabinet (it failed to build), each person falls back to their portrait and profile link.
+/**
+ * "In this story" for the initial HTML: the same storyCast() cards, order, lead and name/set lines as the browser block,
+ * then the linked names past the card budget, then a portrait for a listed person with no card yet.
+ */
+function storyPeopleHtml(stories: StoryCastSource[], people: NewsPerson[]): string {
+  // Without a Cabinet (it failed to build), each listed person falls back to their portrait and profile link.
   const cabinet = tryNewsCollection();
-  const selected = cabinet && cardFaces ? selectedStoryCards(cabinet, people, cardFaces) : [];
-  if (selected.length) return `<aside aria-label="In this story"><h2>In this story</h2>${selected.map(card =>
-    `<article><a href="${esc(card.href)}"><img src="${esc(card.src)}" alt="${esc(card.alt)}" width="300" height="420"/></a><p>${esc(card.label)}</p></article>`
-  ).join('')}</aside>`;
-  return `<aside aria-label="In this story"><h2>In this story</h2>${people.map(person => {
+  const { tiles, more } = cabinet ? storyCast(cabinet, stories) : { tiles: [], more: [] };
+  const shown = new Set([...tiles.map(tile => tile.personId), ...more.map(item => item.key.replace(/^person:/, ''))]);
+  const without = people.filter(person => !shown.has(person.id));
+  if (!tiles.length && !more.length && !without.length) return '';
+  const competition = stories[0]?.competition;
+  return `<aside aria-label="In this story"><h2>In this story</h2>${tiles.map(tile =>
+    `<article${tile.lead ? ' data-lead="true"' : ''}><a href="${esc(tile.href)}"><img src="${esc(tile.src)}" alt="${esc(tile.alt)}" width="${tile.width}" height="${tile.height}"/></a><p>${esc(tile.name)} · ${esc(tile.set)}</p></article>`
+  ).join('')}${more.length ? `<p>Also in this story: ${more.map(item => `<a href="${esc(item.href)}">${esc(item.name)}</a>`).join(' · ')}</p>` : ''}${without.map(person => {
     const portrait = displayPortrait(person);
     const team = [...person.memberships].reverse().find(member => member.competition === competition);
-    const card = cabinet ? cardForPerson(cabinet.cards, person.id, competition, cabinet.sets) : undefined;
-    if (card && cabinet) return `<article><a href="${esc(card.cardUrl)}"><img src="/api/news/cards/${esc(encodeURIComponent(card.id))}/thumb.webp?side=front&amp;w=300&amp;v=${esc(collectionShareVersion(card, cabinet))}" alt="${esc(`${person.name}, ${collectionRoleLabel(card).toLowerCase()} card`)}" width="300" height="420"/></a><p>${personLink(person)}${team ? ` · ${esc(team.teamName)}` : ''}</p></article>`;
     return `<article>${portrait ? `<img src="${esc(portrait.src)}" alt="${esc(portrait.alt)}" width="76" height="88"/>` : ''}${personLink(person)}${team ? `<p>${esc(team.teamName)}</p>` : ''}${person.hallOfFame[0] ? `<p>${esc(person.hallOfFame[0].label)}</p>` : ''}${person.editorialPortrait ? '<p>AI editorial portrait</p>' : ''}</article>`;
   }).join('')}</aside>`;
 }

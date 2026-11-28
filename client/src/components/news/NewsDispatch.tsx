@@ -1,6 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6.1 Terra / Codex (reasoning effort not exposed); Claude Opus 5.5
  * Date: 14-Nov-2026 (Claude Opus 5.5); 13-November-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): the card block reads the shared storyCast() rule; a front-page feature passes its
+ *          edition so the feature and edition are read as one story.
  * 25-Nov-2026 (GPT-6 / Codex): use the dispatch’s selected faces in the existing card strip.
  * 14-Nov-2026 (Claude Opus 5.5): the headline is an in-app Link to the dispatch's page, which passes
  *          `permalink` to print it as the page's <h1>; the kicker reads the shared dispatchLabel.
@@ -11,7 +13,7 @@
  */
 import { Link } from 'wouter';
 import { SportsText } from './SportsText';
-import type { NewsDispatch, NewsPerson, NewsStat } from '@shared/news';
+import type { NewsArticle, NewsDispatch, NewsPerson, NewsStat } from '@shared/news';
 import { competitionName, dispatchLabel, newsArticlePath, newsDate, reportedPeople, writerCredit, NEWS_NAME } from '@shared/news';
 import { StoryPeopleCards } from './NewsPeople';
 import { NewsEditorCredit } from './NewsEditorCredit';
@@ -21,7 +23,7 @@ export function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch
 }
 
 /** A dispatch in full. `permalink` is its own page, where the headline is the <h1> rather than a link to itself. */
-export function DispatchPreview({ dispatch, lead = false, people = [], showPeople = true, subjects, stats = [], permalink = false }: { dispatch: NewsDispatch; lead?: boolean; people?: NewsPerson[]; showPeople?: boolean; subjects?: NewsPerson[]; stats?: NewsStat[]; permalink?: boolean }) {
+export function DispatchPreview({ dispatch, edition, lead = false, people = [], showPeople = true, subjects, stats = [], permalink = false }: { dispatch: NewsDispatch; edition?: NewsArticle; lead?: boolean; people?: NewsPerson[]; showPeople?: boolean; subjects?: NewsPerson[]; stats?: NewsStat[]; permalink?: boolean }) {
   return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
     <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>{dispatchLabel(dispatch)}</span></div>
     {permalink
@@ -33,7 +35,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [], showPeopl
     {dispatch.sections.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
       <p className="news-dispatch-text"><SportsText text={section.text} stats={stats} /></p>
-      {index === 0 && showPeople && <StoryPeopleCards people={subjects ?? reportedPeople([dispatch], people)} competition={dispatch.competition} cardFaces={dispatch.cardFaces} />}
+      {index === 0 && showPeople && <StoryPeopleCards stories={edition ? [dispatch, edition] : [dispatch]} people={subjects ?? reportedPeople([dispatch], people)} />}
       <NewsArticleSectionExtras section={section} />
       <div className="news-section-sources">{section.sourceIds.map(id => {
         const source = dispatch.sources.find(item => item.id === id);

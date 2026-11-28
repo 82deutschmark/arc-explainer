@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Terra / Codex; GPT-6 / Codex (reasoning effort not exposed); GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low; Claude Sonnet 5.5; GPT-6 Astra Extra high; Claude Opus 5.5
  * Date: 14-Nov-2026
+ * 27-Nov-2026 (Claude Opus 5.5 Medium): personIds and cardFaces notes follow the shared card rule (shared/storyCast.ts).
  * 25-Nov-2026 (GPT-6 / Codex): allow a dispatch to select specific faces of its verified subjects’ cards.
  * 14-Nov-2026 (Claude Opus 5.5): wire stories get their own permalink (wirePath, wireTitle,
  *          wireDescription, wireDeskPausedSince, NewsIndex.wireLatest); dispatches get dispatchTitle,
@@ -144,8 +145,10 @@ export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
   dek?: string;
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
-  /** Ordered, verified story cast. An empty list deliberately shows no cards. */
+  /** Ordered, verified story cast; the first is the story's subject. Empty means no single subject: the card rule
+   *  (shared/storyCast.ts) still adds everyone on the story's board or named in it who holds a card for its contest. */
   personIds?: string[];
+  /** Hand-typed faces: they may move a person forward or add a back face, never limit the cards shown. */
   cardFaces?: StoryCardFace[];
   /** Historical dispatches lack a writer ID; new features record their actual writer. */
   generatedBy?: typeof NEWS_EDITION_WRITERS[number];
